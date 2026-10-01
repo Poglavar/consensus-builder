@@ -299,7 +299,7 @@
         banner.textContent = '';
         const place = state.explorePlace;
         banner.appendChild(el('p', 'explore-banner__text', {
-            text: t('world.explore.banner', 'No parcel data here yet — you can look around; proposals need parcels.')
+            text: t('world.explore.banner', 'No parcels here: you can draw a site and propose, but a proposal can only execute through an authority\'s verdict.')
         }));
         const actions = el('div', 'explore-banner__actions');
         if (!place || place.kind !== 'ocean') {
@@ -340,7 +340,7 @@
             identifyExplorePlace({ lat: center.lat, lon: center.lng });
             renderBanner();
             // The status line's boot text says parcels are loading; here none ever will.
-            if (typeof global.updateStatus === 'function') global.updateStatus(t('world.explore.status', 'Exploring without parcel data'));
+            if (typeof global.updateStatus === 'function') global.updateStatus(t('world.explore.status', 'No parcel data here: click the map to draw a site and propose.'));
             map.on('moveend', () => {
                 const c = map.getCenter();
                 m.rememberExploreView({ lat: c.lat, lon: c.lng, zoom: map.getZoom() });

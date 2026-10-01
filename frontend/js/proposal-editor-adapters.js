@@ -113,6 +113,8 @@
             // untouched edit must preserve this immutable scope; only a changed/new selection is
             // projected through LiveParcelFabric at serialization time.
             cadastreParcelIds: authoredCadastreParcelIds,
+            site: clone(proposal?.site || null),
+            toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
             offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
             offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
             acquisitionMode: proposal?.acquisitionMode || null,
@@ -131,6 +133,23 @@
         };
     }
 
+    function siteDraftApi() {
+        if (global.__siteDraft) return global.__siteDraft;
+        if (typeof require === 'function') return require('./proposals/site-draft.js');
+        throw new Error('Cannot validate a draft: proposals/site-draft.js is not loaded.');
+    }
+
+    // Synthetic plots cut from a site on bare ground (proposals/site-plots.js) are design input,
+    // not cadastral ground: they never reach the declaration.
+    function isSitePlotId(id) {
+        return /^site(-plot)?:/.test(String(id || ''));
+    }
+
+    function boundParcelIds(binding) {
+        const parcels = binding && Array.isArray(binding.parcels) ? binding.parcels : [];
+        return [...new Set(parcels.map(hit => normalizeParcelId(hit && hit.parcelId)).filter(Boolean))].sort();
+    }
+
     function issue(code, message, path, mapTarget) {
         return { code, message, path: path || null, mapTarget: clone(mapTarget || null) };
     }
@@ -141,9 +160,10 @@
         if (!draft?.fields?.name || !String(draft.fields.name).trim()) {
             errors.push(issue('missing-name', 'Add a proposal name.', 'fields.name'));
         }
-        if (!Array.isArray(draft?.fields?.selectedParcelIds) || draft.fields.selectedParcelIds.length === 0) {
-            errors.push(issue('missing-parcels', 'Select at least one parcel.', 'fields.selectedParcelIds'));
-        }
+        // Parcel acts need parcels; material proposals need a site, parcels or their own design
+        // geometry (proposals/site-draft.js, PARCEL-OPTIONAL.md).
+        const groundIssue = siteDraftApi().draftGroundIssue(draft);
+        if (groundIssue) errors.push(issue(groundIssue.code, groundIssue.message, groundIssue.path));
         if (!draft?.fields?.description || !String(draft.fields.description).trim()) {
             warnings.push(issue('missing-description', 'A description will help others understand the replacement.', 'fields.description'));
         }
@@ -268,7 +288,10 @@
         return null;
     }
 
-    function reparcellizationTopologyValidation(plan) {
+    // `options.site`: a subdivision (plan.poolSource 'site', PARCEL-OPTIONAL.md phase 4) is
+    // checked against its SITE — the bound parcels' part and the open ground alike — so the plots
+    // must tile exactly the site's ground, whatever pool geometry the plan carries.
+    function reparcellizationTopologyValidation(plan, options = {}) {
         const errors = [];
         const warnings = [];
         const features = planFeatures(plan);
@@ -295,7 +318,8 @@
             }
             geometryKeys.add(key);
         });
-        const poolGeometry = plan?.poolGeometry;
+        const siteGeometry = options && options.site && /Polygon/.test(String(options.site.type || '')) ? options.site : null;
+        const poolGeometry = siteGeometry || plan?.poolGeometry;
         if (poolGeometry && poolGeometry.type === 'MultiPolygon' && (poolGeometry.coordinates || []).length > 1) {
             errors.push(issue(
                 'disconnected-readjustment',
@@ -328,9 +352,13 @@
         if (Number.isFinite(targetArea) && targetArea > 0 && assignedArea > 0) {
             const tolerance = Math.max(0.5, targetArea * 0.005);
             if (assignedArea < targetArea - tolerance) {
-                errors.push(issue('coverage-gap', 'Replacement parcels leave part of the required parent area uncovered.', 'editorPayload.plan.polygons'));
+                errors.push(issue('coverage-gap', siteGeometry
+                    ? 'The plots leave part of the site uncovered (its parcels or its open ground).'
+                    : 'Replacement parcels leave part of the required parent area uncovered.', 'editorPayload.plan.polygons'));
             } else if (assignedArea > targetArea + tolerance) {
-                errors.push(issue('coverage-excess', 'Replacement parcel areas exceed the required parent coverage.', 'editorPayload.plan.polygons'));
+                errors.push(issue('coverage-excess', siteGeometry
+                    ? 'The plots cover more than the site.'
+                    : 'Replacement parcel areas exceed the required parent coverage.', 'editorPayload.plan.polygons'));
             }
         }
         if (!turfRef || typeof turfRef.intersect !== 'function' || typeof turfRef.area !== 'function') return { errors, warnings };
@@ -342,7 +370,9 @@
                 if ((gap && turfRef.area(gap) > 0.5) || (outside && turfRef.area(outside) > 0.5)) {
                     errors.push(issue(
                         'pool-coverage-mismatch',
-                        'Replacement parcels must tile the saved readjustment extent exactly.',
+                        siteGeometry
+                            ? 'The plots must tile the site exactly: its parcels and its open ground.'
+                            : 'Replacement parcels must tile the saved readjustment extent exactly.',
                         'editorPayload.plan.polygons',
                         poolGeometry
                     ));
@@ -382,15 +412,24 @@
     function applyFieldsToProposal(output, draft) {
         const fields = draft.fields || {};
         const selectedParcelIds = [...new Set((fields.selectedParcelIds || [])
-            .map(normalizeParcelId).filter(Boolean))];
+            .map(normalizeParcelId).filter(Boolean).filter(id => !isSitePlotId(id)))];
         const authoredCadastreParcelIds = [...new Set((fields.cadastreParcelIds || [])
             .map(normalizeParcelId).filter(Boolean))];
         const sourceSelectionIds = sourceParcels(draft.sourceSnapshot || {});
         const selectionUnchanged = selectedParcelIds.length === sourceSelectionIds.length
             && selectedParcelIds.every(id => sourceSelectionIds.includes(id));
+        // No live selection: a site on bare ground (or on ground whose binding is computed at
+        // publish). The declaration starts as the preview binding when the site carries one.
         const cadastreParcelIds = authoredCadastreParcelIds.length && selectionUnchanged
             ? authoredCadastreParcelIds
-            : cadastreIdsForLiveSelection(selectedParcelIds);
+            : (selectedParcelIds.length ? cadastreIdsForLiveSelection(selectedParcelIds) : boundParcelIds(fields.binding));
+        const site = siteDraftApi().draftSite(draft);
+        if (site) output.site = site;
+        else delete output.site;
+        const toleranceM = Number(fields.toleranceM);
+        if (Number.isFinite(toleranceM) && toleranceM > 0) output.toleranceM = toleranceM;
+        else delete output.toleranceM;
+        if (fields.binding && typeof fields.binding === 'object') output.binding = clone(fields.binding);
         output.title = fields.name || output.title || output.name || '';
         output.name = output.title;
         output.proposalName = output.title;
@@ -545,6 +584,15 @@
         const ids = [...new Set((parcelIds || []).map(String).filter(Boolean))];
         if (!ids.length) {
             return { ids: [], layers: [], substituted: false, complete: true, unresolvedIds: [] };
+        }
+        // A site's synthetic design parcels (the site as a superparcel, or plots cut from it) have
+        // no live layer; they resolve through the site tool while it holds them.
+        if (ids.every(isSitePlotId)) {
+            const resolve = global.resolveDesignParcelFeature;
+            const unresolvedIds = ids.filter(id => typeof resolve !== 'function' || !resolve(id));
+            return unresolvedIds.length
+                ? { ids: [], layers: [], substituted: false, complete: false, unresolvedIds }
+                : { ids, layers: [], substituted: false, complete: true, unresolvedIds: [], synthetic: true };
         }
         // With no footprint the ids are exact live selection ids. With a footprint they are the
         // record's explicit cadastral anchors, which the repository may need to provision before
@@ -1169,7 +1217,9 @@
         },
         validate(draft) {
             const common = commonValidation(draft);
-            const topology = reparcellizationTopologyValidation(draft.editorPayload?.plan);
+            const plan = draft.editorPayload?.plan;
+            const site = plan && plan.poolSource === 'site' ? siteDraftApi().draftSite(draft) : null;
+            const topology = reparcellizationTopologyValidation(plan, { site });
             return {
                 valid: common.errors.length + topology.errors.length === 0,
                 errors: [...common.errors, ...topology.errors],
@@ -1181,6 +1231,29 @@
         },
         async openDesignEditor(draft) {
             const plan = clone(draft.editorPayload?.plan || {});
+            // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is the draft's site — the bound
+            // parcels' part (their owners contribute) and the open ground (no owner). The bound
+            // parcels are the site's binding, never a live selection.
+            if (plan.poolSource === 'site') {
+                const site = siteDraftApi().draftSite(draft);
+                if (!site) throw new Error('This subdivision has no site.');
+                const bound = boundParcelIds(draft.fields?.binding);
+                plan.parcelIds = bound.length ? bound
+                    : [...new Set((draft.fields?.cadastreParcelIds || []).map(normalizeParcelId).filter(Boolean))];
+                plan.poolGeometry = site;
+                global.pendingReparcellizationPlan = plan;
+                if (typeof global.openReparcellizationModal !== 'function' && typeof global.ensureReparcellizationModuleLoaded === 'function') {
+                    await global.ensureReparcellizationModuleLoaded();
+                }
+                if (typeof global.openReparcellizationModal !== 'function') return false;
+                return global.openReparcellizationModal({
+                    algorithm: plan.algorithm || 'street-plots',
+                    ownershipMode: 'multiple',
+                    initialPolygons: clone(plan.polygons || []),
+                    poolGeometry: clone(site),
+                    sitePool: { site: clone(site), boundParcelIds: plan.parcelIds.slice() }
+                });
+            }
             const selection = await prepareProposalDraftParcelSelection(draft);
             // Input land belongs to the draft fields and ultimately the proposal's single root
             // cadastre declaration. The reparcellization payload contains only its authored output.

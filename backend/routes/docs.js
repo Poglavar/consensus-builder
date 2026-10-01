@@ -242,6 +242,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     listByParcel: `${base}/proposals?parcel_id={cadastreParcelId}`,
                     parcelHistory: `${base}/parcels/{parcelUid}/history`,
                     parcelsUnder: `${base}/parcels/under`,
+                    proposalBinding: `${base}/agent/binding`,
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`,
                     hackathonProof: `${base}/hackathon/proof.json`,
@@ -412,18 +413,20 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 proposalAccount: {
                     programId: proposalProgramId(),
                     cluster: 'devnet',
-                    // v2 interface (blockchain/solana/README.md "Lens model v2"), pending devnet
+                    // v3 interface (parcel-optional, PARCEL-OPTIONAL.md "Chain (phase 5)"), pending devnet
                     // deployment. The devnet program is still v1 until the upgrade.
-                    interfaceVersion: 'v2, pending devnet deployment',
+                    interfaceVersion: 'v3, pending devnet deployment',
                     mint: {
                         instruction: 'mint_and_fund',
-                        args: ['parcel_ids: vec<string>', 'is_conditional: bool', 'image_uri: string', 'sol_amount: u64', 'lens: vec<pubkey>', 'verdict_may_execute: bool'],
+                        args: ['parcel_ids: vec<string>', 'is_conditional: bool', 'image_uri: string', 'sol_amount: u64', 'lens: vec<pubkey>', 'verdict_may_execute: bool', 'site_hash: [u8; 32]', 'open_ground: bool'],
                         accounts: ['proposal', 'proposal_counter', 'owner', 'system_program'],
                         signer: 'owner: your own wallet; it pays rent for the 4096-byte proposal account',
-                        parcelIds: 'the same strings as the record\'s cadastreParcelIds',
+                        parcelIds: 'the same strings as the record\'s cadastreParcelIds (the site\'s binding); may be empty only with a site_hash, and then open_ground must be true',
+                        siteHash: 'sha256 of the canonical site encoding (frontend/js/proposals/site-hash.js); 32 zero bytes when the proposal has no site',
+                        openGround: 'true when part of the site lies on no bound parcel (binding coverage not complete, or no parcels); needs a site_hash. Such a proposal also needs a lens member\'s executed verdict to execute',
                         lens: 'must be non-empty; the attesters whose ownership and verdict attestations this proposal accepts',
-                        verdictMayExecute: 'false is the normal value; true lets a lens member\'s executed verdict settle the proposal without per-parcel consent (permit-style evidence)',
-                        v1: 'the devnet program until the v2 upgrade takes the same args without the trailing verdict_may_execute',
+                        verdictMayExecute: 'true lets a lens member\'s executed verdict count: without parcels it executes the proposal, with parcels and open ground it clears the open ground (owners still consent), with parcels and no open ground it executes without per-parcel consent (permit-style evidence). Set it exactly when open_ground is true unless you mean permit-style evidence',
+                        v1: 'the devnet program until the upgrade takes the same args without the trailing verdict_may_execute, site_hash and open_ground',
                         counterPda: 'seeds ["proposal_counter"]',
                         proposalPda: 'seeds ["proposal", count as 8-byte little-endian u64], count read at byte offset 8 of the counter account'
                     },
@@ -443,9 +446,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         accounts: ['proposal', 'verdict', 'verdict_credential', 'verdict_record', 'submitter', 'system_program'],
                         signer: 'submitter: anyone (signer, writable: pays the verdict record\'s rent); the verdict (ProposalVerdict-v1) must be signed by a lens member',
                         verdictRecordPda: 'seeds ["verdict", proposal, verdict_attestation] (VerdictRecord { proposal, member, verdict_attestation, verdict_hash, verdict, settled_at, bump }); init, so one attestation settles at most once',
-                        effect: 'expired sets Expired (3); executed sets Executed (1) only when minted with verdict_may_execute',
-                        event: 'VerdictSettled { proposal, verdict_attestation, verdict_hash, member, status, settled_at }',
-                        status: 'v2, pending devnet deployment'
+                        effect: 'expired sets Expired (3); executed needs verdict_may_execute and sets Executed (1), except on a proposal with parcels and open ground, where it clears the open ground and the proposal executes once every parcel is accepted',
+                        event: 'VerdictSettled { proposal, verdict_attestation, verdict_hash, member, status (after settlement), settled_at, verdict (1 executed, 3 expired) }',
+                        status: 'v3, pending devnet deployment'
                     },
                     recordLink: {
                         field: 'onchain',

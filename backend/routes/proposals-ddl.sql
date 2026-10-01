@@ -44,6 +44,8 @@ CREATE TABLE IF NOT EXISTS proposal (
     owner_acceptances JSONB, -- Object mapping owner addresses to acceptance status
     ownership_flow JSONB, -- Per crossed base cadastral parcel: ceded m2 + where the ownership goes, stamped at publish
     cadastre_frame JSONB, -- Which cadastre frame the publish-time stamps were computed against ({ capturedAt })
+    site geometry(MultiPolygon, 4326), -- The ground the proposal occupies (PARCEL-OPTIONAL.md)
+    binding JSONB, -- Server binding of the site at publish: { parcels, touched, toleranceM, coverage, unsurveyedM2, unknownM2, siteM2, source, computedAt }
 
     -- Proposal-specific data (stored as JSONB for flexibility)
     -- For road proposals: authored definition (points, cross-sections, metadata)
@@ -81,9 +83,10 @@ CREATE TABLE IF NOT EXISTS proposal (
     
     -- Indexes for common queries
     CONSTRAINT proposal_proposal_id_key UNIQUE (proposal_id),
-    CONSTRAINT proposal_cadastre_parcel_ids_nonempty CHECK (
+    -- A proposal has cadastral land OR a site: material proposals may stand on unsurveyed ground.
+    CONSTRAINT proposal_cadastre_parcel_ids_or_site CHECK (
         CASE WHEN jsonb_typeof(cadastre_parcel_ids) = 'array'
-            THEN jsonb_array_length(cadastre_parcel_ids) > 0
+            THEN jsonb_array_length(cadastre_parcel_ids) > 0 OR site IS NOT NULL
             ELSE FALSE
         END
     ),
@@ -95,6 +98,7 @@ CREATE TABLE IF NOT EXISTS proposal (
 
 -- Idempotent column additions for installs created from an older version of this file.
 ALTER TABLE proposal ADD COLUMN IF NOT EXISTS edit_token_hash VARCHAR(64);
+-- site / binding and the relaxed declaration CHECK: see proposal-site-ddl.sql (applied on deploy).
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_proposal_city ON proposal(city);
@@ -113,6 +117,8 @@ COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle s
 COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
 COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Exact authored selection of immutable cadastral parcel IDs.';
 COMMENT ON COLUMN proposal.ownership_flow IS 'Per crossed base cadastral parcel: ceded area (m2) and ownership destination (public/proposer/mapping/undecided), stamped at publish. See rethink-proposals.md §9/§12.';
+COMMENT ON COLUMN proposal.site IS 'The ground the proposal occupies (MultiPolygon, EPSG:4326). See PARCEL-OPTIONAL.md.';
+COMMENT ON COLUMN proposal.binding IS 'Server binding of the site at publish time (parcels, intrusion, coverage). cadastre_parcel_ids equals its bound parcels.';
 COMMENT ON COLUMN proposal.cadastre_frame IS 'Which cadastre frame the publish-time stamps were computed against ({ capturedAt }). See rethink-proposals.md D5/§11.';
 COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used for reconstruction';
 COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';

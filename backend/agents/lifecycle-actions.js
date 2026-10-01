@@ -45,9 +45,11 @@ function readStringVector(bytes, state) {
     return values;
 }
 
-// Proposal account (proposal_nft v2, lens-model.md): prefix unchanged from v1, then `lens`, `bump`
-// and the v2 `verdict_may_execute` flag. v1 zero-initialised the fixed 4096-byte account, so every
-// existing proposal carries a real 0 byte there; a buffer that ends before it is not a proposal account.
+// Proposal account (proposal_nft v3, lens-model.md): prefix unchanged from v1, then `lens`, `bump`,
+// v2's `verdict_may_execute`, and v3's `site_hash` [32], `open_ground`, `open_ground_cleared` and
+// `layout_version`. The fixed 4096-byte account is zero-initialised, so v1/v2 proposals carry real 0
+// bytes there (no site, closed ground, layoutVersion 0; v3 mints write 3); a buffer that ends before
+// open_ground_cleared is not a proposal account, one that ends before layout_version reads 0.
 export function decodeProposalState(data) {
     const bytes = Buffer.from(data || []);
     const state = { offset: 8 };
@@ -63,7 +65,9 @@ export function decodeProposalState(data) {
     const acceptedParcels = readStringVector(bytes, state);
     if (state.offset + 4 > bytes.length) throw new Error('proposal account ended before the lens');
     const lensCount = bytes.readUInt32LE(state.offset); state.offset += 4;
-    if (state.offset + lensCount * 32 + 2 > bytes.length) throw new Error('proposal account ended inside the lens, bump or verdict_may_execute');
+    if (state.offset + lensCount * 32 + 2 + 34 > bytes.length) {
+        throw new Error('proposal account ended inside the lens, bump, verdict_may_execute or the v3 site fields');
+    }
     const lens = [];
     for (let index = 0; index < lensCount; index += 1) {
         lens.push(new web3.PublicKey(bytes.subarray(state.offset, state.offset + 32)).toBase58());
@@ -71,7 +75,15 @@ export function decodeProposalState(data) {
     }
     const bump = bytes[state.offset++];
     const verdictMayExecute = bytes[state.offset++] === 1;
-    return { owner, parcelIds, isConditional, imageUri, acceptancePossible, status, acceptedParcels, lens, bump, verdictMayExecute };
+    const siteHashBytes = bytes.subarray(state.offset, state.offset + 32); state.offset += 32;
+    const siteHash = siteHashBytes.some(byte => byte !== 0) ? siteHashBytes.toString('hex') : null;
+    const openGround = bytes[state.offset++] === 1;
+    const openGroundCleared = bytes[state.offset++] === 1;
+    const layoutVersion = state.offset < bytes.length ? bytes[state.offset++] : 0;
+    return {
+        owner, parcelIds, isConditional, imageUri, acceptancePossible, status, acceptedParcels, lens, bump,
+        verdictMayExecute, siteHash, openGround, openGroundCleared, layoutVersion
+    };
 }
 
 // v1 anchors carry the first minter as `owner`; v2 anchors carry the default key. Nothing reads it for
@@ -205,8 +217,9 @@ export function decodeAcceptanceRecord(data) {
 
 const VERDICT_CODE_NAMES = { 1: 'executed', 3: 'expired' };
 
-// VerdictRecord: proposal, member, verdict_attestation, verdict_hash [32], verdict u8 (1 Executed,
-// 3 Expired), settled_at i64, bump.
+// VerdictRecord: proposal, member, verdict_attestation, verdict_hash [32], verdict u8 (what the
+// verdict said: 1 executed, 3 expired), settled_at i64, bump. In v3 an executed verdict on an
+// open-ground proposal with parcels only clears the open ground; the proposal may stay Active.
 export function decodeVerdictRecord(data) {
     const bytes = Buffer.from(data || []);
     checkDiscriminator(bytes, 'VerdictRecord');
@@ -422,10 +435,17 @@ export async function settleWithVerdict({
     if (verdict === 'executed' && !proposal.verdictMayExecute) {
         throw new Error('an executed verdict cannot skip per-parcel consent: this proposal was minted without verdict_may_execute');
     }
+    // v3: on an open-ground proposal with parcels an executed verdict clears the open ground and the
+    // proposal stays Active until its last parcel is accepted.
+    const consentComplete = proposal.parcelIds.length > 0 && proposal.acceptedParcels.length === proposal.parcelIds.length;
+    const clearsOnly = verdict === 'executed' && proposal.openGround && proposal.parcelIds.length > 0 && !consentComplete;
     const signature = await sendInstruction(connection, buildSettleWithVerdictIx({
         proposalAccount: proposalKey, verdictAttestation, verdictCredential: credential, submitter: submitterKeypair.publicKey, programId
     }), submitterKeypair, sendAndConfirm);
-    return { replayed: false, signature, status: verdict, verdict, member: memberKey.toBase58(), record: recordAddress, verdictHash: attestation.accountHash };
+    return {
+        replayed: false, signature, status: clearsOnly ? 'active' : verdict, verdict, openGroundCleared: verdict === 'executed' && proposal.openGround,
+        member: memberKey.toBase58(), record: recordAddress, verdictHash: attestation.accountHash
+    };
 }
 
 export async function cancelProposal({

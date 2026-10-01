@@ -140,12 +140,13 @@
     }
 
     // Propose leads: it is what a selection is usually for.
-    const TRAY_ORDER = ['selection.propose', 'blocks.fromSelected', 'selection.clear', 'selection.done'];
+    const TRAY_ORDER = ['selection.propose', 'selection.useAsSite', 'blocks.fromSelected', 'selection.clear', 'selection.done'];
 
     // The registry labels say what a command does anywhere (the palette lists them out of
     // context); in the tray, next to the count, the short word is enough.
     const SHORT_LABELS = {
         'blocks.fromSelected': ['selectionTray.actions.detectBlock', 'Detect block'],
+        'selection.useAsSite': ['selectionTray.actions.useAsSiteShort', 'Site'],
         'selection.clear': ['selectionTray.actions.clearShort', 'Clear'],
         'selection.done': ['selectionTray.actions.doneShort', 'Done']
     };

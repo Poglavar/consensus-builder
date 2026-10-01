@@ -1,5 +1,5 @@
 // Unit tests for agents/minter.js — the node port of the browser's mint_and_fund.
-// The parity check is not a copy of the browser encoding: the browser's own v2 codec
+// The parity check is not a copy of the browser encoding: the browser's own v3 codec
 // (frontend/js/solana/acceptance-client.js, which proposal-bridge.js's mintProposal() calls) is
 // required in THIS realm and its instruction data is compared byte for byte, after the browser's own
 // de-duplication of parcel ids. So a change to either side that moves a single byte fails here. The
@@ -21,6 +21,7 @@ import {
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
+const siteHashApi = require('../../frontend/js/proposals/site-hash.js');
 const { PublicKey, Keypair, SystemProgram } = web3;
 
 const REPO = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
@@ -47,12 +48,14 @@ beforeAll(() => {
 
 // Byte-for-byte what proposal-bridge.js's mintProposal() puts in the instruction: it de-duplicates
 // the parcel ids, then hands them to the shared codec.
-function browserMintAndFundData({ parcelIds, isConditional, imageUri, lamports, lens, verdictMayExecute = false }) {
+function browserMintAndFundData({ parcelIds, isConditional, imageUri, lamports, lens, verdictMayExecute = false, siteHash = null, openGround = false }) {
     const uniqueParcelIds = [...new Set(parcelIds.map(String).filter(Boolean))];
     return browserCodec.encodeMintAndFundData({
-        parcelIds: uniqueParcelIds, isConditional, imageUri, solLamports: lamports, lens, verdictMayExecute
+        parcelIds: uniqueParcelIds, isConditional, imageUri, solLamports: lamports, lens, verdictMayExecute, siteHash, openGround
     });
 }
+
+const SITE = { type: 'Polygon', coordinates: [[[15.97, 45.80], [15.98, 45.80], [15.98, 45.81], [15.97, 45.80]]] };
 
 function counterAccount(count) {
     const data = Buffer.alloc(16);
@@ -100,22 +103,45 @@ describe('encodeMintAndFundData', () => {
         expect(new PublicKey(bytes.slice(offset + 4, offset + 36)).toBase58()).toBe(LENS_A);
         expect(new PublicKey(bytes.slice(offset + 36, offset + 68)).toBase58()).toBe(LENS_B);
         expect(bytes[offset + 68]).toBe(0); // verdict_may_execute, default false
-        expect(bytes.length).toBe(offset + 69);
+        expect(Array.from(bytes.slice(offset + 69, offset + 101))).toEqual(Array(32).fill(0)); // site_hash: none
+        expect(bytes[offset + 101]).toBe(0); // open_ground
+        expect(bytes.length).toBe(offset + 102);
     });
 
-    it('encodes verdict_may_execute as the trailing bool the v2 IDL declares', async () => {
+    it('encodes verdict_may_execute, site_hash and open_ground in the order the v3 IDL declares', async () => {
         const idl = IDL.instructions.find(ix => ix.name === 'mint_and_fund');
         expect(idl.args.map(arg => [arg.name, arg.type])).toEqual([
             ['parcel_ids', { vec: 'string' }], ['is_conditional', 'bool'], ['image_uri', 'string'],
-            ['sol_amount', 'u64'], ['lens', { vec: 'pubkey' }], ['verdict_may_execute', 'bool']
+            ['sol_amount', 'u64'], ['lens', { vec: 'pubkey' }], ['verdict_may_execute', 'bool'],
+            ['site_hash', { array: ['u8', 32] }], ['open_ground', 'bool']
         ]);
         const off = encodeMintAndFundData(FIXTURE);
         const on = encodeMintAndFundData({ ...FIXTURE, verdictMayExecute: true });
         expect(on.length).toBe(off.length);
-        expect(Array.from(on.slice(0, -1))).toEqual(Array.from(off.slice(0, -1)));
-        expect([off.at(-1), on.at(-1)]).toEqual([0, 1]);
+        expect(Array.from(on.slice(0, -34))).toEqual(Array.from(off.slice(0, -34)));
+        expect([off.at(-34), on.at(-34)]).toEqual([0, 1]);
         expect(Array.from(on)).toEqual(Array.from(await browserMintAndFundData({ ...FIXTURE, verdictMayExecute: true })));
         expect(() => encodeMintAndFundData({ ...FIXTURE, verdictMayExecute: 'yes' })).toThrow(/boolean/);
+    });
+
+    it('encodes an empty binding with its site hash and open ground byte-identically to the browser', async () => {
+        const siteHash = await siteHashApi.siteHash(SITE);
+        const empty = { ...FIXTURE, parcelIds: [], siteHash, openGround: true, verdictMayExecute: true };
+        const bytes = encodeMintAndFundData(empty);
+        expect(Array.from(bytes)).toEqual(Array.from(await browserMintAndFundData(empty)));
+        expect(Array.from(bytes.slice(8, 12))).toEqual([0, 0, 0, 0]); // empty vec<string>
+        expect(Array.from(bytes.slice(-33, -1))).toEqual(Array.from(siteHash));
+        expect(bytes.at(-1)).toBe(1);
+    });
+
+    it('mirrors the program\'s v3 mint rules', async () => {
+        const siteHash = await siteHashApi.siteHash(SITE);
+        expect(() => encodeMintAndFundData({ ...FIXTURE, parcelIds: [], openGround: true })).toThrow(/siteHash/);
+        expect(() => encodeMintAndFundData({ ...FIXTURE, parcelIds: [], siteHash })).toThrow(/open ground/);
+        expect(() => encodeMintAndFundData({ ...FIXTURE, openGround: true })).toThrow(/openGround needs a siteHash/);
+        expect(() => encodeMintAndFundData({ ...FIXTURE, siteHash: [1, 2, 3] })).toThrow(/32 bytes/);
+        // The browser codec refuses the same inputs.
+        expect(() => browserMintAndFundData({ ...FIXTURE, parcelIds: [], siteHash })).toThrow(/open ground/);
     });
 
     it('refuses a proposal with no parcels and a fractional lamport amount', () => {
@@ -238,6 +264,29 @@ describe('mintProposal', () => {
             chainId: 'solana-devnet',
             contractAddress: PROGRAM_ID
         });
+    });
+
+    it('derives site_hash and open_ground from the site and its binding; open ground turns verdict_may_execute on', async () => {
+        const ownerKeypair = Keypair.generate();
+        const siteHash = await siteHashApi.siteHash(SITE);
+        const cases = [
+            { parcelIds: [], binding: { coverage: 'none' }, openGround: true },
+            { parcelIds: ['HR-1'], binding: { coverage: 'partial' }, openGround: true },
+            { parcelIds: ['HR-1'], binding: { coverage: 'complete' }, openGround: false }
+        ];
+        for (const c of cases) {
+            const { connection, sendAndConfirm, sends } = stubbedRun({ counts: [1n], sendResults: ['SIG'] });
+            await mintProposal({ connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: c.parcelIds, site: SITE, binding: c.binding, lens: [LENS_A], sendAndConfirm });
+            const data = Array.from(sends[0].transaction.instructions[0].data);
+            expect(data).toEqual(Array.from(encodeMintAndFundData({
+                parcelIds: c.parcelIds, lens: [LENS_A], siteHash, openGround: c.openGround, verdictMayExecute: c.openGround
+            })));
+        }
+        // A site-less mint keeps the zero hash; a parcel-less one without a site never reaches the wire.
+        const none = stubbedRun({ counts: [1n], sendResults: ['SIG'] });
+        await expect(mintProposal({ connection: none.connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: [], lens: [LENS_A], sendAndConfirm: none.sendAndConfirm }))
+            .rejects.toThrow(/needs a site/);
+        expect(none.sends).toHaveLength(0);
     });
 
     it('refuses to mint without a lens instead of defaulting to the owner', async () => {

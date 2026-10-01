@@ -86,12 +86,18 @@ export function decodeAcceptanceRecord(data) {
     };
 }
 
-/** Decode a VerdictSettled event payload (the bytes after "Program data: ", base64-decoded). */
+/**
+ * Decode a VerdictSettled event payload (the bytes after "Program data: ", base64-decoded).
+ * `status` is the proposal's status after the settlement. v3 appends `verdict`, what the verdict
+ * said (1 executed, 3 expired): an executed verdict that only cleared an open-ground proposal's
+ * open ground leaves status 0 (Active). Events logged by v2 end after settled_at; there the
+ * status always equals the verdict, so `verdict` reads as `status`.
+ */
 export function decodeVerdictSettled(data) {
     const bytes = Buffer.from(data || []);
     const reader = new Reader(bytes, 'VerdictSettled event');
     if (!reader.take(8).equals(VERDICT_SETTLED_DISCRIMINATOR)) throw new Error('not a VerdictSettled event');
-    return {
+    const event = {
         proposal: reader.pubkey(),
         verdictAttestation: reader.pubkey(),
         verdictHash: reader.take(32).toString('hex'),
@@ -99,6 +105,9 @@ export function decodeVerdictSettled(data) {
         status: reader.u8(),
         settledAt: reader.i64()
     };
+    event.verdict = reader.offset < bytes.length ? reader.u8() : event.status;
+    if (reader.offset !== bytes.length) throw new Error('VerdictSettled event has trailing bytes');
+    return event;
 }
 
 /**
@@ -154,8 +163,9 @@ export function buildAcceptanceEvent({ recordAddress, record, accountData, trans
 }
 
 export function buildVerdictEvent({ verdict, transaction, slot = null }) {
-    const outcome = TERMINAL_OUTCOMES[verdict.status];
-    if (outcome !== 'executed' && outcome !== 'expired') throw new Error(`VerdictSettled status ${verdict.status} is not a verdict outcome`);
+    const said = verdict.verdict ?? verdict.status;
+    const outcome = TERMINAL_OUTCOMES[said];
+    if (outcome !== 'executed' && outcome !== 'expired') throw new Error(`VerdictSettled verdict ${said} is not a verdict outcome`);
     if (!transaction) throw new Error('transaction is required');
     return {
         id: `solana:devnet:${VERDICT_EVENT_TYPE}:${verdict.proposal}:${verdict.verdictAttestation}`,
@@ -178,6 +188,8 @@ export function buildVerdictEvent({ verdict, transaction, slot = null }) {
             verdictAttestation: verdict.verdictAttestation,
             member: verdict.member,
             proposalStatusByte: verdict.status,
+            // v3: an executed verdict that cleared open ground while owners' consent was still open.
+            clearedOpenGroundOnly: outcome === 'executed' && verdict.status === 0,
             settledAt: verdict.settledAt
         }
     };

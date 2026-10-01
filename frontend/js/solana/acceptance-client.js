@@ -1,7 +1,7 @@
-// Pure client codec for the lens-model v2 instructions of proposal_nft and parcel_nft
+// Pure client codec for the lens-model instructions of proposal_nft (v3: parcel-optional) and parcel_nft
 // (blockchain/solana/idl/*.json): PDA derivation, byte-exact Anchor/borsh instruction encoding for
 // mint_and_fund, mint_parcel, accept_with_attestations, settle_with_verdict and distribute_funds,
-// and decoders for Proposal (v2, incl. verdict_may_execute), ConsentTally, AcceptanceRecord, VerdictRecord and SAS
+// and decoders for Proposal (v3: verdict_may_execute, site_hash, open_ground, layout_version), ConsentTally, AcceptanceRecord, VerdictRecord and SAS
 // lens attestations. No DOM and no wallet; the fetch* helpers take a connection and only read.
 (function attachSolanaAcceptanceClient(root, factory) {
     const core = (root && root.LensCore) || (typeof require === 'function' ? require('../lens-core.js') : null);
@@ -135,11 +135,32 @@
         return Uint8Array.from(IX_DISCRIMINATORS[name]);
     }
 
+    // [u8; 32]: exactly 32 bytes; absent means the zero hash ("no site").
+    function encodeSiteHash(value) {
+        if (value === null || value === undefined) return new Uint8Array(32);
+        const bytes = value instanceof Uint8Array ? value : Uint8Array.from(value);
+        if (bytes.length !== 32 || bytes.some(byte => !Number.isInteger(byte) || byte < 0 || byte > 255)) {
+            throw new Error('siteHash must be 32 bytes');
+        }
+        return Uint8Array.from(bytes);
+    }
+
     // mint_and_fund(parcel_ids: Vec<String>, is_conditional: bool, image_uri: String,
-    //               sol_amount: u64, lens: Vec<Pubkey>, verdict_may_execute: bool)
-    function encodeMintAndFundData({ parcelIds, isConditional = false, imageUri = '', solLamports = 0n, lens, verdictMayExecute = false } = {}) {
-        if (!Array.isArray(parcelIds) || !parcelIds.length) throw new Error('parcelIds must be a non-empty array');
+    //               sol_amount: u64, lens: Vec<Pubkey>, verdict_may_execute: bool,
+    //               site_hash: [u8; 32], open_ground: bool)
+    // v3 mint rules, mirrored so a wallet never signs a mint the program refuses: an empty parcel
+    // list needs a site hash and open_ground; open_ground needs a site hash.
+    function encodeMintAndFundData({
+        parcelIds, isConditional = false, imageUri = '', solLamports = 0n, lens,
+        verdictMayExecute = false, siteHash = null, openGround = false
+    } = {}) {
+        if (!Array.isArray(parcelIds)) throw new Error('parcelIds must be an array');
         if (!Array.isArray(lens) || !lens.length) throw new Error('lens must name at least one key');
+        const site = encodeSiteHash(siteHash);
+        const hasSite = site.some(byte => byte !== 0);
+        if (!parcelIds.length && !hasSite) throw new Error('parcelIds must be non-empty unless the proposal has a siteHash');
+        if (!parcelIds.length && openGround !== true) throw new Error('a proposal without parcels is all open ground: openGround must be true');
+        if (openGround === true && !hasSite) throw new Error('openGround needs a siteHash');
         return concat([
             disc('mint_and_fund'),
             u32(parcelIds.length), ...parcelIds.map(id => encodeString(String(id))),
@@ -147,7 +168,9 @@
             encodeString(imageUri),
             u64(solLamports),
             u32(lens.length), ...lens.map((key, index) => encodePubkey(key, `lens[${index}]`)),
-            encodeBool(verdictMayExecute)
+            encodeBool(verdictMayExecute),
+            site,
+            encodeBool(openGround)
         ]);
     }
 
@@ -380,9 +403,11 @@
         return Number(big);
     }
 
-    // The whole v2 Proposal, including `verdict_may_execute` after `bump`. v1-era accounts carry a
-    // zero byte there (the fixed 4096-byte account was zero-initialised), which reads as false.
-    function readProposalV2(data, address = null) {
+    // The whole v3 Proposal: v2's `verdict_may_execute` after `bump`, then v3's `site_hash`,
+    // `open_ground`, `open_ground_cleared` and `layout_version`. v1/v2-era accounts carry zero bytes
+    // there (the fixed 4096-byte account was zero-initialised), which read as false, as "no site"
+    // (siteHash null) and as layoutVersion 0; every v3 mint writes layoutVersion 3.
+    function readProposal(data, address = null) {
         const bytes = data instanceof Uint8Array ? data : Uint8Array.from(data || []);
         if (!hasDiscriminator(bytes, ACCOUNT_DISCRIMINATORS.Proposal)) return null;
         const r = reader(bytes, 8);
@@ -400,6 +425,14 @@
         const lens = r.vecPubkey('lens');
         const bump = r.u8('bump');
         const verdictMayExecute = r.bool('verdict_may_execute');
+        const siteHashBytes = r.bytes(32, 'site_hash');
+        const openGround = r.bool('open_ground');
+        const openGroundCleared = r.bool('open_ground_cleared');
+        // Absent (an account cut short before it) reads as 0, like the zero padding of v1/v2.
+        const layoutVersion = r.offset < r.body.length ? r.u8('layout_version') : 0;
+        const siteHash = siteHashBytes.some(byte => byte !== 0)
+            ? Array.from(siteHashBytes, byte => byte.toString(16).padStart(2, '0')).join('')
+            : null;
         return {
             address,
             proposalId: proposalId.toString(),
@@ -416,7 +449,11 @@
             acceptedParcels,
             lens,
             bump,
-            verdictMayExecute
+            verdictMayExecute,
+            siteHash,
+            openGround,
+            openGroundCleared,
+            layoutVersion
         };
     }
 
@@ -456,7 +493,8 @@
         return record;
     }
 
-    // verdict is the status the settlement set: 1 Executed, 3 Expired.
+    // verdict is what the verdict said: 1 Executed, 3 Expired. An executed verdict that only cleared
+    // a v3 proposal's open ground leaves the proposal Active (it executes at the last acceptance).
     function readVerdictRecord(data, address = null) {
         const bytes = data instanceof Uint8Array ? data : Uint8Array.from(data || []);
         if (!hasDiscriminator(bytes, ACCOUNT_DISCRIMINATORS.VerdictRecord)) return null;
@@ -537,6 +575,7 @@
         if (!(attestation.expiry > now)) return 'attestation_expired';
         if (fields.proposalAccount !== proposalAddress) return 'wrong_proposal';
         if (fields.verdict !== 'executed' && fields.verdict !== 'expired') return 'bad_verdict';
+        // v3: no "every parcel accepted" shortcut; an executed verdict always needs the flag.
         if (fields.verdict === 'executed' && !proposal.verdictMayExecute) return 'verdict_cannot_execute';
         if (fields.sourceObservedAt > now) return 'observed_in_future';
         return null;
@@ -549,9 +588,9 @@
         return info && info.data ? new Uint8Array(info.data) : null;
     }
 
-    async function fetchProposalV2(connection, proposal) {
+    async function fetchProposal(connection, proposal) {
         const data = await fetchAccountData(connection, proposal);
-        return data ? readProposalV2(data, toKey(proposal, 'proposal').toBase58()) : null;
+        return data ? readProposal(data, toKey(proposal, 'proposal').toBase58()) : null;
     }
 
     async function fetchConsentTally(connection, { proposal, parcelId, programId } = {}) {
@@ -630,7 +669,7 @@
         buildSettleWithVerdictIx,
         planDistribution,
         buildDistributeFundsIx,
-        readProposalV2,
+        readProposal,
         readConsentTally,
         readAcceptanceRecord,
         readVerdictRecord,
@@ -638,7 +677,7 @@
         decodeLensPayload,
         checkOwnershipForAccept,
         checkVerdictForSettle,
-        fetchProposalV2,
+        fetchProposal,
         fetchConsentTally,
         fetchAcceptanceRecord,
         fetchConsentTallies,

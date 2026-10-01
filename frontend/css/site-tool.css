@@ -1,0 +1,357 @@
+/* ========== Site tool and ground menu ==========
+   The site panel (js/site-drawing.js): drawing a proposal's site, its binding preview (bound
+   parcels, small intrusions, open ground hatched, coverage) and the build palette on the site.
+   The ground menu reuses the parcel menu's styles (css/parcel-menu.css); only its emphasis is here. */
+
+:root {
+    --site-outline: #111827;
+    --site-bound: #2563eb;
+    --site-warn: #d97706;
+    --site-touched: #9ca3af;
+    --site-open: #059669;
+    --site-plot: #7c3aed;
+}
+
+/* The ground menu's first action (Draw a site here) is the main one. */
+.ground-menu .parcel-menu__action[data-command="ground.drawSite"] {
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.ground-menu .parcel-menu__action[data-command="ground.drawSite"] i {
+    color: #2563eb;
+}
+
+/* ---- map layers (pane siteToolPane) ---- */
+.site-tool-pane {
+    z-index: 640;
+}
+
+body.site-tool-drawing .leaflet-container {
+    cursor: crosshair;
+}
+
+.site-outline {
+    stroke: var(--site-outline);
+    stroke-width: 2.5px;
+    fill: var(--site-outline);
+    fill-opacity: 0.04;
+}
+
+.site-outline--drawing {
+    stroke-dasharray: 6 4;
+}
+
+.site-drawing-line {
+    stroke: var(--site-outline);
+    stroke-width: 2px;
+    stroke-dasharray: 6 4;
+    fill: none;
+}
+
+.site-drawing-vertex {
+    stroke: var(--site-outline);
+    stroke-width: 2px;
+    fill: #fff;
+    fill-opacity: 1;
+}
+
+.site-drawing-vertex--first {
+    fill: var(--site-bound);
+}
+
+.site-snap-marker {
+    stroke: var(--site-bound);
+    stroke-width: 2px;
+    fill: var(--site-bound);
+    fill-opacity: 0.35;
+}
+
+.site-binding-parcel {
+    stroke-width: 2px;
+    fill-opacity: 0.08;
+}
+
+.site-binding-parcel--bound {
+    stroke: var(--site-bound);
+    fill: var(--site-bound);
+}
+
+.site-binding-parcel--small {
+    stroke: var(--site-warn);
+    fill: var(--site-warn);
+    fill-opacity: 0.18;
+    stroke-dasharray: 5 3;
+}
+
+.site-binding-parcel--touched {
+    stroke: var(--site-touched);
+    fill: var(--site-touched);
+    stroke-dasharray: 2 4;
+}
+
+/* Open ground: hatched through the SVG pattern site-drawing.js puts in the pane's renderer. */
+.site-open-ground {
+    stroke: var(--site-open);
+    stroke-width: 1px;
+    fill: url(#site-open-ground-hatch);
+    fill-opacity: 1;
+}
+
+.site-open-ground-hatch-line {
+    stroke: var(--site-open);
+    stroke-width: 2px;
+    stroke-opacity: 0.6;
+}
+
+.site-plot {
+    stroke: var(--site-plot);
+    stroke-width: 1.5px;
+    fill: var(--site-plot);
+    fill-opacity: 0.06;
+}
+
+.site-frontage-edge {
+    stroke: var(--site-plot);
+    stroke-width: 10px;
+    stroke-opacity: 0.15;
+    cursor: pointer;
+}
+
+.site-frontage-edge:hover {
+    stroke-opacity: 0.35;
+}
+
+.site-frontage-edge--chosen {
+    stroke-width: 6px;
+    stroke-opacity: 0.85;
+}
+
+/* ---- the site panel ---- */
+.site-panel {
+    position: absolute;
+    top: 64px;
+    left: 64px; /* right of the mode strip, under the search box; the right side keeps Layers/Settings */
+    z-index: 1060; /* over the map and the parcel/ground menus, under the sheets (1600) */
+    width: 320px;
+    max-width: calc(100% - 24px);
+    max-height: calc(100% - 150px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    color: #1f2937;
+    font-size: 13px;
+}
+
+.site-panel[hidden] {
+    display: none;
+}
+
+.site-panel__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.site-panel__title {
+    flex: 1;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.site-panel__area {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.site-panel__hint,
+.site-panel__note,
+.site-panel__status {
+    margin: 6px 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.site-panel__error {
+    margin: 6px 0;
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.site-panel__coverage {
+    margin: 6px 0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #1e3a8a;
+    font-weight: 600;
+}
+
+.site-panel__coverage--partial,
+.site-panel__coverage--none {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.site-panel__coverage--unknown {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.site-panel__bound {
+    margin: 6px 0;
+    overflow-wrap: anywhere;
+}
+
+.site-panel__warnings {
+    margin: 6px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-panel__warning {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    border-left: 3px solid var(--site-warn);
+    border-radius: 4px;
+    background: #fffbeb;
+}
+
+.site-panel__warning--touched {
+    border-left-color: var(--site-touched);
+    background: #f9fafb;
+}
+
+.site-panel__warning-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.site-panel__mini {
+    padding: 2px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.site-panel__mini:hover {
+    background: #f3f4f6;
+}
+
+.site-panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.site-panel__btn {
+    min-height: 32px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 16px;
+    background: #f3f4f6;
+    color: #1f2937;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.site-panel__btn:hover {
+    background: #e5e7eb;
+}
+
+.site-panel__btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.site-panel__btn--primary {
+    background: #2563eb;
+    color: #fff;
+}
+
+.site-panel__btn--primary:hover {
+    background: #1d4ed8;
+}
+
+.site-panel__palette {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #eef0f3;
+}
+
+/* A disabled palette tool says why (the parcel palette's buttons, css/panels.css). */
+.parcel-build-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.parcel-build-disabled-reason {
+    grid-column: 1 / -1;
+    margin: 2px 0 6px;
+    color: #6b7280;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* The create dialog's tolerance row (js/proposals/dialog-create.js). */
+.proposal-tolerance-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.proposal-tolerance-row input {
+    width: 72px;
+    text-align: center;
+}
+
+.proposal-tolerance-help {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.proposal-site-summary {
+    margin: 0 0 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: #ecfdf5;
+    color: #065f46;
+    font-size: 13px;
+}
+
+/* ---- phones: the panel is a bottom sheet ---- */
+@media (max-width: 767px) {
+    .site-panel {
+        position: fixed;
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1700;
+        width: auto;
+        max-width: none;
+        max-height: 50vh;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    }
+}

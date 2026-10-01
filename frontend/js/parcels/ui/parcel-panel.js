@@ -719,7 +719,17 @@
 
             const resolvedId = displayParcelId || brojValue;
             titleElement.textContent = '';
-            if (resolvedId) {
+            // A piece on open ground (PARCEL-OPTIONAL.md phase 3) is no cadastral parcel: its id is a
+            // proposal-local name, so the title says what the ground is instead of "Parcel <id>".
+            let groundPiece = false;
+            try {
+                const fabric = global.LiveParcelFabric;
+                const liveFeature = fabric && typeof fabric.peek === 'function' ? (fabric.peek(parcelId) || feature) : feature;
+                groundPiece = !!(global.__openGround && global.__openGround.isGroundPiece(liveFeature));
+            } catch (_) { groundPiece = false; }
+            if (groundPiece) {
+                titleElement.textContent = tParcel('parcelMenu.groundTitle', {}, 'Open ground');
+            } else if (resolvedId) {
                 const numberMarker = '__PARCEL_NUMBER__';
                 const headerTemplate = tParcel(
                     'panel.parcel.multi.parcelLabel',

@@ -106,9 +106,11 @@
             footprintAreaM2,
             summedFootprintAreaM2,
             overlapAreaM2: Math.max(0, summedFootprintAreaM2 - footprintAreaM2),
-            siteCoveragePercent: parcelAreaM2 > 0 ? (footprintAreaM2 / parcelAreaM2) * 100 : 0,
+            // Ratios over the ground (a parcel, or a drawn site on open ground). With no ground
+            // polygon there is nothing to divide by: null, not a 0 that reads like an empty plot.
+            siteCoveragePercent: parcelAreaM2 > 0 ? (footprintAreaM2 / parcelAreaM2) * 100 : null,
             aboveGroundGbpM2,
-            kin: parcelAreaM2 > 0 ? aboveGroundGbpM2 / parcelAreaM2 : 0
+            kin: parcelAreaM2 > 0 ? aboveGroundGbpM2 / parcelAreaM2 : null
         };
     }
 

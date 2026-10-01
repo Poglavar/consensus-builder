@@ -62,6 +62,13 @@ filename = "tests/fixtures/expired-book.json"
 address = "DcQ5uCvjijqCX1juMJy8XBWHhQakjGLQv3GSiU6r3oL2"
 filename = "tests/fixtures/expired-commitment.json"
 
+# A proposal_nft Proposal in the v2 layout (no site_hash/open_ground), so tests/proposal_nft.ts can
+# prove v3 reads and drives accounts v2 minted. Regenerate with:
+# node tests/fixtures/generate-v2-proposal-fixture.mjs
+[[test.validator.account]]
+address = "3Tr3MTsfVySFCUkgZyWK2B52yMY1sUH7wvRSegzAiFgC"
+filename = "tests/fixtures/v2-proposal.json"
+
 # Localnet-only mock of the Solana Attestation Service at its real program id (source in
 # tests/mock_sas): the lens-model suites write SAS credential/schema/attestation bytes through it.
 [[test.genesis]]

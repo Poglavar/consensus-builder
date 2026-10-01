@@ -569,8 +569,13 @@ async function createProposal() {
             finalParcelIds = [selectedParcelId];
         }
 
-        console.debug('[createProposal] Final parcel IDs:', finalParcelIds.length, 'parcels');
-        if (finalParcelIds.length === 0) {
+        // A site-first proposal (the dialog's site context, js/site-drawing.js) has its ground as a
+        // site and its declaration as the binding — possibly empty on bare ground.
+        const siteContext = (typeof window !== 'undefined' && window.pendingProposalSiteContext
+            && window.pendingProposalSiteContext.site && !ownerOfferRequested) ? window.pendingProposalSiteContext : null;
+        if (siteContext) finalParcelIds = [];
+        console.debug('[createProposal] Final parcel IDs:', finalParcelIds.length, 'parcels', siteContext ? '(site-first)' : '');
+        if (finalParcelIds.length === 0 && !siteContext) {
             showProposalAlertMessage('no_parcels_selected_please_select_parcels_before_creating_a_proposal', 'No parcels selected. Please select parcels before creating a proposal.');
             return;
         }
@@ -583,7 +588,13 @@ async function createProposal() {
         if (!liveFabric || typeof liveFabric.cadastreIdsForParcelIds !== 'function') {
             throw new Error('Live parcel fabric is required to author proposal ground.');
         }
-        const authoredCadastreParcelIds = liveFabric.cadastreIdsForParcelIds(selectedLiveParcelIds);
+        const authoredCadastreParcelIds = siteContext
+            ? (siteContext.cadastreParcelIds || []).map(String)
+            : liveFabric.cadastreIdsForParcelIds(selectedLiveParcelIds);
+        // The intrusion tolerance (the dialog's Options): linear metres, default 0.
+        const toleranceInput = document.getElementById('proposalToleranceM');
+        const toleranceRaw = toleranceInput ? Number(toleranceInput.value) : 0;
+        const toleranceM = Number.isFinite(toleranceRaw) && toleranceRaw > 0 ? Math.min(toleranceRaw, 1) : 0;
 
         // Check if parcels have NFTs on-chain before proceeding
         console.debug('[createProposal] Checking blockchain support and wallet connection');
@@ -610,7 +621,7 @@ async function createProposal() {
         const cantonActive = !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
 
         console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected, 'Canton:', cantonActive);
-        let shouldMintOnchain = ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && finalParcelIds.length > 0);
+        let shouldMintOnchain = ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && (finalParcelIds.length > 0 || !!siteContext));
 
         // Parcel NFTs represent original cadastral land, never a browser's materialized pieces.
         const parcelIds = authoredCadastreParcelIds.slice();
@@ -624,7 +635,7 @@ async function createProposal() {
             if (feature) parcelFeatureById.set(parcelId, feature);
         }
 
-        if (shouldMintOnchain && !cantonActive) {
+        if (shouldMintOnchain && !cantonActive && parcelIds.length) {
             // Get chain ID from wallet or use default
             let chainId = null;
             if (isSolanaWalletConnected) {
@@ -706,7 +717,7 @@ async function createProposal() {
         // Calculate bounds for the proposal (for reliable positioning)
         console.debug('[createProposal] Calculating proposal bounds');
         const boundsStartTime = performance.now();
-        const bounds = calculateProposalBounds(finalParcelIds);
+        const bounds = calculateProposalBounds(finalParcelIds, siteContext ? { site: siteContext.site } : {});
         console.debug('[createProposal] Bounds calculation took:', (performance.now() - boundsStartTime).toFixed(2), 'ms');
 
         // Check for expiry option
@@ -822,6 +833,9 @@ async function createProposal() {
             // and so a shared link can be recognised as cross-city even without a ?city= param.
             city: getProposalCityId()
         };
+        if (siteContext && siteContext.authored !== false) proposal.site = JSON.parse(JSON.stringify(siteContext.site));
+        if (siteContext && siteContext.binding) proposal.binding = JSON.parse(JSON.stringify(siteContext.binding));
+        if (toleranceM > 0) proposal.toleranceM = toleranceM;
 
         // Lineage for "Copy into new proposal". The source is never mutated — the fork just
         // records where it came from. Set by showProposalDialog() from its `copySource` override,
@@ -912,7 +926,13 @@ async function createProposal() {
             const kind = selectedTool;
             let structureGeometry = null;
             try {
-                if (typeof buildGeometryFromParcels === 'function') {
+                if (siteContext) {
+                    // A site-first structure is its authored geometry (the draft), else its site.
+                    const draft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
+                    const authored = draft?.editorPayload?.structureProposal?.geometry || draft?.editorPayload?.geometry || null;
+                    structureGeometry = authored || (siteContext.site.coordinates.length === 1
+                        ? { type: 'Polygon', coordinates: siteContext.site.coordinates[0] } : siteContext.site);
+                } else if (typeof buildGeometryFromParcels === 'function') {
                     if (finalParcelIds.length) {
                         structureGeometry = buildGeometryFromParcels(finalParcelIds);
                     }
@@ -1167,7 +1187,11 @@ async function createProposal() {
             // This is the complete authored selection, including block parcels where the rule did
             // not manage to place a building. addProposal projects it to one flat root
             // cadastreParcelIds declaration; output buildings must never redefine that scope.
-            proposal.cadastreParcelIds = liveFabric.cadastreIdsForParcelIds(designParcelIds);
+            // A site design's parcels are synthetic (the site, or plots cut from it): its
+            // declaration is the site's binding, never a projection of those ids.
+            proposal.cadastreParcelIds = siteContext
+                ? authoredCadastreParcelIds.slice()
+                : liveFabric.cadastreIdsForParcelIds(designParcelIds);
             proposal.tags = ['buildings'];
 
             if (!proposal.geometry) proposal.geometry = {};
@@ -1408,17 +1432,33 @@ async function createProposal() {
                     firstPolygonSample: parcelPolygons[0]
                 });
 
-                if (parcelFeatures.length === 0) {
-                    console.warn('No parcel features found for screenshot generation');
-                    hideWaitingPopupSafe();
-                } else {
+                // A site-first proposal's image and metadata come from its site (there may be no
+                // parcel at all under it); its on-chain parcel list is the SERVER binding, the
+                // same declaration a publish sends (proposals/publish-binding.js).
+                if (proposal.site) {
+                    pushParcelPolygons(proposal.site.coordinates);
+                    updateStatus(t('modal.createProposal.site.binding', 'Checking which parcels the site reaches into...'));
+                    const bound = await window.__publishBinding.bindForPublish(proposal, {
+                        fetchBinding: window.__publishBinding.createFetchBinding(fetch.bind(window), resolveBackendBaseUrl()),
+                        city: proposal.city || null
+                    });
+                    proposal.cadastreParcelIds = bound.proposal.cadastreParcelIds;
+                    proposal.binding = bound.binding;
+                    console.info(`[${new Date().toISOString()}] [createProposal] site binding for mint: ${proposal.cadastreParcelIds.length} parcel(s), coverage ${bound.binding.coverage}`);
+                }
+
+                // Nothing to draw or mint is an error to report, never a silent skip: the user
+                // asked for an on-chain proposal and would otherwise get a local one unawares.
+                if (parcelPolygons.length === 0) {
+                    throw new Error(t('modal.createProposal.errors.noMintGeometry', 'This proposal has no site or parcel geometry to mint.'));
+                }
+                {
                     const parcelIdsForMinting = Array.isArray(proposal.cadastreParcelIds)
                         ? proposal.cadastreParcelIds.slice()
                         : [];
 
-                    if (parcelIdsForMinting.length === 0) {
-                        console.warn('Proposal has no cadastral IDs for on-chain minting');
-                        hideWaitingPopupSafe();
+                    if (parcelIdsForMinting.length === 0 && !proposal.site) {
+                        throw new Error(t('modal.createProposal.errors.noMintParcels', 'This proposal names no parcels and has no site, so it cannot be minted.'));
                     } else {
                         // Verify required services are available
                         if (!window.MapScreenshot) {
@@ -1752,16 +1792,26 @@ async function createProposal() {
                             // An owner offer names an asking price; bids arrive as pledges and donations
                             // from others, so nothing is escrowed from the owner's own wallet at mint.
                             const escrowAmount = proposal.proposalRole === 'owner-offer' ? 0 : nativeAmount;
+                            // proposal_nft v3: the site and its binding give site_hash and open_ground
+                            // (frontend/js/proposals/site-hash.js). Owners of bound parcels always
+                            // consent; open ground (or an empty binding) also needs a lens member's
+                            // executed verdict, so verdict_may_execute is set exactly when there is open
+                            // ground. On such a proposal the verdict clears the open ground and never
+                            // stands in for the owners; permit-style skipping of consent stays off.
+                            const siteArgs = await window.__siteHash.chainSiteArgs({
+                                site: proposal.site || null,
+                                binding: proposal.binding || null,
+                                parcelIds: parcelIdsForMinting
+                            });
                             onchainResult = await window.SolanaProposalChainBridge.mintProposal({
                                 parcelIds: parcelIdsForMinting,
                                 isConditional: isConditional,
                                 solAmount: escrowAmount,
                                 imageURI: metadataUri,
                                 lens: solanaLens.keys,
-                                // Every goal this dialog creates changes named parcels, so per-parcel
-                                // owner consent always applies and no lens verdict may execute it.
-                                // `true` is reserved for permit-style evidence with no parcel consent.
-                                verdictMayExecute: false
+                                verdictMayExecute: siteArgs.openGround,
+                                siteHash: siteArgs.siteHash,
+                                openGround: siteArgs.openGround
                             });
                         } else {
                             onchainResult = await window.ProposalChainBridge.mintProposal({
@@ -2081,10 +2131,27 @@ function buildUploadReadyProposal(proposal) {
         || typeof window.__cadastreAncestry.publishDeclaration !== 'function') {
         throw new Error('Cannot publish: cadastral geometry resolution is unavailable.');
     }
-    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.validateCadastreParcelIds({
-        ...uploadProposal,
-        cadastreParcelIds: window.__cadastreAncestry.publishDeclaration(uploadProposal)
-    });
+    // A material proposal (not an act on parcels) publishes the SERVER binding of its site as its
+    // declaration (PARCEL-OPTIONAL.md rule 3): uploadProposalToServer binds it first
+    // (proposals/publish-binding.js), and that answer is published as is. Unbound material records
+    // (a JSON download, the dialog's pre-check) keep their declaration here; the server decides.
+    // Parcel acts keep the old strict client check of their named parcels.
+    const siteApi = window.__siteBinding;
+    const material = !!(siteApi && typeof siteApi.requiresParcels === 'function' && !siteApi.requiresParcels(uploadProposal));
+    if (material && window.__publishBinding && window.__publishBinding.isServerBinding(uploadProposal.binding)) {
+        uploadProposal.cadastreParcelIds = (uploadProposal.cadastreParcelIds || []).map(String);
+    } else if (material) {
+        uploadProposal.cadastreParcelIds = window.__cadastreAncestry.publishDeclaration(uploadProposal);
+    } else {
+        uploadProposal.cadastreParcelIds = window.__cadastreAncestry.validateCadastreParcelIds({
+            ...uploadProposal,
+            cadastreParcelIds: window.__cadastreAncestry.publishDeclaration(uploadProposal)
+        });
+    }
+    // A client-preview binding never crosses the publish boundary; the server computes its own.
+    if (uploadProposal.binding && !(window.__publishBinding && window.__publishBinding.isServerBinding(uploadProposal.binding))) {
+        delete uploadProposal.binding;
+    }
 
     // The ownership flow (§9/§12 step 2) and the frame it was measured against (D5), stamped at the
     // same moment and for the same reason as cadastreParcelIds. The effect hash is derived from the
@@ -2093,7 +2160,9 @@ function buildUploadReadyProposal(proposal) {
     // none of these are in proposalContentFingerprint's allowlist, so share ids never move.
     try {
         if (window.__cadastreAncestry && typeof window.__cadastreAncestry.computeOwnershipFlow === 'function') {
-            uploadProposal.ownershipFlow = window.__cadastreAncestry.computeOwnershipFlow(proposal);
+            // Measured over the declaration being published (the server binding for material
+            // proposals), not the local one it replaced.
+            uploadProposal.ownershipFlow = window.__cadastreAncestry.computeOwnershipFlow(uploadProposal);
         }
         uploadProposal.cadastreFrame = { capturedAt: new Date().toISOString() };
         if (window.__ownershipFlow) {

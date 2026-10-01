@@ -7,6 +7,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    function openGroundApi() {
+        if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
+        return typeof require === 'function' ? require('../open-ground.js') : null;
+    }
+
+    // The pseudo-owner of open ground in a plan (proposals/subdivision.js): never an agent.
+    const OPEN_GROUND_OWNER_KEY = 'open-ground';
+
     return {
     async _applyReparcellizationProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
@@ -37,7 +45,65 @@
         // Skip overlay rendering: add child parcels directly with existing parcel styling
         console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
-        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'readjustment', options);
+        // Corridors applied AFTER this plan take their ribbon out of its plots — the same rule that
+        // carves a park (apply/road.js _groundAfterLaterCorridors): a plot the road crosses keeps the
+        // rest of its ground, split into parts where the road runs through it; a plot the road takes
+        // whole is not formed. The authored plan is untouched (this is the private copy), so
+        // unapplying the road gives the plots back. The resolver measures the carved plan.
+        let groundRecord = proposalData;
+        if (typeof this._groundAfterLaterCorridors === 'function') {
+            const carved = this._groundAfterLaterCorridors(proposalData, plan.polygons.map(slice => slice && slice.geometry), options);
+            if (carved.corridorIds.length) {
+                plan.polygons = plan.polygons
+                    .map((slice, index) => {
+                        const geometry = carved.geometries[index];
+                        if (!geometry) return null;
+                        const next = { ...slice, geometry };
+                        if (slice && slice.area !== undefined) next.area = _calculateGeoJsonArea(geometry);
+                        return next;
+                    })
+                    .filter(Boolean);
+                if (!plan.polygons.length) {
+                    const message = 'Cannot apply the land readjustment: later roads take all of its plots.';
+                    try { this._setLastApplyFailure(idLabel, { code: 'readjustment-taken-by-corridors', message, corridorIds: carved.corridorIds }); } catch (_) { }
+                    if (typeof updateStatus === 'function') updateStatus(message);
+                    return false;
+                }
+                groundRecord = {
+                    ...proposalData,
+                    reparcellization: { ...proposalData.reparcellization, polygons: plan.polygons }
+                };
+            }
+        }
+
+        // An EARLIER road is not carved: nothing is formed over a street. On cadastral ground the
+        // arrangement already enforces it (the road's ground is no host piece, so coverage fails);
+        // open ground has no arrangement, so the plots are tested against the standing roads here,
+        // exactly as a park or square on open ground is.
+        const ground = openGroundApi();
+        if (ground && ground.hasOpenGround(proposalData) && typeof this._appliedRoadOverlappedByTaking === 'function') {
+            for (const slice of plan.polygons) {
+                const geometry = slice && slice.geometry;
+                if (!geometry || !/Polygon/.test(String(geometry.type || ''))) continue;
+                const roadHit = this._appliedRoadOverlappedByTaking(geometry, idLabel, options);
+                if (!roadHit) continue;
+                const road = roadHit.proposal;
+                const roadName = road.title || road.name || road.proposalId;
+                const message = `Cannot apply the land readjustment: its plots would stand on ${Math.round(roadHit.overlapM2)} m² of the applied road "${roadName}". Nothing is formed over a street — move the outline clear, or unapply that road first.`;
+                if (typeof updateStatus === 'function') updateStatus(message);
+                try {
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'readjustment-over-road',
+                        message,
+                        roadProposalId: String(road.proposalId || ''),
+                        overlapM2: roadHit.overlapM2
+                    });
+                } catch (_) { }
+                return false;
+            }
+        }
+
+        const liveParents = this._resolveLiveFormationParents(groundRecord, idLabel, 'readjustment', options);
         if (!liveParents.ok) return false;
         let parentIds = liveParents.ids;
         let parentFeatures = liveParents.features;
@@ -52,12 +118,23 @@
         // That is the same rule roads live under: you may take what is free, never what is spoken
         // for. A record is defined by its cadastral anchors plus the geometry of its take, exactly
         // as a road is; the pieces it stands on are derived and carry no authority of their own.
+        //
+        // Open ground (PARCEL-OPTIONAL.md phase 4): a subdivision takes the open-ground host, i.e.
+        // the part of its site no parcel and no other proposal covers. A piece another proposal
+        // FORMED on open ground (a park, a building plot, another subdivision's plot) is that
+        // proposal's — open ground has no remainders, so such a piece is always spoken for — and
+        // is refused like a corridor piece, never silently re-divided.
+        const isHost = feature => !!(ground && ground.isOpenGroundHost(feature));
         {
             const takenParents = parentIds.map(String).filter(id => {
                 const layerFeature = parentFeatures.find(f => String(_getParcelIdFromFeature(f)) === id);
                 const props = (layerFeature && layerFeature.properties) || {};
                 const takers = Array.isArray(props.formedByProposalIds) ? props.formedByProposalIds : [];
-                return props.isCorridor === true || props.isTrack === true || takers.length > 0;
+                const foreignGroundPiece = !!(ground && layerFeature && !isHost(layerFeature)
+                    && ground.groundIdsOf(layerFeature).length
+                    && props.producedByProposalId !== undefined && props.producedByProposalId !== null
+                    && String(props.producedByProposalId) !== String(proposalId));
+                return props.isCorridor === true || props.isTrack === true || takers.length > 0 || foreignGroundPiece;
             });
             if (takenParents.length) {
                 const coverers = new Map();
@@ -155,7 +232,7 @@
             };
 
             const pct = Number(slice.percent);
-            if (Number.isFinite(pct)) {
+            if (Number.isFinite(pct) && slice.ownerKey !== OPEN_GROUND_OWNER_KEY) {
                 const isSingleOwnerPlan = proposalData?.reparcellization?.isSingleOwner === true;
                 const percentValue = isSingleOwnerPlan ? 100 : (pct > 1 ? pct : pct * 100);
                 feature.properties.ownershipDetails = {
@@ -196,15 +273,30 @@
                 try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
             }
         };
+        // Provenance per plot: the cadastral parcels under it and, on open ground, the ground id of
+        // the host it stands on. A plot wholly on open ground carries only `groundIds` (rootless id);
+        // one spanning both carries both; one on neither is ground from nowhere and refuses.
         const parentEntries = parentFeatures.flatMap(feature => formationEdit.cadastreIdsOfFeature(feature)
             .map(baseId => ({ baseId, feature })));
-        if (!parentEntries.length) {
-            throw new Error('Readjustment parents carry no explicit cadastral provenance.');
+        const groundEntries = ground
+            ? parentFeatures.flatMap(feature => ground.groundIdsOf(feature).map(baseId => ({ baseId, feature })))
+            : [];
+        if (!parentEntries.length && !groundEntries.length) {
+            throw new Error('Readjustment parents carry no explicit cadastral or open-ground provenance.');
         }
         childFeatures.forEach(feature => {
-            const ids = formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx);
-            if (!ids.length) throw new Error('A readjustment plot lies on no declared cadastral parcel.');
+            const ids = parentEntries.length ? formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx) : [];
+            const groundIds = groundEntries.length ? formationEdit.overlappingBaseIds(feature, groundEntries, anchorCtx) : [];
+            if (!ids.length && !groundIds.length) {
+                throw new Error('A readjustment plot lies on no declared cadastral parcel and no open ground of its site.');
+            }
             feature.properties.cadastreParcelIds = ids;
+            if (groundIds.length) feature.properties.groundIds = groundIds;
+            else delete feature.properties.groundIds;
+            if (!ids.length) {
+                feature.properties.rootParcelId = null;
+                feature.properties.rootParcelNumber = null;
+            }
         });
 
         let allocForeignIndex = null;
@@ -228,6 +320,9 @@
                 if (plotsUnion) {
                     parentFeatures.forEach(parentFeature => {
                         if (!parentFeature || !parentFeature.geometry) return;
+                        // Open ground has no owner to return a remainder to: the host's leftover
+                        // stays open ground, nothing is minted for it.
+                        if (isHost(parentFeature)) return;
                         let leftover = null;
                         try {
                             leftover = turfRemainder.difference(
@@ -266,11 +361,11 @@
                                 carried.properties.calculatedArea = Math.round(part.area);
                                 const syntheticIndex = partIndex === 0
                                     ? carryIdentity.index
-                                    : allocForeignIndex(carryIdentity.cadastreParcelIds[0], carryIdentity.token);
+                                    : allocForeignIndex(carryIdentity.anchor, carryIdentity.token);
                                 const carriedId = partIndex === 0
                                     ? String(parentId)
                                     : _composeSyntheticParcelId(
-                                        carryIdentity.cadastreParcelIds[0],
+                                        carryIdentity.root,
                                         carryIdentity.token,
                                         syntheticIndex);
                                 const carriedNumber = partIndex === 0
@@ -344,7 +439,10 @@
                     const ownerKey = feature.properties.ownerKey;
                     const displayName = feature.properties.displayName;
                     let agentId = null;
-                    if (ownerKey === 'public-land') {
+                    if (ownerKey === OPEN_GROUND_OWNER_KEY) {
+                        // Open ground stays ownerless: no agent, no transfer.
+                        agentId = null;
+                    } else if (ownerKey === 'public-land') {
                         agentId = (typeof getOrCreateCityAgent === 'function')
                             ? getOrCreateCityAgent(ownershipContext)
                             : null;
@@ -384,6 +482,7 @@
             .filter(Boolean));
         const carriedBaseAnchors = new Set();
         const consumedParentIds = Array.from(new Set(parentFeatures
+            .filter(f => !isHost(f))
             .map(f => { const id = _getParcelIdFromFeature(f); return id ? String(id) : null; })
             .filter(Boolean)))
             .filter(id => {
@@ -405,7 +504,9 @@
         carriedBaseAnchors.forEach(baseId => {
             if (!consumedParentIds.includes(baseId)) consumedParentIds.push(baseId);
         });
+        // The open-ground host is transient (never in the fabric): nothing to consume.
         this._consumeFeaturesFromLiveFabric(parentFeatures.filter(f => {
+            if (isHost(f)) return false;
             try { return !mintedIdSet.has(String(_getParcelIdFromFeature(f))); } catch (_) { return true; }
         }), options);
         const flatParentIds = Array.from(new Set(
@@ -413,7 +514,7 @@
                 ? proposalData.cadastreParcelIds.map(String).filter(Boolean)
                 : []
         ));
-        if (!flatParentIds.length) {
+        if (!flatParentIds.length && !liveParents.groundHost) {
             const error = new Error('Cannot apply reparcellization without explicit cadastral provenance.');
             error.code = 'reparcellization-cadastre-provenance-missing';
             throw error;

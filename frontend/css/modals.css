@@ -1711,6 +1711,25 @@ body.site-intro-open {
     white-space: nowrap;
 }
 
+/* Subdivision: "Turn the street" (plots along a street) and the ownerless open-ground ledger row. */
+.reparcel-legend-actions .reparcel-street-turn-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    min-width: 0;
+    width: auto;
+    white-space: nowrap;
+}
+
+.reparcel-legend-actions .reparcel-street-turn-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.reparcel-ledger-table tr.reparcel-ledger-row--no-owner td {
+    color: #6b7280;
+    font-style: italic;
+}
+
 /* Reparcellization: active "Draw plot" toggle */
 .reparcel-legend-actions .btn-icon[aria-pressed="true"],
 .reparcel-legend-actions .btn-icon.active {

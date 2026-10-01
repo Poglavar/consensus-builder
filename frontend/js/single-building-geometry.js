@@ -243,9 +243,27 @@
         return ensureClosedRing(ring);
     }
 
+    function siteClipApi() {
+        if (global && global.__siteClip) return global.__siteClip;
+        try { return typeof require === 'function' ? require('./proposals/site-clip.js') : null; } catch (_) { return null; }
+    }
+
+    // footprintWithinBoundary accepts up to GROUND_AREA_EPSILON_M2 outside the block (float noise
+    // from dragging a vertex onto the edge), but 0.01 m² is a 1-2 cm sliver along a few decimetres
+    // of the neighbour's ground, which binds that parcel at tolerance 0. A saved footprint is
+    // therefore clipped to the block: what the editor tolerated as noise is cut off, not published.
+    function clipFootprintToBoundary(footprint, boundary, turfApi) {
+        if (!footprint?.geometry || !boundary?.geometry) return footprint;
+        const clip = siteClipApi();
+        if (!clip) throw new Error('single-building-geometry: proposals/site-clip.js is not loaded');
+        const clipped = clip.clipToSite(footprint, boundary, turfApi ? { turf: turfApi } : undefined);
+        return clipped || footprint;
+    }
+
     const api = {
         GROUND_AREA_EPSILON_M2,
         buildRectangleRing,
+        clipFootprintToBoundary,
         ensureClosedRing,
         footprintWithinBoundary,
         isSimpleRing,

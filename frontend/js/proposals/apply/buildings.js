@@ -7,6 +7,11 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    function openGroundApi() {
+        if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
+        return typeof require === 'function' ? require('../open-ground.js') : null;
+    }
+
     function shouldFormOwnBuildingParcel(proposalData, goalKey, featureCount) {
         const planId = proposalData?.coordinatedPlanId;
         const belongsToCoordinatedPlan = planId !== undefined && planId !== null
@@ -205,6 +210,11 @@
     //                the building's parcel (the family-house-with-yard case).
     // Ownership goes to the PROPOSER (ownership-flow's declared destination for freeform).
     // Buildings on existing parcels (blocks/row/parcelBased) stay content and never reach here.
+    // Open ground (PARCEL-OPTIONAL.md phase 3): the open-ground host is a parent beside the live
+    // parcels. The part of the footprint on it joins the building parcel, which then carries the
+    // host's ground id; nothing is minted for the rest of the host (open ground is not a parcel, so
+    // it has no remainder and no owner to return one to). "Whole parcels" applies to the cadastral
+    // parcels only — open ground is taken exactly where the footprint covers it.
     async _formBuildingParcel(proposalId, proposalData, buildingProposal, footprintGeometry, declaredParentIds, idLabel, resolvedParentFeatures = null, options = {}) {
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
@@ -233,9 +243,29 @@
                 allowMissing: true,
                 _parcelMutation: options._parcelMutation
             }) || []);
-        const candidates = candidateFeatures
+        const ground = openGroundApi();
+        const allCandidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
+        const hostEntries = allCandidates.filter(entry => ground && ground.isOpenGroundHost(entry.feature));
+        const candidates = allCandidates.filter(entry => !hostEntries.includes(entry));
+        const asPlain = geometry => ({ type: 'Feature', properties: {}, geometry });
+        const takenHosts = hostEntries.filter(entry => takeCtx.intersectionArea(footprint, asPlain(entry.feature.geometry))
+            >= formationEdit.DEFAULT_TOLERANCE_M2);
+        // Ground provenance of what the building parcel takes: the open-ground host and any formed
+        // pieces on open ground among its parents.
+        const groundIdsWith = features => Array.from(new Set([
+            ...takenHosts.flatMap(entry => ground.groundIdsOf(entry.feature)),
+            ...features.flatMap(feature => ground.groundIdsOf(feature))
+        ]));
+        // The footprint's ground on the open-ground host(s): exactly footprint ∩ host.
+        const groundTakeGeometries = [];
+        takenHosts.forEach(entry => {
+            let hit = null;
+            try { hit = turfRef.intersect(footprint, asPlain(entry.feature.geometry)); } catch (_) { hit = null; }
+            if (hit && hit.geometry) groundTakeGeometries.push(hit.geometry);
+        });
+        const hostOverlapM2 = groundTakeGeometries.reduce((sum, geometry) => sum + takeCtx.area(asPlain(geometry)), 0);
 
         const proposerName = proposalData.author || 'Proposer';
         const proposerOwnership = { owners: [{ name: proposerName, ownerLabel: proposerName, percentageShare: 100, actualShareText: '100%' }] };
@@ -265,7 +295,18 @@
         };
 
         if (buildingProposal.takeWholeParcels === true) {
-            const plan = formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx);
+            let plan = candidates.length
+                ? formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx)
+                : { mode: 'refuse', reason: 'no-parcels', parcelIds: [], partials: [], uncoveredShare: 1 };
+            if (takenHosts.length && (plan.reason === 'uncovered-ground' || plan.reason === 'no-parcels')) {
+                const footprintArea = takeCtx.area(footprint);
+                const uncoveredM2 = Math.max(0, (Number(plan.uncoveredShare) || 0) * footprintArea - hostOverlapM2);
+                if (uncoveredM2 <= Math.max(formationEdit.DEFAULT_TOLERANCE_M2, footprintArea * formationEdit.DEFAULT_TOLERANCE_PCT / 100)) {
+                    plan = { mode: plan.parcelIds.length ? 'merge' : 'ground', reason: null, parcelIds: plan.parcelIds.slice(), partials: [], uncoveredShare: uncoveredM2 / footprintArea };
+                } else {
+                    plan = { ...plan, reason: 'uncovered-ground', uncoveredShare: uncoveredM2 / footprintArea };
+                }
+            }
             if (plan.mode === 'refuse') {
                 const partialText = plan.partials
                     .map(partial => `${partial.id} (${Math.round(partial.coveredShare * 100)}%)`)
@@ -285,8 +326,8 @@
             // hide the source instead of mutating a cadastral feature in place.
             let unionFeature = null;
             try {
-                unionFeature = takenFeatures.reduce((acc, feature) => {
-                    const asFeat = { type: 'Feature', properties: {}, geometry: feature.geometry };
+                unionFeature = [...takenFeatures.map(feature => feature.geometry), ...groundTakeGeometries].reduce((acc, geometry) => {
+                    const asFeat = { type: 'Feature', properties: {}, geometry };
                     return acc ? turfRef.union(acc, asFeat) : asFeat;
                 }, null);
             } catch (_) { unionFeature = null; }
@@ -312,7 +353,8 @@
             }
             const primary = takenFeatures[0];
             const childCadastreIds = formationEdit.baseIdsOfFeatures(takenFeatures);
-            if (!childCadastreIds.length) {
+            const groundIds = groundIdsWith(takenFeatures);
+            if (!childCadastreIds.length && !groundIds.length) {
                 throw new Error('Building formation has no explicit cadastral anchors.');
             }
             const childFeature = {
@@ -320,9 +362,10 @@
                 geometry: JSON.parse(JSON.stringify(unionFeature.geometry)),
                 properties: {
                     producedByProposalId: proposalId,
-                    rootParcelId: childCadastreIds[0],
+                    rootParcelId: childCadastreIds[0] || null,
                     rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
                     cadastreParcelIds: childCadastreIds,
+                    ...(groundIds.length ? { groundIds } : {}),
                     calculatedArea: Math.round(_calculateGeoJsonArea(unionFeature.geometry)),
                     isProposed: true,
                     ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
@@ -353,7 +396,7 @@
             return { ok: false };
         }
         const hosts = [];
-        let coveredM2 = 0;
+        let coveredM2 = hostOverlapM2;
         candidates.forEach(entry => {
             const parcelFeature = { type: 'Feature', properties: {}, geometry: entry.feature.geometry };
             const overlap = takeCtx.intersectionArea(footprint, parcelFeature);
@@ -361,7 +404,7 @@
             coveredM2 += overlap;
             hosts.push(entry);
         });
-        if (!hosts.length) {
+        if (!hosts.length && !takenHosts.length) {
             const message = 'No parcels found under the building footprint.';
             if (typeof updateStatus === 'function') updateStatus(message);
             try { this._setLastApplyFailure(idLabel, { code: 'building-no-parcels', message }); } catch (_) { }
@@ -381,7 +424,8 @@
         const parentEntries = hosts.flatMap(entry => formationEdit.cadastreIdsOfFeature(entry.feature)
             .map(baseId => ({ baseId, feature: entry.feature })));
         const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx);
-        if (!buildingCadastreIds.length) {
+        const groundIds = groundIdsWith(hostFeatures);
+        if (!buildingCadastreIds.length && !groundIds.length) {
             throw new Error('Building formation has no explicit cadastral anchors under its footprint.');
         }
 
@@ -391,9 +435,10 @@
             properties: {
                 producedByProposalId: proposalId,
                 buildingParcel: true,
-                rootParcelId: buildingCadastreIds[0],
+                rootParcelId: buildingCadastreIds[0] || null,
                 rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
                 cadastreParcelIds: buildingCadastreIds,
+                ...(groundIds.length ? { groundIds } : {}),
                 calculatedArea: Math.round(_calculateGeoJsonArea(footprintGeometry)),
                 isProposed: true,
                 ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
@@ -469,11 +514,11 @@
                 if (isForeign && allocateForeignIndex) {
                     const syntheticIndex = index === 0
                         ? hostIdentity.index
-                        : allocateForeignIndex(hostIdentity.cadastreParcelIds[0], hostIdentity.token);
+                        : allocateForeignIndex(hostIdentity.anchor, hostIdentity.token);
                     remainder.properties.__carryIdentity = {
                         parcelId: index === 0
                             ? hostId
-                            : _composeSyntheticParcelId(hostIdentity.cadastreParcelIds[0], hostIdentity.token, syntheticIndex),
+                            : _composeSyntheticParcelId(hostIdentity.root, hostIdentity.token, syntheticIndex),
                         parcelNumber: index === 0
                             ? (hostFeature.properties.BROJ_CESTICE || null)
                             : _composeSyntheticParcelNumber(
@@ -547,7 +592,7 @@
         }), options);
         finishOwnership(buildingParcelIds);
 
-        return { ok: true, parentIds: hostIds.slice() };
+        return { ok: true, parentIds: hostIds.concat(takenHosts.map(entry => String(entry.id))) };
     },
     };
 });

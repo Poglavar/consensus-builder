@@ -545,6 +545,12 @@
             appliedOnly: true,
             materializedFeatures
         });
+        // Grain is scored over parcels; proposals on open ground bind none, so there is nothing
+        // to score — say so instead of "the shapes could not be measured".
+        if (fabric.bound === false) {
+            renderError(t('groundStats.grainNoParcels', 'No parcels here: these proposals stand on open ground, so there are no resulting parcels to score.'));
+            return null;
+        }
         const rows = await resolvePlanItems(proposals, fabric);
         const items = rows.filter(row => row.feature && Number.isFinite(row.widthMeters) && Number.isFinite(row.depthMeters));
         if (!items.length) {
@@ -553,7 +559,7 @@
         }
         const beforeCount = rules.startingParcelIds(fabric).length;
         const afterCount = (fabric.resulting || []).length;
-        const score = rules.scorePlan({ beforeParcelCount: beforeCount, afterParcelCount: afterCount, parcels: rows });
+        const score = rules.scorePlan({ beforeParcelCount: beforeCount, afterParcelCount: afterCount, parcels: rows, bound: fabric.bound });
         state.prepared = {
             plan: plan || { slug: null, title: null },
             proposals,

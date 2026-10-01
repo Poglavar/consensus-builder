@@ -91,6 +91,37 @@ export function readProposalLens(data) {
     return lens;
 }
 
+/**
+ * proposal_nft v3's site fields, after the lens: bump, verdict_may_execute, then site_hash [32],
+ * open_ground, open_ground_cleared and layout_version. The fixed 4096-byte account is zero-padded,
+ * so v1/v2 accounts read as no site (siteHash null), closed ground and layoutVersion 0; every v3
+ * mint writes layoutVersion 3, which tells a v3 proposal without a site from a legacy one.
+ * `parcelCount` 0 with a site is an empty binding, which executes only through a lens member's
+ * executed verdict.
+ */
+export function readProposalSite(data) {
+    const bytes = Buffer.from(data || []);
+    let offset = 8 + 8 + 32;
+    const parcelCount = takeU32(bytes, offset);
+    offset = statusOffset(bytes) + 1 + 8 + 8 + 8;
+    const acceptedCount = takeU32(bytes, offset); offset += 4;
+    for (let index = 0; index < acceptedCount; index += 1) {
+        const length = takeU32(bytes, offset); offset += 4 + length;
+    }
+    const lensCount = takeU32(bytes, offset); offset += 4 + lensCount * 32;
+    offset += 1 + 1; // bump, verdict_may_execute
+    if (offset + 34 > bytes.length) throw new Error('proposal account ended before the v3 site fields');
+    const hash = bytes.subarray(offset, offset + 32);
+    return {
+        siteHash: hash.some(byte => byte !== 0) ? hash.toString('hex') : null,
+        openGround: bytes[offset + 32] === 1,
+        openGroundCleared: bytes[offset + 33] === 1,
+        // Absent (an account cut short before it) reads as 0, like v1/v2's zero padding.
+        layoutVersion: offset + 34 < bytes.length ? bytes[offset + 34] : 0,
+        parcelCount
+    };
+}
+
 // proposal-lifecycle-v1 is precommitted: its body, and therefore its hash, must never change under
 // this id (proposal-lifecycle-oracle.test.js pins the hash). Trusted attester: the ProposalNFT
 // program only; executed -> YES, cancelled -> NO.
@@ -202,6 +233,8 @@ export function buildProposalLifecycleEvent({
         },
         evidence: {
             proposalStatusByte: status,
+            // v3: the site and open ground the proposal was minted with.
+            site: readProposalSite(bytes),
             accountDataBase64: bytes.toString('base64'),
             recipeId: recipeForProposalAccount({ proposalAccount, accountData: bytes }).id
         }

@@ -43,6 +43,12 @@
     let serverCountsSignature = '';
     let serverCountsInFlight = false;
 
+    function isGroundPiece(parcelId) {
+        const fabric = global.LiveParcelFabric;
+        const feature = fabric && typeof fabric.peek === 'function' ? fabric.peek(parcelId) : null;
+        return !!(feature && global.__openGround && global.__openGround.isGroundPiece(feature));
+    }
+
     function ensureServerProposalCounts(parcelIds) {
         if (typeof fetch !== 'function' || !Array.isArray(parcelIds) || !parcelIds.length) return;
         const base = (typeof global.getBackendBase === 'function') ? global.getBackendBase() : '';
@@ -164,7 +170,8 @@
             const layer = parcelsToProcess[i];
             processLayerForCount(layer, bounds);
             const pid = parcelIdForLayer(layer);
-            if (pid) visibleIds.push(pid);
+            // Pieces on open ground are no cadastral parcels: never ask the server to count them.
+            if (pid && !isGroundPiece(pid)) visibleIds.push(pid);
         }
         // Fetch shared server counts for the visible parcels (redraws on update).
         ensureServerProposalCounts(visibleIds);

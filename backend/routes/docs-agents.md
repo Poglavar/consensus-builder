@@ -62,7 +62,29 @@ with `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET`; buyers never receive or need tho
 
 ## 2. Choose land
 
-Proposals are declared on **cadastre parcel ids** (`cadastreParcelIds`). Ways to find them:
+A proposal is about its **site**: the ground it occupies, a GeoJSON Polygon or MultiPolygon in WGS84.
+The site's **binding** is the set of cadastral parcels it reaches into, and the proposal declares
+exactly those parcels in `cadastreParcelIds` — no more, no fewer. Ask the server for the binding:
+
+- `POST $(base)/agent/binding` (same as `POST $(base)/proposals/binding`) with
+  `{ "site": <GeoJSON Polygon|MultiPolygon>, "toleranceM": 0 }` →
+  `{ "binding": { "parcels": [{ "parcelId", "overlapM2", "intrusionM" }], "touched": [...],
+  "toleranceM", "coverage", "unsurveyedM2", "unknownM2", "siteM2", "source", "computedAt" } }`.
+  Free, no Origin header. `binding.parcels[].parcelId` is your `cadastreParcelIds`.
+- **Intrusion** is how far the site reaches into a parcel, as a width (the widest circle inside
+  site ∩ parcel), never a share of area. A parcel is bound when its intrusion exceeds `toleranceM`
+  (default 0, at most 1 m; widths under 1 mm are arithmetic noise). `touched` lists parcels the site
+  reaches into by less than the tolerance — not bound, shown so you can fix the design.
+- **coverage**: `complete` (the whole site is on parcels), `partial` (some of it is on no parcel:
+  `unsurveyedM2`, or outside the cadastre the server holds: `unknownM2`), `none` (a city with no
+  cadastre), `unknown` (the server holds no cadastre there — only the Croatian cadastre is bound
+  today; elsewhere your declaration is stored unverified). Ground on no parcel has no owner who can
+  consent, so it executes only through a lens member's verdict.
+- A building, structure, road or readjustment may have an **empty** `cadastreParcelIds` when its
+  site lies on no parcel. An offer, ownership transfer, vote or road designation acts on parcels and
+  always needs them.
+
+Other ways to find parcels:
 
 - The parcel at a point: `GET $(base)/parcels?coordinates=<lng>,<lat>` (WGS84) → a GeoJSON
   `FeatureCollection` holding the one current parcel that contains the point (no features if none);
@@ -195,7 +217,11 @@ proposal PDA, not the counter or the transaction.
 }
 ```
 
-Everything except `cadastreParcelIds` may be omitted, but without the `onchain` object from step 3
+Everything except the land may be omitted: `cadastreParcelIds`, or a `site` (with optional
+`toleranceM`) for a material proposal, or both. Without a `site` the server takes the proposal's own
+geometry as the site (or, for a parcel act with no geometry, the declared parcels); any geometry you
+send must lie inside the site. The server computes the binding itself and stores it with the record
+(`binding`); a `binding` you send is ignored. Without the `onchain` object from step 3
 the record cannot be forecast or funded. `agent.wallet` and `agent.paid` are written by the
 server from the settled payment — anything you send there is overwritten. Send `author` only if it is
 your paying wallet's address; a different value is refused **before** you pay (`author_mismatch`).
@@ -298,6 +324,14 @@ source's own time (chain block or attestation time, the record's creation for `p
 | Status | Meaning | Paid? |
 |---|---|---|
 | 400 | Body failed validation (wrong types, retired fields). | no |
+| 400 `code: "undeclared-parcels"` | The site reaches into parcels not in `cadastreParcelIds`; `missing: [{ id, overlapM2, intrusionM }]` (`extra` too, when both). | no |
+| 400 `code: "unbound-parcels"` | `cadastreParcelIds` names parcels the site does not reach at `toleranceM`; `extra: [{ id, intrusionM }]`. | no |
+| 400 `code: "parcels-required"` | A parcel act (offer, transfer, vote, designation), or a record with no geometry and no site, needs parcels. | no |
+| 400 `code: "site-required"` | Empty `cadastreParcelIds` with no site and no geometry of its own. | no |
+| 400 `code: "footprint-outside-site"` | The proposal's geometry reaches outside its `site`. | no |
+| 400 `code: "invalid-site"` / `"invalid-tolerance"` / `"invalid-footprint"` | Malformed site, tolerance outside 0–1 m, or malformed geometry. | no |
+| 413 `code: "too-many-parcels"` | The site meets more than 5000 parcels (binding route and create). | no |
+| 503 before payment | The cadastre could not be asked; nothing was stored or charged. | no |
 | 402 with `PAYMENT-REQUIRED` | Pay and retry. | no |
 | 402 with body `error: "author_mismatch"` | `author` is not the paying wallet. | no |
 | 402 with body `error: "invalid_payment_payload"` | Signed transaction could not be decoded. | no |

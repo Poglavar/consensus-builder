@@ -588,7 +588,12 @@ function buildSummary(primary, ctx) {
         if (action === 'mint_and_fund') {
             const parcels = Array.isArray(args.parcel_ids) && args.parcel_ids.length ? args.parcel_ids.join(',') : 'no parcels';
             const sol = args.sol_amount != null ? formatAtomicAmount(String(args.sol_amount), LAMPORTS_DECIMALS) : '?';
-            return `${label(actorAddress(primary, 'owner'))} minted proposal for parcels ${parcels} funded with ${sol} SOL`;
+            // v3 appends site_hash (hex here) and open_ground; an all-zero hash is "no site".
+            const site = typeof args.site_hash === 'string' && /[1-9a-f]/.test(args.site_hash)
+                ? ` on site ${args.site_hash.slice(0, 12)}…${args.open_ground ? ' with open ground' : ''}`
+                : '';
+            const subject = Array.isArray(args.parcel_ids) && args.parcel_ids.length ? `for parcels ${parcels}` : 'with no parcels';
+            return `${label(actorAddress(primary, 'owner'))} minted proposal ${subject}${site} funded with ${sol} SOL`;
         }
         if (action === 'accept_with_attestations') {
             const member = accountAddress(primary, 'ownership');

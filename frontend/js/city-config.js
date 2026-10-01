@@ -543,8 +543,10 @@
                 source: 'none'
             },
             sidebar: {
-                // Everything that needs parcels; Measure, Activity and Settings stay.
-                disabledSections: ['parcels', 'parcelBlocks', 'buildings', 'roads', 'areaMonitor', 'stations', 'proposals', 'game']
+                // Everything that needs parcels; Measure, Activity and Settings stay. Proposals and
+                // stations need none (PARCEL-OPTIONAL.md): a site drawn here has an empty binding
+                // and can only execute through an authority's verdict.
+                disabledSections: ['parcels', 'parcelBlocks', 'buildings', 'roads', 'areaMonitor', 'game']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -904,11 +906,17 @@
      * Map sidebar section names to feature names
      * When a sidebar section is disabled, the corresponding feature is also disabled
      */
+    // 'roads' is deliberately absent: that section holds Zagreb's road DATASETS (GUP/DGU/OSM
+    // detection, the government plan), which most cities lack, while drawing a road or track needs
+    // no dataset and no parcels (PARCEL-OPTIONAL.md). Mapping it to `roadTools` switched road
+    // drawing off in every city without those datasets, explore included. A city that really must
+    // not draw roads sets `features: { roadTools: false }`.
     const SECTION_TO_FEATURE_MAP = {
-        'roads': 'roadTools',
         'parcelBlocks': 'parcelBlocks',  // Can be extended for other features
         'buildings': 'buildings'          // Can be extended for other features
     };
+    // Every feature a city has unless its config switches it off.
+    const DEFAULT_ENABLED_FEATURES = ['parcelBlocks', 'buildings', 'roadTools'];
 
     /**
      * Get feature configuration, automatically deriving from sidebar config
@@ -935,7 +943,7 @@
         });
 
         // Ensure all mapped features have a value (default to true if not disabled)
-        Object.values(SECTION_TO_FEATURE_MAP).forEach(featureName => {
+        DEFAULT_ENABLED_FEATURES.forEach(featureName => {
             if (!(featureName in features)) {
                 features[featureName] = true;
             }

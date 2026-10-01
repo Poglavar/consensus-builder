@@ -86,6 +86,26 @@ describe('proposal API serializer', () => {
         });
     });
 
+    // PARCEL-OPTIONAL.md: a material proposal may stand on ground with no cadastral parcel, but only
+    // with its site; an act on parcels never has an empty declaration.
+    it('accepts an empty declaration only for a material record that carries its site', () => {
+        const site = { type: 'MultiPolygon', coordinates: [[[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.8]]]] };
+        const binding = { parcels: [], coverage: 'partial', toleranceM: 0, unsurveyedM2: 9000 };
+        const open = serializeProposalRow({
+            id: 9, proposal_id: 'p-open', type: 'structure', cadastre_parcel_ids: [], binding,
+            proposal_data: { goal: 'park', cadastreParcelIds: [], site, binding }
+        });
+        expect(open.cadastreParcelIds).toEqual([]);
+        expect(open.site).toEqual(site);
+        expect(open.binding).toEqual(binding);
+        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'park', cadastreParcelIds: [] } }).detail)
+            .toMatch(/cadastre_parcel_ids is required/);
+        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'ownership-transfer', cadastreParcelIds: [], site } }).detail)
+            .toMatch(/cadastre_parcel_ids is required/);
+        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'park', isVote: true, cadastreParcelIds: [], site } }).detail)
+            .toMatch(/cadastre_parcel_ids is required/);
+    });
+
     it('rejects full database rows with missing, conflicting, or generated cadastral identity', () => {
         expect(rejectionOf({ cadastre_parcel_ids: null }).detail)
             .toMatch(/cadastre_parcel_ids is required/);

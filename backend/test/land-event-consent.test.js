@@ -11,6 +11,7 @@ import { describe, expect, it } from 'vitest';
 import { decodeParsedTransaction, encodeBase58, loadIdls } from '../solana/tx-decoder.js';
 import {
     ACCEPTANCE_RECORD_DISCRIMINATOR,
+    buildVerdictEvent,
     decodeAcceptanceRecord,
     decodeVerdictSettled,
     membersFromRecords,
@@ -56,9 +57,11 @@ function recordBytes({ owner, attestation, acceptedAt, payout = SYSTEM, parcel =
     ]);
 }
 
-function verdictPayload(status = STATUS_EXPIRED) {
+// v2 events end after settled_at; v3 appends the verdict byte (pass `verdict`).
+function verdictPayload(status = STATUS_EXPIRED, verdict = null) {
     return Buffer.concat([
-        VERDICT_SETTLED_DISCRIMINATOR, key(PROPOSAL), key(VERDICT), Buffer.alloc(32, 0xcd), key(MEMBER), Buffer.from([status]), i64(SETTLED)
+        VERDICT_SETTLED_DISCRIMINATOR, key(PROPOSAL), key(VERDICT), Buffer.alloc(32, 0xcd), key(MEMBER), Buffer.from([status]), i64(SETTLED),
+        verdict === null ? Buffer.alloc(0) : Buffer.from([verdict])
     ]);
 }
 
@@ -160,15 +163,23 @@ describe('lens-model v2 account and event layouts', () => {
     it('decodes the fields in IDL order', () => {
         const fields = name => idl.types.find(t => t.name === name).type.fields.map(f => f.name);
         expect(fields('AcceptanceRecord')).toEqual(['proposal', 'parcel_id', 'owner', 'member', 'ownership_attestation', 'ownership_hash', 'payout', 'accepted_at', 'bump']);
-        expect(fields('VerdictSettled')).toEqual(['proposal', 'verdict_attestation', 'verdict_hash', 'member', 'status', 'settled_at']);
+        expect(fields('VerdictSettled')).toEqual(['proposal', 'verdict_attestation', 'verdict_hash', 'member', 'status', 'settled_at', 'verdict']);
         expect(decodeAcceptanceRecord(RECORDS[0].account.data)).toEqual({
             proposal: PROPOSAL, parcelUid: 'HR-335649-507', owner: OWNER_A, member: MEMBER,
             ownershipAttestation: ATTESTATION_A, ownershipHash: 'ab'.repeat(32), payout: null, acceptedAt: ACCEPTED_A
         });
         expect(decodeAcceptanceRecord(RECORDS[1].account.data).payout).toBe(OWNER_B);
+        // A v2 event (no trailing verdict byte): the status it set is what the verdict said.
         expect(decodeVerdictSettled(verdictPayload())).toEqual({
-            proposal: PROPOSAL, verdictAttestation: VERDICT, verdictHash: 'cd'.repeat(32), member: MEMBER, status: STATUS_EXPIRED, settledAt: SETTLED
+            proposal: PROPOSAL, verdictAttestation: VERDICT, verdictHash: 'cd'.repeat(32), member: MEMBER, status: STATUS_EXPIRED, settledAt: SETTLED,
+            verdict: STATUS_EXPIRED
         });
+        // v3: an executed verdict that only cleared open ground leaves the proposal Active (0).
+        expect(decodeVerdictSettled(verdictPayload(0, STATUS_EXECUTED))).toMatchObject({ status: 0, verdict: STATUS_EXECUTED });
+        expect(() => decodeVerdictSettled(Buffer.concat([verdictPayload(0, 1), Buffer.from([0])]))).toThrow(/trailing/);
+        const cleared = buildVerdictEvent({ verdict: decodeVerdictSettled(verdictPayload(0, STATUS_EXECUTED)), transaction: 'sig' });
+        expect(cleared).toMatchObject({ outcome: 'executed', evidence: { proposalStatusByte: 0, clearedOpenGroundOnly: true } });
+        expect(buildVerdictEvent({ verdict: decodeVerdictSettled(verdictPayload()), transaction: 'sig' }).evidence.clearedOpenGroundOnly).toBe(false);
         expect(() => decodeAcceptanceRecord(RECORDS[0].account.data.subarray(0, 100))).toThrow(/ended early/);
     });
 

@@ -591,7 +591,9 @@
         const parcelIds = geometry && aligned
             ? findStationParcelIds(geometry, api, options.parcelEntries)
             : [];
-        const valid = aligned && parcelIds.length > 0;
+        // A station is a material proposal: where no parcel lies under it, it is placed with an
+        // empty binding (PARCEL-OPTIONAL.md), so alignment alone decides placement.
+        const valid = aligned;
         return {
             cursor: cursor.slice(),
             center,
@@ -602,7 +604,7 @@
             parcelIds,
             aligned,
             valid,
-            reason: !aligned ? 'no-alignment' : (parcelIds.length ? null : 'no-loaded-parcel')
+            reason: !aligned ? 'no-alignment' : null
         };
     }
 
@@ -1149,10 +1151,14 @@
             || createStationFootprint(active.center, active.bearing, active.type);
         updatePlacementStatus('Checking cadastral ground for the complete station footprint…');
         let scope = null;
+        const cityHasCadastre = !(global.CityConfigManager && typeof global.CityConfigManager.hasParcelData === 'function'
+            && !global.CityConfigManager.hasParcelData());
         try {
-            scope = await resolveStationCadastreScope(geometry, {
-                city: global.CityConfigManager?.getCurrentCityId?.() || global.currentCityId || null
-            });
+            scope = cityHasCadastre
+                ? await resolveStationCadastreScope(geometry, {
+                    city: global.CityConfigManager?.getCurrentCityId?.() || global.currentCityId || null
+                })
+                : { ids: [], coverage: 0, complete: false };
         } catch (error) {
             active.committing = false;
             updatePlacementStatus('Could not load cadastral ground for the station footprint.');
@@ -1161,15 +1167,12 @@
         }
         if (placement !== active) return null;
         const selectedParcelIds = scope.ids;
-        if (!scope.complete) {
-            active.committing = false;
-            active.valid = false;
-            active.reason = 'no-loaded-parcel';
-            active.parcelIds = [];
-            active.statusKey = null;
-            renderPlacementPreview();
-            updatePlacementStatus('The complete station footprint must lie on cadastral ground.');
-            return null;
+        // A station is a material proposal: on ground without (complete) cadastral coverage it is
+        // still a proposal, with a partial or empty binding computed from its footprint at publish
+        // (PARCEL-OPTIONAL.md); the part of the footprint on no parcel stands on open ground.
+        const partialGround = !scope.complete;
+        if (partialGround) {
+            console.info(`[${new Date().toISOString()}] [transit-stations] footprint only ${Math.round((scope.coverage || 0) * 100)}% on cadastral ground (${selectedParcelIds.length} parcel(s)); stored with a ${cityHasCadastre ? 'partial' : 'no-cadastre'} binding`);
         }
         const type = active.type;
         const center = active.center.slice();
@@ -1188,6 +1191,13 @@
                 name: '',
                 description: '',
                 selectedParcelIds,
+                // The preview binding of an incomplete footprint: open ground under part of it.
+                binding: partialGround ? {
+                    parcels: selectedParcelIds.map(parcelId => ({ parcelId, overlapM2: null, intrusionM: null })),
+                    touched: [],
+                    coverage: cityHasCadastre ? 'partial' : 'none',
+                    source: 'client-preview'
+                } : null,
                 offer: 0,
                 offerCurrency: 'USDT'
             },

@@ -469,6 +469,17 @@ function uploadRateLimitMessage(retryAfterSeconds) {
     return fallback;
 }
 
+// i18n with an English fallback and {{param}} interpolation (the binding messages of a publish).
+function publishBindingText(key, fallback, params) {
+    try {
+        if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') {
+            const translated = window.i18n.t(key, params || {});
+            if (translated && translated !== key) return translated;
+        }
+    } catch (_) { /* English fallback */ }
+    return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => (params && name in params ? params[name] : match));
+}
+
 async function uploadProposalToServer(proposal) {
     // Publish checks the footprint against the cadastre the browser has LOADED: every parcel the
     // geometry lies on must be declared. Pan away from a road and its parcels are no longer on the
@@ -480,9 +491,39 @@ async function uploadProposalToServer(proposal) {
         console.warn('[uploadProposalToServer] publishing with partially loaded ground; the server re-checks parcels');
     }
 
+    // A material proposal publishes the server binding of its site as its declaration
+    // (proposals/publish-binding.js). Parcels it reaches into by under half a metre are said out
+    // loud first — usually a design leaking across a boundary — and the author decides.
+    let bound = null;
+    try {
+        bound = await window.__publishBinding.bindForPublish(proposal, {
+            fetchBinding: window.__publishBinding.createFetchBinding(fetch.bind(window), resolveBackendBaseUrl()),
+            city: proposal.city || null
+        });
+    } catch (bindError) {
+        console.warn(`[${new Date().toISOString()}] [uploadProposalToServer] binding failed`, bindError);
+        return { ok: false, message: publishBindingText('modal.createProposal.errors.bindingFailed',
+            'Could not check which parcels this proposal\'s site reaches into: {{reason}}', { reason: bindError.message || String(bindError) }) };
+    }
+    if (bound.smallIntrusions.length) {
+        const list = window.__publishBinding.describeHits(bound.smallIntrusions.map(hit => ({ id: hit.parcelId, intrusionM: hit.intrusionM })));
+        const question = publishBindingText('modal.createProposal.smallIntrusions.question',
+            'The site reaches only slightly into these parcels: {{list}}. Publishing includes them, so their owners must agree too. Include them, or cancel and change the design.',
+            { count: bound.smallIntrusions.length, list });
+        const include = typeof window.showStyledConfirm === 'function'
+            ? await window.showStyledConfirm(question, {
+                okText: publishBindingText('modal.createProposal.smallIntrusions.include', 'Include them'),
+                cancelText: publishBindingText('modal.createProposal.smallIntrusions.change', 'Change the design')
+            })
+            : window.confirm(question);
+        if (!include) {
+            return { ok: false, cancelled: true, message: publishBindingText('modal.createProposal.smallIntrusions.cancelled', 'Publishing cancelled: change the design so it stays inside the parcels you mean.') };
+        }
+    }
+
     let uploadProposal;
     try {
-        uploadProposal = buildUploadReadyProposal(proposal);
+        uploadProposal = buildUploadReadyProposal(bound.proposal);
     } catch (gateError) {
         // The §15a publish gate refused — a non-flat record, or geometry on parcels the author did
         // not declare, is the author's error to see, not something to heal into shape.
@@ -526,8 +567,13 @@ async function uploadProposalToServer(proposal) {
                 };
             }
 
-            // The API's land rule (every parcel under the geometry must be declared) found parcels
-            // the browser gate could not see; say which, in the user's language.
+            // The API's land rule (declaration == binding of the site) refused: say which parcels,
+            // and how far the site reaches into each, in the user's language.
+            const bindingRefusal = window.__publishBinding ? window.__publishBinding.refusalMessage(errorBody, publishBindingText) : null;
+            if (bindingRefusal) {
+                console.warn('[uploadProposalToServer] server refused the declaration', errorBody.code, errorBody.missing, errorBody.extra);
+                return { ok: false, code: errorBody.code, message: bindingRefusal };
+            }
             if (errorBody && errorBody.code === 'undeclared-parcels' && Array.isArray(errorBody.parcels)) {
                 console.warn('[uploadProposalToServer] server: geometry lies on undeclared parcels', errorBody.parcels);
                 const list = errorBody.parcels.map(parcel => parcel && parcel.id).filter(Boolean).join(', ');

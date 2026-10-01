@@ -50,16 +50,25 @@
         const token = props.syntheticToken;
         const index = Number(props.syntheticIndex);
         const cadastreParcelIds = cadastreIdsOfFeature(feature);
+        // A piece on open ground only (PARCEL-OPTIONAL.md phase 3) has no cadastral anchor; its
+        // ground id stands in as the allocation anchor and its id is rootless (`<token>-<n>`).
+        const groundIds = (Array.isArray(props.groundIds) ? props.groundIds : [])
+            .map(value => String(value || '').trim())
+            .filter(value => value.startsWith('ground:'));
         if (parcelId === undefined || parcelId === null || String(parcelId).trim() === ''
             || token === undefined || token === null || String(token).trim() === ''
-            || !Number.isInteger(index) || index < 1 || !cadastreParcelIds.length) return null;
+            || !Number.isInteger(index) || index < 1 || (!cadastreParcelIds.length && !groundIds.length)) return null;
         return {
             parcelId: String(parcelId),
             parcelNumber: props.BROJ_CESTICE === undefined || props.BROJ_CESTICE === null
                 ? null : String(props.BROJ_CESTICE),
             token: String(token),
             index,
-            cadastreParcelIds
+            cadastreParcelIds,
+            groundIds,
+            // `root` composes ids (null on open ground); `anchor` scopes index allocation.
+            root: cadastreParcelIds.length ? cadastreParcelIds[0] : null,
+            anchor: cadastreParcelIds.length ? cadastreParcelIds[0] : groundIds[0]
         };
     }
 
@@ -383,7 +392,9 @@
             const declared = Array.isArray(props.cadastreParcelIds) && props.cadastreParcelIds.length
                 ? props.cadastreParcelIds
                 : [];
-            if (ownId && !declared.length) {
+            // A piece on open ground only names a ground id instead: it adds no cadastral anchor.
+            const onOpenGround = Array.isArray(props.groundIds) && props.groundIds.some(id => String(id || '').startsWith('ground:'));
+            if (ownId && !declared.length && !onOpenGround) {
                 const error = new Error(`Parcel ${ownId} has no explicit cadastral provenance.`);
                 error.code = 'parcel-cadastre-provenance-missing';
                 throw error;

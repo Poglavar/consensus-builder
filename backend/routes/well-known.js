@@ -157,6 +157,46 @@ const LENS_MEMBERS_SCHEMA = {
     }
 };
 
+// POST /agent/binding (= /proposals/binding), see proposals/binding.js and PARCEL-OPTIONAL.md.
+const BINDING_PARCEL = {
+    type: 'object',
+    properties: {
+        parcelId: { type: 'string' },
+        overlapM2: { type: 'number' },
+        intrusionM: { type: 'number', description: 'Width of site ∩ parcel: diameter of the largest inscribed circle, metres.' }
+    }
+};
+const BINDING_REQUEST_SCHEMA = {
+    type: 'object',
+    required: ['site'],
+    properties: {
+        site: { type: 'object', description: 'GeoJSON Polygon or MultiPolygon, EPSG:4326.' },
+        toleranceM: { type: 'number', minimum: 0, maximum: 1, default: 0, description: 'A parcel is bound when the site reaches into it by more than this width.' },
+        city: { type: 'string', description: 'City id; a city with no cadastre (explore) answers coverage none instead of unknown.' }
+    }
+};
+const BINDING_RESPONSE_SCHEMA = {
+    type: 'object',
+    properties: {
+        binding: {
+            type: 'object',
+            properties: {
+                parcels: { type: 'array', items: BINDING_PARCEL, description: 'Bound parcels: exactly what cadastreParcelIds must contain.' },
+                touched: { type: 'array', items: BINDING_PARCEL, description: 'Reached into by less than toleranceM; not bound.' },
+                toleranceM: { type: 'number' },
+                coverage: { type: 'string', enum: ['complete', 'partial', 'none', 'unknown'] },
+                unsurveyedM2: { type: 'number' },
+                unknownM2: { type: 'number' },
+                siteM2: { type: 'number' },
+                source: { type: 'string' },
+                computedAt: { type: 'string', format: 'date-time' },
+                reason: { type: 'string' }
+            }
+        },
+        queryMs: { type: 'integer' }
+    }
+};
+
 export function buildOpenApi(base, env) {
     const paid = Object.fromEntries(paidResources(base, env).map(r => [r.url, r]));
     const x402 = (url) => paid[url]
@@ -186,6 +226,18 @@ export function buildOpenApi(base, env) {
                         503: { description: 'x402 is not configured on this server.' }
                     },
                     ...x402(`${base}/agent/proposals`)
+                }
+            },
+            '/agent/binding': {
+                post: {
+                    summary: 'The cadastral binding of a proposal site: the parcels it reaches into (intrusion as a width), and how much of it is open ground. Same as POST /proposals/binding; a read, free',
+                    operationId: 'postAgentBinding',
+                    requestBody: { required: true, content: { 'application/json': { schema: BINDING_REQUEST_SCHEMA } } },
+                    responses: {
+                        200: { description: 'The binding.', content: { 'application/json': { schema: BINDING_RESPONSE_SCHEMA } } },
+                        400: { description: 'invalid-site or invalid-tolerance.' },
+                        413: { description: 'too-many-parcels: the site meets more than 5000 parcels.' }
+                    }
                 }
             },
             '/agent/oracle/facts': {

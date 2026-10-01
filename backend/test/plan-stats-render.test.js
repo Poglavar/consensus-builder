@@ -19,6 +19,7 @@ import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const planYield = require('../../frontend/js/proposals/plan-yield.js');
+const siteStats = require('../../frontend/js/proposals/site-stats.js');
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/plan-stats.js', import.meta.url)), 'utf8');
 
 function makeNode(tag) {
@@ -91,6 +92,7 @@ function makeWindow(proposals, { search = '', getProposals = null } = {}) {
         document,
         console,
         __planYield: planYield,
+        __siteStats: siteStats,
         requestAnimationFrame: fn => fn(),
         location: { search },
         setTimeout: fn => { timers.push(fn); return timers.length; },
@@ -191,6 +193,45 @@ describe('opening the dialog', () => {
 
         expect(slot(window, 'resulting-parcels')).toBe('1');
         expect(slot(window, 'notes')).toMatch(/1/);
+    });
+});
+
+// Open ground (PARCEL-OPTIONAL.md phase 6): a proposal with an empty binding has a site and
+// buildings but no parcels. Its floor area is a site figure and is shown; its parcel count is a
+// binding figure and reads "No parcels here" — never a 0 that looks measured.
+describe('a plan on open ground', () => {
+    const site = { type: 'MultiPolygon', coordinates: [SIBENIK] };
+    const onOpenGround = (unsurveyedM2, parcels = []) => ({
+        ...block(null),
+        cadastreParcelIds: parcels,
+        site,
+        binding: { parcels: parcels.map(parcelId => ({ parcelId })), coverage: parcels.length ? 'partial' : 'none', unsurveyedM2, siteM2: 25000 }
+    });
+
+    it('says there are no parcels instead of counting 0, and still measures the floor area', async () => {
+        const window = openDialog([onOpenGround(25000)]);
+        await window.showPlanStatsModal();
+
+        expect(slot(window, 'resulting-parcels')).toBe('No parcels here');
+        expect(digits(slot(window, 'floor-area'))).toBeGreaterThan(0);
+        expect(digits(slot(window, 'buildings'))).toBe(1);
+        expect(slot(window, 'notes')).toMatch(/Open ground: 25,000 m²/);
+        expect(slot(window, 'notes')).not.toMatch(/average parcel size/);
+    });
+
+    it('a partly bound plan counts its bound parcels and shows the open ground beside them', async () => {
+        const window = openDialog([onOpenGround(300, ['HR-330264-700'])]);
+        await window.showPlanStatsModal();
+
+        expect(slot(window, 'resulting-parcels')).toBe('1');
+        expect(slot(window, 'notes')).toMatch(/Open ground: 300 m²/);
+    });
+
+    it('a cadastral plan shows no open-ground note', async () => {
+        const window = openDialog(plan);
+        await window.showPlanStatsModal();
+
+        expect(slot(window, 'notes')).not.toMatch(/Open ground/);
     });
 });
 

@@ -886,8 +886,29 @@
         if (!draft) return null;
         try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
         closeProposalEditorShell();
-        const selection = await global.prepareProposalDraftParcelSelection?.(draft);
-        if (!selection?.layers?.length) {
+        // A site-first draft (a drawn site, possibly on ground without parcels) needs no live
+        // parcel selection: its ground is the site, its declaration the binding (publish computes
+        // the server's). The dialog takes the site instead of the selection.
+        const authoredSite = global.__siteDraft?.draftSite?.(draft) || null;
+        const liveSelectionIds = (draft.fields?.selectedParcelIds || []).map(String)
+            .filter(id => !/^site(-plot)?:/.test(id));
+        // A material record with no parcels at all (a road drawn across bare ground) has its
+        // footprint as its site.
+        const footprintSite = !authoredSite && !liveSelectionIds.length && draft.sourceSnapshot
+            && global.__siteBinding && !global.__siteBinding.requiresParcels(draft.sourceSnapshot)
+            ? global.__siteBinding.siteOf(draft.sourceSnapshot) : null;
+        const site = authoredSite || footprintSite;
+        const siteContext = site && (draft.sourceSnapshot?.site || footprintSite || !liveSelectionIds.length) ? {
+            site,
+            authored: !!authoredSite,
+            toleranceM: Number(draft.fields?.toleranceM) || 0,
+            binding: draft.fields?.binding || null,
+            cadastreParcelIds: (draft.fields?.cadastreParcelIds || []).map(String)
+        } : null;
+        const selection = siteContext
+            ? { ids: [], layers: [], complete: true }
+            : await global.prepareProposalDraftParcelSelection?.(draft);
+        if (!siteContext && !selection?.layers?.length) {
             if (!existing) store.deleteDraft(draft.id);
             return reportGeometryEditFailure(
                 tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.'),
@@ -1054,7 +1075,9 @@
             goal: adapterKey,
             proposalType: proposalLabel(adapterKey),
             adapterKey,
-            fields: { name: '', description: '', selectedParcelIds: ids, offer: 0, offerCurrency: 'USDT' },
+            // The selection's union is the design's site (a block's superparcel): the binding at
+            // publish is computed from it, so parcels the rule left without a building stay bound.
+            fields: { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids), offer: 0, offerCurrency: 'USDT' },
             editorPayload: {},
             previewGeometry: null
         });
@@ -1076,6 +1099,145 @@
             }
         }
         return opened;
+    }
+
+    // ---- Site-first creation (js/site-drawing.js, PARCEL-OPTIONAL.md phase 2) ----
+    // siteContext: { site (MultiPolygon), toleranceM, binding (preview or server), selectionIds? }. The draft carries the site; its declaration starts as the binding's parcels
+    // and is replaced by the server binding at publish.
+    function siteDraftFields(siteContext, selectedParcelIds) {
+        return {
+            name: '',
+            description: '',
+            selectedParcelIds: (selectedParcelIds || []).map(String),
+            site: JSON.parse(JSON.stringify(siteContext.site)),
+            toleranceM: Number(siteContext.toleranceM) || 0,
+            binding: siteContext.binding ? JSON.parse(JSON.stringify(siteContext.binding)) : null,
+            offer: 0,
+            offerCurrency: 'USDT'
+        };
+    }
+
+    function polygonOfSite(site) {
+        const geometry = site && site.type === 'Feature' ? site.geometry : site;
+        if (geometry && geometry.type === 'MultiPolygon' && geometry.coordinates.length === 1) {
+            return { type: 'Polygon', coordinates: geometry.coordinates[0] };
+        }
+        return geometry;
+    }
+
+    // A park, square or lake IS its site: no design tool, the object appears, on cadastral
+    // parcels and on open ground alike (PARCEL-OPTIONAL.md phase 3).
+    async function instantCreateStructureFromSite(kind, siteContext) {
+        if (!STRUCTURE_KIND_LABELS[kind] || !siteContext || !siteContext.site) return null;
+        let structureGeometry = polygonOfSite(siteContext.site);
+        if (!structureGeometryIsOneArea(structureGeometry)) {
+            reportDisconnectedStructureSelection();
+            return null;
+        }
+        let lakeGraphics = null;
+        if (kind === 'lake' && typeof global.buildLakeGraphicsFromGeometry === 'function') {
+            lakeGraphics = global.buildLakeGraphicsFromGeometry(structureGeometry);
+            if (!lakeGraphics || !lakeGraphics.geometry) {
+                const message = tDraft('proposalDrafts.errors.parcelsNotContiguous', 'A lake needs contiguous parcels.');
+                if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+                return null;
+            }
+            structureGeometry = lakeGraphics.geometry;
+        }
+        const draft = global.proposalDraftStore.createDraft({
+            cityId: currentCityId(),
+            goal: kind,
+            proposalType: STRUCTURE_KIND_LABELS[kind],
+            adapterKey: kind,
+            // No live selection: the site's binding is the declaration, even when the site
+            // started as a selection's outline (it may have been reshaped since).
+            fields: siteDraftFields(siteContext, []),
+            editorPayload: {
+                structureProposal: { kind, applied: false, geometry: structureGeometry, blockName: null, lakeGraphics: lakeGraphics || null }
+            },
+            previewGeometry: structureGeometry
+        });
+        if (!draft) return null;
+        return instantCreateProposalFromDraft(draft.id);
+    }
+
+    // A building typology on a site: the design tool opens on the site's design parcels (the live
+    // selection it came from, the whole site as one synthetic superparcel, or synthetic plots cut
+    // along a frontage), and Done commits the draft as for any Build-palette creation.
+    async function startInstantSiteDesign(adapterKey, siteContext, designParcelIds) {
+        const ids = (designParcelIds || []).map(String).filter(Boolean);
+        if (!ids.length || !siteContext || !siteContext.site) return false;
+        const draft = global.proposalDraftStore.createDraft({
+            cityId: currentCityId(),
+            goal: adapterKey,
+            proposalType: proposalLabel(adapterKey),
+            adapterKey,
+            fields: siteDraftFields(siteContext, ids),
+            editorPayload: {},
+            previewGeometry: null
+        });
+        if (!draft) return false;
+        geometryEditCommitDraftId = draft.id;
+        let opened = false;
+        try {
+            opened = await global.openProposalDraftDesign?.(draft.id);
+        } catch (error) {
+            opened = false;
+            console.warn('[ProposalEditor] Site design tool failed to open', error);
+        }
+        if (opened === false) {
+            geometryEditCommitDraftId = null;
+            global.proposalDraftStore.deleteDraft(draft.id);
+            if (typeof global.updateStatus === 'function') {
+                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
+            }
+        }
+        return opened;
+    }
+
+    // Subdivide a site (PARCEL-OPTIONAL.md phase 4): the readjustment editor opens with the site as
+    // its pool — the bound parcels' part with their owners, the open ground with none. No live
+    // selection: the declaration is the site's binding (replaced by the server's at publish).
+    async function startSiteSubdivision(siteContext) {
+        if (!siteContext || !siteContext.site) return false;
+        const site = JSON.parse(JSON.stringify(siteContext.site));
+        const draft = global.proposalDraftStore.createDraft({
+            cityId: currentCityId(),
+            goal: 'reparcellization',
+            proposalType: proposalLabel('reparcellization'),
+            adapterKey: 'reparcellization',
+            fields: siteDraftFields(siteContext, []),
+            editorPayload: { plan: { poolSource: 'site', poolGeometry: site, algorithm: 'street-plots', polygons: [] } },
+            previewGeometry: null
+        });
+        if (!draft) return false;
+        geometryEditCommitDraftId = draft.id;
+        let opened = false;
+        try {
+            opened = await global.openProposalDraftDesign?.(draft.id);
+        } catch (error) {
+            opened = false;
+            console.warn('[ProposalEditor] Subdivision editor failed to open', error);
+        }
+        if (opened === false) {
+            geometryEditCommitDraftId = null;
+            global.proposalDraftStore.deleteDraft(draft.id);
+            if (typeof global.updateStatus === 'function') {
+                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
+            }
+        }
+        return opened;
+    }
+
+    // The union of a live parcel selection, as the site of a design started from it.
+    function siteOfLiveSelection(ids) {
+        try {
+            const features = (ids || []).map(id => global.LiveParcelFabric?.get?.(String(id))).filter(Boolean);
+            return features.length && global.__siteDraft ? global.__siteDraft.siteFromFeatures(features) : null;
+        } catch (error) {
+            console.warn('[ProposalEditor] could not union the selection into a site', error);
+            return null;
+        }
     }
 
     const STRUCTURE_KIND_LABELS = { park: 'Park', square: 'Square', lake: 'Lake' };
@@ -1158,7 +1320,7 @@
             goal: kind,
             proposalType: STRUCTURE_KIND_LABELS[kind],
             adapterKey: kind,
-            fields: { name: '', description: '', selectedParcelIds: liveIds, offer: 0, offerCurrency: 'USDT' },
+            fields: { name: '', description: '', selectedParcelIds: liveIds, site: siteOfLiveSelection(liveIds), offer: 0, offerCurrency: 'USDT' },
             editorPayload: {
                 structureProposal: {
                     kind,
@@ -1349,8 +1511,29 @@
             }
             return false;
         }
-        const selection = await global.prepareProposalDraftParcelSelection?.(draft);
-        if (!selection?.layers?.length) {
+        // A site-first draft (a drawn site, possibly on ground without parcels) needs no live
+        // parcel selection: its ground is the site, its declaration the binding (publish computes
+        // the server's). The dialog takes the site instead of the selection.
+        const authoredSite = global.__siteDraft?.draftSite?.(draft) || null;
+        const liveSelectionIds = (draft.fields?.selectedParcelIds || []).map(String)
+            .filter(id => !/^site(-plot)?:/.test(id));
+        // A material record with no parcels at all (a road drawn across bare ground) has its
+        // footprint as its site.
+        const footprintSite = !authoredSite && !liveSelectionIds.length && draft.sourceSnapshot
+            && global.__siteBinding && !global.__siteBinding.requiresParcels(draft.sourceSnapshot)
+            ? global.__siteBinding.siteOf(draft.sourceSnapshot) : null;
+        const site = authoredSite || footprintSite;
+        const siteContext = site && (draft.sourceSnapshot?.site || footprintSite || !liveSelectionIds.length) ? {
+            site,
+            authored: !!authoredSite,
+            toleranceM: Number(draft.fields?.toleranceM) || 0,
+            binding: draft.fields?.binding || null,
+            cadastreParcelIds: (draft.fields?.cadastreParcelIds || []).map(String)
+        } : null;
+        const selection = siteContext
+            ? { ids: [], layers: [], complete: true }
+            : await global.prepareProposalDraftParcelSelection?.(draft);
+        if (!siteContext && !selection?.layers?.length) {
             const message = tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.');
             store.markPublishFailed(draftId, new Error(message));
             // The editor shell is dormant UI — say it out loud instead of rendering into the void.
@@ -1390,6 +1573,7 @@
         const overrides = {
             goal: dialogGoal(draft),
             acquisitionMode: fields.acquisitionMode || null,
+            siteContext,
             prefill,
             copySource: draft.sourceProposalId ? { proposalId: draft.sourceProposalId, name: global.pendingProposalReplacementSource.name } : null,
             geometryPreset: seeded ? {
@@ -1545,7 +1729,9 @@
 
         // Every corridor draft uses the same atomic authoring boundary, whichever UI committed it.
         // The drawing tool passes atomicCorridorAuthoring explicitly as a source-level contract;
-        // callers cannot accidentally opt a road into the generic store-then-derive path.
+        // callers cannot accidentally opt a road into the generic store-then-derive path. That
+        // includes a corridor across ground without parcels: its ribbon simply has no cadastral
+        // arrangement there (PARCEL-OPTIONAL.md phase 3).
         const atomicCorridorAuthoring = !!proposal.roadProposal?.definition;
         let proposalId = null;
         if (atomicCorridorAuthoring) {
@@ -1802,6 +1988,9 @@
     global.confirmDiscardProposalDesignSession = confirmDiscardProposalDesignSession;
     global.stageProposalDraftForPublishing = stageProposalDraftForPublishing;
     global.instantCreateProposalFromDraft = instantCreateProposalFromDraft;
+    global.instantCreateStructureFromSite = instantCreateStructureFromSite;
+    global.startInstantSiteDesign = startInstantSiteDesign;
+    global.startSiteSubdivision = startSiteSubdivision;
     global.syncActiveProposalDraftFromEditor = syncActiveProposalDraftFromEditor;
     global.renderProposalDraftComparison = renderProposalDraftComparison;
     global.clearProposalDraftComparison = clearProposalDraftComparison;

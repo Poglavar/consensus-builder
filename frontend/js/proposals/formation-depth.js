@@ -28,16 +28,30 @@
         return isFormationGoal(proposal.goal) ? 'potential-formation' : 'content';
     }
 
+    function siteBindingApi() {
+        if (typeof globalThis !== 'undefined' && globalThis.__siteBinding) return globalThis.__siteBinding;
+        return typeof require === 'function' ? require('./site-binding.js') : null;
+    }
+
+    // Whether this record may stand with an empty declaration: a material proposal (not an act on
+    // parcels) with a site or a footprint of its own (PARCEL-OPTIONAL.md rule 4). Its binding is
+    // computed from that site at publish; on bare ground it is empty.
+    function mayHaveEmptyDeclaration(proposal) {
+        const api = siteBindingApi();
+        if (!api || typeof api.requiresParcels !== 'function') return false;
+        return !api.requiresParcels(proposal);
+    }
+
     // The cadastral declaration is authoritative by field, not by ID syntax. Current records have
     // exactly one land declaration. Compatibility fields are migration input, never a second view
-    // retained by an API or browser record.
+    // retained by an API or browser record. A material record with a site may declare nothing.
     function conformanceOf(proposal, options) {
         const opts = options || {};
         const role = opts.mintsGround === true ? 'formation'
             : (opts.mintsGround === false ? 'content' : roleOf(proposal));
         const anchors = normalizedIds(proposal?.cadastreParcelIds);
         const violations = [];
-        if (!anchors.length) violations.push({ code: 'missing-cadastral-provenance' });
+        if (!anchors.length && !mayHaveEmptyDeclaration(proposal)) violations.push({ code: 'missing-cadastral-provenance' });
         const authored = (typeof globalThis !== 'undefined' && globalThis.ProposalAuthoredRecord)
             ? globalThis.ProposalAuthoredRecord
             : (typeof require === 'function' ? require('./authored-record.js') : null);
@@ -185,7 +199,7 @@
                 }]
             };
         }
-        if (!anchors.length) {
+        if (!anchors.length && !mayHaveEmptyDeclaration(out)) {
             verdict = {
                 ...verdict,
                 flat: false,
@@ -204,6 +218,7 @@
         FORMATION_GOALS,
         isFormationGoal,
         roleOf,
+        mayHaveEmptyDeclaration,
         conformanceOf,
         findNonCadastralReference,
         stripDerivedRecordData,

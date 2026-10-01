@@ -779,7 +779,12 @@
 
     function syncTexts() {
         if (!state.input) return;
-        state.input.placeholder = t('mapSearch.placeholder', 'Search places, parcels, proposals…');
+        // Without a cadastre (explore) there are no parcels to find.
+        const config = manager();
+        const parcels = !(config && typeof config.hasParcelData === 'function') || config.hasParcelData();
+        state.input.placeholder = parcels
+            ? t('mapSearch.placeholder', 'Search places, parcels, proposals…')
+            : t('mapSearch.placeholderNoParcels', 'Search places, proposals…');
         state.input.setAttribute('aria-label', t('mapSearch.label', 'Search the map'));
         state.searchButton.setAttribute('aria-label', t('mapSearch.open', 'Search'));
         state.searchButton.title = t('mapSearch.open', 'Search');

@@ -84,10 +84,23 @@ describe('GET /openapi.json', () => {
         expect(res.body.servers).toEqual([{ url: 'https://api.example.test' }]);
         const post = res.body.paths['/agent/proposals'].post;
         const schema = post.requestBody.content['application/json'].schema;
-        expect(schema.required).toContain('cadastreParcelIds');
+        expect(schema.anyOf.map(branch => branch.required[0])).toEqual(['cadastreParcelIds', 'site']);
         expect(schema.$schema).toBeUndefined();
         expect(post['x-x402']).toEqual({ price: '$0.05', network: 'solana:devnet', payTo: env.X402_PAY_TO });
         expect(post.responses[402]).toBeDefined();
+    });
+
+    it('documents the site binding read and the recipe site/tolerance fields', async () => {
+        const res = await request(appFor()).get('/openapi.json');
+        const binding = res.body.paths['/agent/binding'].post;
+        expect(binding.requestBody.content['application/json'].schema.required).toEqual(['site']);
+        const answer = binding.responses[200].content['application/json'].schema.properties.binding.properties;
+        expect(answer.coverage.enum).toEqual(['complete', 'partial', 'none', 'unknown']);
+        expect(answer.parcels.items.properties).toHaveProperty('intrusionM');
+        expect(binding['x-x402']).toBeUndefined();
+        const recipe = res.body.paths['/agent/proposals'].post.requestBody.content['application/json'].schema.properties;
+        expect(recipe).toHaveProperty('site');
+        expect(recipe.toleranceM.maximum).toBe(1);
     });
 
     it('lists the lens directory and schema endpoints and the recipe lens field', async () => {
@@ -113,7 +126,7 @@ describe('GET /agents.json', () => {
         const alias = await request(app).get('/agents.json');
         const canonical = await request(app).get('/docs/agents.json');
         expect(alias.status).toBe(200);
-        expect(alias.body.schema.required).toContain('cadastreParcelIds');
+        expect(alias.body.schema.properties).toHaveProperty('site');
         expect(alias.body).toEqual(canonical.body);
     });
 

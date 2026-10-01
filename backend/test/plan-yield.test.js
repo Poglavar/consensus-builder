@@ -354,4 +354,15 @@ describe('freeform structures', () => {
         expect(result.total.grossFloorAreaM2).toBe(0);
         expect(result.byEpoch[0].openSpaceM2).toBeGreaterThan(0);
     });
+
+    it('counts a park as it stands when the caller knows its applied body (a road built through it)', () => {
+        const park = {
+            proposalId: 'p1',
+            applied: true,
+            structure_proposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: SIBENIK } }
+        };
+        expect(planYield([park], { openSpaceAreaOf: p => (p.proposalId === 'p1' ? 1234 : null) }).total.openSpaceM2).toBe(1234);
+        // No applied body known: the authored geometry.
+        expect(planYield([park], { openSpaceAreaOf: () => null }).total.openSpaceM2).toBeCloseTo(geometryAreaM2(polygon(SIBENIK)), 3);
+    });
 });

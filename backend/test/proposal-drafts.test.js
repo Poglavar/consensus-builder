@@ -338,3 +338,40 @@ describe('ProposalDraftStore', () => {
         expect(restored.getDraft(draft.id).editorPayload.giantGeometry).toHaveLength(1800);
     });
 });
+
+// The store's own validator (no adapter): material goals need a site, parcel acts need parcels,
+// and a site draft builds a record with an empty declaration (PARCEL-OPTIONAL.md, phase 2).
+describe('site-first drafts in the store', () => {
+    const SITE = {
+        type: 'MultiPolygon',
+        coordinates: [[[[15.97, 45.8], [15.9705, 45.8], [15.9705, 45.8004], [15.97, 45.8004], [15.97, 45.8]]]]
+    };
+
+    it('reports missing-site for a material draft without ground, missing-parcels for a parcel act', () => {
+        const { store } = harness();
+        const park = store.createDraft({ goal: 'park', fields: { name: 'Park', selectedParcelIds: [] } });
+        expect(store.validateDraft(park.id).validation.errors.map(error => error.code)).toEqual(['missing-site']);
+        const transfer = store.createDraft({ goal: 'ownership-transfer', fields: { name: 'Sell', selectedParcelIds: [], site: SITE } });
+        expect(store.validateDraft(transfer.id).validation.errors.map(error => error.code)).toEqual(['missing-parcels']);
+    });
+
+    it('builds a site draft into a record with its site and no declaration', () => {
+        const { store } = harness();
+        const draft = store.createDraft({
+            goal: 'park',
+            fields: { name: 'Park', selectedParcelIds: [], site: SITE },
+            editorPayload: {}
+        });
+        expect(store.validateDraft(draft.id).validation.valid).toBe(true);
+        const record = store.buildProposalFromDraft(draft.id);
+        expect(record.site).toEqual(SITE);
+        expect(record.cadastreParcelIds).toEqual([]);
+    });
+
+    it('carries the site and tolerance of a source record into its draft', () => {
+        const { store } = harness();
+        const draft = store.createDraftFromProposal({ proposalId: 'p-site', goal: 'park', title: 'Park', site: SITE, toleranceM: 0.02, cadastreParcelIds: [] });
+        expect(draft.fields.site).toEqual(SITE);
+        expect(draft.fields.toleranceM).toBe(0.02);
+    });
+});

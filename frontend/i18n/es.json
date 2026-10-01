@@ -1366,6 +1366,8 @@
             "ownedByGovernmentLabel": "Propiedad del gobierno:",
             "ownedByIndividualsLabel": "Propiedad de particulares:",
             "parcelAreaLabel": "Área de parcela:",
+            "openGroundLabel": "Terreno abierto:",
+            "openGroundValue": "{{count}} · {{area}}",
             "parcelCountLabel": "Número de parcelas:",
             "builtStatus": "Carretera construida — haz clic para editarla o proponerla.",
             "segmentCancelledStatus": "Segmento cancelado — los segmentos colocados se mantienen. Esc de nuevo construye el camino.",
@@ -2531,7 +2533,13 @@
                 "missingParcels": "Faltan parcelas o geometría para esta propuesta.",
                 "couldNotDetermineParcels": "No se pudieron determinar las parcelas para este bloque.",
                 "parcelsNotContiguous": "Las parcelas no son contiguas",
-                "undeclaredParcels": "La geometría de esta propuesta ocupa {{count}} parcela(s) que no seleccionaste: {{list}}. Selecciónalas también o mantén la geometría dentro de las parcelas seleccionadas."
+                "undeclaredParcels": "La geometría de esta propuesta ocupa {{count}} parcela(s) que no seleccionaste: {{list}}. Selecciónalas también o mantén la geometría dentro de las parcelas seleccionadas.",
+                "bindingMissing": "El sitio entra en parcelas que la propuesta no nombra ({{count}}): {{list}}.",
+                "bindingExtra": "La propuesta nombra parcelas a las que su sitio no llega ({{count}}): {{list}}.",
+                "bindingFix": "Incluye esas parcelas en el sitio o cambia el diseño para que quede dentro.",
+                "bindingFailed": "No se pudo comprobar en qué parcelas entra el sitio de esta propuesta: {{reason}}",
+                "noMintGeometry": "Esta propuesta no tiene geometría de sitio ni de parcelas para acuñar.",
+                "noMintParcels": "Esta propuesta no nombra parcelas ni tiene sitio, así que no puede acuñarse."
             },
             "walletNotConnected": {
                 "message": "No estás conectado con una billetera, por lo que no puedes acuñar propuestas en cadena.",
@@ -2584,6 +2592,21 @@
                 "notAttested": "Ningún miembro de tu lente ha atestado esta cartera como propietaria de una parcela seleccionada.",
                 "attested": "Tu cartera es la propietaria atestada de {{attested}} de {{total}} parcelas seleccionadas.",
                 "deselectOthers": "Ofrece solo tus parcelas: deselecciona {{parcels}}."
+            },
+            "site": {
+                "bound": "Sitio de {{area}} m², parcelas vinculadas: {{count}}. Al publicar se comprueba el vínculo con el catastro completo.",
+                "unbound": "Sitio de {{area}} m² en terreno sin parcelas: ningún propietario puede consentir, así que solo puede ejecutarse con el veredicto de una autoridad.",
+                "binding": "Comprobando en qué parcelas entra el sitio..."
+            },
+            "tolerance": {
+                "label": "Tolerancia de intrusión en parcelas (m)",
+                "help": "Una parcela entra en la propuesta cuando el sitio entra en ella más que este ancho (lineal, no por superficie). En ciudades deja 0: no puedes tomar nada de la parcela del vecino. Úsala solo para errores de medición; máximo 1 m."
+            },
+            "smallIntrusions": {
+                "question": "El sitio entra solo un poco en estas parcelas: {{list}}. Al publicar se incluyen, así que sus propietarios también deben aceptar. Inclúyelas o cancela y cambia el diseño.",
+                "include": "Incluirlas",
+                "change": "Cambiar el diseño",
+                "cancelled": "Publicación cancelada: cambia el diseño para que quede dentro de las parcelas que quieres."
             }
         },
         "unapplyTour": {
@@ -2843,7 +2866,8 @@
                 "sweepLine": "Algoritmo de línea de barrido",
                 "centroidalVoronoi": "Voronoi centroidal",
                 "wasserstein": "Wasserstein",
-                "manual": "Manual"
+                "manual": "Manual",
+                "streetPlots": "Parcelas a lo largo de una calle"
             },
             "algorithmTitle": "Tipo de reparcelación",
             "closeAria": "Cerrar",
@@ -2912,7 +2936,9 @@
                 "lineAnchored": "Anclada en {{count}} puntos — la línea se trazará entre los dos extremos, y en ningún otro sitio.",
                 "lineOneAnchor": "Un anclaje por ahora. Cruza otro lindero, o termina en una esquina existente.",
                 "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
-                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno."
+                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno.",
+                "streetPlotsFailed": "No se pudieron trazar parcelas a lo largo de una calle en este sitio.",
+                "streetPlotsHint": "Parcelas a lo largo de una calle. Gire la calle hacia otro borde o cambie a Manual para editar las parcelas."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -2986,7 +3012,15 @@
             "eraseTooltip": "Borrar este lindero — {{a}} y {{b}} pasan a ser una sola parcela",
             "nodeRemoveMerges": "Al quitarlo, {{joining}} se une a {{keeper}} — {{moved}} m² cambian de manos.",
             "nodeRemoveStraightens": "Al quitarlo, el lindero se endereza — unos {{moved}} m² cruzan al otro lado.",
-            "plotLabel": "parcela {{n}} ({{area}} m²)"
+            "plotLabel": "parcela {{n}} ({{area}} m²)",
+            "noOwnerBalance": "El terreno abierto no tiene propietario: no se debe ni se paga nada.",
+            "openGroundOwner": "Terreno abierto (sin propietario)",
+            "subdivisionTitle": "Parcelación",
+            "turnStreet": "Girar la calle",
+            "turnStreetTitle": "Trazar la calle a lo largo del siguiente borde del sitio",
+            "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
+            "siteUnavailable": "Este sitio no se puede parcelar aquí.",
+            "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta."
         }
     },
     "status": {
@@ -3834,15 +3868,15 @@
             },
             "source": {
                 "short": "Hay datos abiertos",
-                "text": "Aquí existen datos abiertos de parcelas, pero aún no están en la app. Explora el mapa sin parcelas o pide que se añada este lugar."
+                "text": "Aquí existen datos abiertos de parcelas, pero aún no están en la app. Aun así puedes dibujar un sitio y proponer —sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad— o pedir que se añada este lugar."
             },
             "none": {
                 "short": "Sin datos abiertos",
-                "text": "Buscamos y no encontramos datos abiertos de parcelas aquí. Aun así puedes explorar el mapa, sin parcelas."
+                "text": "Buscamos y no encontramos datos abiertos de parcelas aquí. Aun así puedes dibujar un sitio y proponer; sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad."
             },
             "unknown": {
                 "short": "Sin investigar",
-                "text": "Nadie ha revisado todavía este lugar. Aun así puedes explorar el mapa, sin parcelas."
+                "text": "Nadie ha revisado todavía este lugar. Aun así puedes dibujar un sitio y proponer; sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad."
             }
         },
         "popup": {
@@ -3851,7 +3885,7 @@
         },
         "action": {
             "open": "Abrir {{city}}",
-            "explore": "Explorar de todos modos",
+            "explore": "Abrir el mapa aquí",
             "askCity": "Pedir esta ciudad",
             "askArea": "Pedir esta zona"
         },
@@ -3862,10 +3896,10 @@
         },
         "explore": {
             "chip": "Explorar · {{place}}",
-            "banner": "Aún no hay datos de parcelas aquí: puedes echar un vistazo; las propuestas necesitan parcelas.",
+            "banner": "Aquí no hay parcelas: puedes dibujar un sitio y proponer, pero una propuesta solo puede ejecutarse con el veredicto de una autoridad.",
             "worldView": "Vista del mundo",
             "dismiss": "Descartar",
-            "status": "Explorando sin datos de parcelas"
+            "status": "Aquí no hay datos de parcelas: haz clic en el mapa para dibujar un sitio y proponer."
         }
     },
     "mapShell": {
@@ -3918,8 +3952,11 @@
             "tools": "Herramientas",
             "offer": "Ofrecer mi terreno",
             "view3d": "Ver en 3D",
-            "detectBlock": "Detectar bloque"
-        }
+            "detectBlock": "Detectar bloque",
+            "useAsSite": "Usar como sitio"
+        },
+        "groundTitle": "Terreno sin parcela",
+        "groundNote": "sin parcela catastral"
     },
     "selectionTray": {
         "label": "Parcelas seleccionadas",
@@ -3934,11 +3971,14 @@
             "done": "Terminar selección",
             "detectBlock": "Detectar bloque",
             "clearShort": "Borrar",
-            "doneShort": "Listo"
+            "doneShort": "Listo",
+            "useAsSite": "Usar la selección como sitio",
+            "useAsSiteShort": "Sitio"
         }
     },
     "mapSearch": {
         "placeholder": "Buscar lugares, parcelas, propuestas…",
+        "placeholderNoParcels": "Buscar lugares, propuestas…",
         "label": "Buscar en el mapa",
         "open": "Buscar",
         "close": "Cerrar la búsqueda",
@@ -4000,7 +4040,102 @@
             "activity": "Actividad",
             "settings": "Ajustes",
             "parcel": "Parcela",
-            "selection": "Selección"
+            "selection": "Selección",
+            "ground": "Terreno",
+            "site": "Sitio"
         }
+    },
+    "groundMenu": {
+        "label": "Acciones en el terreno",
+        "title": {
+            "bare": "Aquí no hay parcela",
+            "noCadastre": "Terreno abierto"
+        },
+        "facts": {
+            "bare": "Terreno sin catastrar o un hueco entre parcelas: tierra de nadie, que sepamos.",
+            "noCadastre": "Aquí no hay datos de parcelas. Una propuesta solo puede ejecutarse con el veredicto de una autoridad."
+        },
+        "notLoaded": "Las parcelas aún no se han cargado aquí: acerca el mapa o espera a que carguen.",
+        "actions": {
+            "drawSite": "Dibujar un sitio aquí"
+        }
+    },
+    "siteTool": {
+        "commands": {
+            "draw": "Dibujar sitio"
+        },
+        "title": "Sitio",
+        "titleDrawing": "Dibuja un sitio",
+        "hint": {
+            "drawing": "Haz clic para añadir vértices (se ajustan a los bordes de las parcelas; mantén Alt para evitarlo). Haz clic en el primer vértice o pulsa Enter para terminar. Retroceso quita el último vértice, Esc cancela.",
+            "editing": "Arrastra los vértices para cambiar la forma; haz clic en un borde para añadir uno. Después construye en el sitio.",
+            "plots": "Los lotes se cortan a lo largo del borde de fachada (el más largo por defecto). Haz clic en otro borde del sitio para usarlo."
+        },
+        "actions": {
+            "finish": "Terminar sitio",
+            "undoCorner": "Quitar el último vértice",
+            "build": "Construir en este sitio",
+            "redraw": "Volver a dibujar",
+            "cancel": "Cancelar"
+        },
+        "editor": {
+            "vertexTitle": "Arrastra para mover · haz clic en un borde para añadir un vértice",
+            "deleteVertex": "Eliminar este vértice",
+            "undo": "Deshacer (Cmd/Ctrl+Z)"
+        },
+        "binding": {
+            "previewPrefix": "Vista previa",
+            "serverPrefix": "Catastro",
+            "bound": "Parcelas vinculadas ({{count}}):",
+            "more": "+{{count}} más",
+            "noParcels": "No vincula ninguna parcela: solo puede ejecutarse con el veredicto de una autoridad.",
+            "openGround": "Rayado: terreno abierto por el que nadie puede consentir; ejecutarlo requiere el veredicto de una autoridad.",
+            "touched": "Entra {{width}} en {{parcel}}: por debajo de la tolerancia, no queda vinculada.",
+            "smallIntrusion": "Entra {{width}} en {{parcel}}: inclúyela o cambia el diseño.",
+            "include": "Incluirla",
+            "trim": "Recortar el sitio",
+            "previewSkipped": "Demasiadas parcelas alrededor del sitio para una vista previa; esperando al servidor.",
+            "checking": "Comprobando con el catastro…",
+            "serverFailed": "No se pudo comprobar con el servidor: {{reason}}",
+            "serverChecked": "Comprobado con el catastro completo.",
+            "previewOnly": "Vista previa a partir de las parcelas cargadas en el mapa.",
+            "serverNoCadastre": "Confirmado por el servidor: ningún catastro cubre este lugar."
+        },
+        "coverage": {
+            "complete": "completa: todo el sitio está sobre parcelas catastrales",
+            "partial": "parcial: parte del sitio es terreno abierto (sin parcela)",
+            "none": "ninguna: aquí no hay parcelas; todo el sitio es terreno abierto",
+            "unknown": "desconocida: aquí no se pueden comprobar las parcelas",
+            "partialAll": "parcial: todo el sitio es terreno abierto; aquí no hay parcela, aunque el catastro cubre la zona"
+        },
+        "palette": {
+            "readjustNeedsParcels": "La reparcelación trabaja sobre parcelas seleccionadas: selecciónalas en lugar de dibujar un sitio.",
+            "subdivide": "Parcelar",
+            "readjustUnknownCadastre": "Parcelar requiere un catastro que el servidor tenga: no conoce ninguno para este lugar."
+        },
+        "plots": {
+            "summary": "{{tool}}: {{count}} lotes a lo largo de una fachada de {{length}} m.",
+            "continue": "Diseñar en estos lotes",
+            "back": "Atrás",
+            "frontageChosen": "Borde de fachada",
+            "frontagePick": "Haz clic para usar este borde como fachada"
+        },
+        "errors": {
+            "tooFew": "Un sitio necesita al menos tres vértices.",
+            "tooMany": "Un sitio puede tener como máximo 500 vértices.",
+            "selfIntersecting": "El contorno se cruza consigo mismo; mueve un vértice para evitarlo.",
+            "tooSmall": "El sitio es demasiado pequeño.",
+            "reshapeSplit": "Eso dividiría el sitio en dos; edita sus vértices en su lugar.",
+            "mapBusy": "Termina primero la herramienta abierta.",
+            "parcelsUnavailable": "Esas parcelas no están en el mapa.",
+            "plotsUnavailable": "El corte de lotes no está disponible."
+        }
+    },
+    "groundStats": {
+        "noParcels": "Aquí no hay parcelas",
+        "siteAreaValue": "Sitio: {{area}} m²",
+        "openGroundValue": "Terreno abierto: {{area}} m²",
+        "openGroundNote": "Terreno abierto: {{area}} m² de los sitios no tienen parcelas catastrales; las cifras de parcelas cubren solo las parcelas vinculadas.",
+        "grainNoParcels": "Aquí no hay parcelas: estas propuestas están en terreno abierto, así que no hay parcelas resultantes que puntuar."
     }
 }

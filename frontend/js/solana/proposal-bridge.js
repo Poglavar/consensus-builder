@@ -1,6 +1,7 @@
 /**
  * Solana Proposal Chain Bridge
- * Mint, contribute, distribute and cancel proposals on Solana (proposal_nft v2).
+ * Mint, contribute, distribute and cancel proposals on Solana (proposal_nft v3: a proposal may
+ * have an empty parcel list when it carries a site; see frontend/js/proposals/site-hash.js).
  * Owner consent is not here: see acceptance-bridge.js (accept_with_attestations).
  */
 (function () {
@@ -149,7 +150,12 @@
 
         const parcelIds = Array.isArray(options.parcelIds) ? options.parcelIds : [];
         const uniqueParcelIds = [...new Set(parcelIds.map(String).filter(Boolean))];
-        if (uniqueParcelIds.length === 0) throw new Error('No parcel identifiers provided');
+        // v3: the site (options.site, a GeoJSON (Multi)Polygon) and its binding decide site_hash and
+        // open_ground; an empty parcel list is allowed only with a site. An explicit
+        // options.siteHash/openGround pair (already computed) is used as given.
+        const siteArgs = options.siteHash !== undefined
+            ? { siteHash: options.siteHash, openGround: options.openGround === true }
+            : await globalScope.__siteHash.chainSiteArgs({ site: options.site || null, binding: options.binding || null, parcelIds: uniqueParcelIds });
 
         const programId = options.programId || await resolveProposalProgramId();
         if (!programId) throw new Error('ProposalNFT program not configured');
@@ -172,8 +178,9 @@
                     : parseIntegerBigInt(options.ethAmountWei || 0, 'SOL lamports')));
 
         const lensAddresses = (options.lens || []).map(l => typeof l === 'string' ? l : (l?.address || l?.toString?.())).filter(Boolean);
-        // v2 mint_and_fund ends with `verdict_may_execute: bool`. Only an explicit `true` sets it:
-        // a lens member's `executed` verdict may then execute without per-parcel consent.
+        // `verdict_may_execute`: only an explicit `true` sets it. A lens member's `executed` verdict
+        // may then execute a proposal without per-parcel consent, or clear its open ground; without
+        // it a proposal with open ground (or no parcels) can never execute.
         const { proposal: proposalPda, instruction } = globalScope.SolanaAcceptanceClient.buildMintAndFundIx({
             owner: wallet,
             proposalCount: count,
@@ -183,7 +190,9 @@
             imageUri: options.imageURI || '',
             solLamports: solAmount,
             lens: lensAddresses,
-            verdictMayExecute: options.verdictMayExecute === true
+            verdictMayExecute: options.verdictMayExecute === true,
+            siteHash: siteArgs.siteHash,
+            openGround: siteArgs.openGround
         });
 
         const provider = globalScope.solanaWalletManager.getProvider();

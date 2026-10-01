@@ -215,12 +215,26 @@ describe('the explore city (city-config.js)', () => {
         expect(required.filter(key => !explore.has(key))).toEqual([]);
     });
 
-    it('disables every parcel-dependent section', () => {
+    it('disables every parcel-dependent section, and keeps proposing possible', () => {
         const disabled = tokyo.manager.getCityConfig('explore').sidebar.disabledSections;
-        for (const section of ['parcels', 'parcelBlocks', 'buildings', 'roads', 'areaMonitor', 'stations', 'proposals']) {
+        for (const section of ['parcels', 'parcelBlocks', 'buildings', 'roads', 'areaMonitor']) {
             expect(disabled).toContain(section);
         }
-        expect(tokyo.manager.isFeatureEnabled('roadTools')).toBe(false);
+        // A site drawn here has an empty binding (PARCEL-OPTIONAL.md): proposals and stations
+        // need no parcels.
+        expect(disabled).not.toContain('proposals');
+        expect(disabled).not.toContain('stations');
+        // Drawing a road needs no dataset and no parcels: the 'roads' section (Zagreb's road
+        // datasets) is off, road drawing is not.
+        expect(tokyo.manager.isFeatureEnabled('roadTools')).toBe(true);
+        expect(tokyo.manager.isFeatureEnabled('parcelBlocks')).toBe(false);
+    });
+
+    it('keeps road drawing on in cities without Zagreb\'s road datasets', () => {
+        const sibenik = loadCityConfig('?city=sibenik').manager;
+        expect(sibenik.getCurrentCityConfig().sidebar.disabledSections).toContain('roads');
+        expect(sibenik.isFeatureEnabled('roadTools')).toBe(true);
+        expect(loadCityConfig('?city=zg').manager.isFeatureEnabled('roadTools')).toBe(true);
     });
 
     it('is not a city: not listed, not nearest, not stored, its own storage scope', () => {

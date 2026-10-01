@@ -83,6 +83,7 @@ DDL_FILES=(
     routes/city-requests-ddl.sql
     routes/parcels-ddl.sql
     routes/transactions-ddl.sql
+    routes/proposal-site-ddl.sql
     db/agents-ddl.sql
     ens/ens-plan-ddl.sql
     ens/parcel-ens-ddl.sql

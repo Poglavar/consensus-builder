@@ -204,9 +204,14 @@ export function createUrbanGameTheoryTools({
             });
         },
 
-        async mintProposal({ parcelIds, lens, imageUri = '', isConditional = true, confirm } = {}) {
+        // proposal_nft v3: `site` and its server `binding` set site_hash and open_ground (minter.js);
+        // an empty parcel list is allowed only with a site. The binding must be the server's answer
+        // (POST /proposals/binding), never assumed: without it open ground could not be declared.
+        async mintProposal({ parcelIds = [], site = null, binding = null, lens, imageUri = '', isConditional = true, confirm } = {}) {
             requireLive(confirm);
-            if (!Array.isArray(parcelIds) || !parcelIds.length) throw new Error('parcelIds must contain at least one parcel id');
+            if (!Array.isArray(parcelIds)) throw new Error('parcelIds must be an array of parcel ids');
+            if (!parcelIds.length && !site) throw new Error('parcelIds must contain at least one parcel id, or pass the proposal site');
+            if (site && !binding) throw new Error('a site needs its binding from POST /proposals/binding (it decides open_ground)');
             const lensKeys = parseLensList(lens || []);
             if (!lensKeys.length) throw new Error('lens must name at least one lens member key (see ugt_list_attesters)');
             const { keypair, connection } = signer();
@@ -215,7 +220,7 @@ export function createUrbanGameTheoryTools({
                 throw new Error(`lens names only this agent's own key ${self}; a self-lens lets the proposer decide its own proposal`);
             }
             return impl.mintProposal({
-                connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair, parcelIds,
+                connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair, parcelIds, site, binding,
                 isConditional, imageUri, lamports: 0n, lens: lensKeys,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });

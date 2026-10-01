@@ -9,9 +9,19 @@ function handleUrbanRuleMainTypeClick() {
     applyContiguityConstraints();
 }
 
-function applyContiguityConstraints() {
+// The create dialog's ground: a site-first proposal (proposals/dialog-create.js siteContext) is one
+// area when its site is one polygon; otherwise the selected parcels decide.
+function proposalGroundContiguity() {
+    const siteContext = (typeof window !== 'undefined') ? window.pendingProposalSiteContext : null;
+    if (siteContext && siteContext.site && Array.isArray(siteContext.site.coordinates)) {
+        return { contiguous: siteContext.site.type === 'Polygon' || siteContext.site.coordinates.length === 1 };
+    }
     const selection = getCurrentParcelSelectionContext();
-    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.ids) : { contiguous: true };
+    return (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.ids) : { contiguous: true };
+}
+
+function applyContiguityConstraints() {
+    const contiguity = proposalGroundContiguity();
     const isContiguous = contiguity.contiguous;
 
     const disabledMessage = (typeof t === 'function')
@@ -311,8 +321,7 @@ function selectLandUse(key, { skipChecks = false } = {}) {
         return false;
     }
     if (!skipChecks && ['park', 'square', 'lake'].includes(key)) {
-        const selection = getCurrentParcelSelectionContext();
-        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.ids) : { contiguous: true };
+        const contiguity = proposalGroundContiguity();
         if (!contiguity.contiguous) {
             if (typeof showProposalAlertMessage === 'function') showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
             return;

@@ -89,6 +89,14 @@ function declaredCadastreAnchors(parcelIds) {
 
 function requireExactCadastreAnchors(record, action) {
     const values = record?.cadastreParcelIds;
+    // A material record with a site or a footprint of its own may declare no parcel (ground without
+    // parcels, PARCEL-OPTIONAL.md rule 4); the field itself stays mandatory.
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    const depthApi = root && root.__formationDepth;
+    if (Array.isArray(values) && !values.length && depthApi
+        && typeof depthApi.mayHaveEmptyDeclaration === 'function' && depthApi.mayHaveEmptyDeclaration(record)) {
+        return [];
+    }
     if (!Array.isArray(values) || !values.length) {
         throw new Error(`Cannot ${action} proposal: cadastreParcelIds is required.`);
     }
@@ -477,7 +485,9 @@ const proposalStorage = {
         const declaredCadastreIds = owns(raw, 'cadastreParcelIds')
             ? raw.cadastreParcelIds
             : metaProps.cadastreParcelIds;
-        if (!Array.isArray(declaredCadastreIds) || !declaredCadastreIds.length) {
+        // An empty list is a site-first proposal on ground without parcels; it must carry its site.
+        const declaresSite = !!(raw.site || metaProps.site);
+        if (!Array.isArray(declaredCadastreIds) || (!declaredCadastreIds.length && !declaresSite)) {
             throw new Error('Cannot import chain proposal: cadastreParcelIds is required.');
         }
         const chainTokenId = raw.proposalId ?? raw.tokenId ?? (raw.onchain && raw.onchain.proposalId) ?? metaProps.tokenId ?? null;
@@ -1496,6 +1506,11 @@ const proposalStorage = {
         parts.push(`city:${city}`);
         parts.push(`goal:${goal}`);
         parts.push(`parents:${parentIds.join(',')}`);
+        // A site-first proposal on bare ground has no parents, so its ground must be in the seed
+        // too, or two same-parameter designs on different drawn sites collide (only the time
+        // suffix in addProposal kept them apart). Absent on older records: their ids are unchanged.
+        if (proposal.site) parts.push(`site:${serialiseGeometry(proposal.site)}`);
+        if (Number(proposal.toleranceM) > 0) parts.push(`tolerance:${Number(proposal.toleranceM)}`);
 
         // Road / track
         const roadDef = proposal.roadProposal?.definition || null;
@@ -1515,6 +1530,11 @@ const proposalStorage = {
                 // a nested param hashed identically and one silently overwrote the other. For today's
                 // flat params it yields the identical string, so existing ids are unchanged.
                 try { parts.push(`buildingParams:${stableStringify(proposal.buildingProposal.parameters)}`); } catch (_) { }
+            }
+            // The buildings themselves, not only the rule that made them: on bare ground there are
+            // no parents to tell two same-parameter designs apart.
+            if (proposal.buildingProposal.buildingFeature && !proposal.geometry) {
+                parts.push(`buildingGeom:${serialiseGeometry(proposal.buildingProposal.buildingFeature.geometry || proposal.buildingProposal.buildingFeature)}`);
             }
         }
         // Structure (park/square/lake/station)

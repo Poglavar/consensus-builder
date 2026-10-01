@@ -19,6 +19,16 @@
         return (typeof window !== 'undefined' && window.__planYield) ? window.__planYield : null;
     }
 
+    // Site/binding figures (proposals/site-stats.js). Optional: without it the dialog still counts
+    // parcels, it just cannot say how much of the plan stands on open ground.
+    function siteStatsApi() {
+        return (typeof window !== 'undefined' && window.__siteStats) ? window.__siteStats : null;
+    }
+
+    function finiteNumber(value) {
+        return typeof value === 'number' && Number.isFinite(value);
+    }
+
     function formatTemplate(template, values = {}) {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}|\{(\w+)\}/g, (match, k1, k2) => {
@@ -85,7 +95,20 @@
         }
 
         const applied = all.filter(p => p && p.applied === true);
-        const result = api.planYield(applied, assumptions);
+        // Open space as it stands on the map: parks/squares/lakes carved by later roads.
+        const appliedBodies = new Map();
+        ['parks', 'squares', 'lakes'].forEach(name => {
+            (Array.isArray(window[name]) ? window[name] : []).forEach(feature => {
+                const id = feature && feature.properties && feature.properties.proposalId;
+                if (id !== undefined && id !== null && feature.geometry) appliedBodies.set(String(id), feature);
+            });
+        });
+        const openSpaceAreaOf = proposal => {
+            const feature = appliedBodies.get(String(proposal && proposal.proposalId));
+            if (!feature || !window.turf) return null;
+            try { return window.turf.area(feature); } catch (_) { return null; }
+        };
+        const result = api.planYield(applied, { ...assumptions, openSpaceAreaOf });
         const cadastreIds = Array.from(new Set(applied.flatMap(proposal => (
             Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : []
         ))));
@@ -107,16 +130,22 @@
             }
         });
 
+        // Parcel figures are binding metrics: a plan whose proposals bind no cadastral parcel (all
+        // on open ground) has none, and says so with null rather than a count of 0.
+        const noParcels = applied.length > 0 && parcels.bound === false;
+        const ground = siteStatsApi() ? siteStatsApi().planGround(applied) : null;
+
         return {
             unavailable: false,
             proposalsTotal: all.length,
             proposalsCounted: applied.length,
             yield: result,
-            parcelCount: parcels.resulting.length,
-            parcelProduced: parcels.produced.length,
-            parcelConsumed: parcels.consumed.length,
-            parcelMeasuredCount: measuredCount,
-            parcelMeasuredArea: measuredArea
+            parcelCount: noParcels ? null : parcels.resulting.length,
+            parcelProduced: noParcels ? null : parcels.produced.length,
+            parcelConsumed: noParcels ? null : parcels.consumed.length,
+            parcelMeasuredCount: noParcels ? null : measuredCount,
+            parcelMeasuredArea: noParcels ? null : measuredArea,
+            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null
         };
     }
 
@@ -373,7 +402,8 @@
         }
 
         const total = stats.yield.total;
-        const avgParcel = stats.parcelMeasuredCount > 0 ? stats.parcelMeasuredArea / stats.parcelMeasuredCount : null;
+        const noParcels = !finiteNumber(stats.parcelCount);
+        const avgParcel = !noParcels && stats.parcelMeasuredCount > 0 ? stats.parcelMeasuredArea / stats.parcelMeasuredCount : null;
 
         set('scope', tPlanStats(
             'sidebar.proposals.planStats.scope',
@@ -381,7 +411,8 @@
             { counted: formatNumber(stats.proposalsCounted), total: formatNumber(stats.proposalsTotal) }
         ));
 
-        set('resulting-parcels', avgParcel === null
+        if (noParcels) set('resulting-parcels', tPlanStats('groundStats.noParcels', 'No parcels here'));
+        else set('resulting-parcels', avgParcel === null
             ? formatNumber(stats.parcelCount)
             : `${formatNumber(stats.parcelCount)} (${formatNumber(avgParcel)} m²)`);
         set('buildings', `${formatNumber(total.buildings)} (${formatNumber(total.footprintM2)} m²)`);
@@ -403,12 +434,19 @@
                 { n: formatNumber(total.unmeasuredBuildings), total: formatNumber(total.buildings) }
             ));
         }
-        const unmeasuredParcels = stats.parcelCount - stats.parcelMeasuredCount;
+        const unmeasuredParcels = noParcels ? 0 : stats.parcelCount - stats.parcelMeasuredCount;
         if (unmeasuredParcels > 0) {
             notes.push(tPlanStats(
                 'sidebar.proposals.planStats.noteParcelArea',
                 'The average parcel size is over the {{measured}} parcels whose shape is loaded; {{missing}} are counted but not measured.',
                 { measured: formatNumber(stats.parcelMeasuredCount), missing: formatNumber(unmeasuredParcels) }
+            ));
+        }
+        if (finiteNumber(stats.openGroundM2) && stats.openGroundM2 > 0) {
+            notes.push(tPlanStats(
+                'groundStats.openGroundNote',
+                'Open ground: {{area}} m² of the sites has no cadastral parcels; parcel figures cover the bound parcels only.',
+                { area: formatNumber(stats.openGroundM2) }
             ));
         }
         set('notes', notes.join(' '));

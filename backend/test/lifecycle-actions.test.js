@@ -41,14 +41,17 @@ function keyVector(keys) {
     return Buffer.concat([count, ...keys.map(key => new PublicKey(key).toBuffer())]);
 }
 
-// Proposal v2 bytes: v1 prefix, lens, bump, verdict_may_execute, zero padding like the 4096-byte account.
+// Proposal v3 bytes: v1 prefix, lens, bump, verdict_may_execute, site_hash, open_ground,
+// open_ground_cleared, layout_version (3 = a v3 mint, 0 = v1/v2), zero padding like the 4096-byte account.
 function proposalAccount(status, {
-    owner = Keypair.generate().publicKey, parcelIds = [], accepted = [], lens = [], acceptancePossible = true, verdictMayExecute = false
+    owner = Keypair.generate().publicKey, parcelIds = [], accepted = [], lens = [], acceptancePossible = true, verdictMayExecute = false,
+    siteHash = Buffer.alloc(32), openGround = false, openGroundCleared = false, layoutVersion = 3
 } = {}) {
     return Buffer.concat([
         Buffer.from([26, 94, 189, 187, 116, 136, 53, 33]), Buffer.alloc(8), owner.toBuffer(), stringVector(parcelIds),
         Buffer.from([1]), string(''), Buffer.from([acceptancePossible ? 1 : 0, status]), Buffer.alloc(24),
-        stringVector(accepted), keyVector(lens), Buffer.from([254, verdictMayExecute ? 1 : 0]), Buffer.alloc(16)
+        stringVector(accepted), keyVector(lens), Buffer.from([254, verdictMayExecute ? 1 : 0]),
+        Buffer.from(siteHash), Buffer.from([openGround ? 1 : 0, openGroundCleared ? 1 : 0, layoutVersion]), Buffer.alloc(16)
     ]);
 }
 
@@ -134,23 +137,35 @@ describe('owner-only cancellation', () => {
     });
 });
 
-describe('proposal v2 account decoding', () => {
-    it('reads the lens, bump and verdict_may_execute after the v1 prefix', () => {
+describe('proposal v3 account decoding', () => {
+    it('reads the lens, bump, verdict_may_execute and the v3 site fields after the v1 prefix', () => {
         const lens = [Keypair.generate().publicKey.toBase58(), Keypair.generate().publicKey.toBase58()];
         const state = decodeProposalState(proposalAccount(3, { parcelIds: ['A', 'B'], accepted: ['A'], lens, verdictMayExecute: true }));
-        expect(state).toMatchObject({ status: 3, parcelIds: ['A', 'B'], acceptedParcels: ['A'], lens, bump: 254, verdictMayExecute: true });
+        expect(state).toMatchObject({
+            status: 3, parcelIds: ['A', 'B'], acceptedParcels: ['A'], lens, bump: 254, verdictMayExecute: true,
+            siteHash: null, openGround: false, openGroundCleared: false, layoutVersion: 3
+        });
         expect(decodeProposalState(proposalAccount(0, { lens })).verdictMayExecute).toBe(false);
+        expect(decodeProposalState(proposalAccount(0, { lens, layoutVersion: 0 })).layoutVersion).toBe(0);
+        const site = decodeProposalState(proposalAccount(0, { lens, siteHash: Buffer.alloc(32, 7), openGround: true, openGroundCleared: true }));
+        expect(site).toMatchObject({ parcelIds: [], siteHash: '07'.repeat(32), openGround: true, openGroundCleared: true });
     });
 
-    it('agrees with the browser decoder and refuses bytes that end before verdict_may_execute', () => {
+    it('agrees with the browser decoder and refuses bytes that end before the v3 site fields', () => {
         const lens = [Keypair.generate().publicKey.toBase58()];
-        const bytes = proposalAccount(1, { parcelIds: ['HR-1'], accepted: ['HR-1'], lens, verdictMayExecute: true });
+        const bytes = proposalAccount(1, { parcelIds: ['HR-1'], accepted: ['HR-1'], lens, verdictMayExecute: true, siteHash: Buffer.alloc(32, 9), openGround: true });
         const ours = decodeProposalState(bytes);
-        const theirs = browser.readProposalV2(bytes);
-        expect({ lens: ours.lens, accepted: ours.acceptedParcels, v: ours.verdictMayExecute })
-            .toEqual({ lens: theirs.lens, accepted: theirs.acceptedParcels, v: theirs.verdictMayExecute });
-        const truncated = bytes.subarray(0, bytes.length - 17);
-        expect(() => decodeProposalState(truncated)).toThrow(/verdict_may_execute/);
+        const theirs = browser.readProposal(bytes);
+        const pick = p => ({ lens: p.lens, accepted: p.acceptedParcels, v: p.verdictMayExecute, site: p.siteHash, open: p.openGround,
+            cleared: p.openGroundCleared, layout: p.layoutVersion });
+        expect(pick(ours)).toEqual(pick(theirs));
+        expect(ours.layoutVersion).toBe(3);
+        // Ending right before layout_version reads it as 0 (absent), in both decoders.
+        const noLayout = bytes.subarray(0, bytes.length - 17);
+        expect(decodeProposalState(noLayout).layoutVersion).toBe(0);
+        expect(browser.readProposal(noLayout).layoutVersion).toBe(0);
+        const truncated = bytes.subarray(0, bytes.length - 18);
+        expect(() => decodeProposalState(truncated)).toThrow(/site fields/);
     });
 });
 
@@ -277,12 +292,15 @@ describe('accept_with_attestations', () => {
 });
 
 describe('settle_with_verdict', () => {
-    function verdictChain({ status = 0, verdict = 'expired', verdictMayExecute = false, inLens = true } = {}) {
+    function verdictChain({ status = 0, verdict = 'expired', verdictMayExecute = false, inLens = true, parcelIds = ['HR-1'], accepted = [], openGround = false } = {}) {
         const chain = fakeChain();
         const member = Keypair.generate().publicKey.toBase58();
         const proposal = Keypair.generate().publicKey;
         const attestation = Keypair.generate().publicKey;
-        chain.put(proposal, proposalAccount(status, { parcelIds: ['HR-1'], lens: inLens ? [member] : [], verdictMayExecute }));
+        chain.put(proposal, proposalAccount(status, {
+            parcelIds, accepted, lens: inLens ? [member] : [], verdictMayExecute,
+            siteHash: openGround ? Buffer.alloc(32, 1) : Buffer.alloc(32), openGround
+        }));
         chain.putSas(attestation, attestationAccount('verdict', { member, fields: {
             proposalAccount: proposal.toBase58(), verdict, evidenceRef: 'agent-retire', sourceObservedAt: 1780000000
         } }));
@@ -351,6 +369,26 @@ describe('settle_with_verdict', () => {
         const permitted = verdictChain({ verdict: 'executed', verdictMayExecute: true });
         const ok = await settleWithVerdict({ connection: permitted.chain.connection, submitterKeypair, proposalAccount: permitted.proposal, verdictAttestation: permitted.attestation, sendAndConfirm: vi.fn(async () => 'tx') });
         expect(ok).toMatchObject({ status: 'executed', signature: 'tx' });
+    });
+
+    it('v3: refuses an executed verdict on an empty binding without verdict_may_execute (no 0 == 0 shortcut)', async () => {
+        const sendAndConfirm = vi.fn();
+        const empty = verdictChain({ verdict: 'executed', parcelIds: [], openGround: true });
+        await expect(settleWithVerdict({ connection: empty.chain.connection, submitterKeypair: Keypair.generate(), proposalAccount: empty.proposal, verdictAttestation: empty.attestation, sendAndConfirm }))
+            .rejects.toThrow(/cannot skip per-parcel consent/);
+        expect(sendAndConfirm).not.toHaveBeenCalled();
+        const permitted = verdictChain({ verdict: 'executed', parcelIds: [], openGround: true, verdictMayExecute: true });
+        expect(await settleWithVerdict({ connection: permitted.chain.connection, submitterKeypair: Keypair.generate(), proposalAccount: permitted.proposal, verdictAttestation: permitted.attestation, sendAndConfirm: vi.fn(async () => 'tx') }))
+            .toMatchObject({ status: 'executed', openGroundCleared: true });
+    });
+
+    it('v3: on open ground with parcels an executed verdict only clears the open ground until consent completes', async () => {
+        const waiting = verdictChain({ verdict: 'executed', parcelIds: ['HR-1', 'HR-2'], accepted: ['HR-1'], openGround: true, verdictMayExecute: true });
+        expect(await settleWithVerdict({ connection: waiting.chain.connection, submitterKeypair: Keypair.generate(), proposalAccount: waiting.proposal, verdictAttestation: waiting.attestation, sendAndConfirm: vi.fn(async () => 'tx') }))
+            .toMatchObject({ status: 'active', verdict: 'executed', openGroundCleared: true });
+        const complete = verdictChain({ verdict: 'executed', parcelIds: ['HR-1'], accepted: ['HR-1'], openGround: true, verdictMayExecute: true });
+        expect(await settleWithVerdict({ connection: complete.chain.connection, submitterKeypair: Keypair.generate(), proposalAccount: complete.proposal, verdictAttestation: complete.attestation, sendAndConfirm: vi.fn(async () => 'tx') }))
+            .toMatchObject({ status: 'executed', openGroundCleared: true });
     });
 
     it('expires by asking the lifecycle member for a verdict at the policy time, then settling it', async () => {

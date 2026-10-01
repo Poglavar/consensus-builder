@@ -23,7 +23,7 @@ import {
 } from '@solana/kit';
 import { decodePaymentRequiredHeader, decodePaymentResponseHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 import { appendPaymentIdentifierToExtensions } from '@x402/extensions/payment-identifier';
-import { createMockPool } from './helpers/mock-pool.js';
+import { createMockPool, defaultBindingAnswer } from './helpers/mock-pool.js';
 import { validProposalBody, insertResult, updateResult } from './helpers/fixtures.js';
 import { setupProposalsRoute } from '../routes/proposals.js';
 import { setupAgentProposalsRoute, AGENT_PROPOSALS_PATH } from '../routes/agent-proposals.js';
@@ -203,6 +203,9 @@ beforeEach(() => {
     pool.query = (sql, params, session = 0) => {
         const lockAnswer = advisoryLockAnswer(sql, params, session);
         if (lockAnswer) return Promise.resolve(lockAnswer);
+        // The cadastre lookup of the binding precheck is not part of the payment/write sequence.
+        const bindingAnswer = defaultBindingAnswer(sql, params);
+        if (bindingAnswer) return Promise.resolve(bindingAnswer);
         sequence.push('db');
         if (sharedLockBlocksInsert(sql, params, session)) return Promise.resolve({ rows: [], rowCount: 0 });
         if (sql.includes('WHERE agent_payment_id = $1')) {
@@ -249,7 +252,7 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — unpaid`, () => {
         expect(discovery.info.input.body.cadastreParcelIds).toEqual(['HR-335550-1234/1']);
         expect(discovery.info.output.example).toMatchObject({ id: 1342, screenshotUrl: null });
         const discoveredBody = discovery.schema.properties.input.properties.body;
-        expect(discoveredBody.required).toContain('cadastreParcelIds');
+        expect(discoveredBody.anyOf.map(branch => branch.required[0])).toEqual(['cadastreParcelIds', 'site']);
         expect(discoveredBody.properties.goal).toBeTruthy();
         expect(discoveredBody.properties.structureProposal.required).toEqual(['kind', 'geometry']);
         expect(discoveredBody.properties.ownershipFlow.items.required).toEqual(['parcelId', 'cededM2', 'destination']);
@@ -493,6 +496,8 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
         pool.query = async (sql, params, session = 0) => {
             const lockAnswer = advisoryLockAnswer(sql, params, session);
             if (lockAnswer) return lockAnswer;
+            const bindingAnswer = defaultBindingAnswer(sql, params);
+            if (bindingAnswer) return bindingAnswer;
             sequence.push('db');
             if (sql.includes('WHERE agent_payment_id = $1')) return { rows: [], rowCount: 0 };
             if (sql.includes(PROPOSAL_ID_CHECK)) return { rows: [], rowCount: 0 };

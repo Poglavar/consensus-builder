@@ -651,9 +651,9 @@
             const subtitle = el('p', 'world-popup__subtitle', { text: subtitleParts.join(' · ') });
             const texts = {
                 live: 'Parcels, proposals and 3D are ready here.',
-                source: 'Open parcel data exists here, but it is not in the app yet. Explore the map without parcels, or ask for this place to be added.',
-                none: 'We looked and found no open parcel data here. You can still explore the map, without parcels.',
-                unknown: 'Nobody has checked this place for open parcel data yet. You can still explore the map, without parcels.'
+                source: 'Open parcel data exists here, but it is not in the app yet. You can still draw a site and propose here — without parcels, a proposal executes only through an authority\'s verdict — or ask for this place to be added.',
+                none: 'We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.',
+                unknown: 'Nobody has checked this place for open parcel data yet. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.'
             };
             const text = el('p', 'world-popup__text', {
                 text: place.kind === 'ocean'
@@ -673,7 +673,7 @@
                 open.addEventListener('click', () => { if (typeof opts.onOpenCity === 'function') opts.onOpenCity(liveCityId, point); });
                 actions.appendChild(open);
             } else {
-                const explore = el('button', 'world-btn' + (tier === 'source' ? '' : ' world-btn--primary'), { type: 'button', text: t('world.action.explore', 'Explore anyway') });
+                const explore = el('button', 'world-btn' + (tier === 'source' ? '' : ' world-btn--primary'), { type: 'button', text: t('world.action.explore', 'Open the map here') });
                 explore.addEventListener('click', () => { if (typeof opts.onExplore === 'function') opts.onExplore(point); });
                 if (tier === 'source') {
                     const labels = {

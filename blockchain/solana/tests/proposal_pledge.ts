@@ -23,8 +23,10 @@ import {
     findProposalPDA,
     findParcelPDA,
     initializeProposalCounter,
+    NO_SITE,
+    testSiteHash,
 } from "./helpers.ts";
-import { LensMember, attestAndAccept, createLensMember, ensureParcelAnchor } from "./sas-mock.ts";
+import { LensMember, attestAndAccept, attestVerdict, createLensMember, ensureParcelAnchor, settleWithVerdict } from "./sas-mock.ts";
 
 const COMMITMENT_ACTIVE = 0;
 const COMMITMENT_FULFILLED = 1;
@@ -118,7 +120,7 @@ describe("proposal_pledge", () => {
         const count = (await proposalProgram.account.proposalCounter.fetch(counterPDA)).count as any;
         const [proposal] = findProposalPDA(proposalProgram.programId, count.toNumber());
         await proposalProgram.methods
-            .mintAndFund([parcelId], false, "ipfs://pledge-test", new anchor.BN(0), [creator.publicKey], false)
+            .mintAndFund([parcelId], false, "ipfs://pledge-test", new anchor.BN(0), [creator.publicKey], false, NO_SITE, false)
             .accounts({ proposal, proposalCounter: counterPDA, owner: creator.publicKey, systemProgram: SystemProgram.programId } as any)
             .signers([creator])
             .rpc();
@@ -533,6 +535,49 @@ describe("proposal_pledge", () => {
                 expect(await balance(expiredDonor.usdc)).to.equal(Number(fixtures.expiredDonation));
                 expect(await balance(new PublicKey(fixtures.expiredVault))).to.equal(0);
                 await expectFailure(expiredRefund, "AlreadyRefunded");
+            });
+        });
+
+        // v3: a proposal with no parcels (a site on open ground) settles only by verdict; the escrow
+        // follows the status exactly as for a parcel proposal.
+        describe("v3 empty-binding proposals", () => {
+            async function emptyBinding(label: string, verdictMayExecute: boolean): Promise<PublicKey> {
+                const count = (await proposalProgram.account.proposalCounter.fetch(counterPDA)).count as any;
+                const [proposal] = findProposalPDA(proposalProgram.programId, count.toNumber());
+                await proposalProgram.methods
+                    .mintAndFund([], false, "ipfs://pledge-test", new anchor.BN(0), [creator.publicKey], verdictMayExecute, testSiteHash(label), true)
+                    .accounts({ proposal, proposalCounter: counterPDA, owner: creator.publicKey, systemProgram: SystemProgram.programId } as any)
+                    .signers([creator])
+                    .rpc();
+                return proposal;
+            }
+
+            async function submitVerdict(proposal: PublicKey, verdict: "executed" | "expired") {
+                const attestation = await attestVerdict(provider, creatorLens, { proposalAccount: proposal, verdict });
+                return settleWithVerdict(proposalProgram, { proposal, verdict: attestation, credential: creatorLens.credential });
+            }
+
+            it("releases donations only after an executed verdict on a proposal minted with verdict_may_execute", async () => {
+                const proposal = await emptyBinding("plg-empty-yes", true);
+                await createEscrow(proposal);
+                await donate(donorA, proposal, "v3-yes", 1_000_000);
+                await expectFailure(() => release(proposal, attacker), "ProposalNotExecuted");
+                await submitVerdict(proposal, "executed");
+                const before = await balance(beneficiaryUsdc);
+                await release(proposal, attacker);
+                expect((await balance(beneficiaryUsdc)) - before).to.equal(1_000_000);
+            });
+
+            it("refuses the executed verdict without verdict_may_execute; expiry refunds the donor", async () => {
+                const proposal = await emptyBinding("plg-empty-no", false);
+                await createEscrow(proposal);
+                await donate(donorB, proposal, "v3-no", 1_000_000);
+                await expectFailure(() => submitVerdict(proposal, "executed"), "VerdictCannotSkipConsent");
+                await expectFailure(() => release(proposal, attacker), "ProposalNotExecuted");
+                await submitVerdict(proposal, "expired");
+                const before = await balance(donorB.usdc);
+                await refund(donorB, proposal, "v3-no");
+                expect((await balance(donorB.usdc)) - before).to.equal(1_000_000);
             });
         });
 

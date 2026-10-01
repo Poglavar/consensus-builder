@@ -10,7 +10,9 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`parcel.<id>`).
-    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'history', 'tools', 'offer', 'view3d', 'detectBlock']);
+    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'history', 'tools', 'offer', 'view3d', 'detectBlock', 'useAsSite']);
+    // What stays available on a piece of open ground (no cadastral parcel under it).
+    const GROUND_ACTIONS = new Set(['details', 'view3d', 'useAsSite']);
 
     // The build palette (parcels/ui/proposal-actions.js renderParcelProposalActions) renders — and
     // with it the Ownership "Offer" tool — whenever there is a parcel context: a non-empty
@@ -28,6 +30,9 @@
         const f = facts || {};
         const hasParcel = typeof f.parcelId === 'string' ? f.parcelId !== '' : (typeof f.parcelId === 'number');
         if (!hasParcel) return false;
+        // A piece on open ground is not a cadastral parcel: nothing that acts on parcels (an offer,
+        // a parcel history, a build palette over a parcel selection, a block seed) applies to it.
+        if (f.isGround === true && !GROUND_ACTIONS.has(action)) return false;
         switch (action) {
             case 'propose':
             case 'details':
@@ -45,6 +50,9 @@
                 });
             case 'view3d':
                 return f.can3d === true;
+            case 'useAsSite':
+                // The parcel (or the selection) as an editable site; needs the site tool.
+                return f.siteToolAvailable === true;
             case 'detectBlock':
                 // A block is grown over non-corridor parcels; a road parcel cannot seed one.
                 return f.blocksEnabled === true && f.isRoad !== true;

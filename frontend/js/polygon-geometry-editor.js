@@ -557,7 +557,10 @@
             const rawCoordinate = latLng
                 ? [latLng.lng, latLng.lat]
                 : this.ring[vertexIndex];
-            const coordinate = snapCoordinateToBoundary(rawCoordinate, this.options.boundary, this.turf);
+            // A caller-supplied snap (the site tool snaps to parcel edges) replaces the boundary one.
+            const coordinate = typeof this.options.snapCoordinate === 'function'
+                ? (this.options.snapCoordinate(rawCoordinate) || rawCoordinate)
+                : snapCoordinateToBoundary(rawCoordinate, this.options.boundary, this.turf);
             if (coordinate) this.ring[vertexIndex] = coordinate;
             const constrainedRing = constrainRingToBoundary(this.ring, this.options.boundary, this.turf);
             if (constrainedRing) this.ring = constrainedRing;

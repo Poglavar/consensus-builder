@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 // helpers onto globalThis before requiring the adapters — otherwise draftFromProposal throws.
 Object.assign(globalThis, require('../../frontend/js/corridor-profile.js'));
 globalThis.turf = require('@turf/turf');
+const turf = globalThis.turf;
 
 const {
     CREATABLE_PROPOSAL_GOALS,
@@ -463,6 +464,67 @@ describe('reparcellization adapter', () => {
     });
 });
 
+// A subdivision (PARCEL-OPTIONAL.md phase 4) is a readjustment whose pool is its SITE: the bound
+// parcels' part and the open ground. Its plots must tile the site, whatever pool the plan carries,
+// and its editor opens on the site with the binding's parcels, never on a live selection.
+describe('subdivision (readjustment pooled from a site)', () => {
+    const subdivision = require('../../frontend/js/proposals/subdivision.js');
+    const rect = (x0, y0, x1, y1) => ({
+        type: 'Polygon',
+        coordinates: [[[15.876 + x0 * 1e-4, 43.7537 + y0 * 1e-4], [15.876 + x1 * 1e-4, 43.7537 + y0 * 1e-4],
+            [15.876 + x1 * 1e-4, 43.7537 + y1 * 1e-4], [15.876 + x0 * 1e-4, 43.7537 + y1 * 1e-4], [15.876 + x0 * 1e-4, 43.7537 + y0 * 1e-4]]]
+    });
+    const site = rect(0, 0, 12, 6);
+    const plot = geometry => ({ geometry, ownerKey: 'open-ground', owners: [{ ownerKey: 'open-ground', share: 1 }], source: 'street-plots' });
+    const layout = subdivision.streetPlotsLayout(site, { turf: globalThis.turf });
+    const record = (polygons, poolGeometry = site) => ({
+        proposalId: 'sub-1',
+        city: 'sibenik',
+        goal: 'reparcellization',
+        title: 'Subdivide the hole',
+        cadastreParcelIds: ['HR-330264-1'],
+        site: { type: 'MultiPolygon', coordinates: [site.coordinates] },
+        binding: { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', source: 'server' },
+        reparcellization: { algorithm: 'street-plots', poolSource: 'site', poolGeometry, polygons }
+    });
+
+    it('accepts plots and a street that tile the site exactly', () => {
+        const draft = draftFor(reparcellizationAdapter, record([...layout.plots, layout.street].map(plot)));
+        expect(reparcellizationAdapter.validate(draft)).toMatchObject({ valid: true, errors: [] });
+    });
+
+    it('refuses plots that leave the open part of the site uncovered, even when the plan\'s pool agrees with them', () => {
+        // Only the plots over the parcel half: the plan's own pool is that half, the site is not.
+        const parcelHalf = rect(0, 0, 6, 6);
+        const halfPlots = layout.plots.concat([layout.street])
+            .map(geometry => turf.intersect(turf.feature(geometry), turf.feature(parcelHalf)))
+            .filter(Boolean).map(feature => plot(feature.geometry));
+        const draft = draftFor(reparcellizationAdapter, record(halfPlots, parcelHalf));
+        const result = reparcellizationAdapter.validate(draft);
+        expect(result.valid).toBe(false);
+        expect(result.errors.map(error => error.code)).toEqual(expect.arrayContaining(['coverage-gap', 'pool-coverage-mismatch']));
+        expect(result.errors.find(error => error.code === 'pool-coverage-mismatch').message).toContain('open ground');
+    });
+
+    it('opens the editor on the site with the binding\'s parcels as the owned pool', async () => {
+        const calls = [];
+        globalThis.openReparcellizationModal = async options => { calls.push(options); return true; };
+        try {
+            const draft = draftFor(reparcellizationAdapter, record([...layout.plots, layout.street].map(plot)));
+            draft.fields.binding = { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial' };
+            await expect(reparcellizationAdapter.openDesignEditor(draft)).resolves.toBe(true);
+            expect(calls).toHaveLength(1);
+            expect(calls[0].sitePool.boundParcelIds).toEqual(['HR-330264-1']);
+            expect(calls[0].sitePool.site).toEqual({ type: 'MultiPolygon', coordinates: [site.coordinates] });
+            expect(calls[0].algorithm).toBe('street-plots');
+            expect(globalThis.pendingReparcellizationPlan.poolGeometry).toEqual(calls[0].sitePool.site);
+        } finally {
+            delete globalThis.openReparcellizationModal;
+            delete globalThis.pendingReparcellizationPlan;
+        }
+    });
+});
+
 // A readjustment's inputs are the parcels it says it pooled. The editor opens on that record, and
 // what the map happens to have loaded or selected must never redefine it — when it did, an applied
 // plan handed the editor its own CHILD parcels as inputs, the pool became the outline of the
@@ -536,5 +598,68 @@ describe('reparcellization inputs survive the trip into the design editor', () =
     it('still refuses a plan that has neither polygons nor parcels to work from', async () => {
         const draft = draftFor(reparcellizationAdapter, proposal({ polygons: [] }));
         await expect(openWith(draft, [])).rejects.toThrow(/not available/i);
+    });
+});
+
+// Site-first drafts (PARCEL-OPTIONAL.md, phase 2): the draft carries the site; with no live
+// selection the declaration is the site's binding (possibly empty on bare ground), synthetic design
+// parcels of a site never reach it, and material goals need a site where parcel acts need parcels.
+describe('site-first drafts', () => {
+    const SITE = {
+        type: 'MultiPolygon',
+        coordinates: [[[[15.97, 45.8], [15.9705, 45.8], [15.9705, 45.8004], [15.97, 45.8004], [15.97, 45.8]]]]
+    };
+    const POLYGON = { type: 'Polygon', coordinates: SITE.coordinates[0] };
+    const siteDraft = (adapter, fields, editorPayload) => ({
+        id: 'draft-site', cityId: 'zagreb', goal: adapter.key, adapterKey: adapter.key,
+        sourceSnapshot: null,
+        fields: { name: 'Pocket park', description: 'x', selectedParcelIds: [], ...fields },
+        editorPayload
+    });
+
+    it('serializes a park on bare ground with its site and an empty declaration', () => {
+        const adapter = buildStructureAdapter('park');
+        const draft = siteDraft(adapter, { site: SITE }, { structureProposal: { kind: 'park', geometry: POLYGON } });
+        expect(adapter.validate(draft)).toMatchObject({ valid: true });
+        const record = adapter.serializeProposal(draft);
+        expect(record.site).toEqual(SITE);
+        expect(record.cadastreParcelIds).toEqual([]);
+        expect(record).not.toHaveProperty('toleranceM');
+    });
+
+    it('declares the preview binding of a site over parcels, and carries the tolerance', () => {
+        const adapter = buildStructureAdapter('square');
+        const binding = { parcels: [{ parcelId: 'HR-1-2' }, { parcelId: 'HR-1-1' }], coverage: 'complete', source: 'client-preview' };
+        const record = adapter.serializeProposal(siteDraft(adapter, { site: SITE, binding, toleranceM: 0.05 },
+            { structureProposal: { kind: 'square', geometry: POLYGON } }));
+        expect(record.cadastreParcelIds).toEqual(['HR-1-1', 'HR-1-2']);
+        expect(record.toleranceM).toBe(0.05);
+        expect(record.binding.source).toBe('client-preview');
+    });
+
+    it('keeps a site\'s synthetic design parcels out of the declaration', () => {
+        const adapter = registry.get('parcelBased');
+        const plot = { type: 'Feature', properties: {}, geometry: POLYGON };
+        const draft = siteDraft(adapter, { site: SITE, selectedParcelIds: ['site-plot:abc:1', 'site-plot:abc:2'] },
+            { typology: 'parcelBased', context: { buildings: [plot], parameters: {} } });
+        const previousFabric = globalThis.LiveParcelFabric;
+        globalThis.LiveParcelFabric = { cadastreIdsForParcelIds: () => { throw new Error('synthetic ids reached the fabric'); } };
+        try {
+            const record = adapter.serializeProposal(draft);
+            expect(record.cadastreParcelIds).toEqual([]);
+            expect(record.site).toEqual(SITE);
+        } finally {
+            if (previousFabric === undefined) delete globalThis.LiveParcelFabric;
+            else globalThis.LiveParcelFabric = previousFabric;
+        }
+    });
+
+    it('asks a material draft for a site and a parcel act for parcels', () => {
+        const park = buildStructureAdapter('park');
+        const noGround = park.validate(siteDraft(park, {}, {}));
+        expect(noGround.errors.map(error => error.code)).toEqual(expect.arrayContaining(['missing-site']));
+        const transfer = registry.get('ownership-transfer');
+        const act = transfer.validate({ ...siteDraft(transfer, { site: SITE }, {}), goal: 'ownership-transfer' });
+        expect(act.errors.map(error => error.code)).toContain('missing-parcels');
     });
 });

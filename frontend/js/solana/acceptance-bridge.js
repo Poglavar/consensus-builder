@@ -79,7 +79,7 @@
     }
 
     async function readProposal(client, connection, proposal) {
-        const parsed = await client.fetchProposalV2(connection, proposal);
+        const parsed = await client.fetchProposal(connection, proposal);
         if (!parsed) throw codedError('Proposal account not found or not a proposal_nft v2 account', 'PROPOSAL_NOT_FOUND');
         return parsed;
     }
@@ -184,7 +184,7 @@
         const sent = await send(connection, provider, wallet, cluster, [built.instruction], options);
         const [tally, after] = await Promise.all([
             client.fetchConsentTally(connection, { proposal, parcelId, programId: proposalProgram }),
-            client.fetchProposalV2(connection, proposal)
+            client.fetchProposal(connection, proposal)
         ]);
         log(`accepted ${parcelId} on ${proposal}`, { signature: sent.transactionHash, tally });
         return {
@@ -220,7 +220,7 @@
         const verdictRecord = client.getVerdictRecordPda(proposal, onChain.address, proposalProgram)[0].toBase58();
         const sent = await send(connection, provider, wallet, cluster, [instruction], options);
         const [after, record] = await Promise.all([
-            client.fetchProposalV2(connection, proposal),
+            client.fetchProposal(connection, proposal),
             client.fetchVerdictRecord(connection, { proposal, verdictAttestation: onChain.address, programId: proposalProgram })
         ]);
         log(`settled ${proposal} with verdict ${onChain.fields.verdict}; verdict record ${verdictRecord}`, {

@@ -688,3 +688,7 @@ Canonical names for follow-up discussion.
 | **handoff frame** | the globe's last frame fading over the map after a city reload |
 | **"At this spot" stack** | the drill panel (right dock) listing what lies under a click |
 | **parcel panel** | right-dock `#parcel-info-panel` (Info / Proposals = build palette / Tools tabs) |
+| **ground menu** | popover at a click on ground with no parcel (phones: bottom-sheet peek): Draw a site here, Road, Track, stations (`#ground-menu`, PARCEL-OPTIONAL.md) |
+| **site tool** / **site panel** | drawing and editing a proposal's site (`#site-panel`, top-left; phones: bottom sheet): area, binding preview, Build on this site |
+| **binding preview** | in the site panel and on the map: bound parcels (blue), small intrusions (amber, with Include it / Trim the site), open ground (hatched), coverage label |
+| **frontage edge** | the site edge row/detached plots are cut along (thick purple); click another edge to choose it |

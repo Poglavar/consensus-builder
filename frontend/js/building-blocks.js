@@ -28,7 +28,10 @@ function blockifyParcelId(parcel) {
 
 function blockifyFeatureForParcel(parcel) {
     const id = blockifyParcelId(parcel);
-    return id ? window.LiveParcelFabric?.get?.(id) || null : null;
+    if (!id) return null;
+    // A site on bare ground designs on synthetic parcels (js/site-drawing.js).
+    if (typeof window.resolveDesignParcelFeature === 'function') return window.resolveDesignParcelFeature(id) || null;
+    return window.LiveParcelFabric?.get?.(id) || null;
 }
 
 function blockifyFeaturesForBlock(block) {
@@ -2584,9 +2587,9 @@ function watchBlockifyMapUntilFitted() {
 
 // Function to generate building in the modal only
 // Reduce an outline's vertex count (turf.simplify / Douglas–Peucker, tolerance in metres) and clip it
-// inside `parcel` so no edge ends up outside the parcel. The clip only runs when the outline actually
-// pokes out, so a fully-inside simplified outline keeps its low vertex count. Used by both the
-// parametric builder and the manual (freeform) builder.
+// inside `parcel` so no edge ends up outside the parcel. Clipping an outline that is already inside
+// returns it unchanged, so a fully-inside simplified outline keeps its low vertex count. Used by both
+// the parametric builder and the manual (freeform) builder.
 function simplifyAndClipOutline(feature, simplifyM, parcel) {
     let outline = feature;
     if (simplifyM > 0 && outline && outline.geometry) {
@@ -2599,15 +2602,17 @@ function simplifyAndClipOutline(feature, simplifyM, parcel) {
             console.warn('Outline simplification failed', err);
         }
     }
+    // Always clip. turf.booleanWithin only tests vertices, so a simplification chord across an
+    // outward bend of the parcel edge (every vertex inside, the edge 2 cm outside) read as "inside"
+    // and was published reaching into the neighbour. Intersecting an outline that IS inside returns
+    // it unchanged; site-clip also strips the zero-width spikes clipping leaves on shared edges.
     if (parcel && parcel.geometry && outline && outline.geometry) {
         try {
-            let inside = false;
-            try { inside = turf.booleanWithin(outline, parcel); } catch (_) { inside = false; }
-            if (!inside) {
-                const clipped = turf.intersect(outline, parcel);
-                if (clipped && clipped.geometry && turf.area(clipped) > 0) {
-                    outline = toSingleLargestPolygon(clipped) || outline;
-                }
+            const clipped = (typeof __siteClip !== 'undefined' && __siteClip)
+                ? __siteClip.clipToSite(outline, parcel, { turf })
+                : turf.intersect(outline, parcel);
+            if (clipped && clipped.geometry && turf.area(clipped) > 0) {
+                outline = toSingleLargestPolygon(clipped) || outline;
             }
         } catch (err) {
             console.warn('Clip-to-parcel failed', err);
@@ -4214,7 +4219,10 @@ function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null }) 
         return;
     }
     blockifySeedState = initialState || null;
-    const features = ids.map(id => window.LiveParcelFabric?.get?.(id)).filter(Boolean);
+    const resolve = typeof window.resolveDesignParcelFeature === 'function'
+        ? window.resolveDesignParcelFeature
+        : id => window.LiveParcelFabric?.get?.(id);
+    const features = ids.map(id => resolve(id)).filter(Boolean);
     if (features.length !== ids.length) {
         updateStatus('Could not resolve parcel data for the selected parcels.');
         return;

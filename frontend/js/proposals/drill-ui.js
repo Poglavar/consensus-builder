@@ -587,7 +587,15 @@
     function onMapClick(e) {
         if (!e || !e.latlng || interactionBlocked()) return;
         const stack = stackAt(e.latlng);
-        if (!stack.length) { hidePanel(); return; }
+        if (!stack.length) {
+            hidePanel();
+            // Nothing here at all: the ground menu decides whether this is bare ground (it opens)
+            // or cadastre that has not loaded yet (it does not) — ui/ground-menu.js.
+            if (global.GroundMenu && typeof global.GroundMenu.openForEmptyClick === 'function') {
+                global.GroundMenu.openForEmptyClick(e.latlng);
+            }
+            return;
+        }
         const top = stack[0];
         if (top.kind === 'proposal') selectProposalEntry(top, null);
         else selectParcelEntry(top);

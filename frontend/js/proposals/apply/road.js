@@ -59,6 +59,92 @@
         return null;
     },
 
+    // The ground a formation keeps once the corridors applied AFTER it in the formation order have
+    // taken theirs: one rule for every formed piece a road can cross — a park/square/lake body and
+    // each plot of a land readjustment or subdivision, on cadastral and on open ground alike (the
+    // road tool's "Build through": the road cuts through and the rest stays as it is). On cadastral
+    // ground the arrangement already cut the parcels under the road, so the formation would no
+    // longer find its ground there; on open ground nothing is arranged, so without this the road
+    // and the formation would both cover the ribbon. Every replay asks this, so the result is a
+    // function of the plan (records + order), never of apply timing: the record stays as authored,
+    // only the applied pieces are carved, and unapplying the road gives the ground back. An EARLIER
+    // road is not carved here — a newer formation over it is still refused.
+    //
+    // Takes the same geometry the corridor cut consumes (plan-order footprintOf, as
+    // _appliedCorridorTakes), clipped through the arrangement's snapped clipper; crumbs below
+    // MIN_REAL_OVERLAP_M2 are dropped. `geometries` is a list (one per piece); returns
+    // { geometries, corridorIds } — each entry the carved geometry, or null when the corridors take
+    // all of it; the input list unchanged and [] when no later corridor crosses any of them.
+    _groundAfterLaterCorridors(record, geometries, options = {}) {
+        const list = Array.isArray(geometries) ? geometries : [];
+        const unchanged = { geometries: list, corridorIds: [] };
+        const turfRef = (typeof turf !== 'undefined') ? turf : null;
+        const root = (typeof window !== 'undefined') ? window : globalThis;
+        const order = root.__planOrder;
+        const arrangement = root.__parcelArrangement;
+        if (!turfRef || !list.length || !record || !order || typeof order.compareFormationOrder !== 'function') return unchanged;
+        const clip = (operation, a, b) => (arrangement && typeof arrangement.clip === 'function')
+            ? arrangement.clip(operation, a, b)
+            : turfRef[operation](a, b);
+        const store = options?._parcelMutation?.proposals
+            || (typeof proposalStorage !== 'undefined' ? proposalStorage : null);
+        const all = store && typeof store.peekAllProposals === 'function'
+            ? store.peekAllProposals()
+            : (store && typeof store.getAllProposals === 'function' ? store.getAllProposals() : []);
+        const selfKey = String(record.proposalId ?? '');
+        const claims = [];
+        for (const p of all) {
+            if (!p || String(p.proposalId) === selfKey) continue;
+            if (!(p.roadProposal && p.roadProposal.definition)) continue;
+            if (typeof isProposalCurrentlyApplied === 'function' && !isProposalCurrentlyApplied(p)) continue;
+            if (order.compareFormationOrder(p, record) <= 0) continue;
+            let claim = null;
+            try {
+                const footprint = typeof order.footprintOf === 'function' ? order.footprintOf(p) : null;
+                claim = footprint && footprint.geometry ? footprint.geometry : this._takingFootprintOf(p);
+            } catch (_) { claim = this._takingFootprintOf(p); }
+            if (!claim) continue;
+            let box = null;
+            try { box = turfRef.bbox(claim); } catch (_) { box = null; }
+            claims.push({ id: String(p.proposalId), feature: { type: 'Feature', properties: {}, geometry: claim }, box });
+        }
+        if (!claims.length) return unchanged;
+        const area = feature => { try { return turfRef.area(feature) || 0; } catch (_) { return 0; } };
+        const disjoint = (a, b) => !!a && !!b && (a[0] > b[2] || b[0] > a[2] || a[1] > b[3] || b[1] > a[3]);
+        const corridorIds = new Set();
+        const carved = list.map(geometry => {
+            if (!geometry || !/Polygon/.test(String(geometry.type || ''))) return geometry;
+            let body = { type: 'Feature', properties: {}, geometry };
+            let cut = false;
+            for (const claim of claims) {
+                let box = null;
+                try { box = turfRef.bbox(body); } catch (_) { box = null; }
+                if (disjoint(box, claim.box)) continue;
+                let overlapM2 = 0;
+                try {
+                    const hit = clip('intersect', body, claim.feature);
+                    overlapM2 = hit ? area(hit) : 0;
+                } catch (_) { overlapM2 = 0; }
+                if (overlapM2 < MIN_REAL_OVERLAP_M2) continue;
+                corridorIds.add(claim.id);
+                cut = true;
+                const rest = clip('difference', body, claim.feature);
+                if (!rest || !rest.geometry || !(area(rest) >= MIN_REAL_OVERLAP_M2)) return null;
+                body = { type: 'Feature', properties: {}, geometry: rest.geometry };
+            }
+            if (!cut) return geometry;
+            // Drop the clipper's sub-noise crumbs so the piece is only real ground.
+            const polygons = body.geometry.type === 'MultiPolygon'
+                ? body.geometry.coordinates
+                : [body.geometry.coordinates];
+            const kept = polygons.filter(coordinates => area({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } }) >= MIN_REAL_OVERLAP_M2);
+            if (!kept.length) return null;
+            return kept.length === 1 ? { type: 'Polygon', coordinates: kept[0] } : { type: 'MultiPolygon', coordinates: kept };
+        });
+        if (!corridorIds.size) return unchanged;
+        return { geometries: carved, corridorIds: Array.from(corridorIds) };
+    },
+
     // A road, once placed, IS a parcel, and nothing else may be built on it. Not "may not cut it
     // in two" — may not stand on it at all: a square laid across a street, a building overhanging
     // the carriageway, a park swallowing a junction are all the same mistake, and the fabric has no
@@ -72,6 +158,8 @@
     //
     // Roads still take from everything else; this is the one direction that is closed. Returns
     // { proposal, overlapM2 } for the first applied road the taking would stand on, else null.
+    // A road applied AFTER a structure is not "placed" for it: replay carves that road's ground out
+    // of the formation first (_groundAfterLaterCorridors), so only earlier roads remain here.
     _appliedRoadOverlappedByTaking(takenGeometry, excludeProposalId, options = {}) {
         try {
             const turfRef = (typeof turf !== 'undefined') ? turf : null;

@@ -696,6 +696,11 @@ button.status-log-message {
     gap: 8px;
 }
 
+/* A metric with nothing to report (open ground on a purely cadastral road) is left out. */
+.road-metrics-grid .metric-group[hidden] {
+    display: none;
+}
+
 /* The label yields first when the box gets tight (it wraps); the value never shrinks, so a
    number like "243.006 m²" is never cut in half. */
 .road-metrics-grid .metric-group > .metric-label {

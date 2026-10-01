@@ -139,12 +139,29 @@
         // last saw rather than an intermediate drag frame.
         historyCtl: null,
         // Set for the duration of an open, so a second click cannot start a second editor.
-        opening: false
+        opening: false,
+        // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is a drawn site, partly or wholly
+        // open ground. { site, boundParcelIds, pool } — pool is proposals/subdivision.js sitePool():
+        // the bound parcels' parts (their owners contribute) and the open ground (no owner).
+        sitePool: null,
+        // Frontage edge of the "plots along a street" layout (null = the site's longest edge).
+        streetFrontageIndex: null
     };
+
+    function subdivisionApi() {
+        return window.__subdivision || null;
+    }
+
+    function isNoOwnerEntry(entry) {
+        const api = subdivisionApi();
+        return !!(entry && (entry.noOwner || (api && api.isOpenGroundOwnerKey(entry.ownerKey))));
+    }
 
     // Pseudo-owner for land assigned to public use (roads, parks, etc.). Rendered
     // white so it reads as "not an owner"; excluded from owner cash accounting.
     const PUBLIC_LAND_KEY = 'public-land';
+    // Open ground (no owner) in a subdivision: a pale sand, distinct from public land's white.
+    const OPEN_GROUND_COLOR = '#e8dcc0';
     function getPublicLandOwner() {
         return {
             ownerKey: PUBLIC_LAND_KEY,
@@ -227,7 +244,14 @@
     }
 
     function getAlgorithmOptions() {
-        return [
+        // "Plots along a street" (subdivision.js streetPlotsLayout) is offered on a site pool: the
+        // quick layout of bare ground. The sweep line and manual tools stay available beside it.
+        const streetPlots = state.sitePool ? [{
+            key: 'street-plots',
+            label: t('reparcellization.modal.algorithms.streetPlots', 'Plots along a street'),
+            disabled: false
+        }] : [];
+        return streetPlots.concat([
             {
                 key: 'sweep-line',
                 label: t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm'),
@@ -238,7 +262,7 @@
                 label: t('reparcellization.modal.algorithms.manual', 'Manual'),
                 disabled: false
             }
-        ];
+        ]);
     }
 
     function getAlgorithmOptionByKey(key) {
@@ -413,6 +437,8 @@
         state.oldPlotsListEl = null;
         state.nodeEditWasActive = false;
         state.poolFromOutputs = false;
+        state.sitePool = null;
+        state.streetFrontageIndex = null;
         state.nodeEdit.active = false;
         state.nodeEdit.topology = null;
         state.nodeEdit.boundaryIndex = null;
@@ -440,7 +466,10 @@
             algorithm: algorithmLabel,
             parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount }
         };
-        const titleText = t('reparcellization.modal.title', 'Reparcellization');
+        const titleKey = state.sitePool ? 'reparcellization.modal.subdivisionTitle' : 'reparcellization.modal.title';
+        const titleText = state.sitePool
+            ? t('reparcellization.modal.subdivisionTitle', 'Subdivision')
+            : t('reparcellization.modal.title', 'Reparcellization');
         const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', subtitleParams);
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
@@ -465,6 +494,7 @@
                                 </label>
                                 <button type="button" class="btn-icon reparcel-assign-btn" data-reparcel-assign aria-pressed="false" data-i18n-key="reparcellization.modal.assignOwners" data-i18n-attr="title" title="${assignOwnersLabel}">&#x1F464;</button>
                                 <button type="button" class="btn reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
+                                ${state.sitePool ? `<button type="button" class="btn reparcel-street-turn-btn" data-reparcel-street-turn title="${escapeHtml(t('reparcellization.modal.turnStreetTitle', 'Run the street along the next edge of the site'))}">${escapeHtml(t('reparcellization.modal.turnStreet', 'Turn the street'))}</button>` : ''}
                                 <span class="reparcel-tools-spacer"></span>
                             </div>
                             <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
@@ -497,7 +527,7 @@
             <div class="reparcel-modal" role="dialog" aria-modal="true">
                 <div class="reparcel-header">
                     <div class="reparcel-header__text">
-                        <h2 data-i18n-key="reparcellization.modal.title">${titleText}</h2>
+                        <h2 data-i18n-key="${titleKey}">${titleText}</h2>
                         <p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
                     </div>
                     <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" data-i18n-key="reparcellization.modal.closeAria" data-i18n-attr="aria-label" aria-label="${closeLabel}">&times;</button>
@@ -633,7 +663,7 @@
                 if (!option || option.disabled) return;
                 state.algorithm = option.key;
                 state.subtitleData.algorithmLabel = option.label;
-                updateSubtitleWithOwners(state.ownerShares.length);
+                updateSubtitleWithOwners(state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length);
                 // The sweep orientation point only belongs to sweep-line mode.
                 if (option.key !== 'sweep-line') {
                     destroySweepOrientation();
@@ -643,6 +673,7 @@
                     cancelDraw();
                 }
                 updateDrawToolButtons();
+                if (state.streetTurnBtn) state.streetTurnBtn.disabled = option.key !== 'street-plots';
                 // Manual means the NODE/EDGE system, not the polygon tool. It used to arm
                 // drawing on entry, which made "draw a plot" look like the only manual way to
                 // work and left boundary editing unreachable. Draw-plot and split-with-line are
@@ -652,6 +683,12 @@
                     toggleNodeEditing(option.key === 'manual');
                 }).catch(() => { });
             });
+        }
+
+        state.streetTurnBtn = overlay.querySelector('[data-reparcel-street-turn]');
+        if (state.streetTurnBtn) {
+            state.streetTurnBtn.disabled = state.algorithm !== 'street-plots';
+            state.streetTurnBtn.addEventListener('click', turnStreet);
         }
 
         const shuffleBtn = overlay.querySelector('[data-reparcel-shuffle]');
@@ -770,19 +807,22 @@
     // after the public-land contribution ratio, what they've been assigned, and
     // the cash balance (+ owner pays for surplus land, − owner is compensated).
     function computeOwnerLedger(entry) {
+        // Open ground has no owner: nothing is owed or paid (subdivision.js ledgerOf, balance null).
+        if (isNoOwnerEntry(entry) && subdivisionApi()) {
+            return subdivisionApi().ledgerOf(entry, {
+                basis: ledgerUsesMoney() ? 'value' : 'area',
+                poolUnitValue: state.poolUnitValue,
+                contributionRatio: state.contributionRatio,
+                assignedArea: assignedAreaOf(entry.ownerKey)
+            });
+        }
         const useMoney = ledgerUsesMoney();
         const unit = useMoney ? state.poolUnitValue : 1;
         const contributed = useMoney
             ? (Number.isFinite(entry.value) ? entry.value : (entry.area || 0) * unit)
             : (entry.area || 0);
         const entitled = contributed * (state.contributionRatio || 1);
-        let assignedArea = 0;
-        for (const slice of state.slices) {
-            if (!Array.isArray(slice.owners) || !slice.owners.length) continue;
-            const match = slice.owners.find(o => o.ownerKey === entry.ownerKey);
-            if (!match) continue;
-            assignedArea += computeFeatureArea(sliceToFeature(slice)) * (match.share || 0);
-        }
+        const assignedArea = assignedAreaOf(entry.ownerKey);
         const assigned = assignedArea * unit;
         return {
             contributed,
@@ -793,14 +833,27 @@
         };
     }
 
+    function assignedAreaOf(ownerKey) {
+        let assignedArea = 0;
+        for (const slice of state.slices) {
+            if (!Array.isArray(slice.owners) || !slice.owners.length) continue;
+            const match = slice.owners.find(o => o.ownerKey === ownerKey);
+            if (!match) continue;
+            assignedArea += computeFeatureArea(sliceToFeature(slice)) * (match.share || 0);
+        }
+        return assignedArea;
+    }
+
     // Default cash offer for an owner: the shortfall to compensate when they were
     // assigned less than their entitlement (negative balance), otherwise nothing.
     function defaultCashOffer(ledger) {
+        if (ledger.noOwner) return null;
         return ledger.cashBalance < 0 ? -ledger.cashBalance : 0;
     }
 
     // Cash offer for an owner: the user's edited override if any, else the default.
     function getCashOffer(ownerKey, ledger) {
+        if (ledger && ledger.noOwner) return null;
         if (Object.prototype.hasOwnProperty.call(state.cashOfferOverrides, ownerKey)) {
             return state.cashOfferOverrides[ownerKey];
         }
@@ -810,13 +863,19 @@
     function computeTotalCashOffer() {
         let total = 0;
         for (const entry of state.ownerShares) {
-            total += getCashOffer(entry.ownerKey, computeOwnerLedger(entry));
+            if (isNoOwnerEntry(entry)) continue;
+            total += getCashOffer(entry.ownerKey, computeOwnerLedger(entry)) || 0;
         }
         return total;
     }
 
     function updateCashTotalDisplay() {
         if (!state.cashTotalEl) return;
+        // A pool with no owner (a subdivision of bare ground) has nobody to pay or compensate.
+        if (!state.ownerShares.some(entry => !isNoOwnerEntry(entry))) {
+            state.cashTotalEl.textContent = '';
+            return;
+        }
         const total = computeTotalCashOffer();
         state.cashTotalEl.textContent = t(
             'reparcellization.modal.totalCashOffer',
@@ -908,6 +967,19 @@
                 const color = safePlanColor(entry.color, pickOwnerColor(entry.ownerKey, index));
                 entry.color = color;
                 const ledger = computeOwnerLedger(entry);
+                if (ledger.noOwner) {
+                    // Open ground: pooled and assigned area, no balance and no cash (nobody to pay).
+                    const tr = document.createElement('tr');
+                    tr.className = 'reparcel-ledger-row--no-owner';
+                    tr.innerHTML = `
+                    <td>${ownerLegendCellHtml(entry, color)}</td>
+                    <td class="area-cell">${formatArea(ledger.contributed)}</td>
+                    <td class="area-cell">${formatArea(ledger.assignedArea)}</td>
+                    <td class="area-cell bal-even" title="${escapeHtml(t('reparcellization.modal.noOwnerBalance', 'Open ground has no owner: nothing is owed or paid.'))}">—</td>
+                    <td class="cash-offer-cell">—</td>`;
+                    tbody.appendChild(tr);
+                    return;
+                }
                 // Balance sign: + owner receives surplus land and pays, − owner is compensated.
                 const balClass = Math.abs(ledger.cashBalance) < Math.max(1, ledger.entitled * 0.005)
                     ? 'bal-even'
@@ -1333,7 +1405,8 @@
                     geometry: JSON.parse(JSON.stringify(polygon.geometry)),
                     owners: normalizePlotOwners({ ...polygon, ownerKey, displayName, color })
                         .map(owner => ({ ...owner, color: safePlanColor(owner.color, color) })),
-                    source: polygon.source || 'manual'
+                    source: polygon.source || 'manual',
+                    ...(polygon.use === 'street' ? { use: 'street' } : {})
                 };
             });
     }
@@ -3026,6 +3099,48 @@
     // A draggable point on the map sets the direction the strip cut-lines point
     // toward. Bearing 0 (point due north of centroid) == the default vertical cuts.
 
+    // "Plots along a street" on a site pool: a street (public land) parallel to the frontage edge
+    // and plots on either side, each given to the contributor whose ground it mostly stands on —
+    // a bound parcel's owner, or open ground (no owner).
+    function computeStreetPlotSlices() {
+        const api = subdivisionApi();
+        if (!api || !state.sitePool || !state.superParcel) return [];
+        let layout = null;
+        try {
+            layout = api.streetPlotsLayout(state.superParcel.geometry, {
+                frontageEdgeIndex: Number.isInteger(state.streetFrontageIndex) ? state.streetFrontageIndex : undefined
+            });
+        } catch (error) {
+            console.warn('[reparcellization] street layout failed', error);
+            return [];
+        }
+        state.streetFrontageIndex = layout.frontageEdgeIndex;
+        const ownerByKey = new Map(state.ownerShares.map(entry => [entry.ownerKey, entry]));
+        const slices = [];
+        layout.plots.forEach(geometry => {
+            const key = api.ownerKeyByGround(geometry, state.sitePool.pool, state.ownerShares);
+            const owner = key ? ownerByKey.get(key) : null;
+            slices.push(makePlotFromOwners(geometry, owner ? [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }] : [], 'street-plots'));
+        });
+        if (layout.street) {
+            const publicOwner = getPublicLandOwner();
+            const street = makePlotFromOwners(layout.street, [{ ...publicOwner, share: 1 }], 'street');
+            street.use = 'street';
+            slices.push(street);
+        }
+        return slices;
+    }
+
+    function turnStreet() {
+        if (state.algorithm !== 'street-plots' || !state.superParcel || !window.__sitePlots) return;
+        const edges = window.__sitePlots.frontageEdges(state.superParcel.geometry);
+        if (!edges.length) return;
+        const current = Number.isInteger(state.streetFrontageIndex) ? state.streetFrontageIndex : -1;
+        state.streetFrontageIndex = edges[(edges.findIndex(edge => edge.index === current) + 1) % edges.length].index;
+        pushHistory();
+        refreshPreview().catch(error => console.warn('[reparcellization] turning the street failed', error));
+    }
+
     function getSweepBearing() {
         if (!state.sweepHandle || !state.superParcel) return 0;
         const c = getSuperParcelCentroidLngLat(state.superParcel);
@@ -3040,29 +3155,18 @@
 
     // Slice value-proportional strips oriented toward the sweep point: rotate the
     // pool so that direction becomes vertical, run the standard vertical sweep,
-    // then rotate the resulting slices back.
+    // then rotate the resulting slices back. The rotation is affine in the local
+    // metre frame (reparcellization-slice.js sliceAlongBearing), so the slices'
+    // outer edges land back on the pool's own edges instead of millimetres outside.
     function computeSweepSlices() {
         if (!state.superParcel || !state.ownerShares.length) return [];
         const bearing = getSweepBearing();
-        if (!bearing || typeof turf.transformRotate !== 'function') {
-            return sliceWithSweepLine(state.superParcel, state.ownerShares);
-        }
         const pivot = getSuperParcelCentroidLngLat(state.superParcel);
-        if (!pivot) return sliceWithSweepLine(state.superParcel, state.ownerShares);
-        const pivotPt = turf.point(pivot);
-        let rotated = null;
-        try {
-            rotated = turf.transformRotate(JSON.parse(JSON.stringify(state.superParcel)), -bearing, { pivot: pivotPt });
-        } catch (_) {
-            return sliceWithSweepLine(state.superParcel, state.ownerShares);
-        }
-        const slices = sliceWithSweepLine(rotated, state.ownerShares);
-        return slices.map(s => {
-            let geom = s.geometry;
-            try {
-                geom = turf.transformRotate(turf.feature(s.geometry), bearing, { pivot: pivotPt }).geometry;
-            } catch (_) { /* keep rotated-frame geometry as fallback */ }
-            return Object.assign({}, s, { geometry: geom });
+        if (!bearing || !pivot) return sliceWithSweepLine(state.superParcel, state.ownerShares);
+        return window.ReparcellizationSlice.sliceAlongBearing(state.superParcel, state.ownerShares, bearing, {
+            turf: (typeof turf !== 'undefined' ? turf : undefined),
+            computeFeatureArea,
+            pivot
         });
     }
 
@@ -3477,6 +3581,13 @@
             // not always the boundary. Persisting the pool prevents a later edit from resurrecting
             // those outside remainders as thick-red-outline slivers.
             poolGeometry: JSON.parse(JSON.stringify(state.superParcel.geometry)),
+            // A subdivision's pool is its site (bound parcels' part + open ground): the editor and
+            // the coverage checks reopen it from the site, never from a parcel selection.
+            ...(state.sitePool ? {
+                poolSource: 'site',
+                openGroundM2: Math.round(state.sitePool.pool.openGroundM2 * 100) / 100,
+                ...(Number.isInteger(state.streetFrontageIndex) ? { streetFrontageIndex: state.streetFrontageIndex } : {})
+            } : {}),
             totalArea: state.totalArea,
             // Land-readjustment accounting metadata so downstream views/audits can
             // reconstruct entitlements and cash balances without re-deriving them.
@@ -3492,6 +3603,7 @@
                 return {
                     ownerKey: entry.ownerKey,
                     displayName: entry.displayName,
+                    ...(ledger.noOwner ? { noOwner: true } : {}),
                     percent: entry.percent,
                     color: entry.color,
                     contributedArea: entry.area,
@@ -3509,6 +3621,7 @@
                 percent: slice.percent,
                 color: slice.color,
                 source: slice.source || 'manual',
+                ...(slice.use === 'street' ? { use: 'street' } : {}),
                 area: computeFeatureArea(sliceToFeature(slice)),
                 geometry: slice.geometry,
                 owners: Array.isArray(slice.owners) && slice.owners.length
@@ -3614,7 +3727,48 @@
         return ids.join('+');
     }
 
+    // Owner shares of a subdivision's site pool: each bound parcel's owners contribute the part of
+    // the parcel INSIDE the site (not the whole parcel), the open ground contributes its area with
+    // no owner. Measured by area (subdivision.js poolShares: open ground has no known value).
+    async function buildSitePoolShares() {
+        const api = subdivisionApi();
+        const pool = state.sitePool && state.sitePool.pool;
+        if (!api || !pool) return [];
+        const byOwner = new Map();
+        for (const part of pool.parts) {
+            let slots = [];
+            if (typeof ensureParcelOwnerSlots === 'function') {
+                try { slots = await ensureParcelOwnerSlots(part.parcelId); } catch (error) {
+                    console.warn('[reparcellization] owner slots unavailable for', part.parcelId, error);
+                }
+            }
+            if (!Array.isArray(slots) || !slots.length) {
+                slots = [{ key: `parcel:${part.parcelId}:synthetic-owner`, displayName: t('reparcellization.modal.syntheticOwner', 'Owner of {{parcel}}', { parcel: part.parcelId }), shareText: '1/1' }];
+            }
+            normalizeOwnerSlots(slots).forEach(({ slot, fraction }) => {
+                const fallbackOwnerName = t('reparcellization.modal.syntheticOwner', 'Owner of {{parcel}}', { parcel: part.parcelId });
+                const { ownerKey, displayName } = ownerIdentityForSlot(slot, part.parcelId, fallbackOwnerName);
+                const entry = byOwner.get(ownerKey) || { ownerKey, displayName, area: 0, value: null, parcelIds: [] };
+                entry.area += part.areaM2 * fraction;
+                if (!entry.parcelIds.includes(part.parcelId)) entry.parcelIds.push(part.parcelId);
+                byOwner.set(ownerKey, entry);
+            });
+        }
+        const result = api.poolShares(Array.from(byOwner.values()), {
+            openGroundM2: pool.openGroundM2,
+            openGroundLabel: t('reparcellization.modal.openGroundOwner', 'Open ground (no owner)')
+        });
+        state.contributionBasis = result.basis;
+        state.totalValue = result.totalValue;
+        state.poolUnitValue = result.poolUnitValue;
+        return result.shares.map((entry, index) => ({
+            ...entry,
+            color: entry.noOwner ? OPEN_GROUND_COLOR : pickOwnerColor(entry.ownerKey, index)
+        }));
+    }
+
     async function buildOwnerShares(selection) {
+        if (state.sitePool) return buildSitePoolShares();
         const result = new Map();
         const parcelFeatures = liveSelectionFeatures(selection);
         let totalArea = 0;
@@ -3740,13 +3894,14 @@
         );
         ensureCommitAvailability(false);
         state.ownerShares = await buildOwnerShares(state.selection);
-        const realOwnerCount = state.ownerShares.length;
+        const realOwnerCount = state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length;
         // A single owner can still readjust: the implicit second party is PUBLIC LAND (the land
         // the proposal cedes to public use, or plots the city would sell on later). Open with a
         // half/half split — the sweep handle and plot editing take it from there. Contribution
         // accounting is untouched: the owner contributed everything, public land nothing, so the
         // balance column shows exactly what the ceded half is worth.
-        if (state.ownerShares.length === 1) {
+        // A subdivision already has its second party (open ground; public land is assignable).
+        if (!state.sitePool && state.ownerShares.length === 1) {
             state.ownerShares[0].percent = 0.5;
             state.ownerShares.push({
                 ...getPublicLandOwner(),
@@ -3790,7 +3945,25 @@
             }
         }
 
-        if (state.algorithm === 'sweep-line') {
+        if (state.algorithm === 'street-plots') {
+            state.slices = computeStreetPlotSlices();
+            if (!state.slices.length) {
+                setStatus(
+                    t('reparcellization.modal.status.streetPlotsFailed', 'Could not lay out plots along a street on this site.'),
+                    'error',
+                    'reparcellization.modal.status.streetPlotsFailed'
+                );
+                updateLegend(state.ownerShares);
+                drawPreview();
+                updateCommitState();
+                return;
+            }
+            setStatus(
+                t('reparcellization.modal.status.streetPlotsHint', 'Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.'),
+                'info',
+                'reparcellization.modal.status.streetPlotsHint'
+            );
+        } else if (state.algorithm === 'sweep-line') {
             initSweepOrientation();
             state.slices = computeSweepSlices();
             if (!state.slices.length) {
@@ -3928,11 +4101,115 @@
         }
     }
 
+    // A pending plan pooled from a site (plan.poolSource 'site'): its site is the saved pool, its
+    // bound parcels the plan's own list or else the design draft's binding/declaration. The plan's
+    // saved open-ground area guards the fallback (buildSitePool).
+    function sitePoolOfPendingPlan() {
+        const plan = window.pendingReparcellizationPlan;
+        if (!plan || plan.poolSource !== 'site' || !plan.poolGeometry) return null;
+        let ids = Array.isArray(plan.parcelIds) ? plan.parcelIds.map(String) : null;
+        if (!ids || !ids.length) {
+            const draft = typeof window.getActiveProposalDesignDraft === 'function' ? window.getActiveProposalDesignDraft() : null;
+            const fields = (draft && draft.fields) || {};
+            const bound = fields.binding && Array.isArray(fields.binding.parcels)
+                ? fields.binding.parcels.map(hit => String(hit && hit.parcelId || '')).filter(Boolean) : [];
+            ids = bound.length ? bound : (Array.isArray(fields.cadastreParcelIds) ? fields.cadastreParcelIds.map(String) : []);
+        }
+        return {
+            site: plan.poolGeometry,
+            boundParcelIds: Array.from(new Set(ids)),
+            expectedOpenGroundM2: Number.isFinite(Number(plan.openGroundM2)) ? Number(plan.openGroundM2) : null
+        };
+    }
+
+    // A subdivision's pool (PARCEL-OPTIONAL.md phase 4): the drawn site, split into the bound
+    // parcels' parts (cadastral geometry from the repository — the same source the open-ground
+    // host is derived from at apply) and the open ground. Every bound parcel must resolve: a
+    // missing one would be counted as open ground, i.e. land with no owner, which it is not.
+    async function buildSitePool(sitePool) {
+        const api = subdivisionApi();
+        const site = sitePool && sitePool.site;
+        if (!api || !site || !/Polygon/.test(String(site.type || ''))) return null;
+        const boundIds = (sitePool.boundParcelIds || []).map(String);
+        const resolved = boundIds.length ? await resolveInputParcelFeatures(boundIds) : { features: [], missing: [] };
+        if (resolved.missing.length) {
+            console.warn('[reparcellization] subdivision: bound parcels not available', resolved.missing);
+            return { error: 'missing', missing: resolved.missing };
+        }
+        const parcels = resolved.features.map(feature => ({
+            id: String(feature.properties && (feature.properties.parcelId || feature.properties.id) || ''),
+            geometry: feature.geometry
+        }));
+        // Authoring mirrors apply (apply/parcels.js): ground another proposal formed on open ground
+        // is spoken for, so a subdivision over it would never apply.
+        const fabric = window.LiveParcelFabric;
+        const ground = window.__openGround;
+        const order = window.__planOrder;
+        if (fabric && typeof fabric.queryBounds === 'function' && ground && order && typeof order.intersectionArea === 'function') {
+            const siteFeature = { type: 'Feature', properties: {}, geometry: site };
+            const holders = new Set();
+            fabric.queryBounds(ground.bboxOf(site))
+                .filter(feature => ground.groundIdsOf(feature).length && feature.properties && feature.properties.producedByProposalId)
+                .filter(feature => Number(order.intersectionArea(siteFeature, feature)) >= (Number(order.MIN_INTERSECTION_M2) || 0.25))
+                .forEach(feature => holders.add(String(feature.properties.producedByProposalId)));
+            if (holders.size) {
+                const names = Array.from(holders).map(id => {
+                    const record = window.proposalStorage && typeof window.proposalStorage.getProposal === 'function'
+                        ? window.proposalStorage.getProposal(id) : null;
+                    return (record && (record.title || record.name)) || id;
+                });
+                return { error: 'taken', names };
+            }
+        }
+        const pool = api.sitePool(site, parcels);
+        // The plan saved its open ground. Finding MORE now means bound parcels are missing from the
+        // inputs: their ground would be counted as ownerless, so refuse rather than open on it.
+        const expected = sitePool.expectedOpenGroundM2;
+        if (typeof expected === 'number' && Number.isFinite(expected)
+            && pool.openGroundM2 > expected + Math.max(1, expected * 0.01)) {
+            console.warn('[reparcellization] subdivision: more open ground than the plan saved — bound parcels missing',
+                { saved: expected, now: Math.round(pool.openGroundM2), boundParcelIds: boundIds });
+            return { error: 'unavailable' };
+        }
+        console.debug(`[${new Date().toISOString()}] [reparcellization] subdivision pool`, {
+            siteM2: Math.round(pool.totalAreaM2), boundParcels: pool.parts.length, openGroundM2: Math.round(pool.openGroundM2)
+        });
+        return {
+            site: JSON.parse(JSON.stringify(site)),
+            boundParcelIds: boundIds,
+            pool
+        };
+    }
+
     async function buildReparcellizationModal(options = {}) {
         let selection = (typeof getCurrentParcelSelectionContext === 'function')
             ? getCurrentParcelSelectionContext()
             : null;
         let planPool = null;
+        state.sitePool = null;
+        state.streetFrontageIndex = null;
+
+        // Every opener of a subdivision lands here: the draft adapter passes `sitePool`; the create
+        // dialog's Edit only has the pending plan, whose pool IS the site.
+        const sitePoolRequest = options.sitePool || sitePoolOfPendingPlan();
+        if (sitePoolRequest) {
+            const built = await buildSitePool(sitePoolRequest);
+            if (!built || built.error) {
+                const message = built && built.error === 'missing'
+                    ? t('reparcellization.modal.siteParcelsMissing', 'The parcels under this site could not be loaded: {{ids}}.', { ids: built.missing.join(', ') })
+                    : (built && built.error === 'taken'
+                        ? t('reparcellization.modal.siteGroundTaken', 'This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.', { names: built.names.map(name => `"${name}"`).join(', ') })
+                        : t('reparcellization.modal.siteUnavailable', 'This site cannot be subdivided here.'));
+                if (typeof updateStatus === 'function') updateStatus(message);
+                try { if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 8000, 'warning'); } catch (_) { }
+                return false;
+            }
+            state.sitePool = built;
+            state.streetFrontageIndex = Number.isInteger(window.pendingReparcellizationPlan && window.pendingReparcellizationPlan.streetFrontageIndex)
+                ? window.pendingReparcellizationPlan.streetFrontageIndex : null;
+            selection = { ids: built.boundParcelIds.slice(), source: 'cadastre' };
+            planPool = { type: 'Feature', properties: { parcelIds: built.boundParcelIds.slice() }, geometry: built.pool.pool };
+        }
 
         // Reopening a SAVED plan: the inputs are the parcels the plan DECLARES, full stop.
         //
@@ -3950,7 +4227,7 @@
             : ((window.pendingReparcellizationPlan && Array.isArray(window.pendingReparcellizationPlan.polygons))
                 ? window.pendingReparcellizationPlan.polygons
                 : null);
-        if (savedPolygons && savedPolygons.length) {
+        if (!state.sitePool && savedPolygons && savedPolygons.length) {
             const planIds = declaredPlanParcelIds(selection);
             const resolved = planIds.length ? await resolveInputParcelFeatures(planIds) : { features: [], missing: [] };
             const savedPool = options.poolGeometry
@@ -4042,10 +4319,17 @@
         // selections. ownershipMode is kept only as metadata on the saved plan.
         state.ownershipMode = 'multiple';
         state.cashOfferOverrides = {};
-        state.algorithm = options.algorithm || 'sweep-line';
+        state.algorithm = options.algorithm || (state.sitePool ? 'street-plots' : 'sweep-line');
         state.initialPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
             ? JSON.parse(JSON.stringify(options.initialPolygons))
             : null;
+        // A subdivision reopened without explicit polygons (the create dialog's Edit) restores the
+        // pending plan's own plots and algorithm instead of re-running one over the site.
+        const pendingSitePlan = state.sitePool && !state.initialPolygons ? window.pendingReparcellizationPlan : null;
+        if (pendingSitePlan && Array.isArray(pendingSitePlan.polygons) && pendingSitePlan.polygons.length) {
+            state.initialPolygons = JSON.parse(JSON.stringify(pendingSitePlan.polygons));
+            if (pendingSitePlan.algorithm) state.algorithm = pendingSitePlan.algorithm;
+        }
         // A saved plan whose algorithm this editor does not know is hand-authored ground, not an
         // algorithm's output — an imported UPU carries its own provenance ('upu-plan'), and an
         // unknown key left the chooser with NOTHING selected and no editable mode. Manual is what

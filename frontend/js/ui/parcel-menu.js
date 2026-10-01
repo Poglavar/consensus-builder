@@ -95,11 +95,16 @@
         const props = (feature && feature.properties) || {};
         const multi = win.multiParcelSelection;
         let historyIds = [];
+        let groundIds = [];
         try {
             const fabric = win.LiveParcelFabric;
             if (fabric && typeof fabric.explicitCadastreIds === 'function') historyIds = fabric.explicitCadastreIds(feature);
+            if (fabric && typeof fabric.explicitGroundIds === 'function') groundIds = fabric.explicitGroundIds(feature);
         } catch (_) { historyIds = []; }
-        if (!historyIds.length) historyIds = [id];
+        // A piece on open ground only (PARCEL-OPTIONAL.md phase 3) is no cadastral parcel: it has no
+        // parcel history to show and must never be sent to the backend as a parcel id.
+        const isGround = !historyIds.length && groundIds.length > 0;
+        if (!historyIds.length && !isGround) historyIds = [id];
         const ownership = model.ownershipFacts({
             ownershipType: props.ownershipType,
             ownershipSummary: props.ownership_summary,
@@ -113,8 +118,10 @@
             multiSelectActive: !!(multi && multi.isActive),
             selectionCount: multi && multi.selectedParcels ? multi.selectedParcels.size : 0,
             historyIds,
+            isGround,
             blocksEnabled: blocksEnabled(),
             can3d: can3d(),
+            siteToolAvailable: !!(win.SiteTool && typeof win.SiteTool.isActive === 'function' && !win.SiteTool.isActive()),
             area: model.parcelArea(props, geometryArea(feature)),
             ownershipType: ownership.ownershipType,
             ownerCount: ownership.ownerCount
@@ -138,6 +145,7 @@
         if (facts.area !== null) {
             parts.push(`${Math.round(facts.area).toLocaleString('hr-HR')} ${t('panel.parcel.metrics.areaUnit', 'm²')}`);
         }
+        if (facts.isGround) parts.push(t('parcelMenu.groundNote', 'no cadastral parcel'));
         if (facts.isRoad) parts.push(t('panel.parcel.multi.roadTag', 'Road'));
         if (facts.ownershipType) {
             parts.push(t(`panel.parcel.ownershipType.${facts.ownershipType}`, facts.ownershipType));
@@ -161,7 +169,9 @@
         const closeLabel = t('modal.common.close', 'Close');
         close.setAttribute('aria-label', closeLabel);
         close.title = closeLabel;
-        el.querySelector('.parcel-menu__title').textContent = t('panel.parcel.multi.parcelLabel', 'Parcel {{number}}', { number: facts.displayId });
+        el.querySelector('.parcel-menu__title').textContent = facts.isGround
+            ? t('parcelMenu.groundTitle', 'Open ground')
+            : t('panel.parcel.multi.parcelLabel', 'Parcel {{number}}', { number: facts.displayId });
         const line = factsLine(facts);
         const factsEl = el.querySelector('.parcel-menu__facts');
         factsEl.textContent = line;
@@ -393,7 +403,9 @@
         // The build palette's own Offer tool (it opens the ownership-only proposal dialog).
         offer: () => win.startParcelBuildTool('offer'),
         view3d: viewIn3d,
-        detectBlock: () => win.animateFloodfillFromSelected()
+        detectBlock: () => win.animateFloodfillFromSelected(),
+        // This parcel as the starting outline of an editable site (js/site-drawing.js).
+        useAsSite: facts => win.SiteTool.startFromParcels([facts.parcelId])
     };
 
     function runAction(action, facts) {

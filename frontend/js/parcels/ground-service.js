@@ -881,6 +881,23 @@
             roadIdsByBounds.clear();
         }
 
+        // Whether the cadastre at a point has been LOADED (its grid cell answered), so that "no
+        // parcel here" is a fact about the cadastre and not about what has not arrived yet
+        // (unsurveyed-ground.md). A cell still in flight, failed, or never requested is not loaded.
+        function isPointLoaded(lng, lat, options = {}) {
+            if (!Number.isFinite(lng) || !Number.isFinite(lat)) return false;
+            const city = normalizeId(options.city) || cityKey();
+            const loaded = loadedBounds.get(city);
+            if (!loaded || !loaded.size || typeof dependencies.boundsKeysOf !== 'function') return false;
+            const point = { lat, lng };
+            const keys = (dependencies.boundsKeysOf({
+                getSouthWest: () => point,
+                getNorthEast: () => point,
+                getCenter: () => point
+            }) || []).map(normalizeId).filter(Boolean);
+            return keys.length > 0 && keys.every(key => loaded.has(key) && !boundsInFlight.has(scoped(city, key)));
+        }
+
         function snapshot() {
             const city = cityKey();
             return {
@@ -905,6 +922,7 @@
             peekMany,
             list,
             coverageOf,
+            isPointLoaded,
             roadClassificationAvailable,
             ensureRoadIds,
             reset,

@@ -405,6 +405,19 @@
         {
           "name": "verdict_may_execute",
           "type": "bool"
+        },
+        {
+          "name": "site_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "open_ground",
+          "type": "bool"
         }
       ]
     },
@@ -444,8 +457,10 @@
       "name": "settle_with_verdict",
       "docs": [
         "Settle an Active proposal from a lens member's ProposalVerdict-v1 attestation: `expired`",
-        "sets Expired; `executed` sets Executed only for proposals minted with",
-        "`verdict_may_execute` (a verdict cannot skip per-parcel consent otherwise)."
+        "sets Expired; `executed` needs a proposal minted with `verdict_may_execute` (a verdict",
+        "cannot skip per-parcel consent otherwise) and then executes it, except on an open-ground",
+        "proposal with parcels: there it clears the open ground, and the proposal executes now if",
+        "every parcel is already accepted, or at the last acceptance otherwise."
       ],
       "discriminator": [
         167,
@@ -602,7 +617,7 @@
     {
       "code": 6000,
       "name": "NoParcels",
-      "msg": "Must include at least one parcel"
+      "msg": "Must include at least one parcel, or a site_hash for a proposal on open ground"
     },
     {
       "code": 6001,
@@ -763,6 +778,16 @@
       "code": 6032,
       "name": "NotExpired",
       "msg": "Proposal is not expired"
+    },
+    {
+      "code": 6033,
+      "name": "EmptyBindingIsOpenGround",
+      "msg": "A proposal without parcels is all open ground: open_ground must be set"
+    },
+    {
+      "code": 6034,
+      "name": "OpenGroundNeedsSite",
+      "msg": "Open ground needs a site: site_hash must be set"
     }
   ],
   "types": [
@@ -926,6 +951,41 @@
           {
             "name": "verdict_may_execute",
             "type": "bool"
+          },
+          {
+            "name": "site_hash",
+            "docs": [
+              "sha256 of the canonical site encoding (frontend/js/proposals/site-hash.js); zero = no site."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "open_ground",
+            "docs": [
+              "Part of the site lies on no bound parcel: execution also needs an executed verdict."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "open_ground_cleared",
+            "docs": [
+              "An executed verdict has cleared the open ground (only meaningful with `open_ground`)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "layout_version",
+            "docs": [
+              "Account layout the mint wrote: PROPOSAL_LAYOUT_VERSION (3) for a v3 mint, 0 for a v1/v2",
+              "account (zero padding; only the mint sets it, so it stays 0). Tells a legacy account from a v3",
+              "mint without a site, which both hold a zero `site_hash`."
+            ],
+            "type": "u8"
           }
         ]
       }
@@ -967,8 +1027,9 @@
       "docs": [
         "One settled verdict: PDA [\"verdict\", proposal, verdict_attestation]. Keeps the verdict",
         "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
-        "account (and the transaction logs that carry `VerdictSettled`). `verdict` is the status it set:",
-        "1 Executed, 3 Expired."
+        "account (and the transaction logs that carry `VerdictSettled`). `verdict` is what the verdict",
+        "said: 1 executed, 3 expired. An executed verdict on an open-ground proposal with parcels clears",
+        "the open ground and may leave the proposal Active until the last owner accepts."
       ],
       "type": {
         "kind": "struct",
@@ -1037,11 +1098,21 @@
           },
           {
             "name": "status",
+            "docs": [
+              "The proposal's status after the settlement (0 Active for an open-ground clearance)."
+            ],
             "type": "u8"
           },
           {
             "name": "settled_at",
             "type": "i64"
+          },
+          {
+            "name": "verdict",
+            "docs": [
+              "What the verdict said: 1 executed, 3 expired."
+            ],
+            "type": "u8"
           }
         ]
       }

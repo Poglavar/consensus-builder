@@ -277,6 +277,12 @@ let lockedStats = {
     individualOwners: 0  // Count of individual person owners across all locked parcels
 };
 
+// Pieces formed on open ground that the corridor crosses (piece id → m²): subdivision plots, parks,
+// building plots with no cadastral parcel. They have no owner and nothing to acquire, so they are
+// never counted as parcels; the panel shows them as open ground. `locked` follows the committed
+// corridor, `preview` the segment under the cursor.
+const roadOpenGroundCrossed = { locked: new Map(), preview: new Map() };
+
 // Per-segment history for undo functionality
 // Each entry stores the parcels that were locked by that segment
 let roadSegmentHistory = []; // Array of { parcelIds: Set, stats: {...} }
@@ -1648,10 +1654,19 @@ function liveRoadDrawingParcelsIntersecting(queryFeature, options = {}) {
     } catch (_) {
         return [];
     }
-    return candidates.filter(feature => {
+    const hits = candidates.filter(feature => {
         try { return turf.booleanIntersects(queryFeature, feature); }
         catch (_) { return false; }
     });
+    // Only cadastral parcels are returned: a piece formed on open ground joins no count, owner
+    // tally or declaration. `options.groundInto` (a Map) collects those pieces for the open-ground stat.
+    const ground = (typeof window !== 'undefined') ? window.__openGround : null;
+    if (!ground || typeof ground.splitCrossedPieces !== 'function') return hits;
+    const split = ground.splitCrossedPieces(hits, { idOf: getRoadDrawingParcelIdFromFeature });
+    if (options.groundInto instanceof Map) {
+        split.ground.pieces.forEach(piece => options.groundInto.set(piece.id, piece.areaM2));
+    }
+    return split.parcels;
 }
 
 function roadDrawingParcelEntry(feature) {
@@ -1686,6 +1701,25 @@ function setRoadParcelStats(countValue, areaText = '—') {
     const areaEl = document.getElementById('road-parcels-area');
     if (countEl) countEl.textContent = typeof countValue === 'number' ? countValue.toString() : (countValue || '—');
     if (areaEl) areaEl.textContent = areaText || '—';
+    renderRoadOpenGroundStat();
+}
+
+// The open ground the corridor crosses (committed + preview), shown only when there is some.
+function renderRoadOpenGroundStat() {
+    const el = document.getElementById('road-open-ground');
+    if (!el) return;
+    const crossed = new Map([...roadOpenGroundCrossed.locked, ...roadOpenGroundCrossed.preview]);
+    const group = el.closest('.metric-group');
+    if (group) group.hidden = crossed.size === 0;
+    if (!crossed.size) {
+        el.textContent = '—';
+        return;
+    }
+    const area = Array.from(crossed.values()).reduce((sum, value) => sum + (Number(value) || 0), 0);
+    el.textContent = translateRoadText('panel.road.openGroundValue', '{{count}} · {{area}}', {
+        count: crossed.size,
+        area: formatParcelArea(area)
+    });
 }
 
 function formatParcelArea(area) {
@@ -1694,6 +1728,8 @@ function formatParcelArea(area) {
 }
 
 function resetRoadMetricPlaceholders() {
+    roadOpenGroundCrossed.locked.clear();
+    roadOpenGroundCrossed.preview.clear();
     const ownerCountEl = document.getElementById('road-individual-owners');
     if (ownerCountEl) ownerCountEl.textContent = '—';
     setRoadParcelStats(0, '—');
@@ -3739,7 +3775,9 @@ function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highl
         ? new Set(Array.from(excludeParcelIds).map(String))
         : null;
 
-    liveRoadDrawingParcelsIntersecting(turfPolygon).forEach(feature => {
+    // A piece another proposal formed on open ground is no parcel to acquire: the query leaves it
+    // out of the corridor's parcels (counts, owners, declaration) and reports it as open ground.
+    liveRoadDrawingParcelsIntersecting(turfPolygon, { groundInto: options.groundInto }).forEach(feature => {
         const entry = roadDrawingParcelEntry(feature);
         if (!entry || (excludeSet && excludeSet.has(entry.id))) return;
         affectedParcels.push(entry);
@@ -3791,7 +3829,7 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
     }
 
     const newParcels = [];
-    liveRoadDrawingParcelsIntersecting(turfPolygon).forEach(feature => {
+    liveRoadDrawingParcelsIntersecting(turfPolygon, { groundInto: roadOpenGroundCrossed.locked }).forEach(feature => {
         const entry = roadDrawingParcelEntry(feature);
         if (!entry || lockedParcelIds.has(entry.id)) return;
         newParcels.push(entry);
@@ -3846,6 +3884,7 @@ function recomputeLockedParcelsFromPolygon(polygon) {
     clearAffectedParcels();
     roadSegmentHistory = [];
     lockedParcelIds.clear();
+    roadOpenGroundCrossed.locked.clear();
     lockedStats = {
         parcelCount: 0,
         totalArea: 0,
@@ -3980,12 +4019,13 @@ function findAffectedParcels(roadPolygon) {
     };
 
     // Use the shared fabric query to find and highlight affected parcels.
+    roadOpenGroundCrossed.locked.clear();
     roadAffectedParcels = findAndHighlightAffectedParcels(
         roadPolygon,
         roadAffectedParcels,
         committedRoadStyle,
         null,
-        { skipBoundsFilter: true }
+        { skipBoundsFilter: true, groundInto: roadOpenGroundCrossed.locked }
     );
 
     // Rebuild locked state from roadAffectedParcels
@@ -4697,11 +4737,11 @@ async function finishRoadDrawingOnce() {
 
     markCorridorFinishPhase('parcels');
 
+    // A corridor is a material proposal: one drawn across ground without parcels (unsurveyed
+    // land, an explore city) has an empty binding and is still a proposal (PARCEL-OPTIONAL.md).
     const affectedParcels = roadAffectedParcels;
     if (affectedParcels.length === 0) {
-        showRoadAlert('no_parcels_affected_by_this_road_please_try_drawing_the_road_again', 'No parcels affected by this road. Please try drawing the road again.');
-        exitRoadDrawingMode();
-        return;
+        console.info(`[${new Date().toISOString()}] [road-drawing] the corridor crosses no loaded parcel; it is created with an empty binding`);
     }
 
     // What was drawn is a track iff its cross-section carries rails — a "road" the user gave a tram
@@ -4971,6 +5011,7 @@ function clearAffectedParcels() {
 
 // Helper function to clear highlighting for preview-affected parcels
 function clearPreviewAffectedParcels() {
+    roadOpenGroundCrossed.preview.clear();
     // Only iterate through the preview parcels list, not all parcels (performance)
     if (roadPreviewAffectedParcels.length > 0) {
         for (const previewParcel of roadPreviewAffectedParcels) {
@@ -5800,7 +5841,8 @@ function findPreviewAffectedParcels(previewPolygon) {
 
     const newPreviewParcels = [];
 
-    liveRoadDrawingParcelsIntersecting(turfPolygon).forEach(feature => {
+    roadOpenGroundCrossed.preview.clear();
+    liveRoadDrawingParcelsIntersecting(turfPolygon, { groundInto: roadOpenGroundCrossed.preview }).forEach(feature => {
         const entry = roadDrawingParcelEntry(feature);
         if (!entry || lockedParcelIds.has(entry.id)) return;
         newPreviewParcels.push(entry);

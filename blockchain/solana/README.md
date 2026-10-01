@@ -82,7 +82,7 @@ Requires status Expired and `sol_balance > 0`; moves the whole balance to the ow
 | `AcceptanceRecord` | `["acceptance", proposal, parcel_id, owner]` (proposal_nft) | `proposal, parcel_id (≤32), owner, member, ownership_attestation, ownership_hash [u8;32] (sha256 of the whole SAS account), payout (default key = none), accepted_at i64, bump` — 245 bytes |
 | `VerdictRecord` | `["verdict", proposal, verdict_attestation]` (proposal_nft) | `proposal, member, verdict_attestation, verdict_hash [u8;32] (sha256 of the whole SAS account), verdict u8 (status set: 1 Executed, 3 Expired), settled_at i64, bump` — 146 bytes |
 | `Parcel` | `["parcel", parcel_id]` (parcel_nft) | unchanged |
-| `Proposal` | `["proposal", counter u64 LE]` (proposal_nft) | unchanged prefix; `verdict_may_execute: bool` appended after `bump` |
+| `Proposal` | `["proposal", counter u64 LE]` (proposal_nft) | unchanged prefix; `verdict_may_execute: bool` appended after `bump`; v3 appends `site_hash [u8;32], open_ground, open_ground_cleared, layout_version u8` |
 
 `verdict_may_execute` lives in the fixed 4096-byte Proposal account after `bump`. proposal_market,
 proposal_pledge, `backend/oracle/proposal-lifecycle.js` and `frontend/js/solana/chain-data-loader.js`
@@ -111,6 +111,42 @@ accounts it owns, so `tests/sas-mock.ts` can lay out credentials, schemas and at
 as SAS does. Rebuild it with `cargo build-sbf --manifest-path tests/mock_sas/Cargo.toml` and copy
 `tests/mock_sas/target/deploy/mock_sas.so` to `tests/fixtures/`. Never deploy it. Tests read the
 validator's clock (`chainNow`), never `Date.now()`, because the localnet clock drifts from the host.
+
+## proposal_nft v3, parcel-optional proposals — built and tested on localnet, NOT deployed
+
+Design: [`PARCEL-OPTIONAL.md`](../../PARCEL-OPTIONAL.md) (Chain, phase 5) and
+[`lens-model.md`](../../lens-model.md) ("proposal_nft v3"). A proposal is about a site; its parcel
+list is the site's cadastral binding and may be empty. `idl/proposal_nft.json` is v3;
+`idl/legacy/proposal_nft.v2.json` is the v2 interface it replaces (the tx decoder tries v3, v2, v1).
+
+- `Proposal` appends `site_hash: [u8; 32]`, `open_ground: bool`, `open_ground_cleared: bool`,
+  `layout_version: u8` after `verdict_may_execute`. Prefix readers (proposal_market, proposal_pledge,
+  the lifecycle oracle) are unaffected. v1/v2 accounts hold zero bytes there and read as no site,
+  closed ground: their behaviour is exactly v2's (proven against a v2-layout genesis fixture,
+  `tests/fixtures/v2-proposal.json`).
+- `layout_version` is `PROPOSAL_LAYOUT_VERSION` (3) on every v3 mint and 0 on a v1/v2 account, which
+  keeps 0 when the v3 program rewrites it (no instruction but the mint sets it). It is what tells a
+  legacy account from a v3 mint without a site, since both hold a zero `site_hash`
+  (`backend/oracle/open-ground-audit.js` skips layout 0 as legacy).
+- `mint_and_fund(parcel_ids, is_conditional, image_uri, sol_amount, lens, verdict_may_execute,
+  site_hash, open_ground)`: an empty `parcel_ids` needs a non-zero `site_hash` (else `NoParcels`) and
+  `open_ground` (`EmptyBindingIsOpenGround`); `open_ground` needs a `site_hash` (`OpenGroundNeedsSite`).
+  `site_hash` is the sha256 of the canonical site encoding in `frontend/js/proposals/site-hash.js`.
+- Execution: by consent ⇔ parcels non-empty ∧ every parcel accepted ∧ (¬open_ground ∨
+  open_ground_cleared); an `executed` verdict always needs `verdict_may_execute` (the v2
+  `acceptance_count == parcel_ids.len()` alternative, which read 0 == 0 for an empty list, is gone).
+  The verdict executes the proposal, except on open ground with parcels, where it sets
+  `open_ground_cleared` and the proposal executes at the last acceptance (or at once, if consent was
+  already complete). Consent complete on open ground leaves the proposal Active, still open to
+  contributions, until that verdict arrives.
+- `VerdictRecord.verdict` and the new trailing `VerdictSettled.verdict` say what the verdict said (1
+  executed, 3 expired); `VerdictSettled.status` is the proposal's status after the settlement (0 for
+  an open-ground clearance).
+- Funds: Active → `cancel_and_refund`; Expired → `reclaim_expired_funds`; Executed →
+  `distribute_funds` (records of accepted parcels, or the owner when there are none). Every terminal
+  state has an exit, tested per path.
+- The 4096-byte account always has room: one mint transaction caps the variable data at about 1.1 KB,
+  so the proposal plus a full `accepted_parcels` copy stays under about 2.4 KB.
 
 ## Build
 

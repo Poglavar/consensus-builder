@@ -110,8 +110,13 @@ describe('Urban Game Theory MCP server', () => {
         expect(ownership.required).toEqual(['serviceUrl', 'parcelUid']);
 
         const mint = byName.ugt_mint_proposal.inputSchema;
-        expect(Object.keys(mint.properties)).toEqual(['parcelIds', 'lens', 'imageUri', 'isConditional', 'confirm']);
-        expect(mint.required).toEqual(expect.arrayContaining(['parcelIds', 'lens', 'confirm']));
+        expect(Object.keys(mint.properties)).toEqual(['parcelIds', 'site', 'binding', 'lens', 'imageUri', 'isConditional', 'confirm']);
+        expect(mint.required).toEqual(expect.arrayContaining(['lens', 'confirm']));
+        // proposal_nft v3: parcels may be empty when a site (and its server binding) is given.
+        expect(mint.required).not.toContain('parcelIds');
+        expect(mint.properties.parcelIds.minItems).toBeUndefined();
+        expect(mint.properties.site.properties.type.enum).toEqual(['Polygon', 'MultiPolygon']);
+        expect(mint.properties.binding.properties.coverage.enum).toEqual(['complete', 'partial', 'none', 'unknown']);
         expect(mint.properties.lens.minItems).toBe(1);
         expect(byName.ugt_mint_proposal.annotations.destructiveHint).toBe(true);
         expect(byName.ugt_submit_proposal.inputSchema.properties.proposal.properties).toHaveProperty('lens');

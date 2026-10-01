@@ -29,6 +29,11 @@
         return kind === 'station' || structureGeometryPartCount(geometry) === 1;
     }
 
+    function openGroundApi() {
+        if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
+        return typeof require === 'function' ? require('../open-ground.js') : null;
+    }
+
     function structureTakeContext(turfRef, arrangement) {
         const intersect = arrangement && typeof arrangement.clip === 'function'
             ? (left, right) => arrangement.clip('intersect', left, right)
@@ -46,7 +51,45 @@
         };
     }
 
+    // A structure's stored decorations kept to the ground it actually stands on (a body carved by a
+    // later road): points outside are dropped, polylines are split into their inside runs, rings
+    // (ponds, flowerbeds) are kept only when wholly inside. Pure; never written back to the record.
+    function decorationsOnGround(decorations, geometry, turfRef) {
+        if (!decorations || typeof decorations !== 'object' || !geometry || !turfRef) return decorations;
+        const ground = { type: 'Feature', properties: {}, geometry };
+        const isCoord = value => Array.isArray(value) && value.length >= 2
+            && typeof value[0] === 'number' && typeof value[1] === 'number';
+        const inside = coord => {
+            try { return turfRef.booleanPointInPolygon(coord, ground); } catch (_) { return false; }
+        };
+        const isRing = line => line.length >= 4 && line[0][0] === line[line.length - 1][0] && line[0][1] === line[line.length - 1][1];
+        const out = {};
+        Object.keys(decorations).forEach(key => {
+            const value = decorations[key];
+            if (isCoord(value)) { out[key] = inside(value) ? value : null; return; }
+            if (!Array.isArray(value)) { out[key] = value; return; }
+            const kept = [];
+            value.forEach(entry => {
+                if (isCoord(entry)) { if (inside(entry)) kept.push(entry); return; }
+                if (Array.isArray(entry) && entry.length && entry.every(isCoord)) {
+                    if (isRing(entry)) { if (entry.every(inside)) kept.push(entry); return; }
+                    let run = [];
+                    entry.forEach(coord => {
+                        if (inside(coord)) run.push(coord);
+                        else { if (run.length > 1) kept.push(run); run = []; }
+                    });
+                    if (run.length > 1) kept.push(run);
+                    return;
+                }
+                kept.push(entry);
+            });
+            out[key] = kept;
+        });
+        return out;
+    }
+
     return {
+    decorationsOnGround,
     structureNeedsGroundFormation,
     structureTakeContext,
     structureGeometryIsContiguous,
@@ -87,6 +130,29 @@
                 } catch (_) { }
                 try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
                 return false;
+            }
+            // "Build through": corridors applied after this structure in the formation order take
+            // their ground out of it; the body that forms (and is drawn) is what is left. The
+            // authored geometry (sp.geometry, persisted below) is untouched. A road across the
+            // middle leaves two parts — the road's doing, so the authored-contiguity rule above
+            // still judges the authored body.
+            let carvedByCorridors = false;
+            let authoredGeometry = geometry;
+            if (structureNeedsGroundFormation(kind) && typeof this._groundAfterLaterCorridors === 'function') {
+                const carvedList = this._groundAfterLaterCorridors(proposalData, [geometry], options);
+                const carved = { geometry: carvedList.geometries[0], corridorIds: carvedList.corridorIds };
+                if (carved.corridorIds.length) {
+                    if (!carved.geometry) {
+                        const message = `Cannot apply the ${kind}: later roads take all of its ground.`;
+                        try { this._setLastApplyFailure(idLabel, { code: 'structure-taken-by-corridors', message, corridorIds: carved.corridorIds }); } catch (_) { }
+                        try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
+                        return false;
+                    }
+                    traceApply(`carved by later corridor(s) ${carved.corridorIds.join(', ')}`);
+                    authoredGeometry = geometry;
+                    geometry = carved.geometry;
+                    carvedByCorridors = true;
+                }
             }
             const refreshStructureLayer = () => {
                 if (kind === 'park') {
@@ -148,7 +214,16 @@
             let parentIds = [];
             let liveParentFeatures = [];
             if (structureNeedsGroundFormation(kind)) {
-                const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind, options);
+                // The resolver measures the record's footprint; a carved body is measured as carved
+                // (a view of the record, never written back).
+                const groundRecord = carvedByCorridors
+                    ? {
+                        ...proposalData,
+                        ...(proposalData.geometry ? { geometry } : {}),
+                        structureProposal: { ...(proposalData.structureProposal || {}), geometry }
+                    }
+                    : proposalData;
+                const liveParents = this._resolveLiveFormationParents(groundRecord, idLabel, kind, options);
                 if (!liveParents.ok) return false;
                 parentIds = liveParents.ids;
                 liveParentFeatures = liveParents.features;
@@ -185,9 +260,20 @@
                     modelVersion: sp.modelVersion || undefined,
                     name: proposalData.title || proposalData.name || undefined
                 },
-                geometry: JSON.parse(JSON.stringify(geometry))
+                // Decorations are generated on (and copied back for) the authored body; the
+                // carved body replaces it just before the feature is published below.
+                geometry: JSON.parse(JSON.stringify(authoredGeometry))
             };
             const replaceOwnFeature = () => {
+                if (carvedByCorridors) {
+                    feature.geometry = JSON.parse(JSON.stringify(geometry));
+                    if (kind === 'lake') {
+                        feature.properties.lakeGraphics = null;
+                        try { if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(feature); } catch (_) { }
+                    } else if (feature.properties.decorations) {
+                        feature.properties.decorations = decorationsOnGround(feature.properties.decorations, geometry, typeof turf !== 'undefined' ? turf : null);
+                    }
+                }
                 const retained = collection.filter(candidate => String(candidate?.properties?.proposalId || '') !== String(proposalId));
                 collection.splice(0, collection.length, ...retained, feature);
             };
@@ -258,12 +344,17 @@
         }
     },
 
-    // §15a structure formation (decision 2026-08-05). A park/square/lake takes WHOLE parcels
-    // only: adopt the one parcel matching its footprint (formation is adoptive, §15.1 — ownership
-    // moves, nothing is cut or minted), or merge-take a union of whole parcels into ONE minted
-    // parcel anchored flat to every base underneath. Partial coverage of any parcel REFUSES with
-    // the offenders named — if only part of a parcel is wanted, a road or a land readjustment
-    // cuts it first. Ownership goes to the City agent at apply, the reparcellization pattern.
+    // §15a structure formation, with the site rule of PARCEL-OPTIONAL.md phase 3. A park/square/lake
+    // takes EXACTLY its footprint (= its site): parcels wholly under it are adopted/merged into ONE
+    // minted parcel anchored flat to every base underneath; a parcel it covers only partly is cut at
+    // the body edge, and the part outside stays a piece of that parcel (with its owners — minted as
+    // this structure's remainder for a cadastral parent, keeping its identity for a formed one).
+    // Ground under it that no parcel covers comes from the open-ground host and is taken as is: the
+    // body carries the host's ground id, and nothing is minted for the host's outside part (open
+    // ground is not a parcel). A structure designed on a parcel selection covers whole parcels by
+    // construction, so the whole-parcel case is just the cut-nothing case. Refusals remain for
+    // ground that is not there (uncovered footprint) and for cuts that cannot be computed.
+    // Ownership goes to the City agent at apply, the reparcellization pattern.
     async _formStructureParcel(proposalId, proposalData, sp, geometry, declaredParentIds, idLabel, resolvedParentFeatures = null, options = {}) {
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
@@ -292,29 +383,43 @@
                 allowMissing: true,
                 _parcelMutation: options._parcelMutation
             }) || []);
-        const candidates = candidateFeatures
+        const ground = openGroundApi();
+        const allCandidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
+        // The open-ground host is not a parcel: it never enters the whole-parcel plan, it only
+        // supplies the footprint's ground where no parcel lies.
+        const hostEntries = allCandidates.filter(entry => ground && ground.isOpenGroundHost(entry.feature));
+        const candidates = allCandidates.filter(entry => !hostEntries.includes(entry));
+        const hostOverlapM2 = hostEntries.reduce((sum, entry) => sum
+            + takeCtx.intersectionArea(footprint, { type: 'Feature', properties: {}, geometry: entry.feature.geometry }), 0);
+        const takenHosts = hostEntries.filter(entry => takeCtx.intersectionArea(
+            footprint, { type: 'Feature', properties: {}, geometry: entry.feature.geometry }) >= (Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1));
 
-        let plan = formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx);
-        // §15c REBUILD: this structure's claim already stands (latest wins) — the replay just
-        // re-derived the fabric beneath it (a road edit reshapes the remainders), so its
-        // authored footprint may no longer align to whole parcels. "Whole parcels" is the
-        // AUTHORING gate; a rebuild CUTS the partials at the body's edge instead: the inside
-        // is consumed with the take, and each outside piece is re-minted so identity flows
-        // with the ground — a derived parent's pieces stay ITS proposal's children (the same
-        // carry the road cut uses), a base parent's leftovers become this structure's §14.2
-        // remainders (the formation owes the owner their remainders).
-        const rebuildingTake = !!(this && this._rebuildInProgress === true);
+        let plan = candidates.length
+            ? formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx)
+            : { mode: 'refuse', reason: 'no-parcels', parcelIds: [], partials: [], uncoveredShare: 1 };
+        const footprintArea = takeCtx.area(footprint);
+        const uncoveredTolerance = Math.max(
+            Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1,
+            footprintArea * (Number(formationEdit.DEFAULT_TOLERANCE_PCT) || 1) / 100
+        );
+        // Ground the footprint covers that is on neither a candidate parcel nor the open-ground host.
+        const uncoveredM2 = Math.max(0, Math.max(0, Number(plan.uncoveredShare) || 0) * footprintArea - hostOverlapM2);
+        if (takenHosts.length && (plan.reason === 'uncovered-ground' || plan.reason === 'no-parcels')) {
+            // The rest of the footprint is open ground: take the whole parcels (if any) plus it.
+            plan = uncoveredM2 <= uncoveredTolerance
+                ? { mode: plan.parcelIds.length ? 'merge' : 'ground', reason: null, parcelIds: plan.parcelIds.slice(), partials: [], uncoveredShare: uncoveredM2 / footprintArea }
+                : { ...plan, reason: 'uncovered-ground', uncoveredShare: uncoveredM2 / footprintArea };
+        }
+        // Partial parcels are cut at the body edge: the inside is consumed with the take, and each
+        // outside piece is re-minted so identity flows with the ground — a formed parent's pieces
+        // stay ITS proposal's children (the same carry the road cut uses), a cadastral parent's
+        // leftovers become this structure's §14.2 remainders (the formation owes the owner their
+        // remainders). The body is then exactly the authored footprint.
+        const cutsAtBodyEdge = plan.mode === 'refuse' && plan.reason === 'partial-parcels';
         let partialCuts = null;
-        if (rebuildingTake && plan.mode === 'refuse' && plan.reason === 'partial-parcels'
-            && typeof turfRef.difference === 'function') {
-            const footprintArea = takeCtx.area(footprint);
-            const uncoveredM2 = Math.max(0, Number(plan.uncoveredShare) || 0) * footprintArea;
-            const uncoveredTolerance = Math.max(
-                Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1,
-                footprintArea * (Number(formationEdit.DEFAULT_TOLERANCE_PCT) || 1) / 100
-            );
+        if (cutsAtBodyEdge && typeof turfRef.difference === 'function') {
             const takenIdSet = new Set(plan.parcelIds.map(String));
             partialCuts = [];
             let cutsOk = uncoveredM2 <= uncoveredTolerance;
@@ -353,8 +458,10 @@
                 takenIdSet.add(String(partial.id));
             });
             if (cutsOk) {
-                plan = { mode: 'merge', reason: null, parcelIds: Array.from(takenIdSet), partials: [], uncoveredShare: plan.uncoveredShare };
-                console.info('[§15c] rebuild take cut', partialCuts.length, 'partial parcel(s) at the', sp.kind, 'edge');
+                plan = { mode: 'merge', reason: null, parcelIds: Array.from(takenIdSet), partials: [], uncoveredShare: uncoveredM2 / footprintArea };
+                if (typeof window !== 'undefined' && window.DEBUG_APPLY) {
+                    console.debug('[structureFormation] cut', partialCuts.length, 'partial parcel(s) at the', sp.kind, 'edge');
+                }
             } else {
                 partialCuts = null;
             }
@@ -364,7 +471,7 @@
                 .map(partial => `${partial.id} (${Math.round(partial.coveredShare * 100)}%)`)
                 .join(', ');
             const message = plan.reason === 'partial-parcels'
-                ? `A ${sp.kind} must take whole parcels, but this footprint covers only part of: ${partialText}. Cut the ground first with a road or a land readjustment.`
+                ? `The ${sp.kind} could not be cut out of the parcels it covers in part: ${partialText}. Nothing was changed.`
                 : (plan.reason === 'uncovered-ground'
                     ? `Part of the ${sp.kind} footprint lies on no live parcel here (${Math.round(plan.uncoveredShare * 100)}% uncovered).`
                     : `No parcels found under the ${sp.kind} footprint.`);
@@ -383,6 +490,12 @@
         const takenFeatures = candidates
             .filter(entry => takenIds.includes(String(entry.id)))
             .map(entry => entry.feature);
+        // The body's ground provenance: the open-ground host it stands on and every formed piece on
+        // open ground it takes.
+        const groundIds = Array.from(new Set([
+            ...takenHosts.flatMap(entry => ground.groundIdsOf(entry.feature)),
+            ...takenFeatures.flatMap(feature => ground.groundIdsOf(feature))
+        ]));
         // Ruling 2026-08-07: no take may DISCONNECT an applied road — no structure-editing
         // gesture legitimately severs one, so a footprint that would is an authoring error and
         // the apply refuses BEFORE any mutation. Tested against the actual taken ground (whole
@@ -392,7 +505,7 @@
             const severTestPolys = takenFeatures
                 .map(feature => feature && feature.geometry)
                 .filter(g => g && /Polygon/.test(String(g.type || '')));
-            const severTestGround = rebuildingTake ? geometry
+            const severTestGround = cutsAtBodyEdge || takenHosts.length || !severTestPolys.length ? geometry
                 : (severTestPolys.length === 0 ? geometry
                     : (severTestPolys.length === 1 ? severTestPolys[0] : {
                         type: 'MultiPolygon',
@@ -433,7 +546,7 @@
         // parcel still underneath and required ownership snapshots on unapply.
         const primary = takenFeatures[0];
             const structureCadastreIds = formationEdit.baseIdsOfFeatures(takenFeatures);
-            if (!structureCadastreIds.length) {
+            if (!structureCadastreIds.length && !groundIds.length) {
                 throw new Error('Structure formation has no explicit cadastral anchors.');
             }
             const childFeature = {
@@ -442,9 +555,10 @@
                 properties: {
                     producedByProposalId: proposalId,
                     structureType: sp.kind,
-                    rootParcelId: structureCadastreIds[0],
+                    rootParcelId: structureCadastreIds[0] || null,
                     rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
                     cadastreParcelIds: structureCadastreIds,
+                    ...(groundIds.length ? { groundIds } : {}),
                     calculatedArea: Math.round(_calculateGeoJsonArea(geometry)),
                     isProposed: true,
                     ownershipDetails: JSON.parse(JSON.stringify(cityOwnership)),
@@ -488,11 +602,11 @@
                         if (parentIdentity && allocForeign) {
                             const syntheticIndex = partIndex === 0
                                 ? parentIdentity.index
-                                : allocForeign(parentIdentity.cadastreParcelIds[0], parentIdentity.token);
+                                : allocForeign(parentIdentity.anchor, parentIdentity.token);
                             const carriedId = partIndex === 0
                                 ? parentId
                                 : _composeSyntheticParcelId(
-                                    parentIdentity.cadastreParcelIds[0],
+                                    parentIdentity.root,
                                     parentIdentity.token,
                                     syntheticIndex);
                             clone.properties.parcelId = carriedId;
@@ -520,8 +634,10 @@
                     const startIndexByRootId = {};
                     bodyFeatures.forEach(feature => {
                         const identity = formationEdit.formationIdentityOf(feature);
-                        if (!identity) return;
-                        const base = identity.cadastreParcelIds[0];
+                        // Remainders are cadastral (open ground leaves none), so only rooted bodies
+                        // share their numbering.
+                        if (!identity || !identity.root) return;
+                        const base = identity.root;
                         startIndexByRootId[base] = Math.max(
                             Number(startIndexByRootId[base]) || 1,
                             identity.index + 1
@@ -570,7 +686,7 @@
                 // different by rule 12: partial parents are cut at the BODY EDGE, so its taking
                 // and amendment geometry is exactly the authored body. Passing the whole partial
                 // parent here destroyed the legitimate outside sliver we had just re-minted.
-                const takenGround = rebuildingTake ? geometry
+                const takenGround = cutsAtBodyEdge || takenHosts.length || !takenPolys.length ? geometry
                     : (takenPolys.length === 0 ? geometry
                         : (takenPolys.length === 1 ? takenPolys[0] : {
                             type: 'MultiPolygon',

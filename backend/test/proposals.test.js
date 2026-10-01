@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import request from 'supertest';
-import { createMockPool } from './helpers/mock-pool.js';
+import { createMockPool, defaultBindingAnswer } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
 import { hashEditToken, normalizeCityCode } from '../routes/proposals.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
@@ -71,7 +71,10 @@ describe('POST /proposals', () => {
 
     it('returns 500 when proposal body causes a DB error', async () => {
         pool.setResults([]);
-        pool.query = async () => {
+        // The cadastre answers (the binding precheck); the write itself fails.
+        pool.query = async (sql, params) => {
+            const binding = defaultBindingAnswer(sql, params);
+            if (binding) return binding;
             throw new Error('connection refused');
         };
 
@@ -154,6 +157,8 @@ describe('POST /proposals', () => {
 
         pool.setResults([]);
         pool.query = async (sql, params) => {
+            const binding = defaultBindingAnswer(sql, params);
+            if (binding) return binding;
             pool.getCalls().push({ sql, params });
             if (sql.includes('INSERT INTO proposal')) {
                 throw uniqueViolation;
@@ -176,6 +181,8 @@ describe('POST /proposals', () => {
         uniqueViolation.code = '23505';
 
         pool.query = async (sql, params) => {
+            const binding = defaultBindingAnswer(sql, params);
+            if (binding) return binding;
             pool.getCalls().push({ sql, params });
             if (sql.includes('INSERT INTO proposal')) {
                 throw uniqueViolation;
@@ -197,6 +204,8 @@ describe('POST /proposals', () => {
         uniqueViolation.detail = '(proposal_id)=(test-proposal-001)';
 
         pool.query = async (sql, params) => {
+            const binding = defaultBindingAnswer(sql, params);
+            if (binding) return binding;
             pool.getCalls().push({ sql, params });
             if (sql.includes('INSERT INTO proposal')) {
                 throw uniqueViolation;
@@ -307,6 +316,8 @@ describe('POST /proposals', () => {
         uniqueViolation.detail = '(proposal_id)=(derived-from-detail)';
 
         pool.query = async (sql, params) => {
+            const binding = defaultBindingAnswer(sql, params);
+            if (binding) return binding;
             pool.getCalls().push({ sql, params });
             if (sql.includes('INSERT INTO proposal')) {
                 throw uniqueViolation;
@@ -370,10 +381,13 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(39);
-        // Free route: no x402 payment id / request hash; the last param is the edit-token hash.
+        expect(insertParams).toHaveLength(41);
+        // Free route: no x402 payment id / request hash; then the edit-token hash, site and binding.
         expect(insertParams.slice(36, 38)).toEqual([null, null]);
         expect(insertParams[38]).toMatch(/^[0-9a-f]{64}$/);
+        // No geometry of its own: a parcel act whose site is its declared parcels (mock cadastre).
+        expect(JSON.parse(insertParams[39]).type).toBe('MultiPolygon');
+        expect(JSON.parse(insertParams[40])).toMatchObject({ coverage: 'complete', subject: 'declared-parcels' });
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
         expect(JSON.parse(insertParams[24])).toEqual({ width: 6 });
         expect(JSON.parse(insertParams[32])).not.toHaveProperty('applied');

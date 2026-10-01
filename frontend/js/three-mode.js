@@ -353,6 +353,9 @@
     // Parcel count behind the currently-shown panel (proposal panel only; null for single parcel),
     // so the price slider can recompute the average gain/loss per parcel live.
     let lastParcelCount = null;
+    // Floor areas over the bound parcels only, when the panel's totals also cover open ground
+    // (a partly bound site), so the per-parcel average does not credit open ground to owners.
+    let lastParcelFloorAreas = null;
 
     // Assumptions for the parcel value panel. GFA (floor area) is derived from built/proposed
     // volume by dividing out a typical storey height; value uses a €/m² rate the user can slide.
@@ -551,10 +554,14 @@
     // built (nearbyProposalBuildings, deduped at intake) + proposed (window.proposedBuildings)
     // building lists, and injects turf + the footprint/height lookups.
     function computeParcelMetrics(parcelId) {
-        const parcel = getParcelFeatureById(parcelId);
-        if (!parcel) return null;
+        return computeGroundMetrics(getParcelFeatureById(parcelId));
+    }
+
+    // The same volume maths over any ground polygon: a parcel, or a proposal's site.
+    function computeGroundMetrics(groundFeature) {
+        if (!groundFeature) return null;
         return window.ProposalGain.computeParcelMetrics(
-            parcel,
+            groundFeature,
             Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : [],
             Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [],
             {
@@ -640,7 +647,8 @@
             builtFloorArea: built,
             proposedFloorArea: proposed,
             priceEurPerM2,
-            parcelCount: lastParcelCount
+            parcelCount: lastParcelCount,
+            parcelFloorAreas: lastParcelFloorAreas
         });
 
         const titleEl = panel.querySelector('[data-role="value-title"]');
@@ -751,6 +759,7 @@
         if (!m) { panel.style.display = 'none'; try { document.body.classList.remove('three-info-open'); } catch (_) { } return; }
         lastFloorAreas = { built: m.builtFloorArea, proposed: m.proposedFloorArea };
         lastParcelCount = null; // single parcel — no per-parcel average
+        lastParcelFloorAreas = null;
 
         const L = panelLabels();
         // If the parcel belongs to a proposal, offer a [show] button that opens the proposal view.
@@ -775,29 +784,56 @@
         wireSliderAndGain(panel);
     }
 
-    // Aggregate panel for a whole proposal: totals across all its parcels, total gain/loss.
+    // A proposal's site as a feature (site-binding.js: authored site, else its own footprint).
+    function proposalSiteFeature(proposal) {
+        try {
+            const site = window.__siteBinding?.siteOf?.(proposal, { turf }) || null;
+            return site ? { type: 'Feature', properties: {}, geometry: site } : null;
+        } catch (_) { return null; }
+    }
+
+    // Aggregate panel for a whole proposal: totals across all its parcels, total gain/loss. The
+    // ground rule (which figures are site metrics, which need a binding) is in gain.js
+    // summarizeProposalGround: on open ground the totals are the site's and there is no parcel count.
     function updateProposalInfoPanel(proposal, idSet) {
         const panel = ensureParcelInfoPanel();
         if (!panel) return;
-        let builtVolume = 0, proposedVolume = 0, builtFloorArea = 0, proposedFloorArea = 0, parcelCount = 0;
+        const siteStats = window.__siteStats || null;
+        const ground = siteStats ? siteStats.groundOf(proposal) : null;
+        const parcelMetrics = [];
         idSet.forEach(id => {
+            // A piece minted on open ground is not a parcel; its ground is measured with the site.
+            if (siteStats && siteStats.isGroundPiece(getParcelFeatureById(id))) return;
             const m = computeParcelMetrics(id);
-            if (!m) return;
-            parcelCount++;
-            builtVolume += m.builtVolume;
-            proposedVolume += m.proposedVolume;
-            builtFloorArea += m.builtFloorArea;
-            proposedFloorArea += m.proposedFloorArea;
+            if (m) parcelMetrics.push(m);
         });
-        lastFloorAreas = { built: builtFloorArea, proposed: proposedFloorArea };
-        lastParcelCount = parcelCount;
+        const siteMetrics = window.ProposalGain.needsSiteMetrics(ground)
+            ? computeGroundMetrics(proposalSiteFeature(proposal))
+            : null;
+        const summary = window.ProposalGain.summarizeProposalGround({ parcelMetrics, siteMetrics, ground });
+        if (!summary) { hideParcelInfoPanel(); return; }
+        lastFloorAreas = { built: summary.builtFloorArea, proposed: summary.proposedFloorArea };
+        lastParcelCount = summary.parcelCount;
+        lastParcelFloorAreas = summary.parcelFloorAreas;
 
         const L = panelLabels();
+        const lines = [];
+        if (summary.siteM2 !== null) {
+            lines.push(threeI18n('groundStats.siteAreaValue', 'Site: {{area}} m²', { area: formatInt(summary.siteM2) })
+                .replace('{{area}}', formatInt(summary.siteM2)));
+        }
+        lines.push(summary.parcelCount === null
+            ? threeI18n('groundStats.noParcels', 'No parcels here')
+            : `${L.parcelsLabel}: ${summary.parcelCount}`);
+        if (summary.parcelCount !== null && summary.openGroundM2 !== null && summary.openGroundM2 > 0) {
+            lines.push(threeI18n('groundStats.openGroundValue', 'Open ground: {{area}} m²', { area: formatInt(summary.openGroundM2) })
+                .replace('{{area}}', formatInt(summary.openGroundM2)));
+        }
         panel.innerHTML = `
             ${panelTitleHtml(L.proposalHeading)}
             <div class="parcel-panel-proposal-name">${escapeHtml(proposalDisplayTitle(proposal))}</div>
-            <div class="parcel-panel-subnote">${L.parcelsLabel}: ${parcelCount}</div>
-            ${metricsTableHtml(L, builtVolume, proposedVolume, builtFloorArea, proposedFloorArea)}
+            ${lines.map(line => `<div class="parcel-panel-subnote">${escapeHtml(line)}</div>`).join('')}
+            ${metricsTableHtml(L, summary.builtVolume, summary.proposedVolume, summary.builtFloorArea, summary.proposedFloorArea)}
             <div class="parcel-panel-avg" data-role="avg-gain"></div>
         `;
         wireSliderAndGain(panel);
@@ -890,11 +926,19 @@
         const proposal = (store && typeof store.getProposal === 'function') ? store.getProposal(proposalId) : null;
         if (!proposal) return;
         const idSet = getProposalParcelIdSet(proposal);
-        if (!idSet.size) return;
+        // A proposal on open ground has no parcels to isolate; it still has a site to frame and
+        // figures to show, so the scene stays as it is and only the panel and camera follow it.
+        const siteFeature = idSet.size ? null : proposalSiteFeature(proposal);
+        if (!idSet.size && !siteFeature) return;
         isolatedProposalId = String(proposalId);
         isolatedParcelId = null;
         updateIsolationButton();
         updateProposalInfoPanel(proposal, idSet);
+        if (siteFeature) {
+            frameIsolatedFeatures([siteFeature]);
+            notifyIsolationChanged();
+            return;
+        }
         const feats = [];
         idSet.forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
         applyIsolationVisibility(idSet, feats);

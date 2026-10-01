@@ -130,6 +130,10 @@
             // stacked on top of it (Šibenik, 2026-09-03: a plan re-applied two buildings inside
             // freshly created structures because only buildings counted as rivals).
             if (!isBuildingContentProposal(candidate) && !candidate.structureProposal) return false;
+            // A road or track does not displace a park, square or lake it crosses: it cuts through
+            // and the rest of the structure stays (the road tool's "Build through"; the carve is
+            // apply/road.js _groundAfterLaterCorridors). Buildings it covers still go.
+            if (proposal.roadProposal && candidate.structureProposal && !isBuildingContentProposal(candidate)) return false;
             // No measurable footprint on either side means no demonstrable overlap, and ground that
             // cannot be shown to be taken is left free: refusing here would block on a suspicion.
             if (!targetFootprint || !planOrder || typeof planOrder.footprintOf !== 'function'

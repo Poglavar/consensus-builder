@@ -6,11 +6,15 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { SystemProgram, Keypair, PublicKey } from "@solana/web3.js";
 import { expect } from "chai";
+import { readFileSync } from "fs";
+import path from "path";
 import {
     findProposalCounterPDA,
     findProposalPDA,
     airdrop,
     initializeProposalCounter,
+    NO_SITE,
+    testSiteHash,
 } from "./helpers.ts";
 import {
     LensMember,
@@ -93,7 +97,7 @@ describe("proposal_nft", () => {
         parcelIds: string[],
         isConditional: boolean,
         solAmount: number = 0,
-        opts: { lens?: PublicKey[]; verdictMayExecute?: boolean } = {}
+        opts: { lens?: PublicKey[]; verdictMayExecute?: boolean; siteHash?: number[]; openGround?: boolean } = {}
     ): Promise<{ proposalId: number; proposalPDA: PublicKey }> {
         for (const parcelId of parcelIds) {
             await ensureParcelAnchor(parcelProgram, parcelId);
@@ -109,7 +113,9 @@ describe("proposal_nft", () => {
                 "ipfs://test-image",
                 new anchor.BN(solAmount),
                 opts.lens ?? [notary.publicKey],
-                opts.verdictMayExecute ?? false
+                opts.verdictMayExecute ?? false,
+                opts.siteHash ?? NO_SITE,
+                opts.openGround ?? false
             )
             .accounts({
                 proposal: proposalPDA,
@@ -182,6 +188,8 @@ describe("proposal_nft", () => {
         expect((account.acceptanceCount as any).toNumber()).to.equal(0);
         expect(account.lens.map((k: PublicKey) => k.toBase58())).to.deep.equal([notary.publicKey.toBase58()]);
         expect(account.verdictMayExecute).to.be.false;
+        // Every v3 mint stamps PROPOSAL_LAYOUT_VERSION, with or without a site.
+        expect(account.layoutVersion).to.equal(3);
     });
 
     it("increments the counter", async () => {
@@ -685,6 +693,246 @@ describe("proposal_nft", () => {
             expect((account.solBalance as any).toNumber()).to.equal(0);
             expect(account.status).to.deep.equal({ expired: {} });
             await expectFailure(() => reclaim(proposalPDA), "ZeroAmount");
+        });
+    });
+
+    // ========================
+    // v3: parcel-optional proposals (site_hash, open_ground)
+    // ========================
+
+    describe("v3 site and open ground", () => {
+        const LAMPORTS = anchor.web3.LAMPORTS_PER_SOL;
+        const proposer = () => provider.wallet.publicKey;
+        const ownerMeta = () => [{ pubkey: proposer(), isSigner: false, isWritable: true }];
+
+        async function verdictOn(proposal: PublicKey, verdict: "executed" | "expired") {
+            const attestation = await attestVerdict(provider, notary, { proposalAccount: proposal, verdict });
+            await settleWithVerdict(program, { proposal, verdict: attestation, credential: notary.credential });
+            return attestation;
+        }
+
+        async function balanceDelta(fn: () => Promise<any>): Promise<number> {
+            const before = await provider.connection.getBalance(proposer());
+            await fn();
+            return (await provider.connection.getBalance(proposer())) - before;
+        }
+
+        describe("mint_and_fund", () => {
+            it("mints an empty binding with a site hash as open ground and stores both", async () => {
+                const site = testSiteHash("empty-ok");
+                const { proposalPDA } = await mintProposal([], false, 0, { siteHash: site, openGround: true, verdictMayExecute: true });
+                const account = await program.account.proposal.fetch(proposalPDA);
+                expect(account.parcelIds).to.deep.equal([]);
+                expect(Array.from(account.siteHash as number[])).to.deep.equal(site);
+                expect(account.openGround).to.be.true;
+                expect(account.openGroundCleared).to.be.false;
+                expect(account.layoutVersion).to.equal(3);
+                expect(account.status).to.deep.equal({ active: {} });
+            });
+
+            it("refuses an empty binding without a site hash (NoParcels)", async () => {
+                await expectFailure(() => mintProposal([], false, 0, { openGround: true, verdictMayExecute: true }), "NoParcels");
+            });
+
+            it("refuses an empty binding that is not open ground", async () => {
+                await expectFailure(
+                    () => mintProposal([], false, 0, { siteHash: testSiteHash("empty-closed"), verdictMayExecute: true }),
+                    "EmptyBindingIsOpenGround"
+                );
+            });
+
+            it("refuses open ground without a site hash", async () => {
+                await expectFailure(() => mintProposal(["HR-v3-nosite"], false, 0, { openGround: true }), "OpenGroundNeedsSite");
+            });
+
+            it("a site hash on a fully bound proposal changes nothing: consent alone executes", async () => {
+                const { proposalPDA } = await mintProposal(["HR-v3-bound"], false, 0, { siteHash: testSiteHash("bound") });
+                await attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: "HR-v3-bound", owner: await fundedKeypair() });
+                expect(await status(proposalPDA)).to.deep.equal({ executed: {} });
+            });
+        });
+
+        describe("empty binding", () => {
+            it("loophole regression: an executed verdict cannot execute an empty binding minted without verdict_may_execute", async () => {
+                const { proposalPDA } = await mintProposal([], false, 0.1 * LAMPORTS, { siteHash: testSiteHash("loophole"), openGround: true });
+                const verdict = await attestVerdict(provider, notary, { proposalAccount: proposalPDA, verdict: "executed" });
+                // v2 read acceptance_count == parcel_ids.len() (0 == 0) as consent and executed here.
+                await expectFailure(
+                    () => settleWithVerdict(program, { proposal: proposalPDA, verdict, credential: notary.credential }),
+                    "VerdictCannotSkipConsent"
+                );
+                expect(await status(proposalPDA)).to.deep.equal({ active: {} });
+                // Its funds still have an exit: expire, then reclaim.
+                await verdictOn(proposalPDA, "expired");
+                const delta = await balanceDelta(() => program.methods.reclaimExpiredFunds()
+                    .accountsStrict({ proposal: proposalPDA, owner: proposer() }).rpc());
+                expect(delta).to.be.within(0.1 * LAMPORTS - 20_000, 0.1 * LAMPORTS);
+            });
+
+            it("executes only through an executed verdict when minted with verdict_may_execute; distribute returns the balance", async () => {
+                const { proposalPDA } = await mintProposal([], false, 0.2 * LAMPORTS, { siteHash: testSiteHash("permit"), openGround: true, verdictMayExecute: true });
+                const verdict = await verdictOn(proposalPDA, "executed");
+                expect(await status(proposalPDA)).to.deep.equal({ executed: {} });
+                expect((await program.account.verdictRecord.fetch(findVerdictRecord(proposalPDA, verdict))).verdict).to.equal(1);
+                const delta = await balanceDelta(() => program.methods.distributeFunds()
+                    .accountsStrict({ proposal: proposalPDA }).remainingAccounts(ownerMeta()).rpc());
+                expect(delta).to.be.within(0.2 * LAMPORTS - 20_000, 0.2 * LAMPORTS);
+            });
+
+            it("has nothing to accept: an acceptance for any parcel is refused", async () => {
+                const { proposalPDA } = await mintProposal([], false, 0, { siteHash: testSiteHash("no-accept"), openGround: true, verdictMayExecute: true });
+                await ensureParcelAnchor(parcelProgram, "HR-v3-stray");
+                await expectFailure(
+                    () => attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: "HR-v3-stray", owner: (provider.wallet as any).payer }),
+                    "ParcelNotInProposal"
+                );
+            });
+
+            it("cancel refunds an Active empty binding", async () => {
+                const { proposalPDA } = await mintProposal([], false, 0.1 * LAMPORTS, { siteHash: testSiteHash("cancel"), openGround: true });
+                const delta = await balanceDelta(() => program.methods.cancelAndRefund()
+                    .accountsStrict({ proposal: proposalPDA, owner: proposer() }).rpc());
+                expect(delta).to.be.within(0.1 * LAMPORTS - 20_000, 0.1 * LAMPORTS);
+                expect(await status(proposalPDA)).to.deep.equal({ cancelled: {} });
+            });
+        });
+
+        describe("open ground with parcels", () => {
+            it("consent first: every owner accepts, the proposal waits Active for the open-ground verdict, which executes it", async () => {
+                const ids = ["HR-v3-og-a", "HR-v3-og-b"];
+                const { proposalPDA } = await mintProposal(ids, false, 0.2 * LAMPORTS, { siteHash: testSiteHash("og-consent-first"), openGround: true, verdictMayExecute: true });
+                const [alice, bob] = await Promise.all([fundedKeypair(), fundedKeypair()]);
+                await attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: ids[0], owner: alice });
+                await attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: ids[1], owner: bob });
+                let account = await program.account.proposal.fetch(proposalPDA);
+                expect(account.status).to.deep.equal({ active: {} });
+                expect((account.acceptanceCount as any).toNumber()).to.equal(2);
+                expect(account.acceptancePossible).to.be.true; // still open, e.g. to contributions
+
+                const verdict = await verdictOn(proposalPDA, "executed");
+                account = await program.account.proposal.fetch(proposalPDA);
+                expect(account.status).to.deep.equal({ executed: {} });
+                expect(account.openGroundCleared).to.be.true;
+                expect(account.acceptancePossible).to.be.false;
+                expect((await program.account.verdictRecord.fetch(findVerdictRecord(proposalPDA, verdict))).verdict).to.equal(1);
+
+                // The owners' records receive the escrow (empty payouts pay the proposer).
+                const meta = (pubkey: PublicKey, isWritable = false) => ({ pubkey, isSigner: false, isWritable });
+                const delta = await balanceDelta(() => program.methods.distributeFunds().accountsStrict({ proposal: proposalPDA })
+                    .remainingAccounts([
+                        meta(findTally(program.programId, proposalPDA, ids[0])), meta(findRecord(program.programId, proposalPDA, ids[0], alice.publicKey)), meta(proposer(), true),
+                        meta(findTally(program.programId, proposalPDA, ids[1])), meta(findRecord(program.programId, proposalPDA, ids[1], bob.publicKey)), meta(proposer(), true),
+                    ]).rpc());
+                expect(delta).to.be.within(0.2 * LAMPORTS - 20_000, 0.2 * LAMPORTS);
+            });
+
+            it("verdict first: the verdict clears the open ground but does not execute; the last owner's acceptance does", async () => {
+                const ids = ["HR-v3-ogv-a", "HR-v3-ogv-b"];
+                const { proposalPDA } = await mintProposal(ids, false, 0, { siteHash: testSiteHash("og-verdict-first"), openGround: true, verdictMayExecute: true });
+                const verdict = await verdictOn(proposalPDA, "executed");
+                let account = await program.account.proposal.fetch(proposalPDA);
+                expect(account.status).to.deep.equal({ active: {} });
+                expect(account.openGroundCleared).to.be.true;
+                expect(account.acceptancePossible).to.be.true;
+                // The record keeps what the verdict said (executed) although the status stayed Active.
+                expect((await program.account.verdictRecord.fetch(findVerdictRecord(proposalPDA, verdict))).verdict).to.equal(1);
+
+                await attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: ids[0], owner: await fundedKeypair() });
+                expect(await status(proposalPDA)).to.deep.equal({ active: {} });
+                await attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: ids[1], owner: await fundedKeypair() });
+                expect(await status(proposalPDA)).to.deep.equal({ executed: {} });
+            });
+
+            it("without verdict_may_execute, complete consent never executes it: the verdict is refused, cancel refunds", async () => {
+                const { proposalPDA } = await mintProposal(["HR-v3-ognv"], false, 0.1 * LAMPORTS, { siteHash: testSiteHash("og-no-verdict"), openGround: true });
+                await attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: "HR-v3-ognv", owner: await fundedKeypair() });
+                expect(await status(proposalPDA)).to.deep.equal({ active: {} });
+                const verdict = await attestVerdict(provider, notary, { proposalAccount: proposalPDA, verdict: "executed" });
+                await expectFailure(
+                    () => settleWithVerdict(program, { proposal: proposalPDA, verdict, credential: notary.credential }),
+                    "VerdictCannotSkipConsent"
+                );
+                const delta = await balanceDelta(() => program.methods.cancelAndRefund()
+                    .accountsStrict({ proposal: proposalPDA, owner: proposer() }).rpc());
+                expect(delta).to.be.within(0.1 * LAMPORTS - 20_000, 0.1 * LAMPORTS);
+            });
+
+            it("an expired verdict ends a proposal waiting for its open-ground verdict; reclaim returns the escrow", async () => {
+                const { proposalPDA } = await mintProposal(["HR-v3-ogexp"], false, 0.1 * LAMPORTS, { siteHash: testSiteHash("og-expired"), openGround: true, verdictMayExecute: true });
+                await attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: "HR-v3-ogexp", owner: await fundedKeypair() });
+                await verdictOn(proposalPDA, "expired");
+                expect(await status(proposalPDA)).to.deep.equal({ expired: {} });
+                const delta = await balanceDelta(() => program.methods.reclaimExpiredFunds()
+                    .accountsStrict({ proposal: proposalPDA, owner: proposer() }).rpc());
+                expect(delta).to.be.within(0.1 * LAMPORTS - 20_000, 0.1 * LAMPORTS);
+            });
+        });
+
+        describe("v2 accounts (genesis fixture in the v2 layout)", () => {
+            const fixtureDir = path.join(__dirname, "fixtures");
+            const loadKeypair = (name: string) =>
+                Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(path.join(fixtureDir, `${name}.keypair.json`), "utf8"))));
+            const v2Proposal = loadKeypair("v2-proposal-address").publicKey;
+            const v2Parcel = "HR-v2-fixture";
+            // Byte offset of site_hash in a Proposal account: walk the borsh prefix up to verdict_may_execute.
+            const siteHashOffset = (data: Buffer) => {
+                let offset = 8 + 8 + 32;
+                const skipStrings = () => {
+                    const count = data.readUInt32LE(offset); offset += 4;
+                    for (let i = 0; i < count; i++) offset += 4 + data.readUInt32LE(offset);
+                };
+                skipStrings();                                   // parcel_ids
+                offset += 1;                                     // is_conditional
+                offset += 4 + data.readUInt32LE(offset);         // image_uri
+                offset += 1 + 1 + 8 + 8 + 8;                     // acceptance_possible, status, balances, count
+                skipStrings();                                   // accepted_parcels
+                offset += 4 + 32 * data.readUInt32LE(offset);    // lens
+                return offset + 1 + 1;                           // bump, verdict_may_execute
+            };
+
+            it("reads the missing v3 fields as no site, no open ground", async () => {
+                const raw = (await provider.connection.getAccountInfo(v2Proposal))!;
+                expect(raw.data.length).to.equal(4096);
+                const account = await program.account.proposal.fetch(v2Proposal);
+                expect(account.parcelIds).to.deep.equal([v2Parcel]);
+                expect(account.verdictMayExecute).to.be.false;
+                expect(Array.from(account.siteHash as number[])).to.deep.equal(NO_SITE);
+                expect(account.openGround).to.be.false;
+                expect(account.openGroundCleared).to.be.false;
+                expect(account.layoutVersion).to.equal(0);
+                // The fixture really is v2: zero bytes from site_hash through layout_version (and beyond).
+                const tail = raw.data.subarray(siteHashOffset(raw.data));
+                expect(tail.subarray(0, 32 + 1 + 1 + 1).every(byte => byte === 0)).to.be.true;
+            });
+
+            it("behaves as before: an executed verdict is refused, the attested owner's acceptance executes, distribute pays", async () => {
+                const member = await createLensMember(provider, loadKeypair("v2-lens-member"));
+                const verdict = await attestVerdict(provider, member, { proposalAccount: v2Proposal, verdict: "executed" });
+                await expectFailure(
+                    () => settleWithVerdict(program, { proposal: v2Proposal, verdict, credential: member.credential }),
+                    "VerdictCannotSkipConsent"
+                );
+                await ensureParcelAnchor(parcelProgram, v2Parcel);
+                const owner = await fundedKeypair();
+                const payout = Keypair.generate().publicKey;
+                await attestAndAccept(program, member, { proposal: v2Proposal, parcelId: v2Parcel, owner, payout });
+                expect(await status(v2Proposal)).to.deep.equal({ executed: {} });
+
+                // The v3 write-back leaves a readable account of the same size, still layout 0: only the
+                // mint sets layout_version, so a v2 account stays recognisably legacy after v3 writes it.
+                const rewritten = (await provider.connection.getAccountInfo(v2Proposal))!;
+                expect(rewritten.data.length).to.equal(4096);
+                const afterAccept = await program.account.proposal.fetch(v2Proposal);
+                expect(afterAccept.acceptedParcels).to.deep.equal([v2Parcel]);
+                expect(afterAccept.layoutVersion).to.equal(0);
+                expect(rewritten.data[siteHashOffset(rewritten.data) + 34]).to.equal(0);
+                await program.methods.distributeFunds().accountsStrict({ proposal: v2Proposal }).remainingAccounts([
+                    { pubkey: findTally(program.programId, v2Proposal, v2Parcel), isSigner: false, isWritable: false },
+                    { pubkey: findRecord(program.programId, v2Proposal, v2Parcel, owner.publicKey), isSigner: false, isWritable: false },
+                    { pubkey: payout, isSigner: false, isWritable: true },
+                ]).rpc();
+                expect(await provider.connection.getBalance(payout)).to.equal(0.1 * LAMPORTS);
+            });
         });
     });
 

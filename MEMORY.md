@@ -400,3 +400,28 @@
 - 2026-09-30: World-parcel research consolidated in `world-parcels/FINDINGS.md` (what verified means, techniques that worked, network limits, sensitive-data handling, open items). Branch merged to main.
 - 2026-09-30: Rwanda verified nationally: NLA LAIS parcels are open per-district ArcGIS layers on geodata.rw (RSDI) and the NLA ArcGIS Online account, no token; found via the NLA site -> RSDI portal catalogue. Headed Chromium in this container fails on the proxy CA chain; catalogue/REST inspection is the substitute.
 - 2026-09-30: Developed-country re-check: JP, SG, UY, CO verified nationally (50 green); CL, PE rural-only; HU is paid by law; KR needs a VWorld key. Singapore's Open Data Licence is the first licence read and cleared.
+- 2026-10-01: **Proposals are about a site; parcels are a derived binding.** A proposal's subject is the
+  geography it occupies (its site); cadastral parcels are attached by an adapter for execution (consent,
+  attestations, compensation) and may be absent. Land readjustment generalises to subdivision on bare ground.
+- 2026-10-01: **Parcel intrusion tolerance is linear, not a share of area, and defaults to 0.** A parcel joins
+  a proposal's binding when the site reaches into it at all; the tolerance is a parameter in metres of inward
+  intrusion (measurement error at most), because in cities you can't take any of a neighbour's parcel. A
+  design that needs half a metre of another parcel should change, or include (buy) that parcel.
+- 2026-10-01: **The server binds only the cadastre it holds.** `POST /proposals/binding` answers
+  `unknown` (not `none`) for a site outside every Croatian cadastral municipality, and a create there
+  keeps its declaration unverified; `none` is reserved for a city configured with no cadastre
+  (explore). Intrusion width is a bisection on the inward buffer in both SQL and turf, not
+  ST_MaximumInscribedCircle (too coarse on long slivers).
+- 2026-10-01: **Site-first creation (phase 2).** A click on loaded ground with no parcel (or anywhere in a
+  city without a cadastre) opens the ground menu; "not loaded yet" never counts as bare. A drawn or
+  reshaped site's declaration is its binding, published as the server's; small (< 0.5 m) intrusions are
+  confirmed at publish, never passed by a tolerance. Apply on ground without parcels refuses with a
+  clear message until phase 3.
+- 2026-10-01: **Open ground is hosted, never minted from gaps (phase 3).** Where a proposal's binding leaves
+  part of its site on no parcel, apply derives a transient host `ground:<siteHash>` = site − bound parcels −
+  pieces others formed there; pieces on it carry `groundIds` and no cadastre ids. A proposal takes exactly
+  its site: partly covered parcels are cut at the body edge (their rest stays their piece); whole-parcel
+  taking is only the freeform building's explicit option, and only for cadastral parcels.
+- 2026-10-01: **A later road carves every formed piece it crosses (phase 6b).** `_groundAfterLaterCorridors`
+  clips applied corridors later in formation order out of structure bodies AND readjustment/subdivision
+  plots, on cadastral and open ground; records stay authored, unapply restores. Earlier roads still refuse.

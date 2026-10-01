@@ -122,6 +122,7 @@
                 'css/ai-scene.css',
                 'css/map-shell.css',
                 'css/parcel-menu.css',
+                'css/site-tool.css',
                 'css/selection-tray.css',
                 'css/map-search.css',
                 'css/command-palette.css',
@@ -1402,6 +1403,10 @@
                     <div class="metric-label" data-i18n-key="panel.road.parcelAreaLabel">Parcel area:</div>
                     <div class="metric-value" id="road-parcels-area">—</div>
                 </div>
+                <div class="metric-group" hidden>
+                    <div class="metric-label" data-i18n-key="panel.road.openGroundLabel">Open ground:</div>
+                    <div class="metric-value" id="road-open-ground">—</div>
+                </div>
                 <div class="metric-group">
                     <div class="metric-label" data-i18n-key="panel.road.individualOwnersLabel">Individual owners:</div>
                     <div class="metric-value" id="road-individual-owners">—</div>
@@ -1595,6 +1600,7 @@
             'js/solana/chain-data-loader.js',
             'js/solana/acceptance-client.js',
             'js/solana/acceptance-bridge.js',
+            'js/proposals/site-hash.js',
             'js/solana/proposal-bridge.js',
             'js/solana/pledge-client.js',
             'js/solana/pledge-bridge.js',
@@ -1628,6 +1634,8 @@
             'js/ui/map-shell.js',
             'js/ui/parcel-menu-model.js',
             'js/ui/parcel-menu.js',
+            'js/ui/ground-menu-model.js',
+            'js/ui/ground-menu.js',
             'js/ui/selection-tray.js',
             'js/ui/search-model.js',
             'js/world/world-coverage.js',
@@ -1681,6 +1689,13 @@
             'js/proposals/parcel-id.js',
             'js/proposals/footprint-parts.js',
             'js/proposals/plan-order.js',
+            'js/proposals/site-binding.js',
+            'js/proposals/open-ground.js',
+            'js/proposals/site-clip.js',
+            'js/proposals/site-plots.js',
+            'js/proposals/subdivision.js',
+            'js/proposals/site-draft.js',
+            'js/proposals/publish-binding.js',
             'js/proposals/parcel-arrangement.js',
             'js/proposals/readjustment-contributions.js',
             'js/proposals/authored-record.js',
@@ -1747,6 +1762,7 @@
             'js/proposals/bootstrap.js',
             'js/proposals/sharing.js',
             'js/proposals/plan-yield.js',
+            'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',
             'js/proposals/demolition-prefetch.js',
             'js/proposals/grain-score.js',
@@ -1925,6 +1941,7 @@
             'js/parcel-blocks.js',
             'js/proposal-warnings.js',
             'js/polygon-geometry-editor.js',
+            'js/site-drawing.js',
             'js/building-density-stats.js',
             'js/blockify-map-fit.js',
             'js/design-change-tracker.js',

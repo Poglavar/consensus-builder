@@ -147,6 +147,19 @@ describe('ugt tools: attesters, ownership and mint', () => {
             parcelIds: [PARCEL], lens: [AUTHORITY], imageUri: 'https://x/img', isConditional: false, lamports: 0n
         }));
     });
+
+    it('v3: mints an empty binding only with a site and its server binding', async () => {
+        const mintProposal = vi.fn(async () => ({ signature: 'mint-tx', proposalPda: 'pda' }));
+        const env = { UGT_AGENT_KEYPAIR: keyFile, UGT_MCP_LIVE: '1' };
+        const tools = createUrbanGameTheoryTools({ env, fetchImpl: vi.fn(), createConnection: () => ({}), dependencies: { mintProposal, sendAndConfirmPolling: vi.fn() } });
+        const site = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.9701, 45.8], [15.9701, 45.8001], [15.97, 45.8]]] };
+        await expect(tools.mintProposal({ parcelIds: [], lens: [AUTHORITY], confirm: true })).rejects.toThrow(/or pass the proposal site/);
+        await expect(tools.mintProposal({ parcelIds: [], site, lens: [AUTHORITY], confirm: true })).rejects.toThrow(/binding/);
+        expect(mintProposal).not.toHaveBeenCalled();
+        const binding = { parcels: [], coverage: 'none' };
+        await tools.mintProposal({ parcelIds: [], site, binding, lens: [AUTHORITY], confirm: true });
+        expect(mintProposal).toHaveBeenCalledWith(expect.objectContaining({ parcelIds: [], site, binding, lens: [AUTHORITY] }));
+    });
 });
 
 describe('member lookups and operator verdicts against a dry-run reference member', () => {

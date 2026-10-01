@@ -1052,8 +1052,13 @@ function calculateProposalGeometryBounds(proposal) {
     return null;
 }
 
+// Bounds of a proposal: its parcels' centres, else (no parcels, or none on the map) its site's
+// extent when `options.site` is given — a site on bare ground has no parcel to centre on.
 function calculateProposalBounds(parcelIds, options = {}) {
-    if (!parcelIds || parcelIds.length === 0) return null;
+    const siteBounds = () => (options.site && window.__siteDraft && typeof window.__siteDraft.siteBounds === 'function')
+        ? window.__siteDraft.siteBounds(options.site)
+        : null;
+    if (!parcelIds || parcelIds.length === 0) return siteBounds();
 
     const positions = [];
     const missingParcels = [];
@@ -1078,6 +1083,8 @@ function calculateProposalBounds(parcelIds, options = {}) {
     });
 
     if (positions.length === 0) {
+        const fromSite = siteBounds();
+        if (fromSite) return fromSite;
         if (options.warnIfMissing !== false) {
             console.warn('Cannot calculate bounds - no valid parcel positions found');
         }
@@ -1122,6 +1129,12 @@ function calculateProposalBounds(parcelIds, options = {}) {
 
 function computeProposalArea(proposal) {
     if (!proposal) return 0;
+
+    // A proposal's area is its site's when it has one (drawn sites need not follow parcels).
+    if (proposal.site && window.__siteDraft && typeof window.__siteDraft.siteAreaM2 === 'function') {
+        const siteArea = window.__siteDraft.siteAreaM2(proposal.site);
+        if (siteArea > 0) return siteArea;
+    }
 
     if (Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0) {
         return proposal.cadastreParcelIds.reduce((sum, id) => sum + getParcelAreaById(id), 0);

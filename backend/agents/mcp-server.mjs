@@ -101,9 +101,16 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
 
     server.registerTool('ugt_mint_proposal', {
         title: 'Mint a proposal with a chosen lens',
-        description: 'Sign mint_and_fund on devnet with UGT_AGENT_KEYPAIR: the parcels, the lens (lens member keys whose attestations decide this proposal; not only your own key), the image URI and the conditional flag.',
+        description: 'Sign mint_and_fund on devnet with UGT_AGENT_KEYPAIR: the parcels (the site\'s binding; may be empty when a site is given), the site and its binding from POST /proposals/binding (they set site_hash and open_ground; open ground executes only through a lens member\'s executed verdict), the lens (lens member keys whose attestations decide this proposal; not only your own key), the image URI and the conditional flag.',
         inputSchema: z.object({
-            parcelIds: z.array(z.string().min(1)).min(1),
+            parcelIds: z.array(z.string().min(1)).default([]),
+            site: z.object({
+                type: z.enum(['Polygon', 'MultiPolygon']),
+                coordinates: z.array(z.any())
+            }).optional().describe('The proposal site, GeoJSON EPSG:4326; required when parcelIds is empty'),
+            binding: z.object({
+                coverage: z.enum(['complete', 'partial', 'none', 'unknown'])
+            }).passthrough().optional().describe('The server binding of the site (POST /proposals/binding); required with a site'),
             lens: z.array(pubkey).min(1).describe('Lens member keys, for example from ugt_list_attesters'),
             imageUri: z.string().default(''),
             isConditional: z.boolean().default(true),
@@ -131,12 +138,22 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
         inputSchema: z.object({
             proposal: z.object({
                 proposalId: z.string().min(1),
-                cadastreParcelIds: z.array(z.string().min(1)).min(1),
+                // Equal to the site's binding (POST /agent/binding answers it). Empty only
+                // for a material proposal that carries a site; the server enforces the rest.
+                cadastreParcelIds: z.array(z.string().min(1)).default([]),
+                site: z.object({
+                    type: z.enum(['Polygon', 'MultiPolygon']),
+                    coordinates: z.array(z.any())
+                }).passthrough().optional().describe('The ground the proposal occupies (GeoJSON, EPSG:4326)'),
+                toleranceM: z.number().min(0).max(1).optional().describe('Linear intrusion tolerance in metres (default 0)'),
                 city: z.string().optional(), type: z.string().optional(), name: z.string().optional(),
                 description: z.string().optional(), offer: z.number().optional(), offerCurrency: z.string().optional(),
                 lens: z.array(pubkey).optional().describe('The lens the proposal was minted with (ugt_mint_proposal)'),
                 agent: z.object({ persona: z.string().optional(), rationale: z.string().optional(), run_id: z.string().optional() }).optional()
-            }).passthrough(),
+            }).passthrough().refine(p => p.cadastreParcelIds.length > 0 || !!p.site, {
+                message: 'Declare cadastreParcelIds, or give a site for a proposal on ground with no cadastral parcel.',
+                path: ['cadastreParcelIds']
+            }),
             confirm: confirmation
         }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.submitProposal(args)));

@@ -60,6 +60,16 @@
         return Array.from(new Set(raw.map(normalizeId).filter(Boolean)));
     }
 
+    // Open-ground provenance (PARCEL-OPTIONAL.md phase 3): a piece minted on ground no cadastral
+    // parcel covers names the proposal site's `ground:<siteHash>` here instead of (or beside) its
+    // cadastral anchors. It is never a cadastral id and is never indexed as one.
+    function explicitGroundIds(feature) {
+        const raw = Array.isArray(feature?.properties?.groundIds)
+            ? feature.properties.groundIds
+            : [];
+        return Array.from(new Set(raw.map(normalizeId).filter(id => id.startsWith('ground:') && id.length > 7)));
+    }
+
     function producerId(feature) {
         return normalizeId(feature?.properties?.producedByProposalId);
     }
@@ -188,7 +198,10 @@
             const props = feature.properties || (feature.properties = {});
             assertNoRetiredProvenance(props, sourceId);
             const cadastreIds = config.cadastreSeed ? [normalizeId(config.cadastreId || sourceId)] : explicitCadastreIds(feature);
-            if (!cadastreIds.length) {
+            const groundIds = config.cadastreSeed ? [] : explicitGroundIds(feature);
+            // A piece on open ground only is legitimate when a proposal produced it; the producer
+            // stamp is then its whole ownership boundary (removal is by producer, never by scope).
+            if (!cadastreIds.length && !(groundIds.length && producerId(feature))) {
                 const error = new TypeError(`Generated live parcel ${sourceId} has no explicit cadastral provenance.`);
                 error.code = 'live-parcel-provenance-missing';
                 error.parcelId = sourceId;
@@ -197,6 +210,8 @@
             props.parcelId = sourceId;
             props.id = sourceId;
             props.cadastreParcelIds = cadastreIds;
+            if (groundIds.length) props.groundIds = groundIds;
+            else delete props.groundIds;
             if (formedByIds(feature).length) props.formedByProposalIds = formedByIds(feature);
             else delete props.formedByProposalIds;
             metrics.normalized += 1;
@@ -887,9 +902,10 @@
             snapshot,
             diagnostics,
             featureId,
-            explicitCadastreIds
+            explicitCadastreIds,
+            explicitGroundIds
         });
     }
 
-    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, GEOMETRY_EPSILON_M2 });
+    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, explicitGroundIds, GEOMETRY_EPSILON_M2 });
 });

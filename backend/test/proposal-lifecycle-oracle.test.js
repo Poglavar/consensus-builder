@@ -18,6 +18,7 @@ import {
     STATUS_CANCELLED,
     STATUS_EXECUTED,
     STATUS_EXPIRED,
+    readProposalSite,
     sourceForProposal,
     syncProposalLifecycleEvents
 } from '../oracle/proposal-lifecycle.js';
@@ -33,7 +34,9 @@ function proposalAccount(status) {
     return Buffer.concat([
         Buffer.alloc(8), Buffer.alloc(8), Buffer.alloc(32),
         u32(1), u32(parcel.length), parcel,
-        Buffer.from([0]), u32(uri.length), uri, Buffer.from([1, status])
+        Buffer.from([0]), u32(uri.length), uri, Buffer.from([1, status]),
+        // the rest of the fixed 4096-byte account, zero-initialised like every real one
+        Buffer.alloc(4096 - (8 + 8 + 32 + 4 + 4 + parcel.length + 1 + 4 + uri.length + 2))
     ]);
 }
 
@@ -69,9 +72,11 @@ describe('proposal lifecycle oracle', () => {
         expect(readProposalStatus(data)).toBe(STATUS_EXECUTED);
         expect(readProposalLens(data)).toEqual([OWNER, PROGRAM]);
         expect(readProposalLens(proposalAccountBytes({ lens: [] }))).toEqual([]);
-        expect(() => readProposalLens(data.subarray(0, data.length - 20))).toThrow(/lens/);
-        // v1 accounts end at status in the old fixture below: no lens, never an invented one.
-        expect(() => readProposalLens(proposalAccount(STATUS_EXECUTED))).toThrow();
+        const unpadded = proposalAccountBytes({ status: STATUS_EXECUTED, acceptedParcels: ['HR-1', 'HR-22'], lens: [OWNER, PROGRAM], padTo: 0 });
+        expect(() => readProposalLens(unpadded.subarray(0, unpadded.length - 60))).toThrow(/lens/);
+        // A v1 account (zero-initialised after status) has a zero lens count: no lens, never an invented one.
+        expect(readProposalLens(proposalAccount(STATUS_EXECUTED))).toEqual([]);
+        expect(() => readProposalLens(proposalAccount(STATUS_EXECUTED).subarray(0, 70))).toThrow();
     });
 
     it('treats Expired (3) as a terminal outcome anchored to settle_with_verdict', () => {
@@ -126,6 +131,23 @@ describe('proposal lifecycle oracle', () => {
         expect(event.evidence.recipeId).toBe('proposal-lifecycle-v2');
     });
 
+    it('reads the v3 site fields after the lens; an empty binding has parcelCount 0', () => {
+        const site = readProposalSite(proposalAccountBytes({
+            status: STATUS_EXECUTED, parcelIds: [], lens: [OWNER], verdictMayExecute: true,
+            siteHash: Buffer.alloc(32, 0x42), openGround: true
+        }));
+        expect(site).toEqual({ siteHash: '42'.repeat(32), openGround: true, openGroundCleared: false, layoutVersion: 3, parcelCount: 0 });
+        expect(readProposalSite(proposalAccountBytes({ lens: [OWNER] }))).toEqual({ siteHash: null, openGround: false, openGroundCleared: false, layoutVersion: 3, parcelCount: 1 });
+        // A v1/v2 account: zero padding after verdict_may_execute reads layout 0.
+        expect(readProposalSite(proposalAccountBytes({ lens: [OWNER], layoutVersion: 0 })).layoutVersion).toBe(0);
+        const event = buildProposalLifecycleEvent({
+            proposalAccount: PROPOSAL, status: STATUS_EXECUTED, transaction: 'tx-1', blockTime: 1_789_895_600,
+            accountData: proposalAccountBytes({ status: STATUS_EXECUTED, parcelIds: [], lens: [OWNER], siteHash: Buffer.alloc(32, 1), openGround: true })
+        });
+        expect(event.evidence.site).toMatchObject({ parcelCount: 0, openGround: true });
+        expect(() => readProposalSite(proposalAccountBytes({ lens: [OWNER], padTo: 0 }).subarray(0, 140))).toThrow(/site fields/);
+    });
+
     it('uses the chain block time and account bytes as event evidence', () => {
         const data = proposalAccount(STATUS_EXECUTED);
         const event = buildProposalLifecycleEvent({
@@ -136,7 +158,7 @@ describe('proposal lifecycle oracle', () => {
             eventType: 'proposal_lifecycle', outcome: 'executed',
             observedAt: '2026-09-20T09:13:20.000Z',
             source: { transaction: 'tx-1', slot: 42 },
-            evidence: { proposalStatusByte: STATUS_EXECUTED }
+            evidence: { proposalStatusByte: STATUS_EXECUTED, site: { siteHash: null, openGround: false, openGroundCleared: false, layoutVersion: 0, parcelCount: 1 } }
         });
         expect(event.source.hash).toMatch(/^sha256:[a-f0-9]{64}$/);
         expect(() => buildProposalLifecycleEvent({

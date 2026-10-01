@@ -152,11 +152,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Total area: sum across whatever we have resolved so far. As parcelDataLoaded fires and
     // more rows hydrate via the lazy list, this number is best-effort — accuracy improves as
     // the user scrolls / panes parcels into view.
-    const totalArea = parentParcels.reduce((sum, ap) => {
-        const area = ap?.feature?.properties?.calculatedArea;
-        if (Number.isFinite(area)) return sum + area;
-        return sum;
-    }, 0);
+    // A proposal on open ground has no (or not only) cadastral parents: with none, its area is
+    // its site's (computeProposalArea prefers the site).
+    const totalArea = parentParcels.length
+        ? parentParcels.reduce((sum, ap) => {
+            const area = ap?.feature?.properties?.calculatedArea;
+            if (Number.isFinite(area)) return sum + area;
+            return sum;
+        }, 0)
+        : (typeof computeProposalArea === 'function' ? (Number(computeProposalArea(proposal)) || 0) : 0);
 
     const renderAncestorParcelItem = (parentParcelOrId) => {
         const parentParcel = (typeof parentParcelOrId === 'string')

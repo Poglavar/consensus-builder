@@ -2,16 +2,34 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://api.urbangametheory.xyz/docs/agents.json",
   "title": "Urban Game Theory — minimal agent proposal recipe",
-  "description": "Body of POST /agent/proposals (x402-paid). Only cadastreParcelIds is required. agent.wallet and agent.paid are set by the server from the settled payment; author, if sent, must equal the paying wallet.",
+  "description": "Body of POST /agent/proposals (x402-paid). Declare land with cadastreParcelIds, or give a site (or geometry of its own) for a material proposal on ground with no cadastral parcel. cadastreParcelIds must equal the server binding of the site (POST /agent/binding). agent.wallet and agent.paid are set by the server from the settled payment; author, if sent, must equal the paying wallet.",
   "type": "object",
-  "required": ["cadastreParcelIds"],
+  "anyOf": [
+    { "required": ["cadastreParcelIds"], "properties": { "cadastreParcelIds": { "minItems": 1 } } },
+    { "required": ["site"] }
+  ],
   "properties": {
     "city": { "type": "string", "description": "City id, e.g. zagreb, split, belgrade, new_york.", "maxLength": 100 },
     "cadastreParcelIds": {
       "type": "array",
-      "minItems": 1,
       "items": { "type": "string", "maxLength": 255 },
-      "description": "The parcels the proposal is declared on (from POST /parcels/under)."
+      "description": "The parcels the proposal is bound to: exactly the parcels its site reaches into (POST /agent/binding answers binding.parcels). Empty is allowed for a material proposal (building, structure, road, readjustment) whose site lies on no cadastral parcel; never for a parcel act (offer, ownership transfer, vote, road designation)."
+    },
+    "site": {
+      "type": "object",
+      "description": "The ground the proposal occupies: GeoJSON Polygon or MultiPolygon, EPSG:4326 (at most 100000 vertices, 500 km² bounding box). Optional: without it the site is the proposal's own geometry (or, for a parcel act, its declared parcels). The proposal's geometry must lie inside it.",
+      "properties": {
+        "type": { "type": "string", "enum": ["Polygon", "MultiPolygon"] },
+        "coordinates": { "type": "array" }
+      },
+      "required": ["type", "coordinates"]
+    },
+    "toleranceM": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Linear intrusion tolerance in metres: a parcel is bound when the site reaches into it by more than this width (the diameter of the largest circle inside site ∩ parcel). Default 0: any reach binds. Measurement error only, never a design allowance."
     },
     "proposalId": { "type": "string", "maxLength": 255, "description": "Unique operation id. Reuse it, together with the same x402 payment identifier and body, for safe retries." },
     "type": { "type": "string", "maxLength": 50, "description": "parcel | building | structure | road (free text, 50 chars)." },

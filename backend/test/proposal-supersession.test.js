@@ -201,3 +201,24 @@ describe('ground is taken by overlap, not by parcel identity', () => {
         expect(alternatives.map(entry => entry.proposalId)).toEqual(['single-a']);
     });
 });
+
+// The road tool's "Build through": a road crossing an applied park cuts through it (the park keeps
+// the rest), so explicit Apply must not take the park off the map as a rival. Buildings it covers
+// remain rivals.
+describe('a road across an applied structure', () => {
+    const box = (west, south, east, north) => ({
+        type: 'Polygon',
+        coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+    });
+    const road = { proposalId: 'road', goal: 'road-track', roadProposal: { definition: { polygon: box(15.9695, 45.8004, 15.9725, 45.8006), width: 6 } } };
+
+    it('is not an alternative to the park it crosses', () => {
+        const park = { proposalId: 'park', applied: true, goal: 'park', structureProposal: { kind: 'park', geometry: box(15.97, 45.8, 15.972, 45.801) } };
+        expect(collectAppliedProposalAlternatives(road, [road, park])).toEqual([]);
+    });
+
+    it('still displaces a building it covers', () => {
+        const house = building('house', 15.9705, true);
+        expect(collectAppliedProposalAlternatives(road, [road, house]).map(p => p.proposalId)).toEqual(['house']);
+    });
+});

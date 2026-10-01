@@ -396,7 +396,11 @@
     function singleBuildingParcelsForIds(parcelIds) {
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
         return ids.map(id => {
-            const feature = window.LiveParcelFabric?.get?.(id) || null;
+            // Live parcels, or the synthetic design parcels of a site on bare ground
+            // (js/site-drawing.js: the site as one superparcel, or plots cut along a frontage).
+            const feature = (typeof window.resolveDesignParcelFeature === 'function'
+                ? window.resolveDesignParcelFeature(id)
+                : window.LiveParcelFabric?.get?.(id)) || null;
             return feature ? { id, feature } : null;
         }).filter(Boolean);
     }
@@ -1640,7 +1644,8 @@
         const clonedBuildings = [];
         for (const entry of buildingEntries) {
             if (!entry || !entry.feature) continue;
-            const cloned = JSON.parse(JSON.stringify(entry.feature));
+            const cloned = window.SingleBuildingGeometry.clipFootprintToBoundary(
+                JSON.parse(JSON.stringify(entry.feature)), singleBlockFeature, turf);
             if (!cloned.properties) cloned.properties = {};
             cloned.properties.height = Math.max(3, Number(entry.height) || DEFAULT_HEIGHT_M);
             cloned.properties.rotation = Number(entry.rotation) || 0;

@@ -1,4 +1,4 @@
-// Unit tests for frontend/js/solana/acceptance-client.js, the pure codec for the lens-model v2
+// Unit tests for frontend/js/solana/acceptance-client.js, the pure codec for the lens-model v3
 // instructions of proposal_nft and parcel_nft. Instruction data and account bytes are produced by an
 // independent borsh encoder driven by the committed IDLs, discriminators are re-derived from sha256,
 // account metas are compared with the IDL's own order and flags, and the SAS attestation parser is
@@ -106,21 +106,36 @@ describe('instruction data', () => {
         parcelIds: [PARCEL_ID, 'HR-335550-2/1'], isConditional: true, imageUri: 'ipfs://meta', solLamports: 1500000000n,
         lens: [MEMBER, keyOf(21)]
     };
-    const mintIdlValues = verdict => ({
-        parcel_ids: mintArgs.parcelIds, is_conditional: true, image_uri: 'ipfs://meta', sol_amount: 1500000000n,
-        lens: mintArgs.lens, verdict_may_execute: verdict
+    const NO_SITE = Array(32).fill(0);
+    const SITE_HASH = Array.from({ length: 32 }, (_, i) => i + 1);
+    const mintIdlValues = (verdict, { parcelIds = mintArgs.parcelIds, siteHash = NO_SITE, openGround = false } = {}) => ({
+        parcel_ids: parcelIds, is_conditional: true, image_uri: 'ipfs://meta', sol_amount: 1500000000n,
+        lens: mintArgs.lens, verdict_may_execute: verdict, site_hash: siteHash, open_ground: openGround
     });
 
-    it('mint_and_fund ends with verdict_may_execute, false by default', () => {
+    it('mint_and_fund ends with verdict_may_execute, a zero site_hash and open_ground false by default', () => {
         const bytes = Buffer.from(client.encodeMintAndFundData(mintArgs));
         expect(bytes.equals(encodeIxData(PROPOSAL_IDL, 'mint_and_fund', mintIdlValues(false)))).toBe(true);
-        expect(bytes[bytes.length - 1]).toBe(0);
+        expect([...bytes.subarray(-34)]).toEqual([0, ...NO_SITE, 0]);
     });
 
-    it('mint_and_fund with verdictMayExecute true sets the trailing byte', () => {
+    it('mint_and_fund with verdictMayExecute true sets its byte', () => {
         const bytes = Buffer.from(client.encodeMintAndFundData({ ...mintArgs, verdictMayExecute: true }));
         expect(bytes.equals(encodeIxData(PROPOSAL_IDL, 'mint_and_fund', mintIdlValues(true)))).toBe(true);
-        expect(bytes[bytes.length - 1]).toBe(1);
+        expect(bytes[bytes.length - 34]).toBe(1);
+    });
+
+    it('mint_and_fund v3: an empty parcel list with a site hash on open ground', () => {
+        const args = { ...mintArgs, parcelIds: [], verdictMayExecute: true, siteHash: Uint8Array.from(SITE_HASH), openGround: true };
+        const bytes = Buffer.from(client.encodeMintAndFundData(args));
+        expect(bytes.equals(encodeIxData(PROPOSAL_IDL, 'mint_and_fund', mintIdlValues(true, { parcelIds: [], siteHash: SITE_HASH, openGround: true })))).toBe(true);
+    });
+
+    it('mint_and_fund v3 refuses what the program refuses', () => {
+        expect(() => client.encodeMintAndFundData({ ...mintArgs, parcelIds: [] })).toThrow(/siteHash/);
+        expect(() => client.encodeMintAndFundData({ ...mintArgs, parcelIds: [], siteHash: SITE_HASH })).toThrow(/open ground/);
+        expect(() => client.encodeMintAndFundData({ ...mintArgs, openGround: true })).toThrow(/openGround needs a siteHash/);
+        expect(() => client.encodeMintAndFundData({ ...mintArgs, siteHash: [1] })).toThrow(/32 bytes/);
     });
 
     it('mint_and_fund refuses an empty lens or non-key lens entries', () => {
@@ -237,30 +252,44 @@ describe('instruction accounts', () => {
 const PROPOSAL_VALUES = {
     proposal_id: 42, owner: OWNER, parcel_ids: [PARCEL_ID, 'HR-335550-2/1'], is_conditional: false, image_uri: 'ipfs://m',
     acceptance_possible: true, status: 0, sol_balance: 5, token_balance: 0, acceptance_count: 1,
-    accepted_parcels: ['HR-335550-2/1'], lens: [MEMBER], bump: 254, verdict_may_execute: true
+    accepted_parcels: ['HR-335550-2/1'], lens: [MEMBER], bump: 254, verdict_may_execute: true,
+    site_hash: Array(32).fill(0), open_ground: false, open_ground_cleared: false, layout_version: 3
 };
 
 describe('account decoders', () => {
-    it('readProposalV2 decodes every field including verdict_may_execute', () => {
-        const parsed = client.readProposalV2(encodeAccount(PROPOSAL_IDL, 'Proposal', PROPOSAL_VALUES, 4096), PROPOSAL);
+    it('readProposal decodes every field including verdict_may_execute and the v3 site fields', () => {
+        const parsed = client.readProposal(encodeAccount(PROPOSAL_IDL, 'Proposal', PROPOSAL_VALUES, 4096), PROPOSAL);
         expect(parsed).toMatchObject({
             address: PROPOSAL, proposalId: '42', owner: OWNER, parcelIds: PROPOSAL_VALUES.parcel_ids, acceptancePossible: true,
             statusCode: 0, status: 'Active', solBalance: 5n, acceptanceCount: 1n, acceptedParcels: ['HR-335550-2/1'],
-            lens: [MEMBER], bump: 254, verdictMayExecute: true
+            lens: [MEMBER], bump: 254, verdictMayExecute: true, siteHash: null, openGround: false, openGroundCleared: false,
+            layoutVersion: 3
         });
+        const site = client.readProposal(encodeAccount(PROPOSAL_IDL, 'Proposal', {
+            ...PROPOSAL_VALUES, parcel_ids: [], accepted_parcels: [], acceptance_count: 0,
+            site_hash: Array(32).fill(0xab), open_ground: true, open_ground_cleared: true
+        }, 4096));
+        expect(site).toMatchObject({ parcelIds: [], siteHash: 'ab'.repeat(32), openGround: true, openGroundCleared: true, layoutVersion: 3 });
     });
 
-    it('a v1-era account (zero byte after bump) reads verdict_may_execute false; Expired decodes', () => {
-        const parsed = client.readProposalV2(encodeAccount(PROPOSAL_IDL, 'Proposal', { ...PROPOSAL_VALUES, verdict_may_execute: false, status: 3 }, 4096));
-        expect(parsed.verdictMayExecute).toBe(false);
-        expect(parsed.status).toBe('Expired');
+    it('a v2-era account (zero bytes after verdict_may_execute) reads as no site, closed ground, layout 0; Expired decodes', () => {
+        const values = { ...PROPOSAL_VALUES, verdict_may_execute: false, status: 3 };
+        const v3Only = ['site_hash', 'open_ground', 'open_ground_cleared', 'layout_version'];
+        for (const name of v3Only) delete values[name];
+        const v2Fields = typeOf(PROPOSAL_IDL, 'Proposal').fields.filter(field => !v3Only.includes(field.name));
+        const body = Buffer.concat([Buffer.from(PROPOSAL_IDL.accounts.find(a => a.name === 'Proposal').discriminator),
+            ...v2Fields.map(field => encodeType(field.type, values[field.name]))]);
+        const parsed = client.readProposal(Buffer.concat([body, Buffer.alloc(4096 - body.length)]));
+        expect(parsed).toMatchObject({ verdictMayExecute: false, status: 'Expired', siteHash: null, openGround: false, openGroundCleared: false, layoutVersion: 0 });
     });
 
     it('a truncated proposal throws; another account type returns null', () => {
         const full = encodeAccount(PROPOSAL_IDL, 'Proposal', PROPOSAL_VALUES);
-        expect(() => client.readProposalV2(full.subarray(0, full.length - 1))).toThrow(/verdict_may_execute/);
+        // Cut before layout_version only: absent reads as 0, like the v1/v2 zero padding.
+        expect(client.readProposal(full.subarray(0, full.length - 1)).layoutVersion).toBe(0);
+        expect(() => client.readProposal(full.subarray(0, full.length - 2))).toThrow(/open_ground_cleared/);
         const tally = encodeAccount(PROPOSAL_IDL, 'ConsentTally', { proposal: PROPOSAL, parcel_id: PARCEL_ID, member: MEMBER, required: 2, accepted: 1, bump: 250 });
-        expect(client.readProposalV2(tally)).toBeNull();
+        expect(client.readProposal(tally)).toBeNull();
     });
 
     it('readConsentTally', () => {
@@ -340,7 +369,7 @@ describe('SAS lens attestations', () => {
         expect(() => client.parseSasAttestation(Buffer.from([1, 2, 3]))).toThrow(/not a SAS attestation/);
     });
 
-    const proposal = () => client.readProposalV2(encodeAccount(PROPOSAL_IDL, 'Proposal', { ...PROPOSAL_VALUES, verdict_may_execute: false }), PROPOSAL);
+    const proposal = () => client.readProposal(encodeAccount(PROPOSAL_IDL, 'Proposal', { ...PROPOSAL_VALUES, verdict_may_execute: false }), PROPOSAL);
     const now = 1759300000;
     const check = (overrides = {}, fields = ownershipFields) => client.checkOwnershipForAccept({
         attestation: { authority: MEMBER, expiry: 1790000000, ...overrides }, fields, proposal: proposal(), parcelId: PARCEL_ID, owner: OWNER, nowSeconds: now
@@ -361,6 +390,8 @@ describe('SAS lens attestations', () => {
         const run = (p, fields) => client.checkVerdictForSettle({ attestation: { authority: MEMBER, expiry: 1790000000 }, fields, proposal: p, proposalAddress: PROPOSAL, nowSeconds: now });
         expect(run(proposal(), verdict)).toBe('verdict_cannot_execute');
         expect(run({ ...proposal(), verdictMayExecute: true }, verdict)).toBeNull();
+        // v3: an empty binding has no "every parcel accepted" shortcut (0 == 0).
+        expect(run({ ...proposal(), parcelIds: [], acceptedParcels: [], acceptanceCount: 0n, openGround: true }, verdict)).toBe('verdict_cannot_execute');
         expect(run(proposal(), { ...verdict, verdict: 'expired' })).toBeNull();
         expect(run(proposal(), { ...verdict, proposalAccount: keyOf(5) })).toBe('wrong_proposal');
     });

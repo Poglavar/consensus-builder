@@ -214,15 +214,25 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
  * Calculate proposal execution payout per parcel
  * @param {number} totalBudget - Total proposal budget in ETH
  * @param {number} numberOfParcels - Number of parcels in the proposal
- * @returns {number} - Payout per parcel in ETH
+ * @returns {number|null} - Payout per parcel in ETH; null when the proposal binds no parcel (open
+ *   ground: there is no owner to pay, which is not the same as paying each owner 0) or the budget
+ *   is not a number.
  */
 function calculatePayoutPerParcel(totalBudget, numberOfParcels) {
-    if (numberOfParcels === 0) return 0;
+    if (!(typeof numberOfParcels === 'number' && Number.isInteger(numberOfParcels) && numberOfParcels > 0)) return null;
+    if (!(typeof totalBudget === 'number' && Number.isFinite(totalBudget))) return null;
     return totalBudget / numberOfParcels;
 }
 
 // Make functions available globally
-window.estimateParcelMarketValue = estimateParcelMarketValue;
-window.getLastTransactedPrice = getLastTransactedPrice;
-window.calculatePortfolioValue = calculatePortfolioValue;
-window.calculatePayoutPerParcel = calculatePayoutPerParcel;
+if (typeof window !== 'undefined') {
+    window.estimateParcelMarketValue = estimateParcelMarketValue;
+    window.getLastTransactedPrice = getLastTransactedPrice;
+    window.calculatePortfolioValue = calculatePortfolioValue;
+    window.calculatePayoutPerParcel = calculatePayoutPerParcel;
+}
+
+// Node tests load this classic script with require (the browser ignores this branch).
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { calculatePayoutPerParcel, areaToEth };
+}

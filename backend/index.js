@@ -35,6 +35,7 @@ import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
+import { setupProposalBindingRoute, PROPOSAL_BINDING_PATHS } from './routes/proposal-binding.js';
 import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
 import { setupAgentPledgesRoute } from './routes/agent-pledges.js';
 import { setupAgentActivityRoute } from './routes/agent-activity.js';
@@ -212,6 +213,11 @@ export const WRITE_RATE_LIMIT = 600;
 // body of up to 15 MB, so it gets its own, much larger, budget instead of none at all.
 export const PARCELS_UNDER_RATE_LIMIT = 3000;
 
+// POST /proposals/binding (and its /agent/binding alias) is the same kind of PostGIS read over a
+// site, asked by the browser once per publish and by a drawing preview as the site changes. Its own
+// budget: not a write, not unlimited.
+export const PROPOSAL_BINDING_RATE_LIMIT = 1200;
+
 // POST routes that are READS: they take a POST only because their input (a GeoJSON geometry, a list
 // of ids) is too big for a query string, and they change nothing. So neither the Origin gate nor the
 // write limiter in createApp applies to them — one list, so the two can never disagree about what is
@@ -222,7 +228,8 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/buildings/footprints',
     '/buildings/under',
     '/parcels/under',
-    '/proposals/batch'
+    '/proposals/batch',
+    '/proposals/binding'
 ]);
 
 // Canton is off unless explicitly enabled: its OAuth client is currently rejected (invalid_grant)
@@ -236,7 +243,8 @@ export function createApp({
     env = process.env,
     pool: providedPool,
     writeRateLimit = WRITE_RATE_LIMIT,
-    parcelsUnderRateLimit = PARCELS_UNDER_RATE_LIMIT
+    parcelsUnderRateLimit = PARCELS_UNDER_RATE_LIMIT,
+    proposalBindingRateLimit = PROPOSAL_BINDING_RATE_LIMIT
 } = {}) {
     // Before ANY route or middleware is registered: every async handler's rejection goes to the
     // error handler below instead of becoming an unhandled rejection that exits the process.
@@ -384,10 +392,20 @@ export function createApp({
         legacyHeaders: false,
         message: { error: 'Too many requests, please try again later.' }
     });
+    const proposalBindingRateLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: proposalBindingRateLimit,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: { error: 'Too many requests, please try again later.' }
+    });
     app.use((req, res, next) => {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
             if (req.method === 'POST' && req.path === '/parcels/under') {
                 return parcelsUnderRateLimiter(req, res, next);
+            }
+            if (req.method === 'POST' && PROPOSAL_BINDING_PATHS.includes(req.path)) {
+                return proposalBindingRateLimiter(req, res, next);
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
             if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
@@ -439,6 +457,7 @@ export function createApp({
     setupFileStorageRoutes(app);
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);
+    setupProposalBindingRoute(app, activePool); // before /proposals/:id routes
     setupProposalsRoute(app, activePool);
     setupAgentProposalsRoute(app, activePool, { env }); // paid x402 front door to the same create handler
     setupAgentPledgesRoute(app, { env }); // read-only view; pledge writes go directly to Solana

@@ -647,18 +647,32 @@ function showProposalDialog(overrides = null) {
 
     currentProposalTool = null;
 
-    if (!selectedParcels.length || selectedFeatures.length !== parcelIds.length) {
+    // A site-first proposal (js/site-drawing.js) carries its ground as a site and its declaration
+    // as the binding, possibly empty on bare ground: no live selection is needed. The owner offer
+    // stays an act on parcels and keeps requiring them.
+    const siteContext = (!ownershipOnly && proposalDialogOverrides && proposalDialogOverrides.siteContext
+        && proposalDialogOverrides.siteContext.site) ? proposalDialogOverrides.siteContext : null;
+    window.pendingProposalSiteContext = siteContext;
+    if (!siteContext && (!selectedParcels.length || selectedFeatures.length !== parcelIds.length)) {
         updateStatus(noParcelsMessage);
         return;
     }
 
-    const totalArea = selectedFeatures.reduce((sum, feature) => {
+    const siteArea = siteContext && window.__siteDraft ? window.__siteDraft.siteAreaM2(siteContext.site) : 0;
+    const siteParcelIds = siteContext ? (siteContext.cadastreParcelIds || []) : [];
+    const totalArea = siteContext ? siteArea : selectedFeatures.reduce((sum, feature) => {
         const area = feature.properties?.calculatedArea || 0;
         return sum + area;
     }, 0);
 
     const ownershipStats = computeOwnershipStatsFromSelection(selection);
-    const totalOwners = ownershipStats.ownerCount || selectedParcels.length;
+    const totalOwners = siteContext ? siteParcelIds.length : (ownershipStats.ownerCount || selectedParcels.length);
+    const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary">${siteParcelIds.length
+        ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: Math.round(siteArea).toLocaleString('hr-HR'), count: siteParcelIds.length })
+        : t('modal.createProposal.site.unbound', 'Site of {{area}} m² on ground without parcels: no owner can consent, so it can only execute through an authority\'s verdict.', { area: Math.round(siteArea).toLocaleString('hr-HR') })}</p>` : '';
+    const toleranceLabel = t('modal.createProposal.tolerance.label', 'Parcel intrusion tolerance (m)');
+    const toleranceHelp = t('modal.createProposal.tolerance.help', 'A parcel joins the proposal when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour\'s parcel. Use it only for measurement error; max 1 m.');
+    const toleranceValue = siteContext && Number(siteContext.toleranceM) > 0 ? Number(siteContext.toleranceM) : 0;
     const ownershipMode = ownershipStats.mode;
     currentOwnershipMode = ownershipMode;
     // Create parcel list HTML with error handling
@@ -704,6 +718,7 @@ function showProposalDialog(overrides = null) {
             </div>
             <div class="proposal-modal-body">
                 ${mintChainHtml}
+                ${siteSummaryHtml}
                 ${hasScreenshotCandidate ? '<div class="form-group proposal-screenshot-loading" id="proposalScreenshotContainer" style="margin-bottom: 15px;"><div class="proposal-screenshot-spinner" aria-label="Preparing preview"></div></div>' : ''}
                 <div class="form-group proposal-author-row">
                     <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
@@ -902,6 +917,11 @@ function showProposalDialog(overrides = null) {
                             <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
                             <span style="color:#666;">${depositHelperText}</span>
                         </div>
+                    </div>
+                    <div class="proposal-tolerance-row" id="proposalToleranceRow">
+                        <label for="proposalToleranceM">${toleranceLabel}</label>
+                        <input type="number" id="proposalToleranceM" min="0" max="1" step="0.01" value="${toleranceValue}" inputmode="decimal">
+                        <p class="proposal-tolerance-help">${toleranceHelp}</p>
                     </div>
                     <div class="proposal-option-row" id="proposalOptionAreaProportional" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
@@ -1503,6 +1523,8 @@ function closeProposalDialog() {
         ? String(window.pendingProposalDraftId)
         : null;
     clearProposalBalanceWatcher();
+    // The site this dialog was opened on belongs to it alone.
+    if (typeof window !== 'undefined') window.pendingProposalSiteContext = null;
     // If this dialog seeded multi-select for its parcel context, disarm it — a cancelled
     // Propose must not leave the "Multiparcel selection" panel armed for later clicks.
     try { if (typeof window !== 'undefined') window.releaseEditorSeededMultiSelection?.(); } catch (_) { }

@@ -220,3 +220,35 @@ describe('stripDerivedRecordData', () => {
         expect(out.buildingProposal).not.toHaveProperty('ancestorKey');
     });
 });
+
+// PARCEL-OPTIONAL.md rule 4: a material proposal may stand with an empty declaration when it has a
+// site or a footprint of its own; parcel acts may not.
+describe('site-first records', () => {
+    const SITE = {
+        type: 'MultiPolygon',
+        coordinates: [[[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]]]
+    };
+
+    it('accepts a material record with a site and no declaration', () => {
+        const verdict = records.conformanceOf({ goal: 'park', site: SITE, cadastreParcelIds: [] });
+        expect(verdict.flat).toBe(true);
+        expect(verdict.cadastreParcelIds).toEqual([]);
+        // ...and one whose site is its own footprint (a road across bare ground).
+        expect(records.conformanceOf({ goal: 'park', structureProposal: { kind: 'park', geometry: SITE.coordinates[0] && { type: 'Polygon', coordinates: SITE.coordinates[0] } } }).flat).toBe(true);
+    });
+
+    it('keeps refusing parcel acts and records about nothing', () => {
+        expect(records.conformanceOf({ goal: 'ownership-transfer', site: SITE, cadastreParcelIds: [] }).violations.map(v => v.code))
+            .toContain('missing-cadastral-provenance');
+        expect(records.conformanceOf({ goal: 'park', isVote: true, site: SITE }).flat).toBe(false);
+        expect(records.conformanceOf({ goal: 'park', cadastreParcelIds: [] }).flat).toBe(false);
+    });
+
+    it('lets the publish gate pass a site record with an empty declaration', () => {
+        const gate = records.preparePublishRecord({ goal: 'park', site: SITE, cadastreParcelIds: [], structureProposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: SITE.coordinates[0] } } });
+        expect(gate.verdict.flat).toBe(true);
+        expect(gate.proposal.site).toEqual(SITE);
+        const act = records.preparePublishRecord({ goal: 'offer', site: SITE, cadastreParcelIds: [] });
+        expect(act.verdict.violations.map(v => v.code)).toContain('geometric-parent-resolution-required');
+    });
+});

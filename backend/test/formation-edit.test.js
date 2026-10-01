@@ -303,8 +303,23 @@ describe('formationIdentityOf', () => {
             parcelNumber: 'display value',
             token: 'formation-token',
             index: 3,
-            cadastreParcelIds: ['cadastre#official']
+            cadastreParcelIds: ['cadastre#official'],
+            groundIds: [],
+            root: 'cadastre#official',
+            anchor: 'cadastre#official'
         });
+    });
+
+    it('identifies a piece on open ground by its ground id, with a rootless id', () => {
+        const ground = `ground:${'c'.repeat(64)}`;
+        expect(fe.formationIdentityOf({ properties: {
+            parcelId: 'p-1-2',
+            syntheticToken: 'p-1',
+            syntheticIndex: 2,
+            cadastreParcelIds: [],
+            groundIds: [ground]
+        } })).toEqual(expect.objectContaining({ root: null, anchor: ground, cadastreParcelIds: [], groundIds: [ground] }));
+        expect(fe.baseIdsOfFeatures([{ properties: { parcelId: 'p-1-2', cadastreParcelIds: [], groundIds: [ground] } }])).toEqual([]);
     });
 
     it('refuses incomplete explicit provenance even when the id resembles an old generated id', () => {

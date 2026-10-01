@@ -17,7 +17,16 @@ import {
     stripLocalProposalState
 } from '../proposals/serializer.js';
 import { isInvalidRecordError } from '../proposals/serializer.js';
-import { checkDeclaredParcels } from '../proposals/footprint.js';
+import {
+    checkProposalBinding,
+    normalizeSiteGeometry,
+    parseTolerance,
+    requiresParcels,
+    validateSiteGeometry,
+    BINDING_CODES,
+    MAX_INTRUSION_TOLERANCE_M
+} from '../proposals/binding.js';
+import { footprintParts, hasFootprint } from '../proposals/footprint.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 
@@ -368,8 +377,15 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         depositPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'depositPercent', integer: true, min: 0, max: 1000 })) },
         isConditional: { required: false, validate: validators.optional(validators.boolean({ label: 'isConditional' }), { nullValue: false }) },
         disbursementMode: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_DISBURSEMENT_MODE_LENGTH, label: 'disbursementMode', disallowControlChars: true })) },
-        // The proposal's one and only durable land declaration.
+        // The proposal's one and only durable land declaration. It must equal the server binding of
+        // the site (proposals/binding.js); empty is allowed for a material proposal with a site.
         cadastreParcelIds: { required: false, validate: validators.optional(stringArrayValidator('cadastreParcelIds'), { nullValue: [] }) },
+        // The ground the proposal occupies (GeoJSON Polygon/MultiPolygon, EPSG:4326). Optional: the
+        // server derives it from the footprint (or, for a parcel act, the declared parcels) when absent.
+        // Shape and size are checked in precheckProposalCreate.
+        site: { required: false, validate: validators.optional(validators.plainObject({ label: 'site' })) },
+        // Linear intrusion tolerance (metres) the binding is computed at; default 0.
+        toleranceM: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'toleranceM', min: 0, max: MAX_INTRUSION_TOLERANCE_M })) },
         // Per crossed base parcel: ceded area + ownership destination, stamped at publish (§9/§12).
         ownershipFlow: { required: false, validate: validators.optional(ownershipFlowValidator, { nullValue: [] }) },
         // Which cadastre frame the stamps were measured against ({ capturedAt }) — D5/§11.
@@ -462,7 +478,7 @@ const proposalScreenshotPatchValidator = createJsonBodyValidator({
 // otherwise the payer is charged and no row is written (and a retry cannot recover the payment).
 // Returns { ok: true, value } or { ok: false, status, error }.
 export function precheckProposalCreate(req) {
-    const fail = error => ({ ok: false, status: 400, error });
+    const fail = (error, code) => ({ ok: false, status: 400, error, ...(code ? { code } : {}) });
     const body = req.body;
     if (!body || typeof body !== 'object' || Array.isArray(body) || !req.validatedBody) {
         return fail('Proposal body must be a JSON object.');
@@ -489,11 +505,29 @@ export function precheckProposalCreate(req) {
     const lifecycleResult = resolveIncomingLifecycleStatus(validated);
     if (!lifecycleResult.ok) return fail(lifecycleResult.error);
 
+    // The record as the land rule sees it: every authored field (the validator keeps only its schema
+    // fields, and goal, isVote, geometry and buildingGeometry are not among them), with the
+    // validated, normalised values on top.
+    const record = { ...stripLocalProposalState(body), ...validated };
+
+    const siteError = validated.site ? validateSiteGeometry(validated.site) : null;
+    if (siteError) return fail(siteError, BINDING_CODES.invalidSite);
+    const site = validated.site ? normalizeSiteGeometry(validated.site) : null;
+    const tolerance = parseTolerance(validated.toleranceM);
+    if (!tolerance.ok) return fail(tolerance.error, BINDING_CODES.invalidTolerance);
+
     const cadastreParcelIds = validated.cadastreParcelIds ?? [];
     if (!cadastreParcelIds.length) {
-        return fail('cadastreParcelIds must contain the proposal\'s cadastral land.');
+        // An empty declaration is a material proposal on ground with no (known) cadastral parcel.
+        // Acts on parcels, and records about no ground at all, still need their parcels.
+        if (requiresParcels(site ? { ...record, site } : record)) {
+            return fail('cadastreParcelIds must contain the proposal\'s cadastral land.', BINDING_CODES.parcelsRequired);
+        }
+        if (!site && !hasFootprint(footprintParts(record))) {
+            return fail('A proposal without parcels needs a site or geometry of its own.', BINDING_CODES.siteRequired);
+        }
     }
-    const rawCadastreParcelIds = body.cadastreParcelIds;
+    const rawCadastreParcelIds = body.cadastreParcelIds ?? [];
     if (!Array.isArray(rawCadastreParcelIds)
         || rawCadastreParcelIds.some((id, index) => id !== cadastreParcelIds[index])) {
         return fail('cadastreParcelIds must contain exact, unpadded strings.');
@@ -515,50 +549,63 @@ export function precheckProposalCreate(req) {
         ok: true,
         value: {
             validated,
+            record,
             proposalId: explicitProposalId,
             type,
             lifecycleStatus: lifecycleResult.value,
             cadastreParcelIds,
-            ownershipFlow
+            ownershipFlow,
+            site,
+            toleranceM: tolerance.value
         }
     };
 }
 
+const precheckRefusalBody = result => ({ error: result.error, ...(result.code ? { code: result.code } : {}) });
+
 export function proposalCreatePrecheck(req, res, next) {
     const result = precheckProposalCreate(req);
-    if (!result.ok) return res.status(result.status).json({ error: result.error });
+    if (!result.ok) return res.status(result.status).json(precheckRefusalBody(result));
     return next();
 }
 
-// The land rule, which needs the cadastre: every parcel the proposal's own geometry covers by >= 1 m²
-// must be in cadastreParcelIds (declared parcels with no geometry on them are fine — a whole-block
-// selection). Returns null when the body passes, or the { status, body } refusal. A lookup failure
-// refuses too (503): the paid route runs this BEFORE settlement and must never let an unchecked body
-// through to a payment.
-async function refuseUndeclaredParcels(pool, req) {
+// The land rule, which needs the cadastre: cadastreParcelIds must EQUAL the server binding of the
+// proposal's site at its toleranceM (proposals/binding.js checkProposalBinding) — bound parcels
+// missing from the declaration and declared parcels the site does not reach are both refused, with
+// `missing` and `extra` listed. The server-computed site and binding are what gets stored; a client
+// `binding` field is ignored. Returns { refusal } ({ status, body }) or { bound: { site, binding } }.
+// A lookup failure refuses too (503): the paid route runs this BEFORE settlement and must never let
+// an unchecked body through to a payment.
+async function bindProposal(pool, req) {
     const precheck = precheckProposalCreate(req);
-    if (!precheck.ok) return { status: precheck.status, body: { error: precheck.error } };
+    if (!precheck.ok) return { refusal: { status: precheck.status, body: precheckRefusalBody(precheck) } };
+    const { validated, record, cadastreParcelIds, site, toleranceM } = precheck.value;
     let result;
     try {
-        result = await checkDeclaredParcels(pool, precheck.value.validated, precheck.value.cadastreParcelIds);
+        result = await checkProposalBinding(pool, record, cadastreParcelIds, {
+            site,
+            toleranceM,
+            city: normalizeCityCode(validated.city) || null
+        });
     } catch (error) {
-        console.error('[proposals] declared-parcel check failed:', error);
-        return { status: 503, body: { error: 'The proposal\'s parcels could not be checked; nothing was stored or charged. Try again.' } };
+        if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
+            return { refusal: { status: error.status, body: { error: error.message, code: error.code } } };
+        }
+        console.error('[proposals] parcel binding check failed:', error);
+        return { refusal: { status: 503, body: { error: 'The proposal\'s parcels could not be checked; nothing was stored or charged. Try again.' } } };
     }
-    if (result.ok) return null;
-    return {
-        status: 400,
-        body: { error: result.error, code: result.code, ...(result.parcels ? { parcels: result.parcels } : {}) }
-    };
+    if (result.ok) return { bound: { site: result.site, binding: result.binding } };
+    const { ok: _ok, status, ...body } = result;
+    return { refusal: { status, body } };
 }
 
-// Middleware form, placed in front of the x402 gate on the paid route. It stamps the request so the
-// create handler, which runs after settlement, does not query the same body twice.
+// Middleware form, placed in front of the x402 gate on the paid route. It stamps the request with
+// the computed binding so the create handler, which runs after settlement, does not query twice.
 export function createProposalParcelPrecheck(pool) {
     return async (req, res, next) => {
-        const refusal = await refuseUndeclaredParcels(pool, req);
+        const { refusal, bound } = await bindProposal(pool, req);
         if (refusal) return res.status(refusal.status).json(refusal.body);
-        req.proposalParcelsChecked = true;
+        req.proposalBound = bound;
         return next();
     };
 }
@@ -610,10 +657,12 @@ export function createProposalCreateHandler(pool) {
     return async (req, res) => {
         try {
             const precheck = precheckProposalCreate(req);
-            if (!precheck.ok) return res.status(precheck.status).json({ error: precheck.error });
-            if (!req.proposalParcelsChecked) {
-                const refusal = await refuseUndeclaredParcels(pool, req);
-                if (refusal) return res.status(refusal.status).json(refusal.body);
+            if (!precheck.ok) return res.status(precheck.status).json(precheckRefusalBody(precheck));
+            let bound = req.proposalBound;
+            if (!bound) {
+                const outcome = await bindProposal(pool, req);
+                if (outcome.refusal) return res.status(outcome.refusal.status).json(outcome.refusal.body);
+                bound = outcome.bound;
             }
             const { validated, type, cadastreParcelIds, ownershipFlow } = precheck.value;
             const proposal = stripLocalProposalState(req.body);
@@ -708,10 +757,17 @@ export function createProposalCreateHandler(pool) {
                 ...proposal,
                 lifecycleStatus,
                 reparcellization,
+                // The declaration is always present (the DB checks it matches the column), the site
+                // and binding are the server's, and the tolerance lives inside the binding.
+                cadastreParcelIds,
+                site: bound.site,
+                binding: bound.binding,
                 createdAt: createdAt.toISOString(),
                 ...(authoredAt ? { authoredAt } : {})
             });
             if (!authoredAt) delete proposalData.authoredAt;
+            delete proposalData.toleranceM;
+            if (!proposalData.site) delete proposalData.site;
             if (droppedClaims.length) {
                 console.warn(`[POST proposals ${proposalId}] dropped unprovable client claims: ${droppedClaims.join(', ')}`);
             }
@@ -741,7 +797,8 @@ export function createProposalCreateHandler(pool) {
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     lens, bounds, onchain_data, screenshot_url, proposal_data,
                     ownership_flow, cadastre_frame, epoch_year,
-                    agent_payment_id, agent_request_hash, edit_token_hash
+                    agent_payment_id, agent_request_hash, edit_token_hash,
+                    site, binding
                 )
                 SELECT
                     $1, $2, $3, $4, $5, $6, $7,
@@ -755,7 +812,8 @@ export function createProposalCreateHandler(pool) {
                     $25, $26, $27, $28,
                     $29, $30, $31, $32, $33,
                     $34, $35, $36,
-                    $37, $38, $39
+                    $37, $38, $39,
+                    ST_Multi(ST_CollectionExtract(ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON($40::text), 4326)), 3)), $41
                 WHERE pg_try_advisory_xact_lock_shared(${PROPOSAL_ID_LOCK_NAMESPACE}, hashtext($1::varchar))
                 RETURNING id, proposal_id, created_at
             `;
@@ -768,7 +826,7 @@ export function createProposalCreateHandler(pool) {
                 decayEnabled, decayPercent, decayDurationMs,
                 depositEnabled, depositPercent,
                 isConditional, disbursementMode,
-                cadastreParcelIds.length ? JSON.stringify(cadastreParcelIds) : null,
+                JSON.stringify(cadastreParcelIds),
                 null, // accepted_parcel_ids: consent is never taken from the uploader (dropUnprovableClaims)
                 null, // owner_acceptances: likewise
                 storedRoadProposal ? JSON.stringify(storedRoadProposal) : null,
@@ -785,7 +843,9 @@ export function createProposalCreateHandler(pool) {
                 epochYear,
                 agentPaymentId,
                 agentRequestHash,
-                editToken.hash
+                editToken.hash,
+                bound.site ? JSON.stringify(bound.site) : null,
+                JSON.stringify(bound.binding)
             ];
 
             // The paid route passes the session that holds the proposal_id lock.

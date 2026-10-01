@@ -1305,6 +1305,8 @@
             "areaLabel": "Road Area:",
             "parcelCountLabel": "Parcel count:",
             "parcelAreaLabel": "Parcel area:",
+            "openGroundLabel": "Open ground:",
+            "openGroundValue": "{{count}} · {{area}}",
             "ownedByIndividualsLabel": "Owned by individuals:",
             "ownedByCompaniesLabel": "Owned by companies:",
             "ownedByGovernmentLabel": "Owned by government:",
@@ -2480,7 +2482,13 @@
                 "missingParcels": "Missing parcels or geometry for this proposal.",
                 "couldNotDetermineParcels": "Could not determine parcels for this block.",
                 "parcelsNotContiguous": "Parcels not contiguous",
-                "undeclaredParcels": "This proposal's geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels."
+                "undeclaredParcels": "This proposal's geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels.",
+                "bindingMissing": "The site reaches into parcels the proposal does not name ({{count}}): {{list}}.",
+                "bindingExtra": "The proposal names parcels its site does not reach ({{count}}): {{list}}.",
+                "bindingFix": "Include those parcels in the site, or change the design so it stays inside it.",
+                "bindingFailed": "Could not check which parcels this proposal's site reaches into: {{reason}}",
+                "noMintGeometry": "This proposal has no site or parcel geometry to mint.",
+                "noMintParcels": "This proposal names no parcels and has no site, so it cannot be minted."
             },
             "walletNotConnected": {
                 "message": "You are not connected with a wallet, so you can't mint proposals on chain.",
@@ -2533,6 +2541,21 @@
                 "notAttested": "No lens member in your lens has attested this wallet as owner of a selected parcel.",
                 "attested": "Your wallet is the attested owner of {{attested}} of {{total}} selected parcels.",
                 "deselectOthers": "Offer only your own parcels: deselect {{parcels}}."
+            },
+            "site": {
+                "bound": "Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.",
+                "unbound": "Site of {{area}} m² on ground without parcels: no owner can consent, so it can only execute through an authority's verdict.",
+                "binding": "Checking which parcels the site reaches into..."
+            },
+            "tolerance": {
+                "label": "Parcel intrusion tolerance (m)",
+                "help": "A parcel joins the proposal when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour's parcel. Use it only for measurement error; max 1 m."
+            },
+            "smallIntrusions": {
+                "question": "The site reaches only slightly into these parcels: {{list}}. Publishing includes them, so their owners must agree too. Include them, or cancel and change the design.",
+                "include": "Include them",
+                "change": "Change the design",
+                "cancelled": "Publishing cancelled: change the design so it stays inside the parcels you mean."
             }
         },
         "unapplyTour": {
@@ -2793,7 +2816,8 @@
                 "sweepLine": "Sweep line algorithm",
                 "centroidalVoronoi": "Centroidal Voronoi",
                 "wasserstein": "Wasserstein",
-                "manual": "Manual"
+                "manual": "Manual",
+                "streetPlots": "Plots along a street"
             },
             "algorithmTitle": "Land readjustment type",
             "closeAria": "Close",
@@ -2895,7 +2919,9 @@
                 "lineAnchored": "Anchored in {{count}} places — the line will be drawn between the outermost two, and nowhere else.",
                 "lineOneAnchor": "One anchor so far. Cross another boundary, or finish on an existing corner.",
                 "lineNoAnchor": "No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.",
-                "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one."
+                "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one.",
+                "streetPlotsFailed": "Could not lay out plots along a street on this site.",
+                "streetPlotsHint": "Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots."
             },
             "parcelCount": {
                 "one": "{{count}} parcel",
@@ -2935,7 +2961,15 @@
             "eraseTooltip": "Erase this boundary — {{a}} and {{b}} become one plot",
             "nodeRemoveMerges": "Removing it merges {{joining}} into {{keeper}} — {{moved}} m² changes hands.",
             "nodeRemoveStraightens": "Removing it straightens the boundary — about {{moved}} m² moves across it.",
-            "plotLabel": "plot {{n}} ({{area}} m²)"
+            "plotLabel": "plot {{n}} ({{area}} m²)",
+            "noOwnerBalance": "Open ground has no owner: nothing is owed or paid.",
+            "openGroundOwner": "Open ground (no owner)",
+            "subdivisionTitle": "Subdivision",
+            "turnStreet": "Turn the street",
+            "turnStreetTitle": "Run the street along the next edge of the site",
+            "siteParcelsMissing": "The parcels under this site could not be loaded: {{ids}}.",
+            "siteUnavailable": "This site cannot be subdivided here.",
+            "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first."
         }
     },
     "status": {
@@ -3783,15 +3817,15 @@
             },
             "source": {
                 "short": "Open data found",
-                "text": "Open parcel data exists here, but it is not in the app yet. Explore the map without parcels, or ask for this place to be added."
+                "text": "Open parcel data exists here, but it is not in the app yet. You can still draw a site and propose here — without parcels, a proposal executes only through an authority's verdict — or ask for this place to be added."
             },
             "none": {
                 "short": "No open data",
-                "text": "We looked and found no open parcel data here. You can still explore the map, without parcels."
+                "text": "We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a proposal executes only through an authority's verdict."
             },
             "unknown": {
                 "short": "Not researched",
-                "text": "Nobody has checked this place for open parcel data yet. You can still explore the map, without parcels."
+                "text": "Nobody has checked this place for open parcel data yet. You can still draw a site and propose here; without parcels, a proposal executes only through an authority's verdict."
             }
         },
         "popup": {
@@ -3800,7 +3834,7 @@
         },
         "action": {
             "open": "Open {{city}}",
-            "explore": "Explore anyway",
+            "explore": "Open the map here",
             "askCity": "Ask for this city",
             "askArea": "Ask for this area"
         },
@@ -3811,10 +3845,10 @@
         },
         "explore": {
             "chip": "Explore · {{place}}",
-            "banner": "No parcel data here yet — you can look around; proposals need parcels.",
+            "banner": "No parcels here: you can draw a site and propose, but a proposal can only execute through an authority's verdict.",
             "worldView": "World view",
             "dismiss": "Dismiss",
-            "status": "Exploring without parcel data"
+            "status": "No parcel data here: click the map to draw a site and propose."
         }
     },
     "mapShell": {
@@ -3867,8 +3901,11 @@
             "tools": "Tools",
             "offer": "Offer my land",
             "view3d": "View in 3D",
-            "detectBlock": "Detect block"
-        }
+            "detectBlock": "Detect block",
+            "useAsSite": "Use as site"
+        },
+        "groundTitle": "Open ground",
+        "groundNote": "no cadastral parcel"
     },
     "selectionTray": {
         "label": "Selected parcels",
@@ -3883,11 +3920,14 @@
             "done": "Done selecting",
             "detectBlock": "Detect block",
             "clearShort": "Clear",
-            "doneShort": "Done"
+            "doneShort": "Done",
+            "useAsSite": "Use the selection as a site",
+            "useAsSiteShort": "Site"
         }
     },
     "mapSearch": {
         "placeholder": "Search places, parcels, proposals…",
+        "placeholderNoParcels": "Search places, proposals…",
         "label": "Search the map",
         "open": "Search",
         "close": "Close search",
@@ -3949,7 +3989,102 @@
             "activity": "Activity",
             "settings": "Settings",
             "parcel": "Parcel",
-            "selection": "Selection"
+            "selection": "Selection",
+            "ground": "Ground",
+            "site": "Site"
         }
+    },
+    "groundMenu": {
+        "label": "Ground actions",
+        "title": {
+            "bare": "No parcel here",
+            "noCadastre": "Open ground"
+        },
+        "facts": {
+            "bare": "Unsurveyed ground or a gap between parcels: nobody's land that we know of.",
+            "noCadastre": "No parcel data here. A proposal can only execute through an authority's verdict."
+        },
+        "notLoaded": "Parcels are not loaded here yet — zoom in or wait for them to load.",
+        "actions": {
+            "drawSite": "Draw a site here"
+        }
+    },
+    "siteTool": {
+        "commands": {
+            "draw": "Draw site"
+        },
+        "title": "Site",
+        "titleDrawing": "Draw a site",
+        "hint": {
+            "drawing": "Click to add corners (they snap to parcel edges; hold Alt not to). Click the first corner or press Enter to finish. Backspace removes the last corner, Esc cancels.",
+            "editing": "Drag corners to reshape, click an edge to add one. Then build on the site.",
+            "plots": "Plots are cut along the frontage edge (the longest by default). Click another edge of the site to use it instead."
+        },
+        "actions": {
+            "finish": "Finish site",
+            "undoCorner": "Remove last corner",
+            "build": "Build on this site",
+            "redraw": "Redraw",
+            "cancel": "Cancel"
+        },
+        "editor": {
+            "vertexTitle": "Drag to move · click an edge to add a corner",
+            "deleteVertex": "Delete this corner",
+            "undo": "Undo (Cmd/Ctrl+Z)"
+        },
+        "binding": {
+            "previewPrefix": "Preview",
+            "serverPrefix": "Cadastre",
+            "bound": "Bound parcels ({{count}}):",
+            "more": "+{{count}} more",
+            "noParcels": "Binds no parcel: it can only execute through an authority's verdict.",
+            "openGround": "Hatched: open ground nobody can consent for; executing needs an authority's verdict.",
+            "touched": "Reaches {{width}} into {{parcel}} — below the tolerance, not bound.",
+            "smallIntrusion": "Reaches {{width}} into {{parcel}} — include it, or change the design.",
+            "include": "Include it",
+            "trim": "Trim the site",
+            "previewSkipped": "Too many parcels around this site for a preview; waiting for the server.",
+            "checking": "Checking with the cadastre…",
+            "serverFailed": "Could not check with the server: {{reason}}",
+            "serverChecked": "Checked against the full cadastre.",
+            "previewOnly": "Preview from the parcels loaded on the map.",
+            "serverNoCadastre": "Confirmed by the server: no cadastre covers this place."
+        },
+        "coverage": {
+            "complete": "complete — the whole site lies on cadastral parcels",
+            "partial": "partial — part of the site is open ground (no parcel)",
+            "none": "none — no parcels here; the whole site is open ground",
+            "unknown": "unknown — can't check parcels here",
+            "partialAll": "partial — the whole site is open ground: no parcel here, though the cadastre covers the area"
+        },
+        "palette": {
+            "readjustNeedsParcels": "Land readjustment works on selected parcels: select them instead of drawing a site.",
+            "subdivide": "Subdivide",
+            "readjustUnknownCadastre": "Subdividing needs a cadastre the server holds: this place has none it knows."
+        },
+        "plots": {
+            "summary": "{{tool}}: plots {{count}}, along a {{length}} m frontage.",
+            "continue": "Design on these plots",
+            "back": "Back",
+            "frontageChosen": "Frontage edge",
+            "frontagePick": "Click to use this edge as the frontage"
+        },
+        "errors": {
+            "tooFew": "A site needs at least three corners.",
+            "tooMany": "A site can have at most 500 corners.",
+            "selfIntersecting": "The outline crosses itself; move a corner so it does not.",
+            "tooSmall": "The site is too small.",
+            "reshapeSplit": "That would split the site in two; edit its corners instead.",
+            "mapBusy": "Finish the tool that is open first.",
+            "parcelsUnavailable": "Those parcels are not on the map.",
+            "plotsUnavailable": "Plot cutting is not available."
+        }
+    },
+    "groundStats": {
+        "noParcels": "No parcels here",
+        "siteAreaValue": "Site: {{area}} m²",
+        "openGroundValue": "Open ground: {{area}} m²",
+        "openGroundNote": "Open ground: {{area}} m² of the sites has no cadastral parcels; parcel figures cover the bound parcels only.",
+        "grainNoParcels": "No parcels here: these proposals stand on open ground, so there are no resulting parcels to score."
     }
 }

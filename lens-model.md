@@ -154,6 +154,67 @@ is appended after `bump` inside the fixed account, which every existing prefix d
 38 devnet proposals all carry a zero byte there. `mint_and_fund` gained the trailing bool, so v1 clients
 must send it. The external market takes the optional proposal as remaining account 0. Not deployed.
 
+### proposal_nft v3: parcel-optional proposals (2026-10-01, built, not deployed)
+
+A proposal is about a site; its `parcel_ids` are the site's cadastral binding (PARCEL-OPTIONAL.md)
+and may be empty. Ground the binding does not cover is **open ground**: no owner can consent for it,
+so only a lens member's `executed` verdict can authorise it. The proposal records
+`site_hash` (sha256 of the canonical site, `frontend/js/proposals/site-hash.js`), `open_ground`,
+`open_ground_cleared` and `layout_version`, appended after `verdict_may_execute`.
+
+Mint rules: an empty parcel list needs a site hash and `open_ground`; `open_ground` needs a site hash.
+`verdict_may_execute` stays the proposer's opt-in for executed verdicts; clients set it exactly when
+there is open ground (without it such a proposal can only expire or be cancelled, which the program
+allows and tests).
+
+State machine (Active is the only non-terminal state):
+
+```mermaid
+stateDiagram-v2
+    [*] --> Active: mint_and_fund
+    Active --> Active: owner accepts, parcels still missing
+    Active --> Active: executed verdict on open ground with parcels, consent incomplete (open_ground_cleared)
+    Active --> Active: last owner accepts on open ground, not yet cleared
+    Active --> Executed: last owner accepts, no open ground or already cleared
+    Active --> Executed: executed verdict (verdict_may_execute), no parcels, or parcels without open ground (permit-style, v2)
+    Active --> Executed: executed verdict on open ground with parcels, consent already complete
+    Active --> Expired: expired verdict
+    Active --> Cancelled: cancel_and_refund (owner; refunds)
+    Executed --> [*]: distribute_funds
+    Expired --> [*]: reclaim_expired_funds
+    Cancelled --> [*]
+```
+
+- by consent ⇔ parcels non-empty ∧ every parcel accepted ∧ (¬open_ground ∨ open_ground_cleared);
+- by verdict ⇔ `verdict_may_execute` ∧ ¬(open_ground ∧ parcels non-empty).
+
+On open ground with parcels the verdict and the owners are both needed, in either order: the verdict
+speaks for the ground nobody owns and never for the bound parcels' owners. That is why it does not
+execute there even with `verdict_may_execute`, while on a proposal without open ground the v2
+permit-style meaning (the verdict stands in for consent) is unchanged. The v2 alternative
+`acceptance_count == parcel_ids.len()` for an executed verdict is removed: it read `0 == 0` for an
+empty list and was dead code otherwise (consent-complete proposals were already Executed).
+`VerdictRecord.verdict` and the appended `VerdictSettled.verdict` record what the verdict said;
+`VerdictSettled.status` is the status after it (0 for a clearance).
+
+`open_ground` is declared by the proposer at mint; the program cannot measure ground. The record's
+server binding (phase 1) is authoritative off chain, so an audit can compare the on-chain
+`site_hash`/`open_ground` with the record and flag a proposal that hid its open ground to execute by
+consent alone.
+
+Funds never strand: Active → `cancel_and_refund`, Expired → `reclaim_expired_funds`, Executed →
+`distribute_funds` (acceptance records per accepted parcel; the owner when there is none, e.g. an
+empty binding). Open ground has no owner, so with parcels the whole balance goes to the parcels'
+records.
+
+Versioning: v1/v2 accounts hold zero bytes after `verdict_may_execute` (the 4096-byte account is
+zero-initialised and no instruction ever shrinks its content), so they read as no site and closed
+ground and behave exactly as under v2; localnet proves it against a v2-layout genesis fixture.
+`layout_version` makes the layout explicit: every v3 mint writes `PROPOSAL_LAYOUT_VERSION` (3), a
+v1/v2 account reads 0 and keeps 0 when the v3 program rewrites it (only the mint sets the field).
+A zero `site_hash` alone cannot tell a v1/v2 account from a v3 mint without a site; layout 0 vs 3
+can, so the open-ground audit needs no operator-supplied deploy time.
+
 ### Space
 
 Each acceptance record is its own PDA (about 8 + 32 + 4 + 32 + 32 + 32 + 32 + 32 + 32 + 8 + 1 ≈ 245

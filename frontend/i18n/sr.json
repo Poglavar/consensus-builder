@@ -1349,6 +1349,8 @@
             "ownedByGovernmentLabel": "U vlasništvu države:",
             "ownedByIndividualsLabel": "U vlasništvu pojedinaca:",
             "parcelAreaLabel": "Površina parcela:",
+            "openGroundLabel": "Otvoreno tlo:",
+            "openGroundValue": "{{count}} · {{area}}",
             "parcelCountLabel": "Broj parcela:",
             "builtStatus": "Put izgrađen — kliknite ga za uređivanje ili predlog.",
             "segmentCancelledStatus": "Segment poništen — postavljeni segmenti ostaju. Esc ponovo gradi put.",
@@ -2488,7 +2490,13 @@
                 "missingParcels": "Nedostaju parcele ili geometrija za ovaj predlog.",
                 "couldNotDetermineParcels": "Nije moguće odrediti parcele za ovaj blok.",
                 "parcelsNotContiguous": "Parcele nisu spojene",
-                "undeclaredParcels": "Geometrija ovog predloga leži na parcelama koje nisu izabrane ({{count}}): {{list}}. Izaberi i njih ili zadrži geometriju unutar izabranih parcela."
+                "undeclaredParcels": "Geometrija ovog predloga leži na parcelama koje nisu izabrane ({{count}}): {{list}}. Izaberi i njih ili zadrži geometriju unutar izabranih parcela.",
+                "bindingMissing": "Lokacija zadire u parcele koje predlog ne navodi ({{count}}): {{list}}.",
+                "bindingExtra": "Predlog navodi parcele u koje lokacija ne zadire ({{count}}): {{list}}.",
+                "bindingFix": "Uključite te parcele u lokaciju ili promenite projekat da ostane unutar nje.",
+                "bindingFailed": "Nije moguće proveriti u koje parcele zadire lokacija ovog predloga: {{reason}}",
+                "noMintGeometry": "Ovaj predlog nema geometriju lokacije ni parcela za kovanje.",
+                "noMintParcels": "Ovaj predlog ne navodi parcele i nema lokaciju, pa se ne može iskovati."
             },
             "walletNotConnected": {
                 "message": "Niste povezani sa novčanikom, pa ne možete mintovati predloge na lancu.",
@@ -2541,6 +2549,21 @@
                 "notAttested": "Nijedan član tvog sočiva nije potvrdio ovaj novčanik kao vlasnika izabrane parcele.",
                 "attested": "Tvoj novčanik je potvrđeni vlasnik {{attested}} od {{total}} izabranih parcela.",
                 "deselectOthers": "Ponudi samo svoje parcele: poništi izbor {{parcels}}."
+            },
+            "site": {
+                "bound": "Lokacija od {{area}} m², vezanih parcela: {{count}}. Objava proverava vezu prema celom katastru.",
+                "unbound": "Lokacija od {{area}} m² na tlu bez parcela: nijedan vlasnik ne može dati saglasnost, pa se može izvršiti samo odlukom nadležnog organa.",
+                "binding": "Provera u koje parcele lokacija zadire..."
+            },
+            "tolerance": {
+                "label": "Tolerancija zadiranja u parcele (m)",
+                "help": "Parcela ulazi u predlog kad lokacija u nju zadire više od ove širine (linearno, ne površinom). U gradovima ostavite 0: ne smete uzeti ništa od susedove parcele. Koristite samo za grešku merenja; najviše 1 m."
+            },
+            "smallIntrusions": {
+                "question": "Lokacija tek malo zadire u ove parcele: {{list}}. Objava ih uključuje, pa moraju da se slože i njihovi vlasnici. Uključite ih ili odustanite i promenite projekat.",
+                "include": "Uključi ih",
+                "change": "Promeni projekat",
+                "cancelled": "Objava otkazana: promenite projekat da ostane unutar parcela koje mislite."
             }
         },
         "mintedProposals": {
@@ -2828,7 +2851,8 @@
                 "borderPerpendicular": "Normalno na granicu",
                 "centroidalVoronoi": "Centroidalni Voronoi",
                 "manual": "Ručno",
-                "wasserstein": "Wasserstein"
+                "wasserstein": "Wasserstein",
+                "streetPlots": "Parcele uz ulicu"
             },
             "closeAria": "Zatvori",
             "done": "Gotovo",
@@ -2918,7 +2942,9 @@
                 "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigde drugde.",
                 "lineOneAnchor": "Zasad jedno uporište. Pređi još jednu među ili završi na postojećem vrhu.",
                 "lineNoAnchor": "Još nema uporišta. Linija mora preći među ili dodirnuti postojeći vrh na dva mesta da bi nastala nova međa.",
-                "lineNoAnchors": "Linija je dodirnula postojeće međe na manje od dva mesta, pa nema između čega povući među. Pređi dve međe, ili počni na vrhu i pređi jednu."
+                "lineNoAnchors": "Linija je dodirnula postojeće međe na manje od dva mesta, pa nema između čega povući među. Pređi dve međe, ili počni na vrhu i pređi jednu.",
+                "streetPlotsFailed": "Na ovoj lokaciji nije moguće rasporediti parcele uz ulicu.",
+                "streetPlotsHint": "Parcele uz ulicu. Okrenite ulicu ka drugoj ivici ili pređite na Ručno za uređivanje parcela."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodeli vlasnike",
@@ -2970,7 +2996,15 @@
             "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna parcela",
             "nodeRemoveMerges": "Uklanjanjem se {{joining}} spaja u {{keeper}} — menja vlasnika {{moved}} m².",
             "nodeRemoveStraightens": "Uklanjanjem se međa ispravlja — preko nje prelazi otprilike {{moved}} m².",
-            "plotLabel": "parcela {{n}} ({{area}} m²)"
+            "plotLabel": "parcela {{n}} ({{area}} m²)",
+            "noOwnerBalance": "Otvoreno tlo nema vlasnika: ništa se ne duguje niti plaća.",
+            "openGroundOwner": "Otvoreno tlo (bez vlasnika)",
+            "subdivisionTitle": "Parcelacija",
+            "turnStreet": "Okreni ulicu",
+            "turnStreetTitle": "Provedi ulicu duž sledeće ivice lokacije",
+            "siteParcelsMissing": "Parcele ispod ove lokacije nije moguće učitati: {{ids}}.",
+            "siteUnavailable": "Ovu lokaciju ovde nije moguće parcelisati.",
+            "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi predlog: {{names}}. Nacrtajte lokaciju van njega ili najpre poništite primenu tog predloga."
         }
     },
     "status": {
@@ -3819,15 +3853,15 @@
             },
             "source": {
                 "short": "Postoje otvoreni podaci",
-                "text": "Ovde postoje otvoreni podaci o parcelama, ali još nisu u aplikaciji. Istražite mapu bez parcela ili zatražite da se ovo mesto doda."
+                "text": "Ovde postoje otvoreni podaci o parcelama, ali još nisu u aplikaciji. Ipak možete nacrtati lokaciju i predložiti — bez parcela se predlog izvršava samo odlukom nadležnog organa — ili zatražiti da se ovo mesto doda."
             },
             "none": {
                 "short": "Nema otvorenih podataka",
-                "text": "Tražili smo i nismo našli otvorene podatke o parcelama. Mapu i dalje možete istraživati, bez parcela."
+                "text": "Tražili smo i nismo našli otvorene podatke o parcelama. Ipak možete nacrtati lokaciju i predložiti; bez parcela se predlog izvršava samo odlukom nadležnog organa."
             },
             "unknown": {
                 "short": "Nije istraženo",
-                "text": "Ovo mesto još niko nije proverio. Mapu i dalje možete istraživati, bez parcela."
+                "text": "Ovo mesto još niko nije proverio. Ipak možete nacrtati lokaciju i predložiti; bez parcela se predlog izvršava samo odlukom nadležnog organa."
             }
         },
         "popup": {
@@ -3836,7 +3870,7 @@
         },
         "action": {
             "open": "Otvori {{city}}",
-            "explore": "Svejedno istraži",
+            "explore": "Otvori mapu ovde",
             "askCity": "Zatraži ovaj grad",
             "askArea": "Zatraži ovo područje"
         },
@@ -3847,10 +3881,10 @@
         },
         "explore": {
             "chip": "Istraži · {{place}}",
-            "banner": "Ovde još nema podataka o parcelama — možete da razgledate; za predloge su potrebne parcele.",
+            "banner": "Ovde nema parcela: možete nacrtati lokaciju i predložiti, ali predlog može da se izvrši samo odlukom nadležnog organa.",
             "worldView": "Pogled na svet",
             "dismiss": "Zatvori",
-            "status": "Istraživanje bez podataka o parcelama"
+            "status": "Ovde nema podataka o parcelama: kliknite mapu da nacrtate lokaciju i predložite."
         }
     },
     "mapShell": {
@@ -3904,8 +3938,11 @@
             "tools": "Alati",
             "offer": "Ponudi svoje zemljište",
             "view3d": "Prikaži u 3D-u",
-            "detectBlock": "Detektuj blok"
-        }
+            "detectBlock": "Detektuj blok",
+            "useAsSite": "Koristi kao lokaciju"
+        },
+        "groundTitle": "Tlo bez parcele",
+        "groundNote": "nije katastarska parcela"
     },
     "selectionTray": {
         "label": "Izabrane parcele",
@@ -3921,11 +3958,14 @@
             "done": "Završi izbor",
             "detectBlock": "Detektuj blok",
             "clearShort": "Poništi",
-            "doneShort": "Gotovo"
+            "doneShort": "Gotovo",
+            "useAsSite": "Koristi izbor kao lokaciju",
+            "useAsSiteShort": "Lokacija"
         }
     },
     "mapSearch": {
         "placeholder": "Traži mesta, parcele, predloge…",
+        "placeholderNoParcels": "Traži mesta, predloge…",
         "label": "Pretraži mapu",
         "open": "Traži",
         "close": "Zatvori pretragu",
@@ -3987,7 +4027,102 @@
             "activity": "Aktivnost",
             "settings": "Podešavanja",
             "parcel": "Parcela",
-            "selection": "Izbor"
+            "selection": "Izbor",
+            "ground": "Tlo",
+            "site": "Lokacija"
         }
+    },
+    "groundMenu": {
+        "label": "Radnje na tlu",
+        "title": {
+            "bare": "Ovde nema parcele",
+            "noCadastre": "Otvoreno tlo"
+        },
+        "facts": {
+            "bare": "Nesnimljeno tlo ili razmak između parcela: koliko znamo, ničije zemljište.",
+            "noCadastre": "Ovde nema podataka o parcelama. Predlog se može izvršiti samo odlukom nadležnog organa."
+        },
+        "notLoaded": "Parcele ovde još nisu učitane — približite mapu ili sačekajte da se učitaju.",
+        "actions": {
+            "drawSite": "Nacrtaj lokaciju ovde"
+        }
+    },
+    "siteTool": {
+        "commands": {
+            "draw": "Nacrtaj lokaciju"
+        },
+        "title": "Lokacija",
+        "titleDrawing": "Nacrtaj lokaciju",
+        "hint": {
+            "drawing": "Kliknite da dodate uglove (prianjaju uz ivice parcela; držite Alt da ne prianjaju). Kliknite prvi ugao ili pritisnite Enter za kraj. Backspace briše poslednji ugao, Esc odustaje.",
+            "editing": "Prevucite uglove da promenite oblik, kliknite ivicu za novi ugao. Zatim gradite na lokaciji.",
+            "plots": "Placevi se seku duž ivice fronta (podrazumevano najduže). Kliknite drugu ivicu lokacije da je upotrebite."
+        },
+        "actions": {
+            "finish": "Završi lokaciju",
+            "undoCorner": "Ukloni poslednji ugao",
+            "build": "Gradi na ovoj lokaciji",
+            "redraw": "Nacrtaj ponovo",
+            "cancel": "Odustani"
+        },
+        "editor": {
+            "vertexTitle": "Prevucite za pomeranje · kliknite ivicu za novi ugao",
+            "deleteVertex": "Obriši ovaj ugao",
+            "undo": "Poništi (Cmd/Ctrl+Z)"
+        },
+        "binding": {
+            "previewPrefix": "Pregled",
+            "serverPrefix": "Katastar",
+            "bound": "Vezane parcele ({{count}}):",
+            "more": "+ još {{count}}",
+            "noParcels": "Ne vezuje nijednu parcelu: može se izvršiti samo odlukom nadležnog organa.",
+            "openGround": "Šrafirano: otvoreno tlo za koje niko ne može dati saglasnost; za izvršenje treba odluka nadležnog organa.",
+            "touched": "Zadire {{width}} u {{parcel}} — ispod tolerancije, nije vezana.",
+            "smallIntrusion": "Zadire {{width}} u {{parcel}} — uključite je ili promenite projekat.",
+            "include": "Uključi je",
+            "trim": "Skrati lokaciju",
+            "previewSkipped": "Previše parcela oko lokacije za pregled; čeka se server.",
+            "checking": "Provera u katastru…",
+            "serverFailed": "Provera na serveru nije uspela: {{reason}}",
+            "serverChecked": "Provereno prema celom katastru.",
+            "previewOnly": "Pregled prema parcelama učitanim na mapi.",
+            "serverNoCadastre": "Server potvrđuje: ovo mesto ne pokriva nijedan katastar."
+        },
+        "coverage": {
+            "complete": "potpuna — cela lokacija leži na katastarskim parcelama",
+            "partial": "delimična — deo lokacije je otvoreno tlo (bez parcele)",
+            "none": "nema — ovde nema parcela; cela lokacija je otvoreno tlo",
+            "unknown": "nepoznata — ovde se parcele ne mogu proveriti",
+            "partialAll": "delimična — cela lokacija je otvoreno tlo: ovde nema parcele, iako katastar pokriva područje"
+        },
+        "palette": {
+            "readjustNeedsParcels": "Komasacija radi na izabranim parcelama: izaberite ih umesto crtanja lokacije.",
+            "subdivide": "Parceliši",
+            "readjustUnknownCadastre": "Za parcelaciju je potreban katastar koji server ima: za ovo mesto ga nema."
+        },
+        "plots": {
+            "summary": "{{tool}}: placeva {{count}}, duž fronta od {{length}} m.",
+            "continue": "Projektuj na ovim placevima",
+            "back": "Nazad",
+            "frontageChosen": "Ivica fronta",
+            "frontagePick": "Kliknite da ova ivica bude front"
+        },
+        "errors": {
+            "tooFew": "Lokacija treba bar tri ugla.",
+            "tooMany": "Lokacija može imati najviše 500 uglova.",
+            "selfIntersecting": "Obris seče sam sebe; pomerite ugao da ga ne seče.",
+            "tooSmall": "Lokacija je premala.",
+            "reshapeSplit": "To bi lokaciju podelilo na dva dela; uredite njene uglove.",
+            "mapBusy": "Prvo završite otvoreni alat.",
+            "parcelsUnavailable": "Te parcele nisu na mapi.",
+            "plotsUnavailable": "Sečenje placeva nije dostupno."
+        }
+    },
+    "groundStats": {
+        "noParcels": "Ovde nema parcela",
+        "siteAreaValue": "Lokacija: {{area}} m²",
+        "openGroundValue": "Otvoreno tlo: {{area}} m²",
+        "openGroundNote": "Otvoreno tlo: {{area}} m² lokacija nema katastarskih parcela; brojke o parcelama odnose se samo na obuhvaćene parcele.",
+        "grainNoParcels": "Ovde nema parcela: ovi predlozi stoje na otvorenom tlu, pa nema nastalih parcela za ocenu."
     }
 }

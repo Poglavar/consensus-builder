@@ -103,16 +103,68 @@
 
     // The € figures for the panel. When there is no proposed massing (proposed <= 0) there is no
     // "gain" to show — the panel shows the current built value instead of a negative delta. avg is
-    // the per-parcel gain for the whole-proposal panel (null unless there is proposed massing).
-    function computeGain({ builtFloorArea = 0, proposedFloorArea = 0, priceEurPerM2 = 0, parcelCount = null } = {}) {
+    // the per-parcel gain for the whole-proposal panel (null unless there is proposed massing, and
+    // null with no parcels: a proposal on open ground has no per-parcel figure). When the totals
+    // cover open ground beside the parcels, `parcelFloorAreas` ({ built, proposed } over the bound
+    // parcels only) is what the per-parcel average divides, so open ground is not credited to owners.
+    function computeGain({ builtFloorArea = 0, proposedFloorArea = 0, priceEurPerM2 = 0, parcelCount = null, parcelFloorAreas = null } = {}) {
         const gain = (proposedFloorArea - builtFloorArea) * priceEurPerM2;
         const currentValue = builtFloorArea * priceEurPerM2;
         const hasProposed = proposedFloorArea > 0;
-        const avg = (parcelCount && parcelCount > 0 && hasProposed) ? gain / parcelCount : null;
+        const parcelGain = parcelFloorAreas
+            ? ((Number(parcelFloorAreas.proposed) || 0) - (Number(parcelFloorAreas.built) || 0)) * priceEurPerM2
+            : gain;
+        const avg = (typeof parcelCount === 'number' && parcelCount > 0 && hasProposed) ? parcelGain / parcelCount : null;
         return { gain, currentValue, hasProposed, avg };
     }
 
-    const api = { dedupeCoincidentBuildings, computeParcelMetrics, computeGain };
+    const METRIC_KEYS = ['builtVolume', 'proposedVolume', 'builtFloorArea', 'proposedFloorArea'];
+
+    function sumMetrics(list) {
+        const out = {};
+        METRIC_KEYS.forEach(key => {
+            out[key] = list.reduce((total, m) => total + ((typeof m[key] === 'number' && Number.isFinite(m[key])) ? m[key] : 0), 0);
+        });
+        return out;
+    }
+
+    // Whether a proposal's totals must be measured over its site: it binds no parcel, or its site
+    // reaches onto open ground beside the bound parcels. `ground` is site-stats.js groundOf(record).
+    function needsSiteMetrics(ground) {
+        return !!ground && (ground.hasBinding === false || ground.partial === true);
+    }
+
+    /**
+     * A whole proposal's built/proposed totals and the ground they cover.
+     *   parcelMetrics: computeParcelMetrics results for its cadastral parcels/pieces (pieces minted on
+     *     open ground are not parcels and belong to the site, not this list);
+     *   siteMetrics: computeParcelMetrics over the site, or null;
+     *   ground: site-stats.js groundOf(record), or null when unknown (then: the old parcel sum).
+     * A fully bound proposal keeps the per-parcel sum. With no bound parcels or with open ground the
+     * totals are the site's. parcelCount is null — never 0 — when the proposal binds no parcel.
+     * Returns null when nothing could be measured for a proposal on open ground.
+     */
+    function summarizeProposalGround({ parcelMetrics = [], siteMetrics = null, ground = null } = {}) {
+        const parcels = (Array.isArray(parcelMetrics) ? parcelMetrics : []).filter(m => m && typeof m === 'object');
+        const parcelTotals = sumMetrics(parcels);
+        const unbound = !!ground && ground.hasBinding === false;
+        const useSite = needsSiteMetrics(ground) && !!siteMetrics;
+        if (unbound && !useSite) return null;
+        const totals = useSite ? sumMetrics([siteMetrics]) : parcelTotals;
+        const finiteOrNull = value => (typeof value === 'number' && Number.isFinite(value)) ? value : null;
+        return {
+            ...totals,
+            source: useSite ? 'site' : 'parcels',
+            parcelCount: unbound ? null : parcels.length,
+            parcelFloorAreas: (useSite && parcels.length)
+                ? { built: parcelTotals.builtFloorArea, proposed: parcelTotals.proposedFloorArea }
+                : null,
+            siteM2: ground ? finiteOrNull(ground.siteM2) : null,
+            openGroundM2: (ground && (unbound || ground.partial)) ? finiteOrNull(ground.openGroundM2) : null
+        };
+    }
+
+    const api = { dedupeCoincidentBuildings, computeParcelMetrics, computeGain, needsSiteMetrics, summarizeProposalGround };
 
     if (typeof window !== 'undefined') {
         window.ProposalGain = api;

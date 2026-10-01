@@ -94,7 +94,7 @@ describe('proposal_market reads the proposal lens by a mirrored ProposalLensView
         const view = structFields(marketRs, 'struct ProposalLensView {').map(f => f.name);
         expect(idlFields.slice(0, view.length)).toEqual(view);
         // Everything after the lens is outside every mirror and may grow; nothing before it may move.
-        expect(idlFields.slice(view.length)).toEqual(['bump', 'verdict_may_execute']);
+        expect(idlFields.slice(view.length)).toEqual(['bump', 'verdict_may_execute', 'site_hash', 'open_ground', 'open_ground_cleared', 'layout_version']);
     });
 });
 

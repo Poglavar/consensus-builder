@@ -10,6 +10,14 @@
     const GEOM_BUFFER_STEPS = 16;
     const GEOM_EPSILON_M = 0.1; // small clean-up buffer in meters
 
+    function ringsOf(feature) {
+        const g = feature && (feature.geometry || feature);
+        if (!g || !Array.isArray(g.coordinates)) return [];
+        if (g.type === 'Polygon') return g.coordinates;
+        if (g.type === 'MultiPolygon') return [].concat(...g.coordinates);
+        return [];
+    }
+
     // Ensure polygon/multipolygon is simple, closed, proper winding and without duplicate points
     function sanitizePolygonFeature(inputFeature) {
         if (!inputFeature) return null;
@@ -19,9 +27,18 @@
             try { feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
             // Remove consecutive duplicate coordinates
             try { feature = turf.cleanCoords(feature, { mutate: false }); } catch (_) { }
-            // Split self-intersections into simple pieces
+            // Split self-intersections into simple pieces. Only a polygon that actually had kinks is
+            // dissolved: the ±GEOM_EPSILON_M buffer pair is a morphological closing, which fills every
+            // concave corner with a 0.1 m fillet — ground of the neighbouring parcel (a 2-4 cm reach
+            // that binds it, PARCEL-OPTIONAL.md) — so a polygon without kinks passes through
+            // untouched. (unkinkPolygon is not that test: it returns a holed polygon's hole as a
+            // second piece, and the dissolve then filled the hole. Kinks are looked for ring by ring:
+            // turf.kinks on the whole feature also reports two parts of a MultiPolygon touching.)
             try {
-                const unkinked = turf.unkinkPolygon(feature);
+                const kinked = ringsOf(feature).some(ring => {
+                    try { return turf.kinks(turf.lineString(ring)).features.length > 0; } catch (_) { return false; }
+                });
+                const unkinked = kinked ? turf.unkinkPolygon(feature) : null;
                 if (unkinked && unkinked.features && unkinked.features.length > 0) {
                     // Merge pieces via tiny buffer dissolve
                     let dissolved = null;
@@ -71,13 +88,29 @@
         return current;
     }
 
-    // Union many polygons robustly with clean-up buffers
+    function siteClipApi() {
+        if (global && global.__siteClip) return global.__siteClip;
+        try { return typeof require === 'function' ? require('./proposals/site-clip.js') : null; } catch (_) { return null; }
+    }
+
+    // Union many polygons (a block's parcels) into its superparcel. The result is the EXACT union —
+    // the parcels' own edges, cadastral micro-gaps filled (site-clip.siteOfParcels) — so a design
+    // traced from it never reaches into a neighbouring parcel. The old ±GEOM_EPSILON_M dissolve
+    // (buffer out, union, buffer in) is a morphological closing: it put a 0.1 m fillet into every
+    // concave corner of the block outline, i.e. 2-5 cm into the neighbour there (116 of 120 real
+    // Zagreb selections bound a neighbour at tolerance 0). It is kept only as the fallback when the
+    // plain union throws on broken input.
     function robustUnion(features) {
         if (!features || features.length === 0) return null;
+        const sanitized = features.map(raw => sanitizePolygonFeature(raw)).filter(f => f && f.geometry);
+        const clip = siteClipApi();
+        if (clip && sanitized.length) {
+            const exact = clip.siteOfParcels(sanitized, typeof turf !== 'undefined' ? { turf } : undefined);
+            if (exact) return exact;
+            console.warn('robustUnion: exact union failed; falling back to the buffered dissolve (may reach ~5 cm past concave corners)');
+        }
         let acc = null;
-        for (const raw of features) {
-            const f = sanitizePolygonFeature(raw);
-            if (!f) continue;
+        for (const f of sanitized) {
             try {
                 const fb = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
                 acc = acc ? (turf.union(acc, fb) || acc) : fb;

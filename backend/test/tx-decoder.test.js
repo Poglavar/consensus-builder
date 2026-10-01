@@ -69,6 +69,7 @@ function borsh(type, value) {
         return Buffer.concat([len, bytes]);
     }
     if (type === 'pubkey') return new PublicKey(value).toBuffer();
+    if (type && Array.isArray(type.array)) return Buffer.from(value);
     if (type && type.option) return value == null ? Buffer.from([0]) : Buffer.concat([Buffer.from([1]), borsh(type.option, value)]);
     if (type && type.vec) {
         const len = Buffer.alloc(4);
@@ -384,7 +385,7 @@ describe('decodeParsedTransaction: proposal_nft accept_proposal (recorded devnet
     });
 });
 
-describe('decodeParsedTransaction: proposal_nft v2 instructions (synthetic)', () => {
+describe('decodeParsedTransaction: proposal_nft v2/v3 instructions (synthetic)', () => {
     const OWNER = PERSONA_WALLET;
     const PAYOUT = TREASURY;
     const PARCEL = 'DDi6wgNuAR3GYu2Zirmys4HnB6Ee3DiHpY84bqauqQHH';
@@ -402,11 +403,11 @@ describe('decodeParsedTransaction: proposal_nft v2 instructions (synthetic)', ()
         instructions: [{ accounts, data: anchorData('proposal_nft', 'accept_with_attestations', values), programId: PROPOSAL_PROGRAM, stackHeight: 1 }]
     });
 
-    it('decodes accept_with_attestations with the v2 interface, the payout option and the account roles', () => {
+    it('decodes accept_with_attestations (unchanged since v2, so read as current) with the payout option and the account roles', () => {
         const decoded = decode(tx({ parcel_id: 'HR-335649-507', payout: PAYOUT }));
         const anchor = decoded.instructions[0];
         expect(anchor.action).toBe('accept_with_attestations');
-        expect(anchor.idlVersion).toBe('v2');
+        expect(anchor.idlVersion).toBe('v3');
         expect(anchor.args).toEqual({ parcel_id: 'HR-335649-507', payout: PAYOUT });
         expect(anchor.argsError).toBeUndefined();
         expect(anchor.accounts.map((account) => account.role)).toEqual(['proposal', 'parcel', 'ownership', 'ownership_credential', 'tally', 'record', 'owner', 'payer', 'system_program']);
@@ -417,20 +418,40 @@ describe('decodeParsedTransaction: proposal_nft v2 instructions (synthetic)', ()
         expect(decode(tx({ parcel_id: 'HR-1', payout: null })).instructions[0].args).toEqual({ parcel_id: 'HR-1', payout: null });
     });
 
+    const mintTx = (data) => decode(buildTx({
+        accountKeys: [key(OWNER, { signer: true, writable: true }), key(PROPOSAL, { writable: true }), key(TALLY, { writable: true }), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)],
+        instructions: [{ accounts: [PROPOSAL, TALLY, OWNER, SYSTEM_PROGRAM], data, programId: PROPOSAL_PROGRAM, stackHeight: 1 }]
+    }));
+
     it('decodes a v2 mint_and_fund (trailing verdict_may_execute) with the v2 interface', () => {
-        const data = anchorData('proposal_nft', 'mint_and_fund', {
+        const data = anchorData('legacy/proposal_nft.v2', 'mint_and_fund', {
             parcel_ids: ['HR-1'], is_conditional: false, image_uri: 'ipfs://x', sol_amount: '0', lens: [TREASURY], verdict_may_execute: true
         });
-        const decoded = decode(buildTx({
-            accountKeys: [key(OWNER, { signer: true, writable: true }), key(PROPOSAL, { writable: true }), key(TALLY, { writable: true }), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)],
-            instructions: [{ accounts: [PROPOSAL, TALLY, OWNER, SYSTEM_PROGRAM], data, programId: PROPOSAL_PROGRAM, stackHeight: 1 }]
-        }));
+        const decoded = mintTx(data);
         expect(decoded.instructions[0].idlVersion).toBe('v2');
         expect(decoded.instructions[0].args.verdict_may_execute).toBe(true);
         expect(decoded.instructions[0].args.lens).toEqual([TREASURY]);
+        expect(decoded.instructions[0].args.site_hash).toBeUndefined();
     });
 
-    it('decodes a v2 settle_with_verdict with its verdict record and names the record in the summary', () => {
+    it('decodes a v3 mint_and_fund with an empty parcel list, its site hash and open ground', () => {
+        const siteHash = Buffer.alloc(32, 0xab);
+        const data = anchorData('proposal_nft', 'mint_and_fund', {
+            parcel_ids: [], is_conditional: false, image_uri: 'ipfs://x', sol_amount: '0', lens: [TREASURY],
+            verdict_may_execute: true, site_hash: siteHash, open_ground: true
+        });
+        const decoded = mintTx(data);
+        expect(decoded.instructions[0].idlVersion).toBe('v3');
+        expect(decoded.instructions[0].args).toMatchObject({ parcel_ids: [], site_hash: 'ab'.repeat(32), open_ground: true, verdict_may_execute: true });
+        expect(decoded.summary).toContain('minted proposal with no parcels on site abababababab… with open ground');
+        // A v1 mint (no trailing fields at all) still reads with the v1 interface.
+        const v1 = mintTx(anchorData('legacy/proposal_nft.v1', 'mint_and_fund', {
+            parcel_ids: ['HR-1'], is_conditional: false, image_uri: 'ipfs://x', sol_amount: '0', lens: [TREASURY]
+        }));
+        expect(v1.instructions[0].idlVersion).toBe('v1');
+    });
+
+    it('decodes settle_with_verdict (unchanged since v2) with its verdict record and names the record in the summary', () => {
         const VERDICT_RECORD = PublicKey.findProgramAddressSync(
             [Buffer.from('verdict'), new PublicKey(PROPOSAL).toBuffer(), new PublicKey(ATTESTATION).toBuffer()], new PublicKey(PROPOSAL_PROGRAM)
         )[0].toBase58();
@@ -446,7 +467,7 @@ describe('decodeParsedTransaction: proposal_nft v2 instructions (synthetic)', ()
         }));
         const anchor = decoded.instructions[0];
         expect(anchor.action).toBe('settle_with_verdict');
-        expect(anchor.idlVersion).toBe('v2');
+        expect(anchor.idlVersion).toBe('v3');
         expect(anchor.accountsWarning).toBeUndefined();
         expect(anchor.accounts.map((account) => account.role)).toEqual(['proposal', 'verdict', 'verdict_credential', 'verdict_record', 'submitter', 'system_program']);
         expect(anchor.accounts[3].address).toBe(VERDICT_RECORD);
@@ -456,9 +477,9 @@ describe('decodeParsedTransaction: proposal_nft v2 instructions (synthetic)', ()
 });
 
 describe('loadIdls: legacy interfaces', () => {
-    it('lists the current proposal_nft IDL first and the v1 history interface after it', () => {
+    it('lists the current proposal_nft IDL (v3) first, then the v2 and v1 interfaces', () => {
         const versions = idls.byName.get('proposal_nft').versions.map((version) => version.idlVersion);
-        expect(versions).toEqual(['v2', 'v1']);
+        expect(versions).toEqual(['v3', 'v2', 'v1']);
         expect(idls.byName.get('proposal_pledge').versions.map((version) => version.idlVersion)).toEqual(['v1']);
     });
 });

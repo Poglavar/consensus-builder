@@ -22,13 +22,13 @@ function stringVector(values) {
     return Buffer.concat([count, ...values.map(string)]);
 }
 
-// Proposal v2 bytes: v1 prefix, lens, bump, verdict_may_execute.
+// Proposal v3 bytes: v1 prefix, lens, bump, verdict_may_execute, zero site_hash/open_ground/cleared.
 function proposalBytes(status, owner, accepted = [], lens = []) {
     const lensCount = Buffer.alloc(4); lensCount.writeUInt32LE(lens.length);
     return Buffer.concat([
         Buffer.alloc(8), Buffer.alloc(8), owner.toBuffer(), stringVector(['335550:1']),
         Buffer.from([1]), string(''), Buffer.from([1, status]), Buffer.alloc(24),
-        stringVector(accepted), lensCount, ...lens.map(key => key.toBuffer()), Buffer.from([255, 0])
+        stringVector(accepted), lensCount, ...lens.map(key => key.toBuffer()), Buffer.from([255, 0]), Buffer.alloc(34)
     ]);
 }
 

@@ -233,14 +233,29 @@
         }
     }
 
-    function buildPaletteHtml() {
-        const buttonHtml = tool => `
-            <button type="button" class="parcel-build-btn parcel-build-btn--${tool.key}" onclick="startParcelBuildTool('${tool.key}')"
-                title="${tParcel(tool.labelKey, {}, tool.fallback)}">
+    // options (the site tool's palette, js/site-drawing.js, reuses this one):
+    //   buildHandler     — global called with the tool key (default startParcelBuildTool);
+    //   includeOwnership — the Ownership group (Offer is an act on parcels: parcel palette only);
+    //   disabled         — { toolKey: reason } shown disabled, the reason as its title and a note;
+    //   labels           — { toolKey: label } replaces a tool's label (the site tool names Land
+    //                      readjustment "Subdivide" on a site with open ground).
+    function buildPaletteHtml(options = {}) {
+        const buildHandler = options.buildHandler || 'startParcelBuildTool';
+        const disabled = options.disabled || {};
+        const labels = options.labels || {};
+        const escapeAttr = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        const buttonHtml = tool => {
+            const label = labels[tool.key] || tParcel(tool.labelKey, {}, tool.fallback);
+            const reason = disabled[tool.key];
+            return `
+            <button type="button" class="parcel-build-btn parcel-build-btn--${tool.key}" onclick="${buildHandler}('${tool.key}')"
+                title="${escapeAttr(reason || label)}"${reason ? ' disabled aria-disabled="true"' : ''}>
                 <i class="fas ${tool.icon}"></i>
-                <span>${tParcel(tool.labelKey, {}, tool.fallback)}</span>
+                <span>${label}</span>
             </button>
+            ${reason ? `<p class="parcel-build-disabled-reason">${escapeAttr(reason)}</p>` : ''}
         `;
+        };
         // The §15a taxonomy, drawn as labelled groups (rethink-proposals.md, decision 2026-08-05):
         // Land readjustment stands alone first — the formation primitive; Block/Row/Detached are
         // RULES-based tools (form follows parameters → Urban rules); Freeform Building, Park,
@@ -262,7 +277,7 @@
                 const stationAttribute = tool.stationType ? ` data-station-type="${tool.stationType}"` : '';
                 return `
                     <button type="button" class="parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}"
-                        onclick="startParcelTransportTool('${tool.key}')"${stationAttribute}
+                        onclick="${options.transportHandler || 'startParcelTransportTool'}('${tool.key}')"${stationAttribute}
                         title="${title}" aria-label="${title}">
                         <i class="fas ${tool.icon}" aria-hidden="true"></i>
                         <span>${label}</span>
@@ -287,10 +302,10 @@
                         <legend>${transportTitle}</legend>
                         <div class="parcel-transport-grid">${transportButtons}</div>
                     </fieldset>
-                    <fieldset class="parcel-ownership-group">
+                    ${options.includeOwnership === false ? '' : `<fieldset class="parcel-ownership-group">
                         <legend>${ownershipTitle}</legend>
                         <div class="parcel-ownership-grid">${ownershipButtons}</div>
-                    </fieldset>
+                    </fieldset>`}
                 </div>
             </div>
         `;
@@ -324,4 +339,5 @@
     global.startParcelBuildTool = startParcelBuildTool;
     global.startParcelTransportTool = startParcelTransportTool;
     global.renderParcelProposalActions = renderParcelProposalActions;
+    global.buildProposalPaletteHtml = buildPaletteHtml;
 })(typeof window !== 'undefined' ? window : globalThis);

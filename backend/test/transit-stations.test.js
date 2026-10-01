@@ -263,10 +263,13 @@ describe('station placement alignment', () => {
             referenceAlignments: references,
             parcelEntries: []
         });
+        // A station is a material proposal (PARCEL-OPTIONAL.md): with no parcel under it, it is
+        // still placeable — its binding is computed from the footprint, empty here.
         expect(outsideLoadedParcels).toMatchObject({
             aligned: true,
-            valid: false,
-            reason: 'no-loaded-parcel'
+            valid: true,
+            reason: null,
+            parcelIds: []
         });
     });
 
@@ -621,11 +624,12 @@ describe('station placement input ownership', () => {
         }
     });
 
-    it('restores the ready message after moving away from an incomplete cadastral footprint', async () => {
+    it('places a station on partly uncovered ground with a partial binding instead of refusing it', async () => {
         const keys = [
             'map', 'L', 'document', 'turf', 'addEventListener', 'removeEventListener',
             'isThreeModeActive', 'clearParcelHover', 'proposalStorage', 'LiveParcelFabric',
-            'CadastralParcelRepository', 'CityConfigManager', 'updateStatus', 'TransitAlignments'
+            'CadastralParcelRepository', 'CityConfigManager', 'updateStatus', 'TransitAlignments',
+            'proposalDraftStore', 'instantCreateProposalFromDraft'
         ];
         const originals = new Map(keys.map(key => [key, globalThis[key]]));
         const handlers = new Map();
@@ -687,6 +691,9 @@ describe('station placement input ownership', () => {
         globalThis.CityConfigManager = { getCurrentCityId: () => 'test-city' };
         globalThis.TransitAlignments = { getRecords: () => [], queryNearby: () => [] };
         globalThis.updateStatus = message => messages.push(message);
+        const createDraft = vi.fn(input => ({ id: 'draft-1', ...input }));
+        globalThis.proposalDraftStore = { createDraft };
+        globalThis.instantCreateProposalFromDraft = vi.fn(async () => 'p-station');
 
         try {
             expect(stations.startTransitStationPlacement('tram')).toBe(true);
@@ -701,12 +708,12 @@ describe('station placement input ownership', () => {
                 preventDefault() {},
                 stopImmediatePropagation() {}
             });
-            await vi.waitFor(() => {
-                expect(messages.at(-1)).toBe('The complete station footprint must lie on cadastral ground.');
-            });
-
-            handlers.get('map:mousemove')?.({ latlng: cursor });
-            expect(messages.at(-1)).toBe('Snapped to a compatible track. Click to place; Esc cancels.');
+            await vi.waitFor(() => expect(globalThis.instantCreateProposalFromDraft).toHaveBeenCalledWith('draft-1'));
+            expect(messages).not.toContain('The complete station footprint must lie on cadastral ground.');
+            const fields = createDraft.mock.calls[0][0].fields;
+            expect(fields.selectedParcelIds).toEqual(['partial-ground']);
+            expect(fields.binding).toMatchObject({ coverage: 'partial', source: 'client-preview' });
+            expect(fields.binding.parcels.map(hit => hit.parcelId)).toEqual(['partial-ground']);
         } finally {
             stations.cancelTransitStationPlacement();
             for (const [key, value] of originals.entries()) {

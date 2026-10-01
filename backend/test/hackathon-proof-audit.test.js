@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { auditHackathonProof, exactResource } from '../agents/hackathon-proof-audit.js';
+import { runOpenGroundAudit } from '../oracle/open-ground-audit.js';
+import { proposalAccountBytes } from './fixtures/proposal-account.js';
+import { createMockPool } from './helpers/mock-pool.js';
 
 const BASE = 'https://api.example.test';
 
@@ -393,5 +396,52 @@ describe('public hackathon proof audit', () => {
     it('requires an exact normalized resource URL', () => {
         expect(exactResource({ state: 'listed', listing: { resource: `${BASE}/agent/proposals/` } }, `${BASE}/agent/proposals`)).toBe(true);
         expect(exactResource({ state: 'listed', listing: { resource: `${BASE}/other` } }, `${BASE}/agent/proposals`)).toBe(false);
+    });
+});
+
+describe('open-ground audit wiring (advisory)', () => {
+    const AT = Date.parse('2026-09-21T12:00:00Z');
+    const run = openGroundAudit => auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(fixtures()), now: AT, openGroundAudit });
+    const item = result => result.checks.find(entry => entry.id === 'open_ground_audit');
+
+    it('is not listed when the operator did not ask for it (the public audit is HTTP-only)', async () => {
+        const result = await run(null);
+        expect(item(result)).toBeUndefined();
+        expect(result.summary).toEqual({ pass: 20, warn: 1, fail: 0 });
+    });
+
+    it('passes with counts on a v1-only chain: legacy accounts are skipped, nothing fails', async () => {
+        const owner = { toBase58: () => '11111111111111111111111111111111' };
+        const connection = {
+            getProgramAccounts: async () => [1, 2].map(seed => ({
+                pubkey: { toBase58: () => `legacy-${seed}` },
+                account: { owner, data: proposalAccountBytes({ parcelIds: ['HR-1'], layoutVersion: 0 }) }
+            }))
+        };
+        const pool = createMockPool();
+        pool.setResult({ rows: [{ id: 1, proposal_id: 'p1', proposal_account: 'legacy-1', cadastre_parcel_ids: ['HR-1'], proposal_data: {}, binding: null, site_geojson: null }] });
+        const result = await run(() => runOpenGroundAudit({ pool, connection }));
+        expect(result.status).toBe('verified');
+        expect(result.summary).toEqual({ pass: 21, warn: 1, fail: 0 });
+        expect(item(result)).toMatchObject({
+            status: 'pass',
+            evidence: { accounts: 2, records: 1, checked: 0, mismatches: 0, skipped: 2,
+                skippedByReason: { 'legacy-layout': 2 } }
+        });
+    });
+
+    it('warns, but never fails the audit, on mismatches or a loader error', async () => {
+        const mismatch = { kind: 'open-ground-understated', proposal: { account: 'A', recordId: 1, proposalId: 'p1' }, coverage: 'partial' };
+        const flagged = await run(async () => ({
+            accounts: 1, records: 1, checked: 1, mismatches: [mismatch], skipped: [],
+            byKind: { 'open-ground-understated': 1 }, skippedByReason: {}, undecodable: []
+        }));
+        expect(flagged.status).toBe('verified');
+        expect(item(flagged)).toMatchObject({ status: 'warn', evidence: { mismatches: 1, byKind: { 'open-ground-understated': 1 }, examples: [mismatch] } });
+
+        const broken = await run(async () => { throw new Error('rpc 429'); });
+        expect(broken.status).toBe('verified');
+        expect(item(broken)).toMatchObject({ status: 'warn', evidence: 'rpc 429' });
+        expect(broken.sourceErrors.openGroundAudit).toBe('rpc 429');
     });
 });

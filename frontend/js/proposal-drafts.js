@@ -30,6 +30,12 @@
         throw new Error('Cannot build proposal: the authored-record boundary is unavailable.');
     }
 
+    function siteDraftApi() {
+        if (global.__siteDraft) return global.__siteDraft;
+        if (typeof require === 'function') return require('./proposals/site-draft.js');
+        throw new Error('Cannot validate a draft: proposals/site-draft.js is not loaded.');
+    }
+
     function isPlainObject(value) {
         if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
         const prototype = Object.getPrototypeOf(value);
@@ -175,6 +181,10 @@
             // separately so an untouched edit does not need the live map to rediscover it.
             selectedParcelIds: cadastreParcelIds.slice(),
             cadastreParcelIds: cadastreParcelIds.slice(),
+            // The authored site and its intrusion tolerance (PARCEL-OPTIONAL.md); null for
+            // records whose site is their footprint.
+            site: cloneDraftValue(proposal?.site || null),
+            toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
             ownership: cloneDraftValue(proposal?.ownership || proposal?.proposalFacets?.ownership || proposal?.facets?.ownership || null),
             recipientScope: proposal?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.facets?.recipientScope || null,
             recipientAddress: proposal?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.facets?.recipientAddress || null,
@@ -728,9 +738,10 @@
                     const errors = [];
                     if (!draft.goal) errors.push({ code: 'missing-goal', message: 'Choose a proposal type.', path: 'goal' });
                     if (!draft.fields?.name?.trim()) errors.push({ code: 'missing-name', message: 'Add a proposal name.', path: 'fields.name' });
-                    if (!Array.isArray(draft.fields?.selectedParcelIds) || draft.fields.selectedParcelIds.length === 0) {
-                        errors.push({ code: 'missing-parcels', message: 'Select at least one parcel.', path: 'fields.selectedParcelIds' });
-                    }
+                    // A parcel act needs parcels; a material proposal needs a site, parcels or its
+                    // own design geometry (proposals/site-draft.js).
+                    const groundIssue = siteDraftApi().draftGroundIssue(draft);
+                    if (groundIssue) errors.push(groundIssue);
                     result = { valid: errors.length === 0, errors, warnings: [] };
                 }
             } catch (error) {
@@ -768,6 +779,9 @@
                     && selected.every(id => authored.includes(String(id)));
                 if (authored.length && selectionUnchanged) {
                     proposal.cadastreParcelIds = authored;
+                } else if (!selected.length) {
+                    // A site without parcels: the declaration is the binding, computed at publish.
+                    proposal.cadastreParcelIds = [];
                 } else {
                     const fabric = global.LiveParcelFabric;
                     if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {

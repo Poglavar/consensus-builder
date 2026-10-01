@@ -363,8 +363,13 @@ describe('agent quickstart docs', () => {
         const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
         const res = await request(app).get('/docs/agents.json');
         expect(res.status).toBe(200);
-        expect(res.body.schema.required).toEqual(['cadastreParcelIds']);
-        expect(res.body.schema.properties.cadastreParcelIds.minItems).toBe(1);
+        // Land is declared parcels OR a site (PARCEL-OPTIONAL.md): a non-empty declaration, or a site.
+        expect(res.body.schema.anyOf).toEqual([
+            { required: ['cadastreParcelIds'], properties: { cadastreParcelIds: { minItems: 1 } } },
+            { required: ['site'] }
+        ]);
+        expect(res.body.schema.properties.site.properties.type.enum).toEqual(['Polygon', 'MultiPolygon']);
+        expect(res.body.schema.properties.toleranceM).toMatchObject({ minimum: 0, maximum: 1, default: 0 });
         expect(res.body.x402).toMatchObject({
             enabled: true,
             network: X402_ENV.X402_NETWORK,
@@ -414,7 +419,8 @@ describe('agent quickstart docs', () => {
         });
         // The documented signature is the checked-in IDL's, not a hand-kept copy that can drift.
         const typeName = type => (typeof type === 'string' ? type
-            : type.vec !== undefined ? `vec<${typeName(type.vec)}>` : `option<${typeName(type.option)}>`);
+            : type.vec !== undefined ? `vec<${typeName(type.vec)}>`
+                : Array.isArray(type.array) ? `[${typeName(type.array[0])}; ${type.array[1]}]` : `option<${typeName(type.option)}>`);
         const idl = JSON.parse(fs.readFileSync(repoFile(res.body.proposalAccount.idl), 'utf8'));
         const documented = (doc, name) => {
             const ix = idl.instructions.find(instruction => instruction.name === name);

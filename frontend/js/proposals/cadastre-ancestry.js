@@ -149,6 +149,11 @@
             : [])
             .map(value => String(value || '').trim())
             .filter(Boolean)));
+        // A material proposal may have an empty binding (bare ground, PARCEL-OPTIONAL.md rule 4).
+        const siteApi = global.__siteBinding;
+        if (!declared.length && siteApi && typeof siteApi.requiresParcels === 'function' && !siteApi.requiresParcels(proposal)) {
+            return [];
+        }
         if (!declared.length) {
             const error = new Error('Cannot publish: the proposal has no explicit cadastral parcel declaration.');
             error.code = 'cadastre-declaration-missing';
@@ -198,6 +203,8 @@
             // 16% of a shared-plan apply.
             const repository = global.CadastralParcelRepository;
             const declared = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+            // No bound parcels (a site on bare ground): nobody's land changes hands.
+            if (!declared.length) return [];
             const parcels = declared.length && repository && typeof repository.peekMany === 'function'
                 ? repository.peekMany(declared).map(feature => ({ id: String(feature.properties.parcelId), feature }))
                 : loadedCadastreParcels();

@@ -7,6 +7,19 @@
 //! attested owner completes the parcel. A lens member's ProposalVerdict-v1 attestation can expire
 //! the proposal (or execute it, only when minted with `verdict_may_execute`). Parcel anchors carry
 //! no ownership and nothing here reads their `owner`.
+//!
+//! v3, parcel-optional proposals (PARCEL-OPTIONAL.md, lens-model.md "proposal_nft v3"): a proposal
+//! is about a site (`site_hash`, sha256 of its canonical MultiPolygon) and its parcel list is the
+//! site's cadastral binding, which may be empty. `open_ground` says part of the site lies on no
+//! bound parcel, so no owner can consent for it: such a proposal also needs an `executed` verdict
+//! from a lens member, and an empty binding executes only through one. Execution:
+//! by consent  ⇔ parcels non-empty ∧ every parcel accepted ∧ (¬open_ground ∨ open ground cleared)
+//! by verdict  ⇔ verdict_may_execute ∧ ¬(open_ground ∧ parcels non-empty)
+//! where an `executed` verdict on an open-ground proposal with parcels clears the open ground (it
+//! does not stand in for the owners), in either order with the owners' consent.
+//! Every v3 mint stamps `layout_version` = 3; a v1/v2 account reads 0 there (zero padding) and
+//! keeps 0 when this program rewrites it, so readers can tell a legacy account from a v3 mint
+//! without a site (both hold a zero `site_hash`).
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
@@ -22,6 +35,9 @@ const PARCEL_NFT_PROGRAM_ID: Pubkey = pubkey!("4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5
 pub const OWNERSHIP_SCHEMA_NAME: &[u8] = b"ParcelOwnership";
 pub const VERDICT_SCHEMA_NAME: &[u8] = b"ProposalVerdict";
 pub const LENS_SCHEMA_VERSION: u8 = 1;
+
+/// Stamped into `Proposal.layout_version` by every mint. v1/v2 accounts read 0 (zero padding).
+pub const PROPOSAL_LAYOUT_VERSION: u8 = 3;
 
 /// Longest parcel id a tally or record can hold (also the PDA seed limit).
 pub const MAX_PARCEL_ID_LEN: usize = 32;
@@ -45,8 +61,13 @@ pub mod proposal_nft {
         sol_amount: u64,
         lens: Vec<Pubkey>,
         verdict_may_execute: bool,
+        site_hash: [u8; 32],
+        open_ground: bool,
     ) -> Result<()> {
-        require!(!parcel_ids.is_empty(), ProposalError::NoParcels);
+        // v3: an empty binding is allowed only for a proposal about a site, and is all open ground.
+        require!(!parcel_ids.is_empty() || site_hash != [0u8; 32], ProposalError::NoParcels);
+        require!(!parcel_ids.is_empty() || open_ground, ProposalError::EmptyBindingIsOpenGround);
+        require!(!open_ground || site_hash != [0u8; 32], ProposalError::OpenGroundNeedsSite);
         require!(!lens.is_empty(), ProposalError::NoLens);
 
         let proposal_id = ctx.accounts.proposal_counter.count;
@@ -83,6 +104,10 @@ pub mod proposal_nft {
         proposal.owner = ctx.accounts.owner.key();
         proposal.bump = ctx.bumps.proposal;
         proposal.verdict_may_execute = verdict_may_execute;
+        proposal.site_hash = site_hash;
+        proposal.open_ground = open_ground;
+        proposal.open_ground_cleared = false;
+        proposal.layout_version = PROPOSAL_LAYOUT_VERSION;
 
         Ok(())
     }
@@ -181,7 +206,9 @@ pub mod proposal_nft {
         if tally.accepted == tally.required {
             proposal.accepted_parcels.push(parcel_id);
             proposal.acceptance_count += 1;
-            if proposal.acceptance_count == proposal.parcel_ids.len() as u64 {
+            // Consent complete executes unless open ground still waits for its verdict; then the
+            // proposal stays Active (and open to contributions) until that verdict arrives.
+            if proposal.consent_complete() && (!proposal.open_ground || proposal.open_ground_cleared) {
                 proposal.acceptance_possible = false;
                 proposal.status = ProposalStatus::Executed;
             }
@@ -191,8 +218,10 @@ pub mod proposal_nft {
     }
 
     /// Settle an Active proposal from a lens member's ProposalVerdict-v1 attestation: `expired`
-    /// sets Expired; `executed` sets Executed only for proposals minted with
-    /// `verdict_may_execute` (a verdict cannot skip per-parcel consent otherwise).
+    /// sets Expired; `executed` needs a proposal minted with `verdict_may_execute` (a verdict
+    /// cannot skip per-parcel consent otherwise) and then executes it, except on an open-ground
+    /// proposal with parcels: there it clears the open ground, and the proposal executes now if
+    /// every parcel is already accepted, or at the last acceptance otherwise.
     pub fn settle_with_verdict(ctx: Context<SettleWithVerdict>) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
         let proposal_key = ctx.accounts.proposal.key();
@@ -215,19 +244,30 @@ pub mod proposal_nft {
         require_keys_eq!(verdict.proposal_account, proposal_key, ProposalError::WrongProposal);
         require!(verdict.source_observed_at <= now, ProposalError::AttestationFromFuture);
 
-        let status = if verdict.verdict == b"expired" {
-            ProposalStatus::Expired
+        // `verdict_kind` is what the record keeps (1 executed, 3 expired); `status` is where the
+        // proposal ends up, which stays Active for an open-ground clearance awaiting consent.
+        let (verdict_kind, status) = if verdict.verdict == b"expired" {
+            (ProposalStatus::Expired, ProposalStatus::Expired)
         } else if verdict.verdict == b"executed" {
-            require!(
-                proposal.verdict_may_execute
-                    || proposal.acceptance_count == proposal.parcel_ids.len() as u64,
-                ProposalError::VerdictCannotSkipConsent
-            );
-            ProposalStatus::Executed
+            // No `acceptance_count == parcel_ids.len()` shortcut: with an empty list that read
+            // 0 == 0 and let any executed verdict execute a parcel-less proposal.
+            require!(proposal.verdict_may_execute, ProposalError::VerdictCannotSkipConsent);
+            if proposal.open_ground && !proposal.parcel_ids.is_empty() {
+                proposal.open_ground_cleared = true;
+                if proposal.consent_complete() {
+                    (ProposalStatus::Executed, ProposalStatus::Executed)
+                } else {
+                    (ProposalStatus::Executed, ProposalStatus::Active)
+                }
+            } else {
+                (ProposalStatus::Executed, ProposalStatus::Executed)
+            }
         } else {
             return err!(ProposalError::InvalidVerdict);
         };
-        proposal.acceptance_possible = false;
+        if status != ProposalStatus::Active {
+            proposal.acceptance_possible = false;
+        }
         proposal.status = status;
 
         let verdict_hash = hash(&verdict_data).to_bytes();
@@ -236,7 +276,7 @@ pub mod proposal_nft {
         record.member = member;
         record.verdict_attestation = accounts.verdict.key();
         record.verdict_hash = verdict_hash;
-        record.verdict = status as u8;
+        record.verdict = verdict_kind as u8;
         record.settled_at = now;
         record.bump = ctx.bumps.verdict_record;
 
@@ -247,6 +287,7 @@ pub mod proposal_nft {
             member,
             status: status as u8,
             settled_at: now,
+            verdict: verdict_kind as u8,
         });
         Ok(())
     }
@@ -387,7 +428,7 @@ pub struct MintAndFund<'info> {
     #[account(
         init,
         payer = owner,
-        space = 4096,
+        space = PROPOSAL_ACCOUNT_SPACE,
         seeds = [b"proposal", &proposal_counter.count.to_le_bytes()],
         bump
     )]
@@ -562,7 +603,31 @@ pub struct Proposal {
     pub lens: Vec<Pubkey>,
     pub bump: u8,
     pub verdict_may_execute: bool,
+    // v3 (appended after v2's tail so prefix readers keep working; v1/v2 accounts hold zero bytes
+    // here, which read as no site, no open ground, not cleared: exactly their v2 behaviour).
+    /// sha256 of the canonical site encoding (frontend/js/proposals/site-hash.js); zero = no site.
+    pub site_hash: [u8; 32],
+    /// Part of the site lies on no bound parcel: execution also needs an executed verdict.
+    pub open_ground: bool,
+    /// An executed verdict has cleared the open ground (only meaningful with `open_ground`).
+    pub open_ground_cleared: bool,
+    /// Account layout the mint wrote: PROPOSAL_LAYOUT_VERSION (3) for a v3 mint, 0 for a v1/v2
+    /// account (zero padding; only the mint sets it, so it stays 0). Tells a legacy account from a v3
+    /// mint without a site, which both hold a zero `site_hash`.
+    pub layout_version: u8,
 }
+
+impl Proposal {
+    /// Every parcel of a non-empty binding is accepted. Never true for an empty binding.
+    pub fn consent_complete(&self) -> bool {
+        !self.parcel_ids.is_empty() && self.acceptance_count == self.parcel_ids.len() as u64
+    }
+}
+
+/// The fixed account size every Proposal lives in. It always has room: everything variable comes
+/// from one mint_and_fund instruction, whose data a 1232-byte transaction caps at about 1.1 KB, so
+/// the proposal plus a full `accepted_parcels` copy of its parcel ids stays under about 2.4 KB.
+pub const PROPOSAL_ACCOUNT_SPACE: usize = 4096;
 
 /// One lens member's view of one parcel's owner set within one proposal:
 /// PDA ["consent", proposal, parcel_id].
@@ -598,8 +663,9 @@ pub struct AcceptanceRecord {
 
 /// One settled verdict: PDA ["verdict", proposal, verdict_attestation]. Keeps the verdict
 /// attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS
-/// account (and the transaction logs that carry `VerdictSettled`). `verdict` is the status it set:
-/// 1 Executed, 3 Expired.
+/// account (and the transaction logs that carry `VerdictSettled`). `verdict` is what the verdict
+/// said: 1 executed, 3 expired. An executed verdict on an open-ground proposal with parcels clears
+/// the open ground and may leave the proposal Active until the last owner accepts.
 #[account]
 #[derive(InitSpace)]
 pub struct VerdictRecord {
@@ -618,8 +684,11 @@ pub struct VerdictSettled {
     pub verdict_attestation: Pubkey,
     pub verdict_hash: [u8; 32],
     pub member: Pubkey,
+    /// The proposal's status after the settlement (0 Active for an open-ground clearance).
     pub status: u8,
     pub settled_at: i64,
+    /// What the verdict said: 1 executed, 3 expired.
+    pub verdict: u8,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq)]
@@ -632,7 +701,7 @@ pub enum ProposalStatus {
 
 #[error_code]
 pub enum ProposalError {
-    #[msg("Must include at least one parcel")]
+    #[msg("Must include at least one parcel, or a site_hash for a proposal on open ground")]
     NoParcels,
     #[msg("Must include at least one lens")]
     NoLens,
@@ -698,6 +767,10 @@ pub enum ProposalError {
     VerdictCannotSkipConsent,
     #[msg("Proposal is not expired")]
     NotExpired,
+    #[msg("A proposal without parcels is all open ground: open_ground must be set")]
+    EmptyBindingIsOpenGround,
+    #[msg("Open ground needs a site: site_hash must be set")]
+    OpenGroundNeedsSite,
 }
 
 /// The parcel anchor must exist: owned by parcel_nft at PDA ["parcel", parcel_id].

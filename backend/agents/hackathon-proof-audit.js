@@ -180,7 +180,11 @@ export async function auditHackathonProof({
     now = Date.now(),
     maxRunAgeHours = 48,
     lensWindowDays = 30,
-    maxLensLookups = 50
+    maxLensLookups = 50,
+    // Optional: () => Promise<report> from oracle/open-ground-audit.js runOpenGroundAudit. It needs the
+    // database and an RPC, which this HTTP-only audit never touches, so the operator opts in
+    // (scripts/hackathon-proof-audit.mjs --open-ground); without it the check is not listed.
+    openGroundAudit = null
 } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('no fetch implementation available');
     const base = cleanBase(baseUrl);
@@ -363,6 +367,18 @@ export async function auditHackathonProof({
     const lensMembers = Array.isArray(values.lensMembers?.members) ? values.lensMembers.members : [];
     const attesters = lensMembers.filter(member => member?.key && Number(member.coverage?.ownership) > 0);
 
+    // Open-ground audit: v3 accounts' site_hash/open_ground/parcel_ids against the published record.
+    // Advisory: a chain with no v3 accounts (devnet is v1; layout_version 0 reads as legacy) checks
+    // nothing and passes with its counts.
+    let openGround = null;
+    if (typeof openGroundAudit === 'function') {
+        try {
+            openGround = await openGroundAudit();
+        } catch (error) {
+            errors.openGroundAudit = error instanceof Error ? error.message : String(error);
+        }
+    }
+
     const checks = [
         check('proposal_bazaar', exactResource(values.proposalDiscovery, expectedProposal),
             'Paid proposal endpoint has an exact hosted Bazaar listing',
@@ -478,7 +494,18 @@ export async function auditHackathonProof({
             values.lensMembers ? {
                 members: lensMembers.length,
                 attesters: attesters.map(member => ({ key: member.key, name: member.name || null, ownership: Number(member.coverage.ownership) }))
-            } : errors.lensMembers || null, 'advisory')
+            } : errors.lensMembers || null, 'advisory'),
+        ...(typeof openGroundAudit === 'function' ? [check('open_ground_audit',
+            Boolean(openGround && Array.isArray(openGround.mismatches) && openGround.mismatches.length === 0
+                && !(openGround.undecodable?.length > 0)),
+            'Every v3 proposal account declares the site hash, open ground and parcels of its published record',
+            openGround ? {
+                accounts: openGround.accounts, records: openGround.records ?? null, checked: openGround.checked,
+                mismatches: openGround.mismatches.length, byKind: openGround.byKind,
+                skipped: openGround.skipped.length, skippedByReason: openGround.skippedByReason,
+                undecodable: openGround.undecodable?.length ?? 0,
+                examples: openGround.mismatches.slice(0, 10)
+            } : errors.openGroundAudit || null, 'advisory')] : [])
     ];
     const summary = checks.reduce((counts, item) => {
         counts[item.status] += 1;

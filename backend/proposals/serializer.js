@@ -4,6 +4,10 @@ import { createRequire } from 'node:module';
 
 const requireCjs = createRequire(import.meta.url);
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
+const siteBinding = requireCjs('../../frontend/js/proposals/site-binding.js');
+
+const isPolygonGeometry = value => !!value && typeof value === 'object'
+    && (value.type === 'Polygon' || value.type === 'MultiPolygon') && Array.isArray(value.coordinates);
 
 const LOCAL_STATE_SUB_KEYS = Object.freeze([
     'roadProposal',
@@ -68,8 +72,19 @@ export function assertCanonicalProposalRow(row) {
     // broken durable record instead of quietly manufacturing a usable proposal from it.
     if (!owns(row, 'cadastre_parcel_ids')) return;
     const ids = row.cadastre_parcel_ids;
-    if (!Array.isArray(ids) || !ids.length) {
+    if (!Array.isArray(ids)) {
         throw invalidRecord('Invalid proposal record: cadastre_parcel_ids is required.');
+    }
+    const raw = row.proposal_data && typeof row.proposal_data === 'object'
+        ? row.proposal_data
+        : {};
+    if (!ids.length) {
+        // An empty declaration is valid only for a material proposal that carries its site (the
+        // column, when the query selected it, or the record's own copy) — PARCEL-OPTIONAL.md.
+        const hasSite = present(row.site) || isPolygonGeometry(raw.site);
+        if (!hasSite || siteBinding.isParcelAct(raw)) {
+            throw invalidRecord('Invalid proposal record: cadastre_parcel_ids is required.');
+        }
     }
     const normalizedIds = ids.map(value => typeof value === 'string' ? value : '');
     if (normalizedIds.some((id, index) => !id || id !== id.trim() || id !== ids[index])
@@ -80,9 +95,6 @@ export function assertCanonicalProposalRow(row) {
     if (generated) {
         throw invalidRecord(`Invalid proposal record: cadastre_parcel_ids contains generated id ${generated}.`);
     }
-    const raw = row.proposal_data && typeof row.proposal_data === 'object'
-        ? row.proposal_data
-        : {};
     const candidate = {
         ...raw,
         cadastreParcelIds: ids,
@@ -196,6 +208,10 @@ export function serializeProposalRow(row, options = {}) {
     // against (rethink-proposals.md §9/§12 step 2, D5).
     proposal.ownershipFlow = choose(row.ownership_flow, proposal.ownershipFlow ?? null);
     proposal.cadastreFrame = choose(row.cadastre_frame, proposal.cadastreFrame ?? null);
+    // The proposal's ground and the server binding fixed at publish (PARCEL-OPTIONAL.md). The site
+    // is served from the record (the geometry column exists for spatial queries, not transport).
+    proposal.site = proposal.site ?? null;
+    proposal.binding = choose(row.binding, proposal.binding ?? null);
     proposal.parcelSet = buildParcelSet({
         parcelIds: proposal.cadastreParcelIds || [],
         jurisdiction: proposal.city || 'unknown',

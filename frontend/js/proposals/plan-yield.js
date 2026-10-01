@@ -264,7 +264,10 @@
         const kind = sp && sp.kind ? String(sp.kind).toLowerCase() : null;
         if (kind && OPEN_SPACE_KINDS.includes(kind)) {
             bucket.openSpaces = 1;
-            bucket.openSpaceM2 = geometryAreaM2(sp.geometry);
+            // The applied body can be smaller than the authored one (a later road built through a
+            // park takes its strip): a caller holding the applied map passes `openSpaceAreaOf`.
+            const applied = typeof opts.openSpaceAreaOf === 'function' ? num(opts.openSpaceAreaOf(proposal)) : null;
+            bucket.openSpaceM2 = applied !== null ? applied : geometryAreaM2(sp.geometry);
         }
 
         return bucket;
@@ -397,9 +400,12 @@
 
     /**
      * @returns {{resulting: string[], produced: string[], consumed: string[], builtOn: string[],
-     *            cadastre: string[], materialized: boolean}}
+     *            cadastre: string[], materialized: boolean, bound: boolean}}
      *          `resulting` is the explicit live-fabric snapshot when supplied. With no snapshot,
      *          it is the proposal set's cadastral scope and `materialized` is false.
+     *          `bound` is false when no proposal binds a cadastral parcel (all on open ground):
+     *          then there are no parcels to count, and a caller shows "no parcels here", not 0.
+     *          Pieces minted on open ground carry no cadastral anchor, so they are never counted.
      */
     function resultingParcels(proposals, options) {
         const opts = options || {};
@@ -417,7 +423,8 @@
                 consumed: [],
                 builtOn: [...cadastre],
                 cadastre: [...cadastre],
-                materialized: false
+                materialized: false,
+                bound: cadastre.size > 0
             };
         }
 
@@ -452,7 +459,8 @@
             consumed: [...consumed],
             builtOn: [...builtOn],
             cadastre: [...cadastre],
-            materialized: true
+            materialized: true,
+            bound: cadastre.size > 0
         };
     }
 

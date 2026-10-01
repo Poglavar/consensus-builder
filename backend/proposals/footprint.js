@@ -1,8 +1,8 @@
 // Server side of the proposal footprint: which cadastral parcels a proposal's own geometry lies on.
 // The parts come from the shared pure builder (frontend/js/proposals/footprint-parts.js, the same
 // one the browser publish gate uses); PostGIS unions them and measures each parcel's overlap in
-// EPSG:3765 metres. Used by POST /proposals, the paid /agent/proposals precheck and the
-// legacy-declaration migration, so all three apply one rule.
+// EPSG:3765 metres. The strict declaration rule for new records (declared == binding) lives in
+// binding.js; parcelOverlaps here serves the legacy-declaration migration.
 
 import { createRequire } from 'node:module';
 
@@ -15,7 +15,6 @@ export const { footprintParts, hasFootprint, MAX_FOOTPRINT_VERTICES } = footprin
 // proposal lies on. The browser gate uses the same floor.
 export const MIN_PARCEL_OVERLAP_M2 = 1;
 
-export const UNDECLARED_PARCELS = 'undeclared-parcels';
 export const INVALID_FOOTPRINT = 'invalid-footprint';
 
 // A stored row keeps sub-proposals both in their own columns and inside proposal_data; the column
@@ -75,30 +74,4 @@ export async function parcelOverlaps(db, parts, { minAreaM2 = MIN_PARCEL_OVERLAP
         parcelAreaM2: Number(row.parcel_area_m2),
         overlapM2: Number(row.overlap_m2)
     }));
-}
-
-/**
- * The strict declaration rule: every current parcel the geometry covers by >= 1 m² must be declared.
- * Declared parcels with no geometry on them are allowed (a whole-block selection).
- * @returns {Promise<{ ok: true, undeclared: object[], checked: boolean }
- *                 | { ok: false, code: string, error: string, parcels?: object[] }>}
- */
-export async function checkDeclaredParcels(db, proposal, declaredIds) {
-    const parts = footprintParts(proposal);
-    if (parts.invalid) {
-        return { ok: false, code: INVALID_FOOTPRINT, error: `Proposal geometry is invalid: ${parts.invalid}.` };
-    }
-    if (!hasFootprint(parts)) return { ok: true, undeclared: [], checked: false };
-    const declared = new Set((declaredIds || []).map(String));
-    const undeclared = (await parcelOverlaps(db, parts)).filter(hit => !declared.has(hit.id));
-    if (undeclared.length) {
-        return {
-            ok: false,
-            code: UNDECLARED_PARCELS,
-            error: `The proposal's geometry lies on ${undeclared.length} parcel(s) that are not in cadastreParcelIds: `
-                + `${undeclared.map(hit => hit.id).join(', ')}. Declare them, or keep the geometry inside the declared parcels.`,
-            parcels: undeclared.map(hit => ({ id: hit.id, overlapM2: Math.round(hit.overlapM2 * 10) / 10 }))
-        };
-    }
-    return { ok: true, undeclared: [], checked: true };
 }

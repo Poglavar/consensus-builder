@@ -22,6 +22,8 @@ import {
     findProposalPDA,
     airdrop,
     initializeProposalCounter,
+    NO_SITE,
+    testSiteHash,
 } from "./helpers.ts";
 import {
     LensMember,
@@ -108,7 +110,8 @@ describe("proposal_market", () => {
     async function mintProposal(
         parcelIds: string[],
         isConditional: boolean,
-        solAmount: number = 0
+        solAmount: number = 0,
+        opts: { verdictMayExecute?: boolean; siteHash?: number[]; openGround?: boolean } = {}
     ): Promise<{ proposalId: number; proposalPDA: PublicKey }> {
         for (const parcelId of parcelIds) {
             await ensureParcelAnchor(parcelProgram, parcelId);
@@ -124,7 +127,9 @@ describe("proposal_market", () => {
                 "ipfs://test-image",
                 new anchor.BN(solAmount),
                 [notary.publicKey], // lens
-                false // verdict_may_execute
+                opts.verdictMayExecute ?? false,
+                opts.siteHash ?? NO_SITE,
+                opts.openGround ?? false
             )
             .accounts({
                 proposal: proposalPDA,
@@ -536,6 +541,44 @@ describe("proposal_market", () => {
             expect(after - before).to.equal(250_000n);
             expect((await program.account.position.fetch(position)).claimed).to.be.true;
             expect(await tokenBalance(cancelledVault)).to.equal(0n);
+        });
+    });
+
+    // ========================
+    // v3 empty binding (no parcels, a site on open ground): YES only through a verdict that may execute
+    // ========================
+
+    describe("resolve on a v3 empty-binding proposal", () => {
+        async function emptyBinding(label: string, verdictMayExecute: boolean) {
+            const { proposalPDA } = await mintProposal([], false, 0, { siteHash: testSiteHash(label), openGround: true, verdictMayExecute });
+            const { market } = await createMarket(proposalPDA);
+            return { proposal: proposalPDA, market };
+        }
+
+        async function submitVerdict(proposal: PublicKey, verdict: "executed" | "expired") {
+            const attestation = await attestVerdict(provider, notary, { proposalAccount: proposal, verdict });
+            return settleWithVerdict(proposalProgram, { proposal, verdict: attestation, credential: notary.credential });
+        }
+
+        it("resolves YES only after an executed verdict on a proposal minted with verdict_may_execute", async () => {
+            const { proposal, market } = await emptyBinding("mkt-empty-yes", true);
+            await expectFailure(() => resolve(market, proposal), "NotTerminal");
+            await submitVerdict(proposal, "executed");
+            await resolve(market, proposal);
+            const account = await program.account.market.fetch(market);
+            expect(account.resolved).to.be.true;
+            expect(account.outcome).to.equal(SIDE_YES);
+        });
+
+        it("cannot resolve YES without verdict_may_execute (the 0 == 0 loophole), and resolves NO on expiry", async () => {
+            const { proposal, market } = await emptyBinding("mkt-empty-no", false);
+            await expectFailure(() => submitVerdict(proposal, "executed"), "VerdictCannotSkipConsent");
+            await expectFailure(() => resolve(market, proposal), "NotTerminal");
+            await submitVerdict(proposal, "expired");
+            await resolve(market, proposal);
+            const account = await program.account.market.fetch(market);
+            expect(account.resolved).to.be.true;
+            expect(account.outcome).to.equal(SIDE_NO);
         });
     });
 

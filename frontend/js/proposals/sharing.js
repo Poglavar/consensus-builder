@@ -131,6 +131,10 @@ function proposalContentPayload(proposal, includeCadastre = false) {
         reparcellization: cleanPayload(proposal.reparcellization),
         decideLaterProposal: cleanPayload(proposal.decideLaterProposal)
     };
+    // The authored site is content (two designs on different drawn sites are different proposals).
+    // Only present on site-first records, so older fingerprints and share ids do not move.
+    if (proposal.site) content.site = proposal.site;
+    if (Number(proposal.toleranceM) > 0) content.toleranceM = Number(proposal.toleranceM);
     if (includeCadastre) {
         content.cadastreParcelIds = (Array.isArray(proposal.cadastreParcelIds)
             ? proposal.cadastreParcelIds : []).map(String).slice().sort();

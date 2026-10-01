@@ -192,8 +192,22 @@
         return 'coarse';
     }
 
-    function scorePlan({ beforeParcelCount, afterParcelCount, parcels }) {
+    // Grain is a binding metric: a plan that binds no cadastral parcel (every proposal on open
+    // ground) has no starting or resulting parcels to score. Every figure is null, not 0 — a count
+    // score of 50 for "0 → 0, unchanged" would read like a measured result.
+    function noParcelsScore() {
+        return {
+            totalScore: null,
+            verdict: verdictKey(null),
+            parcelCount: null,
+            noParcels: true,
+            fineGrain: { score: null, eaten: null, measured: null, total: null, missing: null, eatenParcelIds: [] }
+        };
+    }
+
+    function scorePlan({ beforeParcelCount, afterParcelCount, parcels, bound }) {
         if (!Array.isArray(parcels)) throw new TypeError('parcels must be an array');
+        if (bound === false || (beforeParcelCount === 0 && afterParcelCount === 0)) return noParcelsScore();
         const measured = parcels.filter(parcel => (
             numeric(parcel && parcel.widthMeters) !== null
             && numeric(parcel && (parcel.depthMeters ?? parcel.heightMeters)) !== null

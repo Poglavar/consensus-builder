@@ -11,7 +11,7 @@
     'use strict';
 
     const SURFACES = Object.freeze([
-        'layers', 'tools', 'proposals', 'settings', 'game', 'parcel-menu', 'selection-tray', 'palette'
+        'layers', 'tools', 'proposals', 'settings', 'game', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu'
     ]);
 
     // Every control id the old sidebar held that still exists (rehoused into a sheet or the Game
@@ -148,6 +148,35 @@
             run
         }, spec);
     }
+
+    // ---- Ground menu (ui/ground-menu.js) and the site tool (js/site-drawing.js) ----
+    // ctx.ground is the ground menu's facts ({ kind, roadToolsEnabled, stationsEnabled }), absent
+    // when it is closed — its commands are then unavailable, in the palette too.
+    function groundMenuModel() {
+        if (typeof globalThis !== 'undefined' && globalThis.GroundMenuModel) return globalThis.GroundMenuModel;
+        if (typeof require === 'function') return require('./ground-menu-model.js');
+        throw new Error('UiCommands: GroundMenuModel is not loaded');
+    }
+
+    function groundCommand(action, spec) {
+        const run = ctx => {
+            const menu = ctx && ctx.global ? ctx.global.GroundMenu : undefined;
+            if (!menu || typeof menu.runAction !== 'function') throw new Error('UiCommands: GroundMenu.runAction() is not available');
+            return menu.runAction(action, ctx.ground);
+        };
+        run.calls = `GroundMenu.runAction:${action}`;
+        return Object.assign({
+            id: `ground.${action}`, group: 'ground', surfaces: ['ground-menu'], palette: false,
+            when: ctx => !!(ctx && ctx.ground) && groundMenuModel().isActionAvailable(action, ctx.ground),
+            run
+        }, spec);
+    }
+
+    // The site tool is idle (not drawing or editing a site) and loaded.
+    const siteToolIdle = ctx => {
+        const tool = ctx && ctx.global ? ctx.global.SiteTool : undefined;
+        return !!(tool && typeof tool.isActive === 'function' && !tool.isActive());
+    };
 
     // ctx.selection = { active, count } of the multi-parcel selection.
     const selectionActive = ctx => !!(ctx && ctx.selection && ctx.selection.active);
@@ -317,11 +346,31 @@
         parcelCommand('offer', { labelKey: 'parcelMenu.actions.offer', fallbackLabel: 'Offer my land', icon: 'fas fa-handshake' }),
         parcelCommand('view3d', { labelKey: 'parcelMenu.actions.view3d', fallbackLabel: 'View in 3D', icon: 'fas fa-cube' }),
         parcelCommand('detectBlock', { labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
+        parcelCommand('useAsSite', { labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' }),
+
+        // ---- Ground menu (a click where there is no parcel), in menu order ----
+        groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a site here', icon: 'fas fa-draw-polygon' }),
+        groundCommand('road', { labelKey: 'panel.parcel.build.road', fallbackLabel: 'Road', icon: 'fas fa-road' }),
+        groundCommand('track', { labelKey: 'panel.parcel.build.track', fallbackLabel: 'Track', icon: 'fas fa-train' }),
+        groundCommand('busStation', { labelKey: 'panel.parcel.build.busStation', fallbackLabel: 'Bus station', icon: 'fas fa-bus' }),
+        groundCommand('tramStation', { labelKey: 'panel.parcel.build.tramStation', fallbackLabel: 'Tram station', icon: 'fas fa-tram' }),
+        groundCommand('undergroundStation', { labelKey: 'panel.parcel.build.undergroundStation', fallbackLabel: 'Metro station', icon: 'fas fa-train-subway' }),
+        groundCommand('elevatedStation', { labelKey: 'panel.parcel.build.elevatedStation', fallbackLabel: 'Elevated station', icon: 'fas fa-train' }),
+        // The site tool from anywhere (the palette): draw a site with nothing selected.
+        { id: 'site.draw', group: 'site', surfaces: [], when: siteToolIdle,
+            run: ctx => ctx.global.SiteTool.start(),
+            labelKey: 'siteTool.commands.draw', fallbackLabel: 'Draw site', icon: 'fas fa-draw-polygon' },
 
         // ---- Selection tray (ui/selection-tray.js); Detect block is blocks.fromSelected above ----
         { id: 'selection.propose', group: 'selection', surfaces: ['selection-tray'], when: selectionNonEmpty,
             run: ctx => ctx.global.SelectionTray.propose(),
             labelKey: 'selectionTray.actions.propose', fallbackLabel: 'Propose', icon: 'fas fa-pen-ruler' },
+        // The selection's union as an editable site (the site tool), for designs that should not
+        // follow the parcel edges exactly.
+        { id: 'selection.useAsSite', group: 'selection', surfaces: ['selection-tray'],
+            when: ctx => selectionNonEmpty(ctx) && siteToolIdle(ctx),
+            run: ctx => ctx.global.SiteTool.startFromSelection(),
+            labelKey: 'selectionTray.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' },
         { id: 'selection.clear', group: 'selection', surfaces: ['selection-tray'], when: selectionNonEmpty,
             run: ctx => ctx.global.multiParcelSelection.clearSelection(),
             labelKey: 'selectionTray.actions.clear', fallbackLabel: 'Clear selection', icon: 'fas fa-eraser' },
@@ -546,6 +595,11 @@
             enumerable: true,
             get: () => ('parcel' in extra ? extra.parcel
                 : (win.ParcelMenu && typeof win.ParcelMenu.contextFacts === 'function' ? win.ParcelMenu.contextFacts() : null))
+        });
+        Object.defineProperty(ctx, 'ground', {
+            enumerable: true,
+            get: () => ('ground' in extra ? extra.ground
+                : (win.GroundMenu && typeof win.GroundMenu.contextFacts === 'function' ? win.GroundMenu.contextFacts() : null))
         });
         Object.defineProperty(ctx, 'selection', {
             enumerable: true,

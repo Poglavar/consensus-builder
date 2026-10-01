@@ -344,7 +344,58 @@
         return slices.filter(slice => slice.geometry);
     }
 
-    const api = { sliceWithSweepLine, slicePolygonByXCoordinates, buildSlicePolygon, getPolygonCoordinates };
+    function localFrameApi() {
+        if (global && global.LocalFrame) return global.LocalFrame;
+        try { return typeof require === 'function' ? require('./local-frame.js') : null; } catch (_) { return null; }
+    }
+
+    // Map every coordinate of a GeoJSON geometry through fn([lng, lat]) → [lng, lat].
+    function mapGeometry(geometry, fn) {
+        const walk = coords => (typeof coords[0] === 'number' ? fn(coords) : coords.map(walk));
+        return { type: geometry.type, coordinates: walk(geometry.coordinates) };
+    }
+
+    // A rotation by `angleDeg` (clockwise, like turf.transformRotate) about `pivot` [lng, lat], done in
+    // the local ground-metre frame and mapped back to degrees with the same frame. The whole map is
+    // AFFINE in lng/lat, so straight edges stay straight and the inverse lands every vertex — and
+    // every cut point on an edge — back on the original edge to float precision. turf.transformRotate
+    // rotates along rhumb lines, which is not affine: a cut point on a rotated edge came back off the
+    // original edge, up to ~2 mm outside the pool on a 400 m site (enough to bind a neighbour at the
+    // 1 mm floor of the binding rule).
+    function affineRotation(pivot, angleDeg) {
+        const frames = localFrameApi();
+        if (!frames) throw new Error('reparcellization-slice: local-frame.js is not loaded');
+        const frame = frames.makeLocalFrame(pivot[0], pivot[1]);
+        const a = angleDeg * Math.PI / 180;
+        const cos = Math.cos(a);
+        const sin = Math.sin(a);
+        return {
+            forward: ([lng, lat]) => {
+                const [x, y] = frame.toMeters(lng, lat);
+                return frame.toDegrees(x * cos + y * sin, -x * sin + y * cos);
+            },
+            inverse: ([lng, lat]) => {
+                const [x, y] = frame.toMeters(lng, lat);
+                return frame.toDegrees(x * cos - y * sin, x * sin + y * cos);
+            }
+        };
+    }
+
+    // Value-proportional strips oriented by `bearingDeg`: rotate the pool by -bearing (affinely, see
+    // affineRotation), run the vertical sweep, rotate the slices back. Same result shape as
+    // sliceWithSweepLine. `deps.pivot` ([lng, lat]) defaults to the pool's centroid.
+    function sliceAlongBearing(superParcel, owners, bearingDeg, deps = {}) {
+        const turf = resolveTurf(deps);
+        if (!turf || !superParcel || !superParcel.geometry) return [];
+        if (!bearingDeg) return sliceWithSweepLine(superParcel, owners, deps);
+        const pivot = Array.isArray(deps.pivot) ? deps.pivot : turf.centroid(superParcel).geometry.coordinates;
+        const rotation = affineRotation(pivot, -bearingDeg);
+        const rotated = { type: 'Feature', properties: superParcel.properties || {}, geometry: mapGeometry(superParcel.geometry, rotation.forward) };
+        return sliceWithSweepLine(rotated, owners, deps)
+            .map(slice => Object.assign({}, slice, { geometry: mapGeometry(slice.geometry, rotation.inverse) }));
+    }
+
+    const api = { sliceWithSweepLine, sliceAlongBearing, affineRotation, slicePolygonByXCoordinates, buildSlicePolygon, getPolygonCoordinates };
 
     if (typeof window !== 'undefined') {
         window.ReparcellizationSlice = api;

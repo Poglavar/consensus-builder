@@ -1,7 +1,9 @@
 // Test helper: the bytes of a proposal_nft Proposal account laid out field by field from the
 // checked-in IDL order (discriminator, proposal_id, owner, parcel_ids, is_conditional, image_uri,
 // acceptance_possible, status, sol_balance, token_balance, acceptance_count, accepted_parcels, lens,
-// bump, verdict_may_execute), so oracle tests read the same layout the programs write.
+// bump, verdict_may_execute, then v3's site_hash, open_ground, open_ground_cleared, layout_version),
+// zero-padded to the fixed 4096-byte account, so oracle tests read the same layout the programs write.
+// `layoutVersion` defaults to 3 (what every v3 mint writes); pass 0 for a v1/v2-era account.
 
 import { createHash } from 'node:crypto';
 import { PublicKey } from '@solana/web3.js';
@@ -19,9 +21,14 @@ export function proposalAccountBytes({
     parcelIds = ['HR-1'],
     acceptedParcels = [],
     lens = [],
-    verdictMayExecute = false
+    verdictMayExecute = false,
+    siteHash = Buffer.alloc(32),
+    openGround = false,
+    openGroundCleared = false,
+    layoutVersion = 3,
+    padTo = 4096
 } = {}) {
-    return Buffer.concat([
+    const content = Buffer.concat([
         PROPOSAL_DISCRIMINATOR,
         u64(7),
         new PublicKey(owner).toBuffer(),
@@ -34,6 +41,9 @@ export function proposalAccountBytes({
         vec(acceptedParcels, str),
         vec(lens, key => new PublicKey(key).toBuffer()),
         Buffer.from([254]),
-        Buffer.from([verdictMayExecute ? 1 : 0])
+        Buffer.from([verdictMayExecute ? 1 : 0]),
+        Buffer.from(siteHash),
+        Buffer.from([openGround ? 1 : 0, openGroundCleared ? 1 : 0, layoutVersion])
     ]);
+    return Buffer.concat([content, Buffer.alloc(Math.max(0, padTo - content.length))]);
 }

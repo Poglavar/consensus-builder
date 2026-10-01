@@ -168,16 +168,33 @@
             const acceptanceCount = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
             offset += 8;
             const acceptedParcels = readVecString();
-            // lens: Vec<Pubkey>, bump: u8, then v2's verdict_may_execute: bool; the fixed-size
-            // account's zero padding follows and is ignored (v1-era accounts read false there).
+            // lens: Vec<Pubkey>, bump: u8, then v2's verdict_may_execute: bool, then v3's
+            // site_hash: [u8; 32], open_ground: bool, open_ground_cleared: bool, layout_version: u8.
+            // The fixed-size account is zero-padded, so v1/v2-era accounts read false, no site (null)
+            // and layoutVersion 0 there; every v3 mint writes layoutVersion 3.
             // A malformed lens vector is reported, not replaced.
             let lens = [];
             let lensError = null;
             let verdictMayExecute = false;
+            let siteHash = null;
+            let openGround = false;
+            let openGroundCleared = false;
+            let layoutVersion = 0;
             try {
                 const tail = globalScope.LensCore.decodeProposalLensTail(body, offset);
                 lens = tail.lens;
                 verdictMayExecute = tail.bump !== null && tail.offset < body.length && body[tail.offset] === 1;
+                const siteStart = tail.offset + 1;
+                if (tail.bump !== null && siteStart + 34 <= body.length) {
+                    const hashBytes = body.slice(siteStart, siteStart + 32);
+                    // The zero hash means "no site" (every v1/v2 proposal).
+                    siteHash = hashBytes.some(byte => byte !== 0)
+                        ? Array.from(hashBytes, byte => byte.toString(16).padStart(2, '0')).join('')
+                        : null;
+                    openGround = body[siteStart + 32] === 1;
+                    openGroundCleared = body[siteStart + 33] === 1;
+                    if (siteStart + 34 < body.length) layoutVersion = body[siteStart + 34];
+                }
             } catch (error) {
                 lensError = error && error.message ? error.message : String(error);
                 console.warn(`[${new Date().toISOString()}] [SolanaChainDataLoader] proposal ${address}: lens not decodable: ${lensError}`);
@@ -202,7 +219,11 @@
                 acceptedParcels: acceptedParcels || [],
                 lens,
                 lensError,
-                verdictMayExecute
+                verdictMayExecute,
+                siteHash,
+                openGround,
+                openGroundCleared,
+                layoutVersion
             };
         } catch (_) {
             return null;

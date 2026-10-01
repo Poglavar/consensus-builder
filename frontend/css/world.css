@@ -646,15 +646,13 @@ body.world-view-pending::before {
 }
 
 /* The explore city: no parcels, so the controls that need them are not offered. Settings, Tools
-   (Measure) and Activity stay; the mode strip goes (model/photo/AI/walk build on parcels). */
+   (Measure, stations, sites), Activity and Proposals stay (a site drawn here is a proposal with an
+   empty binding, PARCEL-OPTIONAL.md), and so do the model/photo/AI modes, which render proposals
+   without parcels. Gone: Layers (every layer in it is a cadastre or a Zagreb dataset), the parcel
+   game, the cadastre view and the walk (no transit-sim location here). */
 body.explore-city #layers-button,
-body.explore-city #proposals-button,
 body.explore-city #game-pill,
 body.explore-city #cadastre-view-toggle.map-mode-toggle,
-body.explore-city #mode-2d-toggle.map-mode-toggle,
-body.explore-city #mode-3d-toggle.map-mode-toggle,
-body.explore-city #mode-realistic-toggle,
-body.explore-city #mode-ai-toggle.map-mode-ai-btn,
 body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     display: none;
 }
@@ -745,8 +743,9 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
 }
 
 @media (max-width: 767px) {
+    /* Right of the mode strip (2D/3D/photo), which explore now shows: the banner must not cover it. */
     .explore-banner {
-        left: 16px;
+        left: var(--map-mode-strip, 16px);
         right: 16px;
         width: auto;
         max-width: none;

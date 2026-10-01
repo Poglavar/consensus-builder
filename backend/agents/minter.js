@@ -1,10 +1,14 @@
-// Node port of the browser's `mint_and_fund` (frontend/js/solana/proposal-bridge.js via its v2 codec
+// Node port of the browser's `mint_and_fund` (frontend/js/solana/proposal-bridge.js via its v3 codec
 // acceptance-client.js): the same Anchor discriminator, the same borsh argument encoding and the same PDAs, signed with a persona
 // keypair instead of a wallet extension. Encoding and PDA derivation are pure and byte-compared
 // against the browser code in test/agents-minter.test.js; only mintProposal() touches the network.
 
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import pkg from '@solana/web3.js';
+
+// The one canonical site hash (UMD, shared with the browser).
+const siteHashApi = createRequire(import.meta.url)('../../frontend/js/proposals/site-hash.js');
 
 const { PublicKey, SystemProgram, Transaction, TransactionInstruction, sendAndConfirmTransaction } = pkg;
 
@@ -81,21 +85,40 @@ function toLamports(value, label = 'lamports') {
     return BigInt(text);
 }
 
+function encodeSiteHash(value) {
+    if (value === null || value === undefined) return new Uint8Array(32);
+    const bytes = value instanceof Uint8Array ? value : Uint8Array.from(value);
+    if (bytes.length !== 32) throw new Error('siteHash must be 32 bytes');
+    return Uint8Array.from(bytes);
+}
+
 /**
- * The instruction data for `mint_and_fund` (proposal_nft v2 IDL):
+ * The instruction data for `mint_and_fund` (proposal_nft v3 IDL):
  * discriminator ‖ vec<string> parcel_ids ‖ u8 is_conditional ‖ string image_uri ‖ u64 sol_lamports ‖ vec<pubkey> lens
- * ‖ u8 verdict_may_execute. The trailing bool is new in v2 and defaults to false: only permit-style
- * evidence may let a lens member's `executed` verdict skip per-parcel consent.
+ * ‖ u8 verdict_may_execute ‖ [u8;32] site_hash ‖ u8 open_ground. verdict_may_execute lets a lens
+ * member's `executed` verdict execute the proposal (or, with parcels and open ground, clear the open
+ * ground); site_hash is the canonical site hash (frontend/js/proposals/site-hash.js), zero for none.
+ * An empty parcel list needs a site hash and open_ground; open_ground needs a site hash (the
+ * program's v3 rules, mirrored so no doomed transaction is sent).
  * Parcel ids are de-duplicated and stringified exactly as the browser does, so the same logical
  * input produces the same bytes on both sides.
  *
- * @param {{ parcelIds: string[], isConditional?: boolean, imageUri?: string, lamports?: bigint|number|string, lens?: Array, verdictMayExecute?: boolean }} args
+ * @param {{ parcelIds: string[], isConditional?: boolean, imageUri?: string, lamports?: bigint|number|string, lens?: Array,
+ *           verdictMayExecute?: boolean, siteHash?: Uint8Array|number[]|null, openGround?: boolean }} args
  * @returns {Uint8Array}
  */
-export function encodeMintAndFundData({ parcelIds, isConditional = true, imageUri = '', lamports = 0n, lens = [], verdictMayExecute = false } = {}) {
+export function encodeMintAndFundData({
+    parcelIds, isConditional = true, imageUri = '', lamports = 0n, lens = [],
+    verdictMayExecute = false, siteHash = null, openGround = false
+} = {}) {
     if (typeof verdictMayExecute !== 'boolean') throw new Error('verdictMayExecute must be a boolean');
+    if (typeof openGround !== 'boolean') throw new Error('openGround must be a boolean');
     const ids = [...new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean))];
-    if (ids.length === 0) throw new Error('No parcel identifiers provided');
+    const site = encodeSiteHash(siteHash);
+    const hasSite = site.some(byte => byte !== 0);
+    if (ids.length === 0 && !hasSite) throw new Error('No parcel identifiers provided and no siteHash');
+    if (ids.length === 0 && !openGround) throw new Error('a proposal without parcels is all open ground: openGround must be true');
+    if (openGround && !hasSite) throw new Error('openGround needs a siteHash');
     const lensAddresses = (Array.isArray(lens) ? lens : [])
         .map(entry => (typeof entry === 'string' ? entry : (entry?.address || entry?.toBase58?.() || entry?.toString?.())))
         .filter(Boolean);
@@ -106,7 +129,9 @@ export function encodeMintAndFundData({ parcelIds, isConditional = true, imageUr
         encodeBorshString(imageUri || ''),
         encodeU64(toLamports(lamports, 'SOL lamports')),
         encodeBorshVecPubkey(lensAddresses),
-        Uint8Array.from([verdictMayExecute ? 1 : 0])
+        Uint8Array.from([verdictMayExecute ? 1 : 0]),
+        site,
+        Uint8Array.from([openGround ? 1 : 0])
     ]);
 }
 
@@ -180,8 +205,11 @@ function isCounterRace(error) {
  *
  * @param {{ connection: object, programId: string|PublicKey, ownerKeypair: object, parcelIds: string[],
  *           isConditional?: boolean, imageUri?: string, lamports?: bigint, lens: Array,
- *           verdictMayExecute?: boolean, sendAndConfirm?: Function }} options lens is required (non-empty); sendAndConfirm is the
- *           injection seam for tests.
+ *           verdictMayExecute?: boolean, site?: object, binding?: object, sendAndConfirm?: Function }} options lens is required
+ *           (non-empty); `site` (GeoJSON (Multi)Polygon) and its `binding` give site_hash and open_ground and are required
+ *           when parcelIds is empty; verdictMayExecute defaults to open_ground (open ground executes only through a
+ *           lens member's executed verdict, which never stands in for bound parcels' owners); sendAndConfirm is
+ *           the injection seam for tests.
  * @returns {Promise<{ signature: string, proposalPda: string, count: bigint, chainId: string,
  *                     contractAddress: string, transactionHash: string }>}
  */
@@ -194,7 +222,9 @@ export async function mintProposal({
     imageUri = '',
     lamports = 0n,
     lens,
-    verdictMayExecute = false,
+    verdictMayExecute,
+    site = null,
+    binding = null,
     sendAndConfirm = sendAndConfirmTransaction
 } = {}) {
     if (!connection) throw new Error('a solana connection is required');
@@ -207,7 +237,12 @@ export async function mintProposal({
         throw new Error('lens is required: pass at least one lens member key (see agents/lens-directory-client.js)');
     }
     const lensAddresses = lens;
-    const data = encodeMintAndFundData({ parcelIds, isConditional, imageUri, lamports, lens: lensAddresses, verdictMayExecute });
+    const uniqueIds = [...new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean))];
+    const { siteHash, openGround } = await siteHashApi.chainSiteArgs({ site, binding, parcelIds: uniqueIds });
+    const data = encodeMintAndFundData({
+        parcelIds, isConditional, imageUri, lamports, lens: lensAddresses,
+        verdictMayExecute: verdictMayExecute ?? openGround, siteHash, openGround
+    });
 
     const attempt = async (count) => {
         const { proposalPda } = deriveProposalPdas(program, count);
