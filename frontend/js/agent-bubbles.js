@@ -280,7 +280,7 @@ class AgentBubbleManager {
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         // The floating shell sits on the map's rim (search box and top-right buttons, the mode strip on
-        // the left, the Game pill and bottom button row), so the bubbles ride an inset ring inside it;
+        // the left, the bottom button row), so the bubbles ride an inset ring inside it;
         // at a flat 35px they landed on, and blocked, those controls.
         const inset = { top: 90, right: 35, bottom: 95, left: 90 };
 

@@ -1,6 +1,6 @@
 // ui/map-shell.js — the floating map shell that replaced the left sidebar: the Layers/Settings
-// buttons (top-right), the Proposals/Tools/Activity buttons (bottom-right), the Game pill
-// (bottom-left) and the sheets they open. A sheet is a popover anchored to its button on desktop and
+// buttons (top-right), the Proposals/Tools/Activity buttons (bottom-right) and the sheets they
+// open. A sheet is a popover anchored to its button on desktop and
 // a bottom sheet under 768px; one is open at a time, Esc and an outside click close it. The controls
 // inside the sheets are the old sidebar's, moved with their ids and handlers (see UI-REWORK.md).
 // placePopover is pure and exported for backend/test/frontend-ui-commands.test.js.
@@ -136,7 +136,8 @@
         return !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
     }
 
-    // Open the sheet that holds a control, scroll it into view and focus it. A control that is not
+    // Open the sheet that holds a control (and the <details> folding it away, e.g. the Simulation
+    // settings), scroll it into view and focus it. A control that is not
     // itself focusable while visible (the hidden native city <select> behind the custom dropdown)
     // hands focus to the first visible focusable thing beside it.
     function revealControl(id) {
@@ -144,6 +145,8 @@
         if (!el) throw new Error(`MapShell: control #${id} is missing`);
         const sheet = el.closest('.map-sheet');
         if (sheet) openSheet(sheet, { focus: false });
+        const folded = el.closest('details');
+        if (folded && !folded.open) folded.open = true;
         let target = el;
         if (!isVisible(el) && el.parentElement) {
             target = Array.from(el.parentElement.querySelectorAll('button, input, select, textarea, [tabindex]'))
@@ -207,11 +210,11 @@
 
     // 3D keeps only what drives or navigates it usable: the Buildings and Proposals sections, and
     // the shell's own buttons (so every sheet can still be opened and closed). Everything else in
-    // the sheets and the Game pill is disabled until 3D ends, remembering what was already disabled.
+    // the sheets is disabled until 3D ends, remembering what was already disabled.
     const KEPT_IN_3D = ['buildings', 'proposals'];
 
     function setLockedFor3D(locked) {
-        const scopes = Array.from(doc.querySelectorAll('.map-sheet, #game-pill'));
+        const scopes = Array.from(doc.querySelectorAll('.map-sheet'));
         if (locked) {
             scopes.forEach(scope => {
                 scope.querySelectorAll('input, button, select, textarea').forEach(el => {

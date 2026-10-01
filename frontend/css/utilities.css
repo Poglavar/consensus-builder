@@ -568,7 +568,7 @@ button.status-log-message {
 }
 
 /* Floating status toast: the latest status line, always visible. Small and out of the way: centred
-   one row above the bottom row of floating buttons (Game pill, Proposals/Tools/Activity), single
+   one row above the bottom row of floating buttons (Proposals/Tools/Activity), single
    line, and click-through. The full status bar and its log are in the Activity sheet. */
 .floating-status {
     position: absolute;

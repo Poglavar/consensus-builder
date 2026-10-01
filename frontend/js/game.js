@@ -272,7 +272,7 @@ function startGameLoop() {
         console.log('Game loop already running');
         return;
     }
-    // A running game is game mode. The pill's Play works with the game sheet closed, and a game
+    // A running game is game mode. Play works with the simulation settings folded away, and a game
     // left running with "Enable game mode" off had its own interval and New game controls greyed.
     // Ticking the box the way a click does also runs its change handlers (section gating, title).
     const gameCheckbox = document.getElementById('gameCheckbox');
@@ -559,9 +559,9 @@ async function dispatchAgentAction(actor, action, context = {}) {
     return result;
 }
 
-/** This is a global actor explorer, not a simulation-agent count. */
+/** This is a global actor explorer, not a simulation-agent count. The button is the Activity sheet's. */
 function updateAgentsButton() {
-    const agentsBtn = document.getElementById('show-agents-btn');
+    const agentsBtn = document.getElementById('activity-agents-button');
     if (!agentsBtn) return;
     const key = 'sidebar.game.showAgents';
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -577,7 +577,7 @@ function updateAgentsButton() {
 }
 
 /**
- * Update the Game section title based on current state
+ * Update the Simulation section title (in the Activity sheet) based on current state
  */
 function updateGameSectionTitle() {
     const gameCheckbox = document.getElementById('gameCheckbox');
@@ -586,16 +586,16 @@ function updateGameSectionTitle() {
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
     const key = (gameCheckbox && !gameCheckbox.checked && !gameState.isRunning)
-        ? 'sidebar.game.titlePaused'
-        : 'sidebar.game.title';
+        ? 'mapShell.simulation.titlePaused'
+        : 'mapShell.simulation.title';
 
     gameLabel.setAttribute('data-i18n-key', key);
     if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
         i18nApi.applyTranslations(gameLabel);
-    } else if (key === 'sidebar.game.titlePaused') {
-        gameLabel.textContent = 'Game (paused)';
+    } else if (key === 'mapShell.simulation.titlePaused') {
+        gameLabel.textContent = 'Simulation (paused)';
     } else {
-        gameLabel.textContent = 'Game';
+        gameLabel.textContent = 'Simulation';
     }
 }
 
@@ -646,22 +646,22 @@ gameState.updateGameUI = function () {
             }
         }
 
-        if (this.isRunning) {
-            playPauseBtn.classList.remove('btn-success');
-            playPauseBtn.classList.add('btn-warning');
-        } else {
-            playPauseBtn.classList.remove('btn-warning');
-            playPauseBtn.classList.add('btn-success');
-        }
+        playPauseBtn.classList.toggle('is-running', this.isRunning);
+        playPauseBtn.setAttribute('aria-pressed', this.isRunning ? 'true' : 'false');
     }
 
-    // Update game log button with count
-    const gameLogBtn = document.getElementById('show-game-log-btn');
+    // The running dot on the Activity button (js/ui/simulation-indicator.js).
+    if (typeof window !== 'undefined' && window.SimulationIndicator) {
+        window.SimulationIndicator.sync(document, this);
+    }
+
+    // The Activity sheet's explorer button carries the count of this browser's activity entries.
+    const gameLogBtn = document.getElementById('activity-explorer-button');
     if (gameLogBtn) {
         // The label span, beside the button's icon (the button itself only on older markup).
         const gameLogLabel = gameLogBtn.querySelector('[data-i18n-key]') || gameLogBtn;
         const hasLogs = this.gameLog.length > 0;
-        const logKey = hasLogs ? 'sidebar.game.showGameLogCount' : 'sidebar.game.showGameLog';
+        const logKey = hasLogs ? 'mapShell.activityExplorerCount' : 'mapShell.commands.activityExplorer';
         gameLogLabel.setAttribute('data-i18n-key', logKey);
         if (hasLogs) {
             gameLogLabel.setAttribute('data-i18n-params', JSON.stringify({ count: this.gameLog.length }));
@@ -673,8 +673,8 @@ gameState.updateGameUI = function () {
             gameLogLabel.textContent = i18nApi.t(logKey, { count: this.gameLog.length });
         } else {
             gameLogLabel.textContent = hasLogs
-                ? `Show Game Log (${this.gameLog.length})`
-                : 'Show Game Log';
+                ? `Open activity explorer (${this.gameLog.length})`
+                : 'Open activity explorer';
         }
     }
 
@@ -859,7 +859,7 @@ function refreshLiveActivity() {
 
 /**
  * Open the one activity explorer, optionally scoped (actor/proposal/run/parcel set) and on a view.
- * Every entry point — Game pill and Activity buttons, row drill-downs, proposal Details, ?activity= links — lands here.
+ * Every entry point — the Activity sheet's buttons, row drill-downs, proposal Details, ?activity= links — lands here.
  */
 function showGameLogDialog(options = {}) {
     const scope = options.filter || {};

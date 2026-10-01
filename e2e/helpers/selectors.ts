@@ -26,8 +26,11 @@ export const selectors = {
   toolsSheet: '#tools-sheet',
   activityButton: '#activity-button',
   activitySheet: '#activity-sheet',
-  gamePillToggle: '#game-pill-toggle',
-  gameSheet: '#game-sheet',
+  // The Simulation section inside the Activity sheet, and the running dot on the Activity button.
+  simulationSection: '#activity-sheet .activity-simulation[data-section="game"]',
+  simulationPlayPause: '#game-play-pause-btn',
+  simulationSettings: '#activity-sheet .activity-simulation-settings',
+  simulationRunningDot: '#activity-running-dot',
   proposalsList: '#proposals-list, [data-testid="proposals-list"]',
 
   // Search box (top-left, #map-search-slot) with the city chip — replaced the city select and the

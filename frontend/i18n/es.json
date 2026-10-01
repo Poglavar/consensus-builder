@@ -335,8 +335,6 @@
             "baseMapLabel": "Mapa base:"
         },
         "game": {
-            "title": "Juego",
-            "titlePaused": "Juego (pausado)",
             "enable": "Activar modo juego",
             "enablePaused": "Activar modo juego (pausado)",
             "secondsBetween": "Segundos entre turnos:",
@@ -344,8 +342,6 @@
             "play": "Iniciar",
             "pause": "Pausar",
             "newGame": "Nuevo juego",
-            "showGameLog": "Actividad",
-            "showGameLogCount": "Actividad ({{count}})",
             "showAgents": "Actores",
             "showAgentsCount": "Mostrar agentes ({{count}})"
         },
@@ -3874,9 +3870,13 @@
         "proposals": "Propuestas",
         "tools": "Herramientas",
         "activity": "Actividad",
+        "activityExplorerCount": "Abrir el explorador de actividad ({{count}})",
         "proposalsCount": "Propuestas ({{count}})",
-        "game": {
-            "controls": "Controles del juego",
+        "simulation": {
+            "title": "Simulación",
+            "titlePaused": "Simulación (pausada)",
+            "settings": "Ajustes de la simulación",
+            "running": "Simulación en curso",
             "turn": "Turno"
         },
         "commands": {
@@ -3996,7 +3996,7 @@
             "roads": "Calles",
             "areaMonitor": "Monitor de áreas",
             "proposals": "Propuestas",
-            "game": "Juego",
+            "game": "Simulación",
             "activity": "Actividad",
             "settings": "Ajustes",
             "parcel": "Parcela",

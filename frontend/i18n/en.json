@@ -335,8 +335,6 @@
             "baseMapLabel": "Base map:"
         },
         "game": {
-            "title": "Game",
-            "titlePaused": "Game (paused)",
             "enable": "Enable game mode",
             "enablePaused": "Enable game mode (paused)",
             "secondsBetween": "Seconds between turns:",
@@ -344,8 +342,6 @@
             "play": "Play",
             "pause": "Pause",
             "newGame": "New Game",
-            "showGameLog": "Activity",
-            "showGameLogCount": "Activity ({{count}})",
             "showAgents": "Actors",
             "showAgentsCount": "Show Agents ({{count}})"
         },
@@ -3823,9 +3819,13 @@
         "proposals": "Proposals",
         "tools": "Tools",
         "activity": "Activity",
+        "activityExplorerCount": "Open activity explorer ({{count}})",
         "proposalsCount": "Proposals ({{count}})",
-        "game": {
-            "controls": "Game controls",
+        "simulation": {
+            "title": "Simulation",
+            "titlePaused": "Simulation (paused)",
+            "settings": "Simulation settings",
+            "running": "Simulation running",
             "turn": "Turn"
         },
         "commands": {
@@ -3945,7 +3945,7 @@
             "roads": "Roads",
             "areaMonitor": "Area monitor",
             "proposals": "Proposals",
-            "game": "Game",
+            "game": "Simulation",
             "activity": "Activity",
             "settings": "Settings",
             "parcel": "Parcel",

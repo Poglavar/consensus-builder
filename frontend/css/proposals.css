@@ -2918,13 +2918,12 @@ body.share-plan-highlighting .leaflet-shareplan-highlight-pane {
 }
 
 /* Share-plan mode lockdown: while the panel is open the map is pan/zoom ONLY. The floating shell
-   (its buttons, sheets, the search box, the selection tray and the Game pill) and the mode switches
+   (its buttons, sheets, the search box and the selection tray) and the mode switches
    are disabled; Leaflet controls too — except zoom, which stays. The / and Ctrl-K shortcuts check
    window.sharePlanMode themselves (js/ui/map-search.js, js/ui/command-palette.js). */
 body.share-plan-mode .map-shell-cluster,
 body.share-plan-mode .map-shell-slot,
 body.share-plan-mode .map-sheet,
-body.share-plan-mode .game-pill,
 body.share-plan-mode .map-mode-toggle,
 body.share-plan-mode .map-mode-walk-btn,
 body.share-plan-mode .map-mode-realistic-btn,

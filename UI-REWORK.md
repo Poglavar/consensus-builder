@@ -32,9 +32,9 @@ coverage.
 | top-left | **Search box** (omnibox) with the **city chip** (current city; click → world view) |
 | top-right | existing **user bubble** (`#username-display`), **Layers** button, **Settings** button |
 | left edge, under search | existing **mode strip** (2D/3D/photo/AI/walk, cadastre view) |
-| bottom-left | **Game pill**: date · turn · play/pause; expands to interval, progress, new game, log, agents |
+| bottom-left | nothing but the scale bar (the Game pill was removed: the simulation is a section of the Activity sheet) |
 | bottom-centre | **Selection tray** (only while parcels are selected) |
-| bottom-right | **Proposals** (count badge), **Tools**, **Activity** buttons |
+| bottom-right | **Proposals** (count badge), **Tools**, **Activity** buttons (Activity carries the **running dot** while the simulation runs) |
 | at click point | **Parcel menu** (popover; mobile: bottom-sheet peek) |
 | anywhere | **Command palette** (Ctrl/Cmd-K, also a button in Settings) |
 
@@ -44,7 +44,7 @@ coverage.
 |---|---|
 | City select, detect city | city chip → world view; "Use my location" in the search box; the city list is a search result group |
 | Data source, base map, wipe local data | Settings sheet |
-| Game | Game pill (all ids kept) |
+| Game | Activity sheet → Simulation section (all ids kept) |
 | Proposals: list, plan stats, grain score, minted, share plan, clear | Proposals button opens the proposals sheet (list button first) |
 | Parcels: locate | Search box (parcel-id results); the old input ids remain inside the Layers sheet's parcels section for existing code |
 | Parcels: layer toggles, ownership highlight, parcels-in-view, coverage, refresh, clear | Layers sheet → Parcels |
@@ -661,6 +661,45 @@ applied proposal; mode simulated), photo view itself (Google tiles), geolocation
 
 Full suite: 422 files / 5841 tests passed, 2 skipped (1 file skipped).
 
+### Simulation moved into the Activity sheet — built, browser-checked
+
+The in-UI game is now a minor feature (background agents are watched in the activity explorer), so
+the bottom-left **Game pill** and the separate **game sheet** are gone.
+
+- **Simulation section** (`.accordion-section[data-section="game"]` with the
+  `[data-section-title="game"]` title, "Simulation" / "Simulation (paused)") sits in the Activity
+  sheet under the explorer buttons and above the status line: a small play/pause icon button
+  (`#game-play-pause-btn`, `aria-pressed`, `.is-running`) and muted `#game-datetime · Turn
+  #game-turns`; then a native `<details>` "Simulation settings" holding `#gameCheckbox`, the interval
+  slider, the next-turn progress and New Game. The settings body is the gated `.sheet-section-body`
+  (greyed while game mode is off); the play row and the summary stay live (Play turns game mode on).
+- **Duplicates removed**: `#show-game-log-btn` / `#show-agents-btn` are gone; game.js writes the
+  count into `#activity-explorer-button` ("Open activity explorer (N)") and the label into
+  `#activity-agents-button`.
+- **Running dot**: `#activity-running-dot` on the Activity button, shown only while
+  `gameState.isRunning` (`js/ui/simulation-indicator.js`, pure `indicatorFor` + `sync`, called from
+  `updateGameUI`); labelled "Simulation running"; no pulse under `prefers-reduced-motion`.
+- Commands: the `game` surface is gone; the game commands and the explorer/actors commands
+  (`activity.explorer`, `activity.agents`, formerly `game.log`/`game.agents`) are on a new `activity`
+  surface and the palette. The explorer commands are group `activity`, so the explore city (which
+  hides `game`) keeps them and drops only the simulation. `MapShell.revealControl` opens a folded
+  `<details>` around the control. `setLockedFor3D` scopes to `.map-sheet` only.
+- i18n: `mapShell.simulation.{title,titlePaused,settings,running,turn}`,
+  `mapShell.activityExplorerCount`, palette group `game` → "Simulation"; removed `mapShell.game.*`,
+  `sidebar.game.{title,titlePaused,showGameLog,showGameLogCount}`.
+
+**Verified in a headed browser** (1400×900 and 375×740, Zagreb, `?reduceMotion=1`): bottom-left
+holds only the scale bar; Activity sheet shows the compact row; play → icon pause, turns advanced
+(2 → 3 → 6), dot on the Activity button with the sheet closed; pause → dot gone; settings disclosure
+opens; game mode off greys only the settings and titles the section "(paused)"; explorer
+("Open activity explorer (55)", 159 events) and Actors open; reduced-motion emulation → dot without
+animation; hr labels; explore city (Tokyo) has no simulation section and its palette keeps only the
+explorer/actors/status-log commands; 3D lock disables and restores the section; share-plan mode
+locks the sheet; no page errors. **Not run**: Playwright (map-shell.spec.ts updated: the Game row
+dropped from the sheet table, a new simulation/running-dot test).
+
+Full suite: 428 files (1 skipped) / 5874 tests passed, 2 skipped.
+
 ## UI element names
 
 Canonical names for follow-up discussion.
@@ -675,10 +714,11 @@ Canonical names for follow-up discussion.
 | **Settings button** / **Settings sheet** | top-right; brand, debug badges, World view, Command palette, Data & maintenance, Information |
 | **Data & maintenance** | Settings section: data source, base map, "Stored in this browser" upkeep, Wipe ALL |
 | **mode strip** | left edge under the search box: cadastre view, 2D, 3D, photo, AI, walk |
-| **Game pill** / **game sheet** | bottom-left: date · turn · play/pause; expands to the game sheet |
 | **Proposals button** / **Proposals sheet** | bottom-right with the count badge; list, plan stats, rooster, minted, share plan |
 | **Tools button** / **Tools sheet** | bottom-right; Measurement, Parcel Blocks actions, Stations, Roads, Area Monitor |
-| **Activity button** / **Activity sheet** | bottom-right; activity explorer, actors, status line + log |
+| **Activity button** / **Activity sheet** | bottom-right; activity explorer, actors, Simulation section, status line + log |
+| **running dot** | small pulsing green dot on the Activity button's corner while the simulation runs ("Simulation running"); no pulse under reduced motion |
+| **Simulation section** | Activity sheet, under the explorer buttons: play/pause icon button, date · Turn N; **Simulation settings** disclosure (Enable game mode, interval, next-turn progress, New Game) |
 | **status toast** | `#floating-status`, one line above the bottom row |
 | **parcel menu** | popover at a parcel click (phones: bottom-sheet peek): Propose here, Select more, Details, History, Tools, Offer my land, View in 3D, Detect block |
 | **selection tray** | bottom-centre while multi-select is on: count, area, Propose, Detect block, Clear, Done |
