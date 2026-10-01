@@ -272,6 +272,14 @@ function startGameLoop() {
         console.log('Game loop already running');
         return;
     }
+    // A running game is game mode. The pill's Play works with the game sheet closed, and a game
+    // left running with "Enable game mode" off had its own interval and New game controls greyed.
+    // Ticking the box the way a click does also runs its change handlers (section gating, title).
+    const gameCheckbox = document.getElementById('gameCheckbox');
+    if (gameCheckbox && !gameCheckbox.checked) {
+        gameCheckbox.checked = true;
+        gameCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     gameState.isRunning = true;
     gameState.turnStartTime = Date.now();
     gameState.addLogEntry('Game started.');
@@ -495,6 +503,9 @@ async function executeGameTurn() {
         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.endBatch === 'function') {
             proposalStorage.endBatch();
         }
+        // Agents create proposals every turn; the Proposals button's count (and the list button it
+        // mirrors) otherwise stayed at its old value until a reload.
+        if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
 
         gameState.isTurnExecuting = false;
 
@@ -689,6 +700,12 @@ let liveAgentActivity = null; // unscoped feed; null = not fetched yet; Refresh 
 // What the open explorer shows: its filter, its view (events | actors) and the sources that failed.
 // It was referenced but never declared, so every way into the explorer threw a ReferenceError.
 const activityExplorerState = { filter: null, view: 'events', failures: [] };
+// Backend origin for the live activity feed and run details (same base every other API call uses).
+// The mounted Actors view (ActorExplorer.mount); null until first shown and after the dialog closes.
+let actorExplorerController = null;
+function activityApiBase() {
+    return String(window.getBackendBase()).replace(/\/+$/, '');
+}
 const scopedLiveActivity = new Map(); // server-filtered feeds keyed by query string
 const liveActivityRequests = new Map(); // one in-flight fetch per query, shared by concurrent renders
 
@@ -752,7 +769,7 @@ function effectiveActivityFilter() {
 function activityScopeLabel(filter) {
     if (filter.actorId) return translateGameText('gameDialogs.log.scopeActor', 'Actor: {{id}}', { id: filter.actorId });
     if (filter.proposalId) return translateGameText('gameDialogs.log.scopeProposal', 'Proposal: {{id}}', { id: filter.proposalId });
-    if (filter.parcelSet) return translateGameText('gameDialogs.log.scopeParcelSet', 'Land: {{id}}', { id: `${filter.parcelSet.slice(0, 13)}…` });
+    if (filter.parcelSet) return translateGameText('gameDialogs.log.scopeParcelSet', 'Land: {{id}}', { id: filter.parcelSet.length > 13 ? `${filter.parcelSet.slice(0, 13)}…` : filter.parcelSet });
     if (filter.runId) return translateGameText('gameDialogs.log.scopeRun', 'Run: {{id}}', { id: filter.runId });
     return '';
 }
@@ -796,6 +813,7 @@ async function renderActivityExplorer() {
         if (!actorExplorerController) {
             actorExplorerController = window.ActorExplorer.mount(actors, {
                 events: visible,
+                openProposal: showProposalFromLog,
                 loadRun: async runId => {
                     const response = await fetch(`${activityApiBase()}/agent/runs/${encodeURIComponent(runId)}`);
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -852,6 +870,9 @@ function showGameLogDialog(options = {}) {
         return;
     }
     const t = (key, fallback) => escapeHtml(translateGameText(`gameDialogs.log.${key}`, fallback));
+    // One option per type in the shared action vocabulary, so every live and simulated action is filterable.
+    const actionOptionsHtml = window.ActorExplorer.actionOptions(translateGameText)
+        .map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`).join('');
     const modal = document.createElement('div');
     modal.className = 'game-log-modal';
     modal.innerHTML = `
@@ -868,10 +889,10 @@ function showGameLogDialog(options = {}) {
                     <button type="button" data-activity-view="events" onclick="setActivityView('events')">${t('viewEvents', 'Events')}</button>
                     <button type="button" data-activity-view="actors" onclick="setActivityView('actors')">${t('viewActors', 'Actors')}</button>
                 </div>
-                <nav class="activity-filters" aria-label="Filter activity">
-                    <input type="search" data-activity-filter-field="query" aria-label="Search activity" placeholder="Actor, proposal or transaction" oninput="setActivityFilter('query', this.value)">
-                    <select data-activity-filter-field="source" aria-label="Activity source" onchange="setActivityFilter('source', this.value)">
-                        <option value="combined">All sources</option><option value="live">Live</option><option value="simulation">Simulation</option>
+                <nav class="activity-filters" aria-label="${t('filtersAria', 'Filter activity')}">
+                    <input type="search" data-activity-filter-field="query" aria-label="${t('searchAria', 'Search activity')}" placeholder="${t('searchPlaceholder', 'Actor, proposal or transaction')}" oninput="setActivityFilter('query', this.value)">
+                    <select data-activity-filter-field="source" aria-label="${t('sourceAria', 'Activity source')}" onchange="setActivityFilter('source', this.value)">
+                        <option value="combined">${t('sourceAll', 'All sources')}</option><option value="live">${t('sourceLive', 'Live')}</option><option value="simulation">${t('sourceSimulation', 'Simulation')}</option>
                     </select>
                     <select data-activity-filter-field="kind" aria-label="${t('kindAria', 'Actor type')}" onchange="setActivityFilter('kind', this.value)">
                         <option value="all">${t('kindAll', 'Everyone')}</option><option value="human">${t('kindHuman', 'People')}</option><option value="agent">${t('kindAgent', 'Agents')}</option><option value="system">${t('kindSystem', 'System')}</option>
@@ -879,14 +900,14 @@ function showGameLogDialog(options = {}) {
                     <select data-activity-filter-field="controller" aria-label="${t('controllerAria', 'Controller')}" onchange="setActivityFilter('controller', this.value)">
                         <option value="all">${t('controllerAll', 'Any controller')}</option><option value="human">${t('controllerHuman', 'Human')}</option><option value="algorithm">${t('controllerAlgorithm', 'Algorithm')}</option><option value="llm">${t('controllerLlm', 'LLM')}</option>
                     </select>
-                    <select data-activity-filter-field="action" aria-label="Activity action" onchange="setActivityFilter('action', this.value)">
-                        <option value="all">All actions</option><option value="create">Create</option><option value="publish">Publish</option><option value="accept">Accept</option><option value="donate">Donate</option><option value="pledge">Pledge</option><option value="createMarket">Open market</option><option value="stake">Market stake</option><option value="resolve">Resolve market</option><option value="claim">Claim winnings</option><option value="revokePledge">Revoke pledge</option><option value="refundMyDonations">Refund donation</option><option value="fulfillPledge">Fulfil pledge</option><option value="releaseDonations">Release donations</option>
+                    <select data-activity-filter-field="action" aria-label="${t('actionAria', 'Activity action')}" onchange="setActivityFilter('action', this.value)">
+                        <option value="all">${t('actionAll', 'All actions')}</option>${actionOptionsHtml}
                     </select>
-                    <select data-activity-filter-field="status" aria-label="Activity result" onchange="setActivityFilter('status', this.value)">
-                        <option value="all">Any result</option><option value="success">Succeeded</option><option value="failed">Failed</option>
+                    <select data-activity-filter-field="status" aria-label="${t('statusAria', 'Activity result')}" onchange="setActivityFilter('status', this.value)">
+                        <option value="all">${t('statusAll', 'Any result')}</option><option value="success">${t('statusSuccess', 'Succeeded')}</option><option value="failed">${t('statusFailed', 'Failed')}</option>
                     </select>
-                    <button type="button" onclick="setActivityFilter('reset')">Clear</button>
-                    <button type="button" class="activity-refresh" onclick="refreshLiveActivity()">Refresh</button>
+                    <button type="button" onclick="setActivityFilter('reset')">${t('clearFilters', 'Clear')}</button>
+                    <button type="button" class="activity-refresh" onclick="refreshLiveActivity()">${t('refresh', 'Refresh')}</button>
                 </nav>
                 <div class="activity-scope-chip" data-activity-scope-chip hidden>
                     <span></span><button type="button" onclick="clearActivityScope()" aria-label="${t('clearScope', 'Clear scope')}">&times;</button>
@@ -913,6 +934,13 @@ function closeGameLogDialog() {
         document.body.removeChild(modal);
     }
     actorExplorerController = null;
+    // A ?activity= deep link has been followed once; left in the URL, every reload reopened the
+    // explorer the user had just closed.
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('activity')) {
+        url.searchParams.delete('activity');
+        window.history.replaceState(window.history.state, '', url.toString());
+    }
 }
 
 // Row drill-downs (data-activity-scope) work wherever a shared row is rendered — the explorer
@@ -1006,7 +1034,8 @@ function setupGameLogClickListeners() {
                 return;
             }
 
-            showAgentDialog(agentId);
+            // Over the explorer (a modal above the docked panels) the dialog must be raised too.
+            showAgentDialog(agentId, { elevated: !!this.closest('.game-log-modal') });
         });
     });
 
@@ -1070,7 +1099,7 @@ function showProposalFromLog(proposalId) {
     }
 
     if (!proposal) {
-        showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
+        openServerProposalFromLog(lookup);
         return;
     }
 
@@ -1098,6 +1127,24 @@ function showProposalFromLog(proposalId) {
     } else {
         showGameAlert('unable_to_open_proposal_details', 'Unable to open proposal details.');
     }
+}
+
+// Live activity names proposals that live on the server (agent runs, other people's uploads); they are
+// not in this browser until downloaded, so "Open proposal" on them always said "not found". Download
+// after the same confirm the search box asks, then open; one the server lacks too is reported.
+async function openServerProposalFromLog(lookup) {
+    if (!(await showProposalDownloadConfirm())) return;
+    let proposal;
+    try {
+        proposal = await importServerProposal(lookup);
+    } catch (error) {
+        console.warn(`[${new Date().toISOString()}] [activity] could not download proposal ${lookup}`, error);
+        showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
+        return;
+    }
+    closeGameLogDialog();
+    if (document.querySelector('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
+    openProposalFromList(getProposalKey(proposal) || lookup, { proposal, closeSheets: true });
 }
 
 /**
@@ -1265,9 +1312,9 @@ window.updateGameSectionTitle = updateGameSectionTitle;
  * @param {boolean} autoReinit - Whether to run initializeGame() right after the reset completes.
  */
 function resetGameState(autoReinit = false) {
-    const message = autoReinit ?
-        'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.' :
-        'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.';
+    const message = autoReinit
+        ? translateGameText('gameDialogs.newGameConfirm', 'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.')
+        : translateGameText('gameDialogs.resetConfirm', 'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.');
 
     const confirmed = confirm(message);
     if (!confirmed) return;

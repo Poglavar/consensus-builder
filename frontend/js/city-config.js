@@ -1109,15 +1109,23 @@
             const buttons = document.createElement('div');
             buttons.className = 'cb-confirm-buttons';
 
+            dialog.setAttribute('role', 'alertdialog');
+            dialog.setAttribute('aria-modal', 'true');
+
+            const translated = (key, fallback) => {
+                const value = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+                return value && value !== key ? value : fallback;
+            };
+
             const cancelBtn = document.createElement('button');
             cancelBtn.type = 'button';
             cancelBtn.className = 'btn btn-secondary';
-            cancelBtn.textContent = options.cancelText || 'Cancel';
+            cancelBtn.textContent = options.cancelText || translated('common.cancel', 'Cancel');
 
             const okBtn = document.createElement('button');
             okBtn.type = 'button';
             okBtn.className = 'btn btn-action';
-            okBtn.textContent = options.okText || 'OK';
+            okBtn.textContent = options.okText || translated('common.ok', 'OK');
             // A destructive confirm ("Discard") must not be the inviting blue primary: the safe
             // choice (cancel / keep editing) becomes the primary and the OK reads as destructive.
             if (options.destructive) {
@@ -1126,11 +1134,22 @@
             }
 
             function cleanup(result) {
+                document.removeEventListener('keydown', onKeydown, true);
                 if (overlay && overlay.parentNode) {
                     overlay.parentNode.removeChild(overlay);
                 }
                 resolve(result);
             }
+
+            // Escape cancels, like showStyledChoice. Without it the key went to the page behind:
+            // it closed the sheet the confirm was opened from and left the confirm up.
+            function onKeydown(event) {
+                if (event.key !== 'Escape') return;
+                event.preventDefault();
+                event.stopPropagation();
+                cleanup(false);
+            }
+            document.addEventListener('keydown', onKeydown, true);
 
             cancelBtn.addEventListener('click', () => cleanup(false));
             okBtn.addEventListener('click', () => cleanup(true));
@@ -1146,6 +1165,10 @@
             dialog.appendChild(buttons);
             overlay.appendChild(dialog);
             document.body.appendChild(overlay);
+            // Focus the primary-styled button (cancel for a destructive confirm), as showStyledChoice
+            // does, so the keyboard answers the dialog rather than the control behind it.
+            const focusTarget = options.destructive ? cancelBtn : okBtn;
+            requestAnimationFrame(() => focusTarget.focus({ preventScroll: true }));
         });
     }
 

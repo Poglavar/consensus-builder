@@ -608,8 +608,20 @@ window.hideDguBuildingLayer = hideDguBuildingLayer;
 // says so ONCE, not once per pan.
 let osmBuildingsRetryAt = 0;
 
+// While the upstream is rate-limited nothing new can load, but a layer already fetched is still
+// worth showing: unticking and re-ticking the box used to leave the map empty for the back-off.
+function showFetchedOsmBuildingLayer() {
+    const checkbox = document.getElementById('showBuildingsOsm');
+    if (osmBuildingLayer && (!checkbox || checkbox.checked) && !map.hasLayer(osmBuildingLayer)) {
+        osmBuildingLayer.addTo(map);
+    }
+}
+
 async function fetchOsmBuildings(boundsOverride = null) {
-    if (Date.now() < osmBuildingsRetryAt) return;
+    if (Date.now() < osmBuildingsRetryAt) {
+        showFetchedOsmBuildingLayer();
+        return;
+    }
     // Bottom-gated only, like the GDI fetch above: a ceiling would blank the layer exactly where
     // the work is closest.
     if (!boundsOverride) {
@@ -638,6 +650,7 @@ async function fetchOsmBuildings(boundsOverride = null) {
             const seconds = Number(body.retryAfter) > 0 ? Number(body.retryAfter) : 60;
             osmBuildingsRetryAt = Date.now() + seconds * 1000;
             console.warn(`[buildings] OSM reference is rate-limited upstream; not asking again for ${seconds}s`);
+            showFetchedOsmBuildingLayer();
             return;
         }
         if (!response.ok) throw new Error(`Failed to fetch OSM building data (HTTP ${response.status})`);

@@ -291,11 +291,19 @@
         });
     }
 
+    // Whether a blocking dialog was open when this Escape STARTED (window capture runs before every
+    // other listener). Checking only at the end missed dialogs whose own Escape handler had
+    // already removed them by then (Plan Stats, the status log): the sheet then closed as well.
+    let escapeStartedInDialog = false;
+    function onEscapeCapture(event) {
+        if (event.key === 'Escape') escapeStartedInDialog = isBlockingDialogOpen();
+    }
+
     function onDocumentKeyDown(event) {
         if (event.key !== 'Escape' || !state.openSheet || event.defaultPrevented) return;
         // A dialog opened on top of the sheet (status log, version history, a confirm) owns Escape,
         // even when it left focus in the sheet.
-        if (isBlockingDialogOpen()) return;
+        if (escapeStartedInDialog || isBlockingDialogOpen()) return;
         const active = doc.activeElement;
         // Only when focus is with the sheet (or nowhere in particular): Escape inside a dialog
         // opened on top of it belongs to that dialog.
@@ -320,7 +328,13 @@
             button.addEventListener('click', () => closeSheet({ restoreFocus: true }));
         });
         doc.addEventListener('pointerdown', onDocumentPointerDown, true);
-        doc.addEventListener('keydown', onDocumentKeyDown);
+        // On window, not document: window listeners run after every document listener, so a tool
+        // or dialog that handles Escape first (Measure, Pinpoint, area drawing, the status log)
+        // marks it with preventDefault and the sheet stays open — one Escape, one step. On
+        // document the order depended on who registered first, and a tool started from a sheet
+        // always registers after the shell.
+        (win || doc).addEventListener('keydown', onEscapeCapture, true);
+        (win || doc).addEventListener('keydown', onDocumentKeyDown);
         win.addEventListener('resize', () => {
             if (state.openSheet) positionSheet(state.openSheet, state.trigger);
         });

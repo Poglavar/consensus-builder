@@ -1831,12 +1831,6 @@ function getProposalChainLabel(proposal) {
     return String(chainId);
 }
 
-function isLocalProposalIdAgent(value) {
-    if (value === undefined || value === null) return false;
-    const str = String(value);
-    return str.startsWith('local-') || str.startsWith('local_prop') || str.startsWith('local-prop');
-}
-
 /**
  * Compute display metadata for a proposal, normalising local IDs to the `local-<n>` form.
  */
@@ -1846,26 +1840,19 @@ function getProposalDisplayMeta(proposal, fallbackId = '') {
 
     const proposalId = proposalIdRaw !== null && proposalIdRaw !== undefined ? String(proposalIdRaw) : '';
 
-    let minted = (proposal && (
-        proposal.isMinted === true
-        || !!(proposal.onchain && proposal.onchain.transactionHash)
-        || (proposalId && !isLocalProposalIdAgent(proposalId))
-    )) || false;
+    // The same test the rest of the app uses (proposals/chain.js). "Any id not starting with local-"
+    // stopped meaning minted once local ids became content hashes (p-…): every proposal an agent made
+    // in the simulation was badged Minted.
+    let minted = proposal ? isProposalMinted(proposal) : false;
 
     // If we have no proposal object (e.g., cached id only), treat numeric ids as minted
     if (!minted && !proposal && fallbackRaw) {
-        const numericFallback = Number.isFinite(parseInt(fallbackRaw, 10));
-        minted = numericFallback && !isLocalProposalIdAgent(fallbackRaw);
+        minted = /^\d+$/.test(fallbackRaw);
     }
 
-    let displayId;
-    if (minted) {
-        displayId = proposalId || fallbackRaw || 'unknown';
-    } else {
-        const baseLocalId = proposalId || fallbackRaw || '';
-        const numericLocal = Number.isFinite(parseInt(baseLocalId, 10)) ? parseInt(baseLocalId, 10) : null;
-        displayId = `local-${numericLocal !== null ? numericLocal : (baseLocalId || 'unknown')}`;
-    }
+    const baseId = proposalId || fallbackRaw || '';
+    // Legacy numeric local ids read as local-<n>; hash ids (p-…) are already unambiguous.
+    const displayId = !minted && /^\d+$/.test(baseId) ? `local-${baseId}` : (baseId || 'unknown');
 
     return {
         minted,

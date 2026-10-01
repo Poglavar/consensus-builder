@@ -240,6 +240,10 @@ function initStatusLogDialog() {
     });
     document.addEventListener('keydown', event => {
         if (event.key === 'Escape' && statusLogDialogIsOpen()) {
+            // preventDefault marks the key as handled: stopPropagation does not reach the other
+            // document listeners, and the Activity sheet's Escape (map-shell.js) runs after this
+            // one, finds the dialog already gone and would close the sheet too.
+            event.preventDefault();
             event.stopPropagation();
             closeStatusLogDialog();
         }

@@ -185,7 +185,7 @@
             labelKey: 'sidebar.parcels.coverageButton', fallbackLabel: 'Show loaded parcels cover', icon: 'fas fa-table-cells' }),
         control('refreshParcelDataButton', { id: 'parcels.refresh', group: 'parcels', surfaces: ['settings'],
             labelKey: 'sidebar.parcels.refreshButton', fallbackLabel: 'Refresh Parcel Data', icon: 'fas fa-rotate' }),
-        { id: 'parcels.clearLocal', group: 'parcels', surfaces: ['settings'],
+        { id: 'parcels.clearLocal', group: 'parcels', surfaces: ['settings'], debugOnly: true,
             labelKey: 'sidebar.parcels.clearButton', fallbackLabel: 'Clear Parcel Data From Local Storage', icon: 'fas fa-trash',
             run: clearLocalParcelData },
 
@@ -235,7 +235,7 @@
             labelKey: 'mapShell.commands.blockFromSelected', fallbackLabel: 'Detect block from the selected parcel', icon: 'fas fa-fill-drip' },
         control('showBlockListButton', { id: 'blocks.list', group: 'blocks', surfaces: ['tools'],
             labelKey: 'sidebar.blocks.showListButton', fallbackLabel: 'Show Block List', icon: 'fas fa-list' }),
-        { id: 'blocks.clear', group: 'blocks', surfaces: ['settings'], run: callGlobal('clearBlocks'),
+        { id: 'blocks.clear', group: 'blocks', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearBlocks'),
             labelKey: 'sidebar.blocks.clearButton', fallbackLabel: 'Clear Blocks From Local Storage', icon: 'fas fa-trash' },
         { id: 'stations.bus', group: 'stations', surfaces: ['tools'], run: callGlobal('startTransitStationPlacement', 'bus'),
             labelKey: 'sidebar.stations.bus', fallbackLabel: 'Bus station', icon: 'fas fa-bus' },
@@ -261,7 +261,7 @@
             labelKey: 'sidebar.roads.drawDgu', fallbackLabel: 'Draw roads from DGU', icon: 'fas fa-road' },
         { id: 'roads.detectDgu', group: 'roads', surfaces: ['tools'], run: callGlobal('detectRoadsFromWFS'),
             labelKey: 'sidebar.roads.detectDgu', fallbackLabel: 'Detect roads from DGU', icon: 'fas fa-road' },
-        { id: 'roads.clear', group: 'roads', surfaces: ['settings'], run: callGlobal('clearDetectedRoads'),
+        { id: 'roads.clear', group: 'roads', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearDetectedRoads'),
             labelKey: 'sidebar.roads.clearButton', fallbackLabel: 'Clear Roads from Local Storage', icon: 'fas fa-trash' },
         control('applyGovernmentRoadPlanButton', { id: 'roads.applyGovernmentPlan', group: 'roads', surfaces: ['tools'],
             labelKey: 'sidebar.roads.applyGovPlan', fallbackLabel: 'Apply Government Road Plan', icon: 'fas fa-map-location-dot' }),
@@ -287,7 +287,7 @@
             labelKey: 'sidebar.proposals.mintedButton', fallbackLabel: 'Minted Proposals', icon: 'fas fa-certificate' }),
         control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.shareButton', fallbackLabel: 'Share entire plan (all proposals)', icon: 'fas fa-share-alt' }),
-        { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], run: callGlobal('clearLocalProposalData'),
+        { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
             labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
 
         // ---- Game pill ----
@@ -383,8 +383,22 @@
         }
     }
 
+    // The per-dataset local-storage clears are `.btn-danger` in the Settings sheet, shown only in
+    // debug mode (as in the sidebar). `debugOnly` keeps the palette and search in step with that:
+    // without it they offered the clears that the sheet hides.
+    function hiddenOutsideDebug(entry, ctx) {
+        if (!entry.debugOnly) return false;
+        if (!ctx || typeof ctx.isDebugMode !== 'function') return true;
+        try {
+            return !ctx.isDebugMode();
+        } catch (_) {
+            return true;
+        }
+    }
+
     function isAvailable(entry, ctx) {
         if (sectionHiddenForCity(entry, ctx)) return false;
+        if (hiddenOutsideDebug(entry, ctx)) return false;
         try {
             return !!entry.when(ctx);
         } catch (error) {
@@ -432,6 +446,7 @@
     // their control is off (3D lock, a busy section, hidden for this city, plain disabled).
     function unavailableReason(entry, ctx) {
         if (sectionHiddenForCity(entry, ctx)) return 'hiddenForCity';
+        if (hiddenOutsideDebug(entry, ctx)) return 'debugOnly';
         if (!entry.control || !ctx || typeof ctx.controlUnavailableReason !== 'function') return null;
         try {
             return ctx.controlUnavailableReason(entry.control) || null;
@@ -481,6 +496,9 @@
         const ctx = {
             global: win,
             document: doc,
+            isDebugMode() {
+                return !!(doc.body && doc.body.classList.contains('debug-mode'));
+            },
             isControlAvailable(id) {
                 const el = element(id);
                 return !!el && !el.disabled && !hiddenByConfig(el);

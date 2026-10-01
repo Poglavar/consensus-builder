@@ -656,19 +656,25 @@ function clearProposalOwnParcelInfo(expectedParcelIds = null) {
         if (!expected.has(trackedId)) return false;
     }
 
+    const openedOver = window.__proposalOwnParcelOpenedOver || {};
     window.__proposalOwnParcelPanelId = null;
+    window.__proposalOwnParcelOpenedOver = null;
     window.__openParcelInfoCollapsed = false;
 
     const selectedId = window.selectedParcelId != null ? String(window.selectedParcelId) : null;
     const currentId = window.currentParcel?.id != null ? String(window.currentParcel.id) : null;
     // A direct map click may have reused the same panel for a different parcel since the proposal
     // opened it. In that case the direct selection owns the panel now, so only forget our marker.
-    if ((selectedId && selectedId !== trackedId) || (currentId && currentId !== trackedId)) {
+    // The selection that was already there when the panel opened (typically the parcel a Build
+    // palette tool just consumed) is not a takeover: treating it as one left the companion panel
+    // open after its proposal card closed.
+    const ours = (id, before) => !id || id === trackedId || (before != null && id === before);
+    if (!ours(selectedId, openedOver.selected) || !ours(currentId, openedOver.current)) {
         return false;
     }
 
-    if (selectedId === trackedId) window.selectedParcelId = null;
-    if (currentId === trackedId) {
+    if (selectedId) window.selectedParcelId = null;
+    if (currentId) {
         window.currentParcel = null;
         window.currentParcelCoordinates = null;
     }
@@ -707,6 +713,10 @@ function showOwnParcelInfoForProposal(proposal) {
     clearProposalOwnParcelInfo();
     window.__openParcelInfoCollapsed = true;
     try {
+        window.__proposalOwnParcelOpenedOver = {
+            selected: window.selectedParcelId != null ? String(window.selectedParcelId) : null,
+            current: window.currentParcel?.id != null ? String(window.currentParcel.id) : null
+        };
         showPanel(feature);
         window.__proposalOwnParcelPanelId = String(ownId);
     } catch (error) {

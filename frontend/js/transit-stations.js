@@ -13,7 +13,6 @@
     const ICON_PANE = 'transitStationIconsPane';
     const ALIGNMENT_PANE = 'transitStationAlignmentsPane';
     const SNAP_RADIUS_M = 24;
-    const COMPLETE_CADASTRAL_COVERAGE = 0.999;
     const VALID_PREVIEW_COLOR = '#16a34a';
     const INVALID_PREVIEW_COLOR = '#dc2626';
     const COLORS = Object.freeze({
@@ -669,13 +668,27 @@
         const result = response?.result || {};
         const ids = Array.from(new Set((result.ids || []).map(String).filter(Boolean)));
         const coverage = Number(result.coverage);
+        // The same completeness rule the proposal manager applies when it derives the station
+        // (an absolute uncovered-area epsilon, not a coverage ratio). A ratio threshold accepted a
+        // 90 m² tram platform with 0.02 m² off the cadastre, which the manager then refused: the
+        // station was parked off the map while the status line said it had been placed.
+        const turfApi = options.turfApi || global.turf;
+        const footprintArea = turfApi && typeof turfApi.area === 'function'
+            ? Number(turfApi.area({ type: 'Feature', properties: {}, geometry })) || 0
+            : 0;
         return {
             ids,
             coverage: Number.isFinite(coverage) ? coverage : 0,
-            complete: ids.length > 0
-                && Number.isFinite(coverage)
-                && coverage >= COMPLETE_CADASTRAL_COVERAGE
+            complete: flatGroundCoverageIsComplete()(ids.length, ids.length, coverage, footprintArea)
         };
+    }
+
+    // proposal-manager.js owns the rule. In the page it is a classic-script global loaded before
+    // this file; under node it is required (never re-declared, so both realms share one rule).
+    function flatGroundCoverageIsComplete() {
+        if (typeof global._flatGroundCoverageIsComplete === 'function') return global._flatGroundCoverageIsComplete;
+        if (typeof require === 'function') return require('./proposal-manager.js')._flatGroundCoverageIsComplete;
+        throw new Error('The cadastral coverage rule (proposal-manager.js) is not loaded.');
     }
 
     const STATION_EDITOR_PANE = 'transitStationEditorPane';
@@ -1200,7 +1213,13 @@
         }
         updatePlacementStatus(`Placing ${spec?.label?.toLowerCase() || 'station'}…`);
         const proposalId = await global.instantCreateProposalFromDraft?.(draft.id);
-        if (proposalId) updatePlacementStatus(`${spec?.label || 'Station'} placed.`);
+        // A refused derive still returns the id of the parked record; only a station that is on
+        // the map is "placed" (the parked case already explains itself in an alert).
+        const record = proposalId ? global.proposalStorage?.getProposal?.(proposalId) : null;
+        const landed = !!record && (typeof global.isProposalApplied === 'function'
+            ? global.isProposalApplied(record) === true
+            : record.applied === true);
+        if (landed) updatePlacementStatus(`${spec?.label || 'Station'} placed.`);
         return proposalId || null;
     }
 

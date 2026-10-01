@@ -213,6 +213,7 @@
         "userFallback": "User",
         "close": "Close",
         "cancel": "Cancel",
+        "ok": "OK",
         "download": "Download",
         "busy": {
             "detecting": "Detecting...",
@@ -1342,7 +1343,11 @@
             "lengthLabelTrack": "Track length:",
             "areaLabelTrack": "Track area:",
             "ownedByInstitutionLabel": "Owned by institution:",
-            "costLabel": "Cost:"
+            "costLabel": "Cost:",
+            "continueHint": "Continuing this segment — click to add points, press F to finish the road",
+            "continueHintTrack": "Continuing this segment — click to add points, press F to finish the track",
+            "addPointsHint": "Click to add road points, press F to finish the road",
+            "addPointsHintTrack": "Click to add track points, press F to finish the track"
         },
         "roadAnalysis": {
             "title": "Road Width Analysis",
@@ -3214,11 +3219,20 @@
             "loading_cadastral_ground": "Loading cadastral ground {{done}}/{{total}}…",
             "waiting_for_proposal_before_parcels": "Waiting for proposal to load before fetching parcels…",
             "debug_mode_enabled": "Debug mode enabled - dangerous actions are now visible",
-            "debug_mode_disabled": "Debug mode disabled - dangerous actions are hidden"
+            "debug_mode_disabled": "Debug mode disabled - dangerous actions are hidden",
+            "zoom_in_to_see_buildings": "Zoom in closer to see buildings."
         }
     },
     "city": {
         "labels": {
+            "zagreb": "Zagreb, Croatia",
+            "split": "Split, Croatia",
+            "sibenik": "Šibenik, Croatia",
+            "belgrade": "Belgrade, Serbia",
+            "ljubljana": "Ljubljana, Slovenia",
+            "buenos_aires": "Buenos Aires, Argentina",
+            "colorado": "Denver, USA",
+            "new_york": "New York, USA",
             "denver": "Denver, USA",
             "explore": "Explore"
         },
@@ -3373,6 +3387,47 @@
                 "model": "Model:",
                 "run": "Run",
                 "batch": "Batch"
+            },
+            "filtersAria": "Filter activity",
+            "searchAria": "Search activity",
+            "searchPlaceholder": "Actor, proposal or transaction",
+            "sourceAria": "Activity source",
+            "sourceAll": "All sources",
+            "sourceLive": "Live",
+            "sourceSimulation": "Simulation",
+            "actionAria": "Activity action",
+            "actionAll": "All actions",
+            "statusAria": "Activity result",
+            "statusAll": "Any result",
+            "statusSuccess": "Succeeded",
+            "statusFailed": "Failed",
+            "clearFilters": "Clear",
+            "refresh": "Refresh",
+            "actions": {
+                "create": "Created",
+                "publish": "Published",
+                "accept": "Accepted",
+                "withdrawAcceptance": "Withdrew acceptance",
+                "donate": "Donated",
+                "pledge": "Pledged",
+                "stake": "Bet / stake",
+                "createMarket": "Opened market",
+                "resolve": "Resolved market",
+                "claim": "Claimed winnings",
+                "revokePledge": "Revoked pledge",
+                "fulfillPledge": "Fulfilled pledge",
+                "voidPledge": "Voided pledge",
+                "refundMyDonations": "Refunded donation",
+                "releaseDonations": "Released donations",
+                "cancel": "Cancelled",
+                "vote": "Voted",
+                "x402Payment": "Paid (x402)",
+                "run_status": "Run status",
+                "certifyParcel": "Certified ownership",
+                "anchorParcel": "Anchored parcel",
+                "attestOwnership": "Attested ownership",
+                "acceptance": "Said yes",
+                "verdict": "Submitted verdict"
             }
         },
         "agents": {
@@ -3386,7 +3441,9 @@
             "proposalsAccepted": "Proposals Accepted",
             "proposalsApplied": "Proposals Applied",
             "you": "(You)"
-        }
+        },
+        "newGameConfirm": "Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.",
+        "resetConfirm": "Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data."
     },
     "ephemeral": {
         "messages": {
@@ -3450,6 +3507,7 @@
         }
     },
     "threeMode": {
+        "walkPickHint": "Click the ground where you want to start walking (Esc cancels).",
         "controls": {
             "buildingRenderingAria": "Building rendering",
             "togglePanel": "Toggle controls",
@@ -3640,7 +3698,8 @@
             "directoryPick": "Pick a member…",
             "directoryNone": "No member in the directory publishes a service URL",
             "urlLabel": "Service URL",
-            "load": "Load"
+            "load": "Load",
+            "directoryFailed": "Could not load the lens directory ({{message}})"
         },
         "status": {
             "key": "Member key",
@@ -3867,11 +3926,15 @@
         "placeholder": "Type a command…",
         "empty": "No matching command",
         "hint": "↑↓ to move · Enter to run · Esc to close",
+        "state": {
+            "on": "On"
+        },
         "reason": {
             "disabledIn3D": "Not available in 3D",
             "busy": "Busy: wait for the current task",
             "hiddenForCity": "Not available in this city",
-            "disabled": "Not available right now"
+            "disabled": "Not available right now",
+            "debugOnly": "Turn on debug mode in Settings first"
         },
         "groups": {
             "layers": "Layers",

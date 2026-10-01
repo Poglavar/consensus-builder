@@ -279,10 +279,15 @@ class AgentBubbleManager {
         const dy = objectPoint.y - centerPoint.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
+        // The floating shell sits on the map's rim (search box and top-right buttons, the mode strip on
+        // the left, the Game pill and bottom button row), so the bubbles ride an inset ring inside it;
+        // at a flat 35px they landed on, and blocked, those controls.
+        const inset = { top: 90, right: 35, bottom: 95, left: 90 };
+
         if (distance === 0) {
             // Object is at center, place bubble at top of visible map area
             bubbleData.element.style.left = `${visibleMapLeft + visibleMapWidth / 2 - 25}px`;
-            bubbleData.element.style.top = `10px`;
+            bubbleData.element.style.top = `${inset.top - 25}px`;
             this.updateBubbleTip(bubbleData.element, Math.PI / 2); // Point down
             return;
         }
@@ -291,8 +296,7 @@ class AgentBubbleManager {
         const dirX = dx / distance;
         const dirY = dy / distance;
 
-        // Find intersection with map edges
-        const margin = 35; // Distance from edge
+        // Find intersection with map edges.
         let edgeX, edgeY;
 
         // Calculate intersection with map boundaries
@@ -303,18 +307,18 @@ class AgentBubbleManager {
 
         if (dirX < 0) {
             // Going left - check intersection with left edge
-            tLeft = (visibleMapLeft + margin - centerPoint.x) / dirX;
+            tLeft = (visibleMapLeft + inset.left - centerPoint.x) / dirX;
         } else if (dirX > 0) {
             // Going right - check intersection with right edge (full screen width)
-            tRight = (mapBounds.width - margin - centerPoint.x) / dirX;
+            tRight = (mapBounds.width - inset.right - centerPoint.x) / dirX;
         }
 
         if (dirY < 0) {
             // Going up
-            tTop = (margin - centerPoint.y) / dirY;
+            tTop = (inset.top - centerPoint.y) / dirY;
         } else if (dirY > 0) {
             // Going down
-            tBottom = (mapBounds.height - margin - centerPoint.y) / dirY;
+            tBottom = (mapBounds.height - inset.bottom - centerPoint.y) / dirY;
         }
 
         // Find the closest intersection
@@ -324,8 +328,8 @@ class AgentBubbleManager {
         edgeY = centerPoint.y + dirY * t;
 
         // Ensure bubble stays within bounds (redundant safety check)
-        edgeX = Math.max(visibleMapLeft + margin, Math.min(mapBounds.width - margin, edgeX));
-        edgeY = Math.max(margin, Math.min(mapBounds.height - margin, edgeY));
+        edgeX = Math.max(visibleMapLeft + inset.left, Math.min(mapBounds.width - inset.right, edgeX));
+        edgeY = Math.max(inset.top, Math.min(mapBounds.height - inset.bottom, edgeY));
 
         // Position bubble (offset by half bubble size to center it)
         bubbleData.element.style.left = `${edgeX - 25}px`;

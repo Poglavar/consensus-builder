@@ -252,7 +252,26 @@
         if (win.i18n && typeof win.i18n.onChange === 'function') win.i18n.onChange(relabel);
     }
 
+    // ArrowDown/ArrowUp (and Home/End) walk the actions while focus is in the menu, wrapping —
+    // the menu opens focused on itself, so ArrowDown reaches the first action.
+    function moveActionFocus(event) {
+        const keys = ['ArrowDown', 'ArrowUp', 'Home', 'End'];
+        if (!keys.includes(event.key) || !isOpen() || !state.el.contains(doc.activeElement)) return false;
+        const actions = Array.from(state.el.querySelectorAll('[data-command]'));
+        if (!actions.length) return false;
+        const current = actions.indexOf(doc.activeElement);
+        let next;
+        if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = actions.length - 1;
+        else if (current === -1) next = event.key === 'ArrowDown' ? 0 : actions.length - 1;
+        else next = (current + (event.key === 'ArrowDown' ? 1 : -1) + actions.length) % actions.length;
+        event.preventDefault();
+        actions[next].focus();
+        return true;
+    }
+
     function onKeyDown(event) {
+        if (moveActionFocus(event)) return;
         if (event.key !== 'Escape' || event.defaultPrevented || !isOpen()) return;
         if (typeof win.isEditableTarget === 'function' && win.isEditableTarget(event.target)) return;
         if (typeof win.isAnyModalOpen === 'function' && win.isAnyModalOpen()) return;

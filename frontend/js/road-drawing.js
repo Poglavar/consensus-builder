@@ -2805,7 +2805,9 @@ async function handleRoadClick(e) {
         if (resumeRoadSegment(snap.segmentIndex, snap.atStart)) {
             redrawRoadVertexMarkers();
             rebuildRoadGeometryFromSegments();
-            updateStatus('Continuing this segment — click to add points, press F to finish the road');
+            updateStatus(corridorDrawingIsTrack()
+                ? translateRoadText('panel.road.continueHintTrack', 'Continuing this segment — click to add points, press F to finish the track')
+                : translateRoadText('panel.road.continueHint', 'Continuing this segment — click to add points, press F to finish the road'));
             updateRoadInfoPanel();
             updateUndoButtonState();
             return;
@@ -2843,7 +2845,9 @@ async function handleRoadClick(e) {
         }
 
         // Show status for next point
-        updateStatus('Click to add road points, press F to finish the road');
+        updateStatus(corridorDrawingIsTrack()
+            ? translateRoadText('panel.road.addPointsHintTrack', 'Click to add track points, press F to finish the track')
+            : translateRoadText('panel.road.addPointsHint', 'Click to add road points, press F to finish the road'));
     } else {
         const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
         // Detect with the width THIS segment will actually be drawn at (per-segment override
@@ -2886,7 +2890,7 @@ async function handleRoadClick(e) {
             const hits = detected.filter(hit => !alreadyTunnelledIds.has(String(hit.id)));
             if (hits.length) {
                 const resolution = typeof resolveBuildingObstacles === 'function'
-                    ? await resolveBuildingObstacles(hits, 'road')
+                    ? await resolveBuildingObstacles(hits, corridorDrawingIsTrack() ? 'track' : 'road')
                     : { action: 'cancel', surfaceHits: [], tunnelHits: [] };
                 if (resolution.action === 'cancel') return;
                 (resolution.surfaceHits || []).forEach(hit => roadSurfaceBuildingIds.add(String(hit.id)));

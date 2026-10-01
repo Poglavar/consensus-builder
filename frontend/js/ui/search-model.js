@@ -126,9 +126,10 @@
         const text = String(query || '').trim();
         const scored = list.map(city => {
             const label = city.label || city.id;
-            const rank = text ? matchRank(label, text) : 0;
-            const idRank = text ? matchRank(String(city.id).replace(/_/g, ' '), text) : 0;
-            const best = rank === null ? idRank : (idRank === null ? rank : Math.min(rank, idRank));
+            // The shown label, the id and any alias (the English label behind a translated one).
+            const names = [label, String(city.id).replace(/_/g, ' ')].concat(Array.isArray(city.aliases) ? city.aliases : []);
+            const ranks = text ? names.map(name => matchRank(String(name), text)).filter(r => r !== null) : [0];
+            const best = ranks.length ? Math.min(...ranks) : null;
             return { id: city.id, label, rank: best, current: city.id === currentCityId };
         }).filter(item => item.rank !== null);
         scored.sort((a, b) => (text ? 0 : (b.current - a.current)) || (a.rank - b.rank) || a.label.localeCompare(b.label));

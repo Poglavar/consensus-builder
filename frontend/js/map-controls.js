@@ -86,6 +86,7 @@ function toggleAccordion(checkbox, options = {}) {
         toggleBlocksVisibility();
     } else if (layerName === 'buildings') {
         const showBuildings = document.getElementById('showBuildings').checked;
+        if (showBuildings) announceBuildingZoomGate();
         if (showBuildings) {
             if (typeof fetchBuildings === 'function') {
                 fetchBuildings(null, { announce: true });
@@ -95,6 +96,7 @@ function toggleAccordion(checkbox, options = {}) {
         }
     } else if (layerName === 'buildingsDgu') {
         const showDgu = document.getElementById('showBuildingsDgu').checked;
+        if (showDgu) announceBuildingZoomGate();
         if (showDgu) {
             if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
         } else if (typeof hideDguBuildingLayer === 'function') {
@@ -102,6 +104,7 @@ function toggleAccordion(checkbox, options = {}) {
         }
     } else if (layerName === 'buildingsOsm') {
         const showOsm = document.getElementById('showBuildingsOsm').checked;
+        if (showOsm) announceBuildingZoomGate();
         if (showOsm) {
             if (typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
         } else if (typeof hideOsmBuildingLayer === 'function') {
@@ -119,6 +122,17 @@ function toggleAccordion(checkbox, options = {}) {
     if (layerName === 'blocks' && typeof updateBlockButtonStates === 'function') {
         updateBlockButtonStates();
     }
+}
+
+// Every building survey loads only from zoom 17 (map-core.js fetchBuildings / fetchDguBuildings /
+// fetchOsmBuildings), and the layer then follows the map. Ticking a box further out used to do
+// nothing visible at all, so say why; the layer appears by itself once the map is zoomed in.
+function announceBuildingZoomGate() {
+    const z = (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') ? map.getZoom() : null;
+    if (typeof z !== 'number' || !Number.isFinite(z) || z >= 17 || typeof updateStatus !== 'function') return;
+    const key = 'status.messages.zoom_in_to_see_buildings';
+    const text = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+    updateStatus(text && text !== key ? text : 'Zoom in closer to see buildings.');
 }
 
 // Update enabled/disabled state for controls inside a section based on its layer checkbox. Sections
@@ -297,7 +311,7 @@ async function wipeLocalData(options = {}) {
         const confirmMessage = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
             ? window.i18n.t('modal.dataManagement.wipeWarning')
             : 'This will erase ALL locally stored data (parcels, roads, proposals, proposal drafts, settings). Continue?';
-        const confirmed = skipConfirm ? true : await window.showStyledConfirm(confirmMessage);
+        const confirmed = skipConfirm ? true : await window.showStyledConfirm(confirmMessage, { destructive: true });
         if (!confirmed) return;
         // Delegate to the single canonical eraser (js/wipe-local-data.js) rather than re-clearing a
         // subset here — this wrapper only adds the confirmation, the status line and the reload.

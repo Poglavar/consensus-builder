@@ -654,7 +654,14 @@ async function countBlocks() {
 
             blockPolygonCache.clear();
             updateBlocksList();
-            if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
+            // Forming blocks is a request to see them. The "Show blocks" toggle lives in the Layers
+            // sheet and this button in the Tools sheet, so with the layer off the run produced
+            // nothing visible at all. Switch it on, as highlightAndCenterBlock does.
+            const blocksCheckbox = document.getElementById('parcelBlocksCheckbox');
+            if (blocksCheckbox && !blocksCheckbox.checked && blockCount > 0 && typeof toggleBlocksVisibility === 'function') {
+                blocksCheckbox.checked = true;
+                toggleBlocksVisibility();
+            } else if (blocksCheckbox && blocksCheckbox.checked) {
                 updateBlockLayer();
             }
 

@@ -159,7 +159,11 @@
         global.cadastreViewActive = on;
         try { document.body.classList.toggle('cadastre-view', on); } catch (_) { }
         const button = document.getElementById('cadastre-view-toggle');
-        if (button) button.classList.toggle('active', on);
+        if (button) {
+            button.classList.toggle('active', on);
+            // A toggle: screen readers hear its state, not just the label.
+            button.setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
         try {
             if (on) {
                 cadastreLayer = buildCadastreLayer();
@@ -182,6 +186,7 @@
     function initCadastreViewToggle() {
         const button = document.getElementById('cadastre-view-toggle');
         if (!button) return;
+        button.setAttribute('aria-pressed', global.cadastreViewActive === true ? 'true' : 'false');
         button.addEventListener('click', () => toggleCadastreView());
     }
 

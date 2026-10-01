@@ -11,6 +11,10 @@
 # Cache-Control, so the browser heuristically caches index.html. You add a <script> line, reload, and
 # the page keeps the OLD script list while the server serves the new file correctly: a stale asset is
 # indistinguishable from a broken change. (JSON cannot hold a comment, hence this note here.)
+# It also turns `cleanUrls` off: serve's /page.html -> /page redirect dropped the query string, so
+# /lens.html?service=… (and ?backend=) arrived empty; production nginx serves the .html as is. With
+# cleanUrls off serve no longer finds index.html for `/` by itself, hence the `/` rewrite, and directory
+# listings are off.
 #
 # Each worktree derives its own default ports from its folder name, so several worktrees can run
 # at once. The frontend's ?backend= override (frontend/js/data-source.js) is localhost-only, so it

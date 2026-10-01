@@ -268,6 +268,12 @@
             const input = section.querySelector('[data-lens-verdict-address]');
             const out = section.querySelector('[data-lens-verdict-result]');
             out.className = 'proposal-lens-result';
+            // A malformed address is the user's to fix before any wallet prompt.
+            if (!root.LensCore.isBase58Pubkey(input.value.trim())) {
+                out.classList.add('is-error');
+                out.textContent = errorText({ code: 'BAD_ATTESTATION' }, ctx.members);
+                return;
+            }
             out.textContent = t('panel.proposal.lens.preparing', 'Preparing the transaction…');
             button.disabled = true;
             try {

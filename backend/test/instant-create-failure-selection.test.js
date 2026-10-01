@@ -179,10 +179,14 @@ describe('one-click structure creation focus', () => {
     it('preserves the whole-block selection when placement is refused', async () => {
         const { selectAndHighlightProposal, showStyledAlert } = loadInstantCreate({ lands: false });
 
+        const releaseEditorSeededMultiSelection = vi.fn();
+        install('releaseEditorSeededMultiSelection', releaseEditorSeededMultiSelection);
+
         await globalThis.instantCreateProposalFromDraft('draft-park');
 
         expect(showStyledAlert).toHaveBeenCalledOnce();
         expect(selectAndHighlightProposal).not.toHaveBeenCalled();
+        expect(releaseEditorSeededMultiSelection).not.toHaveBeenCalled();
     });
 
     it('focuses a structure after it really lands', async () => {
@@ -197,5 +201,19 @@ describe('one-click structure creation focus', () => {
             false,
             true
         );
+    });
+
+    it('releases the editor-seeded multi-select once the structure lands', async () => {
+        // One-click structures have no design session to disarm the selection they seeded; the
+        // selection tray used to stay on with nothing selected after a park was created.
+        const { selectAndHighlightProposal } = loadInstantCreate({ lands: true });
+        const releaseEditorSeededMultiSelection = vi.fn();
+        install('releaseEditorSeededMultiSelection', releaseEditorSeededMultiSelection);
+
+        await globalThis.instantCreateProposalFromDraft('draft-park');
+
+        expect(releaseEditorSeededMultiSelection).toHaveBeenCalledOnce();
+        expect(releaseEditorSeededMultiSelection.mock.invocationCallOrder[0])
+            .toBeLessThan(selectAndHighlightProposal.mock.invocationCallOrder[0]);
     });
 });

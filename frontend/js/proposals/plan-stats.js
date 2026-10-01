@@ -176,6 +176,10 @@
             fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
         });
         dialog.className = 'plan-stats-card';
+        // A modal over the Proposals sheet it opens from: the shell's Escape chain and shortcuts
+        // recognise it by these (MapShell.isBlockingDialogOpen).
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
 
         const header = el('div', { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' });
         const title = el('h3', { margin: '0' }, tPlanStats('sidebar.proposals.planStats.modalTitle', 'Plan Stats'));

@@ -39,7 +39,16 @@
         return out;
     }
 
-    const pure = { groupPaletteItems, registryGroupOrder };
+    // Whether a toggle command's layer is on: true / false for a checkbox-backed toggle, null for
+    // anything else (buttons, inputs, a control that is not in the page). The palette shows "On"
+    // beside a toggle that is on — otherwise "Show parcel ids" read the same before and after.
+    function toggleStateOf(entry, getElementById) {
+        if (!entry || entry.kind !== 'toggle' || !entry.control || typeof getElementById !== 'function') return null;
+        const el = getElementById(entry.control);
+        return el && typeof el.checked === 'boolean' ? el.checked : null;
+    }
+
+    const pure = { groupPaletteItems, registryGroupOrder, toggleStateOf };
     if (!win || !win.document) return pure;
 
     const doc = win.document;
@@ -113,6 +122,15 @@
                 }
                 option.appendChild(iconNode);
                 option.appendChild(text);
+                const on = toggleStateOf(item.entry, id => doc.getElementById(id));
+                if (on !== null) {
+                    option.setAttribute('aria-checked', on ? 'true' : 'false');
+                    if (on) {
+                        const badge = el('span', 'command-palette__state');
+                        badge.textContent = t('commandPalette.state.on', 'On');
+                        option.appendChild(badge);
+                    }
+                }
                 section.appendChild(option);
             });
             state.list.appendChild(section);

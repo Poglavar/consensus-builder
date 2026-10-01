@@ -62,3 +62,35 @@ Never let an LLM pick the final outcome.
 - **Effort:** large. Roughly a week or more per source.
 
 Also later: mainnet preparation after contract review, governance/tokenomics, more cities, and broader LLM autonomy.
+
+## Open questions from the map-UI rework (branch `new-ui`, 2026-10-01)
+
+Found during the headed test pass; each needs a decision before it is built or removed.
+
+- **Road clearance and cross-section editor has no entry point.** `openCorridorProfileEditor` lost its only
+  button in ae43c028 ("read-only details"); it still works from the console. Decide where it lives: on the
+  road segment's handles, or as a fork-to-edit action on a placed road.
+- **Proposal compare is dead code.** `showProposalCompareModal` has no caller (on `main` too). Wire it in
+  (e.g. from the Proposals list or the "At this spot" stack) or delete it.
+- **Guest rules are inconsistent.** One-click park/square/lake, Freeform and Detached work for a guest, while
+  Offer and Fork require personalizing first. Pick one rule for all creation actions.
+- **Docked panel on phones is cramped.** The parcel/details panel is 33vh and covers the Game pill; only
+  about two build-palette rows are visible. A taller bottom sheet with a drag handle is the likely fix.
+- **One agent shows as three actor profiles.** Runs say `llm`, the chain decoder says `algorithm`, older runs
+  have no wallet, and the actor key includes the controller. Either key identity on wallet-or-id only, or
+  fill run wallets from the address book on the backend.
+- **Explore city needs a no-cadastre proposal anchor.** Explore is look-only until proposals can exist
+  without parcels (the parcel-optionality work).
+- **Photo view and 3D buildings in explore.** Both go through city-specific code, so they are hidden there.
+- **Search does not find local (unpublished) proposals**, only server ones, and keeps the query after a
+  result is opened.
+- **Smaller items:** the Actors view's own search box and filter are English-only (drop it or translate);
+  `css/actor-explorer.css` has unscoped `details`/`summary`/`pre` rules that leak into the map app; the
+  lens console's issued counts don't refresh after a verdict; `canton-read.js` hardcodes `:3000` for NYC on
+  localhost; tab order goes mode strip → user bubble → search box (search should come first); the "⌘K"
+  chip shows on touch devices; the user bubble writes the user's own name via `innerHTML` (escape it);
+  the user bubble is squeezed at 320px; many in-app modals still register their own Escape listener (a
+  shared modal helper would end that bug class); the How-to guide screenshots still show the old sidebar.
+- **Not yet tested:** real wallet signing, publishing to the backend, AI image generation (costs money),
+  geolocation success, owner-offer and bids cards (no local data), and the Playwright suites (updated for
+  the new UI, never run).

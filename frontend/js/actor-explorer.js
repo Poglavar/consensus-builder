@@ -7,13 +7,26 @@
 })(typeof window !== 'undefined' ? window : globalThis, function actorExplorerFactory(root) {
     'use strict';
 
+    // The action vocabulary: every type the simulation, the live feed (backend/routes/agent-activity.js
+    // CHAIN_ACTIONS, x402 payments, run status) and agent run summaries (AgentActionEngine) emit. The explorer's action filter is built from it, so a
+    // type missing here could never be filtered for.
     const ACTION_LABELS = Object.freeze({
-        create: 'Created', publish: 'Published', donate: 'Donated', pledge: 'Pledged',
-        stake: 'Bet / stake', createMarket: 'Opened market', resolve: 'Resolved market',
-        claim: 'Claimed winnings', revokePledge: 'Revoked pledge', fulfillPledge: 'Fulfilled pledge',
-        refundMyDonations: 'Refunded donation', releaseDonations: 'Released donations',
-        vote: 'Voted', run_status: 'Run status'
+        create: 'Created', publish: 'Published', accept: 'Accepted', withdrawAcceptance: 'Withdrew acceptance',
+        donate: 'Donated', pledge: 'Pledged', stake: 'Bet / stake', createMarket: 'Opened market',
+        resolve: 'Resolved market', claim: 'Claimed winnings', revokePledge: 'Revoked pledge',
+        fulfillPledge: 'Fulfilled pledge', voidPledge: 'Voided pledge', refundMyDonations: 'Refunded donation',
+        releaseDonations: 'Released donations', cancel: 'Cancelled', vote: 'Voted', x402Payment: 'Paid (x402)',
+        certifyParcel: 'Certified ownership', anchorParcel: 'Anchored parcel', attestOwnership: 'Attested ownership',
+        acceptance: 'Said yes', verdict: 'Submitted verdict', run_status: 'Run status'
     });
+
+    // Filter options for the action vocabulary, labelled through the host translator when it has one.
+    function actionOptions(translate = (_key, fallback) => fallback) {
+        return Object.keys(ACTION_LABELS).map(type => ({
+            value: type,
+            label: translate(`gameDialogs.log.actions.${type}`, ACTION_LABELS[type])
+        }));
+    }
 
     function string(value, fallback = '') {
         return value === null || value === undefined ? fallback : String(value);
@@ -219,7 +232,9 @@
         return 'https://api.urbangametheory.xyz';
     }
 
-    function mount(element, { events = [], loadRun = null } = {}) {
+    // openProposal(id): when the host can open a proposal in place (the map), proposal links call it
+    // instead of navigating away; the standalone page keeps plain /proposals/<id> links.
+    function mount(element, { events = [], loadRun = null, openProposal = null } = {}) {
         if (!element || !root?.document) throw new Error('ActorExplorer.mount needs an element and a document');
         const doc = root.document;
         let allEvents = newestFirst(events);
@@ -256,8 +271,12 @@
         async function openRun(runId) {
             if (!runId || typeof loadRun !== 'function') return;
             detail.replaceChildren(text(doc, 'p', 'Loading run provenance…', 'ae-muted'));
+            // The detail sits below the whole activity list; without this the click looked dead.
+            const reveal = () => { if (typeof detail.scrollIntoView === 'function') detail.scrollIntoView({ block: 'start' }); };
+            reveal();
             try { renderRun(await loadRun(runId)); }
             catch (error) { detail.replaceChildren(text(doc, 'p', `Could not load run: ${error.message}`, 'ae-error')); }
+            reveal();
         }
 
         function render() {
@@ -289,6 +308,9 @@
                 if (event.entity?.id) {
                     const proposal = text(doc, 'a', `Proposal ${event.entity.id}`, 'ae-link');
                     proposal.href = `/proposals/${encodeURIComponent(event.entity.id)}`;
+                    if (typeof openProposal === 'function') {
+                        proposal.addEventListener('click', clickEvent => { clickEvent.preventDefault(); openProposal(String(event.entity.id)); });
+                    }
                     meta.append(proposal);
                 }
                 if (event.transaction) {
@@ -348,5 +370,5 @@
         else start();
     }
 
-    return { ACTION_LABELS, activityRowHtml, actorKey, backendBase, buildActorProfiles, eventDetail, eventsInvolvingActor, filterEvents, mount, newestFirst, normalizeEvent, runCostTotal };
+    return { ACTION_LABELS, actionOptions, activityRowHtml, actorKey, backendBase, buildActorProfiles, eventDetail, eventsInvolvingActor, filterEvents, mount, newestFirst, normalizeEvent, runCostTotal };
 });

@@ -34,6 +34,19 @@ describe('3D keyboard context', () => {
         expect(classifyThreeModeKeydown({ active: true, key: 'Escape' })).toBe('block-2d');
     });
 
+    it('lets a sheet, dialog or overlay over 3D have the keyboard, and the palette shortcut through', () => {
+        expect(classifyThreeModeKeydown({ active: true, key: 'Escape', overlayOpen: true })).toBe('pass');
+        expect(classifyThreeModeKeydown({ active: true, key: 'Escape', overlayOpen: true, walkPickActive: true })).toBe('pass');
+        expect(classifyThreeModeKeydown({ active: true, key: 'r', overlayOpen: true })).toBe('pass');
+        expect(classifyThreeModeKeydown({ active: true, key: 'k', metaKey: true })).toBe('pass');
+        expect(classifyThreeModeKeydown({ active: true, key: 'K', ctrlKey: true })).toBe('pass');
+        expect(classifyThreeModeKeydown({ active: true, key: 'k', ctrlKey: true, altKey: true })).toBe('block-2d-native');
+        expect(classifyThreeModeKeydown({ active: true, key: 'k' })).toBe('block-2d');
+        // three-mode.js feeds the open-overlay state from the shell.
+        expect(threeModeSource).toMatch(/overlayOpen: !!\(document\.body\.classList\.contains\('map-sheet-open'\)/);
+        expect(threeModeSource).toContain('window.MapShell.isBlockingDialogOpen()');
+    });
+
     it('loads the policy before 3D and installs a capture-phase boundary', () => {
         expect(indexSource.indexOf("'js/three-keyboard-context.js'"))
             .toBeLessThan(indexSource.indexOf("'js/three-mode.js'"));

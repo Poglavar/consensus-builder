@@ -105,6 +105,12 @@ body:has(#selection-tray) .floating-status {
     bottom: calc(var(--map-shell-bottom) + (var(--selection-tray-row) + 1) * (var(--map-shell-button-size) + var(--map-shell-gap)));
 }
 
+/* The scale bar stays above the toast, which the tray may have lifted a row (css/map.css places it
+   for the toast in row 1); on phones it otherwise sat on the tray's left end. */
+body:has(#selection-tray) .leaflet-bottom.leaflet-left .leaflet-control-scale {
+    margin-bottom: calc(var(--map-shell-bottom) + (var(--selection-tray-row) + 1) * (var(--map-shell-button-size) + var(--map-shell-gap)) + var(--map-shell-gap) + 24px);
+}
+
 /* A panel docked on the right (the parcel panel after Propose) takes the right edge and pushes the
    bottom-right buttons left of it: the tray moves up a row and centres on the map that is left. */
 @media (min-width: 768px) {

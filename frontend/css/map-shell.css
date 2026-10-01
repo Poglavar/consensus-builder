@@ -82,6 +82,7 @@
 
 .map-shell-button:focus-visible,
 .game-pill-toggle:focus-visible,
+#map-container .username-display:focus-visible,
 .map-sheet:focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
@@ -336,6 +337,17 @@
     .sheet-section-busy__spinner {
         animation: none;
     }
+}
+
+/* The blocks list lives in the Tools sheet (its markup sits under the Parcel Blocks buttons). It
+   was a fixed overlay from the sidebar days: in a sheet it floated over the sheet itself and
+   vanished whenever the sheet closed. Inside the sheet it is an inline list under its buttons. */
+#tools-sheet #blocks-list-container {
+    position: static;
+    max-height: 40vh;
+    margin-top: 8px;
+    border: 1px solid #e5e7eb;
+    box-shadow: none;
 }
 
 /* ---- Controls inside the sheets ----
@@ -676,6 +688,25 @@ body.debug-mode .map-sheet .btn-danger,
 #activity-sheet .status-bar {
     border: 1px solid #dee2e6;
     border-radius: 8px;
+}
+
+/* The expanded log and its Copy all / Open log row were positioned above the bar, as they were
+   over the sidebar's bottom edge. In the sheet that put the log over the explorer buttons, clipped
+   by the sheet, with the two buttons on top of its last line. Here they flow under the status
+   line: line, log, buttons. */
+#activity-sheet .status-log-expanded {
+    position: static;
+    max-height: 40vh;
+    margin-top: 8px;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 6px;
+    box-shadow: none;
+}
+
+#activity-sheet .status-log-actions {
+    position: static;
+    justify-content: flex-end;
+    margin: 8px 0 0;
 }
 
 /* Settings sheet: brand, debug badges, the city row */

@@ -109,6 +109,23 @@ describe('ranking', () => {
         expect(Model.matchRank('Šibenik, Croatia', 'sibenik')).toBe(1);
     });
 
+    it('finds a city by its English alias when the label is translated', () => {
+        const serbian = CITIES.map(city => (city.id === 'belgrade'
+            ? { ...city, label: 'Beograd, Srbija', aliases: ['Belgrade, Serbia'] } : city));
+        expect(Model.rankCities('beograd', serbian, 'zagreb')[0]).toMatchObject({ id: 'belgrade', label: 'Beograd, Srbija', rank: 1 });
+        expect(Model.rankCities('belgrade', serbian, 'zagreb')[0]).toMatchObject({ id: 'belgrade', label: 'Beograd, Srbija' });
+        expect(Model.rankCities('nowhere', serbian, 'zagreb')).toEqual([]);
+    });
+
+    it('has a translated name for every configured city in every locale', () => {
+        // map-search.js shows city.labels.<id>; a missing key falls back to the English label.
+        const source = fs.readFileSync(path.join(FRONTEND, 'js/city-config.js'), 'utf8');
+        const block = source.slice(source.indexOf('const CITY_CONFIGS'), source.indexOf('\n    };', source.indexOf('const CITY_CONFIGS')));
+        const ids = [...block.matchAll(/^ {8}([a-z_]+): \{\n {12}id: '([a-z_]+)'/gm)].map(m => m[2]).filter(id => id !== 'explore');
+        expect(ids).toEqual(expect.arrayContaining(['zagreb', 'split', 'sibenik', 'belgrade', 'ljubljana', 'buenos_aires', 'colorado', 'new_york']));
+        for (const lang of LANGS) for (const id of ids) expect(lookup(dictionaries[lang], `city.labels.${id}`), `${lang} ${id}`).toEqual(expect.any(String));
+    });
+
     it('resolves a proposal city id or code, and leaves placeholders unknown', () => {
         const ids = CITIES.map(c => c.id);
         expect(Model.resolveProposalCityId('zagreb', ids, { zg: 'zagreb' })).toBe('zagreb');

@@ -8,7 +8,9 @@
     const SERVICE_URL_KEY = 'lensConsoleServiceUrl';
     const core = root.LensCore;
     const client = root.LensServiceClient;
-    const state = { serviceUrl: null, status: null, directory: [], wallet: null };
+    // directoryError: why the directory could not be read (null when it was). attestations: the last
+    // list rendered, kept so a language switch can redraw it.
+    const state = { serviceUrl: null, status: null, directory: [], directoryError: null, wallet: null, attestations: null };
 
     function t(key, fallback, params = {}) {
         const api = root.i18n;
@@ -100,6 +102,7 @@
     }
 
     function renderAttestations(list) {
+        state.attestations = list;
         const target = doc.getElementById('lc-attestations');
         target.replaceChildren();
         if (!list.length) {
@@ -126,6 +129,7 @@
     async function loadAttestations() {
         const target = doc.getElementById('lc-attestations');
         if (!state.serviceUrl) return showError(target, t('lensConsole.errors.noService', 'Load a service URL first.'));
+        state.attestations = null;
         target.replaceChildren(el('p', 'lc-muted', t('lensConsole.loading', 'Loading…')));
         const result = await client.fetchAttestations({
             serviceUrl: state.serviceUrl,
@@ -144,6 +148,9 @@
         state.status = null;
         storeServiceUrl(url);
         target.replaceChildren(el('p', 'lc-muted', t('lensConsole.loading', 'Loading…')));
+        // The previous service's attestations must not stay under a service that failed to load.
+        state.attestations = null;
+        doc.getElementById('lc-attestations').replaceChildren();
         const result = await client.fetchStatus({ serviceUrl: url });
         if (result.outcome.kind !== 'ok') return showError(target, outcomeMessage(result.outcome));
         state.status = result.body;
@@ -154,11 +161,17 @@
 
     async function loadDirectory() {
         let members = [];
+        state.directoryError = null;
         try {
             const result = await client.fetchDirectory({ base: String(root.getBackendBase()).replace(/\/+$/, '') });
             members = result.outcome.kind === 'ok' ? result.members : [];
-            if (result.outcome.kind !== 'ok') console.warn(`[${new Date().toISOString()}] [lens-console] directory: ${result.outcome.message || result.status}`);
+            if (result.outcome.kind !== 'ok') {
+                // A failed read is not an empty directory; say which one it was.
+                state.directoryError = result.outcome.message || result.outcome.code || `HTTP ${result.outcome.status}`;
+                console.warn(`[${new Date().toISOString()}] [lens-console] directory: ${state.directoryError}`);
+            }
         } catch (error) {
+            state.directoryError = error && error.message ? error.message : String(error);
             console.warn(`[${new Date().toISOString()}] [lens-console] directory failed`, error);
         }
         state.directory = members.filter(member => member.serviceUrl);
@@ -168,9 +181,11 @@
     function renderDirectory() {
         const select = doc.getElementById('lc-directory');
         select.replaceChildren();
-        const placeholder = el('option', '', state.directory.length
-            ? t('lensConsole.service.directoryPick', 'Pick a member…')
-            : t('lensConsole.service.directoryNone', 'No member in the directory publishes a service URL'));
+        const placeholder = el('option', '', state.directoryError
+            ? t('lensConsole.service.directoryFailed', 'Could not load the lens directory ({{message}})', { message: state.directoryError })
+            : state.directory.length
+                ? t('lensConsole.service.directoryPick', 'Pick a member…')
+                : t('lensConsole.service.directoryNone', 'No member in the directory publishes a service URL'));
         placeholder.value = '';
         select.append(placeholder);
         state.directory.forEach(member => {
@@ -228,14 +243,22 @@
         await loadAttestations();
     }
 
+    // Everything rendered from state, redrawn in the new language.
+    function rerender() {
+        renderStatus();
+        renderWallet();
+        renderDirectory();
+        if (state.attestations) renderAttestations(state.attestations);
+    }
+
     function init() {
         const language = doc.getElementById('lc-language');
         if (root.i18n) {
             language.value = root.i18n.getLanguage();
             language.addEventListener('change', () => root.i18n.setLanguage(language.value, { userChoice: true }));
-            root.i18n.onChange(() => { renderStatus(); renderWallet(); renderDirectory(); });
+            root.i18n.onChange(rerender);
         }
-        root.addEventListener('i18n:translationsLoaded', () => { renderStatus(); renderWallet(); renderDirectory(); });
+        root.addEventListener('i18n:translationsLoaded', rerender);
 
         doc.getElementById('lc-run-own').href = `${String(root.getBackendBase()).replace(/\/+$/, '')}/docs/agents`;
 

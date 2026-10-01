@@ -213,6 +213,7 @@
         "userFallback": "Korisnik",
         "close": "Zatvori",
         "cancel": "Otkaži",
+        "ok": "U redu",
         "download": "Preuzmi",
         "busy": {
             "detecting": "Prepoznavanje...",
@@ -484,8 +485,8 @@
             "play": "Pokreni",
             "pause": "Pauza",
             "newGame": "Nova igra",
-            "showGameLog": "Prikaži dnevnik igre",
-            "showGameLogCount": "Prikaži dnevnik igre ({{count}})",
+            "showGameLog": "Aktivnost",
+            "showGameLogCount": "Aktivnost ({{count}})",
             "showAgents": "Akteri",
             "showAgentsCount": "Prikaži agente ({{count}})"
         },
@@ -1372,7 +1373,11 @@
             "lengthLabelTrack": "Dužina pruge:",
             "areaLabelTrack": "Površina pruge:",
             "ownedByInstitutionLabel": "U vlasništvu institucija:",
-            "costLabel": "Cena:"
+            "costLabel": "Cena:",
+            "continueHint": "Nastavljate ovaj segment — kliknite za dodavanje tačaka, pritisnite F za završetak puta",
+            "continueHintTrack": "Nastavljate ovaj segment — kliknite za dodavanje tačaka, pritisnite F za završetak pruge",
+            "addPointsHint": "Kliknite za dodavanje tačaka puta, pritisnite F za završetak puta",
+            "addPointsHintTrack": "Kliknite za dodavanje tačaka pruge, pritisnite F za završetak pruge"
         },
         "roadAnalysis": {
             "title": "Analiza širine puta",
@@ -3250,11 +3255,20 @@
             "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",
             "waiting_for_proposal_before_parcels": "Čeka se učitavanje predloga pre preuzimanja parcela…",
             "debug_mode_enabled": "Režim za otklanjanje grešaka uključen – opasne radnje su sada vidljive",
-            "debug_mode_disabled": "Režim za otklanjanje grešaka isključen – opasne radnje su skrivene"
+            "debug_mode_disabled": "Režim za otklanjanje grešaka isključen – opasne radnje su skrivene",
+            "zoom_in_to_see_buildings": "Približite mapu da biste videli zgrade."
         }
     },
     "city": {
         "labels": {
+            "zagreb": "Zagreb, Hrvatska",
+            "split": "Split, Hrvatska",
+            "sibenik": "Šibenik, Hrvatska",
+            "belgrade": "Beograd, Srbija",
+            "ljubljana": "Ljubljana, Slovenija",
+            "buenos_aires": "Buenos Ajres, Argentina",
+            "colorado": "Denver, SAD",
+            "new_york": "Njujork, SAD",
             "denver": "Denver, SAD",
             "explore": "Istraži"
         },
@@ -3409,6 +3423,47 @@
                 "model": "Model:",
                 "run": "Pokretanje",
                 "batch": "Serija"
+            },
+            "filtersAria": "Filtriraj aktivnost",
+            "searchAria": "Pretraži aktivnost",
+            "searchPlaceholder": "Akter, predlog ili transakcija",
+            "sourceAria": "Izvor aktivnosti",
+            "sourceAll": "Svi izvori",
+            "sourceLive": "Uživo",
+            "sourceSimulation": "Simulacija",
+            "actionAria": "Radnja",
+            "actionAll": "Sve radnje",
+            "statusAria": "Ishod",
+            "statusAll": "Bilo koji ishod",
+            "statusSuccess": "Uspelo",
+            "statusFailed": "Nije uspelo",
+            "clearFilters": "Očisti",
+            "refresh": "Osveži",
+            "actions": {
+                "create": "Kreiran",
+                "publish": "Objavljen",
+                "accept": "Prihvaćen",
+                "withdrawAcceptance": "Povučeno prihvatanje",
+                "donate": "Donirano",
+                "pledge": "Obećano",
+                "stake": "Opklada / ulog",
+                "createMarket": "Otvoreno tržište",
+                "resolve": "Razrešeno tržište",
+                "claim": "Preuzet dobitak",
+                "revokePledge": "Opozvano obećanje",
+                "fulfillPledge": "Ispunjeno obećanje",
+                "voidPledge": "Poništeno obećanje",
+                "refundMyDonations": "Vraćena donacija",
+                "releaseDonations": "Isplaćene donacije",
+                "cancel": "Otkazan",
+                "vote": "Glasao",
+                "x402Payment": "Plaćeno (x402)",
+                "run_status": "Stanje pokretanja",
+                "certifyParcel": "Potvrđeno vlasništvo",
+                "anchorParcel": "Usidrena parcela",
+                "attestOwnership": "Potvrđen vlasnik",
+                "acceptance": "Rekao da",
+                "verdict": "Predata presuda"
             }
         },
         "agents": {
@@ -3422,7 +3477,9 @@
             "proposalsAccepted": "Prihvaćeni predlozi",
             "proposalsApplied": "Primenjeni predlozi",
             "you": "(Ti)"
-        }
+        },
+        "newGameConfirm": "Da li sigurno želite da započnete NOVU igru? Time se brišu svi agenti, napredak igre i podaci o vlasništvu parcela.",
+        "resetConfirm": "Da li sigurno želite da poništite stanje igre? Time se brišu svi agenti, napredak igre i podaci o vlasništvu parcela."
     },
     "ephemeral": {
         "messages": {
@@ -3486,6 +3543,7 @@
         }
     },
     "threeMode": {
+        "walkPickHint": "Kliknite na tlo gde želite da počnete šetnju (Esc otkazuje).",
         "controls": {
             "buildingRenderingAria": "Prikaz zgrada",
             "togglePanel": "Prikaži/sakrij kontrole",
@@ -3676,7 +3734,8 @@
             "directoryPick": "Izaberite člana…",
             "directoryNone": "Nijedan član u imeniku ne objavljuje URL servisa",
             "urlLabel": "URL servisa",
-            "load": "Učitaj"
+            "load": "Učitaj",
+            "directoryFailed": "Imenik sočiva nije mogao da se učita ({{message}})"
         },
         "status": {
             "key": "Ključ člana",
@@ -3905,11 +3964,15 @@
         "placeholder": "Upiši komandu…",
         "empty": "Nema takve komande",
         "hint": "↑↓ za pomeranje · Enter za pokretanje · Esc za zatvaranje",
+        "state": {
+            "on": "Uključeno"
+        },
         "reason": {
             "disabledIn3D": "Nije dostupno u 3D prikazu",
             "busy": "Zauzeto: sačekaj da se završi trenutni zadatak",
             "hiddenForCity": "Nije dostupno u ovom gradu",
-            "disabled": "Trenutno nije dostupno"
+            "disabled": "Trenutno nije dostupno",
+            "debugOnly": "Najpre uključite režim za otklanjanje grešaka u Podešavanjima"
         },
         "groups": {
             "layers": "Slojevi",

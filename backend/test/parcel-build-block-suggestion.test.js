@@ -139,6 +139,28 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(animateFloodfillFromSelected).toHaveBeenCalledWith({ replaceSelection: true });
     });
 
+    it('opens the build palette for the selected block after accepting', async () => {
+        // Selection changes no longer open the parcel panel; without this the user is left with
+        // only the selection tray and no palette after answering "Yes, select the block".
+        const showSelectionInPanel = vi.fn();
+        const switchParcelTab = vi.fn();
+        const multiParcelSelection = { isActive: false, selectedParcels: new Set(), showSelectionInPanel };
+        const window = loadActions({
+            detectBlockParcelIdsForParcel: vi.fn(() => ({ count: 3, parcelIds: [] })),
+            showStyledConfirm: vi.fn(async () => true),
+            animateFloodfillFromSelected: vi.fn(async () => {
+                multiParcelSelection.isActive = true;
+                ['a', 'b', 'c'].forEach(id => multiParcelSelection.selectedParcels.add(id));
+            }),
+            multiParcelSelection,
+            switchParcelTab
+        });
+
+        await window.maybeSuggestWholeBlockForFreshProposal('buildings', ['a']);
+        expect(showSelectionInPanel).toHaveBeenCalledOnce();
+        expect(switchParcelTab).toHaveBeenCalledWith(null, 'proposals-tab');
+    });
+
     it('runs the same preflight when Detached is launched from the classic proposal dialog', async () => {
         const maybeSuggestWholeBlockForFreshProposal = vi.fn(async () => true);
         const openParcelBasedForParcels = vi.fn();

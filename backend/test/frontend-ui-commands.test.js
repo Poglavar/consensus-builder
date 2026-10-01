@@ -176,7 +176,7 @@ describe('availability and search', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => { });
         const ctx = { global: {}, isControlAvailable: () => { throw new Error('boom'); } };
         expect(UiCommands.commandsFor('layers', ctx).map(c => c.id)).not.toContain('layers.parcels');
-        expect(UiCommands.commandsFor('settings', ctx).map(c => c.id)).toContain('parcels.clearLocal'); // no when() of its own
+        expect(UiCommands.commandsFor('settings', ctx).map(c => c.id)).toContain('settings.siteIntro'); // no when() of its own
         warn.mockRestore();
     });
 

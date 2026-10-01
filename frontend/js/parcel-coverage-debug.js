@@ -385,6 +385,8 @@
 
     function handleDocumentKeydown(event) {
         if (event.key === 'Escape' && isModalOpen()) {
+            // Handled: the Settings sheet it opens from must not close on the same key.
+            event.preventDefault();
             event.stopPropagation();
             closeModal();
         }

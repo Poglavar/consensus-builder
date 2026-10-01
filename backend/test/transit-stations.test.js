@@ -788,7 +788,8 @@ describe('station parcel ancestry', () => {
 
         await expect(stations.resolveStationCadastreScope(geometry, {
             repository: { ensureFootprint },
-            city: 'sibenik'
+            city: 'sibenik',
+            turfApi: turf
         })).resolves.toEqual({
             ids: ['cadastre-west', 'cadastre-east'],
             coverage: 0.999999,
@@ -815,6 +816,32 @@ describe('station parcel ancestry', () => {
             coverage: 0.45,
             complete: false
         });
+    });
+});
+
+describe('station cadastral completeness matches the derive rule', () => {
+    it('refuses a footprint the proposal manager would refuse (tiny uncovered sliver)', async () => {
+        // ~90 m² platform with 0.02 m² off the cadastre: the old 0.999 ratio accepted it, the
+        // manager's absolute epsilon (0.01 m²) refused it at derive and parked the station.
+        const geometry = rectangle(15.97990, 45.80995, 15.98005, 45.81002, 'platform').geometry;
+        const area = turf.area({ type: 'Feature', properties: {}, geometry });
+        const coverage = 1 - (0.02 / area);
+        const scope = await stations.resolveStationCadastreScope(geometry, {
+            repository: { ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['street'], coverage } }) },
+            turfApi: turf
+        });
+        expect(coverage).toBeGreaterThan(0.999);
+        expect(scope.complete).toBe(false);
+    });
+
+    it('accepts a footprint whose uncovered area is within the shared epsilon', async () => {
+        const geometry = rectangle(15.97990, 45.80995, 15.98005, 45.81002, 'platform').geometry;
+        const area = turf.area({ type: 'Feature', properties: {}, geometry });
+        const scope = await stations.resolveStationCadastreScope(geometry, {
+            repository: { ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['street'], coverage: 1 - (0.005 / area) } }) },
+            turfApi: turf
+        });
+        expect(scope.complete).toBe(true);
     });
 });
 

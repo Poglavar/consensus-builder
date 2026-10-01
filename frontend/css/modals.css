@@ -2658,8 +2658,9 @@ body.site-intro-open {
     z-index: 7000;
 }
 
+/* Opened over the activity explorer (12100), e.g. from an agent link in one of its rows. */
 .agent-dialog-modal.agent-dialog-elevated {
-    z-index: 12000;
+    z-index: 12150;
 }
 
 .agent-dialog-modal-content {

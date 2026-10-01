@@ -188,9 +188,15 @@
         try { await Promise.resolve(global.animateFloodfillFromSelected?.({ replaceSelection: true })); } catch (error) {
             console.warn('[buildPalette] block selection failed', error);
         }
-        try {
-            document.querySelector('.parcel-tab-btn[data-i18n-key="panel.parcel.tabProposals"]')?.click();
-        } catch (_) { }
+        // Land on the build palette for the new selection. Selection changes no longer open the
+        // parcel panel (the map-driven UI shows the selection tray instead), so open it here —
+        // the same path as the tray's Propose — or the user is left with no palette on screen.
+        const multi = global.multiParcelSelection;
+        if (multi && multi.isActive && multi.selectedParcels && multi.selectedParcels.size > 0
+            && typeof multi.showSelectionInPanel === 'function') {
+            multi.showSelectionInPanel();
+        }
+        if (typeof global.switchParcelTab === 'function') global.switchParcelTab(null, 'proposals-tab');
         return true;
     }
 

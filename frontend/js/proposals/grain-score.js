@@ -700,6 +700,9 @@
         const target = targetForPath(item.path, rooster);
         const previous = rooster.__grainPosition || { x: 8, y: state.ui.overlay.clientHeight - (rooster.offsetHeight || 118) - 20 };
         const facing = target.x >= previous.x ? 1 : -1;
+        // scaleX(-1) mirrors the whole rooster, speech bubble included; the class lets the CSS
+        // mirror the bubble back so its text stays readable while he walks left.
+        rooster.classList.toggle('is-facing-left', facing < 0);
         rooster.classList.add('is-walking');
         const animation = await animate(rooster, [
             { transform: transformFor(previous, rooster.__grainFacing || 1) },

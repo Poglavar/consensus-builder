@@ -107,6 +107,18 @@
     font-size: 12px;
 }
 
+/* "On" beside a toggle command whose layer is switched on. */
+.command-palette__state {
+    flex: 0 0 auto;
+    align-self: center;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 11px;
+    font-weight: 600;
+}
+
 .command-palette__empty {
     padding: 16px;
     color: #6b7280;

@@ -349,7 +349,7 @@
             const newValue = select.value;
 
             const warning = 'Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?';
-            const proceed = await window.showStyledConfirm(warning);
+            const proceed = await window.showStyledConfirm(warning, { destructive: true });
 
             if (!proceed) {
                 // Revert dropdown to the last confirmed value and cancel

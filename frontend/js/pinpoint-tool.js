@@ -61,7 +61,11 @@
     }
 
     function onKeydown(event) {
-        if (event.key === 'Escape' && active) togglePinpointTool();
+        if (event.key === 'Escape' && active) {
+            // One Escape, one step: the Tools sheet Pinpoint was started from stays open.
+            event.preventDefault();
+            togglePinpointTool();
+        }
     }
 
     function togglePinpointTool() {

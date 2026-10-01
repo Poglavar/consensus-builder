@@ -138,7 +138,11 @@
 
     function onKeyDown(e) {
         if (!active) return;
-        if (e.key === 'Escape') deactivate();
+        if (e.key === 'Escape') {
+            // One Escape, one step: the Tools sheet this was started from stays open.
+            e.preventDefault();
+            deactivate();
+        }
     }
 
     function addVertexMarker(latlng, isFirst) {

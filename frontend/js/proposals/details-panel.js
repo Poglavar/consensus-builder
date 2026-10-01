@@ -2319,6 +2319,12 @@ function hideProposalDetailsPanel(clearHighlights = false) {
     // Clear cached proposal context when panel closes
     currentProposalDetailsContext = null;
 
+    // The proposal's own parcel (opened collapsed beside this card by showOwnParcelInfoForProposal)
+    // belongs to the card: close it with the card. Left open, it turned the next parcel click into
+    // "move the open panel" instead of opening the parcel menu. A panel that a direct map selection
+    // has since taken over is left alone (clearProposalOwnParcelInfo checks the tracked id).
+    try { if (typeof clearProposalOwnParcelInfo === 'function') clearProposalOwnParcelInfo(); } catch (_) { }
+
     // Clear hover overlay when closing
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
@@ -2561,7 +2567,9 @@ function applyProposalTitleMarquee(el, text) {
     requestAnimationFrame(() => {
         try {
             if (el.textContent !== text) return; // a newer title landed meanwhile
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            // reduced-motion.js folds the OS setting and the ?reduceMotion override into one flag.
+            if (window.__reducedMotion === true
+                || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
             if (el.clientWidth === 0 || el.scrollWidth <= el.clientWidth) return;
             const track = document.createElement('span');
             track.className = 'title-marquee-track';

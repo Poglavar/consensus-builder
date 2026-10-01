@@ -32,6 +32,19 @@ describe('command palette', () => {
         expect(groups[0].group).toBe('layers');
     });
 
+    it('reports the on/off state of checkbox-backed toggles only', () => {
+        const boxes = { showParcelNumbers: { checked: true }, showOwnerCounts: { checked: false }, measureButton: {} };
+        const byId = id => boxes[id] || null;
+        expect(Palette.toggleStateOf(UiCommands.findCommand('layers.parcelIds'), byId)).toBe(true);
+        expect(Palette.toggleStateOf(UiCommands.findCommand('layers.ownerCounts'), byId)).toBe(false);
+        // A button command, a toggle whose control is not in the page, no lookup: no state.
+        expect(Palette.toggleStateOf(UiCommands.findCommand('tools.measure'), byId)).toBeNull();
+        expect(Palette.toggleStateOf(UiCommands.findCommand('layers.adParcels'), byId)).toBeNull();
+        expect(Palette.toggleStateOf(UiCommands.findCommand('layers.parcelIds'), null)).toBeNull();
+        // Every toggle in the registry names the checkbox it reflects.
+        for (const entry of UiCommands.listCommands().filter(e => e.kind === 'toggle')) expect(entry.control, entry.id).toBeTruthy();
+    });
+
     it('leaves out the command that opens the palette itself', () => {
         expect(view('').flatMap(g => g.items).map(i => i.entry.id)).not.toContain('settings.commandPalette');
         expect(UiCommands.findCommand('settings.commandPalette').surfaces).toEqual(['settings']);

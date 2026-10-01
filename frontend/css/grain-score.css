@@ -204,6 +204,11 @@
     white-space: nowrap;
 }
 
+/* The rooster is mirrored with scaleX(-1) when walking left; un-mirror the bubble's text. */
+.grain-rooster.is-facing-left .grain-rooster__speech {
+    transform: scaleX(-1);
+}
+
 .grain-score-crumb {
     position: absolute;
     z-index: 3;

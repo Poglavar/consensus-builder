@@ -63,6 +63,28 @@ describe('Data & maintenance section', () => {
         }
     });
 
+    it('offers the per-dataset clears in the palette only in debug mode, like the sheet', () => {
+        // The sheet hides them outside debug mode (.btn-danger); the palette used to offer them anyway.
+        const clears = ['parcels.clearLocal', 'blocks.clear', 'roads.clear', 'proposals.clearLocal'];
+        const ctx = debug => ({ global: {}, isControlAvailable: () => true, isDebugMode: () => debug });
+        const ids = debug => UiCommands.commandsFor('palette', ctx(debug)).map(c => c.id);
+        for (const id of clears) {
+            expect(ids(true), id).toContain(id);
+            expect(ids(false), id).not.toContain(id);
+            const ranked = UiCommands.rankCommands('clear', ctx(false), null).find(item => item.entry.id === id);
+            expect(ranked, id).toMatchObject({ available: false, reason: 'debugOnly' });
+        }
+        // Wipe ALL is always visible in the sheet, so it stays available outside debug mode.
+        expect(ids(false)).toContain('settings.wipeLocalData');
+        // Every debug-only command is backed by a .btn-danger in the Settings sheet.
+        for (const id of clears) {
+            const marker = MAINTENANCE.find(item => item.command === id).marker;
+            const at = settings.indexOf(marker);
+            const tag = settings.slice(settings.lastIndexOf('<button', at), settings.indexOf('>', at));
+            expect(tag, id).toContain('btn-danger');
+        }
+    });
+
     it('keeps the section hidden for a city when every wrapper is hidden, including the Settings upkeep', () => {
         // isSectionHidden: true only when every .accordion-section[data-section] wrapper is hidden.
         const wrappers = [...indexHtml.matchAll(/class="[^"]*accordion-section[^"]*"[^>]*data-section="parcels"/g)];

@@ -248,6 +248,8 @@ function handleMeasureMouseMove(e) {
 // Handle keydown events for measurement tool
 function handleMeasureKeydown(e) {
     if (e.key === 'Escape') {
+        // One Escape, one step: the Tools sheet Measure was started from stays open for the next.
+        e.preventDefault();
         if (measureStartPoint || measureLine) {
             clearMeasurement();
             updateStatus('Measurement cancelled. Click to start measuring.');

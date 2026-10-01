@@ -19,6 +19,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'commandPalette.groups.',   // frontend-map-search.test.js checks every command group
     'commandPalette.reason.',   // and every reason, in all four locales
     'gameDialogs.log.',
+    'gameDialogs.log.actions.', // activity-action-vocabulary.test.js checks every action type, all four locales
     'gameDialogs.log.row.',
     'modal.corridor.compass.',
     'modal.corridor.laneTypes.',
@@ -36,6 +37,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'rowHouses.modal.',
     'sidebar.proposals.grainScore.',
     'status.messages.',
+    'city.labels.',             // a configured city's name by id (frontend-map-search.test.js)
     'world.tier.'               // the four coverage tiers (frontend-map-search.test.js)
 ];
 

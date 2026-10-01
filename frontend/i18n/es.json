@@ -213,6 +213,7 @@
         "userFallback": "Usuario",
         "close": "Cerrar",
         "cancel": "Cancelar",
+        "ok": "Aceptar",
         "download": "Descargar",
         "busy": {
             "detecting": "Detectando...",
@@ -343,8 +344,8 @@
             "play": "Iniciar",
             "pause": "Pausar",
             "newGame": "Nuevo juego",
-            "showGameLog": "Mostrar registro del juego",
-            "showGameLogCount": "Mostrar registro del juego ({{count}})",
+            "showGameLog": "Actividad",
+            "showGameLogCount": "Actividad ({{count}})",
             "showAgents": "Actores",
             "showAgentsCount": "Mostrar agentes ({{count}})"
         },
@@ -1389,7 +1390,11 @@
             "lengthLabelTrack": "Longitud de la vía:",
             "areaLabelTrack": "Área de la vía:",
             "ownedByInstitutionLabel": "Propiedad de instituciones:",
-            "costLabel": "Coste:"
+            "costLabel": "Coste:",
+            "continueHint": "Continuando este tramo: haz clic para añadir puntos, pulsa F para terminar la calle",
+            "continueHintTrack": "Continuando este tramo: haz clic para añadir puntos, pulsa F para terminar la vía",
+            "addPointsHint": "Haz clic para añadir puntos de la calle, pulsa F para terminarla",
+            "addPointsHintTrack": "Haz clic para añadir puntos de la vía, pulsa F para terminarla"
         },
         "roadAnalysis": {
             "title": "Análisis del ancho vial",
@@ -3265,11 +3270,20 @@
             "loading_cadastral_ground": "Cargando el catastro {{done}}/{{total}}…",
             "waiting_for_proposal_before_parcels": "Esperando a que cargue la propuesta antes de obtener las parcelas…",
             "debug_mode_enabled": "Modo depuración activado: las acciones peligrosas ahora son visibles",
-            "debug_mode_disabled": "Modo depuración desactivado: las acciones peligrosas están ocultas"
+            "debug_mode_disabled": "Modo depuración desactivado: las acciones peligrosas están ocultas",
+            "zoom_in_to_see_buildings": "Acerca el mapa para ver los edificios."
         }
     },
     "city": {
         "labels": {
+            "zagreb": "Zagreb, Croacia",
+            "split": "Split, Croacia",
+            "sibenik": "Šibenik, Croacia",
+            "belgrade": "Belgrado, Serbia",
+            "ljubljana": "Liubliana, Eslovenia",
+            "buenos_aires": "Buenos Aires, Argentina",
+            "colorado": "Denver, EE. UU.",
+            "new_york": "Nueva York, EE. UU.",
             "denver": "Denver, EE. UU.",
             "explore": "Explorar"
         },
@@ -3424,6 +3438,47 @@
                 "model": "Modelo:",
                 "run": "Ejecución",
                 "batch": "Lote"
+            },
+            "filtersAria": "Filtrar actividad",
+            "searchAria": "Buscar actividad",
+            "searchPlaceholder": "Actor, propuesta o transacción",
+            "sourceAria": "Fuente de la actividad",
+            "sourceAll": "Todas las fuentes",
+            "sourceLive": "En vivo",
+            "sourceSimulation": "Simulación",
+            "actionAria": "Acción",
+            "actionAll": "Todas las acciones",
+            "statusAria": "Resultado",
+            "statusAll": "Cualquier resultado",
+            "statusSuccess": "Con éxito",
+            "statusFailed": "Fallido",
+            "clearFilters": "Borrar",
+            "refresh": "Actualizar",
+            "actions": {
+                "create": "Creada",
+                "publish": "Publicada",
+                "accept": "Aceptada",
+                "withdrawAcceptance": "Aceptación retirada",
+                "donate": "Donó",
+                "pledge": "Comprometió",
+                "stake": "Apuesta",
+                "createMarket": "Abrió mercado",
+                "resolve": "Resolvió mercado",
+                "claim": "Cobró ganancias",
+                "revokePledge": "Revocó compromiso",
+                "fulfillPledge": "Cumplió compromiso",
+                "voidPledge": "Anuló compromiso",
+                "refundMyDonations": "Reembolsó donación",
+                "releaseDonations": "Liberó donaciones",
+                "cancel": "Cancelada",
+                "vote": "Votó",
+                "x402Payment": "Pagó (x402)",
+                "run_status": "Estado de la ejecución",
+                "certifyParcel": "Certificó la propiedad",
+                "anchorParcel": "Ancló la parcela",
+                "attestOwnership": "Atestiguó la propiedad",
+                "acceptance": "Dijo sí",
+                "verdict": "Presentó veredicto"
             }
         },
         "agents": {
@@ -3437,7 +3492,9 @@
             "proposalsAccepted": "Propuestas aceptadas",
             "proposalsApplied": "Propuestas aplicadas",
             "you": "(Tú)"
-        }
+        },
+        "newGameConfirm": "¿Seguro que quieres empezar una partida NUEVA? Se borrarán todos los agentes, el progreso de la partida y los datos de propiedad de las parcelas.",
+        "resetConfirm": "¿Seguro que quieres restablecer el estado de la partida? Se borrarán todos los agentes, el progreso de la partida y los datos de propiedad de las parcelas."
     },
     "ephemeral": {
         "messages": {
@@ -3501,6 +3558,7 @@
         }
     },
     "threeMode": {
+        "walkPickHint": "Haz clic en el suelo donde quieras empezar a caminar (Esc cancela).",
         "controls": {
             "buildingRenderingAria": "Representación de edificios",
             "togglePanel": "Mostrar/ocultar controles",
@@ -3691,7 +3749,8 @@
             "directoryPick": "Elige un miembro…",
             "directoryNone": "Ningún miembro del directorio publica una URL de servicio",
             "urlLabel": "URL del servicio",
-            "load": "Cargar"
+            "load": "Cargar",
+            "directoryFailed": "No se pudo cargar el directorio de la lente ({{message}})"
         },
         "status": {
             "key": "Clave del miembro",
@@ -3918,11 +3977,15 @@
         "placeholder": "Escribe un comando…",
         "empty": "Ningún comando coincide",
         "hint": "↑↓ para moverte · Enter para ejecutar · Esc para cerrar",
+        "state": {
+            "on": "Activado"
+        },
         "reason": {
             "disabledIn3D": "No disponible en 3D",
             "busy": "Ocupado: espera a que termine la tarea actual",
             "hiddenForCity": "No disponible en esta ciudad",
-            "disabled": "No disponible ahora"
+            "disabled": "No disponible ahora",
+            "debugOnly": "Activa primero el modo depuración en Ajustes"
         },
         "groups": {
             "layers": "Capas",

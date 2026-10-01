@@ -276,7 +276,7 @@
         <div id="three-container" aria-hidden="true"></div>
 
         <!-- Username Display -->
-        <div id="username-display" class="username-display">
+        <div id="username-display" class="username-display" role="button" tabindex="0">
             <i class="fas fa-user"></i>
             <span id="username-text">Guest</span>
         </div>
@@ -946,7 +946,7 @@
                         <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
                         <span id="turn-interval-value">30</span>
                     </label>
-                    <input type="range" id="turn-interval-slider" min="0" max="60" value="10"
+                    <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
                         onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
                 </div>
 
@@ -2165,7 +2165,7 @@
 
     <!-- Welcome Modal -->
     <div id="welcome-modal" class="welcome-modal" style="display: none;">
-        <div class="welcome-modal-content">
+        <div class="welcome-modal-content" role="dialog" aria-modal="true">
             <button type="button" id="welcome-close-btn"
                 class="welcome-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close welcome dialog"
                 title="Close welcome dialog" data-i18n-key="modal.welcome.closeLabel" data-i18n-attr="aria-label,title"

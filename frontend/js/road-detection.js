@@ -920,6 +920,11 @@ function toggleGUPRoadLines() {
             gupRoadLayer.addTo(map);
         } else if (window.gupRoadGeoJSON) {
             displayGUPRoads(window.gupRoadGeoJSON);
+        } else {
+            // Nothing drawn yet: ticking the layer is a request to see it. The toggle lives in the
+            // Layers sheet and "Draw Roads from GUP" in the Tools sheet, so a tick that waited for
+            // the button looked broken.
+            drawGUPRoads();
         }
     } else if (gupRoadLayer) {
         map.removeLayer(gupRoadLayer);
@@ -929,12 +934,16 @@ function toggleGUPRoadLines() {
 // Toggle OSM road lines visibility
 function toggleOSMRoadLines() {
     const cb = document.getElementById('showOSMRoadLines');
-    if (cb && window.osmRoadLayer) {
+    if (!cb) return;
+    if (window.osmRoadLayer) {
         if (cb.checked) {
             window.osmRoadLayer.addTo(map);
         } else {
             map.removeLayer(window.osmRoadLayer);
         }
+    } else if (cb.checked) {
+        // Nothing drawn yet: fetch and draw, like the DGU polygons toggle (see toggleGUPRoadLines).
+        drawOSMRoads();
     }
 }
 

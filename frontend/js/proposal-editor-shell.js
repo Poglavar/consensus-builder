@@ -1642,6 +1642,11 @@
         // selection on refusal so retrying is genuinely the same operation. A landed object keeps
         // the normal focus/details behaviour.
         if (landed) {
+            // One-click structures (park/square/lake) seed multi-select without a design session,
+            // so finishProposalDraftDesignSession never disarms it; the selection is consumed
+            // now, like a confirmed design tool's. Without this the selection tray stayed on
+            // ("Click parcels to select them") and the next parcel click joined a selection.
+            try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
             global.__openProposalDetailsCollapsed = true;
             try { global.selectAndHighlightProposal?.(proposalId, null, false, true); } catch (_) { }
         }

@@ -671,6 +671,19 @@ function setupWelcomeModalEventListeners() {
         closeBtn.onclick = hideWelcomeModal;
     }
 
+    // Escape closes it like its × does (it opens from the user bubble over the map). Registered
+    // once: this setup runs on every open.
+    if (!document.body.dataset.welcomeEscapeBound) {
+        document.body.dataset.welcomeEscapeBound = '1';
+        document.addEventListener('keydown', event => {
+            const modal = document.getElementById('welcome-modal');
+            if (event.key !== 'Escape' || !modal || modal.style.display === 'none') return;
+            event.preventDefault();
+            event.stopPropagation();
+            hideWelcomeModal();
+        });
+    }
+
     // Takeover event listeners
     takeoverYesBtn.addEventListener('click', handleTakeoverYes);
     takeoverNoBtn.addEventListener('click', handleTakeoverNo);
@@ -924,6 +937,17 @@ function updateUsernameDisplay() {
                 showAgentDialog(currentUserAgent.id);
             }
         };
+
+        // The bubble is a div acting as a button (role="button" tabindex="0" in index.html): Enter
+        // and Space open it like a click, so Tab through the floating controls can use it too.
+        if (!usernameDisplay.dataset.keyboardBound) {
+            usernameDisplay.dataset.keyboardBound = '1';
+            usernameDisplay.addEventListener('keydown', event => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                usernameDisplay.click();
+            });
+        }
 
         // No longer need network indicator or wallet button in bubble
     }

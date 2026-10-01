@@ -6394,7 +6394,10 @@
             altKey: evt.altKey,
             target: evt.target,
             walkPickActive,
-            hasIsolation: isolatedParcelId !== null || isolatedProposalId !== null
+            hasIsolation: isolatedParcelId !== null || isolatedProposalId !== null,
+            overlayOpen: !!(document.body.classList.contains('map-sheet-open')
+                || (window.MapShell && typeof window.MapShell.isBlockingDialogOpen === 'function'
+                    && window.MapShell.isBlockingDialogOpen()))
         });
         if (action === 'pass') return;
         if (action === 'cancel-walk') cancelWalkPick();
@@ -6447,6 +6450,9 @@
         walkPickActive = true;
         if (walkBtn) walkBtn.classList.add('active');
         if (threeContainer) threeContainer.classList.add('three-mode-walk-pick');
+        // The pick is a second step; only the cursor said so, and the button looked like it did
+        // nothing. Say what to do next (cancelWalkPick takes the hint off the toast again).
+        if (typeof window.updateStatus === 'function') window.updateStatus(walkPickHintText());
 
         walkPickClickHandler = (evt) => {
             // Only react to primary-button clicks.
@@ -6461,9 +6467,18 @@
         }
     }
 
+    function walkPickHintText() {
+        const key = 'threeMode.walkPickHint';
+        const text = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+        return text && text !== key ? text : 'Click the ground where you want to start walking (Esc cancels).';
+    }
+
     function cancelWalkPick() {
         if (!walkPickActive) return;
         walkPickActive = false;
+        // A stale "click the ground" on the toast after the pick ended read as still picking.
+        const toast = document.getElementById('floating-status-text');
+        if (toast && toast.textContent === walkPickHintText()) toast.textContent = '';
         if (walkBtn) walkBtn.classList.remove('active');
         if (threeContainer) threeContainer.classList.remove('three-mode-walk-pick');
         if (renderer && renderer.domElement && walkPickClickHandler) {

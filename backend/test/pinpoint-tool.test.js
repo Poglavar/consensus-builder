@@ -55,8 +55,8 @@ describe('turning it off puts everything back', () => {
         expect(off).toContain("container.style.cursor = ''");
     });
 
-    it('leaves on Escape', () => {
-        expect(tool).toContain("if (event.key === 'Escape' && active) togglePinpointTool();");
+    it('leaves on Escape, marking the key handled so the Tools sheet stays open', () => {
+        expect(tool).toMatch(/if \(event\.key === 'Escape' && active\) \{\s*\/\/[^\n]*\n\s*event\.preventDefault\(\);\s*togglePinpointTool\(\);/);
     });
 });
 

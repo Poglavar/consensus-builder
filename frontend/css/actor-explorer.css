@@ -19,8 +19,9 @@
 .ae-profile-card:hover,.ae-profile-card.is-selected { border-color:var(--ae-accent); background:var(--ae-accent-soft); }
 .ae-tag { display:inline-block; width:max-content; max-width:100%; padding:1px 6px; color:#42505f; background:#eef1f5; border-radius:999px; font-size:.76rem; overflow-wrap:anywhere; }
 .ae-wallet,.ae-provenance { display:block; max-width:100%; overflow-wrap:anywhere; font:12px/1.4 var(--ae-mono); }
-.ae-list { display:grid; gap:8px; padding:0; margin:9px 0 0; list-style:none; }
-.ae-event { padding:10px; border:1px solid var(--ae-line); border-left:3px solid var(--ae-accent); border-radius:6px; }
+/* minmax(0,1fr) + anywhere: base58 proposal ids and signatures have no break points and pushed rows past a phone's width. */
+.ae-list { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; padding:0; margin:9px 0 0; list-style:none; }
+.ae-event { min-width:0; overflow-wrap:anywhere; padding:10px; border:1px solid var(--ae-line); border-left:3px solid var(--ae-accent); border-radius:6px; }
 .ae-event.is-failed { border-left-color:var(--ae-danger); }
 .ae-event-message { display:block; margin:3px 0; }
 .ae-meta { display:flex; flex-wrap:wrap; align-items:center; gap:5px; margin-top:6px; }

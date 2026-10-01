@@ -2086,6 +2086,9 @@ function showOSMRoadSegmentListPopup(segments) {
     renderHistogram(histogramContainer, computeHistogram(segments || []), segments);
     renderSegmentList(listContainer, segments || []);
     popup.style.display = 'block';
+    // The results panel opens where the Tools sheet sits; the run started from that sheet, and the
+    // two stacked on each other.
+    if (window.MapShell && typeof window.MapShell.closeSheets === 'function') window.MapShell.closeSheets();
 }
 
 function highlightOSMSegment(idx) {

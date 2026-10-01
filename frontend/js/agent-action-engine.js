@@ -157,7 +157,10 @@
         if (f.action !== 'all' && event.action?.type !== f.action) return false;
         if (f.status === 'success' && event.ok === false) return false;
         if (f.status === 'failed' && event.ok !== false) return false;
-        if (f.actorId && String(event.actor?.id) !== String(f.actorId)) return false;
+        // Same identity rule as the API's ?actor= filter (routes/agent-activity.js): id, wallet or name.
+        // One agent is "densifier-01" in its run events and its wallet in its chain/x402 events; matching
+        // the id alone dropped every on-chain action the server had already returned for that actor.
+        if (f.actorId && ![event.actor?.id, event.actor?.wallet, event.actor?.name].map(value => String(value ?? '')).includes(String(f.actorId))) return false;
         if (f.proposalId && activityProposalId(event) !== String(f.proposalId)) return false;
         if (f.runId && String(event.runId || '') !== String(f.runId)) return false;
         if (Array.isArray(f.proposalIds) && !f.proposalIds.includes(activityProposalId(event))) return false;

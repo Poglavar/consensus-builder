@@ -57,13 +57,17 @@
     const manager = () => win.CityConfigManager || null;
     const currentCityId = () => (manager() ? manager().getCurrentCityId() : null);
     const shortCityLabel = label => String(label || '').split(',')[0].trim();
+    const cityLabel = (id, fallback) => (id ? t(`city.labels.${id}`, fallback) : fallback);
 
     function configuredCities() {
         const m = manager();
         if (!m || typeof m.getAvailableCities !== 'function') return [];
+        // The label in the UI language (city.labels.<id>); the configured English label stays an
+        // alias, so "Belgrade" still finds Beograd in a Serbian UI.
         return m.getAvailableCities().map(config => ({
             id: config.id,
-            label: config.label || config.id,
+            label: cityLabel(config.id, config.label || config.id),
+            aliases: config.label && cityLabel(config.id, config.label) !== config.label ? [config.label] : [],
             center: typeof m.getCityCenter === 'function' ? m.getCityCenter(config) : null,
             parcelSource: (config.parcels && config.parcels.source) || null
         }));
@@ -754,7 +758,7 @@
     function syncChip() {
         if (!state.chip) return;
         const m = manager();
-        let label = m ? shortCityLabel(m.getCityLabel(currentCityId())) : '';
+        let label = m ? shortCityLabel(cityLabel(currentCityId(), m.getCityLabel(currentCityId()))) : '';
         let shortLabel = label;
         // Explore: "Explore · <place>" once the world view's coverage names the place (js/ui/world-entry.js).
         // Phones show only the compass and the place (css/map-search.css), so the name stays readable.

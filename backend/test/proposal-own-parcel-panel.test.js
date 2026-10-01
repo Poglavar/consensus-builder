@@ -83,3 +83,72 @@ describe('proposal-owned parcel panel lifecycle', () => {
         expect(harness.window.__proposalOwnParcelPanelId).toBeNull();
     });
 });
+
+describe('own-parcel panel opened over an existing selection', () => {
+    it('closes when the selection it opened over is still the one in place', () => {
+        // A Build palette tool consumes the clicked parcel; the stale selection that remains must
+        // not count as a direct map selection taking the panel over.
+        const harness = makeHarness();
+        harness.window.selectedParcelId = 'consumed-source';
+        harness.window.currentParcel = { id: 'consumed-source' };
+        const api = loadOwnParcelPanel(harness.window, harness.document);
+        api.showOwnParcelInfoForProposal({ proposalId: 'lake-1' });
+
+        expect(api.clearProposalOwnParcelInfo()).toBe(true);
+        expect(harness.panel.visible).toBe(false);
+        expect(harness.window.selectedParcelId).toBeNull();
+        expect(harness.window.currentParcel).toBeNull();
+    });
+
+    it('still yields to a different parcel selected after it opened', () => {
+        const harness = makeHarness();
+        harness.window.selectedParcelId = 'consumed-source';
+        const api = loadOwnParcelPanel(harness.window, harness.document);
+        api.showOwnParcelInfoForProposal({ proposalId: 'lake-1' });
+        harness.window.selectedParcelId = 'clicked-later';
+
+        expect(api.clearProposalOwnParcelInfo()).toBe(false);
+        expect(harness.panel.visible).toBe(true);
+        expect(harness.window.selectedParcelId).toBe('clicked-later');
+    });
+});
+
+describe('closing the proposal card', () => {
+    const detailsSource = readFileSync(
+        new URL('../../frontend/js/proposals/details-panel.js', import.meta.url),
+        'utf8'
+    );
+
+    function loadHideProposalDetailsPanel(scope) {
+        const start = detailsSource.indexOf('function hideProposalDetailsPanel(');
+        const end = detailsSource.indexOf('\nfunction ', start + 1);
+        expect(start, 'hideProposalDetailsPanel not found').toBeGreaterThanOrEqual(0);
+        const body = detailsSource.slice(start, end);
+        const names = Object.keys(scope);
+        // eslint-disable-next-line no-new-func
+        return new Function(...names, `let currentProposalDetailsContext = {}; ${body}; return hideProposalDetailsPanel;`)(
+            ...names.map(name => scope[name])
+        );
+    }
+
+    it('also closes the collapsed own-parcel companion panel', () => {
+        // Left open, the companion turned the next parcel click into "move the open panel"
+        // instead of opening the parcel menu.
+        const clearProposalOwnParcelInfo = vi.fn();
+        const panel = { classList: { remove: vi.fn(), contains: vi.fn(() => false) } };
+        const hide = loadHideProposalDetailsPanel({
+            document: { getElementById: vi.fn(() => panel), body: { classList: { remove: vi.fn() } } },
+            window: {},
+            setProposalDetailsPanelMinimized: vi.fn(),
+            teardownProposalDetailsEscapeHandler: vi.fn(),
+            clearProposalInfoHoverOverlay: vi.fn(),
+            clearProposalHighlights: vi.fn(),
+            clearProposalOwnParcelInfo
+        });
+
+        hide();
+
+        expect(panel.classList.remove).toHaveBeenCalledWith('visible');
+        expect(clearProposalOwnParcelInfo).toHaveBeenCalledOnce();
+    });
+});

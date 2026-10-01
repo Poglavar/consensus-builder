@@ -2922,7 +2922,9 @@ input:checked+.slider:before {
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 56px;
+    /* One row above the status toast (which sits one row above the bottom buttons): at a fixed
+       56px the two overlapped, and the toast is where Pinpoint writes its hint and result. */
+    bottom: calc(var(--map-shell-bottom) + 2 * (var(--map-shell-button-size) + var(--map-shell-gap)));
     z-index: 1200;
     padding: 5px 12px;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

@@ -31,6 +31,12 @@
         if (isTextEntryTarget(input.target) || isNativeControlActivation(input.target, input.key)) return 'pass';
         // Focus traversal and browser function keys are native navigation, not 2D app shortcuts.
         if (isBrowserNavigationKey(input.key)) return 'pass';
+        // A sheet, dialog or overlay open over the 3D view (Layers/Tools sheet, the AI render, a
+        // confirm, the palette) owns the keyboard: its Escape must reach it. Blocking here left
+        // every one of them unclosable from the keyboard while 3D was on.
+        if (input.overlayOpen === true) return 'pass';
+        // Ctrl/Cmd-K is the shell's command palette, which works in 3D (it greys what 3D locks).
+        if ((input.ctrlKey || input.metaKey) && !input.altKey && String(input.key || '').toLowerCase() === 'k') return 'pass';
         // Keep the browser/OS default (refresh, location bar, etc.) but do not let application-level
         // 2D listeners observe modifier shortcuts while the 3D context owns the document.
         if (input.ctrlKey || input.metaKey || input.altKey) return 'block-2d-native';

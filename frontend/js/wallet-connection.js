@@ -739,14 +739,6 @@
                 const chainId = chainIdFromSession || await readChainId(entry.provider);
                 finalizeConnection(entry, normalized, chainId, { isAutoConnect: false });
 
-                // Close WC modals if open
-                try {
-                    if (walletConnectModalInstance && typeof walletConnectModalInstance.closeModal === 'function') {
-                        walletConnectModalInstance.closeModal();
-                    }
-                    closeFallbackQrModal();
-                } catch (_) { }
-
                 return cloneState();
             } catch (err) {
                 console.warn('Wallet connect error', err);

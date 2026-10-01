@@ -12,11 +12,14 @@ body {
 
 .road-analysis-modal {
     position: fixed;
-    top: 30px;
-    right: 30px;
+    /* Below the top-right floating buttons (user bubble, Layers, Settings), which it used to cover,
+       and never wider than a 320px phone. */
+    top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    right: var(--map-shell-edge);
     z-index: 1200;
-    min-width: 360px;
-    max-width: 420px;
+    min-width: min(360px, calc(100vw - 2 * var(--map-shell-edge)));
+    max-width: min(420px, calc(100vw - 2 * var(--map-shell-edge)));
+    box-sizing: border-box;
     max-height: 70vh;
     display: flex;
     flex-direction: column;

@@ -5,6 +5,9 @@
 
     function onParcelClick(e) {
         if (global.measureMode) return;
+        // Pinpoint owns the click: it reports what is on the ground there ("At this spot"); a parcel
+        // menu opening on top of that answer was noise.
+        if (typeof global.pinpointToolIsActive === 'function' && global.pinpointToolIsActive()) return;
         if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
             return;
         }

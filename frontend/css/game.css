@@ -62,7 +62,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    /* Above the docked proposal panels (12000): the explorer is opened from proposal Details, and
+       at 2000 the docked card covered its right side (all of it on phones). */
+    z-index: 12100;
 }
 
 .game-log-modal-content {
