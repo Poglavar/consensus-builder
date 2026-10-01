@@ -1207,7 +1207,7 @@
             proposalType: proposalLabel('reparcellization'),
             adapterKey: 'reparcellization',
             fields: siteDraftFields(siteContext, []),
-            editorPayload: { plan: { poolSource: 'site', poolGeometry: site, algorithm: 'street-plots', polygons: [] } },
+            editorPayload: { plan: { poolSource: 'site', poolGeometry: site, algorithm: 'sweep-line', polygons: [] } },
             previewGeometry: null
         });
         if (!draft) return false;

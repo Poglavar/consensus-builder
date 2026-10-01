@@ -90,7 +90,8 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
 
 ### Subdivision (phase 4)
 - Land readjustment with an empty or partial pool: the open ground of the site is a pool with no
-  owners; the existing slicer produces plots and streets. Proposed plots are proposal content; they
+  owners; the existing slicer produces plots — only plots: a public strip (a street) is a plot drawn
+  by hand and assigned to public land. Proposed plots are proposal content; they
   become parcels only through the authority's own process (out of scope).
 
 ### Chain (phase 5, program v3, not deployed in this branch)
@@ -567,18 +568,17 @@ empty-scope fix (boot replay of an explore plan threw "Cadastral replacement sco
 - **Pure module** `frontend/js/proposals/subdivision.js` (UMD, `window.__subdivision`, loaded after
   site-plots.js): `sitePool(site, boundParcels)` (bound parcels' parts = site ∩ parcel, open ground =
   site − parcels, subtracted one at a time), `poolShares(contributions, { openGroundM2 })`,
-  `ledgerOf(entry, ctx)`, `streetPlotsLayout(site, { frontageEdgeIndex, streetWidthM 10, plotWidthM 20,
-  minPlotDepthM 15 })`, `ownerKeyByGround(plot, pool, shares)`, `OPEN_GROUND_OWNER_KEY = 'open-ground'`.
-  `site-plots.js` gained `frontageExtent` and `bandOf`, and `cutPlots` a `vFromM`/`vToM` band, so the
-  street and the plots on both sides are cut from the same frontage frame and tile the site exactly.
+  `ledgerOf(entry, ctx)`, `ownerKeyByGround(plot, pool, shares)`, `OPEN_GROUND_OWNER_KEY = 'open-ground'`.
+  (The "plots along a street" layout first built here — `streetPlotsLayout`, `site-plots.js`
+  `frontageExtent`/`bandOf` — was removed on 2026-10-01, see "Street layout removed" below.)
 - **Apply** (`proposal-manager.js`, `apply/parcels.js`): the `readjustment-open-ground` refusal is gone;
   a readjustment on open ground gets the open-ground host like any formation (`formationOptions`). Plots
   carry per-plot provenance from the cadastral parents AND the ground parents: wholly on open ground →
   `cadastreParcelIds: []`, `groundIds: ['ground:<hash>']`, rootless id `<token>-<n>`; spanning both →
   both; on neither → refusal. The host leaves no remainder, is never consumed from the fabric, and the
   "no cadastral provenance" refusal applies only without a host. Plots assigned to `open-ground` get no
-  agent, no ownership transfer and no `ownershipDetails`; the street (public land) goes to the City as
-  before. A decide-later merge on open ground (cannot happen: parcel act) is refused as
+  agent, no ownership transfer and no `ownershipDetails`; a plot assigned to public land goes to the
+  City as before. A decide-later merge on open ground (cannot happen: parcel act) is refused as
   `merge-open-ground`.
 - **Authoring.** On a drawn site with open ground (coverage partial or none) the palette's Land
   readjustment is enabled and labelled **Subdivide** (`buildProposalPaletteHtml` `labels` option); a
@@ -588,20 +588,17 @@ empty-scope fix (boot replay of an explore plan threw "Cadastral replacement sco
   pending plan itself) opens the editor with `sitePool { site, boundParcelIds }`. The editor
   (`reparcellization.js`): title **Subdivision**; pool = the site; bound parcels from the repository
   (all must resolve); owners contribute their part INSIDE the site; an **Open ground (no owner)** entry
-  contributes the open area; the 1-owner→public 50/50 rule is skipped; new algorithm **Plots along a
-  street** (default on a site, beside Sweep line and Manual) with a **Turn the street** button cycling
-  the frontage edge; plots go to the contributor whose ground they mostly stand on, the street to public
-  land (`use: 'street'`). Ledger: open ground shows pooled/assigned area, "—" for balance and cash;
+  contributes the open area; the 1-owner→public 50/50 rule is skipped; the modes are **Sweep line**
+  (default) and **Manual**; a public strip is a plot assigned to public land. Ledger: open ground shows pooled/assigned area, "—" for balance and cash;
   the cash total is hidden with no owners. Saved plan adds `poolSource: 'site'`, `openGroundM2`,
-  `streetFrontageIndex`, `ownerShares[].noOwner`. Reopening restores the saved plots and algorithm;
+  `ownerShares[].noOwner`. Reopening restores the saved plots and algorithm;
   more open ground than the plan saved (= bound parcels missing) refuses to open.
 - **Coverage checks** (`proposal-editor-adapters.js`): for `poolSource: 'site'` the target is the
   draft's SITE, not the plan's pool, so `coverage-gap` / `coverage-excess` / `pool-coverage-mismatch`
   mean "the plots must tile the site exactly: its parcels and its open ground".
 - Details panel "Total Area" falls back to the site area when there are no cadastral parents (was 0).
 - i18n en/hr/es/sr: `reparcellization.modal.{subdivisionTitle, openGroundOwner, noOwnerBalance,
-  turnStreet, turnStreetTitle, siteParcelsMissing, siteUnavailable, siteGroundTaken}`,
-  `…algorithms.streetPlots`, `…status.streetPlots{Hint,Failed}`, `siteTool.palette.{subdivide,
+  siteParcelsMissing, siteUnavailable, siteGroundTaken}`, `siteTool.palette.{subdivide,
   readjustUnknownCadastre}`; removed `siteTool.palette.readjustBareGround`. CSS in modals.css.
 
 **Decisions**
@@ -614,9 +611,10 @@ empty-scope fix (boot replay of an explore plan threw "Cadastral replacement sco
 - *Open ground is a pseudo-owner, not "unassigned"*: assigning a plot to it is a decision (the plot
   stays ownerless ground until the authority's process), so the completeness gate passes; it is never
   an agent and never owed/paid (`cashBalance: null`).
-- *Both layouts are offered*: the frontage cutter (`site-plots.js`) became the quick "plots along a
-  street" mode; the sweep line (by contribution) and manual editing stay available on the same pool.
-  The design-time `site-plot:` plots of detached/row are unchanged (they remain design input).
+- *A subdivision takes land and outputs only plots*: the sweep line (by contribution) and manual editing
+  work on the site pool. A street is not a layout mode: draw it as one plot and assign it to public
+  land. (A "plots along a street" mode existed briefly and was removed.) The design-time `site-plot:`
+  plots of detached/row are unchanged (they remain design input).
 - *A site wholly over parcels is still a selection readjustment*: Subdivide only appears when the site
   has open ground.
 
@@ -649,7 +647,6 @@ Phone 375×740: editor fits, no horizontal scroll. No page errors.
 - The plots' owner in a mixed pool is by ground majority; owners then show a cash shortfall for ground
   their parcels gave to open-ground plots. A redistribution rule (owners' entitlement first) is a
   design question.
-- Street width/plot width are constants (10 m / 20 m); no UI to change them yet.
 - The automatic name of every readjustment is "Subdivide …" (`data.js` goal label, pre-existing).
 - The details panel offer showed 345,000 USDT on the bare-ground subdivision (pre-existing offer
   default, not investigated).
@@ -846,9 +843,8 @@ HR-335266-3159/1 → road across it (surface level, Build through) → park in 2
   start on the longest edge while the lookup runs ("Looking for the street…"), then move to the street
   edge — "Frontage facing Gotalovečka ulica (7 m away)." / "Frontage: the longest edge (no street within
   30 m)." / "… (street data is unavailable here)." (Overpass throttled or a cell missing) / "the edge you
-  chose" after a click. The subdivision editor's "Plots along a street" does the same for a new plan
-  (status line), re-laying the plots only while the opening layout is untouched and taking that as the
-  new baseline; a saved plan keeps its saved edge. i18n en/hr/es/sr (`siteTool.snap.*`,
+  chose" after a click. (The subdivision editor's "Plots along a street" used it too until that mode
+  was removed.) i18n en/hr/es/sr (`siteTool.snap.*`,
   `siteTool.frontage.*`, updated `siteTool.hint.drawing/plots`).
 
 **Tests**: site-draft +7 (building corner/edge kind, corner-beats-edge across kinds, box entries, viewport
@@ -948,7 +944,10 @@ route" → nothing added.
   proposals off plots, although such a road is refused at apply (`building-over-road`).
 - No docs-agents.md / OpenAPI entry for `GET /proposals/:id/binding-drift` yet.
 
-### Phase 7c — street and plot widths in the subdivision editor (2026-10-01, built, not committed, not deployed)
+### Phase 7c — street and plot widths in the subdivision editor (2026-10-01, REMOVED with the street layout)
+
+Superseded: the whole "plots along a street" mode, with these width controls, was removed (see "Street
+layout removed" below). Kept as the record of what was built.
 
 **Built**
 - **Pure** (`frontend/js/proposals/subdivision.js`): `STREET_WIDTH_LIMITS_M` {4, 30} and
@@ -1061,3 +1060,23 @@ left in the local DB as a test record.) Subdivision on a 15,811 m² Tokyo site �
 25 m) → Create replacement → 11 plots, applied; then Unapply → Fork with no edit (pending plan without
 `parcelIds`, the failing shape) → created → Share → Upload: row 1358, `poolSource site`, 11 plots, author
 "Tester Po14b".
+
+### Street layout removed (2026-10-01, not committed, not deployed)
+
+A subdivision takes land as input and outputs only plots. The "plots along a street" mode (phase 4,
+widths in 7c) was never asked for and is gone; a public road strip is one freeform plot assigned to public
+land (Manual → draw plot → assign to Public land), which already worked.
+
+- `subdivision.js`: removed `streetPlotsLayout`, `streetPlotsWidths`, `streetPlotsPlanFields`,
+  `streetPlotsSettingsOf`, `STREET_WIDTH_M`, `PLOT_WIDTH_M`, `MIN_PLOT_DEPTH_M`, the width limits and the
+  site-plots dependency. `site-plots.js`: removed `frontageExtent`, `bandOf` and the `vFromM`/`vToM` band
+  of `cutPlots` (only the street layout used them).
+- Editor (`reparcellization.js`): modes are Sweep line (default, also on a site) and Manual; the Turn the
+  street button, the street/plot width row, the re-lay confirm and the street frontage lookup are gone.
+  Saved plans no longer carry `streetWidthM`/`plotWidthM`/`streetFrontageIndex`, and plots no longer carry
+  `use: 'street'` (parcel-compare's "street (public)" label went with it). A stored plan whose algorithm is
+  `street-plots` opens its saved plots in Manual (the existing unknown-algorithm rule).
+- `street-frontage.js` stays: the site tool's detached/row plots use it.
+- i18n en/hr/es/sr: removed `reparcellization.modal.{turnStreet, turnStreetTitle, streetSettings.*,
+  relayConfirm*}`, `…algorithms.streetPlots`, `…status.{streetPlotsHint, streetPlotsFailed, noWholePlot,
+  streetWidthInvalid, plotWidthInvalid, streetDropped}`, `parcelCompare.plots.street`. CSS in modals.css.

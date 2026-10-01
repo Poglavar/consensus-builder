@@ -1,9 +1,8 @@
 // The default frontage of a drawn site (window.StreetFrontage): fetch the street centrelines around
 // the site (GET /streets/near: osm_road in Croatia, Overpass elsewhere) and let the pure scorer in
 // proposals/site-plots.js pick the edge that faces one, else the longest edge. Used by the site
-// tool's detached/row plots and the subdivision editor's "plots along a street". basisText() says
-// which basis was used, so the panel never presents the longest edge as a street. PARCEL-OPTIONAL.md
-// phase 7a.
+// tool's detached/row plots. basisText() says which basis was used, so the panel never presents the
+// longest edge as a street. PARCEL-OPTIONAL.md phase 7a.
 (function (win) {
     'use strict';
 

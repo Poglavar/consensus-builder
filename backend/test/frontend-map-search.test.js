@@ -245,6 +245,25 @@ describe('recent searches and keyboard state', () => {
         expect(Model.keyAction('a', 1, 4)).toBeNull();
     });
 
+    // "Ilica 20" + a quick Enter: the geocoder had not answered, the only row was the "Commands…"
+    // hint, and Enter opened the command palette instead of going to the address.
+    it('makes a bare Enter wait for pending results and never default to the palette hint', () => {
+        const loading = [{ key: 'hint:palette', kind: 'hint' }];
+        const opts = list => ({ pending: true, defaultIndex: Model.defaultEnterIndex(list) });
+        expect(Model.keyAction('Enter', -1, loading.length, opts(loading))).toEqual({ type: 'wait' });
+        expect(Model.keyAction('Enter', -1, 0, { pending: true })).toEqual({ type: 'wait' });
+
+        // Settled with nothing but the hint: Enter does nothing rather than open the palette.
+        expect(Model.keyAction('Enter', -1, loading.length, { defaultIndex: Model.defaultEnterIndex(loading) })).toBeNull();
+
+        // Settled with a place: Enter goes to it.
+        const settled = [{ key: 'place:N1', kind: 'place' }, { key: 'hint:palette', kind: 'hint' }];
+        expect(Model.keyAction('Enter', -1, settled.length, { defaultIndex: Model.defaultEnterIndex(settled) }))
+            .toEqual({ type: 'run', index: 0 });
+        // An explicitly highlighted row runs even while searches are pending (the hint included).
+        expect(Model.keyAction('Enter', 1, settled.length, { pending: true })).toEqual({ type: 'run', index: 1 });
+    });
+
     it('lets the keyboard reach only enabled items, in display order', () => {
         const groups = [{ items: [{ key: 'a' }, { key: 'info', disabled: true }] }, { items: [{ key: 'b' }] }];
         expect(Model.selectableItems(groups).map(item => item.key)).toEqual(['a', 'b']);

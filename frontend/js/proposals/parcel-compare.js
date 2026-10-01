@@ -316,8 +316,7 @@
                 number: index + 1,
                 areaM2: round(num(plot.area) !== null ? num(plot.area) : areaOf(t, feature), 1),
                 overlapM2: round(overlapM2, 1),
-                owner: typeof plot.displayName === 'string' && plot.displayName.trim() ? plot.displayName.trim() : null,
-                street: plot.use === 'street'
+                owner: typeof plot.displayName === 'string' && plot.displayName.trim() ? plot.displayName.trim() : null
             });
         });
         plots.sort((a, b) => b.overlapM2 - a.overlapM2);

@@ -1358,6 +1358,7 @@
             "title": "Dibujar camino",
             "titleTrack": "Dibujar vía",
             "crossSectionButton": "Editar sección transversal",
+            "crossSectionHint": "Edita los carriles y anchos de esta calle. Una calle publicada se edita como tu copia local; la versión publicada no cambia.",
             "finishButton": "Terminar carretera (F)",
             "cancelButton": "Cancelar carretera (Esc)",
             "widthLabel": "Ancho de la carretera:",
@@ -2899,8 +2900,7 @@
                 "sweepLine": "Algoritmo de línea de barrido",
                 "centroidalVoronoi": "Voronoi centroidal",
                 "wasserstein": "Wasserstein",
-                "manual": "Manual",
-                "streetPlots": "Parcelas a lo largo de una calle"
+                "manual": "Manual"
             },
             "algorithmTitle": "Tipo de reparcelación",
             "closeAria": "Cerrar",
@@ -2969,13 +2969,7 @@
                 "lineAnchored": "Anclada en {{count}} puntos — la línea se trazará entre los dos extremos, y en ningún otro sitio.",
                 "lineOneAnchor": "Un anclaje por ahora. Cruza otro lindero, o termina en una esquina existente.",
                 "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
-                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno.",
-                "streetPlotsFailed": "No se pudieron trazar parcelas a lo largo de una calle en este sitio.",
-                "streetPlotsHint": "Parcelas a lo largo de una calle. Gire la calle hacia otro borde o cambie a Manual para editar las parcelas.",
-                "noWholePlot": "Una parcela de {{width}} m no cabe: el sitio mide solo {{frontage}} m a lo largo de la calle. Elija una parcela más estrecha o gire la calle.",
-                "streetWidthInvalid": "El ancho de la calle debe ser un número entre {{min}} y {{max}} m.",
-                "plotWidthInvalid": "El ancho de la parcela debe ser un número entre {{min}} y {{max}} m.",
-                "streetDropped": "El sitio es demasiado poco profundo para una calle de {{width}} m y una fila de parcelas, así que todo son parcelas. Elija una calle más estrecha para tenerla."
+                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -3053,18 +3047,6 @@
             "noOwnerBalance": "El terreno abierto no tiene propietario: no se debe ni se paga nada.",
             "openGroundOwner": "Terreno abierto (sin propietario)",
             "subdivisionTitle": "Parcelación",
-            "turnStreet": "Girar la calle",
-            "turnStreetTitle": "Trazar la calle a lo largo del siguiente borde del sitio",
-            "streetSettings": {
-                "streetWidth": "Ancho de la calle",
-                "plotWidth": "Ancho de parcela (fachada)",
-                "unit": "m",
-                "streetWidthTitle": "Ancho de la nueva calle, {{min}}–{{max}} m",
-                "plotWidthTitle": "Ancho de cada parcela a lo largo de la calle, {{min}}–{{max}} m. La fachada se reparte por igual, así que las parcelas quedan cerca de este ancho."
-            },
-            "relayConfirm": "¿Volver a trazar las parcelas con los nuevos anchos? Los cambios que hizo en las parcelas se descartarán.",
-            "relayConfirmOk": "Volver a trazar",
-            "relayConfirmCancel": "Conservar mis parcelas",
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
             "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta."
@@ -4096,7 +4078,8 @@
             "parcel": "Parcela",
             "selection": "Selección",
             "ground": "Terreno",
-            "site": "Sitio"
+            "site": "Sitio",
+            "road": "Calle"
         }
     },
     "groundMenu": {
@@ -4245,7 +4228,6 @@
             "width": "{{width}} m de ancho"
         },
         "plots": {
-            "street": "calle (pública)",
             "line": "Lote {{number}} ({{area}}, {{who}}): {{overlap}} de esta parcela"
         },
         "ownership": {

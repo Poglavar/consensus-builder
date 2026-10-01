@@ -45,7 +45,8 @@
     }
 
     // Undo one vertex. If the pen is up, resume the last segment first. Pop its last point; if that
-    // empties the segment, drop it. Returns { removedEdges, activeIndex, hasStarted, strokeBaseCount,
+    // empties the segment, drop it and put the pen up — so the first (even the only) point of a
+    // stroke is undoable too, leaving an empty drawing that is still in draw mode. Returns { removedEdges, activeIndex, hasStarted, strokeBaseCount,
     // undone }. activeIndex/hasStarted/strokeBaseCount describe the state AFTER the undo.
     function applyRoadUndo(state) {
         const { segments, segmentIds } = state;
@@ -58,7 +59,7 @@
         // Pen up: resume the last segment if it has something to undo.
         if (!hasStarted) {
             const last = segments[segments.length - 1];
-            if (!segments.length || (last && last.length ? last.length : 0) <= 1) {
+            if (!segments.length || !Array.isArray(last) || !last.length) {
                 return result(false); // nothing to undo
             }
             activeIndex = segments.length - 1;
@@ -67,8 +68,8 @@
         }
 
         const active = (activeIndex >= 0 && activeIndex < segments.length) ? segments[activeIndex] : null;
-        if (!hasStarted || !Array.isArray(active) || active.length <= 1) {
-            return result(false); // can't undo a single point or none
+        if (!hasStarted || !Array.isArray(active) || !active.length) {
+            return result(false); // no point to undo
         }
 
         const removed = active[active.length - 1];

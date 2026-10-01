@@ -310,14 +310,8 @@
         const span = uMax - uMin;
         const count = Math.max(1, Math.round(span / plotWidthM));
         const width = span / count;
-        // A band [vFromM, vToM] across the frontage frame (subdivision.js cuts the plots on either
-        // side of a street with it); the cut positions along the frontage do not depend on it, so
-        // plots in two bands line up.
-        const vFrom = Number.isFinite(opts.vFromM) ? opts.vFromM : null;
-        const vTo = Number.isFinite(opts.vToM) ? opts.vToM : null;
-        const vLow = vFrom !== null ? Math.max(vFrom, vMin - PAD_M) : vMin - PAD_M;
-        let vHigh = depthM ? Math.min(depthM, vMax + PAD_M) : vMax + PAD_M;
-        if (vTo !== null) vHigh = Math.min(vHigh, vTo);
+        const vLow = vMin - PAD_M;
+        const vHigh = depthM ? Math.min(depthM, vMax + PAD_M) : vMax + PAD_M;
         if (!(vHigh > vLow)) return [];
         // One pair of cut points per boundary, shared by the strips on both sides of it.
         const cuts = [];
@@ -364,56 +358,7 @@
         });
     }
 
-    // The site's extent in the frontage frame of edge `frontageEdgeIndex`: u along the frontage, v
-    // into the site (metres, v = 0 on the frontage line).
-    function frontageExtent(site, options) {
-        const opts = options || {};
-        const t = T(opts);
-        if (!t) throw new Error('site-plots: turf is not available');
-        const siteGeometry = geometryOf(site);
-        if (!siteGeometry) throw new TypeError('site must be a GeoJSON Polygon or MultiPolygon');
-        const edgeIndex = Number.isInteger(opts.frontageEdgeIndex) ? opts.frontageEdgeIndex : defaultFrontageEdge(siteGeometry, { turf: t });
-        const axes = frontageAxes(siteGeometry, edgeIndex, t);
-        let uMin = Infinity, uMax = -Infinity, vMin = Infinity, vMax = -Infinity;
-        for (const rings of polygonsOf(siteGeometry)) {
-            for (const p of rings[0]) {
-                const [u, v] = axes.toUV(p);
-                uMin = Math.min(uMin, u); uMax = Math.max(uMax, u);
-                vMin = Math.min(vMin, v); vMax = Math.max(vMax, v);
-            }
-        }
-        return { frontageEdgeIndex: edgeIndex, uMin, uMax, vMin, vMax };
-    }
-
-    /**
-     * The part of `site` between v = vFromM and v = vToM in the frontage frame (a band parallel to
-     * the frontage edge), or null when the band misses the site. Its long edges are built from the
-     * same cut points cutPlots uses, so plots cut in the neighbouring bands meet it exactly.
-     */
-    function bandOf(site, options) {
-        const opts = options || {};
-        const t = T(opts);
-        if (!t) throw new Error('site-plots: turf is not available');
-        const siteGeometry = geometryOf(site);
-        if (!siteGeometry) throw new TypeError('site must be a GeoJSON Polygon or MultiPolygon');
-        const extent = frontageExtent(siteGeometry, { ...opts, turf: t });
-        const axes = frontageAxes(siteGeometry, extent.frontageEdgeIndex, t);
-        const vLow = Number.isFinite(opts.vFromM) ? opts.vFromM : extent.vMin - PAD_M;
-        const vHigh = Number.isFinite(opts.vToM) ? opts.vToM : extent.vMax + PAD_M;
-        if (!(vHigh > vLow)) return null;
-        const u0 = extent.uMin - PAD_M;
-        const u1 = extent.uMax + PAD_M;
-        const band = t.polygon([[
-            axes.toLngLat([u0, vLow]), axes.toLngLat([u1, vLow]),
-            axes.toLngLat([u1, vHigh]), axes.toLngLat([u0, vHigh]), axes.toLngLat([u0, vLow])
-        ]]);
-        const piece = intersectOrNull(t, band, { type: 'Feature', properties: {}, geometry: siteGeometry });
-        return piece && piece.geometry && t.area(piece) > 0 ? piece.geometry : null;
-    }
-
     return {
-        frontageExtent,
-        bandOf,
         DETACHED_PLOT_WIDTH_M,
         ROW_PLOT_WIDTH_M,
         MIN_PLOT_WIDTH_SHARE,

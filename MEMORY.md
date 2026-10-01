@@ -431,3 +431,6 @@
 - 2026-10-01: **Outgoing records carry the profile's current name.** Ownership of a local record is
   `authorAgentId` (stamped at create when the author is the current profile); publish/share/mint restamp the
   current name onto this profile's never-published record; forks are new records of whoever forks them.
+- 2026-10-01: **Subdivision outputs only plots.** The "plots along a street" mode is removed; a public road
+  strip is drawn as a freeform parcel owned by the city/public. Road cross-section editor opens from an
+  "Edit cross section" action on a clicked road.

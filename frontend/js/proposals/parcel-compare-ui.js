@@ -222,7 +222,7 @@
         if (!plots) return [DASH];
         if (!plots.length) return [t('parcelCompare.none', 'None')];
         return plots.map(p => {
-            const who = p.street ? t('parcelCompare.plots.street', 'street (public)') : (p.owner || DASH);
+            const who = p.owner || DASH;
             return t('parcelCompare.plots.line', 'Plot {{number}} ({{area}}, {{who}}): {{overlap}} of this parcel', {
                 number: p.number, area: m2(p.areaM2), who, overlap: m2(p.overlapM2)
             });

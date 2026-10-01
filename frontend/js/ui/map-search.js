@@ -35,7 +35,8 @@
         places: { query: '', status: 'idle', items: [], timer: null, abort: null },
         coverage: null,
         coverageRequested: false,
-        marker: null
+        marker: null,
+        enterPendingFor: null    // the query a bare Enter was pressed on while results were loading
     };
 
     const t = (key, fallback, params) => {
@@ -408,7 +409,10 @@
                 })
                 .finally(() => {
                     if (source.abort === controller) source.abort = null;
-                    if (!controller.signal.aborted) render();
+                    if (!controller.signal.aborted) {
+                        render();
+                        runPendingEnter();
+                    }
                 });
         }, delay);
     }
@@ -436,6 +440,22 @@
         const response = await win.fetch(`${PHOTON_URL}?${params}`, { signal });
         if (!response.ok) throw new Error(`HTTP ${response.status} from Photon`);
         return Model.parsePhoton(await response.json());
+    }
+
+    // ---- Enter before the remote results arrive ----
+    const isPending = source => !!source.timer || source.status === 'loading';
+    const searchesPending = () => state.mode === 'search' && (isPending(state.places) || isPending(state.proposals));
+    const enterOptions = () => ({ pending: searchesPending(), defaultIndex: Model.defaultEnterIndex(state.selectable) });
+
+    // A bare Enter pressed while the searches were still running: run the default result now that
+    // they have settled, unless the query changed or the list was closed in the meantime.
+    function runPendingEnter() {
+        if (state.enterPendingFor === null || searchesPending()) return;
+        const wanted = state.enterPendingFor;
+        state.enterPendingFor = null;
+        if (!state.open || wanted !== state.query || state.activeIndex >= 0) return;
+        const action = Model.keyAction('Enter', -1, state.selectable.length, enterOptions());
+        if (action && action.type === 'run') runItem(state.selectable[action.index]);
     }
 
     // ---- running results ----
@@ -712,9 +732,13 @@
             event.preventDefault();
             return;
         }
-        const action = Model.keyAction(event.key, state.activeIndex, state.selectable.length);
+        const action = Model.keyAction(event.key, state.activeIndex, state.selectable.length, enterOptions());
         if (!action) return;
-        if (action.type === 'move') {
+        if (action.type === 'wait') {
+            // Enter beat the geocoder: run the first result once the searches settle.
+            event.preventDefault();
+            state.enterPendingFor = state.query;
+        } else if (action.type === 'move') {
             event.preventDefault();
             setActive(action.index);
         } else if (action.type === 'run') {

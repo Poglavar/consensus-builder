@@ -2681,7 +2681,8 @@ function updateUndoButtonState() {
             const currentSegment = roadHasStarted
                 ? roadPoints
                 : (roadSegments[roadSegments.length - 1] || []);
-            undoButton.disabled = !currentSegment || currentSegment.length <= 1;
+            // Mirrors RoadStrokeState.applyRoadUndo: any point, the stroke's first one included, undoes.
+            undoButton.disabled = !currentSegment || currentSegment.length < 1;
         } else {
             undoButton.disabled = true;
         }
@@ -2759,6 +2760,19 @@ function undoLastRoadSegment() {
     roadHasStarted = result.hasStarted;
     roadStrokeBaseCount = result.strokeBaseCount;
     roadPoints = result.activeIndex >= 0 ? roadSegments[result.activeIndex] : [];
+    // Undoing a stroke's only point puts the pen up: the rubber band from that point is gone too
+    // (the mousemove handler draws none while the pen is up, so nothing would remove it).
+    if (!roadHasStarted) {
+        if (roadPreviewLine) {
+            roadPreviewLine.removeFrom(map);
+            roadPreviewLine = null;
+        }
+        if (roadPreviewPolygonLayer) {
+            roadPreviewPolygonLayer.removeFrom(map);
+            roadPreviewPolygonLayer = null;
+        }
+        roadPreviewPolygon = null;
+    }
 
     // Markers are rebuilt from the segments below, so nothing to pop here.
 

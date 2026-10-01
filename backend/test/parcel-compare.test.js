@@ -104,13 +104,13 @@ describe('what a proposal does to this parcel', () => {
             reparcellization: { polygons: [
                 { geometry: rect(-40, 0, 0, 25), area: 1000, displayName: 'Neighbour' },
                 { geometry: rect(0, 0, 10, 25), area: 250, displayName: 'Owner A' },
-                { geometry: rect(10, 0, 40, 25), area: 750, use: 'street' }
+                { geometry: rect(10, 0, 40, 25), area: 750, displayName: 'Public land' }
             ] } };
         const effect = compare.parcelEffect(plan, PARCEL);
         expect(effect.plots.map(p => p.number)).toEqual([3, 2]);
-        expect(effect.plots[0]).toMatchObject({ number: 3, areaM2: 750, street: true, owner: null });
+        expect(effect.plots[0]).toMatchObject({ number: 3, areaM2: 750, owner: 'Public land' });
         expect(effect.plots[0].overlapM2).toBeCloseTo(750, -1);
-        expect(effect.plots[1]).toMatchObject({ number: 2, areaM2: 250, owner: 'Owner A', street: false });
+        expect(effect.plots[1]).toMatchObject({ number: 2, areaM2: 250, owner: 'Owner A' });
         expect(effect.take.extent).toBe('whole');
         expect(effect.ownership.destination).toBe('mapping');
     });

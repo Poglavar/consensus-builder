@@ -2784,8 +2784,8 @@ textarea.proposal-description-input {
 }
 
 @media (min-width: 769px) {
-    /* Uniform compact grid: up to three equal buttons per row, labels clipped rather than
-       stretching buttons to random widths. */
+    /* Uniform compact grid: up to three equal buttons per row; a long label wraps to a second
+       line rather than being clipped ("Fork with c…") or stretching its button. */
     .proposal-actions-group {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -2799,8 +2799,8 @@ textarea.proposal-description-input {
         padding: 6px 8px;
         overflow: hidden;
         font-size: 12.5px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        line-height: 1.2;
+        white-space: normal;
     }
 }
 

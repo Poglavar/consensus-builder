@@ -1341,6 +1341,7 @@
             "title": "Nacrtaj put",
             "titleTrack": "Nacrtaj prugu",
             "crossSectionButton": "Uredi poprečni presek",
+            "crossSectionHint": "Uredi trake i širine ovog puta. Objavljeni put se uređuje kao tvoja lokalna kopija; objavljena verzija ostaje nepromenjena.",
             "finishButton": "Završi put (F)",
             "cancelButton": "Otkaži put (Esc)",
             "widthLabel": "Širina puta:",
@@ -2884,8 +2885,7 @@
                 "borderPerpendicular": "Normalno na granicu",
                 "centroidalVoronoi": "Centroidalni Voronoi",
                 "manual": "Ručno",
-                "wasserstein": "Wasserstein",
-                "streetPlots": "Parcele uz ulicu"
+                "wasserstein": "Wasserstein"
             },
             "closeAria": "Zatvori",
             "done": "Gotovo",
@@ -2975,13 +2975,7 @@
                 "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigde drugde.",
                 "lineOneAnchor": "Zasad jedno uporište. Pređi još jednu među ili završi na postojećem vrhu.",
                 "lineNoAnchor": "Još nema uporišta. Linija mora preći među ili dodirnuti postojeći vrh na dva mesta da bi nastala nova međa.",
-                "lineNoAnchors": "Linija je dodirnula postojeće međe na manje od dva mesta, pa nema između čega povući među. Pređi dve međe, ili počni na vrhu i pređi jednu.",
-                "streetPlotsFailed": "Na ovoj lokaciji nije moguće rasporediti parcele uz ulicu.",
-                "streetPlotsHint": "Parcele uz ulicu. Okrenite ulicu ka drugoj ivici ili pređite na Ručno za uređivanje parcela.",
-                "noWholePlot": "Parcela od {{width}} m ne staje: lokacija je duž ulice duga samo {{frontage}} m. Izaberite užu parcelu ili okrenite ulicu.",
-                "streetWidthInvalid": "Širina ulice mora biti broj od {{min}} do {{max}} m.",
-                "plotWidthInvalid": "Širina parcele mora biti broj od {{min}} do {{max}} m.",
-                "streetDropped": "Lokacija je preplitka za ulicu od {{width}} m i red parcela, pa je cela podeljena na parcele. Izaberite užu ulicu da biste je dobili."
+                "lineNoAnchors": "Linija je dodirnula postojeće međe na manje od dva mesta, pa nema između čega povući među. Pređi dve međe, ili počni na vrhu i pređi jednu."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodeli vlasnike",
@@ -3037,18 +3031,6 @@
             "noOwnerBalance": "Otvoreno tlo nema vlasnika: ništa se ne duguje niti plaća.",
             "openGroundOwner": "Otvoreno tlo (bez vlasnika)",
             "subdivisionTitle": "Parcelacija",
-            "turnStreet": "Okreni ulicu",
-            "turnStreetTitle": "Provedi ulicu duž sledeće ivice lokacije",
-            "streetSettings": {
-                "streetWidth": "Širina ulice",
-                "plotWidth": "Širina parcele (front)",
-                "unit": "m",
-                "streetWidthTitle": "Širina nove ulice, {{min}}–{{max}} m",
-                "plotWidthTitle": "Širina svake parcele duž ulice, {{min}}–{{max}} m. Front se deli ravnomerno, pa su parcele približno te širine."
-            },
-            "relayConfirm": "Ponovo rasporediti parcele sa novim širinama? Promene koje ste napravili na parcelama biće odbačene.",
-            "relayConfirmOk": "Ponovo rasporedi",
-            "relayConfirmCancel": "Zadrži moje parcele",
             "siteParcelsMissing": "Parcele ispod ove lokacije nije moguće učitati: {{ids}}.",
             "siteUnavailable": "Ovu lokaciju ovde nije moguće parcelisati.",
             "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi predlog: {{names}}. Nacrtajte lokaciju van njega ili najpre poništite primenu tog predloga."
@@ -4083,7 +4065,8 @@
             "parcel": "Parcela",
             "selection": "Izbor",
             "ground": "Tlo",
-            "site": "Lokacija"
+            "site": "Lokacija",
+            "road": "Put"
         }
     },
     "groundMenu": {
@@ -4232,7 +4215,6 @@
             "width": "širine {{width}} m"
         },
         "plots": {
-            "street": "ulica (javno)",
             "line": "Parcela {{number}} ({{area}}, {{who}}): {{overlap}} ove parcele"
         },
         "ownership": {

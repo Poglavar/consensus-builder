@@ -1341,6 +1341,7 @@
             "title": "Nacrtaj cestu",
             "titleTrack": "Nacrtaj prugu",
             "crossSectionButton": "Uredi poprečni presjek",
+            "crossSectionHint": "Uredi trake i širine ove ceste. Objavljena cesta uređuje se kao tvoja lokalna kopija; objavljena verzija ostaje nepromijenjena.",
             "finishButton": "Završi cestu (F)",
             "cancelButton": "Otkaži cestu (Esc)",
             "widthLabel": "Širina ceste:",
@@ -2884,8 +2885,7 @@
                 "borderPerpendicular": "Okomito na granicu",
                 "centroidalVoronoi": "Centroidalni Voronoi",
                 "manual": "Ručno",
-                "wasserstein": "Wasserstein",
-                "streetPlots": "Čestice uz ulicu"
+                "wasserstein": "Wasserstein"
             },
             "closeAria": "Zatvori",
             "done": "Gotovo",
@@ -2975,13 +2975,7 @@
                 "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigdje drugdje.",
                 "lineOneAnchor": "Zasad jedno uporište. Prijeđi još jednu među ili završi na postojećem vrhu.",
                 "lineNoAnchor": "Još nema uporišta. Linija mora prijeći među ili dotaknuti postojeći vrh na dva mjesta da bi nastala nova međa.",
-                "lineNoAnchors": "Linija je dotaknula postojeće međe na manje od dva mjesta, pa nema između čega povući među. Prijeđi dvije međe, ili počni na vrhu i prijeđi jednu.",
-                "streetPlotsFailed": "Na ovoj lokaciji nije moguće rasporediti čestice uz ulicu.",
-                "streetPlotsHint": "Čestice uz ulicu. Okrenite ulicu prema drugom rubu ili prijeđite na Ručno za uređivanje čestica.",
-                "noWholePlot": "Čestica od {{width}} m ne stane: lokacija je uz ulicu duga samo {{frontage}} m. Odaberite užu česticu ili okrenite ulicu.",
-                "streetWidthInvalid": "Širina ulice mora biti broj od {{min}} do {{max}} m.",
-                "plotWidthInvalid": "Širina čestice mora biti broj od {{min}} do {{max}} m.",
-                "streetDropped": "Lokacija je preplitka za ulicu od {{width}} m i red čestica, pa je cijela podijeljena na čestice. Odaberite užu ulicu da biste je dobili."
+                "lineNoAnchors": "Linija je dotaknula postojeće međe na manje od dva mjesta, pa nema između čega povući među. Prijeđi dvije međe, ili počni na vrhu i prijeđi jednu."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
@@ -3037,18 +3031,6 @@
             "noOwnerBalance": "Otvoreno tlo nema vlasnika: ništa se ne duguje niti plaća.",
             "openGroundOwner": "Otvoreno tlo (bez vlasnika)",
             "subdivisionTitle": "Parcelacija",
-            "turnStreet": "Okreni ulicu",
-            "turnStreetTitle": "Provedi ulicu uz sljedeći rub lokacije",
-            "streetSettings": {
-                "streetWidth": "Širina ulice",
-                "plotWidth": "Širina čestice (pročelje)",
-                "unit": "m",
-                "streetWidthTitle": "Širina nove ulice, {{min}}–{{max}} m",
-                "plotWidthTitle": "Širina svake čestice uz ulicu, {{min}}–{{max}} m. Pročelje se dijeli ravnomjerno, pa su čestice približno te širine."
-            },
-            "relayConfirm": "Ponovno rasporediti čestice s novim širinama? Promjene koje ste napravili na česticama bit će odbačene.",
-            "relayConfirmOk": "Ponovno rasporedi",
-            "relayConfirmCancel": "Zadrži moje čestice",
             "siteParcelsMissing": "Čestice ispod ove lokacije nije moguće učitati: {{ids}}.",
             "siteUnavailable": "Ovu lokaciju ovdje nije moguće parcelirati.",
             "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi prijedlog: {{names}}. Nacrtajte lokaciju izvan njega ili najprije poništite primjenu tog prijedloga."
@@ -4083,7 +4065,8 @@
             "parcel": "Čestica",
             "selection": "Odabir",
             "ground": "Tlo",
-            "site": "Lokacija"
+            "site": "Lokacija",
+            "road": "Cesta"
         }
     },
     "groundMenu": {
@@ -4232,7 +4215,6 @@
             "width": "širine {{width}} m"
         },
         "plots": {
-            "street": "ulica (javno)",
             "line": "Nova čestica {{number}} ({{area}}, {{who}}): {{overlap}} ove čestice"
         },
         "ownership": {

@@ -430,6 +430,27 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // A road's cross-section is edited like its nodes are: directly, on the applied road the click
+    // selected (proposals/road-actions-model.js decides when). Unlike Fork it does not clone the
+    // proposal; it goes through updateLocalCorridorGeometry, which on a published/minted road edits
+    // the local copy and detaches its published pointers — the server's and the chain's copies stay
+    // as they were. That is the node handles' rule, not a new one.
+    const roadActionFacts = (proposalKey && window.RoadActions)
+        ? window.RoadActions.factsFor(fullProposal || proposal, { proposalKey: String(proposalKey), applied: appliedState === true })
+        : null;
+    const crossSectionHint = tProposal('panel.road.crossSectionHint', 'Edit this road\'s lanes and widths. A published road is edited as your local copy; the published version stays unchanged.');
+    const crossSectionButtonHtml = (roadActionFacts && window.RoadActionsModel
+        && window.RoadActionsModel.isActionAvailable('crossSection', roadActionFacts))
+        ? `
+        <button type="button" class="btn btn-outline-secondary btn-cross-section"
+            onclick="RoadActions.runAction('crossSection', RoadActions.factsFor(${inlineJsArg(proposalKey)}))"
+            title="${safeAgentText(crossSectionHint)}"
+            aria-label="${safeAgentText(crossSectionHint)}">
+            <i class="fas fa-road"></i> ${tProposal('panel.road.crossSectionButton', 'Edit cross-section')}
+        </button>
+    `
+        : '';
+
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
         ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
@@ -483,8 +504,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         proposalSupportButtonsHtml = `<span class="proposal-support-actions" data-proposal-support-actions="${nftInfo.tokenId}">${renderSupportButtons()}</span>`;
     }
 
-    // The details footer is deliberately view/action-only. Geometry, terms, and ownership are
-    // edited only on the clone produced by Counterpropose / Fork. Contextual extras (Buy, Drive)
+    // The details footer is deliberately view/action-only. Terms and ownership are edited only on
+    // the clone produced by Counterpropose / Fork; the one in-place geometry action is a road's
+    // Edit cross-section (see crossSectionButtonHtml above). Contextual extras (Buy, Drive)
     // append at the end. Deletion lives
     // in the proposal lists (type-aware there) — the panel only offers the reversible Unapply,
     // which means the same thing for local, server, and on-chain proposals.
@@ -494,6 +516,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <div class="proposal-actions proposal-actions-group">
             ${forkButtonHtml}
             ${landForkButtonHtml}
+            ${crossSectionButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${proposalSupportButtonsHtml}
             ${shareButtonHtml}

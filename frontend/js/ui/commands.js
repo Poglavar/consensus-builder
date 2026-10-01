@@ -172,6 +172,30 @@
         }, spec);
     }
 
+    // ---- Selected road (proposals/road-actions.js) ----
+    // ctx.road is the selected proposal's road facts, absent when nothing is selected — its
+    // commands are then unavailable. Which apply is decided by proposals/road-actions-model.js;
+    // the button itself is drawn on the proposal card a road click opens (details-panel.js).
+    function roadActionsModel() {
+        if (typeof globalThis !== 'undefined' && globalThis.RoadActionsModel) return globalThis.RoadActionsModel;
+        if (typeof require === 'function') return require('../proposals/road-actions-model.js');
+        throw new Error('UiCommands: RoadActionsModel is not loaded');
+    }
+
+    function roadCommand(action, spec) {
+        const run = ctx => {
+            const actions = ctx && ctx.global ? ctx.global.RoadActions : undefined;
+            if (!actions || typeof actions.runAction !== 'function') throw new Error('UiCommands: RoadActions.runAction() is not available');
+            return actions.runAction(action, ctx.road);
+        };
+        run.calls = `RoadActions.runAction:${action}`;
+        return Object.assign({
+            id: `road.${action}`, group: 'road', surfaces: [],
+            when: ctx => !!(ctx && ctx.road) && roadActionsModel().isActionAvailable(action, ctx.road),
+            run
+        }, spec);
+    }
+
     // The site tool is idle (not drawing or editing a site) and loaded.
     const siteToolIdle = ctx => {
         const tool = ctx && ctx.global ? ctx.global.SiteTool : undefined;
@@ -358,6 +382,8 @@
         groundCommand('tramStation', { labelKey: 'panel.parcel.build.tramStation', fallbackLabel: 'Tram station', icon: 'fas fa-tram' }),
         groundCommand('undergroundStation', { labelKey: 'panel.parcel.build.undergroundStation', fallbackLabel: 'Metro station', icon: 'fas fa-train-subway' }),
         groundCommand('elevatedStation', { labelKey: 'panel.parcel.build.elevatedStation', fallbackLabel: 'Elevated station', icon: 'fas fa-train' }),
+        // ---- Selected road (the proposal card a road click opens; palette) ----
+        roadCommand('crossSection', { labelKey: 'panel.road.crossSectionButton', fallbackLabel: 'Edit cross-section', icon: 'fas fa-road' }),
         // The site tool from anywhere (the palette): draw a site with nothing selected.
         { id: 'site.draw', group: 'site', surfaces: [], when: siteToolIdle,
             run: ctx => ctx.global.SiteTool.start(),
@@ -602,6 +628,11 @@
             enumerable: true,
             get: () => ('ground' in extra ? extra.ground
                 : (win.GroundMenu && typeof win.GroundMenu.contextFacts === 'function' ? win.GroundMenu.contextFacts() : null))
+        });
+        Object.defineProperty(ctx, 'road', {
+            enumerable: true,
+            get: () => ('road' in extra ? extra.road
+                : (win.RoadActions && typeof win.RoadActions.contextFacts === 'function' ? win.RoadActions.contextFacts() : null))
         });
         Object.defineProperty(ctx, 'selection', {
             enumerable: true,

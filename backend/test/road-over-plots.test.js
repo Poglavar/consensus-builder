@@ -25,6 +25,7 @@ const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabri
 const finalize = require('../../frontend/js/proposals/apply/finalize.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 const subdivision = require('../../frontend/js/proposals/subdivision.js');
+const sitePlots = require('../../frontend/js/proposals/site-plots.js');
 
 // A small grid near Šibenik, in units of 1e-4 degree (≈ 8 m east, 11 m north).
 const LON = 15.876;
@@ -177,20 +178,22 @@ const liveIds = fabric => fabric.list().map(feature => feature.properties.parcel
 const area = value => turf.area(value.type === 'Feature' ? value : turf.feature(value));
 const multi = polygon => ({ type: 'MultiPolygon', coordinates: [polygon.coordinates] });
 
-// The plan the editor saves for a subdivision: the street layout over the site, plots by ground.
+// The plan the editor saves for a subdivision: plots cut across the site, each given to the
+// contributor whose ground it stands on, and the last one assigned to public land by hand (the
+// way a public strip is made: a plot whose owner is set to the City).
 function subdivisionPlan(site, { pool, shares }) {
-    const layout = subdivision.streetPlotsLayout(site, { turf });
+    const cut = sitePlots.cutPlots(site, { frontageEdgeIndex: 0, plotWidthM: 20, turf }).map(feature => feature.geometry);
     const plot = (geometry, ownerKey, displayName) => ({
-        ownerKey, displayName, percent: null, color: '#cccccc', source: 'street-plots', area: area(geometry), geometry,
+        ownerKey, displayName, percent: null, color: '#cccccc', source: 'sweep-line', area: area(geometry), geometry,
         owners: [{ ownerKey, displayName, color: '#cccccc', share: 1 }]
     });
-    const polygons = layout.plots.map(geometry => {
+    const polygons = cut.slice(0, -1).map(geometry => {
         const key = subdivision.ownerKeyByGround(geometry, pool, shares, { turf }) || subdivision.OPEN_GROUND_OWNER_KEY;
         const share = shares.find(entry => entry.ownerKey === key);
         return plot(geometry, key, share ? share.displayName : 'Open ground');
     });
-    if (layout.street) polygons.push({ ...plot(layout.street, 'public-land', 'Public land'), use: 'street' });
-    return { algorithm: 'street-plots', poolSource: 'site', poolGeometry: site, openGroundM2: pool.openGroundM2, polygons };
+    polygons.push(plot(cut[cut.length - 1], 'public-land', 'Public land'));
+    return { algorithm: 'sweep-line', poolSource: 'site', poolGeometry: site, openGroundM2: pool.openGroundM2, polygons };
 }
 
 function subdivisionRecord(id, site, { declared = [], binding, parcels = [], applied = false } = {}) {
@@ -222,10 +225,10 @@ function installOwnershipSpies() {
     return spies;
 }
 
-const BARE_SITE = rect(0, 0, 12, 6); // ≈ 97 m × 67 m: plots on both sides of a street
+const BARE_SITE = rect(0, 0, 12, 6); // ≈ 97 m × 67 m: five plots, the last one public
 const HR1 = parcel('HR-330264-1', rect(0, 0, 6, 6));
 const MIXED_SITE = rect(3, 0, 15, 6); // half over HR-1, half over the hole beside it
-// A road across the street and the plots on both sides of it (≈ 8 m wide, north–south).
+// A road across the site, north–south through a plot (≈ 8 m wide).
 const CROSS_ROAD = rect(7.5, -3, 8.5, 9);
 const overlap = (a, b) => {
     const hit = turf.intersect(turf.feature(a.geometry || a), turf.feature(b.geometry || b));
@@ -271,7 +274,7 @@ describe('a road built through subdivision plots on open ground', () => {
         expect(manager.getLastApplyFailure('road')).toBeNull();
         expect(manager.getLastApplyFailure('sub')).toBeNull();
         const cut = fabric.list();
-        // Plots on both sides and the street were split where the road runs through them.
+        // The plot the road runs through was split where it crosses.
         expect(cut.length).toBeGreaterThan(plotCount);
         expectPartition(cut, CROSS_ROAD, BARE_SITE);
         const hash = await siteHash.siteHashHex(record.site);

@@ -24,6 +24,7 @@ const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabri
 const finalize = require('../../frontend/js/proposals/apply/finalize.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 const subdivision = require('../../frontend/js/proposals/subdivision.js');
+const sitePlots = require('../../frontend/js/proposals/site-plots.js');
 
 // A small grid near Šibenik, in units of 1e-4 degree (≈ 8 m east, 11 m north).
 const LON = 15.876;
@@ -176,20 +177,22 @@ const liveIds = fabric => fabric.list().map(feature => feature.properties.parcel
 const area = value => turf.area(value.type === 'Feature' ? value : turf.feature(value));
 const multi = polygon => ({ type: 'MultiPolygon', coordinates: [polygon.coordinates] });
 
-// The plan the editor saves for a subdivision: the street layout over the site, plots by ground.
+// The plan the editor saves for a subdivision: plots cut across the site, each given to the
+// contributor whose ground it stands on, and the last one assigned to public land by hand (the
+// way a public strip is made: a plot whose owner is set to the City).
 function subdivisionPlan(site, { pool, shares }) {
-    const layout = subdivision.streetPlotsLayout(site, { turf });
+    const cut = sitePlots.cutPlots(site, { frontageEdgeIndex: 0, plotWidthM: 20, turf }).map(feature => feature.geometry);
     const plot = (geometry, ownerKey, displayName) => ({
-        ownerKey, displayName, percent: null, color: '#cccccc', source: 'street-plots', area: area(geometry), geometry,
+        ownerKey, displayName, percent: null, color: '#cccccc', source: 'sweep-line', area: area(geometry), geometry,
         owners: [{ ownerKey, displayName, color: '#cccccc', share: 1 }]
     });
-    const polygons = layout.plots.map(geometry => {
+    const polygons = cut.slice(0, -1).map(geometry => {
         const key = subdivision.ownerKeyByGround(geometry, pool, shares, { turf }) || subdivision.OPEN_GROUND_OWNER_KEY;
         const share = shares.find(entry => entry.ownerKey === key);
         return plot(geometry, key, share ? share.displayName : 'Open ground');
     });
-    if (layout.street) polygons.push({ ...plot(layout.street, 'public-land', 'Public land'), use: 'street' });
-    return { algorithm: 'street-plots', poolSource: 'site', poolGeometry: site, openGroundM2: pool.openGroundM2, polygons };
+    polygons.push(plot(cut[cut.length - 1], 'public-land', 'Public land'));
+    return { algorithm: 'sweep-line', poolSource: 'site', poolGeometry: site, openGroundM2: pool.openGroundM2, polygons };
 }
 
 function subdivisionRecord(id, site, { declared = [], binding, parcels = [], applied = false } = {}) {
@@ -221,12 +224,12 @@ function installOwnershipSpies() {
     return spies;
 }
 
-const BARE_SITE = rect(0, 0, 12, 6); // ≈ 108 m × 67 m: a street through the middle
+const BARE_SITE = rect(0, 0, 12, 6); // ≈ 108 m × 67 m: five plots, the last one public
 const HR1 = parcel('HR-330264-1', rect(0, 0, 6, 6));
 const MIXED_SITE = rect(3, 0, 15, 6); // half over HR-1, half over the hole beside it
 
 describe('subdivision on bare ground (empty binding)', () => {
-    it('forms rootless plots and a street on the open-ground host, and unapply/replay restore exactly', async () => {
+    it('forms rootless plots and a public plot on the open-ground host, and unapply/replay restore exactly', async () => {
         const record = subdivisionRecord('sub-bare', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
         const { manager, fabric } = await harness({ records: [record] });
         const spies = installOwnershipSpies();
@@ -243,9 +246,9 @@ describe('subdivision on bare ground (empty binding)', () => {
             expect(piece.properties.parcelId).toMatch(/^sub-bare-\d+$/);
             expect(openGround.isGroundPiece(piece)).toBe(true);
         });
-        // The plots and the street are the whole site; nothing was minted for the host's rest.
+        // The plots are the whole site; nothing was minted for the host's rest.
         expect(pieces.reduce((sum, piece) => sum + area(piece), 0)).toBeCloseTo(area(BARE_SITE), 0);
-        // Open ground stays ownerless; the street goes to the City.
+        // Open ground stays ownerless; the public plot goes to the City.
         expect(spies.getOrCreateAgentForRecipient).not.toHaveBeenCalled();
         expect(spies.transferParcelOwnership.mock.calls.map(call => call[2])).toEqual(['city']);
         pieces.filter(piece => piece.properties.ownerKey === subdivision.OPEN_GROUND_OWNER_KEY)
@@ -265,7 +268,7 @@ describe('subdivision on bare ground (empty binding)', () => {
 
     it('mints nothing for open ground its plots leave uncovered (open ground has no remainder)', async () => {
         const record = subdivisionRecord('sub-part', BARE_SITE, { binding: { parcels: [], coverage: 'none' } });
-        // Keep only the plots on one side of the street: half the site stays open ground.
+        // Keep only the first three plots: the rest of the site stays open ground.
         record.reparcellization.polygons = record.reparcellization.polygons.slice(0, 3);
         const planned = record.reparcellization.polygons.reduce((sum, polygon) => sum + area(polygon.geometry), 0);
         const { manager, fabric } = await harness({ records: [record] });
@@ -322,7 +325,7 @@ describe('subdivision of a site partly over parcels (mixed pool)', () => {
         onGround.forEach(piece => expect(piece.properties.groundIds).toEqual([`ground:${hash}`]));
         plots.filter(piece => !piece.properties.cadastreParcelIds.length)
             .forEach(piece => expect(piece.properties.parcelId).toMatch(/^sub-mixed-\d+$/));
-        // Spanning plots (the street at least crosses the parcel edge) carry both.
+        // Spanning plots (one crosses the parcel edge) carry both.
         expect(plots.some(piece => piece.properties.cadastreParcelIds.length && piece.properties.groundIds)).toBe(true);
         // HR-1's part outside the site is its remainder, with its owner; the open ground has none.
         const rest = pieces.filter(piece => !plots.includes(piece));

@@ -29,8 +29,25 @@ describe('applyRoadUndo', () => {
             segmentIds: ['a', 'b'],
             activeIndex: 1, hasStarted: true, strokeBaseCount: 1
         };
-        // active segment [pt(5,5)] has length 1 → can't undo (needs >1)
-        expect(applyRoadUndo(state).undone).toBe(false);
+        // A stray first click (pt(5,5)) must be undoable: the stub goes, its id with it, pen up.
+        const r = applyRoadUndo(state);
+        expect(r.undone).toBe(true);
+        expect(r.removedEdges).toEqual([]);
+        expect(state.segments).toEqual([[pt(0, 0), pt(0, 1)]]);
+        expect(state.segmentIds).toEqual(['a']);
+        expect(r.hasStarted).toBe(false);
+        expect(r.activeIndex).toBe(-1);
+    });
+
+    it('undoes the only point of a fresh drawing, leaving it empty', () => {
+        const state = { segments: [[pt(1, 1)]], segmentIds: ['a'], activeIndex: 0, hasStarted: true, strokeBaseCount: 0 };
+        const r = applyRoadUndo(state);
+        expect(r.undone).toBe(true);
+        expect(state.segments).toEqual([]);
+        expect(state.segmentIds).toEqual([]);
+        expect(r.hasStarted).toBe(false);
+        // …and a further undo is a no-op.
+        expect(applyRoadUndo({ segments: state.segments, segmentIds: state.segmentIds, activeIndex: -1, hasStarted: false, strokeBaseCount: 0 }).undone).toBe(false);
     });
 
     it('empties a 2-point active segment down to nothing and removes it in lockstep', () => {
@@ -60,7 +77,7 @@ describe('applyRoadUndo', () => {
 
     it('is a no-op with nothing to undo', () => {
         expect(applyRoadUndo({ segments: [], segmentIds: [], activeIndex: -1, hasStarted: false, strokeBaseCount: 0 }).undone).toBe(false);
-        expect(applyRoadUndo({ segments: [[pt(0, 0)]], segmentIds: ['a'], activeIndex: -1, hasStarted: false, strokeBaseCount: 0 }).undone).toBe(false);
+        expect(applyRoadUndo({ segments: [[]], segmentIds: ['a'], activeIndex: -1, hasStarted: false, strokeBaseCount: 0 }).undone).toBe(false);
     });
 });
 

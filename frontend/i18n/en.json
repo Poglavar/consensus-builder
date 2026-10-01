@@ -1311,6 +1311,7 @@
             "title": "Draw road",
             "titleTrack": "Draw track",
             "crossSectionButton": "Edit cross-section",
+            "crossSectionHint": "Edit this road's lanes and widths. A published road is edited as your local copy; the published version stays unchanged.",
             "finishButton": "Finish Road (F)",
             "cancelButton": "Cancel Road (Esc)",
             "widthLabel": "Road Width:",
@@ -2849,8 +2850,7 @@
                 "sweepLine": "Sweep line algorithm",
                 "centroidalVoronoi": "Centroidal Voronoi",
                 "wasserstein": "Wasserstein",
-                "manual": "Manual",
-                "streetPlots": "Plots along a street"
+                "manual": "Manual"
             },
             "algorithmTitle": "Land readjustment type",
             "closeAria": "Close",
@@ -2952,13 +2952,7 @@
                 "lineAnchored": "Anchored in {{count}} places — the line will be drawn between the outermost two, and nowhere else.",
                 "lineOneAnchor": "One anchor so far. Cross another boundary, or finish on an existing corner.",
                 "lineNoAnchor": "No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.",
-                "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one.",
-                "streetPlotsFailed": "Could not lay out plots along a street on this site.",
-                "streetPlotsHint": "Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.",
-                "noWholePlot": "A {{width}} m plot does not fit: the site is only {{frontage}} m along the street. Choose a narrower plot or turn the street.",
-                "streetWidthInvalid": "Street width must be a number from {{min}} to {{max}} m.",
-                "plotWidthInvalid": "Plot width must be a number from {{min}} to {{max}} m.",
-                "streetDropped": "The site is too shallow for a {{width}} m street and a row of plots, so it is all plots. Choose a narrower street to get one."
+                "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one."
             },
             "parcelCount": {
                 "one": "{{count}} parcel",
@@ -3002,18 +2996,6 @@
             "noOwnerBalance": "Open ground has no owner: nothing is owed or paid.",
             "openGroundOwner": "Open ground (no owner)",
             "subdivisionTitle": "Subdivision",
-            "turnStreet": "Turn the street",
-            "turnStreetTitle": "Run the street along the next edge of the site",
-            "streetSettings": {
-                "streetWidth": "Street width",
-                "plotWidth": "Plot width (frontage)",
-                "unit": "m",
-                "streetWidthTitle": "Width of the new street, {{min}}–{{max}} m",
-                "plotWidthTitle": "Width of each plot along the street, {{min}}–{{max}} m. The frontage is split evenly, so plots come out close to this width."
-            },
-            "relayConfirm": "Re-lay the plots with the new widths? The changes you made to the plots will be discarded.",
-            "relayConfirmOk": "Re-lay plots",
-            "relayConfirmCancel": "Keep my plots",
             "siteParcelsMissing": "The parcels under this site could not be loaded: {{ids}}.",
             "siteUnavailable": "This site cannot be subdivided here.",
             "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first."
@@ -4045,7 +4027,8 @@
             "parcel": "Parcel",
             "selection": "Selection",
             "ground": "Ground",
-            "site": "Site"
+            "site": "Site",
+            "road": "Road"
         }
     },
     "groundMenu": {
@@ -4194,7 +4177,6 @@
             "width": "{{width}} m wide"
         },
         "plots": {
-            "street": "street (public)",
             "line": "Plot {{number}} ({{area}}, {{who}}): {{overlap}} of this parcel"
         },
         "ownership": {

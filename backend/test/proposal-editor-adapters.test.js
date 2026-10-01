@@ -468,15 +468,15 @@ describe('reparcellization adapter', () => {
 // parcels' part and the open ground. Its plots must tile the site, whatever pool the plan carries,
 // and its editor opens on the site with the binding's parcels, never on a live selection.
 describe('subdivision (readjustment pooled from a site)', () => {
-    const subdivision = require('../../frontend/js/proposals/subdivision.js');
+    const sitePlots = require('../../frontend/js/proposals/site-plots.js');
     const rect = (x0, y0, x1, y1) => ({
         type: 'Polygon',
         coordinates: [[[15.876 + x0 * 1e-4, 43.7537 + y0 * 1e-4], [15.876 + x1 * 1e-4, 43.7537 + y0 * 1e-4],
             [15.876 + x1 * 1e-4, 43.7537 + y1 * 1e-4], [15.876 + x0 * 1e-4, 43.7537 + y1 * 1e-4], [15.876 + x0 * 1e-4, 43.7537 + y0 * 1e-4]]]
     });
     const site = rect(0, 0, 12, 6);
-    const plot = geometry => ({ geometry, ownerKey: 'open-ground', owners: [{ ownerKey: 'open-ground', share: 1 }], source: 'street-plots' });
-    const layout = subdivision.streetPlotsLayout(site, { turf: globalThis.turf });
+    const plot = geometry => ({ geometry, ownerKey: 'open-ground', owners: [{ ownerKey: 'open-ground', share: 1 }], source: 'sweep-line' });
+    const plots = sitePlots.cutPlots(site, { plotWidthM: 20, turf: globalThis.turf }).map(feature => feature.geometry);
     const record = (polygons, poolGeometry = site) => ({
         proposalId: 'sub-1',
         city: 'sibenik',
@@ -485,18 +485,18 @@ describe('subdivision (readjustment pooled from a site)', () => {
         cadastreParcelIds: ['HR-330264-1'],
         site: { type: 'MultiPolygon', coordinates: [site.coordinates] },
         binding: { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', source: 'server' },
-        reparcellization: { algorithm: 'street-plots', poolSource: 'site', poolGeometry, polygons }
+        reparcellization: { algorithm: 'sweep-line', poolSource: 'site', poolGeometry, polygons }
     });
 
-    it('accepts plots and a street that tile the site exactly', () => {
-        const draft = draftFor(reparcellizationAdapter, record([...layout.plots, layout.street].map(plot)));
+    it('accepts plots that tile the site exactly', () => {
+        const draft = draftFor(reparcellizationAdapter, record(plots.map(plot)));
         expect(reparcellizationAdapter.validate(draft)).toMatchObject({ valid: true, errors: [] });
     });
 
     it('refuses plots that leave the open part of the site uncovered, even when the plan\'s pool agrees with them', () => {
         // Only the plots over the parcel half: the plan's own pool is that half, the site is not.
         const parcelHalf = rect(0, 0, 6, 6);
-        const halfPlots = layout.plots.concat([layout.street])
+        const halfPlots = plots
             .map(geometry => turf.intersect(turf.feature(geometry), turf.feature(parcelHalf)))
             .filter(Boolean).map(feature => plot(feature.geometry));
         const draft = draftFor(reparcellizationAdapter, record(halfPlots, parcelHalf));
@@ -510,13 +510,13 @@ describe('subdivision (readjustment pooled from a site)', () => {
         const calls = [];
         globalThis.openReparcellizationModal = async options => { calls.push(options); return true; };
         try {
-            const draft = draftFor(reparcellizationAdapter, record([...layout.plots, layout.street].map(plot)));
+            const draft = draftFor(reparcellizationAdapter, record(plots.map(plot)));
             draft.fields.binding = { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial' };
             await expect(reparcellizationAdapter.openDesignEditor(draft)).resolves.toBe(true);
             expect(calls).toHaveLength(1);
             expect(calls[0].sitePool.boundParcelIds).toEqual(['HR-330264-1']);
             expect(calls[0].sitePool.site).toEqual({ type: 'MultiPolygon', coordinates: [site.coordinates] });
-            expect(calls[0].algorithm).toBe('street-plots');
+            expect(calls[0].algorithm).toBe('sweep-line');
             expect(globalThis.pendingReparcellizationPlan.poolGeometry).toEqual(calls[0].sitePool.site);
         } finally {
             delete globalThis.openReparcellizationModal;

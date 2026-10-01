@@ -1247,7 +1247,7 @@
                 }
                 if (typeof global.openReparcellizationModal !== 'function') return false;
                 return global.openReparcellizationModal({
-                    algorithm: plan.algorithm || 'street-plots',
+                    algorithm: plan.algorithm || 'sweep-line',
                     ownershipMode: 'multiple',
                     initialPolygons: clone(plan.polygons || []),
                     poolGeometry: clone(site),

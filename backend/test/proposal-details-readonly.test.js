@@ -15,9 +15,16 @@ describe('proposal details authoring contract', () => {
         expect(detailsSource).not.toContain('class="btn btn-primary btn-propose-proposal"');
     });
 
-    it('does not expose direct geometry editors from the read-only details footer', () => {
-        expect(detailsSource).not.toContain('class="btn btn-outline-secondary btn-cross-section"');
+    it('does not expose the generic geometry editor from the read-only details footer', () => {
         expect(detailsSource).not.toContain('class="btn btn-outline-secondary btn-edit-geometry"');
+    });
+
+    // The one in-place geometry action is a road's cross-section — the same rule as its node
+    // handles — and only where proposals/road-actions-model.js says it applies.
+    it('gates the road cross-section button on RoadActionsModel and runs it through RoadActions', () => {
+        expect(detailsSource).toContain('class="btn btn-outline-secondary btn-cross-section"');
+        expect(detailsSource).toContain("RoadActionsModel.isActionAvailable('crossSection', roadActionFacts)");
+        expect(detailsSource).toContain("onclick=\"RoadActions.runAction('crossSection', RoadActions.factsFor(${inlineJsArg(proposalKey)}))\"");
     });
 
     it('shows one evidence-backed possible-future timeline in read-only Details', () => {

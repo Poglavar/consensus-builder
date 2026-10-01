@@ -276,13 +276,27 @@
         return (index + delta + count) % count;
     }
 
+    // The item a bare Enter (nothing highlighted) runs: the first real result, never a trailing
+    // helper row (the 'hint' that opens the command palette). -1 when there is none.
+    function defaultEnterIndex(items) {
+        return (Array.isArray(items) ? items : []).findIndex(item => item && item.kind !== 'hint');
+    }
+
     // What a key does in an open result list: { type: 'move', index } | { type: 'run', index }
-    // | { type: 'close' } | null (not ours — let the input have it).
-    function keyAction(key, index, count) {
+    // | { type: 'wait' } | { type: 'close' } | null (not ours — let the input have it).
+    // options (map search only): defaultIndex — what a bare Enter runs (defaultEnterIndex);
+    // pending — remote results are still on their way, so a bare Enter waits for them instead of
+    // running whatever happens to be listed already ("Ilica 20" + quick Enter opened the palette).
+    function keyAction(key, index, count, options = {}) {
         switch (key) {
             case 'ArrowDown': return { type: 'move', index: moveSelection(index, 1, count) };
             case 'ArrowUp': return { type: 'move', index: moveSelection(index, -1, count) };
-            case 'Enter': return count ? { type: 'run', index: index >= 0 && index < count ? index : 0 } : null;
+            case 'Enter': {
+                if (count && index >= 0 && index < count) return { type: 'run', index };
+                if (options.pending) return { type: 'wait' };
+                const fallback = Number.isInteger(options.defaultIndex) ? options.defaultIndex : 0;
+                return fallback >= 0 && fallback < count ? { type: 'run', index: fallback } : null;
+            }
             case 'Escape': return { type: 'close' };
             default: return null;
         }
@@ -312,6 +326,7 @@
         orderGroups,
         selectableItems,
         moveSelection,
+        defaultEnterIndex,
         keyAction
     };
 });
