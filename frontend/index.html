@@ -330,26 +330,10 @@
                 title="Activity" data-i18n-key="mapShell.activity" data-i18n-attr="title">
                 <i class="fas fa-wave-square" aria-hidden="true"></i>
                 <span class="map-shell-button-label" data-i18n-key="mapShell.activity">Activity</span>
-            </button>
-        </div>
-
-        <!-- Bottom-left: the Game pill. Collapsed it shows date · turn · play/pause; the toggle
-             expands it into the game sheet (#gameCheckbox, interval, progress, New game, log, agents). -->
-        <div id="game-pill" class="game-pill" data-sheet-anchor>
-            <button type="button" id="game-pill-toggle" class="game-pill-toggle" data-sheet-target="game-sheet"
-                aria-controls="game-sheet" aria-expanded="false" title="Game controls"
-                data-i18n-key="mapShell.game.controls" data-i18n-attr="title">
-                <i class="fas fa-gamepad" aria-hidden="true"></i>
-                <span class="game-pill-metrics">
-                    <span class="metric-value" id="game-datetime">2024-01-01</span>
-                    <span class="game-pill-separator" aria-hidden="true">·</span>
-                    <span class="game-pill-turn-label" data-i18n-key="mapShell.game.turn">Turn</span>
-                    <span class="metric-value" id="game-turns">0</span>
-                </span>
-            </button>
-            <button id="game-play-pause-btn" class="btn btn-success game-pill-play" onclick="toggleGamePlayPause()">
-                <i class="fas fa-play" aria-hidden="true"></i>
-                <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
+                <!-- Shown only while the in-UI simulation runs (js/ui/simulation-indicator.js) -->
+                <span id="activity-running-dot" class="map-shell-running-dot" role="img"
+                    aria-label="Simulation running" title="Simulation running"
+                    data-i18n-key="mapShell.simulation.running" data-i18n-attr="aria-label,title" hidden></span>
             </button>
         </div>
 
@@ -925,58 +909,7 @@
             </div>
         </section>
 
-        <!-- Game sheet: the Game pill expanded. The whole sheet is the game section. -->
-        <section id="game-sheet" class="map-sheet accordion-section" data-section="game" role="dialog"
-            aria-labelledby="game-sheet-title" hidden>
-            <div class="map-sheet-header">
-                <h2 id="game-sheet-title" class="map-sheet-title">
-                    <span class="accordion-title-text" data-section-title="game"
-                        data-i18n-key="sidebar.game.title">Game</span>
-                </h2>
-                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
-                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
-            </div>
-            <div class="map-sheet-body sheet-section-body">
-                <label class="checkbox-group">
-                    <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
-                    <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
-                </label>
-
-                <div class="slider-group">
-                    <label for="turn-interval-slider">
-                        <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
-                        <span id="turn-interval-value">30</span>
-                    </label>
-                    <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
-                        onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
-                </div>
-
-                <div class="turn-progress">
-                    <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
-                    <div class="turn-progress-bar">
-                        <div id="turn-progress-fill" class="turn-progress-fill"></div>
-                    </div>
-                    <div class="turn-progress-time" id="turn-progress-time">--</div>
-                </div>
-
-                <div class="btn-group game-actions">
-                    <button class="btn btn-warning" onclick="resetGameState(true)">
-                        <i class="fas fa-rotate-left" aria-hidden="true"></i>
-                        <span data-i18n-key="sidebar.game.newGame">New Game</span>
-                    </button>
-                    <button id="show-game-log-btn" class="btn btn-info" data-section-independent="true" onclick="showGameLogDialog()">
-                        <i class="fas fa-wave-square" aria-hidden="true"></i>
-                        <span data-i18n-key="sidebar.game.showGameLog">Show Game Log</span>
-                    </button>
-                    <button id="show-agents-btn" class="btn btn-info" data-section-independent="true" onclick="showGameLogDialog({ view: 'actors' })">
-                        <i class="fas fa-robot" aria-hidden="true"></i>
-                        <span data-i18n-key="sidebar.game.showAgents">Show Agents</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Activity sheet: the status line and its log, and the way into the activity explorer -->
+        <!-- Activity sheet: the way into the activity explorer, the simulation, and the status line and its log -->
         <section id="activity-sheet" class="map-sheet" role="dialog" aria-labelledby="activity-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="activity-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.activity">Activity</h2>
@@ -993,6 +926,64 @@
                         <i class="fas fa-robot" aria-hidden="true"></i>
                         <span data-i18n-key="sidebar.game.showAgents">Show Agents</span>
                     </button>
+                </div>
+                <!-- Simulation: the in-UI game, a secondary feature (the agents that matter run in the
+                     background and show up in the explorer). Play/pause with date · turn, and its
+                     settings folded away. The wrapper is the game section: city configs hide it
+                     (disabledSections 'game'), #gameCheckbox gates the settings, game.js titles it. -->
+                <div class="accordion-section activity-simulation" data-section="game">
+                    <h3 class="sheet-section-title">
+                        <span class="accordion-title-text" data-section-title="game"
+                            data-i18n-key="mapShell.simulation.title">Simulation</span>
+                    </h3>
+                    <div class="activity-simulation-row">
+                        <button type="button" id="game-play-pause-btn" class="activity-simulation-play"
+                            aria-pressed="false" onclick="toggleGamePlayPause()">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
+                        </button>
+                        <span class="activity-simulation-metrics">
+                            <span id="game-datetime">2024-01-01</span>
+                            <span aria-hidden="true">·</span>
+                            <span data-i18n-key="mapShell.simulation.turn">Turn</span>
+                            <span id="game-turns">0</span>
+                        </span>
+                    </div>
+                    <details class="activity-simulation-settings">
+                        <summary data-i18n-key="mapShell.simulation.settings">Simulation settings</summary>
+                        <!-- Gated by #gameCheckbox (greyed while game mode is off). The play row above and
+                             this summary stay live: Play turns game mode on by itself. -->
+                        <div class="sheet-section-body">
+                            <label class="checkbox-group">
+                                <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
+                                <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
+                            </label>
+
+                            <div class="slider-group">
+                                <label for="turn-interval-slider">
+                                    <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
+                                    <span id="turn-interval-value">30</span>
+                                </label>
+                                <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
+                                    onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
+                            </div>
+
+                            <div class="turn-progress">
+                                <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
+                                <div class="turn-progress-bar">
+                                    <div id="turn-progress-fill" class="turn-progress-fill"></div>
+                                </div>
+                                <div class="turn-progress-time" id="turn-progress-time">--</div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button class="btn btn-warning" onclick="resetGameState(true)">
+                                    <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                                    <span data-i18n-key="sidebar.game.newGame">New Game</span>
+                                </button>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 <!-- Status bar: click to expand the recent log; Copy all / Open log appear once expanded -->
                 <div class="status-bar">
@@ -1632,6 +1623,7 @@
             'js/map-controls.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',
+            'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js',
             'js/ui/parcel-menu.js',
             'js/ui/ground-menu-model.js',

@@ -26,7 +26,7 @@ const STACK = [
 ];
 
 // Every `selector { body }` pair that declares a top offset for the given button id. Slots are top
-// offsets since the strip moved under the search box (the bottom-left corner is the Game pill's).
+// offsets since the strip moved under the search box (the bottom-left corner is the scale bar's).
 function topDeclarationsFor(id) {
     const found = [];
     for (const [file, css] of Object.entries(SOURCES)) {

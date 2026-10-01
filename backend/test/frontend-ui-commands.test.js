@@ -24,7 +24,7 @@ const tEn = key => lookup(dictionaries.en, key) ?? key;
 
 const commands = UiCommands.listCommands();
 
-// The markup of the floating shell (buttons, Game pill, sheets).
+// The markup of the floating shell (buttons and sheets).
 const shellStart = indexHtml.indexOf('<!-- ===== Floating map shell');
 const shellEnd = indexHtml.indexOf('<!-- ===== End floating map shell ===== -->');
 const shellHtml = indexHtml.slice(shellStart, shellEnd);
@@ -43,9 +43,6 @@ const NOT_COMMANDS = {
     'dev-badge': 'indicator, not an action',
     'debug-badge': 'indicator, not an action',
     'version-badge': 'indicator, not an action',
-    'game-pill-toggle': 'opens the game sheet (a shell affordance, not a capability)',
-    'activity-explorer-button': 'same action as game.log',
-    'activity-agents-button': 'same action as game.agents',
     ...Object.fromEntries([0, 1, 2, 3, 4, 5].flatMap(i => [
         [`legend-min-${i}`, 'road legend threshold input'], [`legend-max-${i}`, 'road legend threshold input']
     ]))
@@ -130,6 +127,16 @@ describe('rehoused sidebar controls', () => {
             expect(shellHtml, section).toMatch(new RegExp(`class="[^"]*accordion-section[^"]*"[^>]*data-section="${section}"`));
         }
         expect(shellHtml).toMatch(/data-section="game"[\s\S]*data-section-title="game"/);
+        // The simulation is a section of the Activity sheet, after the explorer buttons and before
+        // the status line; every one of its controls sits inside that game section.
+        const activity = shellHtml.slice(shellHtml.indexOf('id="activity-sheet"'), shellHtml.indexOf('id="settings-sheet"'));
+        const simulation = activity.indexOf('data-section="game"');
+        expect(simulation).toBeGreaterThan(activity.indexOf('id="activity-agents-button"'));
+        expect(simulation).toBeLessThan(activity.indexOf('id="status"'));
+        for (const id of ['game-play-pause-btn', 'game-datetime', 'game-turns', 'gameCheckbox', 'turn-interval-slider', 'turn-progress-fill']) {
+            expect(activity.indexOf(`id="${id}"`), id).toBeGreaterThan(simulation);
+        }
+        expect(shellHtml).not.toMatch(/id="game-pill|id="game-sheet"|id="show-game-log-btn"|id="show-agents-btn"/);
         expect(shellHtml).toMatch(/data-section-title="parcels"/);
     });
 
@@ -170,6 +177,20 @@ describe('availability and search', () => {
         const withoutMeasure = UiCommands.commandsFor('tools', fakeCtx(['measureButton'])).map(c => c.id);
         expect(withoutMeasure).not.toContain('tools.measure');
         expect(withoutMeasure).toContain('tools.pinpoint');
+    });
+
+    it('puts the explorer and the simulation on the Activity sheet surface, and in the palette', () => {
+        const activity = UiCommands.commandsFor('activity', fakeCtx()).map(c => c.id);
+        expect(activity).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents',
+            'game.enable', 'game.playPause', 'game.interval', 'game.new']));
+        expect(UiCommands.SURFACES).not.toContain('game');
+        const palette = UiCommands.commandsFor('palette', fakeCtx()).map(c => c.id);
+        expect(palette).toEqual(expect.arrayContaining(['activity.explorer', 'game.playPause']));
+        // A city that hides the game section loses the simulation, not the explorer.
+        const noGame = { ...fakeCtx(), isSectionHidden: section => section === 'game' };
+        const withoutGame = UiCommands.commandsFor('activity', noGame).map(c => c.id);
+        expect(withoutGame).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents']));
+        expect(withoutGame.filter(id => id.startsWith('game.'))).toEqual([]);
     });
 
     it('treats a throwing when() as unavailable instead of breaking the surface', () => {
@@ -220,7 +241,7 @@ describe('running commands', () => {
         const showGameLogDialog = vi.fn();
         const ctx = { global: { showAllProposalsModal, showGameLogDialog } };
         UiCommands.runCommand('proposals.list', ctx);
-        UiCommands.runCommand('game.agents', ctx);
+        UiCommands.runCommand('activity.agents', ctx);
         expect(showAllProposalsModal).toHaveBeenCalledOnce();
         expect(showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
     });
@@ -246,9 +267,9 @@ describe('the floating shell', () => {
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => /class="map-sheet\b/.test(tag)).map(tag => attr(tag, 'id')));
-        expect([...sheets].sort()).toEqual(['activity-sheet', 'game-sheet', 'layers-sheet', 'proposals-sheet', 'settings-sheet', 'tools-sheet']);
+        expect([...sheets].sort()).toEqual(['activity-sheet', 'layers-sheet', 'proposals-sheet', 'settings-sheet', 'tools-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
-        expect(triggers.length).toBe(6);
+        expect(triggers.length).toBe(5);
         for (const tag of triggers) {
             const target = attr(tag, 'data-sheet-target');
             expect(sheets.has(target), target).toBe(true);

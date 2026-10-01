@@ -451,8 +451,6 @@
             "baseMapLabel": "Podloga mape:"
         },
         "game": {
-            "title": "Igra",
-            "titlePaused": "Igra (pauzirano)",
             "mintedProposals": {
                 "title": "Kovani predlozi",
                 "loading": "Učitavam kovane predloge...",
@@ -485,8 +483,6 @@
             "play": "Pokreni",
             "pause": "Pauza",
             "newGame": "Nova igra",
-            "showGameLog": "Aktivnost",
-            "showGameLogCount": "Aktivnost ({{count}})",
             "showAgents": "Akteri",
             "showAgentsCount": "Prikaži agente ({{count}})"
         },
@@ -3893,9 +3889,13 @@
         "proposals": "Predlozi",
         "tools": "Alati",
         "activity": "Aktivnost",
+        "activityExplorerCount": "Otvori pregled aktivnosti ({{count}})",
         "proposalsCount": "Predlozi ({{count}})",
-        "game": {
-            "controls": "Upravljanje igrom",
+        "simulation": {
+            "title": "Simulacija",
+            "titlePaused": "Simulacija (pauzirana)",
+            "settings": "Podešavanja simulacije",
+            "running": "Simulacija je pokrenuta",
             "turn": "Potez"
         },
         "commands": {
@@ -4023,7 +4023,7 @@
             "roads": "Putevi",
             "areaMonitor": "Praćenje područja",
             "proposals": "Predlozi",
-            "game": "Igra",
+            "game": "Simulacija",
             "activity": "Aktivnost",
             "settings": "Podešavanja",
             "parcel": "Parcela",

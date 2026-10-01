@@ -122,7 +122,7 @@
         right: 0;
         top: auto;
         bottom: 0;
-        z-index: 1700; /* over the Game pill and the bottom buttons it covers */
+        z-index: 1700; /* over the bottom buttons it covers */
         width: auto;
         max-width: none;
         max-height: 60vh;

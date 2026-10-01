@@ -12,7 +12,7 @@ function toggleAccordion(checkbox, options = {}) {
     // Note: Roads section no longer has a checkbox, so it's always visible
     // Mutual exclusivity between Roads and Parcel Blocks is no longer applicable
 
-    // Handle Game section special behavior
+    // Handle Game section special behavior (the Simulation section of the Activity sheet)
     if (layerName === 'game') {
         const gameHeaderSpan = section ? section.querySelector('[data-section-title="game"]') : null;
         const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -21,21 +21,21 @@ function toggleAccordion(checkbox, options = {}) {
             gameHeaderSpan.setAttribute('data-i18n-key', key);
             if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
                 i18nApi.applyTranslations(gameHeaderSpan);
-            } else if (key === 'sidebar.game.titlePaused') {
-                gameHeaderSpan.textContent = 'Game (paused)';
+            } else if (key === 'mapShell.simulation.titlePaused') {
+                gameHeaderSpan.textContent = 'Simulation (paused)';
             } else {
-                gameHeaderSpan.textContent = 'Game';
+                gameHeaderSpan.textContent = 'Simulation';
             }
         };
 
         if (checkbox.checked) {
-            setGameHeaderKey('sidebar.game.title');
+            setGameHeaderKey('mapShell.simulation.title');
         } else {
             // Game disabled - pause game and update header
             if (typeof gameState !== 'undefined' && gameState.isRunning && typeof stopGameLoop === 'function') {
                 stopGameLoop();
             }
-            setGameHeaderKey('sidebar.game.titlePaused');
+            setGameHeaderKey('mapShell.simulation.titlePaused');
         }
     }
 

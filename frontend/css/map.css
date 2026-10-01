@@ -6,7 +6,7 @@
    button gets the .active "pressed" look (see the end of this file).
 
    They live on the LEFT edge, under the top-left search slot (#map-search-slot, see
-   css/map-shell.css): the bottom-left corner belongs to the Game pill, and the right edge to the
+   css/map-shell.css): the bottom-left corner is kept clear for the scale bar, and the right edge to the
    docked panels and the shell's buttons. There is no sidebar to clear, so the strip sits at a fixed
    offset from the window edge. One variable so all the buttons move together. */
 :root {
@@ -78,7 +78,7 @@ body {
 #mode-2d-toggle.map-mode-toggle { top: var(--map-mode-slot-2); }
 #mode-3d-toggle.map-mode-toggle { top: var(--map-mode-slot-3); }
 
-/* The scale bar sits at the left edge above the Game pill that owns the bottom-left corner, and
+/* The scale bar sits at the left edge, one button row up from the bottom-left corner, and
    above the row the status toast takes (--map-shell-* are declared in css/map-shell.css). */
 .leaflet-bottom.leaflet-left .leaflet-control-scale {
     margin-left: var(--map-mode-stack-left);

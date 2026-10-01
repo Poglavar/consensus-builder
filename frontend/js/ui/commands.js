@@ -11,20 +11,20 @@
     'use strict';
 
     const SURFACES = Object.freeze([
-        'layers', 'tools', 'proposals', 'settings', 'game', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu'
+        'layers', 'tools', 'proposals', 'activity', 'settings', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu'
     ]);
 
-    // Every control id the old sidebar held that still exists (rehoused into a sheet or the Game
-    // pill). Existing code finds these by id, so the test fails if index.html loses one.
+    // Every control id the old sidebar held that still exists (rehoused into a sheet). Existing code finds these by id, so the test fails if index.html loses one.
     const REHOUSED_CONTROL_IDS = Object.freeze([
         // Settings sheet
         'dev-badge', 'debug-badge', 'version-badge',
         'data-source-select', 'tile-source-select', 'wipeLocalDataButton',
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
-        // Game pill + game sheet
+        // Activity sheet: the explorer buttons and the Simulation section
+        'activity-explorer-button', 'activity-agents-button',
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
-        'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn', 'show-game-log-btn', 'show-agents-btn',
+        'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
         'showProposalsButton', 'planStatsButton', 'roosterScoreButton', 'mintedProposalsButton',
         'shareAppliedProposalsButton',
@@ -319,21 +319,22 @@
         { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
             labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
 
-        // ---- Game pill ----
-        control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['game'],
-            labelKey: 'sidebar.game.enable', fallbackLabel: 'Enable game mode', icon: 'fas fa-gamepad' }),
-        { id: 'game.playPause', group: 'game', surfaces: ['game'], run: callGlobal('toggleGamePlayPause'),
-            labelKey: 'mapShell.commands.gamePlayPause', fallbackLabel: 'Play / pause the game', icon: 'fas fa-play' },
-        control('turn-interval-slider', { id: 'game.interval', group: 'game', kind: 'input', surfaces: ['game'],
-            labelKey: 'mapShell.commands.gameInterval', fallbackLabel: 'Turn interval', icon: 'fas fa-stopwatch' }),
-        { id: 'game.new', group: 'game', surfaces: ['game'], run: callGlobal('resetGameState', true),
-            labelKey: 'sidebar.game.newGame', fallbackLabel: 'New Game', icon: 'fas fa-rotate-left' },
-        { id: 'game.log', group: 'game', surfaces: ['game'], run: callGlobal('showGameLogDialog'),
+        // ---- Activity sheet: the explorer, and the Simulation section (group 'game', so a city
+        // config hiding the game section takes the simulation commands with it, not the explorer) ----
+        { id: 'activity.explorer', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog'),
             labelKey: 'mapShell.commands.activityExplorer', fallbackLabel: 'Open activity explorer', icon: 'fas fa-wave-square' },
-        { id: 'game.agents', group: 'game', surfaces: ['game'], run: callGlobal('showGameLogDialog', { view: 'actors' }),
+        { id: 'activity.agents', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog', { view: 'actors' }),
             labelKey: 'sidebar.game.showAgents', fallbackLabel: 'Show Agents', icon: 'fas fa-robot' },
+        control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['activity'],
+            labelKey: 'sidebar.game.enable', fallbackLabel: 'Enable game mode', icon: 'fas fa-gamepad' }),
+        { id: 'game.playPause', group: 'game', surfaces: ['activity'], run: callGlobal('toggleGamePlayPause'),
+            labelKey: 'mapShell.commands.gamePlayPause', fallbackLabel: 'Play / pause the game', icon: 'fas fa-play' },
+        control('turn-interval-slider', { id: 'game.interval', group: 'game', kind: 'input', surfaces: ['activity'],
+            labelKey: 'mapShell.commands.gameInterval', fallbackLabel: 'Turn interval', icon: 'fas fa-stopwatch' }),
+        { id: 'game.new', group: 'game', surfaces: ['activity'], run: callGlobal('resetGameState', true),
+            labelKey: 'sidebar.game.newGame', fallbackLabel: 'New Game', icon: 'fas fa-rotate-left' },
 
-        // ---- Activity ----
+        // ---- Activity: the status log ----
         { id: 'activity.statusLog', group: 'activity', surfaces: [], run: callGlobal('openStatusLogDialog'),
             labelKey: 'mapShell.commands.statusLog', fallbackLabel: 'Open the status log', icon: 'fas fa-terminal' },
 

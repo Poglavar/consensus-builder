@@ -383,7 +383,7 @@ describe('wiring', () => {
         expect(ids([])).toEqual(expect.arrayContaining(['blocks.reform', 'stations.bus', 'proposals.list', 'game.new']));
         const explore = ids(['parcels', 'blocks', 'stations', 'roads', 'proposals', 'game', 'areaMonitor']);
         for (const id of ['blocks.reform', 'stations.bus', 'roads.drawOsm', 'proposals.list', 'game.new', 'parcels.clearLocal']) expect(explore).not.toContain(id);
-        expect(explore).toEqual(expect.arrayContaining(['tools.measure', 'world.open', 'settings.baseMap']));
+        expect(explore).toEqual(expect.arrayContaining(['tools.measure', 'world.open', 'settings.baseMap', 'activity.explorer']));
         const ranked = UiCommands.rankCommands('reform', ctx(['blocks']), null).find(item => item.entry.id === 'blocks.reform');
         expect(ranked).toMatchObject({ available: false, reason: 'hiddenForCity' });
     });

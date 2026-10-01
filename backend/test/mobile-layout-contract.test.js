@@ -177,7 +177,7 @@ describe('smaller fixes', () => {
 
     it('gives the shell buttons the page font (a <button> does not inherit it)', () => {
         expect(ruleBody(mapShellCss, '\\n\\.map-shell-button')).toMatch(/font:\s*inherit;/);
-        expect(ruleBody(mapShellCss, '\\n\\.game-pill-toggle')).toMatch(/font:\s*inherit;/);
+        expect(ruleBody(mapShellCss, '\\n\\.activity-simulation-play')).toMatch(/font:\s*inherit;/);
     });
 
     it('lets a proposal title wrap on phones instead of cutting its distinguishing end', () => {

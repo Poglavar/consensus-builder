@@ -3,7 +3,7 @@ import { waitForMapReady, clickMapAt } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 
 // The map shell replaced the left sidebar (UI-REWORK.md): Layers/Settings buttons top-right,
-// Proposals/Tools/Activity bottom-right and the Game pill bottom-left each toggle a sheet
+// Proposals/Tools/Activity bottom-right each toggle a sheet
 // (frontend/js/ui/map-shell.js). This file took over sidebar.spec.ts, which clicked the sidebar
 // toggle and asserted the `collapsed` class flipped; the equivalent here is that each button really
 // shows/hides its sheet and keeps aria-expanded in step, plus the shell's closing rules (one sheet at
@@ -15,7 +15,6 @@ const SHEETS = [
   { name: 'Proposals', button: selectors.proposalsButton, sheet: selectors.proposalsSheet },
   { name: 'Tools', button: selectors.toolsButton, sheet: selectors.toolsSheet },
   { name: 'Activity', button: selectors.activityButton, sheet: selectors.activitySheet },
-  { name: 'Game', button: selectors.gamePillToggle, sheet: selectors.gameSheet },
 ];
 
 test.describe('Map shell sheets @features', () => {
@@ -96,5 +95,27 @@ test.describe('Map shell sheets @features', () => {
     await expect(page.locator(selectors.toolsSheet)).toBeVisible();
     await expect(page.locator(selectors.settingsSheet)).toBeHidden();
     await expect(page.locator(`${selectors.toolsSheet} #areaMonitorListButton`)).toBeVisible();
+  });
+
+  test('the simulation runs from the Activity sheet and marks the Activity button while it runs', async ({ mockApi: page }) => {
+    const dot = page.locator(selectors.simulationRunningDot);
+    await expect(dot).toBeHidden();
+
+    await page.locator(selectors.activityButton).click();
+    const section = page.locator(selectors.simulationSection);
+    await expect(section).toBeVisible();
+    await expect(page.locator(selectors.simulationSettings)).not.toHaveAttribute('open');
+
+    await page.locator(selectors.simulationPlayPause).click();
+    await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'true');
+    await page.keyboard.press('Escape');
+    await expect(page.locator(selectors.activitySheet)).toBeHidden();
+    await expect(dot).toBeVisible();
+    await expect(dot).toHaveAttribute('aria-label', 'Simulation running');
+
+    await page.locator(selectors.activityButton).click();
+    await page.locator(selectors.simulationPlayPause).click();
+    await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'false');
+    await expect(dot).toBeHidden();
   });
 });

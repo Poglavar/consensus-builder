@@ -1,5 +1,5 @@
 /* ========== Floating map shell ==========
-   The floating buttons, the Game pill and the sheets that replaced the left sidebar
+   The floating buttons and the sheets that replaced the left sidebar
    (js/ui/map-shell.js; layout table in UI-REWORK.md), plus the styles of the controls rehoused into
    those sheets. A sheet is a popover anchored to its button on desktop (map-shell.js sets the
    --sheet-* offsets) and a bottom sheet under 768px. */
@@ -81,7 +81,6 @@
 }
 
 .map-shell-button:focus-visible,
-.game-pill-toggle:focus-visible,
 #map-container .username-display:focus-visible,
 .map-sheet:focus-visible {
     outline: 2px solid #2563eb;
@@ -116,6 +115,36 @@
     display: none;
 }
 
+/* The Activity button's running dot: the in-UI simulation is running (js/ui/simulation-indicator.js).
+   It rides on the button's top-right corner; reduced motion keeps the dot and drops the pulse. */
+.map-shell-running-dot {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #16a34a;
+    animation: map-shell-running-pulse 1.6s ease-in-out infinite;
+}
+
+.map-shell-running-dot[hidden] {
+    display: none;
+}
+
+@keyframes map-shell-running-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.55); }
+    50% { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-shell-running-dot {
+        animation: none;
+    }
+}
+
 /* The user bubble sits left of the Layers and Settings buttons in the same top row. */
 #map-container .username-display {
     top: var(--map-shell-edge);
@@ -124,7 +153,7 @@
     box-sizing: border-box;
 }
 
-/* Visually hidden, still read out (e.g. the play/pause label inside the Game pill). */
+/* Visually hidden, still read out (e.g. the simulation's play/pause label in the Activity sheet). */
 .map-shell-sr-only {
     position: absolute;
     width: 1px;
@@ -135,85 +164,6 @@
     clip: rect(0 0 0 0);
     white-space: nowrap;
     border: 0;
-}
-
-/* ---- Game pill (bottom-left) ---- */
-.game-pill {
-    position: absolute;
-    left: var(--map-shell-edge);
-    bottom: var(--map-shell-bottom);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: var(--map-shell-button-size);
-    padding: 0 4px 0 0;
-    box-sizing: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    max-width: calc(100vw - 2 * var(--map-shell-edge));
-}
-
-.game-pill-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    height: 100%;
-    min-width: 0;
-    padding: 0 6px 0 12px;
-    border: none;
-    border-radius: 20px;
-    background: transparent;
-    color: #1f2937;
-    font: inherit;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.game-pill-toggle:hover {
-    background: #f3f4f6;
-}
-
-.game-pill-toggle[aria-expanded="true"] {
-    background: #e5e7eb;
-}
-
-.game-pill-toggle i {
-    color: #374151;
-    font-size: 16px;
-}
-
-.game-pill-metrics {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    font-variant-numeric: tabular-nums;
-}
-
-.game-pill-metrics .metric-value {
-    font-weight: 600;
-}
-
-.game-pill-separator,
-.game-pill-turn-label {
-    color: #6b7280;
-}
-
-#game-pill .game-pill-play {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    padding: 0;
-    margin: 0;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
 }
 
 /* ---- Sheets ---- */
@@ -532,7 +482,7 @@ body.debug-mode .map-sheet .btn-danger,
     cursor: pointer;
 }
 
-/* A single checkbox row that is itself the group (the game sheet's Enable game mode). */
+/* A single checkbox row that is itself the group (the Simulation settings' Enable game mode). */
 .map-sheet label.checkbox-group {
     min-height: var(--sheet-row-height);
     color: #1f2937;
@@ -657,32 +607,123 @@ body.debug-mode .map-sheet .btn-danger,
     }
 }
 
-/* Game sheet */
-#game-sheet .sheet-section-body {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* Activity sheet: the explorer buttons over the status line and its log */
+.activity-sheet-actions {
+    margin-bottom: 12px;
 }
 
-#game-sheet .checkbox-group {
+/* Simulation: a secondary section under the explorer buttons. One muted row (a small play/pause
+   icon button, then date · turn) and its settings folded into a <details>. */
+#activity-sheet .activity-simulation {
+    margin-bottom: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.activity-simulation .sheet-section-title {
+    margin-bottom: 6px;
+    color: var(--sheet-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.activity-simulation-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.activity-simulation-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--sheet-border);
+    border-radius: 50%;
+    background: #fff;
+    color: #374151;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.activity-simulation-play:hover {
+    background: var(--sheet-hover);
+}
+
+.activity-simulation-play:focus-visible,
+.activity-simulation-settings > summary:focus-visible {
+    outline: 2px solid var(--sheet-focus);
+    outline-offset: 2px;
+}
+
+.activity-simulation-play.is-running {
+    border-color: #16a34a;
+    color: #15803d;
+}
+
+.activity-simulation-play:disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.activity-simulation-metrics {
+    display: inline-flex;
+    gap: 4px;
+    min-width: 0;
+    color: var(--sheet-muted);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-simulation-settings {
+    margin-top: 6px;
+}
+
+.activity-simulation-settings > summary {
+    width: fit-content;
+    padding: 2px 0;
+    color: var(--sheet-muted);
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+.activity-simulation-settings > .sheet-section-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.activity-simulation-settings label.checkbox-group {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
 }
 
-#game-sheet .game-actions {
-    gap: 8px;
-}
-
-#game-sheet .slider-group,
-#game-sheet .turn-progress {
+.activity-simulation-settings .slider-group,
+.activity-simulation-settings .turn-progress {
     margin: 0;
 }
 
-/* Activity sheet: the explorer buttons over the status line and its log */
-.activity-sheet-actions {
-    margin-bottom: 12px;
+@media (max-width: 767px) {
+    .activity-simulation-play {
+        width: 36px;
+        height: 36px;
+    }
+
+    .activity-simulation-settings > summary {
+        padding: 8px 0;
+    }
 }
 
 #activity-sheet .status-bar {
@@ -791,8 +832,7 @@ body.app-loading {
     cursor: progress;
 }
 
-body.app-loading .map-shell-cluster,
-body.app-loading .game-pill {
+body.app-loading .map-shell-cluster {
     pointer-events: none;
 }
 
@@ -826,7 +866,7 @@ body.app-loading .game-pill {
         right: -6px;
     }
 
-    /* A column up the right edge, so the Game pill keeps the bottom row even at 320px. */
+    /* A column up the right edge, leaving the bottom row to the selection tray even at 320px. */
     .map-shell-cluster--bottom-right {
         flex-direction: column;
     }
@@ -838,13 +878,5 @@ body.app-loading .game-pill {
     /* Clear of the compact search box top-left (css/map-search.css). */
     #map-container .username-display {
         max-width: calc(100vw - 2 * var(--map-shell-edge) - 2 * var(--map-shell-button-size) - 3 * var(--map-shell-gap) - var(--map-search-compact-width));
-    }
-
-    .game-pill {
-        max-width: calc(100vw - 2 * var(--map-shell-edge) - var(--map-shell-button-size) - var(--map-shell-gap));
-    }
-
-    .game-pill-turn-label {
-        display: none;
     }
 }
