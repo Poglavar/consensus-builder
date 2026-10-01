@@ -134,6 +134,16 @@ export function resolveProposalPolygon(proposal) {
         if (resolved) return resolved;
     }
 
+    // The proposal's site (PARCEL-OPTIONAL.md): its ground, a MultiPolygon, and on open ground (an
+    // explore city, unsurveyed land) the only geometry a record may have. Every part is framed.
+    const site = proposal.site;
+    if (site && Array.isArray(site.coordinates) && site.coordinates.length) {
+        if (site.type === 'Polygon') return { polygon: site.coordinates, polygonOrder: 'lnglat' };
+        if (site.type === 'MultiPolygon') {
+            return { polygon: site.coordinates.length === 1 ? site.coordinates[0] : site.coordinates, polygonOrder: 'lnglat' };
+        }
+    }
+
     // Generic geometry collection fallback (e.g. parcel-only proposals)
     if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) {
         for (const f of proposal.geometry.buildings) {

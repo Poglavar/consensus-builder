@@ -31,12 +31,17 @@
         };
     }
 
-    function resolveCorridorScreenshotGeometry(proposal, fallbackPolygon) {
+    // fallbackOrder states the fallback polygon's coordinate order ('lnglat' | 'latlng'): the
+    // thumbnail capture never guesses it.
+    function resolveCorridorScreenshotGeometry(proposal, fallbackPolygon, fallbackOrder) {
         const corridor = proposal?.roadProposal?.definition?.polygon || null;
         if (corridor && Array.isArray(corridor.coordinates) && corridor.coordinates.length) {
             return { polygon: corridor.coordinates, polygonOrder: 'lnglat', fitToPolygonOnly: true };
         }
-        return { polygon: fallbackPolygon, polygonOrder: 'auto', fitToPolygonOnly: false };
+        if (fallbackOrder !== 'lnglat' && fallbackOrder !== 'latlng') {
+            throw new Error(`resolveCorridorScreenshotGeometry: fallbackOrder must be 'lnglat' or 'latlng', got ${fallbackOrder}`);
+        }
+        return { polygon: fallbackPolygon, polygonOrder: fallbackOrder, fitToPolygonOnly: false };
     }
 
     function resolveDraftStore(storage) {

@@ -10,7 +10,7 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`parcel.<id>`).
-    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'history', 'tools', 'offer', 'view3d', 'detectBlock', 'useAsSite']);
+    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'view3d', 'detectBlock', 'useAsSite']);
     // What stays available on a piece of open ground (no cadastral parcel under it).
     const GROUND_ACTIONS = new Set(['details', 'view3d', 'useAsSite']);
 
@@ -25,7 +25,7 @@
     }
 
     // facts: { parcelId, isRoad, multiSelectActive, selectionCount, historyIds: [], blocksEnabled,
-    // can3d }. Missing facts count as "not available" — never as a guess that it is.
+    // can3d, compareCount }. Missing facts count as "not available" — never as a guess that it is.
     function isActionAvailable(action, facts) {
         const f = facts || {};
         const hasParcel = typeof f.parcelId === 'string' ? f.parcelId !== '' : (typeof f.parcelId === 'number');
@@ -42,6 +42,9 @@
                 return f.multiSelectActive !== true;
             case 'history':
                 return Array.isArray(f.historyIds) && f.historyIds.some(id => typeof id === 'string' && id !== '');
+            case 'compare':
+                // Two proposals on this parcel to set side by side (proposals/parcel-compare-ui.js).
+                return typeof f.compareCount === 'number' && f.compareCount >= 2;
             case 'offer':
                 return buildPaletteAvailable({
                     multiSelectActive: f.multiSelectActive === true,

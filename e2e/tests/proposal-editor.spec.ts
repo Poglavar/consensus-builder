@@ -46,7 +46,6 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
         geometry: { type: 'Polygon', coordinates: [ring] },
       },
     });
-    w.requirePersonalizedUser = () => false;
     return { proposalId, parcelId };
   }, suffix);
 }
@@ -287,7 +286,6 @@ test.describe('SimCity proposal lifecycle @core', () => {
         properties: { parcelId, parcel_id: parcelId, id: parcelId, BROJ_CESTICE: 'EDIT-instant', maticni_broj_ko: '335754' },
         geometry: { type: 'Polygon', coordinates: [ring] },
       }]);
-      w.requirePersonalizedUser = () => false;
 
       const segment = [{ lat: 45.8001, lng: 15.9820 }, { lat: 45.8004, lng: 15.9823 }];
       const draft = w.proposalDraftStore.createDraft({

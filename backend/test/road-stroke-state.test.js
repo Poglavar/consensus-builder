@@ -147,3 +147,24 @@ describe('the index-alignment invariant survives any push/undo/cancel sequence',
         }
     });
 });
+
+// A click on the stroke's own last vertex added a zero-length edge; a stroke made only of one has no
+// direction, so no cross-section ("[road-drawing] no strips for a drawn segment").
+describe('isRepeatedStrokeVertex', () => {
+    const { isRepeatedStrokeVertex, MIN_STROKE_EDGE_M } = require('../../frontend/js/road-stroke-state.js');
+
+    it('treats the same point (a double-click, a snap back onto it) as no new edge', () => {
+        const a = pt(45.79184481788899, 15.917049050331117);
+        expect(isRepeatedStrokeVertex(a, { ...a })).toBe(true);
+        expect(isRepeatedStrokeVertex(a, pt(a.lat + 1e-8, a.lng))).toBe(true); // ~1 mm
+        expect(MIN_STROKE_EDGE_M).toBe(0.01);
+    });
+
+    it('lets any real edge through, and does not guess on missing input', () => {
+        const a = pt(45.79184481788899, 15.917049050331117);
+        expect(isRepeatedStrokeVertex(a, pt(a.lat + 1e-6, a.lng))).toBe(false); // ~11 cm
+        expect(isRepeatedStrokeVertex(a, pt(a.lat, a.lng + 2e-7))).toBe(false); // ~1.6 cm at 45.8°
+        expect(isRepeatedStrokeVertex(null, a)).toBe(false);
+        expect(isRepeatedStrokeVertex(a, { lat: null, lng: a.lng })).toBe(false);
+    });
+});

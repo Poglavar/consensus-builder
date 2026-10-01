@@ -7,6 +7,7 @@
 //   WorldCoverage.load(url?) -> Promise<coverage>       fetches the JSON (default 'data/world-coverage.json')
 //   WorldCoverage.create(data) -> coverage              wraps already-parsed JSON
 //   coverage.tierAt(lat, lon) -> Place                  see below
+//   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'ocean'|'world', name, cc }  the chip name
 //   coverage.searchPlaces(query, { limit }) -> Place[]  diacritic-insensitive, best first
 //   coverage.tierColors / WorldCoverage.TIERS
 //
@@ -26,6 +27,8 @@
     const LIVE_RADIUS_KM = 60;
     const CITY_RADIUS_KM = 40;
     const RINGLESS_COUNTRY_RADIUS_KM = 30;
+    const NAME_CITY_RADIUS_KM = 25;
+    const NAME_MIN_ZOOM = 5;
     const EARTH_RADIUS_KM = 6371.0088;
 
     function haversineKm(lat1, lon1, lat2, lon2) {
@@ -150,6 +153,20 @@
             return { kind: 'ocean', tier: 'unknown', name: '', country: '', cc: null, note: '', lat, lon, placeKey: 'point:' + roundKey(lat) + ',' + roundKey(lon) };
         }
 
+        // The name of where the map is (the explore city chip): the nearest configured or registry
+        // city within NAME_CITY_RADIUS_KM, else the country, else '' (open water). Tighter than the
+        // coverage radii above, which say which data covers a point, not what the place is called:
+        // Yokohama is not "Tokyo". Below NAME_MIN_ZOOM the map shows a continent, so no one place.
+        function nameAt(lat, lon, zoom) {
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('nameAt: lat/lon must be finite numbers');
+            if (Number.isFinite(zoom) && zoom < NAME_MIN_ZOOM) return { kind: 'world', name: '', cc: null };
+            const city = nearest(liveCities.concat(cities), lat, lon, NAME_CITY_RADIUS_KM);
+            if (city) return { kind: 'city', name: city.name, cc: city.cc || null };
+            const country = countryAt(lat, lon);
+            if (country) return { kind: 'country', name: country.name, cc: country.cc };
+            return { kind: 'ocean', name: '', cc: null };
+        }
+
         const searchIndex = [].concat(
             liveCities.map(l => ({
                 kind: 'live-city', priority: 0, tier: 'live', cityId: l.id, name: l.name, country: countryName(l.cc), cc: l.cc,
@@ -190,7 +207,7 @@
             });
         }
 
-        return { data, tierAt, searchPlaces, countries, cities, liveCities };
+        return { data, tierAt, nameAt, searchPlaces, countries, cities, liveCities };
     }
 
     function load(url) {

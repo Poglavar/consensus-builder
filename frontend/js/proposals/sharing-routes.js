@@ -139,6 +139,8 @@ function setSharePlanButtonBusy(busy) {
 // Resolves when the panel is ready to look at, so a caller that opened this from its own dialog
 // can keep that dialog up meanwhile. `options` is passed straight through (see showSharePlanPanel).
 function shareAppliedProposals(options) {
+    // A share link carries its author (GuestPolicy 'share').
+    if (guestPolicyBlocks('share')) return Promise.resolve(null);
     if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(true);
     // Opening the panel starts with a long SYNCHRONOUS block: a row per applied proposal, plus one
     // map overlay each (turf intersections + a Leaflet layer), plus fitting the map. Starting it in
@@ -167,6 +169,8 @@ function shareAppliedProposals(options) {
 }
 
 function shareSingleProposal(proposalIdOrProposal) {
+    // A share link carries its author (GuestPolicy 'share').
+    if (guestPolicyBlocks('share')) return;
     try {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
@@ -265,7 +269,9 @@ function buildSharedProposalsPayload(appliedProposals) {
     const sanitized = appliedProposals.map(proposal => {
         // Sharing publishes the same authored record the local store owns. It never reconstructs
         // parcel parents or children from runtime output; those pieces belong to LiveParcelFabric.
-        const candidate = deepClone(proposal);
+        // A share link carries its author: this profile's own drafts carry its current name.
+        const candidate = deepClone(stampCurrentAuthor(proposal));
+        delete candidate.authorAgentId; // device-local: which profile here owns the draft
         candidate.goal = resolveProposalGoalKey(proposal) || proposal.goal || null;
         // A corridor publishes every parcel its polygon covers; others exactly their selection.
         candidate.cadastreParcelIds = ancestryApi.validateCadastreParcelIds(typeof ancestryApi.publishDeclaration === 'function'

@@ -6,7 +6,6 @@
     const uiMap = global.ParcelsUIMap || {};
     const uiClaim = global.ParcelsUIClaim || {};
     const uiVisibility = global.ParcelsUIVisibility || {};
-    const uiProposalCompare = global.ParcelsUIProposalCompare || {};
     const uiAdParcels = global.ParcelsAdParcels || {};
     const ownershipUi = global.ParcelsOwnershipUi || {};
     const utils = global.ParcelsUtils || {};
@@ -55,10 +54,6 @@
             createProposalFromSingleParcel: global.createProposalFromSingleParcel,
             createProposalFromSelectedParcels: global.createProposalFromSelectedParcels,
             renderParcelProposalActions: global.renderParcelProposalActions
-        },
-        uiProposalCompare: {
-            showProposalCompareModal: from(uiProposalCompare.showProposalCompareModal, global.showProposalCompareModal),
-            hideProposalCompareModal: from(uiProposalCompare.hideProposalCompareModal, global.hideProposalCompareModal)
         },
         adParcels: uiAdParcels,
         uiSelection,

@@ -50,6 +50,15 @@ describe('parcel menu actions', () => {
         expect(Model.availableActions(baseFacts({ historyIds: [null, ''] }))).not.toContain('history');
     });
 
+    it('offers Compare proposals here only with two or more proposals on the parcel', () => {
+        expect(Model.availableActions(baseFacts({ compareCount: 2 })))
+            .toEqual(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'view3d', 'detectBlock']);
+        expect(Model.availableActions(baseFacts({ compareCount: 1 }))).not.toContain('compare');
+        expect(Model.availableActions(baseFacts({ compareCount: null }))).not.toContain('compare');
+        // Open ground is no cadastral parcel: nothing to compare "on my parcel".
+        expect(Model.availableActions(baseFacts({ compareCount: 3, isGround: true }))).not.toContain('compare');
+    });
+
     it('does not offer Select more while multi-select is already on', () => {
         expect(Model.availableActions(baseFacts({ multiSelectActive: true, selectionCount: 3 }))).not.toContain('selectMore');
     });

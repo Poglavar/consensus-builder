@@ -1982,71 +1982,213 @@ textarea.proposal-description-input {
     padding: 0;
 }
 
-/* Compare table styles */
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
+/* "Compare proposals here" (js/proposals/parcel-compare-ui.js): two proposals side by side for one
+   parcel, a native <dialog>. Columns A and B carry their own colour, matched by the preview SVG. */
+.parcel-compare {
+    --pc-a: #1f6feb;
+    --pc-b: #d4570b;
+    --pc-a-fill: rgba(31, 111, 235, 0.38);
+    --pc-b-fill: rgba(212, 87, 11, 0.38);
+    width: min(860px, calc(100vw - 32px));
+    max-height: calc(100vh - 48px);
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+    background: #fff;
+    color: #222;
+    overflow: auto;
 }
-.comparison-table th {
-    text-align: left;
-    border-bottom: 1px solid #eee;
-    padding: 6px 4px;
+.parcel-compare::backdrop {
+    background: rgba(0, 0, 0, 0.45);
 }
-.comparison-table td.label {
-    padding: 6px 4px;
+.parcel-compare__head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+}
+.parcel-compare__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+.parcel-compare__empty {
+    padding: 16px;
+    margin: 0;
+}
+.parcel-compare__top {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 12px 16px;
+}
+.parcel-compare__pickers {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    min-width: 0;
+}
+.parcel-compare__picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+    padding: 8px;
+    border: 2px solid var(--pc-a);
+    border-radius: 8px;
+}
+.parcel-compare__picker--b {
+    border-color: var(--pc-b);
+}
+.parcel-compare__select {
+    flex: 1 1 calc(100% - 32px);
+    min-width: 0;
+    padding: 4px 6px;
+    font-size: 0.9rem;
+}
+.parcel-compare__type {
+    flex: 1;
+    font-size: 0.8rem;
+    color: #666;
+}
+.parcel-compare__details {
+    margin-left: auto;
+}
+.parcel-compare__marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--pc-a);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.parcel-compare__marker--b {
+    background: var(--pc-b);
+}
+.parcel-compare__preview {
+    flex: 0 0 160px;
+}
+.parcel-compare-svg {
+    display: block;
+    width: 160px;
+    height: 160px;
+}
+.parcel-compare-svg__parcel {
+    fill: #f1f3f5;
+}
+.parcel-compare-svg__outline {
+    stroke: #333;
+    stroke-width: 1.5;
+}
+.parcel-compare-svg__take--a {
+    fill: var(--pc-a-fill);
+    stroke: var(--pc-a);
+    stroke-width: 1;
+}
+.parcel-compare-svg__take--b {
+    fill: var(--pc-b-fill);
+    stroke: var(--pc-b);
+    stroke-width: 1;
+    stroke-dasharray: 3 2;
+}
+.parcel-compare__grid {
+    padding: 0 16px 16px;
+}
+.parcel-compare__section {
+    margin-top: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     color: #555;
 }
-.comparison-table td.value {
-    padding: 6px 4px;
-    text-align: right;
+.parcel-compare__row {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.8fr) 1fr 1fr;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.88rem;
 }
-.profit-positive {
-    color: #28a745;
+.parcel-compare__label {
+    color: #555;
 }
-.profit-negative {
-    color: #dc3545;
+.parcel-compare__cell {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
-
-/* Result tag styles for compare modal */
-.result-tag {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    line-height: 1;
-    vertical-align: middle;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+.parcel-compare__cell .parcel-compare__marker {
+    display: none;
 }
-.result-tag-profit {
-    color: #1f3a1f;
-    background: linear-gradient(135deg, #ffd700, #ffc107, #ffec80);
-    border: 1px solid rgba(255, 193, 7, 0.6);
+.parcel-compare-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 4px 0;
+    font-size: 0.82rem;
+    color: #555;
 }
-.result-tag-loss {
-    color: #6b1f1f;
-    background: linear-gradient(135deg, #ffb3b3, #ff7a7a, #ffc1c1);
-    border: 1px solid rgba(220, 53, 69, 0.4);
+.proposal-item-compare {
+    float: right;
+    margin: -4px -4px 4px 8px;
+    padding: 4px;
+    cursor: pointer;
 }
-
-/* Animated background for difference amount */
-.metric-value .animated-amount {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: linear-gradient(270deg, rgba(255,215,0,0.18), rgba(0,201,87,0.18), rgba(30,144,255,0.18), rgba(255,215,0,0.18));
-    background-size: 600% 600%;
-    animation: amountShimmer 14s ease infinite;
+.proposal-item-compare input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
 }
-
-@keyframes amountShimmer {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+#drill-stack-panel .drill-stack-compare {
+    width: 100%;
+    margin-top: 6px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .metric-value .animated-amount { animation: none; }
+/* Phones: the two columns stack — each row shows its label, then A, then B. */
+@media (max-width: 767px) {
+    .parcel-compare {
+        width: calc(100vw - 16px);
+        max-height: calc(100vh - 16px);
+    }
+    .parcel-compare__top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .parcel-compare__pickers {
+        grid-template-columns: 1fr;
+    }
+    .parcel-compare__preview {
+        align-self: center;
+    }
+    .parcel-compare__row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+    .parcel-compare__cell .parcel-compare__marker {
+        display: inline-flex;
+    }
 }
 
 .proposal-info-modal-content {

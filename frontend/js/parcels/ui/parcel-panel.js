@@ -330,15 +330,31 @@
         // disclosure — plus the remainder report (what the owner keeps once the formations cut).
         // Read-only annotation over the list the panel already collected; failure costs the chips,
         // never the list.
+        function cadastralBaseParcels(ids) {
+            const repository = global.CadastralParcelRepository;
+            if (!repository || typeof repository.peekMany !== 'function' || !ids.length) return [];
+            return repository.peekMany(ids).map(cadastral => ({ id: String(cadastral.properties.parcelId), feature: cadastral }));
+        }
         const parcelDossier = (() => {
             try {
                 if (!global.__dossier || !parcelProposals.length) return null;
+                const cadastralBase = cadastralBaseParcels(parcelCadastreIds);
+                // The parcel's own outline for measuring takes: the cadastral record when the clicked
+                // piece belongs to exactly one parcel; the live piece only when there is none.
+                const parcelOutline = cadastralBase.length === 1
+                    ? cadastralBase[0].feature
+                    : ((feature && feature.geometry) ? feature : undefined);
                 return global.__dossier.buildDossier(parcelId, parcelProposals, {
                     assumeMembership: true,
                     cadastreParcelIds: parcelCadastreIds,
+                    // Unstamped records compute their take from the parcel's CADASTRAL ground (the
+                    // repository record, not the clicked live piece, which an applied road has already
+                    // cut — measuring against that makes the road's own take zero). Without it every
+                    // formation reads "takes nothing" and triages as information, not consent.
+                    baseParcels: cadastralBase,
                     isVote: (typeof global.isVoteProposal === 'function') ? global.isVoteProposal : undefined,
                     isApplied: (typeof global.isProposalApplied === 'function') ? global.isProposalApplied : undefined,
-                    parcelFeature: (feature && feature.geometry) ? feature : undefined
+                    parcelFeature: parcelOutline
                 });
             } catch (error) {
                 console.warn('[parcel-panel] dossier triage unavailable', error);
@@ -584,7 +600,7 @@
                     </div>
                 `;
                 return `
-                    <div class="proposal-item" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})" style="cursor: pointer;">
+                    <div class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})" style="cursor: pointer;">
                         ${thumbHtml ? `<div class="proposal-item-row">${thumbHtml}${proposalBody}</div>` : proposalBody}
                     </div>
                 `;
@@ -924,6 +940,8 @@
             });
         }
         global.document.getElementById('proposals-content').innerHTML = proposalsContent;
+        // Tick boxes + Compare on the listed proposals (proposals/parcel-compare-ui.js).
+        if (global.ParcelCompare) global.ParcelCompare.decoratePanelList(global.document.getElementById('proposals-content'), parcelId);
         // The tab count updates ONLY after the list content is in the DOM — updating it earlier
         // let a mid-render exception show "Proposals (1)" over a stale/empty list.
         const proposalCount = parcelProposals.length;

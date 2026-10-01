@@ -2249,8 +2249,6 @@ function corridorDrawButton() {
 }
 
 function toggleRoadDrawTool() {
-    // Gate: require personalized profile to draw corridors (which create proposals)
-
     updateGlobalRoadDrawingMode(!roadDrawingMode);
     const roadDrawButton = corridorDrawButton();
 
@@ -2885,6 +2883,8 @@ async function handleRoadClick(e) {
             ? translateRoadText('panel.road.addPointsHintTrack', 'Click to add track points, press F to finish the track')
             : translateRoadText('panel.road.addPointsHint', 'Click to add road points, press F to finish the road'));
     } else {
+        // Clicking the stroke's own last vertex again adds no edge (road-stroke-state.js).
+        if (window.RoadStrokeState.isRepeatedStrokeVertex(roadPoints[roadPoints.length - 1], clickPoint)) return;
         const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
         // Detect with the width THIS segment will actually be drawn at (per-segment override
         // included); validating at plain roadWidth can accept a wider rendered edge unchecked.
@@ -2924,8 +2924,9 @@ async function handleRoadClick(e) {
             const detected = detectLoadedBuildingTunnelIntersections(segmentPolygon)
                 .filter(hit => !roadSurfaceBuildingIds.has(String(hit.id)));
             const hits = detected.filter(hit => !alreadyTunnelledIds.has(String(hit.id)));
-            // Subdivision/readjustment plots in the way get Build through / reroute, asked first: a
-            // house standing on such a plot would refuse the apply, so it is said here and only
+            // Subdivision/readjustment plots in the way get Build through / reroute, asked first. A
+            // standing proposal building in the way (a house on a plot, a block on parcels) would
+            // refuse the apply at surface and in a tunnel alike, so it is said here and only
             // rerouting is offered (corridor-structures.js, proposals/plot-crossings.js).
             if (typeof detectPlotCrossings === 'function' && typeof resolvePlotCrossings === 'function') {
                 const plotCrossings = detectPlotCrossings(segmentPolygon, hits);
@@ -5086,11 +5087,7 @@ function generateRandomRoadOffer(min = 10000, max = 500000) {
 
 function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', defaultOffer = 10000, affectedParcels = [], roadPolygon = null, roadPoints = null, roadWidth = null } = {}) {
     return new Promise((resolve, reject) => {
-        // Gate: require personalized profile to create proposals
-        if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
-            resolve(null);
-            return;
-        }
+        // No guest gate: creating stays on this device; publishing asks for a name (guest-policy.js).
 
         try {
             if (typeof closeProposalDialog === 'function') {

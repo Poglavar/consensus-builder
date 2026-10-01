@@ -1549,11 +1549,6 @@
             "confirm": "Aceptar",
             "cancel": "Cancelar"
         },
-        "compare": {
-            "title": "Comparar: actual vs propuesto",
-            "loading": "Cargando comparación…",
-            "failed_to_build": "No se pudo generar la comparación."
-        },
         "singleBuilding": {
             "title": "Edificio de forma libre",
             "defaultName": "Edificio {{n}}",
@@ -2603,6 +2598,12 @@
                 "label": "Ofrecer mi terreno",
                 "explain": "Ofreces tus propias parcelas e invitas a pujar. Las pujas llegan como compromisos y donaciones en esta propuesta; nadie más puede aceptarla. Cuando una puja te convenga, ejecutas la oferta diciendo sí en tus parcelas. El importe de la oferta es tu precio de venta.",
                 "recheck": "Comprobar de nuevo",
+                "proof": {
+                    "intro": "Ofrecer tu terreno requiere prueba de que es tuyo:",
+                    "wallet": "conecta tu billetera Solana",
+                    "attestation": "pide a un miembro de tu lente (👓) que certifique tu billetera como propietaria de estas parcelas",
+                    "name": "elige un nombre de perfil (burbuja arriba a la derecha)"
+                },
                 "checking": "Comprobando tus atestaciones de propiedad…",
                 "needLens": "Elige primero tu lente (👓): la oferta necesita un miembro de la lente que haya atestado tu propiedad.",
                 "needParcels": "Selecciona las parcelas que posees.",
@@ -2663,7 +2664,10 @@
             "note": "El {{kind}} toma su franja de los lotes que cruza; el resto de cada lote se mantiene. Al quitarlo del mapa se devuelven. ¿Construir a través?",
             "blocked": "Atravesaría una casa que está en un lote:",
             "blockedLine": "“{{name}}” en “{{plot}}”",
-            "blockedNote": "Un {{kind}} nunca se construye a través de un edificio existente, así que sería rechazado. Elige otra ruta o quita primero la casa del mapa."
+            "blockedNote": "Un {{kind}} nunca se construye a través de un edificio existente, así que sería rechazado. Elige otra ruta o quita primero la casa del mapa.",
+            "blockedBuilding": "Atravesaría un edificio propuesto:",
+            "blockedBuildingLine": "“{{name}}”",
+            "blockedBuildingNote": "Un {{kind}} nunca se construye a través de un edificio existente, ni en superficie ni en túnel, así que sería rechazado. Elige otra ruta o quita primero esa propuesta del mapa."
         }
     },
     "blockify": {
@@ -2967,7 +2971,11 @@
                 "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
                 "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno.",
                 "streetPlotsFailed": "No se pudieron trazar parcelas a lo largo de una calle en este sitio.",
-                "streetPlotsHint": "Parcelas a lo largo de una calle. Gire la calle hacia otro borde o cambie a Manual para editar las parcelas."
+                "streetPlotsHint": "Parcelas a lo largo de una calle. Gire la calle hacia otro borde o cambie a Manual para editar las parcelas.",
+                "noWholePlot": "Una parcela de {{width}} m no cabe: el sitio mide solo {{frontage}} m a lo largo de la calle. Elija una parcela más estrecha o gire la calle.",
+                "streetWidthInvalid": "El ancho de la calle debe ser un número entre {{min}} y {{max}} m.",
+                "plotWidthInvalid": "El ancho de la parcela debe ser un número entre {{min}} y {{max}} m.",
+                "streetDropped": "El sitio es demasiado poco profundo para una calle de {{width}} m y una fila de parcelas, así que todo son parcelas. Elija una calle más estrecha para tenerla."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -3047,6 +3055,16 @@
             "subdivisionTitle": "Parcelación",
             "turnStreet": "Girar la calle",
             "turnStreetTitle": "Trazar la calle a lo largo del siguiente borde del sitio",
+            "streetSettings": {
+                "streetWidth": "Ancho de la calle",
+                "plotWidth": "Ancho de parcela (fachada)",
+                "unit": "m",
+                "streetWidthTitle": "Ancho de la nueva calle, {{min}}–{{max}} m",
+                "plotWidthTitle": "Ancho de cada parcela a lo largo de la calle, {{min}}–{{max}} m. La fachada se reparte por igual, así que las parcelas quedan cerca de este ancho."
+            },
+            "relayConfirm": "¿Volver a trazar las parcelas con los nuevos anchos? Los cambios que hizo en las parcelas se descartarán.",
+            "relayConfirmOk": "Volver a trazar",
+            "relayConfirmCancel": "Conservar mis parcelas",
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
             "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta."
@@ -3241,7 +3259,6 @@
             "no_parcels_loaded_please_refresh_data_first": "No hay parcelas cargadas. Actualiza los datos primero.",
             "no_parcels_to_clear": "No hay parcelas que borrar.",
             "no_road_parcels_in_view": "No hay parcelas viales en vista.",
-            "only_the_currently_applied_proposal_can_be_compared": "Solo se puede comparar la propuesta aplicada actualmente.",
             "opening_claim_portal": "Abriendo portal de reclamación...",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "La parcela aún no está acuñada y no se pudo preparar el flujo Mint & Attest.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "La parcela aún no está acuñada. Abriendo el flujo Mint & Attest...",
@@ -3371,7 +3388,6 @@
             "an_identical_proposal_already_exists": "Ya existe una propuesta idéntica.",
             "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "No se puede deshacer la aceptación de una propuesta ejecutada que tiene parcelas descendientes.",
-            "could_not_open_comparison_modal": "No se pudo abrir el modal de comparación.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "No se pudieron preparar los datos del edificio para la propuesta. Inténtalo de nuevo.",
             "error_accepting_proposal_please_try_again": "Error al aceptar la propuesta. Inténtalo de nuevo.",
             "error_rejecting_proposal_please_try_again": "Error al rechazar la propuesta. Inténtalo de nuevo.",
@@ -3386,7 +3402,6 @@
             "no_parcels_selected_for_this_proposal": "No hay parcelas seleccionadas para esta propuesta.",
             "no_parcels_selected_please_select_parcels_before_creating_a_proposal": "No hay parcelas seleccionadas. Selecciona parcelas antes de crear una propuesta.",
             "no_recorded_owner_acceptance_to_undo": "No hay una aceptación registrada que se pueda deshacer.",
-            "only_the_currently_applied_proposal_can_be_compared": "Solo se puede comparar la propuesta aplicada actualmente.",
             "only_the_user_who_recorded_this_acceptance_can_undo_it": "Solo el usuario que registró esta aceptación puede deshacerla.",
             "open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal": "Abre la herramienta de edificios, diseña tu bloque y pulsa Hecho antes de crear esta propuesta.",
             "open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal": "Abre la herramienta de casas en hilera, diseña tu hilera y pulsa Hecho antes de crear esta propuesta.",
@@ -3400,6 +3415,8 @@
             "proposal_not_found": "Propuesta no encontrada.",
             "proposal_storage_is_unavailable": "El almacenamiento de propuestas no está disponible.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Falta el plan de reparcelación. Vuelve a ejecutar el algoritmo.",
+            "subdivision_site_missing": "Esta parcelación no tiene sitio. Vuelve a abrirla desde su borrador y guarda de nuevo.",
+            "subdivision_site_changed": "El sitio cambió después de trazar las parcelas. Abre de nuevo el editor de parcelación y pulsa Listo.",
             "run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal": "Ejecuta el algoritmo de reparcelación y pulsa Hecho antes de crear esta propuesta.",
             "select_a_proposal_goal_before_creating_a_proposal": "Selecciona un objetivo de propuesta antes de crearla.",
             "select_which_owner_share_you_are_accepting_for": "Selecciona para qué participación de propietario aceptas.",
@@ -3616,7 +3633,10 @@
             "welcome_back_user": "¡Bienvenido de nuevo, {{name}}! Has tomado el control de tu agente.",
             "welcome_new_user": "Bienvenido, {{name}}. Ahora eres parte de la comunidad de construcción de consenso.",
             "profile_personalized": "¡Genial, {{name}}! Tu perfil está personalizado.",
-            "personalize_to_create_proposal": "Por favor, personaliza tu perfil para crear propuestas.",
+            "name_to_publish": "Elige un nombre de perfil para publicar: las propuestas publicadas llevan su autor. Todo lo que queda en este dispositivo funciona sin él.",
+            "name_to_share": "Elige un nombre de perfil para compartir: un enlace compartido lleva su autor. Todo lo que queda en este dispositivo funciona sin él.",
+            "name_to_mint": "Elige un nombre de perfil para registrar esta propuesta en cadena: el registro lleva su autor.",
+            "name_to_join_list": "Elige un nombre de perfil para unirte a una lista pública.",
             "all_parcels_in_block_selected": "¡Todas las parcelas del bloque seleccionadas!"
         }
     },
@@ -3982,6 +4002,7 @@
             "selectMore": "Seleccionar más",
             "details": "Detalles",
             "history": "Historial",
+            "compare": "Comparar propuestas aquí",
             "tools": "Herramientas",
             "offer": "Ofrecer mi terreno",
             "view3d": "Ver en 3D",
@@ -4184,5 +4205,94 @@
         "openGroundValue": "Terreno abierto: {{area}} m²",
         "openGroundNote": "Terreno abierto: {{area}} m² de los sitios no tienen parcelas catastrales; las cifras de parcelas cubren solo las parcelas vinculadas.",
         "grainNoParcels": "Aquí no hay parcelas: estas propuestas están en terreno abierto, así que no hay parcelas resultantes que puntuar."
+    },
+    "parcelCompare": {
+        "title": "Comparar propuestas en la parcela {{number}}",
+        "needTwo": "Al menos dos propuestas deben tocar esta parcela para compararlas.",
+        "pick": "Propuesta {{side}}",
+        "openDetails": "Detalles",
+        "previewLabel": "Contorno de la parcela con el terreno de cada propuesta",
+        "tableLabel": "Comparación para esta parcela",
+        "intrusion": "entra {{width}} m",
+        "none": "Nada",
+        "yes": "Sí",
+        "no": "No",
+        "extent": {
+            "whole": "Toda la parcela",
+            "edge": "Solo el borde",
+            "part": "Parte de la parcela",
+            "none": "Nada"
+        },
+        "relation": {
+            "intrudes": "Su sitio entra en la parcela sin nombrarla",
+            "short": "entra"
+        },
+        "buildings": {
+            "count": "{{count}} edificio(s)",
+            "footprint": "huella {{area}}",
+            "floorArea": "superficie construida {{area}}",
+            "height": "{{floors}} plantas · {{height}}"
+        },
+        "structure": {
+            "park": "Parque",
+            "square": "Plaza",
+            "lake": "Lago",
+            "station": "Estación"
+        },
+        "corridor": {
+            "road": "Calle",
+            "track": "Vía",
+            "width": "{{width}} m de ancho"
+        },
+        "plots": {
+            "street": "calle (pública)",
+            "line": "Lote {{number}} ({{area}}, {{who}}): {{overlap}} de esta parcela"
+        },
+        "ownership": {
+            "ceded": "{{area}} → {{destination}}"
+        },
+        "offer": {
+            "share": "parte de esta parcela ≈ {{amount}}"
+        },
+        "status": {
+            "local": "Local (este navegador)",
+            "published": "Publicada",
+            "minted": "Acuñada",
+            "executed": "Ejecutada"
+        },
+        "market": {
+            "none": "Sin mercado",
+            "noStakes": "Aún sin apuestas"
+        },
+        "sections": {
+            "ground": "Su terreno",
+            "after": "En esta parcela después",
+            "ownership": "Propiedad",
+            "consent": "Lo que se le pide",
+            "support": "Apoyo"
+        },
+        "rows": {
+            "take": "Toma de esta parcela",
+            "buildings": "Edificios",
+            "structure": "Parque / plaza / lago",
+            "corridor": "Calle / vía",
+            "plots": "Lotes en que se convierte",
+            "ceded": "Terreno cedido → a",
+            "offer": "Oferta",
+            "consentNeeded": "Requiere su consentimiento",
+            "parcelAccepted": "Esta parcela aceptó",
+            "owners": "Propietarios que aceptaron",
+            "parcels": "Parcelas que aceptaron (toda la propuesta)",
+            "donations": "Donaciones",
+            "pledges": "Compromisos",
+            "market": "Mercado: se ejecuta (SÍ)",
+            "status": "Estado"
+        },
+        "bar": {
+            "hint": "Marque dos propuestas para compararlas en esta parcela",
+            "ready": "Dos seleccionadas",
+            "compare": "Comparar",
+            "tick": "Seleccionar para comparar"
+        }
     }
 }

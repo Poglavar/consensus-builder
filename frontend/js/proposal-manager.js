@@ -933,7 +933,12 @@ const ProposalManager = {
         );
         const fabricMs = _now() - fabricStarted;
         if (!derived || derived.ok !== true) {
-            fail((derived?.failed?.[0]?.reason) || 'The corridor ground could not be derived locally.');
+            // Name the proposal that refused: the reason is usually about IT (a building the road
+            // runs through), not about the corridor being drawn.
+            const refusal = derived?.failed?.[0];
+            fail(refusal?.reason
+                ? (refusal.proposalId ? `“${refusal.title}”: ${refusal.reason}` : refusal.reason)
+                : 'The corridor ground could not be derived locally.');
         }
 
         _announceApply(`Saving the completed corridor ${label}…`, proposalId);
@@ -1596,11 +1601,13 @@ const ProposalManager = {
                     }
                     if (!stood) {
                         if (!failed.some(entry => String(entry.proposalId || '') === id)) {
+                            // getLastApplyFailure returns the message itself (a string). Reading
+                            // `.message` off it lost every real reason to the generic fallback.
                             const failure = this.getLastApplyFailure?.(id);
                             failed.push({
                                 proposalId: id,
                                 title: record.title || record.name || id,
-                                reason: failure?.message || 'proposal could not be materialized locally'
+                                reason: failure || 'proposal could not be materialized locally'
                             });
                         }
                         continue;

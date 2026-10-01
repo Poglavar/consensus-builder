@@ -1505,11 +1505,6 @@
             "confirm": "OK",
             "cancel": "Otkaži"
         },
-        "compare": {
-            "title": "Uporedi: Trenutno vs Predloženo",
-            "loading": "Učitavanje poređenja…",
-            "failed_to_build": "Neuspešna izrada poređenja."
-        },
         "singleBuilding": {
             "title": "Slobodna forma",
             "defaultName": "Zgrada {{n}}",
@@ -2560,6 +2555,12 @@
                 "label": "Ponudi svoje zemljište",
                 "explain": "Nudiš sopstvene parcele i pozivaš na ponude. Ponude stižu kao obećanja i donacije na ovaj predlog; niko drugi ne može da ga prihvati. Kad ti ponuda odgovara, izvršavaš ga tako što kažeš da na svojim parcelama. Iznos ponude je tvoja tražena cena.",
                 "recheck": "Proveri ponovo",
+                "proof": {
+                    "intro": "Za ponudu svoje zemlje potreban je dokaz da je tvoja:",
+                    "wallet": "poveži svoj Solana novčanik",
+                    "attestation": "zamoli člana svog sočiva (👓) da potvrdi tvoj novčanik kao vlasnika ovih parcela",
+                    "name": "izaberi ime profila (oblačić gore desno)"
+                },
                 "checking": "Proveravam potvrde vlasništva…",
                 "needLens": "Najpre izaberi sočivo (👓): ponuda traži člana sočiva koji je potvrdio tvoje vlasništvo.",
                 "needParcels": "Izaberi parcele koje poseduješ.",
@@ -2647,7 +2648,10 @@
             "note": "{{kind}} uzima svoj pojas iz parcela koje preseca; ostatak svake parcele ostaje. Uklanjanjem sa mape vraćaju se. Izgraditi kroz?",
             "blocked": "Prošao bi kroz kuću koja stoji na parceli:",
             "blockedLine": "„{{name}}” na „{{plot}}”",
-            "blockedNote": "{{kind}} se nikad ne gradi kroz postojeću zgradu, pa bi bio odbijen. Izaberi drugu trasu ili prvo ukloni kuću sa mape."
+            "blockedNote": "{{kind}} se nikad ne gradi kroz postojeću zgradu, pa bi bio odbijen. Izaberi drugu trasu ili prvo ukloni kuću sa mape.",
+            "blockedBuilding": "Prošao bi kroz predloženu zgradu:",
+            "blockedBuildingLine": "„{{name}}”",
+            "blockedBuildingNote": "{{kind}} se nikad ne gradi kroz postojeću zgradu, ni na površini ni u tunelu, pa bi bio odbijen. Izaberi drugu trasu ili prvo ukloni taj predlog sa mape."
         }
     },
     "blockify": {
@@ -2973,7 +2977,11 @@
                 "lineNoAnchor": "Još nema uporišta. Linija mora preći među ili dodirnuti postojeći vrh na dva mesta da bi nastala nova međa.",
                 "lineNoAnchors": "Linija je dodirnula postojeće međe na manje od dva mesta, pa nema između čega povući među. Pređi dve međe, ili počni na vrhu i pređi jednu.",
                 "streetPlotsFailed": "Na ovoj lokaciji nije moguće rasporediti parcele uz ulicu.",
-                "streetPlotsHint": "Parcele uz ulicu. Okrenite ulicu ka drugoj ivici ili pređite na Ručno za uređivanje parcela."
+                "streetPlotsHint": "Parcele uz ulicu. Okrenite ulicu ka drugoj ivici ili pređite na Ručno za uređivanje parcela.",
+                "noWholePlot": "Parcela od {{width}} m ne staje: lokacija je duž ulice duga samo {{frontage}} m. Izaberite užu parcelu ili okrenite ulicu.",
+                "streetWidthInvalid": "Širina ulice mora biti broj od {{min}} do {{max}} m.",
+                "plotWidthInvalid": "Širina parcele mora biti broj od {{min}} do {{max}} m.",
+                "streetDropped": "Lokacija je preplitka za ulicu od {{width}} m i red parcela, pa je cela podeljena na parcele. Izaberite užu ulicu da biste je dobili."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodeli vlasnike",
@@ -3031,6 +3039,16 @@
             "subdivisionTitle": "Parcelacija",
             "turnStreet": "Okreni ulicu",
             "turnStreetTitle": "Provedi ulicu duž sledeće ivice lokacije",
+            "streetSettings": {
+                "streetWidth": "Širina ulice",
+                "plotWidth": "Širina parcele (front)",
+                "unit": "m",
+                "streetWidthTitle": "Širina nove ulice, {{min}}–{{max}} m",
+                "plotWidthTitle": "Širina svake parcele duž ulice, {{min}}–{{max}} m. Front se deli ravnomerno, pa su parcele približno te širine."
+            },
+            "relayConfirm": "Ponovo rasporediti parcele sa novim širinama? Promene koje ste napravili na parcelama biće odbačene.",
+            "relayConfirmOk": "Ponovo rasporedi",
+            "relayConfirmCancel": "Zadrži moje parcele",
             "siteParcelsMissing": "Parcele ispod ove lokacije nije moguće učitati: {{ids}}.",
             "siteUnavailable": "Ovu lokaciju ovde nije moguće parcelisati.",
             "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi predlog: {{names}}. Nacrtajte lokaciju van njega ili najpre poništite primenu tog predloga."
@@ -3233,7 +3251,6 @@
             "no_parcels_loaded_please_refresh_data_first": "Nema učitanih parcela. Osveži podatke.",
             "no_parcels_to_clear": "Nema parcela za brisanje.",
             "no_road_parcels_in_view": "Nema parcela puteva u prikazu.",
-            "only_the_currently_applied_proposal_can_be_compared": "Samo trenutno primenjen predlog može da se uporedi.",
             "opening_claim_portal": "Otvaram portal za preuzimanje...",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "Parcela još nije iskovana i tok za Mint & Attest nije mogao da se pripremi.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "Parcela još nije iskovana. Otvaram Mint & Attest tok...",
@@ -3356,7 +3373,6 @@
             "an_identical_proposal_already_exists": "Identičan predlog već postoji.",
             "building_proposal_workflow_is_unavailable": "Tok za predlog zgrade nije dostupan.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Ne može se poništiti prihvatanje za izvršen predlog koji ima potomke parcela.",
-            "could_not_open_comparison_modal": "Nije moguće otvoriti modal poređenja.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "Nije moguće pripremiti podatke o zgradi za predlog. Pokušaj ponovo.",
             "error_accepting_proposal_please_try_again": "Greška pri prihvatanju predloga. Pokušaj ponovo.",
             "error_rejecting_proposal_please_try_again": "Greška pri odbijanju predloga. Pokušaj ponovo.",
@@ -3371,7 +3387,6 @@
             "no_parcels_selected_for_this_proposal": "Nema izabranih parcela za ovaj predlog.",
             "no_parcels_selected_please_select_parcels_before_creating_a_proposal": "Nema izabranih parcela. Izaberi parcele pre kreiranja predloga.",
             "no_recorded_owner_acceptance_to_undo": "Nema zabeleženog prihvatanja vlasnika za poništavanje.",
-            "only_the_currently_applied_proposal_can_be_compared": "Samo trenutno primenjen predlog se može uporediti.",
             "only_the_user_who_recorded_this_acceptance_can_undo_it": "Samo korisnik koji je zabeležio ovo prihvatanje može da ga poništi.",
             "open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal": "Otvori alat za zgrade, dizajniraj blok i klikni Gotovo pre kreiranja ovog predloga.",
             "open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal": "Otvori alat za kuće u nizu, dizajniraj niz i klikni Gotovo pre kreiranja ovog predloga.",
@@ -3385,6 +3400,8 @@
             "proposal_not_found": "Predlog nije pronađen.",
             "proposal_storage_is_unavailable": "Skladište predloga nije dostupno.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Nedostaje plan reparcelacije. Ponovo pokreni algoritam.",
+            "subdivision_site_missing": "Ova parcelacija nema lokaciju. Ponovo je otvori iz nacrta i sačuvaj.",
+            "subdivision_site_changed": "Lokacija se promenila nakon što su parcele raspoređene. Ponovo otvori uređivač parcelacije i klikni Gotovo.",
             "run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal": "Pokreni algoritam reparcelacije i klikni Gotovo pre kreiranja ovog predloga.",
             "select_a_proposal_goal_before_creating_a_proposal": "Izaberi cilj predloga pre kreiranja.",
             "select_which_owner_share_you_are_accepting_for": "Izaberi za koji udeo vlasnika prihvataš.",
@@ -3601,7 +3618,10 @@
             "welcome_back_user": "Dobrodošao nazad, {{name}}! Preuzeo si kontrolu nad svojim agentom.",
             "welcome_new_user": "Dobrodošao, {{name}}! Postao si deo zajednice za izgradnju konsenzusa.",
             "profile_personalized": "Odlično, {{name}}! Tvoj profil je sada personalizovan.",
-            "personalize_to_create_proposal": "Molimo personalizuj svoj profil za kreiranje predloga.",
+            "name_to_publish": "Izaberi ime profila za objavu: objavljeni predlozi nose ime autora. Sve što ostaje na ovom uređaju radi i bez njega.",
+            "name_to_share": "Izaberi ime profila za deljenje: link za deljenje nosi ime autora. Sve što ostaje na ovom uređaju radi i bez njega.",
+            "name_to_mint": "Izaberi ime profila za upis predloga na lanac: zapis nosi ime autora.",
+            "name_to_join_list": "Izaberi ime profila za pridruživanje javnoj listi.",
             "all_parcels_in_block_selected": "Sve parcele u bloku izabrane!"
         }
     },
@@ -3968,6 +3988,7 @@
             "selectMore": "Izaberi više",
             "details": "Detalji",
             "history": "Istorija",
+            "compare": "Uporedi predloge ovde",
             "tools": "Alati",
             "offer": "Ponudi svoje zemljište",
             "view3d": "Prikaži u 3D-u",
@@ -4171,5 +4192,94 @@
         "openGroundValue": "Otvoreno tlo: {{area}} m²",
         "openGroundNote": "Otvoreno tlo: {{area}} m² lokacija nema katastarskih parcela; brojke o parcelama odnose se samo na obuhvaćene parcele.",
         "grainNoParcels": "Ovde nema parcela: ovi predlozi stoje na otvorenom tlu, pa nema nastalih parcela za ocenu."
+    },
+    "parcelCompare": {
+        "title": "Poređenje predloga na parceli {{number}}",
+        "needTwo": "Za poređenje ovu parcelu moraju da dodiruju bar dva predloga.",
+        "pick": "Predlog {{side}}",
+        "openDetails": "Detalji",
+        "previewLabel": "Obris parcele sa zemljištem svakog predloga na njoj",
+        "tableLabel": "Poređenje za ovu parcelu",
+        "intrusion": "zadire {{width}} m",
+        "none": "Ništa",
+        "yes": "Da",
+        "no": "Ne",
+        "extent": {
+            "whole": "Cela parcela",
+            "edge": "Samo ivica",
+            "part": "Deo parcele",
+            "none": "Ništa"
+        },
+        "relation": {
+            "intrudes": "Lokacija zadire u parcelu, a ne navodi je",
+            "short": "zadire"
+        },
+        "buildings": {
+            "count": "Zgrada: {{count}}",
+            "footprint": "osnova {{area}}",
+            "floorArea": "BRGP {{area}}",
+            "height": "spratova: {{floors}} · {{height}}"
+        },
+        "structure": {
+            "park": "Park",
+            "square": "Trg",
+            "lake": "Jezero",
+            "station": "Stanica"
+        },
+        "corridor": {
+            "road": "Put",
+            "track": "Pruga",
+            "width": "širine {{width}} m"
+        },
+        "plots": {
+            "street": "ulica (javno)",
+            "line": "Parcela {{number}} ({{area}}, {{who}}): {{overlap}} ove parcele"
+        },
+        "ownership": {
+            "ceded": "{{area}} → {{destination}}"
+        },
+        "offer": {
+            "share": "udeo ove parcele ≈ {{amount}}"
+        },
+        "status": {
+            "local": "Lokalno (ovaj pregledač)",
+            "published": "Objavljeno",
+            "minted": "Mintovano",
+            "executed": "Izvršeno"
+        },
+        "market": {
+            "none": "Nema tržišta",
+            "noStakes": "Još nema uloga"
+        },
+        "sections": {
+            "ground": "Vaše zemljište",
+            "after": "Na ovoj parceli posle toga",
+            "ownership": "Vlasništvo",
+            "consent": "Šta se od vas traži",
+            "support": "Podrška"
+        },
+        "rows": {
+            "take": "Uzima od ove parcele",
+            "buildings": "Zgrade",
+            "structure": "Park / trg / jezero",
+            "corridor": "Put / pruga",
+            "plots": "Parcele koje postaje",
+            "ceded": "Ustupljeno zemljište → kome",
+            "offer": "Ponuda",
+            "consentNeeded": "Potrebna vaša saglasnost",
+            "parcelAccepted": "Ova parcela prihvatila",
+            "owners": "Vlasnici prihvatili",
+            "parcels": "Parcele prihvatile (ceo predlog)",
+            "donations": "Donacije",
+            "pledges": "Obećanja",
+            "market": "Tržište: izvršava se (DA)",
+            "status": "Status"
+        },
+        "bar": {
+            "hint": "Označite dva predloga za poređenje na ovoj parceli",
+            "ready": "Izabrana dva",
+            "compare": "Uporedi",
+            "tick": "Izaberi za poređenje"
+        }
     }
 }

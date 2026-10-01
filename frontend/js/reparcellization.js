@@ -150,7 +150,18 @@
         // a counter that retires a street lookup still in flight when the editor closes or the
         // user turns the street.
         streetFrontageBasis: null,
-        streetFrontageSeq: 0
+        streetFrontageSeq: 0,
+        // The street and plot widths of "plots along a street" (subdivision.js limits; saved in the
+        // plan next to streetFrontageIndex), the last layout's refusal/placement for the status
+        // line, and the layout signature right after the last automatic layout: a re-lay only
+        // goes ahead without asking while the plots still match it (no hand edits since).
+        streetWidthM: 10,
+        plotWidthM: 20,
+        streetPlotsRefusal: null,
+        streetPlotsPlacement: null,
+        streetPlotsBaseline: null,
+        streetWidthInput: null,
+        plotWidthInput: null
     };
 
     function subdivisionApi() {
@@ -446,6 +457,11 @@
         state.streetFrontageIndex = null;
         state.streetFrontageBasis = null;
         state.streetFrontageSeq += 1;
+        state.streetPlotsRefusal = null;
+        state.streetPlotsPlacement = null;
+        state.streetPlotsBaseline = null;
+        state.streetWidthInput = null;
+        state.plotWidthInput = null;
         state.nodeEdit.active = false;
         state.nodeEdit.topology = null;
         state.nodeEdit.boundaryIndex = null;
@@ -504,6 +520,7 @@
                                 ${state.sitePool ? `<button type="button" class="btn reparcel-street-turn-btn" data-reparcel-street-turn title="${escapeHtml(t('reparcellization.modal.turnStreetTitle', 'Run the street along the next edge of the site'))}">${escapeHtml(t('reparcellization.modal.turnStreet', 'Turn the street'))}</button>` : ''}
                                 <span class="reparcel-tools-spacer"></span>
                             </div>
+                            ${state.sitePool ? buildStreetSettingsHtml() : ''}
                             <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
                                 <button type="button" class="btn-draw-tool" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
                                 <button type="button" class="btn-draw-tool btn-draw-finish" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
@@ -681,6 +698,7 @@
                 }
                 updateDrawToolButtons();
                 if (state.streetTurnBtn) state.streetTurnBtn.disabled = option.key !== 'street-plots';
+                syncStreetSettingsInputs();
                 // Manual means the NODE/EDGE system, not the polygon tool. It used to arm
                 // drawing on entry, which made "draw a plot" look like the only manual way to
                 // work and left boundary editing unreachable. Draw-plot and split-with-line are
@@ -697,6 +715,16 @@
             state.streetTurnBtn.disabled = state.algorithm !== 'street-plots';
             state.streetTurnBtn.addEventListener('click', turnStreet);
         }
+        state.streetWidthInput = overlay.querySelector('[data-reparcel-street-width]');
+        state.plotWidthInput = overlay.querySelector('[data-reparcel-plot-width]');
+        [state.streetWidthInput, state.plotWidthInput].forEach(input => {
+            if (!input) return;
+            // 'change' (Enter, blur, the spinner), not 'input': typing "12" must not lay out "1".
+            input.addEventListener('change', () => {
+                onStreetSettingsChange().catch(error => console.error('[reparcellization] re-laying the street plots failed', error));
+            });
+        });
+        syncStreetSettingsInputs();
 
         const shuffleBtn = overlay.querySelector('[data-reparcel-shuffle]');
         if (shuffleBtn) {
@@ -2290,12 +2318,17 @@
             capture: () => ({
                 slices: JSON.parse(JSON.stringify(state.slices || [])),
                 ownerShares: JSON.parse(JSON.stringify(state.ownerShares || [])),
-                selectedSliceIndex: state.selectedSliceIndex
+                selectedSliceIndex: state.selectedSliceIndex,
+                streetWidthM: state.streetWidthM,
+                plotWidthM: state.plotWidthM
             }),
             restore: (snapshot) => {
                 state.slices = snapshot.slices;
                 state.ownerShares = snapshot.ownerShares;
                 state.selectedSliceIndex = snapshot.selectedSliceIndex;
+                if (Number.isFinite(snapshot.streetWidthM)) state.streetWidthM = snapshot.streetWidthM;
+                if (Number.isFinite(snapshot.plotWidthM)) state.plotWidthM = snapshot.plotWidthM;
+                syncStreetSettingsInputs();
                 dismissOwnerPopup();
                 updateLegend(state.ownerShares);
                 drawPreview();
@@ -3109,19 +3142,27 @@
     // "Plots along a street" on a site pool: a street (public land) parallel to the frontage edge
     // and plots on either side, each given to the contributor whose ground it mostly stands on —
     // a bound parcel's owner, or open ground (no owner).
+    // A refusal (subdivision.js streetPlotsLayout: widths out of range, or no whole plot along the
+    // frontage) leaves no slices and is kept in state.streetPlotsRefusal for the status line.
     function computeStreetPlotSlices() {
         const api = subdivisionApi();
+        state.streetPlotsRefusal = null;
+        state.streetPlotsPlacement = null;
         if (!api || !state.sitePool || !state.superParcel) return [];
         let layout = null;
         try {
             layout = api.streetPlotsLayout(state.superParcel.geometry, {
-                frontageEdgeIndex: Number.isInteger(state.streetFrontageIndex) ? state.streetFrontageIndex : undefined
+                frontageEdgeIndex: Number.isInteger(state.streetFrontageIndex) ? state.streetFrontageIndex : undefined,
+                streetWidthM: state.streetWidthM,
+                plotWidthM: state.plotWidthM
             });
         } catch (error) {
-            console.warn('[reparcellization] street layout failed', error);
+            if (error && error.code) state.streetPlotsRefusal = error;
+            else console.warn('[reparcellization] street layout failed', error);
             return [];
         }
         state.streetFrontageIndex = layout.frontageEdgeIndex;
+        state.streetPlotsPlacement = layout.placement;
         const ownerByKey = new Map(state.ownerShares.map(entry => [entry.ownerKey, entry]));
         const slices = [];
         layout.plots.forEach(geometry => {
@@ -3136,6 +3177,122 @@
             slices.push(street);
         }
         return slices;
+    }
+
+    // Street width / plot width inputs (site pools only). They follow the street layout like the
+    // Turn button: usable only while "Plots along a street" is the algorithm.
+    function buildStreetSettingsHtml() {
+        const api = subdivisionApi();
+        const streetLimits = api ? api.STREET_WIDTH_LIMITS_M : { min: 4, max: 30 };
+        const plotLimits = api ? api.PLOT_WIDTH_LIMITS_M : { min: 6, max: 60 };
+        const unit = escapeHtml(t('reparcellization.modal.streetSettings.unit', 'm'));
+        const field = (attr, labelKey, labelFallback, titleKey, titleFallback, limits, value) => {
+            const title = escapeHtml(t(titleKey, titleFallback, { min: limits.min, max: limits.max }));
+            return `<label class="reparcel-street-setting" title="${title}">
+                                    <span class="reparcel-street-setting__label">${escapeHtml(t(labelKey, labelFallback))}</span>
+                                    <input type="number" class="reparcel-street-setting__input" ${attr} min="${limits.min}" max="${limits.max}" step="0.5" inputmode="decimal" value="${value}">
+                                    <span class="reparcel-street-setting__unit">${unit}</span>
+                                </label>`;
+        };
+        return `<div class="reparcel-street-settings" data-reparcel-street-settings>
+                                ${field('data-reparcel-street-width', 'reparcellization.modal.streetSettings.streetWidth', 'Street width',
+                                    'reparcellization.modal.streetSettings.streetWidthTitle', 'Width of the new street, {{min}}–{{max}} m', streetLimits, state.streetWidthM)}
+                                ${field('data-reparcel-plot-width', 'reparcellization.modal.streetSettings.plotWidth', 'Plot width (frontage)',
+                                    'reparcellization.modal.streetSettings.plotWidthTitle', 'Width of each plot along the street, {{min}}–{{max}} m. The frontage is split evenly, so plots come out close to this width.', plotLimits, state.plotWidthM)}
+                            </div>`;
+    }
+
+    function syncStreetSettingsInputs() {
+        const enabled = state.algorithm === 'street-plots';
+        [[state.streetWidthInput, state.streetWidthM], [state.plotWidthInput, state.plotWidthM]].forEach(([input, value]) => {
+            if (!input) return;
+            input.value = String(value);
+            input.disabled = !enabled;
+            input.removeAttribute('aria-invalid');
+        });
+    }
+
+    // The message for a refused street layout or invalid width (subdivision.js error shapes).
+    function streetPlotsRefusalText(refusal) {
+        if (!refusal) return '';
+        if (refusal.code === 'no-whole-plot') {
+            return t('reparcellization.modal.status.noWholePlot',
+                'A {{width}} m plot does not fit: the site is only {{frontage}} m along the street. Choose a narrower plot or turn the street.',
+                { width: refusal.details.plotWidthM, frontage: refusal.details.frontageM });
+        }
+        const error = (refusal.details && refusal.details.errors && refusal.details.errors[0]) || refusal;
+        return error.field === 'streetWidthM'
+            ? t('reparcellization.modal.status.streetWidthInvalid', 'Street width must be a number from {{min}} to {{max}} m.', { min: error.min, max: error.max })
+            : t('reparcellization.modal.status.plotWidthInvalid', 'Plot width must be a number from {{min}} to {{max}} m.', { min: error.min, max: error.max });
+    }
+
+    // Do the current (restored) plots equal what the street layout makes of the current settings?
+    function savedPlotsAreStreetLayout() {
+        const key = slices => JSON.stringify(slices.map(slice => [slice.use || '', slice.ownerKey || '', slice.geometry]).sort((a, b) => (JSON.stringify(a) < JSON.stringify(b) ? -1 : 1)));
+        const saved = state.slices;
+        const frontage = state.streetFrontageIndex;
+        const fresh = computeStreetPlotSlices();
+        state.streetFrontageIndex = frontage;
+        return fresh.length > 0 && key(fresh) === key(saved);
+    }
+
+    // The status line of a laid-out street: frontage basis + hint, or why the street was dropped.
+    function showStreetPlotsStatus() {
+        const hint = t('reparcellization.modal.status.streetPlotsHint', 'Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.');
+        const basis = window.StreetFrontage ? window.StreetFrontage.basisText(state.streetFrontageBasis) : '';
+        // A street too wide for this site's depth leaves only plots: say so, it was asked for.
+        const dropped = state.streetPlotsPlacement === 'none'
+            ? t('reparcellization.modal.status.streetDropped',
+                'The site is too shallow for a {{width}} m street and a row of plots, so it is all plots. Choose a narrower street to get one.',
+                { width: state.streetWidthM })
+            : '';
+        if (dropped) setStatus(`${basis ? `${basis} ` : ''}${dropped}`, 'warning');
+        else if (basis) setStatus(`${basis} ${hint}`, 'info');
+        else setStatus(hint, 'info', 'reparcellization.modal.status.streetPlotsHint');
+    }
+
+    // True while the plots are still what the last automatic street layout produced.
+    function streetPlotsUntouched() {
+        return state.streetPlotsBaseline !== null && layoutSignature() === state.streetPlotsBaseline;
+    }
+
+    async function confirmRelayStreetPlots() {
+        const message = t('reparcellization.modal.relayConfirm',
+            'Re-lay the plots with the new widths? The changes you made to the plots will be discarded.');
+        const okText = t('reparcellization.modal.relayConfirmOk', 'Re-lay plots');
+        const cancelText = t('reparcellization.modal.relayConfirmCancel', 'Keep my plots');
+        if (typeof window.showStyledConfirm === 'function') {
+            try { return await window.showStyledConfirm(message, { okText, cancelText }); } catch (_) { /* native confirm below */ }
+        }
+        return window.confirm(message);
+    }
+
+    // A width input changed: check it, ask before discarding hand edits, re-lay the plots.
+    async function onStreetSettingsChange() {
+        const api = subdivisionApi();
+        if (!api || state.algorithm !== 'street-plots' || !state.streetWidthInput || !state.plotWidthInput) return;
+        const checked = api.streetPlotsWidths({ streetWidthM: state.streetWidthInput.value, plotWidthM: state.plotWidthInput.value });
+        state.streetWidthInput.toggleAttribute('aria-invalid', checked.errors.some(e => e.field === 'streetWidthM'));
+        state.plotWidthInput.toggleAttribute('aria-invalid', checked.errors.some(e => e.field === 'plotWidthM'));
+        if (!checked.ok) {
+            setStatus(streetPlotsRefusalText(checked.errors[0]), 'error');
+            return;
+        }
+        if (checked.streetWidthM === state.streetWidthM && checked.plotWidthM === state.plotWidthM) {
+            // Back to the values in use (after an invalid entry): the layout stands, clear the error.
+            if (state.slices.length) showStreetPlotsStatus();
+            else if (state.streetPlotsRefusal) setStatus(streetPlotsRefusalText(state.streetPlotsRefusal), 'error');
+            return;
+        }
+        if (!streetPlotsUntouched() && state.slices.length && !(await confirmRelayStreetPlots())) {
+            syncStreetSettingsInputs();
+            if (state.slices.length) showStreetPlotsStatus();
+            return;
+        }
+        pushHistory();
+        state.streetWidthM = checked.streetWidthM;
+        state.plotWidthM = checked.plotWidthM;
+        await refreshPreview();
     }
 
     function turnStreet() {
@@ -3595,7 +3752,12 @@
             ...(state.sitePool ? {
                 poolSource: 'site',
                 openGroundM2: Math.round(state.sitePool.pool.openGroundM2 * 100) / 100,
-                ...(Number.isInteger(state.streetFrontageIndex) ? { streetFrontageIndex: state.streetFrontageIndex } : {})
+                // Street/plot widths of "plots along a street", next to its frontage edge.
+                ...subdivisionApi().streetPlotsPlanFields({
+                    streetWidthM: state.streetWidthM,
+                    plotWidthM: state.plotWidthM,
+                    streetFrontageIndex: state.streetFrontageIndex
+                })
             } : {}),
             totalArea: state.totalArea,
             // Land-readjustment accounting metadata so downstream views/audits can
@@ -3947,6 +4109,9 @@
             state.slices = hydrateSlicesFromPolygons(seededPolygons);
             if (state.slices.length) {
                 setStatus('', 'info');
+                // Saved street plots count as untouched (no confirm before a re-lay) only when the
+                // saved settings lay out exactly these plots again.
+                state.streetPlotsBaseline = state.algorithm === 'street-plots' && savedPlotsAreStreetLayout() ? layoutSignature() : null;
                 updateLegend(state.ownerShares);
                 drawPreview();
                 updateCommitState();
@@ -3957,20 +4122,21 @@
         if (state.algorithm === 'street-plots') {
             state.slices = computeStreetPlotSlices();
             if (!state.slices.length) {
-                setStatus(
-                    t('reparcellization.modal.status.streetPlotsFailed', 'Could not lay out plots along a street on this site.'),
-                    'error',
-                    'reparcellization.modal.status.streetPlotsFailed'
-                );
+                state.streetPlotsBaseline = null;
+                if (state.streetPlotsRefusal) setStatus(streetPlotsRefusalText(state.streetPlotsRefusal), 'error');
+                else {
+                    setStatus(
+                        t('reparcellization.modal.status.streetPlotsFailed', 'Could not lay out plots along a street on this site.'),
+                        'error',
+                        'reparcellization.modal.status.streetPlotsFailed'
+                    );
+                }
                 updateLegend(state.ownerShares);
                 drawPreview();
                 updateCommitState();
                 return;
             }
-            const hint = t('reparcellization.modal.status.streetPlotsHint', 'Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.');
-            const basis = window.StreetFrontage ? window.StreetFrontage.basisText(state.streetFrontageBasis) : '';
-            if (basis) setStatus(`${basis} ${hint}`, 'info');
-            else setStatus(hint, 'info', 'reparcellization.modal.status.streetPlotsHint');
+            showStreetPlotsStatus();
         } else if (state.algorithm === 'sweep-line') {
             initSweepOrientation();
             state.slices = computeSweepSlices();
@@ -4006,6 +4172,8 @@
         updateLegend(state.ownerShares);
         drawPreview();
         updateCommitState();
+        // The automatic layout just made is the baseline hand edits are measured against.
+        state.streetPlotsBaseline = state.algorithm === 'street-plots' ? layoutSignature() : null;
     }
 
     function validateSelection(selection) {
@@ -4215,8 +4383,12 @@
                 return false;
             }
             state.sitePool = built;
-            state.streetFrontageIndex = Number.isInteger(window.pendingReparcellizationPlan && window.pendingReparcellizationPlan.streetFrontageIndex)
-                ? window.pendingReparcellizationPlan.streetFrontageIndex : null;
+            // A saved plan's street settings come back with it (defaults for a new subdivision or
+            // a plan saved before the width controls existed).
+            const savedStreet = subdivisionApi().streetPlotsSettingsOf(window.pendingReparcellizationPlan);
+            state.streetWidthM = savedStreet.streetWidthM;
+            state.plotWidthM = savedStreet.plotWidthM;
+            state.streetFrontageIndex = savedStreet.streetFrontageIndex;
             // A saved plan's street stays where it was saved: no street lookup re-lays it.
             state.streetFrontageBasis = state.streetFrontageIndex === null ? null : { basis: 'saved' };
             selection = { ids: built.boundParcelIds.slice(), source: 'cadastre' };

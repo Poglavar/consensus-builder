@@ -1,9 +1,12 @@
-// Which applied subdivision/readjustment plots a road or track edge would cut, and which houses
-// standing on such plots it would run through (PARCEL-OPTIONAL.md phase 7b). A later corridor takes
+// Which applied subdivision/readjustment plots a road or track edge would cut, and which standing
+// proposal buildings it would run through (PARCEL-OPTIONAL.md phase 7b). A later corridor takes
 // its ribbon out of the plots it crosses (apply/road.js _groundAfterLaterCorridors), so the road tool
-// asks "Build through?" naming them; a corridor through a standing building is refused at apply
-// (`building-over-road`), so those are said up front and Build through is not offered. Pure: the
-// browser glue (corridor-structures.js) passes live pieces, proposal buildings and records.
+// asks "Build through?" naming them. A corridor through ANY standing proposal building is refused at
+// apply — a house on a plot (`building-over-road`) and a block on cadastral parcels alike (its replay
+// no longer finds its ground: `formation-ground-unresolved`), at surface or in a tunnel, since a
+// tunnel does not change the take — so every such building is said up front and only another route is
+// offered. Pure: the browser glue (corridor-structures.js) passes live pieces, proposal buildings and
+// records.
 // UMD: `window.__plotCrossings`, `require` in backend tests.
 (function (root, factory) {
     const api = factory(root);
@@ -75,6 +78,8 @@
      *   buildings: applied proposal building footprints (properties.proposalId);
      *   plotRecords: applied subdivision/readjustment records (for "is this house on a plot").
      * @returns {{ plots: {proposalId, title, kind, count, areaM2}[], blocked: {proposalId, title, plotProposalId, plotTitle, areaM2}[] }}
+     *   blocked: every applied proposal building the edge runs through; plotProposalId/plotTitle
+     *   name the plot it stands on, or are null for a building on cadastral parcels.
      */
     function detectPlotCrossings(corridor, options) {
         const opts = options || {};
@@ -116,14 +121,14 @@
             if (!feature || owner === undefined || owner === null || owner === '') return;
             const area = overlapM2(t, edge, feature);
             if (area < min) return;
+            // The plot only words the warning; the refusal is the same on or off a plot.
             const ground = plotGrounds.find(entry => entry.parts.some(part => overlapM2(t, part, feature) >= min));
-            if (!ground) return; // a building not on a plot keeps the building prompt (corridor-tunnel.js)
             const key = String(owner);
             const entry = byHouse.get(key) || {
                 proposalId: key,
                 title: titleOf(lookup(key), key),
-                plotProposalId: idOf(ground.record),
-                plotTitle: titleOf(ground.record, idOf(ground.record)),
+                plotProposalId: ground ? idOf(ground.record) : null,
+                plotTitle: ground ? titleOf(ground.record, idOf(ground.record)) : null,
                 areaM2: 0
             };
             entry.areaM2 += area;
@@ -176,11 +181,20 @@
             }
         }
         if (blocked.length) {
-            const lines = blocked.map(entry => `• ${t('modal.corridorPlots.blockedLine', '“{{name}}” on “{{plot}}”', { name: entry.title, plot: entry.plotTitle })}`);
-            parts.push(`${t('modal.corridorPlots.blocked', 'It would run through a house standing on a plot:', { kind })}\n${lines.join('\n')}`);
-            parts.push(t('modal.corridorPlots.blockedNote',
-                'A {{kind}} is never built through a standing building, so it would be refused. Choose another route, or unapply the house first.',
-                { kind }));
+            const onPlots = blocked.every(entry => entry.plotTitle);
+            const lines = blocked.map(entry => `• ${entry.plotTitle
+                ? t('modal.corridorPlots.blockedLine', '“{{name}}” on “{{plot}}”', { name: entry.title, plot: entry.plotTitle })
+                : t('modal.corridorPlots.blockedBuildingLine', '“{{name}}”', { name: entry.title })}`);
+            parts.push(`${onPlots
+                ? t('modal.corridorPlots.blocked', 'It would run through a house standing on a plot:', { kind })
+                : t('modal.corridorPlots.blockedBuilding', 'It would run through a proposed building:', { kind })}\n${lines.join('\n')}`);
+            parts.push(onPlots
+                ? t('modal.corridorPlots.blockedNote',
+                    'A {{kind}} is never built through a standing building, so it would be refused. Choose another route, or unapply the house first.',
+                    { kind })
+                : t('modal.corridorPlots.blockedBuildingNote',
+                    'A {{kind}} is never built through a standing building, at surface or in a tunnel, so it would be refused. Choose another route, or unapply that proposal first.',
+                    { kind }));
         }
         const cancel = { value: 'cancel', label: t('modal.corridorTunnel.cancel', 'Choose another route', {}) };
         const choices = blocked.length

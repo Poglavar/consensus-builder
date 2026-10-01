@@ -1238,6 +1238,7 @@ body.site-intro-open {
    way the old-plots view does it. */
 .reparcel-assign-mode .reparcel-legend-actions > *:not(.reparcel-assign-btn):not(.reparcel-allpublic-btn),
 .reparcel-assign-mode .reparcel-draw-toolbar,
+.reparcel-assign-mode .reparcel-street-settings,
 .reparcel-assign-mode .reparcel-alg-options {
     opacity: 0.4;
     pointer-events: none;
@@ -1723,6 +1724,50 @@ body.site-intro-open {
 .reparcel-legend-actions .reparcel-street-turn-btn:disabled {
     opacity: 0.5;
     cursor: default;
+}
+
+/* Subdivision: street width and plot width of "plots along a street", a row under the tools.
+   Label, input and unit stay together on one line; the two fields wrap under each other at
+   phone width. */
+.reparcel-street-settings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.reparcel-street-setting {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #374151;
+    white-space: nowrap;
+}
+
+.reparcel-street-setting__input {
+    width: 64px;
+    padding: 4px 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.reparcel-street-setting__input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.reparcel-street-setting__input[aria-invalid] {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 1px #dc2626;
+}
+
+.reparcel-street-setting__unit {
+    color: #6b7280;
 }
 
 .reparcel-ledger-table tr.reparcel-ledger-row--no-owner td {

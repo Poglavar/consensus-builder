@@ -86,7 +86,23 @@
         return result(true);
     }
 
-    const api = { applyStrokeCancel, applyRoadUndo };
+    // A click on the stroke's own last vertex (a double-click, or a snap back onto it) would add a
+    // zero-length edge: no direction, so no cross-section, and a stroke made only of such an edge
+    // draws as a bare centreline ("no strips for a drawn segment"). Such a click adds nothing.
+    // Distance on a local equirectangular plane — exact enough at centimetre scale.
+    const MIN_STROKE_EDGE_M = 0.01;
+    function isRepeatedStrokeVertex(previous, point, minMeters = MIN_STROKE_EDGE_M) {
+        if (!previous || !point) return false;
+        const lat0 = Number(previous.lat), lng0 = Number(previous.lng);
+        const lat1 = Number(point.lat), lng1 = Number(point.lng);
+        if (![lat0, lng0, lat1, lng1].every(Number.isFinite)) return false;
+        const metresPerDegree = 111320;
+        const dy = (lat1 - lat0) * metresPerDegree;
+        const dx = (lng1 - lng0) * metresPerDegree * Math.cos(((lat0 + lat1) / 2) * Math.PI / 180);
+        return Math.hypot(dx, dy) < minMeters;
+    }
+
+    const api = { applyStrokeCancel, applyRoadUndo, isRepeatedStrokeVertex, MIN_STROKE_EDGE_M };
 
     if (typeof window !== 'undefined') {
         window.RoadStrokeState = api;

@@ -1,7 +1,8 @@
 // The road tool's "Build through" prompt for subdivision/readjustment plots (PARCEL-OPTIONAL.md
-// phase 7b): which plots an edge would cut (count and area per proposal), which houses standing on
-// plots it would run through (refused at apply, so warned up front with no Build through), and the
-// browser glue in corridor-structures.js (approvals per drawing session, refusal never approvable).
+// phase 7b): which plots an edge would cut (count and area per proposal), which standing proposal
+// buildings it would run through — on a plot or on cadastral parcels, refused at apply either way, so
+// warned up front with no Build through — and the browser glue in corridor-structures.js (approvals
+// per drawing session, refusal never approvable).
 import { createRequire } from 'node:module';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as turf from '@turf/turf';
@@ -64,7 +65,7 @@ describe('detectPlotCrossings (pure)', () => {
         expect(plots.detectPlotCrossings(road, { pieces: PIECES, lookupProposal: lookup, approvedIds: ['sub'], turf }).plots).toEqual([]);
     });
 
-    it('says a house on a plot is in the way; a house off any plot is left to the building prompt', () => {
+    it('says a house on a plot is in the way, and a building off every plot too', () => {
         const road = rect(8, -3, 9, 9);
         const onPlot = houseOn(rect(7.5, 4, 10, 5.5));
         const result = plots.detectPlotCrossings(road, { pieces: PIECES, buildings: [onPlot], lookupProposal: lookup, plotRecords: [SUB, READJ], turf });
@@ -74,9 +75,32 @@ describe('detectPlotCrossings (pure)', () => {
         const beside = plots.detectPlotCrossings(rect(10.5, -3, 11.5, 9), { pieces: PIECES, buildings: [onPlot], lookupProposal: lookup, plotRecords: [SUB], turf });
         expect(beside.blocked).toEqual([]);
         expect(beside.plots[0].count).toBe(2);
-        // A house outside every plot record is not this prompt's business.
+        // A building outside every plot record refuses the road just the same: named, no plot.
         const offPlot = houseOn(rect(30, 0, 32, 2));
-        expect(plots.detectPlotCrossings(rect(30.5, -3, 31, 9), { pieces: PIECES, buildings: [offPlot], lookupProposal: lookup, plotRecords: [SUB, READJ], turf }).blocked).toEqual([]);
+        expect(plots.detectPlotCrossings(rect(30.5, -3, 31, 9), { pieces: PIECES, buildings: [offPlot], lookupProposal: lookup, plotRecords: [SUB, READJ], turf }).blocked)
+            .toEqual([expect.objectContaining({ proposalId: 'house', title: 'House', plotProposalId: null, plotTitle: null })]);
+        expect(plots.detectPlotCrossings(rect(33, -3, 34, 9), { pieces: PIECES, buildings: [offPlot], lookupProposal: lookup, plotRecords: [SUB, READJ], turf }).blocked).toEqual([]);
+    });
+
+    // Observed on HR-339318-5848/3: a road drawn along the parcel through the building of a Block
+    // proposed on it. The block is on cadastral parcels, not a plot, so the edge used to pass here to
+    // the tunnel prompt, which offered surface and tunnel — both refused when the road was finished.
+    it('blocks the observed road through a block on a cadastral parcel', () => {
+        const fixture = require('./fixtures/road-through-block-5848-3.json');
+        const BLOCK = { proposalId: 'block', title: 'Block 0110-2207', goal: 'buildings', buildingProposal: {} };
+        const building = { type: 'Feature', properties: { proposalId: 'block' }, geometry: fixture.blockBuilding };
+        const parcelPiece = piece(fixture.parcelId, null, fixture.parcel);
+        const result = plots.detectPlotCrossings(fixture.roadPolygon, {
+            pieces: [parcelPiece], buildings: [building], lookupProposal: id => (id === 'block' ? BLOCK : null), plotRecords: [], turf
+        });
+        expect(result.plots).toEqual([]);
+        expect(result.blocked).toEqual([expect.objectContaining({ proposalId: 'block', title: 'Block 0110-2207', plotTitle: null })]);
+        expect(result.blocked[0].areaM2).toBeGreaterThan(10);
+        const prompt = plots.plotCrossingPrompt(result, { corridorKind: 'road' });
+        expect(prompt.message).toContain('It would run through a proposed building:\n• “Block 0110-2207”');
+        expect(prompt.message).toContain('at surface or in a tunnel, so it would be refused');
+        expect(prompt.choices).toEqual([{ value: 'cancel', label: 'Choose another route', primary: true }]);
+        expect(prompt.blocked).toBe(true);
     });
 });
 
@@ -175,7 +199,8 @@ describe('i18n', () => {
     it('has the plot prompt and the drift notice in en/hr/es/sr', () => {
         ['en', 'hr', 'es', 'sr'].forEach(lang => {
             const dict = require(`../../frontend/i18n/${lang}.json`);
-            ['offer', 'line', 'plotOne', 'plotMany', 'note', 'blocked', 'blockedLine', 'blockedNote']
+            ['offer', 'line', 'plotOne', 'plotMany', 'note', 'blocked', 'blockedLine', 'blockedNote',
+                'blockedBuilding', 'blockedBuildingLine', 'blockedBuildingNote']
                 .forEach(key => expect(dict.modal.corridorPlots[key], `${lang} ${key}`).toBeTruthy());
             ['title', 'addedOne', 'addedMany', 'removed', 'addedList', 'removedList', 'coverage', 'note', 'rebind',
                 'reboundAs', 'confirm', 'cancel', 'unavailable', 'failed', 'done']

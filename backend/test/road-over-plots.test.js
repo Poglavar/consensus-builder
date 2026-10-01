@@ -401,3 +401,39 @@ describe('a road built through a land readjustment on parcels', () => {
         expect(snapshot(fabric)).toEqual(before);
     });
 });
+
+// Observed in the road tool on HR-339318-5848/3 (fixture): a Block proposed on the parcel, then a
+// road drawn along the parcel through the block's building. The corridor replay re-derives the block,
+// whose footprint the road has taken, so the block refuses and the whole road rolls back — by the
+// rule above. The refusal used to reach the user as "proposal could not be materialized locally": the
+// block's own reason was read as `.message` off the string getLastApplyFailure returns.
+describe('a road through a block standing on a cadastral parcel (HR-339318-5848/3)', () => {
+    const fixture = require('./fixtures/road-through-block-5848-3.json');
+
+    it('is refused with the block\'s own reason', async () => {
+        const facts = [parcel(fixture.parcelId, fixture.parcel)];
+        const block = {
+            proposalId: 'block', title: 'Block 0110-2207', goal: 'buildings', applied: false,
+            createdAt: '2026-10-01T12:00:00.000Z', cadastreParcelIds: [fixture.parcelId],
+            buildingProposal: {}, geometry: { buildings: [turf.feature(fixture.blockBuilding)] }
+        };
+        const road = {
+            ...roadRecord('road-block', fixture.roadPolygon, { cadastreParcelIds: [fixture.parcelId] }),
+            title: 'Road 0110-2210'
+        };
+        road.roadProposal.definition.points = fixture.roadPoints;
+        road.roadProposal.definition.width = 7.5;
+        const { manager, store } = await harness({ facts, records: [block, road] });
+        installOwnershipSpies();
+        await expect(manager.applyProposal('block')).resolves.toBe(true);
+        // The road really does run through the building, not just across the parcel.
+        expect(overlap(turf.feature(fixture.blockBuilding), fixture.roadPolygon)).toBeGreaterThan(10);
+
+        store.getProposal('road-block').applied = true;
+        const derived = await manager.rematerializeCorridorScope([store.getProposal('road-block')]);
+        expect(derived && derived.ok).not.toBe(true);
+        expect(derived.failed[0]).toMatchObject({ proposalId: 'block', title: 'Block 0110-2207' });
+        expect(derived.failed[0].reason).toMatch(/covers only \d+% of this building's footprint/);
+        expect(derived.failed[0].reason).not.toMatch(/could not be materialized locally/);
+    });
+});

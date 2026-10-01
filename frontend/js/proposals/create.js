@@ -137,6 +137,44 @@ function ownerOfferStatusText(check) {
         { parcels: eligibility.unattestedParcelIds.join(', ') })}`;
 }
 
+// The "Offer my land" gate (GuestPolicy 'ownership-proof'): a connected wallet that a lens member
+// attested as owner of the selected parcels, and a profile name (the offer is published). Returns
+// true when the offer may open; otherwise says what is missing and how to get it, and returns false.
+async function requireOwnerOfferProof() {
+    const t = getProposalI18nHelper();
+    const walletConnected = !!(window.LensPicker && window.LensPicker.isActive());
+    let check = null;
+    if (walletConnected) {
+        try {
+            check = await checkOwnerOfferEligibility();
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [OwnerOffer] proof check failed`, error);
+            check = { ok: false, reason: 'unavailable' };
+        }
+    }
+    const state = {
+        isGuest: currentProfileIsGuest(),
+        walletConnected,
+        ownershipAttested: !!(check && check.ok && check.eligibility.eligible)
+    };
+    const verdict = window.GuestPolicy.check('ownerOffer', state);
+    console.info(`[${new Date().toISOString()}] [OwnerOffer] proof: ${verdict.allowed ? 'ok' : `missing ${verdict.missing.join(', ')}`}`);
+    if (verdict.allowed) return true;
+    const steps = verdict.missing.map(gap => {
+        if (gap === 'wallet') return t('modal.createProposal.ownerOffer.proof.wallet', 'connect your Solana wallet');
+        if (gap === 'attestation') {
+            // With a wallet, the eligibility check knows the precise reason (no lens, no service...).
+            if (check) return ownerOfferStatusText(check);
+            return t('modal.createProposal.ownerOffer.proof.attestation', 'ask a member of your lens (👓) to attest your wallet as the owner of these parcels');
+        }
+        return t('modal.createProposal.ownerOffer.proof.name', 'choose a profile name (top-right bubble)');
+    });
+    const message = `${t('modal.createProposal.ownerOffer.proof.intro', 'Offering your land needs proof that it is yours:')} ${steps.join('; ')}.`;
+    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 10000);
+    else updateStatus(message);
+    return false;
+}
+
 // Re-evaluates the gate and renders the "Offer my land" group. Called when the dialog opens and from
 // its Check again button (the lens and the wallet can change while the dialog is open).
 async function refreshOwnerOfferMode() {
@@ -166,6 +204,8 @@ async function refreshOwnerOfferMode() {
     const eligible = !!(check.ok && check.eligibility.eligible);
     checkbox.disabled = !eligible;
     if (!eligible) checkbox.checked = false;
+    // Opened from "Offer my land", which already proved ownership: start in owner-offer mode.
+    else if (typeof proposalDialogOverrides !== 'undefined' && proposalDialogOverrides && proposalDialogOverrides.ownerOffer) checkbox.checked = true;
     status.textContent = ownerOfferStatusText(check);
     onProposalOwnerOfferChange();
 }
@@ -622,6 +662,8 @@ async function createProposal() {
 
         console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected, 'Canton:', cantonActive);
         let shouldMintOnchain = ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && (finalParcelIds.length > 0 || !!siteContext));
+        // Minting leaves the device and the record carries its author (GuestPolicy 'mint').
+        if (shouldMintOnchain && guestPolicyBlocks('mint')) return;
 
         // Parcel NFTs represent original cadastral land, never a browser's materialized pieces.
         const parcelIds = authoredCadastreParcelIds.slice();
@@ -1131,15 +1173,23 @@ async function createProposal() {
         // }
 
         if (proposalMainType === 'Reparcellization') {
-            if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.parcelIds)) {
-                showProposalAlertMessage('reparcellization_plan_is_missing_please_rerun_the_algorithm', 'Reparcellization plan is missing. Please rerun the algorithm.');
-                return;
-            }
-            const planParcelSet = new Set((pendingReparcelPlan.parcelIds || []).map(id => id && id.toString()));
-            const finalParcelSet = new Set(finalParcelIds.map(id => id && id.toString()));
-            const parcelsMatch = planParcelSet.size === finalParcelSet.size && Array.from(planParcelSet).every(id => finalParcelSet.has(id));
-            if (!parcelsMatch) {
-                showProposalAlertMessage('selected_parcels_changed_after_running_reparcellization_please_rerun_the_algorithm', 'Selected parcels changed after running reparcellization. Please rerun the algorithm.');
+            // A readjustment must still be on its selection; a subdivision (poolSource 'site') is
+            // pooled from its site, whose parcels are its binding (none on open ground), so only its
+            // site is compared (proposals/subdivision.js planCreateVerdict).
+            const planVerdict = window.__subdivision.planCreateVerdict(pendingReparcelPlan, {
+                selectedParcelIds: finalParcelIds.map(id => id && id.toString()),
+                site: siteContext ? siteContext.site : null
+            });
+            if (!planVerdict.ok) {
+                const refusals = {
+                    missing: ['reparcellization_plan_is_missing_please_rerun_the_algorithm', 'Reparcellization plan is missing. Please rerun the algorithm.'],
+                    'parcels-changed': ['selected_parcels_changed_after_running_reparcellization_please_rerun_the_algorithm', 'Selected parcels changed after running reparcellization. Please rerun the algorithm.'],
+                    'site-missing': ['subdivision_site_missing', 'This subdivision has no site. Reopen it from its draft and save again.'],
+                    'site-changed': ['subdivision_site_changed', 'The site changed after the plots were laid. Open the subdivision editor again and click Done.']
+                };
+                const [key, fallback] = refusals[planVerdict.reason];
+                console.warn(`[${new Date().toISOString()}] [createProposal] reparcellization plan refused: ${planVerdict.reason}`);
+                showProposalAlertMessage(key, fallback);
                 return;
             }
             proposal.goal = 'reparcellization';
@@ -1473,64 +1523,11 @@ async function createProposal() {
                         const geometryStartTime = performance.now();
                         updateStatus('Preparing proposal geometry...');
                         showProposalWaitingPopup('Preparing proposal geometry...');
-                        const combinedPolygon = [];
-                        let minLat = Infinity;
-                        let maxLat = -Infinity;
-                        let minLng = Infinity;
-                        let maxLng = -Infinity;
-
-                        const addPoint = (lat, lng) => {
-                            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                                return;
-                            }
-                            combinedPolygon.push([lat, lng]);
-                            minLat = Math.min(minLat, lat);
-                            maxLat = Math.max(maxLat, lat);
-                            minLng = Math.min(minLng, lng);
-                            maxLng = Math.max(maxLng, lng);
-                        };
-
-                        const addCoords = (segment) => {
-                            if (!Array.isArray(segment)) return;
-                            // If this looks like a point [lng, lat]
-                            if (segment.length === 2 && Number.isFinite(segment[0]) && Number.isFinite(segment[1])) {
-                                const lat = Math.abs(segment[0]) <= 90 ? segment[0] : segment[1];
-                                const lng = Math.abs(segment[0]) <= 90 ? segment[1] : segment[0];
-                                addPoint(lat, lng);
-                                return;
-                            }
-                            // If this is a ring or nested array, recurse
-                            segment.forEach(inner => addCoords(inner));
-                        };
-
-                        parcelPolygons.forEach(poly => addCoords(poly));
-
-                        if (combinedPolygon.length < 3) {
-                            // Derive a rectangle from min/max if we collected any coords
-                            if (Number.isFinite(minLat) && Number.isFinite(maxLat) && Number.isFinite(minLng) && Number.isFinite(maxLng)) {
-                                console.warn('[proposal-mint] Fallback rectangle from min/max bounds', { minLat, maxLat, minLng, maxLng });
-                                combinedPolygon.length = 0;
-                                combinedPolygon.push([minLat, minLng]);
-                                combinedPolygon.push([minLat, maxLng]);
-                                combinedPolygon.push([maxLat, maxLng]);
-                                combinedPolygon.push([maxLat, minLng]);
-                                combinedPolygon.push([minLat, minLng]);
-                            }
-                        }
-
-                        if (combinedPolygon.length < 3) {
-                            // Fallback: use map bounds if available
-                            if (bounds && typeof bounds.getSouthWest === 'function') {
-                                const sw = bounds.getSouthWest();
-                                const ne = bounds.getNorthEast();
-                                console.warn('[proposal-mint] Fallback rectangle from map bounds', { sw, ne });
-                                combinedPolygon.push([sw.lat, sw.lng]);
-                                combinedPolygon.push([sw.lat, ne.lng]);
-                                combinedPolygon.push([ne.lat, ne.lng]);
-                                combinedPolygon.push([ne.lat, sw.lng]);
-                                combinedPolygon.push([sw.lat, sw.lng]);
-                            }
-                        }
+                        // Every polygon collected above (live fabric features, the site) is GeoJSON
+                        // [lng, lat]; the combined outline keeps that order and says so to the capture.
+                        // (It used to guess per point with |x| <= 90 => latitude, which reads Zagreb's
+                        // longitude 15.97 as a latitude.)
+                        const combinedPolygon = window.__thumbnailBbox.lngLatPointsOf(parcelPolygons);
 
                         if (combinedPolygon.length < 3) {
                             console.error('[proposal-mint] Unable to derive proposal polygon', {
@@ -1574,7 +1571,7 @@ async function createProposal() {
                         // A road proposal's image is about the designed corridor, not the much larger
                         // set of cadastral parents it crosses. The modal preview already uses this
                         // geometry; keep the final stored/minted capture on the same source of truth.
-                        const screenshotGeometry = resolveCorridorScreenshotGeometry(proposal, combinedPolygon);
+                        const screenshotGeometry = resolveCorridorScreenshotGeometry(proposal, combinedPolygon, 'lnglat');
                         const screenshotPolygon = screenshotGeometry.polygon;
                         const screenshotPolygonOrder = screenshotGeometry.polygonOrder;
                         const screenshotFitToPolygonOnly = screenshotGeometry.fitToPolygonOnly;
@@ -1613,7 +1610,7 @@ async function createProposal() {
                                     zoom: 19,
                                     badge: goalBadge,
                                     polygonOrder: screenshotPolygonOrder,
-                                    parcelPolygonOrder: 'auto',
+                                    parcelPolygonOrder: 'lnglat',
                                     fitToPolygonOnly: screenshotFitToPolygonOnly
                                 });
                                 const bytes = computeByteSize(dataUrl);
@@ -2120,6 +2117,10 @@ async function createProposal() {
 
 function buildUploadReadyProposal(proposal) {
     if (!proposal) return null;
+    // The published record carries the profile's CURRENT name when it is this profile's draft
+    // (GuestPolicy.outgoingAuthor): stamped here, before the device-local authorAgentId is dropped
+    // below, because callers (the share dialog's Upload) project first and upload the projection.
+    stampCurrentAuthor(proposal);
     const uploadProposal = { ...proposal };
 
     // The complete selected cadastral scope was stamped at creation. Publishing never shrinks it to
@@ -2191,6 +2192,9 @@ function buildUploadReadyProposal(proposal) {
     // proposal on their own map.
     delete uploadProposal.applied;
     delete uploadProposal.appliedAt;
+    // The author's local agent id only says which profile on THIS device owns the draft
+    // (GuestPolicy.claimAuthorAgentId); the published record carries the author name.
+    delete uploadProposal.authorAgentId;
     ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
         .forEach(key => {
             const nested = uploadProposal[key];

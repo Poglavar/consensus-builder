@@ -18,6 +18,10 @@
     const OPEN_GROUND_OWNER_KEY = 'open-ground';
     const STREET_WIDTH_M = 10;
     const PLOT_WIDTH_M = 20;
+    // The widths a user may choose in the editor (metres, inclusive). Outside them a layout is
+    // refused, never clamped: a 2 m "street" or a 200 m "plot" is a typo, not a design.
+    const STREET_WIDTH_LIMITS_M = Object.freeze({ min: 4, max: 30 });
+    const PLOT_WIDTH_LIMITS_M = Object.freeze({ min: 6, max: 60 });
     // A band of plots shallower than this is not worth a second row: the street then runs along
     // the frontage instead of through the middle.
     const MIN_PLOT_DEPTH_M = 15;
@@ -182,13 +186,80 @@
         };
     }
 
+    // A refused "plots along a street" layout: `code` is 'invalid-width' (details.errors from
+    // streetPlotsWidths) or 'no-whole-plot' (details.frontageM, details.plotWidthM).
+    function streetPlotsError(code, details) {
+        const error = new RangeError(`subdivision: street plots refused (${code})`);
+        error.code = code;
+        error.details = details || {};
+        return error;
+    }
+
     /**
-     * Plots along a street. The street (STREET_WIDTH_M) runs parallel to the frontage edge: through
-     * the middle when the site is deep enough for a row of plots on each side, else along the
-     * frontage. Plots (about PLOT_WIDTH_M wide) are cut perpendicular to it with the site-plots
-     * cutter, using the same cut positions on both sides.
+     * The street and plot widths of a "plots along a street" layout, checked against their limits.
+     * A missing value (undefined/null) takes the default; anything else must be a number (or a
+     * numeric string, as an input gives it) inside the limits.
+     * @returns {{ok: boolean, streetWidthM: number|null, plotWidthM: number|null,
+     *   errors: {field: 'streetWidthM'|'plotWidthM', reason: 'not-a-number'|'range', min: number, max: number}[]}}
+     */
+    function streetPlotsWidths(input) {
+        const values = input || {};
+        const errors = [];
+        const read = (field, fallback, limits) => {
+            const raw = values[field];
+            if (raw === undefined || raw === null) return fallback;
+            const value = typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : raw;
+            if (!finite(value)) { errors.push({ field, reason: 'not-a-number', min: limits.min, max: limits.max }); return null; }
+            if (value < limits.min || value > limits.max) { errors.push({ field, reason: 'range', min: limits.min, max: limits.max }); return null; }
+            return value;
+        };
+        const streetWidthM = read('streetWidthM', STREET_WIDTH_M, STREET_WIDTH_LIMITS_M);
+        const plotWidthM = read('plotWidthM', PLOT_WIDTH_M, PLOT_WIDTH_LIMITS_M);
+        return { ok: errors.length === 0, streetWidthM, plotWidthM, errors };
+    }
+
+    // The settings a saved plan carries for "plots along a street" (persisted next to
+    // streetFrontageIndex) and back. A saved value that no longer passes the limits reads as the
+    // default rather than reopening a plan the editor would refuse to lay out.
+    function streetPlotsPlanFields(settings) {
+        const checked = streetPlotsWidths(settings);
+        const out = {
+            streetWidthM: checked.streetWidthM !== null ? checked.streetWidthM : STREET_WIDTH_M,
+            plotWidthM: checked.plotWidthM !== null ? checked.plotWidthM : PLOT_WIDTH_M
+        };
+        if (settings && Number.isInteger(settings.streetFrontageIndex)) out.streetFrontageIndex = settings.streetFrontageIndex;
+        return out;
+    }
+
+    function streetPlotsSettingsOf(plan) {
+        const saved = plan || {};
+        const checked = streetPlotsWidths({ streetWidthM: saved.streetWidthM, plotWidthM: saved.plotWidthM });
+        return {
+            streetWidthM: checked.streetWidthM !== null ? checked.streetWidthM : STREET_WIDTH_M,
+            plotWidthM: checked.plotWidthM !== null ? checked.plotWidthM : PLOT_WIDTH_M,
+            streetFrontageIndex: Number.isInteger(saved.streetFrontageIndex) ? saved.streetFrontageIndex : null
+        };
+    }
+
+    /**
+     * Plots along a street. The street (streetWidthM, default STREET_WIDTH_M) runs parallel to the
+     * frontage edge: through the middle when the site is deep enough for a row of plots on each
+     * side, else along the frontage, else (too shallow for a street and minPlotDepthM of plots) not
+     * at all. Plots run from the street to the site edge, so their depth is the site's, not a
+     * setting. They are cut perpendicular to the street with the site-plots cutter, using the same
+     * cut positions on both sides.
+     *
+     * Remainder rule (site-plots cutPlots): the site's whole extent along the frontage is split
+     * into round(extent / plotWidthM) equal strips, so the remainder is spread over every plot
+     * (each is between 0.75× and 1.5× plotWidthM on a rectangle) rather than left as a last odd
+     * plot; a piece of an irregular site narrower than half a plot joins its neighbour.
+     *
+     * Refused (RangeError with .code, see streetPlotsError): widths outside STREET_WIDTH_LIMITS_M /
+     * PLOT_WIDTH_LIMITS_M ('invalid-width'), and a site whose frontage extent is shorter than one
+     * plot ('no-whole-plot') — that would otherwise be one sliver of a plot, not a layout.
      * @returns {{frontageEdgeIndex: number, placement: 'middle'|'frontage'|'none', street: object|null,
-     *   plots: object[]}} geometries in EPSG:4326; street + plots tile the site.
+     *   plots: object[], streetWidthM: number, plotWidthM: number, frontageM: number}} geometries in
+     *   EPSG:4326; street + plots tile the site.
      */
     function streetPlotsLayout(site, options) {
         const opts = options || {};
@@ -197,16 +268,22 @@
         if (!t || !plotsApi) throw new Error('subdivision: turf or the frontage cutter is not available');
         const siteGeometry = geometryOf(site);
         if (!siteGeometry) throw new TypeError('site must be a GeoJSON Polygon or MultiPolygon');
-        const streetWidthM = finite(opts.streetWidthM) && opts.streetWidthM > 0 ? opts.streetWidthM : STREET_WIDTH_M;
-        const plotWidthM = finite(opts.plotWidthM) && opts.plotWidthM > 0 ? opts.plotWidthM : PLOT_WIDTH_M;
+        const widths = streetPlotsWidths({ streetWidthM: opts.streetWidthM, plotWidthM: opts.plotWidthM });
+        if (!widths.ok) throw streetPlotsError('invalid-width', { errors: widths.errors });
+        const { streetWidthM, plotWidthM } = widths;
         const minDepthM = finite(opts.minPlotDepthM) && opts.minPlotDepthM > 0 ? opts.minPlotDepthM : MIN_PLOT_DEPTH_M;
         const extent = plotsApi.frontageExtent(siteGeometry, { frontageEdgeIndex: opts.frontageEdgeIndex, turf: t });
         const edge = extent.frontageEdgeIndex;
         const depth = extent.vMax - extent.vMin;
+        const frontageM = extent.uMax - extent.uMin;
+        if (frontageM < plotWidthM) {
+            throw streetPlotsError('no-whole-plot', { frontageEdgeIndex: edge, frontageM: Math.round(frontageM * 10) / 10, plotWidthM });
+        }
+        const sized = result => ({ ...result, streetWidthM, plotWidthM, frontageM });
         // Too shallow for a street and a row of plots: the whole site is cut into plots.
         if (depth < streetWidthM + minDepthM) {
             const plots = plotsApi.cutPlots(siteGeometry, { frontageEdgeIndex: edge, plotWidthM, turf: t });
-            return { frontageEdgeIndex: edge, placement: 'none', street: null, plots: plots.map(f => f.geometry) };
+            return sized({ frontageEdgeIndex: edge, placement: 'none', street: null, plots: plots.map(f => f.geometry) });
         }
         const middle = depth >= 2 * minDepthM + streetWidthM;
         const low = middle ? extent.vMin + (depth - streetWidthM) / 2 : extent.vMin;
@@ -215,12 +292,12 @@
         const cut = range => plotsApi.cutPlots(siteGeometry, { frontageEdgeIndex: edge, plotWidthM, turf: t, ...range })
             .map(f => f.geometry);
         const plots = (middle ? cut({ vToM: low }) : []).concat(cut({ vFromM: high }));
-        return {
+        return sized({
             frontageEdgeIndex: edge,
             placement: middle ? 'middle' : 'frontage',
             street: street ? simplestGeometry(street) : null,
             plots: plots.filter(g => areaOf(t, g) >= MIN_PIECE_M2)
-        };
+        });
     }
 
     /**
@@ -249,16 +326,58 @@
         return best;
     }
 
+    /**
+     * May the create path turn this pending plan into a proposal? A readjustment pooled from a
+     * parcel selection must still be on the same selection. A subdivision (poolSource 'site') is
+     * pooled from its SITE: its parcels are the site's binding (possibly none, on open ground), not
+     * a selection, so the selection is never compared; the plan's pool must be the dialog's site.
+     * @param {object} plan window.pendingReparcellizationPlan
+     * @param {{selectedParcelIds?: string[], site?: object}} context the create dialog's selection
+     *   and site (the site context, null for a parcel-selection proposal).
+     * @returns {{ok: boolean, reason: null|'missing'|'parcels-changed'|'site-missing'|'site-changed'}}
+     */
+    function planCreateVerdict(plan, context, options) {
+        const ctx = context || {};
+        const verdict = reason => ({ ok: !reason, reason: reason || null });
+        if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) return verdict('missing');
+        if (plan.poolSource === 'site') {
+            const site = geometryOf(ctx.site);
+            if (!site) return verdict('site-missing');
+            const pool = geometryOf(plan.poolGeometry);
+            if (!pool) return verdict('missing');
+            const t = T(options);
+            if (!t) throw new Error('subdivision: turf is not available');
+            // Same ground, within clipping noise: the site was not redrawn after the plots were laid.
+            const outside = (a, b) => {
+                const rest = t.difference(asFeature(a), asFeature(b));
+                return rest ? areaOf(t, rest) : 0;
+            };
+            const tolerance = Math.max(1, areaOf(t, site) * 0.001);
+            return verdict(outside(site, pool) + outside(pool, site) > tolerance ? 'site-changed' : null);
+        }
+        if (!Array.isArray(plan.parcelIds)) return verdict('missing');
+        const planned = new Set(plan.parcelIds.map(String));
+        const selected = new Set((ctx.selectedParcelIds || []).map(String));
+        const same = planned.size === selected.size && Array.from(planned).every(id => selected.has(id));
+        return verdict(same ? null : 'parcels-changed');
+    }
+
     return {
         OPEN_GROUND_OWNER_KEY,
         STREET_WIDTH_M,
         PLOT_WIDTH_M,
         MIN_PLOT_DEPTH_M,
+        STREET_WIDTH_LIMITS_M,
+        PLOT_WIDTH_LIMITS_M,
         isOpenGroundOwnerKey,
+        streetPlotsWidths,
+        streetPlotsPlanFields,
+        streetPlotsSettingsOf,
         sitePool,
         poolShares,
         ledgerOf,
         streetPlotsLayout,
-        ownerKeyByGround
+        ownerKeyByGround,
+        planCreateVerdict
     };
 });

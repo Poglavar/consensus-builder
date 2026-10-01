@@ -459,10 +459,8 @@ function setProposalModalInteractivity(enabled) {
 }
 
 function showProposalDialog(overrides = null) {
-    // Gate: require personalized profile to create proposals
-    if (requirePersonalizedUser()) {
-        return;
-    }
+    // No guest gate here: creating stays on this device (guest-policy.js). Minting, publishing and
+    // sharing ask for a profile name; "Offer my land" asks for proof of ownership.
 
     // Stash overrides for this session
     proposalDialogOverrides = overrides || null;

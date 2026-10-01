@@ -70,10 +70,20 @@ Found during the headed test pass; each needs a decision before it is built or r
 - **Road clearance and cross-section editor has no entry point.** `openCorridorProfileEditor` lost its only
   button in ae43c028 ("read-only details"); it still works from the console. Decide where it lives: on the
   road segment's handles, or as a fork-to-edit action on a placed road.
-- **Proposal compare is dead code.** `showProposalCompareModal` has no caller (on `main` too). Wire it in
-  (e.g. from the Proposals list or the "At this spot" stack) or delete it.
-- **Guest rules are inconsistent.** One-click park/square/lake, Freeform and Detached work for a guest, while
-  Offer and Fork require personalizing first. Pick one rule for all creation actions.
+- **Proposal compare — done (branch `parcel-optional`, 2026-10-01).** The dead `showProposalCompareModal`
+  is deleted; "Compare proposals here" sets two proposals side by side for ONE parcel (what each takes,
+  what stands there afterwards, ownership flow, consent, support, status, an SVG preview). Pure logic in
+  `proposals/parcel-compare.js` (tests: `backend/test/parcel-compare.test.js`), dialog in
+  `proposals/parcel-compare-ui.js`; entry points: tick two in the parcel panel's Proposals tab, the parcel
+  menu / command palette (`parcel.compare`, with ≥2 proposals), and the "At this spot" stack.
+- **Guest rules — decided and built (branch `parcel-optional`, 2026-10-01).** Everything that stays on the
+  device is open to guests (create, edit, fork, apply, compare). A profile name is required only when
+  something leaves the device, because the record carries an author: publish/upload, share link, mint,
+  joining a public list. Acts that assert ownership (Offer my land / owner offer) need proof of ownership:
+  a connected wallet that a lens member attested as owner of the parcels; a name alone is not enough.
+  One table in `frontend/js/guest-policy.js` (tests: `backend/test/guest-policy.test.js`); gates sit in
+  `uploadProposalToServer`, the share entry points, the mint branch of `createProposal`, and
+  `requireOwnerOfferProof` for Offer.
 - **Docked panel on phones is cramped.** The parcel/details panel is 33vh and covers the Game pill; only
   about two build-palette rows are visible. A taller bottom sheet with a drag handle is the likely fix.
 - **One agent shows as three actor profiles.** Runs say `llm`, the chain decoder says `algorithm`, older runs

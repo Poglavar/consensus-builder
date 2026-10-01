@@ -481,6 +481,14 @@ function publishBindingText(key, fallback, params) {
 }
 
 async function uploadProposalToServer(proposal) {
+    // Publishing leaves the device and the record carries its author (GuestPolicy 'publish'). Every
+    // upload path (share dialog, walk gate, re-bind, mint persistence) funnels through here.
+    const nameNeeded = guestPolicyBlocks('publish');
+    if (nameNeeded) return { ok: false, cancelled: true, message: nameNeeded };
+    // ...and that author is the profile's name NOW: a record this profile made as a guest carries
+    // the name chosen since, not its old guest alias (GuestPolicy.outgoingAuthor).
+    stampCurrentAuthor(proposal);
+
     // Publish checks the footprint against the cadastre the browser has LOADED: every parcel the
     // geometry lies on must be declared. Pan away from a road and its parcels are no longer on the
     // map, so load the ground under the footprint here before the gate runs. If loading fails the

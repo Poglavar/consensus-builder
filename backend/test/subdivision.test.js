@@ -151,6 +151,105 @@ describe('streetPlotsLayout', () => {
     });
 });
 
+describe('streetPlotsLayout widths (phase 7c)', () => {
+    const frontageOf = (site, layout) => sitePlots.frontageEdges(site, { turf }).find(edge => edge.index === layout.frontageEdgeIndex);
+    // Each plot's extent along the frontage edge (metres), measured in the frontage edge's own frame.
+    const plotFrontages = (site, layout) => {
+        const edge = frontageOf(site, layout);
+        const { a, b } = edge;
+        const bearing = turf.bearing(turf.point(a), turf.point(b));
+        return layout.plots.map(g => {
+            const us = turf.coordAll(turf.feature(g)).map(p => {
+                const d = turf.distance(turf.point(a), turf.point(p), { units: 'meters' });
+                const angle = (turf.bearing(turf.point(a), turf.point(p)) - bearing) * Math.PI / 180;
+                return d * Math.cos(angle);
+            });
+            return Math.max(...us) - Math.min(...us);
+        });
+    };
+
+    it('respects a chosen street width and plot width, and still tiles the site exactly', () => {
+        const site = rect(0, 0, 12, 6); // ≈ 108 × 67 m
+        const layout = subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: 0, streetWidthM: 16, plotWidthM: 12 });
+        expect(layout).toMatchObject({ placement: 'middle', streetWidthM: 16, plotWidthM: 12 });
+        expectTiles(site, [layout.street, ...layout.plots]);
+        expect(area(layout.street) / frontageOf(site, layout).lengthM).toBeCloseTo(16, 0);
+        // 108 m / 12 m = 9 strips per side.
+        expect(layout.plots).toHaveLength(18);
+        plotFrontages(site, layout).forEach(width => expect(width).toBeCloseTo(layout.frontageM / 9, 0));
+        const wide = subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: 0, streetWidthM: 6, plotWidthM: 36 });
+        expect(wide.plots).toHaveLength(6);
+        expectTiles(site, [wide.street, ...wide.plots]);
+        expect(area(wide.street) / frontageOf(site, wide).lengthM).toBeCloseTo(6, 0);
+    });
+
+    it('spreads the remainder over every plot instead of leaving an odd last plot', () => {
+        const site = rect(0, 0, 12, 6);
+        // 108 m at 25 m: round(4.34) = 4 equal plots per side of about 27 m, none of 8 m.
+        const layout = subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: 0, plotWidthM: 25 });
+        const widths = plotFrontages(site, layout);
+        expect(widths).toHaveLength(8);
+        widths.forEach(width => {
+            expect(width).toBeGreaterThanOrEqual(0.75 * 25);
+            expect(width).toBeLessThan(1.5 * 25);
+            expect(width).toBeCloseTo(widths[0], 1);
+        });
+    });
+
+    it('drops the street when a wide street leaves no room for a row of plots', () => {
+        const site = rect(0, 0, 12, 3); // ≈ 33 m deep: 10 m street + 15 m plots fit, 25 m street does not
+        expect(subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: 0 }).placement).toBe('frontage');
+        const tooWide = subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: 0, streetWidthM: 25 });
+        expect(tooWide).toMatchObject({ placement: 'none', street: null });
+        expectTiles(site, tooWide.plots);
+    });
+
+    it('refuses widths outside the limits and a plot wider than the frontage', () => {
+        const site = rect(0, 0, 12, 6);
+        const refusal = options => {
+            try { subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: 0, ...options }); } catch (error) { return error; }
+            return null;
+        };
+        expect(refusal({ streetWidthM: 3 })).toMatchObject({ code: 'invalid-width', details: { errors: [{ field: 'streetWidthM', reason: 'range', min: 4, max: 30 }] } });
+        expect(refusal({ plotWidthM: 61 })).toMatchObject({ code: 'invalid-width', details: { errors: [{ field: 'plotWidthM', reason: 'range', min: 6, max: 60 }] } });
+        expect(refusal({ plotWidthM: Number.NaN })).toMatchObject({ code: 'invalid-width', details: { errors: [{ field: 'plotWidthM', reason: 'not-a-number' }] } });
+        expect(refusal({ streetWidthM: 0 })).toMatchObject({ code: 'invalid-width' });
+        // A 40 m frontage cannot hold one 50 m plot: refused, not a single 40 m sliver.
+        const narrow = rect(0, 0, 4.4, 8);
+        let error = null;
+        try { subdivision.streetPlotsLayout(narrow, { turf, frontageEdgeIndex: 0, plotWidthM: 50 }); } catch (e) { error = e; }
+        expect(error).toMatchObject({ code: 'no-whole-plot', details: { plotWidthM: 50 } });
+        expect(error.details.frontageM).toBeLessThan(50);
+        expect(subdivision.streetPlotsLayout(narrow, { turf, frontageEdgeIndex: 0, plotWidthM: 39 }).plots.length).toBeGreaterThan(0);
+    });
+
+    it('checks widths from inputs (numeric strings), defaults missing ones, and refuses blanks', () => {
+        expect(subdivision.streetPlotsWidths({})).toEqual({ ok: true, streetWidthM: 10, plotWidthM: 20, errors: [] });
+        expect(subdivision.streetPlotsWidths({ streetWidthM: '12.5', plotWidthM: '30' })).toMatchObject({ ok: true, streetWidthM: 12.5, plotWidthM: 30 });
+        expect(subdivision.streetPlotsWidths({ streetWidthM: '4', plotWidthM: '60' }).ok).toBe(true);
+        const blank = subdivision.streetPlotsWidths({ streetWidthM: '', plotWidthM: 'abc' });
+        expect(blank.ok).toBe(false);
+        expect(blank.errors.map(e => [e.field, e.reason])).toEqual([['streetWidthM', 'not-a-number'], ['plotWidthM', 'not-a-number']]);
+    });
+
+    it('round-trips the settings through the saved plan fields', () => {
+        const fields = subdivision.streetPlotsPlanFields({ streetWidthM: 14, plotWidthM: 32, streetFrontageIndex: 2 });
+        expect(fields).toEqual({ streetWidthM: 14, plotWidthM: 32, streetFrontageIndex: 2 });
+        const plan = JSON.parse(JSON.stringify({ poolSource: 'site', ...fields }));
+        expect(subdivision.streetPlotsSettingsOf(plan)).toEqual({ streetWidthM: 14, plotWidthM: 32, streetFrontageIndex: 2 });
+        // A plan saved before the controls existed reopens with the defaults (and no saved edge).
+        expect(subdivision.streetPlotsSettingsOf({ poolSource: 'site' })).toEqual({ streetWidthM: 10, plotWidthM: 20, streetFrontageIndex: null });
+        // A saved value outside the limits is not reused.
+        expect(subdivision.streetPlotsSettingsOf({ streetWidthM: 2, plotWidthM: 300 })).toMatchObject({ streetWidthM: 10, plotWidthM: 20 });
+        // Same settings → same layout: reopening with the saved values re-lays identical plots.
+        const site = rect(0, 0, 12, 6);
+        const settings = subdivision.streetPlotsSettingsOf(plan);
+        const a = subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: settings.streetFrontageIndex, ...settings });
+        const b = subdivision.streetPlotsLayout(site, { turf, frontageEdgeIndex: fields.streetFrontageIndex, streetWidthM: 14, plotWidthM: 32 });
+        expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+    });
+});
+
 describe('ownerKeyByGround', () => {
     it('gives a plot to the owner whose parcel it stands on, else to open ground', () => {
         const site = rect(0, 0, 12, 6);

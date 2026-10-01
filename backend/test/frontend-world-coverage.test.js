@@ -86,3 +86,35 @@ describe('searchPlaces', () => {
         expect(coverage.searchPlaces('a', { limit: 3 })).toHaveLength(3);
     });
 });
+
+// The explore city chip's name (js/ui/world-entry.js): where the map is, from local data only.
+describe('nameAt (the explore chip)', () => {
+    it('names the city the map is on', () => {
+        expect(coverage.nameAt(35.68, 139.76, 14)).toMatchObject({ kind: 'city', name: 'Tokyo', cc: 'JP' });
+        expect(coverage.nameAt(45.81, 15.97, 14)).toMatchObject({ kind: 'city', name: 'Zagreb', cc: 'HR' });
+    });
+
+    it('falls back to the country away from any registry city (Yokohama is not Tokyo)', () => {
+        expect(coverage.nameAt(35.44, 139.64, 14)).toMatchObject({ kind: 'country', name: 'Japan', cc: 'JP' });
+        // Still "Tokyo" for coverage, which reaches further than a name does.
+        expect(coverage.tierAt(35.44, 139.64)).toMatchObject({ kind: 'city', name: 'Tokyo' });
+    });
+
+    it('has no name on open water or for a continent-wide view (the default world view is over Libya)', () => {
+        expect(coverage.nameAt(34.5, 141.5, 10)).toEqual({ kind: 'ocean', name: '', cc: null });
+        expect(coverage.nameAt(30, 15, 3)).toEqual({ kind: 'world', name: '', cc: null });
+        expect(coverage.nameAt(30, 15, 8)).toMatchObject({ kind: 'country', name: 'Libya' });
+    });
+
+    it('refuses a non-finite point', () => {
+        expect(() => coverage.nameAt(NaN, 1, 10)).toThrow(/finite/);
+    });
+
+    it('the chip is renamed from nameAt on every settled move, not once at boot', () => {
+        const source = readFileSync(path.join(REPO, 'frontend/js/ui/world-entry.js'), 'utf8');
+        expect(source).toMatch(/state\.explorePlace = place;/);
+        expect(source).toMatch(/cov\.nameAt\(view\.lat, view\.lon, view\.zoom\)/);
+        const moveend = source.slice(source.indexOf("map.on('moveend'"));
+        expect(moveend.slice(0, 600)).toMatch(/identifyExplorePlace\(view\)/);
+    });
+});

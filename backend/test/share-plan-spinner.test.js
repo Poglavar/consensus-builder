@@ -74,17 +74,27 @@ describe('spinner na gumbu', () => {
 describe('otvaranje plana', () => {
     const body = sliceBetween(routes, 'function shareAppliedProposals(', 'function shareSingleProposal(');
 
-    function harness({ panel } = {}) {
+    // guestPolicyBlocks: the share link's name gate (guest-policy.js); null = allowed.
+    function harness({ panel, nameGate = () => null } = {}) {
         const frames = [];
         const spies = {
             setSharePlanButtonBusy: vi.fn(),
-            showSharePlanPanel: vi.fn(panel || (() => { }))
+            showSharePlanPanel: vi.fn(panel || (() => { })),
+            guestPolicyBlocks: vi.fn(nameGate)
         };
-        const run = new Function('setSharePlanButtonBusy', 'showSharePlanPanel', 'requestAnimationFrame',
+        const run = new Function('setSharePlanButtonBusy', 'showSharePlanPanel', 'requestAnimationFrame', 'guestPolicyBlocks',
             `${body} return shareAppliedProposals;`)(
-            spies.setSharePlanButtonBusy, spies.showSharePlanPanel, cb => frames.push(cb));
+            spies.setSharePlanButtonBusy, spies.showSharePlanPanel, cb => frames.push(cb), spies.guestPolicyBlocks);
         return { run, spies, frames, tick: () => frames.splice(0).forEach(cb => cb()) };
     }
+
+    it('gost bez imena ne dobije poveznicu: traži se ime, ništa se ne gradi', async () => {
+        const { run, spies, frames } = harness({ nameGate: () => 'Choose a profile name to share' });
+        await run();
+        expect(spies.guestPolicyBlocks).toHaveBeenCalledWith('share');
+        expect(spies.setSharePlanButtonBusy).not.toHaveBeenCalled();
+        expect(frames).toHaveLength(0);
+    });
 
     it('spinner se upali PRIJE nego što išta krene', () => {
         const { run, spies } = harness();
@@ -121,9 +131,9 @@ describe('otvaranje plana', () => {
 
     it('bez requestAnimationFrame se svejedno otvori', () => {
         const spies = { setSharePlanButtonBusy: vi.fn(), showSharePlanPanel: vi.fn() };
-        const run = new Function('setSharePlanButtonBusy', 'showSharePlanPanel', 'requestAnimationFrame',
+        const run = new Function('setSharePlanButtonBusy', 'showSharePlanPanel', 'requestAnimationFrame', 'guestPolicyBlocks',
             `${body} return shareAppliedProposals;`)(
-            spies.setSharePlanButtonBusy, spies.showSharePlanPanel, undefined);
+            spies.setSharePlanButtonBusy, spies.showSharePlanPanel, undefined, () => null);
         run();
         expect(spies.showSharePlanPanel).toHaveBeenCalledTimes(1);
     });

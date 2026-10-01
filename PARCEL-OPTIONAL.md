@@ -947,3 +947,117 @@ route" → nothing added.
 - The existing building prompt still says a surface crossing "takes their ground" for building
   proposals off plots, although such a road is refused at apply (`building-over-road`).
 - No docs-agents.md / OpenAPI entry for `GET /proposals/:id/binding-drift` yet.
+
+### Phase 7c — street and plot widths in the subdivision editor (2026-10-01, built, not committed, not deployed)
+
+**Built**
+- **Pure** (`frontend/js/proposals/subdivision.js`): `STREET_WIDTH_LIMITS_M` {4, 30} and
+  `PLOT_WIDTH_LIMITS_M` {6, 60}; `streetPlotsWidths(input)` (missing → default 10 m / 20 m, numeric
+  strings accepted, blank/NaN/out-of-range → `errors[{field, reason: 'not-a-number'|'range', min, max}]`);
+  `streetPlotsPlanFields` / `streetPlotsSettingsOf(plan)` (saved fields ↔ editor settings; an old plan or
+  an out-of-range saved value reads as the default). `streetPlotsLayout` now REFUSES instead of silently
+  defaulting: a `RangeError` with `code: 'invalid-width'` (widths outside the limits) or
+  `'no-whole-plot'` (the site's extent along the frontage is shorter than one plot; `details.frontageM`),
+  and returns `streetWidthM`, `plotWidthM`, `frontageM` with the layout.
+- **No plot depth control**: plots run from the street to the site edge, so their depth is the site's.
+  `MIN_PLOT_DEPTH_M` (15 m) stays an internal threshold deciding middle / frontage / no street.
+- **Remainder rule (unchanged, now documented on `streetPlotsLayout`)**: the frontage extent is split into
+  `round(extent / plotWidth)` equal strips, so the remainder is spread over every plot (0.75–1.5 × the
+  chosen width on a rectangle), never left as an odd last plot; a piece of an irregular site narrower
+  than half a plot joins its neighbour.
+- **Editor** (`reparcellization.js`, site pools only): a row under the tools — **Street width** and
+  **Plot width (frontage)**, number inputs with the limits, enabled only for "Plots along a street",
+  stood down in assign mode. A change (Enter / blur / spinner, not each keystroke) re-lays the plots;
+  while the plots differ from the last automatic layout (hand edits, owner reassignments) it first asks
+  "Re-lay the plots with the new widths? … discarded" (Re-lay plots / Keep my plots; keep reverts the
+  inputs). A reopened saved plan counts as untouched only if its saved settings re-lay exactly its
+  saved plots. Invalid input marks the field (`aria-invalid`) and says the range; a refused layout says
+  why ("A 50 m plot does not fit: the site is only 40 m along the street…"); a street too wide for the
+  site's depth says the site became all plots. Undo snapshots carry the widths. Saved plan:
+  `streetWidthM`, `plotWidthM` next to `streetFrontageIndex`; restored on reopen (create dialog Edit and
+  the draft adapter both pass the whole plan). Apply/replay read only the polygons, so they are unchanged.
+- i18n en/hr/es/sr: `reparcellization.modal.streetSettings.{streetWidth, plotWidth, unit,
+  streetWidthTitle, plotWidthTitle}`, `…modal.relayConfirm{,Ok,Cancel}`,
+  `…modal.status.{noWholePlot, streetWidthInvalid, plotWidthInvalid, streetDropped}`. CSS in modals.css.
+
+**Tests** (backend vitest, subdivision +6): chosen widths respected (street area / frontage ≈ 16 m,
+18 plots of 108 m / 12 m) and tiling exact; remainder spread evenly; a 25 m street on a 33 m deep site
+drops the street and still tiles; out-of-range / NaN / zero widths and a 50 m plot on a 40 m frontage
+refused with their codes; input-string parsing; plan-field round trip incl. old plans and identical
+re-layout from saved settings. Red-checked: disabling the range check, the no-whole-plot refusal or the
+street width pass-through fails 4 tests. Full suite: **6266 passed, 6 skipped, 0 failed**.
+
+**Verified in a headed browser** (explore Tokyo, local backend; session closed, job stopped, no page
+errors): 7,691 m² site → Subdivide → controls show 10 / 20; street 16 → 16 m street through the middle;
+plot 12 → 6 plots per side on the 70 m frontage; street 3 and plot 61 → field marked, range message,
+layout kept; back to a valid value clears it. A plot reassigned to Public land, then plot 15 → confirm;
+Keep my plots reverted the input to 12 with the reassignment intact; again → Re-lay plots → 5 per side,
+reassignment gone; Undo restored 12 and the reassignment. Done → stored plan `streetWidthM 16,
+plotWidthM 15, streetFrontageIndex 3`, 11 polygons; reload replays the same plots; Unapply → Fork → Edit
+reopens with 16 / 15 and the saved plots; plot 20 then re-lays without asking (untouched). 375 px:
+the two fields wrap under each other, no horizontal scroll.
+
+**Open**
+- "Turn the street" still re-lays without asking even after hand edits (7a behaviour, left as is).
+- Fork → Edit of a still-applied subdivision refuses with `siteGroundTaken` (its own ground); unapply first
+  (phase 4 rule, not changed here).
+- Saving the fork logged `[captureViaTileStitch] Final bbox looks invalid` (lng/lat swapped in the bbox) —
+  thumbnail capture on explore, pre-existing, not investigated.
+
+### Phase 7d — publish author, site-only subdivision forks, explore chip (2026-10-01, built, not committed, not deployed)
+
+**Fixed**
+- **Stale author on publish.** A record created as a guest went out under its guest alias after the profile
+  had chosen a name (local row 1355 "Guest 4232"; reproduced as row 1356 before the fix). Choosing a name
+  renames the same agent in place, but the record only carried the old name string. Now `addProposal`
+  stamps `authorAgentId` when the record's author is the current profile's name
+  (`GuestPolicy.claimAuthorAgentId`), and every outgoing path stamps the profile's CURRENT name onto this
+  profile's never-published record (`GuestPolicy.outgoingAuthor` via `stampCurrentAuthor` in
+  `proposals/storage.js`; local draft updated with `proposalStorage.setProposalAuthor`): the publish
+  projection `buildUploadReadyProposal` (the share dialog projects before it uploads, so the stamp must
+  sit there, before the device-local `authorAgentId` is dropped), `uploadProposalToServer`, the share-plan
+  payload and the share dialog's mint metadata. Published/minted records (`isProposalImmutable`), other
+  agents' records and records without `authorAgentId` keep their author.
+- **Forking a site-only subdivision** failed with "Reparcellization plan is missing": `createProposal`
+  required `pendingReparcellizationPlan.parcelIds`, which a site-pooled plan (`poolSource 'site'`, record
+  1348's shape) does not have, and it compared the plan's parcels with the (empty) selection — a Zagreb
+  subdivision binding parcels would have failed "selected parcels changed" the same way. Now
+  `__subdivision.planCreateVerdict(plan, { selectedParcelIds, site })`: a site plan needs the dialog's
+  site and a pool equal to it (`site-missing` / `site-changed`, new `alerts.messages.subdivision_site_*`
+  en/hr/es/sr); a parcel readjustment keeps the selection check.
+- **Explore chip showed a stale place** ("Explore · Libya" in Tokyo). Cause: the chip was named once, from
+  the boot map centre; the default explore view (no `?at=`, nothing stored) is 30N 15E — Libya — and no
+  later pan or search jump renamed it. `?at=` vs `cb_explore_at` was not the cause (`?at=` wins in both
+  city-config and map-core). Now `WorldCoverage.nameAt(lat, lon, zoom)` (local data only): nearest
+  configured/registry city within 25 km (tighter than the 40/60 km coverage radii: Yokohama reads
+  "Japan", not "Tokyo"), else the country, '' on open water or below zoom 5; renamed on every `moveend`
+  (debounced 250 ms). A "request noted" banner state resets when the place changes.
+
+**Decisions**
+- Author lineage: the author of a record is the profile that created it on this device, proven by
+  `authorAgentId`, and it leaves the device under that profile's name at the time it leaves. A fork or an
+  edit is a NEW record created by whoever forks it (claimed by the current profile); the source keeps its
+  own author, reached through `sourceProposalId`. Author names are never inherited along a fork.
+- `authorAgentId` is device-local and never published (stripped in `buildUploadReadyProposal` and the share
+  payload). Records created before this change carry no `authorAgentId` and keep their author (no
+  name-guessing fallback).
+
+**Tests**: guest-author-stamp 12 (pure claim/outgoing rules; the real store + `stampCurrentAuthor`: guest
+park → name → publish restamps record and local draft, published / AI-agent records untouched, a fork made
+as a guest; wiring incl. the stamp before the agent id is dropped), subdivision-fork-create 6 (fixture
+`test/fixtures/subdivision-site-only-1348.json` through the reparcellization adapter's fork draft → verdict
+ok; bound-parcel subdivision ok; site missing/moved; readjustment selection; create.js wiring),
+frontend-world-coverage +5 (`nameAt`: Tokyo, Zagreb, Yokohama → Japan, open sea, world zoom, wiring).
+Red-checked: dropping the claim or the upload stamp (3 fail), ignoring poolSource (3 fail), the 40 km
+radius (1 fail). Full suite: **6330 passed, 6 skipped, 0 failed**.
+
+**Verified in a headed browser** (local backend → docker DB; session closed, job stopped, no page errors).
+Explore `?at=35.68,139.76,14`: chip "Explore · Tokyo" on first load; pan to Yokohama → "Explore · Japan";
+open sea → "Explore"; back → "Explore · Tokyo"; `?city=explore` with nothing stored → world view at 30N 15E,
+chip "Explore" (was "Libya"). Guest 3737 drew a park → Share as guest showed the name dialog → name
+"Tester Po14b" → Share → Upload: row 1357 author "Tester Po14b", no `authorAgentId` in `proposal_data`; the
+local draft shows the new name. (Row 1356 "Guest 5983" is the same flow before the projection stamp —
+left in the local DB as a test record.) Subdivision on a 15,811 m² Tokyo site → Unapply → Fork → Edit (plot
+25 m) → Create replacement → 11 plots, applied; then Unapply → Fork with no edit (pending plan without
+`parcelIds`, the failing shape) → created → Share → Upload: row 1358, `poolSource site`, 11 plots, author
+"Tester Po14b".

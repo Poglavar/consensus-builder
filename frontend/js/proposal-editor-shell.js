@@ -753,7 +753,7 @@
     // the create dialog, prefilled from the object. On submit the object is absorbed into the
     // proposal that replaces it (see createProposal), so one thing remains on the map.
     async function proposeExistingProposal(proposalIdOrHash) {
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
+        // No guest gate: creating stays on this device (GuestPolicy 'create' is 'none').
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) return null;
         if (rejectRetiredProposalGoal(proposal)) return null;
@@ -868,7 +868,7 @@
     }
 
     async function forkProposalWithChangedLand(proposalIdOrHash) {
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
+        // No guest gate: a fork stays on this device until it is published (GuestPolicy 'fork').
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) return null;
         if (rejectRetiredProposalGoal(proposal)) return null;

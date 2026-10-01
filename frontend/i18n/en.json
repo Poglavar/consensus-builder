@@ -1498,11 +1498,6 @@
             "confirm": "OK",
             "cancel": "Cancel"
         },
-        "compare": {
-            "title": "Compare: Current vs Proposed",
-            "loading": "Loading comparison…",
-            "failed_to_build": "Failed to build comparison."
-        },
         "singleBuilding": {
             "title": "Freeform building",
             "defaultName": "Building {{n}}",
@@ -2552,6 +2547,12 @@
                 "label": "Offer my land",
                 "explain": "You offer your own parcels and invite bids. Bids arrive as pledges and donations on this proposal; nobody else can accept it. When a bid suits you, you execute the offer by saying yes on your parcels. The offer amount is your asking price.",
                 "recheck": "Check again",
+                "proof": {
+                    "intro": "Offering your land needs proof that it is yours:",
+                    "wallet": "connect your Solana wallet",
+                    "attestation": "ask a member of your lens (👓) to attest your wallet as the owner of these parcels",
+                    "name": "choose a profile name (top-right bubble)"
+                },
                 "checking": "Checking your ownership attestations…",
                 "needLens": "Choose your lens (👓) first: the offer needs a lens member that attested your ownership.",
                 "needParcels": "Select the parcels you own.",
@@ -2612,7 +2613,10 @@
             "note": "The {{kind}} takes its ground out of the plots it crosses; the rest of each plot stays. Unapplying the {{kind}} gives them back. Build through?",
             "blocked": "It would run through a house standing on a plot:",
             "blockedLine": "“{{name}}” on “{{plot}}”",
-            "blockedNote": "A {{kind}} is never built through a standing building, so it would be refused. Choose another route, or unapply the house first."
+            "blockedNote": "A {{kind}} is never built through a standing building, so it would be refused. Choose another route, or unapply the house first.",
+            "blockedBuilding": "It would run through a proposed building:",
+            "blockedBuildingLine": "“{{name}}”",
+            "blockedBuildingNote": "A {{kind}} is never built through a standing building, at surface or in a tunnel, so it would be refused. Choose another route, or unapply that proposal first."
         }
     },
     "blockify": {
@@ -2950,7 +2954,11 @@
                 "lineNoAnchor": "No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.",
                 "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one.",
                 "streetPlotsFailed": "Could not lay out plots along a street on this site.",
-                "streetPlotsHint": "Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots."
+                "streetPlotsHint": "Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.",
+                "noWholePlot": "A {{width}} m plot does not fit: the site is only {{frontage}} m along the street. Choose a narrower plot or turn the street.",
+                "streetWidthInvalid": "Street width must be a number from {{min}} to {{max}} m.",
+                "plotWidthInvalid": "Plot width must be a number from {{min}} to {{max}} m.",
+                "streetDropped": "The site is too shallow for a {{width}} m street and a row of plots, so it is all plots. Choose a narrower street to get one."
             },
             "parcelCount": {
                 "one": "{{count}} parcel",
@@ -2996,6 +3004,16 @@
             "subdivisionTitle": "Subdivision",
             "turnStreet": "Turn the street",
             "turnStreetTitle": "Run the street along the next edge of the site",
+            "streetSettings": {
+                "streetWidth": "Street width",
+                "plotWidth": "Plot width (frontage)",
+                "unit": "m",
+                "streetWidthTitle": "Width of the new street, {{min}}–{{max}} m",
+                "plotWidthTitle": "Width of each plot along the street, {{min}}–{{max}} m. The frontage is split evenly, so plots come out close to this width."
+            },
+            "relayConfirm": "Re-lay the plots with the new widths? The changes you made to the plots will be discarded.",
+            "relayConfirmOk": "Re-lay plots",
+            "relayConfirmCancel": "Keep my plots",
             "siteParcelsMissing": "The parcels under this site could not be loaded: {{ids}}.",
             "siteUnavailable": "This site cannot be subdivided here.",
             "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first."
@@ -3198,7 +3216,6 @@
             "no_parcels_loaded_please_refresh_data_first": "No parcels loaded. Please refresh data first.",
             "no_parcels_to_clear": "No parcels to clear.",
             "no_road_parcels_in_view": "No road parcels in view.",
-            "only_the_currently_applied_proposal_can_be_compared": "Only the currently applied proposal can be compared.",
             "opening_claim_portal": "Opening claim portal...",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "Parcel not minted yet and the Mint & Attest flow couldn't be prepared.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "Parcel not minted yet. Opening Mint & Attest flow...",
@@ -3320,7 +3337,6 @@
             "an_identical_proposal_already_exists": "An identical proposal already exists.",
             "building_proposal_workflow_is_unavailable": "Building proposal workflow is unavailable.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Cannot undo acceptance from an executed proposal that has descendant parcels.",
-            "could_not_open_comparison_modal": "Could not open comparison modal.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "Could not prepare building data for the proposal. Please try again.",
             "error_accepting_proposal_please_try_again": "Error accepting proposal. Please try again.",
             "error_rejecting_proposal_please_try_again": "Error rejecting proposal. Please try again.",
@@ -3335,7 +3351,6 @@
             "no_parcels_selected_for_this_proposal": "No parcels selected for this proposal.",
             "no_parcels_selected_please_select_parcels_before_creating_a_proposal": "No parcels selected. Please select parcels before creating a proposal.",
             "no_recorded_owner_acceptance_to_undo": "No recorded owner acceptance to undo.",
-            "only_the_currently_applied_proposal_can_be_compared": "Only the currently applied proposal can be compared.",
             "only_the_user_who_recorded_this_acceptance_can_undo_it": "Only the user who recorded this acceptance can undo it.",
             "open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal": "Open the Buildings tool, design your block, and click Done before creating this proposal.",
             "open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal": "Open the Row Houses tool, design your row, and click Done before creating this proposal.",
@@ -3349,6 +3364,8 @@
             "proposal_not_found": "Proposal not found.",
             "proposal_storage_is_unavailable": "Proposal storage is unavailable.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Reparcellization plan is missing. Please rerun the algorithm.",
+            "subdivision_site_missing": "This subdivision has no site. Reopen it from its draft and save again.",
+            "subdivision_site_changed": "The site changed after the plots were laid. Open the subdivision editor again and click Done.",
             "run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal": "Run the reparcellization algorithm and click Done before creating this proposal.",
             "select_a_proposal_goal_before_creating_a_proposal": "Select a proposal goal before creating a proposal.",
             "select_which_owner_share_you_are_accepting_for": "Select which owner share you are accepting for.",
@@ -3565,7 +3582,10 @@
             "welcome_back_user": "Welcome back, {{name}}! You've taken control of your agent.",
             "welcome_new_user": "Welcome, {{name}}! You're now part of the consensus building community.",
             "profile_personalized": "Great, {{name}}! Your profile is now personalized.",
-            "personalize_to_create_proposal": "Please personalize your profile to create proposals.",
+            "name_to_publish": "Choose a profile name to publish: published proposals carry their author. Everything kept on this device works without one.",
+            "name_to_share": "Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.",
+            "name_to_mint": "Choose a profile name to put this proposal on-chain: the record carries its author.",
+            "name_to_join_list": "Choose a profile name to join a public list.",
             "all_parcels_in_block_selected": "All parcels in the block selected!"
         }
     },
@@ -3931,6 +3951,7 @@
             "selectMore": "Select more",
             "details": "Details",
             "history": "History",
+            "compare": "Compare proposals here",
             "tools": "Tools",
             "offer": "Offer my land",
             "view3d": "View in 3D",
@@ -4133,5 +4154,94 @@
         "openGroundValue": "Open ground: {{area}} m²",
         "openGroundNote": "Open ground: {{area}} m² of the sites has no cadastral parcels; parcel figures cover the bound parcels only.",
         "grainNoParcels": "No parcels here: these proposals stand on open ground, so there are no resulting parcels to score."
+    },
+    "parcelCompare": {
+        "title": "Compare proposals on parcel {{number}}",
+        "needTwo": "At least two proposals must touch this parcel to compare them.",
+        "pick": "Proposal {{side}}",
+        "openDetails": "Details",
+        "previewLabel": "Parcel outline with each proposal’s ground on it",
+        "tableLabel": "Comparison for this parcel",
+        "intrusion": "reaches {{width}} m in",
+        "none": "None",
+        "yes": "Yes",
+        "no": "No",
+        "extent": {
+            "whole": "Whole parcel",
+            "edge": "Edge only",
+            "part": "Part of the parcel",
+            "none": "None"
+        },
+        "relation": {
+            "intrudes": "Its site reaches in without naming this parcel",
+            "short": "reaches in"
+        },
+        "buildings": {
+            "count": "{{count}} building(s)",
+            "footprint": "footprint {{area}}",
+            "floorArea": "floor area {{area}}",
+            "height": "{{floors}} floors · {{height}}"
+        },
+        "structure": {
+            "park": "Park",
+            "square": "Square",
+            "lake": "Lake",
+            "station": "Station"
+        },
+        "corridor": {
+            "road": "Road",
+            "track": "Track",
+            "width": "{{width}} m wide"
+        },
+        "plots": {
+            "street": "street (public)",
+            "line": "Plot {{number}} ({{area}}, {{who}}): {{overlap}} of this parcel"
+        },
+        "ownership": {
+            "ceded": "{{area}} → {{destination}}"
+        },
+        "offer": {
+            "share": "this parcel’s share ≈ {{amount}}"
+        },
+        "status": {
+            "local": "Local (this browser)",
+            "published": "Published",
+            "minted": "Minted",
+            "executed": "Executed"
+        },
+        "market": {
+            "none": "No market",
+            "noStakes": "No stakes yet"
+        },
+        "sections": {
+            "ground": "Your ground",
+            "after": "On this parcel afterwards",
+            "ownership": "Ownership",
+            "consent": "What you are asked",
+            "support": "Support"
+        },
+        "rows": {
+            "take": "Takes of this parcel",
+            "buildings": "Buildings",
+            "structure": "Park / square / lake",
+            "corridor": "Road / track",
+            "plots": "Plots it becomes",
+            "ceded": "Ceded ground → to",
+            "offer": "Offer",
+            "consentNeeded": "Your consent needed",
+            "parcelAccepted": "This parcel accepted",
+            "owners": "Owners accepted",
+            "parcels": "Parcels accepted (whole proposal)",
+            "donations": "Donations",
+            "pledges": "Pledges",
+            "market": "Market: executes (YES)",
+            "status": "Status"
+        },
+        "bar": {
+            "hint": "Tick two proposals to compare them on this parcel",
+            "ready": "Two selected",
+            "compare": "Compare",
+            "tick": "Select to compare"
+        }
     }
 }

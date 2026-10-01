@@ -480,46 +480,12 @@
             throw new Error('Invalid polygon for tile stitch capture');
         }
 
-        // Compute bbox from all coordinates
-        let lngMin = Infinity, lngMax = -Infinity, latMin = Infinity, latMax = -Infinity;
-        const expandBbox = (coords) => {
-            const walk = (node) => {
-                if (!Array.isArray(node)) return;
-                if (node.length >= 2 && typeof node[0] === 'number' && typeof node[1] === 'number') {
-                    if (node[0] < lngMin) lngMin = node[0];
-                    if (node[0] > lngMax) lngMax = node[0];
-                    if (node[1] < latMin) latMin = node[1];
-                    if (node[1] > latMax) latMax = node[1];
-                    return;
-                }
-                node.forEach(walk);
-            };
-            walk(coords);
-        };
-        expandBbox(geoCoords);
-
-
-        // Sanity check: detect swapped lat/lng coordinates
-        // GeoJSON format is [lng, lat]. Zagreb: lng ~15.97, lat ~45.80
-        // If we see lngMin ~45 and latMin ~15, coordinates are swapped (lat ended up in lng slot)
-        // Detection heuristics:
-        // 1. If lng > 90 or < -180, definitely swapped (lat can't be > 90)
-        // 2. For European cities where lat > lng: if computed lngMin > latMax, likely swapped
-        // 3. Check if the "lat" values look like Zagreb longitude (~14-17) and "lng" values look like Zagreb latitude (~45-46)
-        const obviouslySwapped = (lngMin > 90 || lngMax > 90 || latMin < -90 || latMax < -90);
-        const zagrebSwapped = (lngMin > 40 && lngMax < 50 && latMin > 10 && latMax < 20); // lat in lng slot, lng in lat slot
-        const coordsLookSwapped = obviouslySwapped || zagrebSwapped;
-
-
-        if (coordsLookSwapped) {
-            console.warn('[captureViaTileStitch] Detected swapped lat/lng coordinates, fixing...');
-            // Swap lng and lat
-            const tmpLngMin = lngMin, tmpLngMax = lngMax;
-            lngMin = latMin;
-            lngMax = latMax;
-            latMin = tmpLngMin;
-            latMax = tmpLngMax;
-        }
+        // Bbox over GeoJSON [lng, lat]; callers state polygonOrder. No swap guessing: the shared rule
+        // (thumbnail-bbox.js) throws with the values when the box is not a plausible WGS84 box.
+        const bboxApi = globalScope.__thumbnailBbox;
+        if (!bboxApi) throw new Error('[captureViaTileStitch] thumbnail-bbox.js is not loaded');
+        const bbox = bboxApi.bboxOfLngLat(geoCoords);
+        const expandBbox = (coords) => bboxApi.extendBbox(bbox, coords);
 
         // Expand bbox for parcels and neighbours (unless explicitly disabled)
         const allPolygons = [
@@ -558,14 +524,13 @@
             }
         }
 
-        // Final sanity check on bbox before padding - if still looks wrong, abort with error
-        const bboxLooksInvalid = (lngMin > 180 || lngMax > 180 || lngMin < -180 || lngMax < -180 ||
-            latMin > 90 || latMax > 90 || latMin < -90 || latMax < -90 ||
-            (lngMax - lngMin) > 10 || (latMax - latMin) > 10); // More than 10 degrees span is suspicious
-        if (bboxLooksInvalid) {
-            console.error('[captureViaTileStitch] Final bbox looks invalid, aborting:', { lngMin, lngMax, latMin, latMax });
-            throw new Error('Invalid bounding box computed for tile stitch - coordinates may be malformed');
+        try {
+            bboxApi.assertValidBbox(bbox, 'captureViaTileStitch');
+        } catch (error) {
+            console.error(error.message, { polygonOrder, parcelPolygonOrder, firstPosition: Array.isArray(geoCoords) ? JSON.stringify(geoCoords).slice(0, 80) : null });
+            throw error;
         }
+        let { lngMin, lngMax, latMin, latMax } = bbox;
 
         // Apply padding
         const lngSpan = lngMax - lngMin;

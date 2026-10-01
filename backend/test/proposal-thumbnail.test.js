@@ -169,7 +169,7 @@ describe('computeStitchFrame', () => {
     it('rejects an absurd bbox rather than rendering a picture of the whole planet', () => {
         const absurd = [[[0, 0], [30, 0], [30, 30], [0, 30], [0, 0]]];
         expect(() => computeStitchFrame({ polygon: absurd, polygonOrder: 'lnglat' }))
-            .toThrow(/Invalid bounding box/);
+            .toThrow(/invalid bounding box: spans more than/);
     });
 });
 

@@ -425,3 +425,9 @@
 - 2026-10-01: **A later road carves every formed piece it crosses (phase 6b).** `_groundAfterLaterCorridors`
   clips applied corridors later in formation order out of structure bodies AND readjustment/subdivision
   plots, on cadastral and open ground; records stay authored, unapply restores. Earlier roads still refuse.
+- 2026-10-01: **Guest rule (one table, `frontend/js/guest-policy.js`).** Device-local acts are open to guests;
+  a profile name only when something leaves the device (publish, share link, mint, public list) because the
+  record carries an author; Offer my land needs a wallet with a lens ownership attestation, since a name proves no ownership.
+- 2026-10-01: **Outgoing records carry the profile's current name.** Ownership of a local record is
+  `authorAgentId` (stamped at create when the author is the current profile); publish/share/mint restamp the
+  current name onto this profile's never-published record; forks are new records of whoever forks them.

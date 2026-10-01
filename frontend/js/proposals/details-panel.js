@@ -2285,7 +2285,7 @@ function returnToParcelInfo(parcelId, event) {
     // 1) Close Proposal UI (details/modal/list) and leave proposal mode
     if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(true);
     if (typeof closeProposalList === 'function') closeProposalList();
-    if (typeof hideProposalCompareModal === 'function') hideProposalCompareModal();
+    if (window.ParcelCompare) window.ParcelCompare.close();
     if (typeof closeProposalInfoDialog === 'function') closeProposalInfoDialog();
 
     // 2) Disable proposal mode by unchecking the checkbox and updating layers immediately

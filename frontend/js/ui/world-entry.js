@@ -232,14 +232,22 @@
     }
 
     // ---- explore city: chip name and banner ----
+    // The chip follows the map: named from local coverage data only (WorldCoverage.nameAt: the
+    // nearest city in range, else the country, '' on open water or a continent-wide view), never
+    // from the network. It used to be named once, from the boot centre, so a pan or a search jump
+    // kept the first place (the default world view centre is in Libya).
+    const EXPLORE_NAME_DEBOUNCE_MS = 250;
+
     function placeName(place) {
-        if (!place || place.kind === 'ocean') return '';
-        return place.kind === 'city' || place.kind === 'live-city' ? place.name : (place.country || place.name || '');
+        return place && place.name ? place.name : '';
     }
 
     function identifyExplorePlace(view) {
         return coverage().then(cov => {
-            state.explorePlace = cov.tierAt(view.lat, view.lon);
+            const place = cov.nameAt(view.lat, view.lon, view.zoom);
+            // A request sent for one place says nothing about the next one.
+            if (state.request === 'done' && placeName(place) !== placeName(state.explorePlace)) state.request = 'idle';
+            state.explorePlace = place;
             if (global.MapSearch && typeof global.MapSearch.refreshChip === 'function') global.MapSearch.refreshChip();
             renderBanner();
         }).catch(error => console.warn('[world-entry] world coverage did not load; the explored place stays unnamed', error));
@@ -337,13 +345,18 @@
         booted.then(() => {
             const map = global.map;
             const center = map.getCenter();
-            identifyExplorePlace({ lat: center.lat, lon: center.lng });
+            identifyExplorePlace({ lat: center.lat, lon: center.lng, zoom: map.getZoom() });
             renderBanner();
             // The status line's boot text says parcels are loading; here none ever will.
             if (typeof global.updateStatus === 'function') global.updateStatus(t('world.explore.status', 'No parcel data here: click the map to draw a site and propose.'));
+            let renameTimer = null;
             map.on('moveend', () => {
                 const c = map.getCenter();
-                m.rememberExploreView({ lat: c.lat, lon: c.lng, zoom: map.getZoom() });
+                const view = { lat: c.lat, lon: c.lng, zoom: map.getZoom() };
+                m.rememberExploreView(view);
+                // Debounced: a drag or a fly ends in several moveends; name the place it settles on.
+                clearTimeout(renameTimer);
+                renameTimer = setTimeout(() => identifyExplorePlace(view), EXPLORE_NAME_DEBOUNCE_MS);
             });
             global.addEventListener('i18n:translationsLoaded', renderBanner);
             if (global.i18n && typeof global.i18n.onChange === 'function') global.i18n.onChange(renderBanner);

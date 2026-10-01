@@ -5,7 +5,11 @@
 // the same way the client used to. Uses node-canvas (same Canvas 2D API as the browser), NOT a
 // headless browser and NOT leaflet-image — no live Leaflet map is involved anywhere in this path.
 import { createCanvas, loadImage } from 'canvas';
+import { createRequire } from 'node:module';
 import { defaultTileSource } from './tile-source.js';
+
+// One bbox rule for browser and server (no lat/lng guessing; an implausible box throws with values).
+const thumbnailBbox = createRequire(import.meta.url)('../../frontend/js/thumbnail-bbox.js');
 
 // MapTiler basic-v2 raster at 256px, the same style as the site's MapTiler basemap. Carto began
 // stamping keyless tiles with "API KEY REQUIRED" (seen 2026-09), which was baked into every
@@ -169,33 +173,9 @@ export function computeStitchFrame(options = {}) {
         throw new Error('Invalid polygon for tile stitch capture');
     }
 
-    let lngMin = Infinity, lngMax = -Infinity, latMin = Infinity, latMax = -Infinity;
-    const expandBbox = (coords) => {
-        const walk = (node) => {
-            if (!Array.isArray(node)) return;
-            if (node.length >= 2 && typeof node[0] === 'number' && typeof node[1] === 'number') {
-                if (node[0] < lngMin) lngMin = node[0];
-                if (node[0] > lngMax) lngMax = node[0];
-                if (node[1] < latMin) latMin = node[1];
-                if (node[1] > latMax) latMax = node[1];
-                return;
-            }
-            node.forEach(walk);
-        };
-        walk(coords);
-    };
-    expandBbox(geoCoords);
-
-    // Sanity check: detect swapped lat/lng coordinates (GeoJSON is [lng, lat]).
-    const obviouslySwapped = (lngMin > 90 || lngMax > 90 || latMin < -90 || latMax < -90);
-    const zagrebSwapped = (lngMin > 40 && lngMax < 50 && latMin > 10 && latMax < 20);
-    if (obviouslySwapped || zagrebSwapped) {
-        const tmpLngMin = lngMin, tmpLngMax = lngMax;
-        lngMin = latMin;
-        lngMax = latMax;
-        latMin = tmpLngMin;
-        latMax = tmpLngMax;
-    }
+    // Coordinates are GeoJSON [lng, lat] once normalized; the caller states the input order.
+    const bbox = thumbnailBbox.bboxOfLngLat(geoCoords);
+    const expandBbox = (coords) => thumbnailBbox.extendBbox(bbox, coords);
 
     const normalizeOrder = (order) => (order === 'lnglat' || order === 'latlng') ? order : 'auto';
 
@@ -223,12 +203,8 @@ export function computeStitchFrame(options = {}) {
         }
     }
 
-    const bboxLooksInvalid = (lngMin > 180 || lngMax > 180 || lngMin < -180 || lngMax < -180 ||
-        latMin > 90 || latMax > 90 || latMin < -90 || latMax < -90 ||
-        (lngMax - lngMin) > 10 || (latMax - latMin) > 10);
-    if (bboxLooksInvalid) {
-        throw new Error('Invalid bounding box computed for tile stitch - coordinates may be malformed');
-    }
+    thumbnailBbox.assertValidBbox(bbox, 'computeStitchFrame');
+    let { lngMin, lngMax, latMin, latMax } = bbox;
 
     // Apply padding
     const padLng = (lngMax - lngMin) * padding;

@@ -63,8 +63,10 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     }
 
     const parcelPolygons = [];
-    let polygonOrder = 'auto';
-    let parcelPolygonOrder = 'auto';
+    // Every source below is GeoJSON [lng, lat] (live fabric features, unions, road geometry), so the
+    // order is stated, never guessed: the capture refuses a bbox it cannot trust.
+    let polygonOrder = 'lnglat';
+    let parcelPolygonOrder = 'lnglat';
     if (hasParcels) {
         parcelFeatures.forEach(feature => {
             const geom = feature.geometry;
@@ -88,23 +90,6 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     } else if (parcelPolygons.length) {
         polygon = parcelPolygons[0];
     }
-
-    const buildBoundsFromCoords = (coords) => {
-        if (!coords || typeof L === 'undefined' || !L.latLngBounds) return null;
-        const latLngs = [];
-        const collect = (node) => {
-            if (!Array.isArray(node) || !node.length) return;
-            if (node.length >= 2 && Number.isFinite(node[0]) && Number.isFinite(node[1])) {
-                const lat = Math.abs(node[0]) <= 90 ? node[0] : node[1];
-                const lng = Math.abs(node[0]) <= 90 ? node[1] : node[0];
-                latLngs.push(L.latLng(lat, lng));
-                return;
-            }
-            node.forEach(collect);
-        };
-        collect(coords);
-        return latLngs.length ? L.latLngBounds(latLngs) : null;
-    };
 
     let bounds = null;
     if (hasParcels && typeof L !== 'undefined' && L.latLngBounds) {
@@ -162,7 +147,7 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
                     bounds = L.latLngBounds([[minLat, minLng], [maxLat, maxLng]]);
                 }
             }
-            parcelPolygonOrder = 'auto';
+            parcelPolygonOrder = 'lnglat';
 
             if (window?.__DEBUG_SCREENSHOT_CONTEXT__) {
                 console.debug('[buildProposalScreenshotContext] road polygon resolved', {
@@ -1172,7 +1157,10 @@ function showUploadProposalModal(proposal) {
                                             parcelPolygons: parcelPolygons,
                                             padding: 0.12,
                                             zoom: 19,
-                                            badge: goalBadge
+                                            badge: goalBadge,
+                                            // Both were flipped to [lat, lng] just above.
+                                            polygonOrder: 'latlng',
+                                            parcelPolygonOrder: 'latlng'
                                         });
                                         console.log('[shareMint] Screenshot captured, size:', screenshotDataUrl?.length || 0);
                                     } catch (captureErr) {
@@ -1192,7 +1180,8 @@ function showUploadProposalModal(proposal) {
                         const goalLabel = goalKey.replace(/-/g, ' ');
                         const proposalName = proposal.name || proposal.title || `${goalLabel} Proposal`;
                         const proposalDescription = proposal.description || '';
-                        const proposalAuthor = proposal.author || '';
+                        // Minting leaves the device: this profile's own draft carries its current name.
+                        const proposalAuthor = stampCurrentAuthor(proposal).author || '';
                         const isConditional = Boolean(proposal.conditional || proposal.isConditional);
 
                         // Record the FULL geometry (and offer) in the metadata, matching the primary

@@ -122,6 +122,8 @@
             blocksEnabled: blocksEnabled(),
             can3d: can3d(),
             siteToolAvailable: !!(win.SiteTool && typeof win.SiteTool.isActive === 'function' && !win.SiteTool.isActive()),
+            // Proposals touching this parcel, for "Compare proposals here" (null when not loaded).
+            compareCount: !isGround && win.ParcelCompare ? win.ParcelCompare.countFor(id) : null,
             area: model.parcelArea(props, geometryArea(feature)),
             ownershipType: ownership.ownershipType,
             ownerCount: ownership.ownerCount
@@ -398,6 +400,7 @@
         details: facts => showPanelTab(facts, 'info-tab'),
         tools: facts => showPanelTab(facts, 'tools-tab'),
         history: showHistory,
+        compare: facts => win.ParcelCompare.open(facts.parcelId),
         // Same seed as Shift+click: the selected parcel starts the multi-selection.
         selectMore: () => win.multiParcelSelection.toggle({ preserveSelectedParcel: true }),
         // The build palette's own Offer tool (it opens the ownership-only proposal dialog).

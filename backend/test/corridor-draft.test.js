@@ -89,7 +89,9 @@ describe('corridor drawing drafts', () => {
 
     it('keeps the generic parcel screenshot path for non-corridor proposals', () => {
         const fallback = [[40.6, -74.1], [40.8, -73.8], [40.6, -74.1]];
-        expect(resolveCorridorScreenshotGeometry({}, fallback))
-            .toEqual({ polygon: fallback, polygonOrder: 'auto', fitToPolygonOnly: false });
+        expect(resolveCorridorScreenshotGeometry({}, fallback, 'latlng'))
+            .toEqual({ polygon: fallback, polygonOrder: 'latlng', fitToPolygonOnly: false });
+        // The order is stated, never guessed.
+        expect(() => resolveCorridorScreenshotGeometry({}, fallback)).toThrow(/fallbackOrder/);
     });
 });

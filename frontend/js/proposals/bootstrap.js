@@ -94,7 +94,9 @@ if (typeof window !== 'undefined') {
     window.shareProposalFromDetails = shareProposalFromDetails;
     window.showWalkUploadGateModal = showWalkUploadGateModal;
 
-    window.requirePersonalizedUser = requirePersonalizedUser;
+    window.guestPolicyBlocks = guestPolicyBlocks;
+    window.stampCurrentAuthor = stampCurrentAuthor;
+    window.currentProfileIsGuest = currentProfileIsGuest;
     window.showProposalDialog = showProposalDialog;
     window.closeProposalDialog = closeProposalDialog;
     window.createProposal = createProposal;

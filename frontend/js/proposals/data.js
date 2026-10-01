@@ -1183,6 +1183,15 @@ const proposalStorage = {
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
 
+        // Whose record this is: the current profile's agent id when the author is its name
+        // (GuestPolicy.claimAuthorAgentId). Publishing later stamps that profile's CURRENT name, so a
+        // record created as a guest does not leave the device under its old guest alias.
+        const policy = (typeof window !== 'undefined' && window.GuestPolicy) || null;
+        if (policy && typeof policy.claimAuthorAgentId === 'function' && typeof getCurrentUserAgent === 'function') {
+            const authorAgentId = policy.claimAuthorAgentId(normalized, getCurrentUserAgent());
+            if (authorAgentId) normalized.authorAgentId = authorAgentId;
+        }
+
         // Ensure proposals get a deterministic, stable ID derived from immutable inputs
         if (!normalized.proposalId || isLocalProposalId(normalized.proposalId)) {
             normalized.proposalId = this._buildDeterministicId(normalized);
@@ -1325,6 +1334,20 @@ const proposalStorage = {
         if (!text) return false;
         proposal.name = text;
         proposal.title = text;
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        this.save();
+        return true;
+    },
+
+    // Author-only mutation of a draft that never left the device: the name it is published under
+    // (stampCurrentAuthor, proposals/storage.js). Published records are never renamed.
+    setProposalAuthor(proposalId, author) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal) return false;
+        const text = (author === undefined || author === null) ? '' : String(author).trim();
+        if (!text || proposal.author === text) return false;
+        proposal.author = text;
         proposal.updatedAt = new Date().toISOString();
         this._indexProposal(proposal);
         this.save();

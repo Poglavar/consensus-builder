@@ -347,7 +347,6 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
     if (typeof proposeExistingProposal === 'function') {
         return proposeExistingProposal(proposalIdOrHash);
     }
-    if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) return;
 
     const source = (typeof getProposalByIdOrHash === 'function')
         ? getProposalByIdOrHash(proposalIdOrHash)

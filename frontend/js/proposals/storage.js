@@ -159,27 +159,60 @@ function getProposalI18nHelper() {
     };
 }
 
-function requirePersonalizedUser() {
+// The current profile as GuestPolicy reads it: an unknown or guest agent is a guest.
+function currentProfileIsGuest() {
+    const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
+    return agent ? agent.isGuest === true : true;
+}
+
+// The name gate for acts that leave the device (GuestPolicy 'name': publish, share, mint). Returns
+// null when allowed, or the explanation (truthy) when the act is BLOCKED: the guest is then shown
+// the profile dialog and the explanation. Acts that stay
+// on the device have no gate at all; ownership acts go through requireOwnerOfferProof (create.js).
+function guestPolicyBlocks(action) {
+    const policy = window.GuestPolicy;
+    if (!policy) throw new Error('guest-policy.js is not loaded');
+    if (policy.requires(action) !== 'name') {
+        throw new Error(`guestPolicyBlocks handles name-gated acts only, not "${action}"`);
+    }
+    const verdict = policy.check(action, { isGuest: currentProfileIsGuest() });
+    if (verdict.allowed) return null;
     const t = getProposalI18nHelper();
-    if (typeof getCurrentUserAgent !== 'function') {
-        return false; // Can't check, allow through
+    const messages = {
+        publish: ['ephemeral.messages.name_to_publish', 'Choose a profile name to publish: published proposals carry their author. Everything kept on this device works without one.'],
+        share: ['ephemeral.messages.name_to_share', 'Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.'],
+        mint: ['ephemeral.messages.name_to_mint', 'Choose a profile name to put this proposal on-chain: the record carries its author.'],
+        joinList: ['ephemeral.messages.name_to_join_list', 'Choose a profile name to join a public list.']
+    };
+    const [key, fallback] = messages[action];
+    console.info(`[${new Date().toISOString()}] [GuestPolicy] ${action} needs a profile name`);
+    if (typeof showWelcomeModal === 'function') showWelcomeModal();
+    const message = t(key, fallback);
+    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 6000);
+    return message;
+}
+
+// The author a record carries when it leaves the device (publish, share link, mint): the current
+// profile's name for this profile's own never-published record (GuestPolicy.outgoingAuthor). Such a
+// record is a draft that never left the device, so the local copy is updated too (the list then
+// shows the name it was published under). Published or minted records are never touched.
+// -> the same record object, its author restamped when it is this profile's draft.
+function stampCurrentAuthor(proposal) {
+    const policy = window.GuestPolicy;
+    if (!policy) throw new Error('guest-policy.js is not loaded');
+    if (!proposal || typeof proposal !== 'object') return proposal;
+    const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
+    const immutable = typeof isProposalImmutable === 'function' ? isProposalImmutable(proposal) : !!proposal.serverProposalId;
+    const verdict = policy.outgoingAuthor(proposal, agent, { immutable });
+    if (!verdict.restamped) return proposal;
+    console.info(`[${new Date().toISOString()}] [GuestPolicy] record ${proposal.proposalId || '?'} leaves the device as "${verdict.author}" (was "${proposal.author || ''}")`);
+    const stored = (typeof proposalStorage !== 'undefined' && proposal.proposalId && typeof proposalStorage.getProposal === 'function')
+        ? proposalStorage.getProposal(proposal.proposalId) : null;
+    if (stored && String(stored.authorAgentId || '') === String(proposal.authorAgentId || '')) {
+        proposalStorage.setProposalAuthor(stored.proposalId, verdict.author);
     }
-    const agent = getCurrentUserAgent();
-    if (!agent || !agent.isGuest) {
-        return false; // Not a guest, allow through
-    }
-    // User is a guest - prompt them to personalize
-    if (typeof showWelcomeModal === 'function') {
-        showWelcomeModal();
-    }
-    if (typeof showEphemeralMessage === 'function') {
-        const message = t(
-            'ephemeral.messages.personalize_to_create_proposal',
-            'Please personalize your profile to create proposals.'
-        );
-        showEphemeralMessage(message);
-    }
-    return true; // Blocked - user is guest
+    proposal.author = verdict.author;
+    return proposal;
 }
 
 function hashStringDeterministic(str, seed = 0) {

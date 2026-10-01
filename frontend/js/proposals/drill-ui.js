@@ -413,6 +413,20 @@
             el.appendChild(row);
         });
 
+        // Two or more proposals stacked on one parcel: compare them for that parcel.
+        const proposalEntries = stack.filter(entry => entry.kind === 'proposal');
+        const baseParcel = stack.find(entry => entry.kind === 'parcel' && entry.depth === 0)
+            || stack.find(entry => entry.kind === 'parcel');
+        if (proposalEntries.length >= 2 && baseParcel && global.ParcelCompare) {
+            const compare = document.createElement('button');
+            compare.type = 'button';
+            compare.className = 'drill-stack-compare btn btn-sm btn-outline-primary';
+            compare.textContent = t('parcelMenu.actions.compare', 'Compare proposals here');
+            compare.addEventListener('click', () => global.ParcelCompare.open(baseParcel.id,
+                proposalEntries.slice(0, 2).map(entry => entry.proposal.proposalId)));
+            el.appendChild(compare);
+        }
+
         // One row says nothing the parcel/proposal panel's own header does not; phones hide it.
         el.classList.toggle('is-single', stack.length === 1 && !el.querySelector('.drill-stack-parcel-btn'));
         el.classList.add('visible');

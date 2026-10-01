@@ -17,12 +17,14 @@
         return fallback || key || '';
     };
 
-    function createProposalFromSingleParcel() {
-        // Gate: require personalized profile to create proposals
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
-            return;
-        }
+    // "Offer my land" asserts ownership: it needs a wallet a lens member attested as the parcels'
+    // owner (GuestPolicy 'ownership-proof'), not just a profile name. Says what is missing otherwise.
+    async function ownerOfferProofMissing() {
+        if (typeof global.requireOwnerOfferProof !== 'function') throw new Error('requireOwnerOfferProof is not loaded');
+        return !(await global.requireOwnerOfferProof());
+    }
 
+    async function createProposalFromSingleParcel() {
         if (!global.currentParcel || !global.currentParcel.layer) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus(tParcel('panel.parcel.build.noParcelSelected', {}, 'No parcel selected. Please select a parcel first.'));
@@ -33,10 +35,12 @@
             if (!global.multiParcelSelection.isActive) {
                 global.multiParcelSelection.selectedParcels.clear();
                 global.multiParcelSelection.selectedParcels.add(global.currentParcel.id);
+                // Checked on the selection the offer would be made on.
+                if (await ownerOfferProofMissing()) return;
                 if (typeof global.showProposalDialog === 'function') {
                     // Offer negotiates ownership only — building/land-use/parcel changes have
                     // their own palette tools.
-                    global.showProposalDialog({ ownershipOnly: true });
+                    global.showProposalDialog({ ownershipOnly: true, ownerOffer: true });
                 }
             } else {
                 console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
@@ -47,12 +51,7 @@
         }
     }
 
-    function createProposalFromSelectedParcels() {
-        // Gate: require personalized profile to create proposals
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
-            return;
-        }
-
+    async function createProposalFromSelectedParcels() {
         if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection || !global.multiParcelSelection.isActive) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus(tParcel('panel.parcel.build.enableMultiSelect', {}, 'Enable multi-parcel selection to use this action.'));
@@ -68,8 +67,9 @@
             return;
         }
 
+        if (await ownerOfferProofMissing()) return;
         if (typeof global.showProposalDialog === 'function') {
-            global.showProposalDialog({ ownershipOnly: true });
+            global.showProposalDialog({ ownershipOnly: true, ownerOffer: true });
         }
     }
 
