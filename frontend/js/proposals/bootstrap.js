@@ -165,7 +165,6 @@ if (typeof window !== 'undefined' && typeof window.whenAppBooted === 'function')
         run('proposal route', () => handleProposalRouteFromUrl());
         run('single proposal share', () => handleSingleProposalShareFromUrl());
         run('shared proposals', () => handleSharedProposalsFromUrl());
-        run('proposals indicator', () => syncProposalsIndicator());
         run('standalone 3D mode', () => handleStandalone3DModeFromUrl());
     });
 } else if (typeof window !== 'undefined') {

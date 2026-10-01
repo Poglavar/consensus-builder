@@ -450,7 +450,7 @@ highlightBlock = function (blockName) {
 // Update the toggleLayer function to handle blockify button
 // Wait for toggleLayer to be available on window
 (function () {
-    // Wait for sidebar-management.js to load and define toggleLayer
+    // Wait for map-controls.js to load and define toggleLayer
     function wrapToggleLayer() {
         if (typeof window.toggleLayer === 'function') {
             const originalToggleLayer = window.toggleLayer;

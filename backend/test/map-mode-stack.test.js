@@ -1,5 +1,5 @@
-// Guards the lower-left map mode stack: every button owns one declared slot, and no two buttons
-// share one. They are all absolutely positioned at the same `left`, so a shared slot is not a
+// Guards the map mode strip down the left edge (under the top-left search slot): every button owns
+// one declared slot, and no two buttons share one. They are all absolutely positioned at the same `left`, so a shared slot is not a
 // visible layout squeeze — the button later in index.html paints over the other and the covered
 // one becomes unreachable. That has happened twice (walk over the AI wand at 192, then the
 // cadastre grid over walk at 240), each time reported as "the icon is missing".
@@ -14,7 +14,7 @@ const SOURCES = {
 };
 const indexHtml = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
 
-// The stack, bottom → top. The slot each button is expected to own is the contract, not an
+// The strip, top → bottom. The slot each button is expected to own is the contract, not an
 // observation: moving a button between slots means editing this list on purpose.
 const STACK = [
     { id: 'cadastre-view-toggle', slot: 1 },
@@ -25,20 +25,21 @@ const STACK = [
     { id: 'mode-walk-toggle', slot: 6 }
 ];
 
-// Every `selector { body }` pair that declares a bottom offset for the given button id.
-function bottomDeclarationsFor(id) {
+// Every `selector { body }` pair that declares a top offset for the given button id. Slots are top
+// offsets since the strip moved under the search box (the bottom-left corner is the Game pill's).
+function topDeclarationsFor(id) {
     const found = [];
     for (const [file, css] of Object.entries(SOURCES)) {
         for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
             if (!selector.includes(`#${id}`)) continue;
-            const bottom = body.match(/(?:^|[;{\s])bottom:\s*([^;]+);/);
-            if (bottom) found.push({ file, selector: selector.trim(), value: bottom[1].trim() });
+            const top = body.match(/(?:^|[;{\s])top:\s*([^;]+);/);
+            if (top) found.push({ file, selector: selector.trim(), value: top[1].trim() });
         }
     }
     return found;
 }
 
-describe('lower-left map mode stack', () => {
+describe('left-edge map mode strip', () => {
     it('declares one slot ladder, evenly spaced, with no repeated offset', () => {
         const root = SOURCES['map.css'].match(/:root\s*\{([\s\S]*?)\}/);
         expect(root, ':root block with the slot ladder').toBeTruthy();
@@ -60,8 +61,8 @@ describe('lower-left map mode stack', () => {
     it('gives every button its own slot, and none a hand-picked offset', () => {
         const owners = new Map();
         for (const { id, slot } of STACK) {
-            const declarations = bottomDeclarationsFor(id);
-            expect(declarations.length, `#${id} should declare its bottom exactly once`).toBe(1);
+            const declarations = topDeclarationsFor(id);
+            expect(declarations.length, `#${id} should declare its top exactly once`).toBe(1);
             expect(declarations[0].value, `#${id} must sit in a declared slot, not a raw offset`)
                 .toBe(`var(--map-mode-slot-${slot})`);
 

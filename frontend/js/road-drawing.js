@@ -2280,11 +2280,8 @@ function toggleRoadDrawTool() {
             }
         }
 
-        // Collapse the sidebar so the map has room (the retired width picker used to do this).
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-            try { toggleSidebar(); } catch (_) { }
-        }
+        // Fold away an open sheet so the map has room (the retired width picker used to do this).
+        if (window.MapShell) window.MapShell.closeSheets();
 
         // A NEW TRACK starts as one standard-gauge track (3.5 m) and nothing else. Its width is the sum
         // of its lanes from here on: the cross-section editor adds a second track, a platform, a verge —
@@ -5975,11 +5972,8 @@ function showTrackSpeedPicker() {
             const minRadius = parseFloat(selected.dataset.minRadius);
             PersistentStorage.setItem('lastTrackSpeedId', selected.dataset.id);
             modal.style.display = 'none';
-            // Collapse sidebar if open
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-                try { toggleSidebar(); } catch (_) { }
-            }
+            // Fold away an open sheet so the map has room
+            if (window.MapShell) window.MapShell.closeSheets();
             resolve({ speed, minRadius });
         };
 

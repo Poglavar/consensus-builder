@@ -72,7 +72,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         return formatProposalString(fallback, params);
     };
 
-    collapseSidebarIfOpen();
+    // The details panel takes the right of the map: fold away an open sheet.
+    if (window.MapShell) window.MapShell.closeSheets();
 
     const parcelIds = ensureArrayOfStrings(proposal.cadastreParcelIds);
 
@@ -2404,6 +2405,8 @@ function installProposalDetailsEscapeHandler() {
     if (proposalDetailsEscapeHandler) return;
     proposalDetailsEscapeHandler = (event) => {
         if (event.key !== 'Escape') return;
+        // Already handled (an open sheet closed on this Escape): one Escape closes one thing.
+        if (event.defaultPrevented) return;
         const panel = document.getElementById('proposal-details-panel');
         const isActive = panel && panel.classList.contains('visible') && document.body.classList.contains('proposal-details-open');
         if (!isActive) return;

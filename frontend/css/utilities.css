@@ -310,11 +310,11 @@ body.debug-mode .debug-only-control {
     position: relative;
 }
 
-/* Exactly two rows, always. The bar is flex-shrink:0 in a flex column, so every time a message
-   wrapped to a second line it pushed the whole sidebar above it up, and the next short message
-   dropped it back — the panel twitched on nearly every status update, which on a busy reload is
-   several times a second. Reserving the taller of the two heights costs one line of empty space
-   and buys a sidebar that holds still.
+/* Exactly two rows, always. Every time a message wrapped to a second line it resized whatever
+   held the bar (the sidebar once, the Activity sheet now), and the next short message dropped it
+   back — the panel twitched on nearly every status update, which on a busy reload is several times
+   a second. Reserving the taller of the two heights costs one line of empty space and buys a
+   panel that holds still.
 
    Clamped as well as reserved: without the clamp a three-line message would simply move the flip
    up a row rather than remove it. The full text is never lost — the log strip and the pop-out
@@ -567,49 +567,31 @@ button.status-log-message {
     }
 }
 
-/* Floating status message (visible when sidebar is closed AND debug mode is enabled) */
+/* Floating status toast: the latest status line, always visible. Small and out of the way: centred
+   one row above the bottom row of floating buttons (Game pill, Proposals/Tools/Activity), single
+   line, and click-through. The full status bar and its log are in the Activity sheet. */
 .floating-status {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 8px 15px;
-    font-size: 14px;
-    color: #495057;
-    z-index: 1000;
+    left: 50%;
+    bottom: calc(var(--map-shell-bottom) + var(--map-shell-button-size) + var(--map-shell-gap));
+    transform: translateX(-50%);
+    z-index: 990;
+    max-width: min(480px, calc(100vw - 2 * (var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap))));
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    font-size: 12px;
+    line-height: 1.4;
+    color: #374151;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     pointer-events: none;
-    /* Transparent background - text only */
-    background: transparent;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8), 
-                 0 0 4px rgba(255, 255, 255, 0.6),
-                 1px 1px 2px rgba(0, 0, 0, 0.3);
-    /* Ensure text is readable over map */
-    max-width: calc(100vw - 40px);
-    word-wrap: break-word;
-    /* Hidden by default - only shown when sidebar is collapsed AND debug mode is enabled */
+}
+
+.floating-status:has(#floating-status-text:empty) {
     display: none;
-}
-
-/* When sidebar is closed AND debug mode is enabled, show floating status */
-body.debug-mode #sidebar.collapsed ~ #map-container .floating-status,
-body.debug-mode.sidebar-collapsed #map-container .floating-status {
-    display: block;
-    left: 10px;
-    bottom: 10px;
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .floating-status {
-        font-size: 13px;
-        padding: 6px 12px;
-        max-width: calc(100vw - 20px);
-    }
-    
-    body.debug-mode #sidebar.collapsed ~ #map-container .floating-status,
-    body.debug-mode.sidebar-collapsed #map-container .floating-status {
-        left: 10px;
-        bottom: 10px;
-    }
 }
 
 .share-proposal-container {
@@ -2384,7 +2366,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     z-index: 12000 !important;
-    /* Ensure panel sits above sidebar/toggles */
+    /* Ensure panel sits above the floating shell and its sheets */
     display: none;
     overflow-x: hidden;
     overflow-y: auto;
@@ -2551,7 +2533,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         box-sizing: border-box;
     }
 
-    /* The docked sheets (parcel, proposal, road) start right of the lower-left mode buttons.
+    /* The docked sheets (parcel, proposal, road) start right of the left-edge mode strip.
        Full width, they covered the 2D/3D/photo buttons — the way to switch view was buried under
        the very panel that describes what you would switch to. */
     .info-panel.right-dock-panel {
@@ -2625,18 +2607,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     /* Control groups more compact */
     .control-group {
         padding: 12px 0;
-    }
-
-    /* Remove vertical padding from all divs in parcel section on mobile */
-    .accordion-section[data-section="parcels"] .accordion-content {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
-    .accordion-section[data-section="parcels"] .accordion-content > div,
-    .accordion-section[data-section="parcels"] .accordion-content div {
-        padding-top: 0;
-        padding-bottom: 0;
     }
 
     .control-group-title {

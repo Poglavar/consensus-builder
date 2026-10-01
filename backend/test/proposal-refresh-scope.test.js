@@ -19,7 +19,7 @@ function presentationSpies() {
     const names = [
         'scheduleCorridorStripRefresh', 'refreshParcelStylesForAppliedProposals',
         'updateProposalLayer', 'updateProposalList', 'updateShowProposalsButton',
-        'syncProposalsIndicator', 'updateParksLayer', 'updateLakesLayer',
+        'updateParksLayer', 'updateLakesLayer',
         'updateSquaresLayer', 'updateTransitStationsLayer', 'updateProposedBuildingsLayer',
         'updateReparcellizationLayers'
     ];

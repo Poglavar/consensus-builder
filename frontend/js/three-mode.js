@@ -143,7 +143,7 @@
     // "why is there nothing on this plot", it is not part of the plan being looked at.
     let showIneligibleParcels = false;
 
-    // Checkbox listeners to sync 3D buildings with sidebar
+    // Checkbox listeners to sync 3D buildings with the Layers sheet
     let onShowExistingBuildingsChange = null;
     let onShowProposedBuildingsChange = null;
 
@@ -159,7 +159,7 @@
     function updateModeButtonStates() {
         try {
             const rw = !!(window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function' && window.PhotorealMode.isActive());
-            // Loading spinners on the lower-left mode icons: photo (globe) while its tiles compose,
+            // Loading spinners on the mode-strip icons: photo (globe) while its tiles compose,
             // model (3D) while its scene renders. Photo entry passes through 3D init, so photo-loading
             // wins there — only the globe spins, never both.
             // The first click precedes this module's lazy load. Keep that requested mode
@@ -5618,7 +5618,7 @@
             });
         }
 
-        // Checkbox listeners (sync 3D buildings with sidebar state)
+        // Checkbox listeners (sync 3D buildings with the Layers sheet's state)
         const showExistingEl = document.getElementById('showBuildings');
         const showProposedEl = document.getElementById('showProposedBuildings');
         onShowExistingBuildingsChange = () => { rebuild3DBuildingsOnly(); };
@@ -5811,7 +5811,7 @@
         const loop = (now) => {
             stepManualAutoRotate(now);
             // Keep the canvas locked to its container every frame. The window 'resize'
-            // listener misses box changes that don't fire a window resize (sidebar toggle,
+            // listener misses box changes that don't fire a window resize (a panel docking,
             // browser UI showing/hiding, a layout reflow after entering 3D before it settled),
             // which left the canvas stale and shorter than the viewport — the 2D map then
             // showed through along the bottom edge. This is size-only (no camera re-framing,
@@ -5871,7 +5871,7 @@
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
         // Do not reframe here: camera + controls.target are the user's current pan/orbit state.
-        // Updating only the projection keeps that state intact across sidebar and window resizes.
+        // Updating only the projection keeps that state intact across layout and window resizes.
     }
 
     function disposeScene() {
@@ -5967,40 +5967,6 @@
         try { map.keyboard && map.keyboard.enable(); } catch (_) { }
     }
 
-    function disableSidebarFor3D() {
-        try {
-            const sidebar = document.getElementById('sidebar');
-            if (!sidebar) return;
-            // Stay usable in 3D: the Buildings section (drives the 3D layers), Proposals (browsing
-            // them is how you navigate the 3D city), and the sidebar toggles themselves — the mobile
-            // hamburger lives inside #sidebar, and disabling it left no way to open the sidebar.
-            const keptSections = ['buildings', 'proposals']
-                .map(key => document.querySelector(`.accordion-section[data-section="${key}"]`))
-                .filter(Boolean);
-            const interactive = sidebar.querySelectorAll('input, button, select, textarea');
-            interactive.forEach(el => {
-                const kept = keptSections.includes(el.closest('.accordion-section'))
-                    || el.id === 'toggle-sidebar-mobile' || el.id === 'toggle-sidebar-desktop';
-                if (!kept) {
-                    if (!el.disabled) el.setAttribute('data-three-disabled', '1');
-                    el.disabled = true;
-                }
-            });
-        } catch (_) { }
-    }
-
-    function enableSidebarAfter3D() {
-        try {
-            const sidebar = document.getElementById('sidebar');
-            if (!sidebar) return;
-            const toEnable = sidebar.querySelectorAll('[data-three-disabled="1"]');
-            toEnable.forEach(el => {
-                try { el.disabled = false; } catch (_) { }
-                try { el.removeAttribute('data-three-disabled'); } catch (_) { }
-            });
-        } catch (_) { }
-    }
-
     function closeAllPanelsAndModalsFor3D() {
         // `hideParcelInfoPanel` in this module belongs to the Three.js overlay. Explicitly call the
         // 2D parcel-panel owner as well; otherwise its identically named local function shadows the
@@ -6087,14 +6053,9 @@
         if (isActive) return;
         isActive = true;
         scheduleViewAngleHint('model');
-        // 3D takes the full stage: collapse an expanded sidebar so the canvas and its in-view
-        // controls get the whole viewport instead of sharing it with the sidebar column.
-        try {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-                toggleSidebar();
-            }
-        } catch (_) { }
+        // 3D takes the full stage: fold away an open sheet so the canvas and its in-view controls
+        // get the whole viewport.
+        if (window.MapShell) window.MapShell.closeSheets();
         // Optional focus: frame only these proposals (by proposalId) instead of all applied ones.
         // Used by shared-link entry so the camera lands on the just-loaded proposal.
         focusProposalIds = (options && Array.isArray(options.focusProposalIds) && options.focusProposalIds.length)
@@ -6120,7 +6081,8 @@
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
-        disableSidebarFor3D();
+        // Only the Buildings and Proposals controls stay usable in 3D (MapShell.setLockedFor3D).
+        if (window.MapShell) window.MapShell.setLockedFor3D(true);
         initScene();
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
@@ -6154,7 +6116,7 @@
         hideRenderingOverlay();
         updateModeButtonStates();
         enableLeafletInteractions();
-        enableSidebarAfter3D();
+        if (window.MapShell) window.MapShell.setLockedFor3D(false);
         pendingModelLoads = 0;
         updateBuildingsLoader();
         disposeScene();

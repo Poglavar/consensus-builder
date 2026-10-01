@@ -554,12 +554,14 @@ function updateAgentsButton() {
     if (!agentsBtn) return;
     const key = 'sidebar.game.showAgents';
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
-    agentsBtn.setAttribute('data-i18n-key', key);
-    agentsBtn.removeAttribute('data-i18n-params');
+    // The label span, beside the button's icon (the button itself only on older markup).
+    const label = agentsBtn.querySelector('[data-i18n-key]') || agentsBtn;
+    label.setAttribute('data-i18n-key', key);
+    label.removeAttribute('data-i18n-params');
     if (i18nApi && typeof i18nApi.t === 'function') {
-        agentsBtn.textContent = i18nApi.t(key);
+        label.textContent = i18nApi.t(key);
     } else {
-        agentsBtn.textContent = 'Actors';
+        label.textContent = 'Actors';
     }
 }
 
@@ -645,19 +647,21 @@ gameState.updateGameUI = function () {
     // Update game log button with count
     const gameLogBtn = document.getElementById('show-game-log-btn');
     if (gameLogBtn) {
+        // The label span, beside the button's icon (the button itself only on older markup).
+        const gameLogLabel = gameLogBtn.querySelector('[data-i18n-key]') || gameLogBtn;
         const hasLogs = this.gameLog.length > 0;
         const logKey = hasLogs ? 'sidebar.game.showGameLogCount' : 'sidebar.game.showGameLog';
-        gameLogBtn.setAttribute('data-i18n-key', logKey);
+        gameLogLabel.setAttribute('data-i18n-key', logKey);
         if (hasLogs) {
-            gameLogBtn.setAttribute('data-i18n-params', JSON.stringify({ count: this.gameLog.length }));
+            gameLogLabel.setAttribute('data-i18n-params', JSON.stringify({ count: this.gameLog.length }));
         } else {
-            gameLogBtn.removeAttribute('data-i18n-params');
+            gameLogLabel.removeAttribute('data-i18n-params');
         }
 
         if (i18nApi && typeof i18nApi.t === 'function') {
-            gameLogBtn.textContent = i18nApi.t(logKey, { count: this.gameLog.length });
+            gameLogLabel.textContent = i18nApi.t(logKey, { count: this.gameLog.length });
         } else {
-            gameLogBtn.textContent = hasLogs
+            gameLogLabel.textContent = hasLogs
                 ? `Show Game Log (${this.gameLog.length})`
                 : 'Show Game Log';
         }
@@ -682,6 +686,9 @@ function toggleGamePlayPause() {
 // renderer (ActorExplorer) for simulation, live and combined activity. Sources are adapters, so
 // switching from game data to live data never changes the interface or the action vocabulary.
 let liveAgentActivity = null; // unscoped feed; null = not fetched yet; Refresh clears it
+// What the open explorer shows: its filter, its view (events | actors) and the sources that failed.
+// It was referenced but never declared, so every way into the explorer threw a ReferenceError.
+const activityExplorerState = { filter: null, view: 'events', failures: [] };
 const scopedLiveActivity = new Map(); // server-filtered feeds keyed by query string
 const liveActivityRequests = new Map(); // one in-flight fetch per query, shared by concurrent renders
 
@@ -834,7 +841,7 @@ function refreshLiveActivity() {
 
 /**
  * Open the one activity explorer, optionally scoped (actor/proposal/run/parcel set) and on a view.
- * Every entry point — sidebar buttons, row drill-downs, proposal Details, ?activity= links — lands here.
+ * Every entry point — Game pill and Activity buttons, row drill-downs, proposal Details, ?activity= links — lands here.
  */
 function showGameLogDialog(options = {}) {
     const scope = options.filter || {};
@@ -980,17 +987,11 @@ function setupGameLogClickListeners() {
                 return;
             }
 
-            const sidebar = document.getElementById('sidebar');
-            const sidebarWasCollapsed = sidebar ? sidebar.classList.contains('collapsed') : false;
-
             const inProposalModal = this.closest('.proposal-info-modal');
             if (inProposalModal && typeof closeProposalInfoDialog === 'function') {
                 closeProposalInfoDialog();
                 // Allow the proposal dialog to close before opening the agent dialog
                 setTimeout(() => {
-                    if (sidebarWasCollapsed && sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-                        toggleSidebar();
-                    }
                     showAgentDialog(agentId);
                 }, 50);
                 return;
@@ -1000,9 +1001,6 @@ function setupGameLogClickListeners() {
             if (proposalDetailsPanel && proposalDetailsPanel.contains(this) && typeof hideProposalDetailsPanel === 'function') {
                 hideProposalDetailsPanel();
                 setTimeout(() => {
-                    if (sidebarWasCollapsed && sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-                        toggleSidebar();
-                    }
                     showAgentDialog(agentId);
                 }, 50);
                 return;
@@ -1130,16 +1128,9 @@ function showParcelFromLog(parcelId) {
     // Close Game Log dialog if open to allow better visibility of the parcel
     closeGameLogDialog();
 
-    // On mobile, also collapse sidebar if open
+    // Fold away an open sheet so the parcel is in view
+    if (window.MapShell) window.MapShell.closeSheets();
     const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && !sidebar.classList.contains('collapsed')) {
-            if (typeof toggleSidebar === 'function') {
-                toggleSidebar();
-            }
-        }
-    }
 
     // Use the existing parcel selection functionality with mobile-aware behavior
     if (typeof selectParcel === 'function') {

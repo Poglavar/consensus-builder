@@ -1,0 +1,819 @@
+/* ========== Floating map shell ==========
+   The floating buttons, the Game pill and the sheets that replaced the left sidebar
+   (js/ui/map-shell.js; layout table in UI-REWORK.md), plus the styles of the controls rehoused into
+   those sheets. A sheet is a popover anchored to its button on desktop (map-shell.js sets the
+   --sheet-* offsets) and a bottom sheet under 768px. */
+
+:root {
+    --map-shell-gap: 8px;
+    --map-shell-edge: 10px;
+    --map-shell-button-size: 40px;
+    /* Clear of the Leaflet attribution line along the bottom edge (the OSM credit must stay visible). */
+    --map-shell-bottom: 24px;
+}
+
+/* ---- Hooks for later phases: empty until something mounts in them ---- */
+.map-shell-slot:empty {
+    display: none;
+}
+
+.map-shell-slot--search {
+    position: absolute;
+    top: var(--map-shell-edge);
+    left: var(--map-shell-edge);
+    z-index: 1000;
+}
+
+.map-shell-slot--tray {
+    position: absolute;
+    left: 50%;
+    bottom: var(--map-shell-bottom);
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* ---- Floating buttons ---- */
+.map-shell-cluster {
+    position: absolute;
+    z-index: 1000;
+    display: flex;
+    gap: var(--map-shell-gap);
+}
+
+.map-shell-cluster--top-right {
+    top: var(--map-shell-edge);
+    right: var(--map-shell-edge);
+}
+
+.map-shell-cluster--bottom-right {
+    bottom: var(--map-shell-bottom);
+    right: var(--map-shell-edge);
+}
+
+.map-shell-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: var(--map-shell-button-size);
+    height: var(--map-shell-button-size);
+    padding: 0 10px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: #1f2937;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.map-shell-button i {
+    font-size: 16px;
+    color: #374151;
+}
+
+.map-shell-button:hover {
+    background: #f3f4f6;
+}
+
+.map-shell-button:focus-visible,
+.game-pill-toggle:focus-visible,
+.map-sheet:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.map-shell-button.is-active {
+    background: #1f2937;
+    border-color: #1f2937;
+    color: #fff;
+}
+
+.map-shell-button.is-active i {
+    color: #fff;
+}
+
+.map-shell-badge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    box-sizing: border-box;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+}
+
+.map-shell-badge[hidden] {
+    display: none;
+}
+
+/* The user bubble sits left of the Layers and Settings buttons in the same top row. */
+#map-container .username-display {
+    top: var(--map-shell-edge);
+    right: calc(var(--map-shell-edge) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
+    height: var(--map-shell-button-size);
+    box-sizing: border-box;
+}
+
+/* Visually hidden, still read out (e.g. the play/pause label inside the Game pill). */
+.map-shell-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---- Game pill (bottom-left) ---- */
+.game-pill {
+    position: absolute;
+    left: var(--map-shell-edge);
+    bottom: var(--map-shell-bottom);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: var(--map-shell-button-size);
+    padding: 0 4px 0 0;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    max-width: calc(100vw - 2 * var(--map-shell-edge));
+}
+
+.game-pill-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    min-width: 0;
+    padding: 0 6px 0 12px;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: #1f2937;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.game-pill-toggle:hover {
+    background: #f3f4f6;
+}
+
+.game-pill-toggle[aria-expanded="true"] {
+    background: #e5e7eb;
+}
+
+.game-pill-toggle i {
+    color: #374151;
+    font-size: 16px;
+}
+
+.game-pill-metrics {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    font-variant-numeric: tabular-nums;
+}
+
+.game-pill-metrics .metric-value {
+    font-weight: 600;
+}
+
+.game-pill-separator,
+.game-pill-turn-label {
+    color: #6b7280;
+}
+
+#game-pill .game-pill-play {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
+
+/* ---- Sheets ---- */
+.map-sheet {
+    position: fixed;
+    top: var(--sheet-top, auto);
+    bottom: var(--sheet-bottom, auto);
+    left: var(--sheet-left, auto);
+    right: var(--sheet-right, auto);
+    z-index: 1600; /* over the docked parcel/road panels (1000-1510): the person just asked for it */
+    width: 340px;
+    max-width: calc(100vw - 2 * var(--map-shell-edge));
+    max-height: min(var(--sheet-max-height, 70vh), 80vh);
+    box-sizing: border-box;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.22);
+    color: #1f2937;
+    overflow: hidden;
+}
+
+.map-sheet:not([hidden]) {
+    display: flex;
+}
+
+.map-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px 8px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+.map-sheet-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.map-sheet-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 16px 16px;
+    overscroll-behavior: contain;
+}
+
+.map-sheet-body * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.map-sheet .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* A section inside a sheet: a plain heading over its controls (the accordions are gone; the
+   `.accordion-section[data-section]` wrapper stays because code and the city config find it). */
+.map-sheet-body > .accordion-section + .accordion-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.sheet-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.sheet-section-title i {
+    color: #4b5563;
+    width: 16px;
+    text-align: center;
+}
+
+.sheet-section-body.section-disabled,
+.section-dependent-content.section-disabled {
+    opacity: 0.6;
+}
+
+/* A section locked by a long-running action (MapShell.setSectionBusy). */
+.sheet-section-busy {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #1e3a8a;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.sheet-section-busy__spinner {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #bfdbfe;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: sheet-section-busy-spin 0.8s linear infinite;
+}
+
+@keyframes sheet-section-busy-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sheet-section-busy__spinner {
+        animation: none;
+    }
+}
+
+/* ---- Controls inside the sheets ----
+   One compact style for everything rehoused from the sidebar, whatever colour class the markup
+   still carries (.btn-info, .btn-warning, .btn-action…): white rows with an icon, a filled
+   primary for the one main action of a sheet, and red-outlined destructive actions. Scoped to
+   .map-sheet so the same classes elsewhere (modals, panels) keep their look. Rows are 36px on
+   desktop and 44px touch targets on phones. */
+.map-sheet {
+    --sheet-row-height: 36px;
+    --sheet-border: #d1d5db;
+    --sheet-muted: #6b7280;
+    --sheet-hover: #f3f4f6;
+    --sheet-focus: #2563eb;
+    --sheet-danger: #b91c1c;
+}
+
+.control-group {
+    margin-bottom: 12px;
+    max-width: 100%;
+}
+
+.control-group-title {
+    margin: 0 0 6px;
+    color: var(--sheet-muted, #495057);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.map-sheet .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.map-sheet .btn:not(.grain-score-button) {
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+    min-height: var(--sheet-row-height);
+    margin: 0;
+    padding: 7px 12px;
+    border: 1px solid var(--sheet-border);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: none;
+    color: #1f2937;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: normal;
+    text-align: left;
+    text-transform: none;
+    transform: none;
+    opacity: 1;
+}
+
+/* Not on .btn-danger: those are hidden outside debug mode (css/utilities.css), shown below. */
+.map-sheet .btn:not(.grain-score-button):not(.btn-danger) {
+    display: flex;
+}
+
+.map-sheet .btn:not(.grain-score-button):hover {
+    background: var(--sheet-hover);
+    box-shadow: none;
+    transform: none;
+    opacity: 1;
+}
+
+.map-sheet .btn:not(.grain-score-button) > i {
+    flex: 0 0 16px;
+    color: #4b5563;
+    text-align: center;
+}
+
+.map-sheet .btn:focus-visible,
+.map-sheet select:focus-visible,
+.map-sheet input:focus-visible,
+.map-sheet a:focus-visible {
+    outline: 2px solid var(--sheet-focus);
+    outline-offset: 2px;
+}
+
+.map-sheet .btn.disabled,
+.map-sheet .btn:disabled {
+    opacity: 0.5;
+}
+
+/* The one main action of a sheet (the proposals list). */
+.map-sheet .btn.sheet-action--primary,
+.map-sheet .btn.sheet-action--primary:hover {
+    border-color: #1d4ed8;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+
+.map-sheet .btn.sheet-action--primary:hover {
+    background: #1d4ed8;
+}
+
+/* Destructive: clearly red, but an outline, not a block in the main flow. */
+body.debug-mode .map-sheet .btn-danger,
+.map-sheet #wipeLocalDataButton {
+    display: flex;
+}
+
+.map-sheet .btn.btn-danger {
+    border-color: #fca5a5;
+    color: var(--sheet-danger);
+}
+
+.map-sheet .btn.btn-danger > i {
+    color: var(--sheet-danger);
+}
+
+.map-sheet .btn.btn-danger:hover {
+    background: #fef2f2;
+    border-color: var(--sheet-danger);
+}
+
+/* Toggled tools: the measuring tool (active-black-border), a station being placed (is-active). */
+.map-sheet .btn.active-black-border,
+.map-sheet .btn.active-black-border:hover,
+.map-sheet .btn[data-station-type].is-active,
+.map-sheet .btn[data-station-type].is-active:hover {
+    border-color: #1f2937;
+    background: #1f2937;
+    color: #fff;
+}
+
+.map-sheet .btn.active-black-border > i,
+.map-sheet .btn[data-station-type].is-active > i {
+    color: #fff;
+}
+
+/* Rows that carry a second line (share plan's "apply some first", the spinners) stay left-aligned. */
+.map-sheet .share-plan-button {
+    flex-wrap: wrap;
+}
+
+.map-sheet .share-plan-label,
+.map-sheet .share-plan-subtext {
+    text-align: left;
+}
+
+.map-sheet .share-plan-subtext {
+    padding-left: 24px;
+    color: var(--sheet-muted);
+}
+
+.map-sheet select {
+    width: 100%;
+    min-height: var(--sheet-row-height);
+    padding: 6px 10px;
+    border: 1px solid var(--sheet-border);
+    border-radius: 8px;
+    background: #fff;
+    color: #1f2937;
+    font: inherit;
+    font-size: 13.5px;
+}
+
+/* Checkbox rows: the whole row is the target. */
+.map-sheet .checkbox-group {
+    gap: 2px;
+}
+
+.map-sheet .checkbox-group label {
+    gap: 8px;
+    min-height: 32px;
+    margin: 0;
+    padding: 4px 6px;
+    border-radius: 6px;
+    color: #1f2937;
+    font-size: 13.5px;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+/* A single checkbox row that is itself the group (the game sheet's Enable game mode). */
+.map-sheet label.checkbox-group {
+    min-height: var(--sheet-row-height);
+    color: #1f2937;
+    font-size: 13.5px;
+    cursor: pointer;
+}
+
+.map-sheet label.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--sheet-focus);
+}
+
+.map-sheet .checkbox-group label:hover {
+    background: var(--sheet-hover);
+}
+
+/* A disabled row (3D lock, a section gated off, a control not built yet) reads as disabled. */
+.map-sheet .checkbox-group label:has(input:disabled),
+.map-sheet label.checkbox-group:has(input:disabled) {
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.map-sheet .checkbox-group label:has(input:disabled):hover {
+    background: transparent;
+}
+
+.map-sheet .checkbox-group input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--sheet-focus);
+}
+
+.map-sheet .checkbox-group .ownership-legend-swatch {
+    margin-right: 0;
+}
+
+.map-sheet .checkbox-group + .checkbox-group {
+    margin-top: 2px;
+}
+
+/* The rooster keeps its own card look (css/grain-score.css), aligned with the rows around it. */
+.map-sheet .btn.grain-score-button {
+    margin: 0;
+}
+
+/* Settings → Information: sub-headings in the sheet's type scale. */
+.map-sheet .info-subsection h4 {
+    margin: 0 0 6px;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.map-sheet .info-subsection p {
+    font-size: 13.5px;
+}
+
+.map-sheet .info-subsection + hr {
+    margin: 12px 0;
+    border: none;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* A label over its select (Settings: data source, base map). */
+.sheet-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sheet-field-label {
+    color: var(--sheet-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* A quiet one-line readout (parcels in view, parcels counted). */
+.sheet-note {
+    margin: 0 0 12px;
+    color: var(--sheet-muted);
+    font-size: 12.5px;
+}
+
+/* The World view / Command palette pair at the top of Settings. */
+.sheet-shortcuts {
+    margin-bottom: 12px;
+}
+
+.block-toggles {
+    gap: 6px;
+}
+
+#station-placement-status {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.accordion-section[data-section="data"] > .sheet-section-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.accordion-section[data-section="data"] .control-group-title {
+    margin: 6px 0 0;
+}
+
+@media (max-width: 767px) {
+    .map-sheet {
+        --sheet-row-height: 44px;
+    }
+
+    .map-sheet .checkbox-group label {
+        min-height: 44px;
+    }
+}
+
+/* Game sheet */
+#game-sheet .sheet-section-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#game-sheet .checkbox-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+#game-sheet .game-actions {
+    gap: 8px;
+}
+
+#game-sheet .slider-group,
+#game-sheet .turn-progress {
+    margin: 0;
+}
+
+/* Activity sheet: the explorer buttons over the status line and its log */
+.activity-sheet-actions {
+    margin-bottom: 12px;
+}
+
+#activity-sheet .status-bar {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+/* Settings sheet: brand, debug badges, the city row */
+.settings-brand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.settings-brand-logo {
+    width: 28px;
+    height: 28px;
+}
+
+.settings-brand-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.settings-brand .header-ai-badge {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #ffc107, #17a2b8);
+    color: #1f2937;
+    border: 1px solid rgba(255, 193, 7, 0.7);
+}
+
+.settings-badge-bar {
+    display: none; /* shown by environment.js updateBadgeVisibility in debug mode */
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: rgba(220, 53, 69, 0.12);
+    border: 1px solid rgba(220, 53, 69, 0.25);
+}
+
+.settings-badge-bar .dev-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* A panel docked on the right (parcel, proposal details, road) covers the right edge on desktop:
+   the right-hand buttons and the user bubble step left of it, so they stay reachable. */
+@media (min-width: 768px) {
+    body:has(.right-dock-panel.visible) .map-shell-cluster--top-right,
+    body:has(.right-dock-panel.visible) .map-shell-cluster--bottom-right {
+        right: calc(var(--right-dock-width) + 2 * var(--right-dock-gap));
+    }
+
+    body:has(.right-dock-panel.visible) #map-container .username-display {
+        right: calc(var(--right-dock-width) + 2 * var(--right-dock-gap) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
+    }
+}
+
+/* ---- 3D and photo view ---- */
+/* The 3D view's own settings panel owns the top-right corner, so Layers and Settings join the
+   bottom-right cluster, one row above it. */
+body.three-mode-active .map-shell-cluster--top-right {
+    top: auto;
+    bottom: calc(var(--map-shell-bottom) + var(--map-shell-button-size) + var(--map-shell-gap));
+}
+
+/* Photo view: the Google logo and credits line the bottom-right edge (Map Tiles policy), so the
+   bottom-right buttons step up above them. */
+body.realistic-mode-active {
+    --map-shell-bottom: 72px;
+}
+
+/* ---- Boot gate ----
+   The shell is painted long before the script list at the end of the body has parsed, so its
+   handlers do not exist yet. Until boot-ready.js removes body.app-loading, keep it inert: an early
+   click does nothing instead of throwing. */
+body.app-loading {
+    cursor: progress;
+}
+
+body.app-loading .map-shell-cluster,
+body.app-loading .game-pill {
+    pointer-events: none;
+}
+
+/* ---- Phones: bottom sheets, compact buttons ---- */
+@media (max-width: 767px) {
+    .map-sheet {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        max-width: none;
+        max-height: 80vh;
+        border-radius: 16px 16px 0 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .map-shell-button-label {
+        display: none;
+    }
+
+    .map-shell-button--labelled {
+        padding: 0;
+        width: var(--map-shell-button-size);
+    }
+
+    /* The count rides on the icon's corner instead of beside a label. */
+    .map-shell-button--labelled .map-shell-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+    }
+
+    /* A column up the right edge, so the Game pill keeps the bottom row even at 320px. */
+    .map-shell-cluster--bottom-right {
+        flex-direction: column;
+    }
+
+    body.three-mode-active .map-shell-cluster--top-right {
+        bottom: calc(var(--map-shell-bottom) + 3 * (var(--map-shell-button-size) + var(--map-shell-gap)));
+    }
+
+    /* Clear of the compact search box top-left (css/map-search.css). */
+    #map-container .username-display {
+        max-width: calc(100vw - 2 * var(--map-shell-edge) - 2 * var(--map-shell-button-size) - 3 * var(--map-shell-gap) - var(--map-search-compact-width));
+    }
+
+    .game-pill {
+        max-width: calc(100vw - 2 * var(--map-shell-edge) - var(--map-shell-button-size) - var(--map-shell-gap));
+    }
+
+    .game-pill-turn-label {
+        display: none;
+    }
+}

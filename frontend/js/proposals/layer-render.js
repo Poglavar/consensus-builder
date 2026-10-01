@@ -596,7 +596,6 @@ function updateProposalLayer() { /* intentionally empty */ }
 function refreshProposalsLayer() {
     // No special layer to refresh anymore, keep count and indicator in sync
     try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-    try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
 }
 
 function applyProposalHighlights() {

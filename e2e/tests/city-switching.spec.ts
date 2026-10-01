@@ -2,15 +2,29 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, getMapCenter } from '../helpers/app';
 
 test.describe('City switching @core', () => {
-  test('default city is New York', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+  // The fixture stores a city pointer before boot (helpers/fixtures.ts seedCity), which would make
+  // this assertion tautological; opt out so the app has to fall back to its own default. With no
+  // stored city and no ?city= that is also a first visit, so the world view owns the boot and covers
+  // the map (frontend/js/ui/world-entry.js) — the default city loads underneath it.
+  test.describe('first visit', () => {
+    test.use({ seedCity: null });
 
-    const cityId = await page.evaluate(() => {
-      const w = window as any;
-      return w.CityConfigManager?.getCurrentCityId?.() ?? '';
+    test('default city is New York, under the first-visit world view', async ({ mockApi: page }) => {
+      await page.goto('/');
+      await page.waitForFunction(() => !!(window as any).WorldEntry && !!(window as any).CityConfigManager);
+
+      const result = await page.evaluate(() => {
+        const w = window as any;
+        return {
+          cityId: w.CityConfigManager.getCurrentCityId(),
+          chosen: w.CityConfigManager.wasCityChosenAtBoot(),
+          globeOwnsBoot: w.WorldEntry.ownsBoot(),
+        };
+      });
+      expect(result.cityId).toBe('new_york');
+      expect(result.chosen).toBe(false);
+      expect(result.globeOwnsBoot).toBe(true);
     });
-    expect(cityId).toBe('new_york');
   });
 
   // A five-way `typeof mgr.x === 'function'` roll-call used to sit here. Every method it named is

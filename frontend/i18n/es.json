@@ -213,7 +213,16 @@
         "userFallback": "Usuario",
         "close": "Cerrar",
         "cancel": "Cancelar",
-        "download": "Descargar"
+        "download": "Descargar",
+        "busy": {
+            "detecting": "Detectando...",
+            "loading": "Cargando...",
+            "forming": "Formando...",
+            "selecting": "Seleccionando...",
+            "refreshing": "Actualizando...",
+            "analyzing": "Analizando...",
+            "applying": "Aplicando..."
+        }
     },
     "proposals": {
         "contiguityDisabledReason": "Deshabilitado porque las parcelas de la propuesta no son contiguas",
@@ -315,24 +324,20 @@
             "devBadge": "Desarrollo",
             "debugBadge": "Depuración",
             "aiBadge": "Amigable con IA",
-            "aiBadgeTooltip": "Esta plataforma es amigable con IA, lo que significa que toda la funcionalidad principal es accesible y utilizable por agentes de IA. Certificada por la Oficina de la ONU para Asuntos entre Humanos e IA",
-            "toggle": "Alternar barra lateral"
+            "aiBadgeTooltip": "Esta plataforma es amigable con IA, lo que significa que toda la funcionalidad principal es accesible y utilizable por agentes de IA. Certificada por la Oficina de la ONU para Asuntos entre Humanos e IA"
         },
         "city": {
-            "label": "Ciudad:",
             "detectTooltip": "Usar mi ubicación para elegir la ciudad más cercana"
         },
         "data": {
-            "title": "Datos",
-            "sourceLabel": "Fuente de datos:"
+            "sourceLabel": "Fuente de datos:",
+            "baseMapLabel": "Mapa base:"
         },
         "game": {
             "title": "Juego",
             "titlePaused": "Juego (pausado)",
             "enable": "Activar modo juego",
             "enablePaused": "Activar modo juego (pausado)",
-            "datetime": "Fecha y hora del juego:",
-            "turns": "Turnos jugados:",
             "secondsBetween": "Segundos entre turnos:",
             "nextTurn": "Próximo turno en:",
             "play": "Iniciar",
@@ -374,8 +379,6 @@
             "showClaimsCounts": "Mostrar cantidad de reclamaciones (C)",
             "markMinted": "Marcar acuñadas",
             "selectMultiple": "Seleccionar múltiples parcelas",
-            "locateParcelPlaceholder": "ID de parcela",
-            "locateButton": "Ubicar",
             "locateSearching": "Buscando…",
             "locateNotFound": "Parcela no encontrada",
             "locateDataNotLoaded": "Datos de parcelas no cargados",
@@ -513,7 +516,8 @@
             "drawOsm": "Dibujar vías desde OSM",
             "drawOsmTooltip": "Dibujar vías de OpenStreetMap como líneas",
             "existingTitle": "Vías existentes",
-            "showLayer": "Mostrar vías"
+            "showLayer": "Mostrar vías",
+            "detectingExisting": "Detectando las vías existentes..."
         },
         "proposals": {
             "title": "Propuestas",
@@ -3255,19 +3259,27 @@
             "loaded_cadastral_parcels": {
                 "one": "Se cargó {{count}} parcela catastral.",
                 "other": "Se cargaron {{count}} parcelas catastrales."
-            }
+            },
+            "cadastral_ground_already_loaded": "El catastro de esta zona ya está cargado.",
+            "checking_cadastral_ground": "Comprobando el catastro…",
+            "loading_cadastral_ground": "Cargando el catastro {{done}}/{{total}}…",
+            "waiting_for_proposal_before_parcels": "Esperando a que cargue la propuesta antes de obtener las parcelas…",
+            "debug_mode_enabled": "Modo depuración activado: las acciones peligrosas ahora son visibles",
+            "debug_mode_disabled": "Modo depuración desactivado: las acciones peligrosas están ocultas"
         }
     },
     "city": {
         "labels": {
-            "denver": "Denver, EE. UU."
+            "denver": "Denver, EE. UU.",
+            "explore": "Explorar"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",
             "success": "Ubicación detectada: {{label}}"
         },
         "switch": {
-            "confirm": "Cambiar de ciudad recargará la aplicación. Tu trabajo en esta ciudad se conserva y seguirá aquí cuando vuelvas.\n\n¿Quieres continuar?"
+            "confirm": "Cambiar de ciudad recargará la aplicación. Tu trabajo en esta ciudad se conserva y seguirá aquí cuando vuelvas.\n\n¿Quieres continuar?",
+            "cancelled": "Cambio de ciudad cancelado"
         },
         "switchPrompt": {
             "title": "Esta propuesta es de {requested}: estás viendo {current}",
@@ -3740,6 +3752,192 @@
             "http": "El servicio respondió {{status}}: {{message}}",
             "noService": "Primero carga una URL de servicio.",
             "badUrl": "Introduce una URL http(s) de un servicio de miembro de la lente."
+        }
+    },
+    "world": {
+        "title": "Elige un lugar",
+        "hint": "Arrastra para girar · haz clic en cualquier lugar para ver qué datos de parcelas existen",
+        "canvasLabel": "Globo. Arrastra para girar, desplaza para acercar, haz clic en un lugar para ver sus datos de parcelas.",
+        "close": "Cerrar",
+        "search": {
+            "placeholder": "Busca una ciudad o un país",
+            "label": "Buscar lugares",
+            "country": "País",
+            "noResults": "Ningún lugar coincide"
+        },
+        "legend": {
+            "title": "Datos de parcelas"
+        },
+        "tier": {
+            "live": {
+                "short": "En la app",
+                "text": "Parcelas, propuestas y 3D están listos aquí."
+            },
+            "source": {
+                "short": "Hay datos abiertos",
+                "text": "Aquí existen datos abiertos de parcelas, pero aún no están en la app. Explora el mapa sin parcelas o pide que se añada este lugar."
+            },
+            "none": {
+                "short": "Sin datos abiertos",
+                "text": "Buscamos y no encontramos datos abiertos de parcelas aquí. Aun así puedes explorar el mapa, sin parcelas."
+            },
+            "unknown": {
+                "short": "Sin investigar",
+                "text": "Nadie ha revisado todavía este lugar. Aun así puedes explorar el mapa, sin parcelas."
+            }
+        },
+        "popup": {
+            "ocean": "Mar abierto",
+            "oceanText": "Aquí no hay tierra, así que no hay parcelas. Aun así puedes abrir el mapa en este punto."
+        },
+        "action": {
+            "open": "Abrir {{city}}",
+            "explore": "Explorar de todos modos",
+            "askCity": "Pedir esta ciudad",
+            "askArea": "Pedir esta zona"
+        },
+        "request": {
+            "sending": "Enviando…",
+            "done": "Solicitud registrada, gracias",
+            "error": "No se pudo enviar la solicitud. ¿Reintentar?"
+        },
+        "explore": {
+            "chip": "Explorar · {{place}}",
+            "banner": "Aún no hay datos de parcelas aquí: puedes echar un vistazo; las propuestas necesitan parcelas.",
+            "worldView": "Vista del mundo",
+            "dismiss": "Descartar",
+            "status": "Explorando sin datos de parcelas"
+        }
+    },
+    "mapShell": {
+        "layers": "Capas",
+        "settings": "Ajustes",
+        "proposals": "Propuestas",
+        "tools": "Herramientas",
+        "activity": "Actividad",
+        "proposalsCount": "Propuestas ({{count}})",
+        "game": {
+            "controls": "Controles del juego",
+            "turn": "Turno"
+        },
+        "commands": {
+            "highlightGovernment": "Resaltar parcelas del gobierno",
+            "highlightInstitution": "Resaltar parcelas de instituciones",
+            "highlightCompany": "Resaltar parcelas de empresas",
+            "highlightPrivate": "Resaltar parcelas de propiedad privada",
+            "locateParcel": "Localizar una parcela por su id",
+            "blockFromSelected": "Detectar la manzana desde la parcela seleccionada",
+            "areaMonitorCityPlan": "Monitor de área: mostrar el plan vial de la ciudad",
+            "areaMonitorDraw": "Dibujar un área monitorizada",
+            "areaMonitorFromPlan": "Dibujar un área monitorizada desde el plan",
+            "proposalsList": "Abrir la lista de propuestas",
+            "gamePlayPause": "Reproducir / pausar el juego",
+            "gameInterval": "Intervalo entre turnos",
+            "activityExplorer": "Abrir el explorador de actividad",
+            "statusLog": "Abrir el registro de estado",
+            "chooseCity": "Elegir una ciudad",
+            "dataSource": "Fuente de datos",
+            "baseMap": "Mapa base",
+            "worldView": "Vista del mundo"
+        },
+        "maintenance": {
+            "title": "Datos y mantenimiento",
+            "storedTitle": "Guardado en este navegador"
+        }
+    },
+    "parcelMenu": {
+        "label": "Acciones de la parcela",
+        "ownerCount": {
+            "one": "{{count}} propietario",
+            "other": "{{count}} propietarios"
+        },
+        "actions": {
+            "propose": "Proponer aquí",
+            "selectMore": "Seleccionar más",
+            "details": "Detalles",
+            "history": "Historial",
+            "tools": "Herramientas",
+            "offer": "Ofrecer mi terreno",
+            "view3d": "Ver en 3D",
+            "detectBlock": "Detectar bloque"
+        }
+    },
+    "selectionTray": {
+        "label": "Parcelas seleccionadas",
+        "count": {
+            "one": "{{count}} parcela",
+            "other": "{{count}} parcelas"
+        },
+        "empty": "Haz clic en las parcelas para seleccionarlas",
+        "actions": {
+            "propose": "Proponer",
+            "clear": "Borrar selección",
+            "done": "Terminar selección",
+            "detectBlock": "Detectar bloque",
+            "clearShort": "Borrar",
+            "doneShort": "Listo"
+        }
+    },
+    "mapSearch": {
+        "placeholder": "Buscar lugares, parcelas, propuestas…",
+        "label": "Buscar en el mapa",
+        "open": "Buscar",
+        "close": "Cerrar la búsqueda",
+        "clear": "Borrar",
+        "cityChip": "Ciudad actual: {{city}}. Elegir otra",
+        "groups": {
+            "recent": "Búsquedas recientes",
+            "cities": "Ciudades",
+            "parcels": "Parcelas",
+            "proposals": "Propuestas",
+            "places": "Lugares",
+            "commands": "Comandos"
+        },
+        "useMyLocation": "Usar mi ubicación",
+        "currentCity": "Ciudad actual",
+        "switchCity": "Abre esta ciudad (recarga el mapa)",
+        "parcelHint": "Encontrar esta parcela en el mapa",
+        "parcelNeedsMunicipality": "Añade el municipio catastral: HR-<número>-{{id}}",
+        "parcelNeedsMunicipalityHint": "O mueve el mapa hasta la parcela para que se carguen sus identificadores",
+        "untitledProposal": "Propuesta {{id}}",
+        "inCity": "En {{city}}",
+        "proposalsLoading": "Buscando propuestas…",
+        "proposalsError": "No se pudieron buscar propuestas",
+        "proposalDownloading": "Descargando…",
+        "placesLoading": "Buscando lugares…",
+        "placesError": "No se pudo acceder a la búsqueda de direcciones",
+        "openIn": "Abrir en {{city}}",
+        "outsideCities": "Fuera de las ciudades de la app",
+        "attribution": "© colaboradores de OpenStreetMap · Photon",
+        "commandsHint": "Comandos…",
+        "useMyLocationHint": "Abre la ciudad más cercana a ti"
+    },
+    "commandPalette": {
+        "open": "Paleta de comandos",
+        "title": "Paleta de comandos",
+        "placeholder": "Escribe un comando…",
+        "empty": "Ningún comando coincide",
+        "hint": "↑↓ para moverte · Enter para ejecutar · Esc para cerrar",
+        "reason": {
+            "disabledIn3D": "No disponible en 3D",
+            "busy": "Ocupado: espera a que termine la tarea actual",
+            "hiddenForCity": "No disponible en esta ciudad",
+            "disabled": "No disponible ahora"
+        },
+        "groups": {
+            "layers": "Capas",
+            "parcels": "Parcelas",
+            "blocks": "Manzanas",
+            "tools": "Herramientas",
+            "stations": "Estaciones",
+            "roads": "Calles",
+            "areaMonitor": "Monitor de áreas",
+            "proposals": "Propuestas",
+            "game": "Juego",
+            "activity": "Actividad",
+            "settings": "Ajustes",
+            "parcel": "Parcela",
+            "selection": "Selección"
         }
     }
 }

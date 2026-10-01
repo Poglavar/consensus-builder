@@ -404,7 +404,7 @@ body.land-fork-editing #parcel-info-panel {
     background-color: transparent;
     pointer-events: none;
     display: none;
-    z-index: 12000; /* Above sidebar (z<=4000) and info panels */
+    z-index: 12000; /* Above the shell's sheets (1600) and info panels */
 }
 
 /* Desktop: a full-height panel docked to the right ~third of the screen, so the map keeps the rest. */
@@ -2698,7 +2698,7 @@ textarea.proposal-description-input {
     height: 100%;
     background-color: transparent;
     pointer-events: none;
-    z-index: 12000; /* Above sidebar (z<=4000) and info panels, same plane as the proposals list */
+    z-index: 12000; /* Above the shell's sheets (1600) and info panels, same plane as the proposals list */
 }
 
 .share-plan-panel-content {
@@ -2917,10 +2917,14 @@ body.share-plan-highlighting .leaflet-shareplan-highlight-pane {
     padding-top: 10px;
 }
 
-/* Share-plan mode lockdown: while the panel is open the map is pan/zoom ONLY. The sidebar, its
-   toggles and the mode switches are disabled; Leaflet controls too — except zoom, which stays. */
-body.share-plan-mode #sidebar,
-body.share-plan-mode .sidebar-toggle-button,
+/* Share-plan mode lockdown: while the panel is open the map is pan/zoom ONLY. The floating shell
+   (its buttons, sheets, the search box, the selection tray and the Game pill) and the mode switches
+   are disabled; Leaflet controls too — except zoom, which stays. The / and Ctrl-K shortcuts check
+   window.sharePlanMode themselves (js/ui/map-search.js, js/ui/command-palette.js). */
+body.share-plan-mode .map-shell-cluster,
+body.share-plan-mode .map-shell-slot,
+body.share-plan-mode .map-sheet,
+body.share-plan-mode .game-pill,
 body.share-plan-mode .map-mode-toggle,
 body.share-plan-mode .map-mode-walk-btn,
 body.share-plan-mode .map-mode-realistic-btn,

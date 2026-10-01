@@ -613,8 +613,8 @@ async function showAllProposalsModal() {
 
     modal.style.display = 'block';
 
-    // On the open action only (not on every re-render): fold the sidebar away so the map keeps the
-    // rest of the screen, and request search-box autofocus (honored inside the render, which may be
+    // On the open action only (not on every re-render): fold away an open sheet so the map keeps
+    // the rest of the screen, and request search-box autofocus (honored inside the render, which may be
     // deferred until i18n is ready).
     if (wasHidden) {
         // Not on phones/touch: focusing the search there pops the on-screen keyboard over the list.
@@ -622,10 +622,7 @@ async function showAllProposalsModal() {
         // Enter proposal browse mode: the map stays live (pan/zoom) but only proposals are clickable
         // (see onParcelClick + the tail of selectAndHighlightProposal).
         window.proposalListBrowseMode = true;
-        try {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') toggleSidebar();
-        } catch (_) { }
+        if (window.MapShell) window.MapShell.closeSheets();
 
         // Show the panel EMPTY and busy first, then hand the browser a frame to draw it in. Building
         // the list from several hundred proposals is not instant, and until it finishes the click has
@@ -770,12 +767,9 @@ function showSharePlanPanel(options) {
 
         window.sharePlanMode = true;
         try { document.body.classList.add('share-plan-mode'); } catch (_) { }
-        // Fold the sidebar away so the (locked) chrome doesn't cover the map — the same move the
+        // Fold away an open sheet so the (locked) chrome doesn't cover the map — the same move the
         // proposals list makes when it opens.
-        try {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') toggleSidebar();
-        } catch (_) { }
+        if (window.MapShell) window.MapShell.closeSheets();
 
         const selected = new Set(proposalsByHash.keys());
         const uploadState = new Map(); // key -> { uploaded, uploading, serverId }

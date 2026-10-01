@@ -2218,28 +2218,6 @@
             return null;
         }
 
-        // // Check if sidebar is visible and adjust bounds to exclude it
-        // const sidebar = document.getElementById('sidebar');
-        // const isSidebarVisible = sidebar && !sidebar.classList.contains('collapsed');
-
-        // if (isSidebarVisible && typeof window.map.getSize === 'function' &&
-        //     typeof window.map.containerPointToLatLng === 'function') {
-        //     try {
-        //         const mapSize = window.map.getSize();
-        //         const sidebarWidth = 320; // From index.css #sidebar width
-
-        //         // Get bounds excluding the sidebar area
-        //         const topLeft = window.map.containerPointToLatLng([sidebarWidth, 0]);
-        //         const bottomRight = window.map.containerPointToLatLng([mapSize.x, mapSize.y]);
-
-        //         const adjustedBounds = L.latLngBounds(topLeft, bottomRight);
-        //         console.log(`[getActiveMapBounds] Adjusted for sidebar. Map size: ${mapSize.x}x${mapSize.y}, Visible: ${mapSize.x - sidebarWidth}x${mapSize.y}`);
-        //         return adjustedBounds;
-        //     } catch (err) {
-        //         console.warn('Failed to calculate visible bounds, falling back to full map bounds:', err);
-        //     }
-        // }
-
         return window.map.getBounds();
     }
 
@@ -3032,10 +3010,13 @@
     async function applyGovernmentRoadPlan(options) {
         const opts = Object.assign({ skipStatus: false, ignoreZoomGuard: true }, options || {});
         const applyButton = document.getElementById('applyGovernmentRoadPlanButton');
-        const originalLabel = applyButton ? applyButton.textContent : null;
+        // Restored as markup: the button holds an icon and a translatable label span.
+        const originalLabelHtml = applyButton ? applyButton.innerHTML : null;
         if (applyButton) {
             applyButton.disabled = true;
-            applyButton.textContent = 'Applying...';
+            const busyKey = 'common.busy.applying';
+            const busy = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(busyKey) : null;
+            applyButton.textContent = (typeof busy === 'string' && busy && busy !== busyKey) ? busy : 'Applying...';
         }
 
         let result = null;
@@ -3095,7 +3076,7 @@
         } finally {
             if (applyButton) {
                 applyButton.disabled = false;
-                applyButton.textContent = originalLabel || 'Apply Government Road Plan';
+                if (originalLabelHtml) applyButton.innerHTML = originalLabelHtml;
             }
         }
 

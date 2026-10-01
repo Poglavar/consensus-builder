@@ -55,6 +55,32 @@ recorded in [`HACKATHON.md`](HACKATHON.md#live-external-market-proof).
 | [`docs/protocol.md`](docs/protocol.md) | Program IDs, schemas, recipe and adapter contracts, and trust assumptions |
 | [`HACKATHON.md`](HACKATHON.md) | Reviewable hackathon scope and proof links |
 
+## Map UI
+
+The frontend has no sidebar; the map is the whole interface:
+
+- **Search box** (top left) with the **city chip**: cities, parcel ids, proposals, addresses and
+  commands in one input. The city chip opens the world view.
+- **User bubble**, **Layers** and **Settings** (top right). Layers and Settings open floating sheets;
+  Settings holds data source, base map and a *Data & maintenance* section (loaded-parcel cover,
+  refresh parcel data, clear local parcel/block/road/proposal data, wipe all local data).
+- **Mode strip** (left edge): 2D, 3D, photo, AI, walk and the cadastre view.
+- **Game pill** (bottom left): date, turn and play/pause; expands to the game sheet.
+- **Proposals** (with count badge), **Tools** and **Activity** buttons (bottom right).
+- **Parcel menu** on click: *Propose here*, *Select more*, *Details*, *History*, *Tools*,
+  *Offer my land*, *View in 3D*, *Detect block*. Multi-select shows a **selection tray**
+  (*Propose*, *Detect block*, *Clear*, *Done*).
+- **Command palette**: Ctrl/Cmd-K.
+- **World view**: on first visit a globe coloured by parcel-data coverage; pick a city, or
+  *Explore anyway* to open a place without parcel data.
+
+Code: `frontend/js/ui/` (`commands.js` capability registry, `map-shell.js`, `map-search.js`,
+`search-model.js`, `command-palette.js`, `parcel-menu.js`, `parcel-menu-model.js`,
+`selection-tray.js`, `world-entry.js`), `frontend/js/world/` (`globe.js`, `globe-math.js`,
+`world-coverage.js`, `world-entry-model.js`, `handoff.js`) and `frontend/js/map-controls.js` (layer,
+tool and game control behaviour formerly in the sidebar). Coverage data `frontend/data/world-coverage.json` is built by
+`scripts/build-world-coverage.mjs`.
+
 ## Quick verification
 
 ```sh

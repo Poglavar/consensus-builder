@@ -535,13 +535,23 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
     }
 
     const opts = options || {};
-    const originalText = opts.restoreText !== undefined ? opts.restoreText : button.textContent;
+    // The label is restored as markup, not text: sheet buttons carry an icon and a translatable
+    // <span data-i18n-key>, and restoring textContent dropped both (the label then no longer
+    // followed a language switch).
+    const originalHtml = button.innerHTML;
     const wasDisabled = button.disabled;
     const busyClass = opts.busyClass;
     const hadBusyClass = busyClass ? button.classList.contains(busyClass) : false;
 
-    if (busyLabel !== undefined && busyLabel !== null) {
-        button.textContent = busyLabel;
+    // busyLabel is plain text, or { key, fallback } translated through window.i18n.
+    let busyText = busyLabel;
+    if (busyLabel && typeof busyLabel === 'object') {
+        const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+        const translated = i18nApi && typeof i18nApi.t === 'function' ? i18nApi.t(busyLabel.key) : null;
+        busyText = (typeof translated === 'string' && translated && translated !== busyLabel.key) ? translated : busyLabel.fallback;
+    }
+    if (busyText !== undefined && busyText !== null) {
+        button.textContent = busyText;
     }
     button.disabled = true;
     if (busyClass) {
@@ -549,8 +559,10 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
     }
 
     const restore = () => {
-        if (!opts.preserveText) {
-            button.textContent = originalText;
+        if (opts.restoreText !== undefined) {
+            button.textContent = opts.restoreText;
+        } else if (!opts.preserveText) {
+            button.innerHTML = originalHtml;
         }
         button.disabled = wasDisabled;
         if (busyClass && !hadBusyClass) {

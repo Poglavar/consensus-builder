@@ -29,7 +29,6 @@
         namedPlan: null,
         running: false,
         runToken: 0,
-        sidebarWasCollapsed: null,
         priorMapView: null,
         disabledMapControls: [],
         routeRestorePath: null
@@ -570,13 +569,8 @@
 
     function saveAndSimplifyChrome() {
         const leafletMap = mapInstance();
-        if (state.sidebarWasCollapsed === null) {
-            const sidebar = document.getElementById('sidebar');
-            state.sidebarWasCollapsed = !!(sidebar && sidebar.classList.contains('collapsed'));
-            if (sidebar && !state.sidebarWasCollapsed && typeof toggleSidebar === 'function') {
-                try { toggleSidebar(); } catch (_) { }
-            }
-        }
+        // The rooster takes the map: fold away the sheet the button was pressed in.
+        if (global.MapShell) global.MapShell.closeSheets();
         if (!state.priorMapView && leafletMap && typeof leafletMap.getCenter === 'function') {
             state.priorMapView = { center: leafletMap.getCenter(), zoom: leafletMap.getZoom() };
         }
@@ -950,18 +944,12 @@
         if (leafletMap && state.priorMapView) {
             try { leafletMap.setView(state.priorMapView.center, state.priorMapView.zoom, { animate: false }); } catch (_) { }
         }
-        const sidebar = document.getElementById('sidebar');
-        if (state.sidebarWasCollapsed === false && sidebar && sidebar.classList.contains('collapsed')
-            && typeof toggleSidebar === 'function') {
-            try { toggleSidebar(); } catch (_) { }
-        }
         if (state.routeRestorePath && global.location.pathname.startsWith('/plans/')
             && global.history && typeof global.history.replaceState === 'function') {
             try { global.history.replaceState(null, '', `${state.routeRestorePath}${global.location.search || ''}`); } catch (_) { }
         }
         state.prepared = null;
         state.priorMapView = null;
-        state.sidebarWasCollapsed = null;
         state.routeRestorePath = null;
         updateButtonState();
     }

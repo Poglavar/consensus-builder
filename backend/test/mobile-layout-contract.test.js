@@ -12,7 +12,7 @@ const utilitiesCss = read('css/utilities.css');
 const panelsCss = read('css/panels.css');
 const photorealCss = read('css/photoreal-mode.css');
 const grainCss = read('css/grain-score.css');
-const sidebarCss = read('css/sidebar.css');
+const mapShellCss = read('css/map-shell.css');
 const proposalsCss = read('css/proposals.css');
 const drillUi = read('js/proposals/drill-ui.js');
 const threeMode = read('js/three-mode.js');
@@ -53,8 +53,8 @@ function mediaBlocksContaining(css, query, needle) {
     return blocks;
 }
 
-describe('the lower-left mode strip is never covered on phones', () => {
-    it('declares the strip width from the stack offset, on body so it follows the collapsed sidebar', () => {
+describe('the left-edge mode strip is never covered on phones', () => {
+    it('declares the strip width from the stack offset, on body where the offset is in scope', () => {
         const body = ruleBody(mapCss, '(?:^|\\n)body');
         expect(body).toMatch(/--map-mode-strip:\s*calc\(var\(--map-mode-stack-left\)\s*\+\s*50px\)/);
     });
@@ -175,8 +175,9 @@ describe('smaller fixes', () => {
         expect(grainCss).toMatch(/\.btn\.grain-score-button:hover:not\(:disabled\)/);
     });
 
-    it('gives <button> accordion headers the same font as the <div> ones', () => {
-        expect(ruleBody(sidebarCss, '\\n\\.accordion-header')).toMatch(/font:\s*inherit;/);
+    it('gives the shell buttons the page font (a <button> does not inherit it)', () => {
+        expect(ruleBody(mapShellCss, '\\n\\.map-shell-button')).toMatch(/font:\s*inherit;/);
+        expect(ruleBody(mapShellCss, '\\n\\.game-pill-toggle')).toMatch(/font:\s*inherit;/);
     });
 
     it('lets a proposal title wrap on phones instead of cutting its distinguishing end', () => {

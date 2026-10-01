@@ -167,7 +167,7 @@
     let currentStack = [];
     let currentSelectedRef = null;
     let repositionWired = false;
-    // Bottom of the phone top bar (menu button, Guest pill: 10px + 42px) plus one gap.
+    // Bottom of the phone top row (search box, user bubble, Layers/Settings: 10px + 44px) plus a gap.
     const PHONE_TOP_CLEARANCE = 62;
 
     function ensurePanel() {
@@ -182,7 +182,8 @@
             window.addEventListener('resize', positionPanel);
             // The drill sits BETWEEN the proposal card and the parcel panel in the right dock —
             // any size or visibility change of either neighbour moves and re-caps it.
-            ['proposal-details-panel', 'parcel-info-panel'].forEach(id => {
+            // The parcel menu (ui/parcel-menu.js) stands in for the parcel panel after a click.
+            ['proposal-details-panel', 'parcel-info-panel', 'parcel-menu'].forEach(id => {
                 const neighbour = document.getElementById(id);
                 if (!neighbour) return;
                 if (typeof ResizeObserver === 'function') new ResizeObserver(positionPanel).observe(neighbour);
@@ -205,7 +206,7 @@
                 const el = document.getElementById(id);
                 return !!(el && el.classList.contains('visible'));
             };
-            if (!shown('proposal-details-panel') && !shown('parcel-info-panel')) {
+            if (!shown('proposal-details-panel') && !shown('parcel-info-panel') && !shown('parcel-menu')) {
                 hidePanel();
                 return;
             }

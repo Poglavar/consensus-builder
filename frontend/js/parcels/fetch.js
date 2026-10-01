@@ -53,6 +53,13 @@
         try { return String(global.getCurrentDataSource?.() || ''); } catch (_) { return ''; }
     }
 
+    // The explore city (city-config `parcels.source: 'none'`) has no cadastre: every fetch path
+    // answers "nothing here" instead of asking a parcel service about a place it does not cover.
+    function cityHasParcels() {
+        const manager = global.CityConfigManager;
+        return !manager || typeof manager.hasParcelData !== 'function' || manager.hasParcelData();
+    }
+
     function cityConfig(city) {
         try {
             const manager = global.CityConfigManager;
@@ -163,7 +170,7 @@
 
     async function fetchByIds(parcelIds, options = {}) {
         const ids = Array.from(new Set(Array.from(parcelIds || []).map(String).filter(Boolean)));
-        if (!ids.length) return { status: 'ready', complete: true, features: [], absentIds: [], returnsWGS84: true };
+        if (!ids.length || !cityHasParcels()) return { status: 'ready', complete: true, features: [], absentIds: ids, returnsWGS84: true };
         const city = String(options.city || currentCity());
         const source = currentSource();
         let features;
@@ -255,6 +262,7 @@
     }
 
     async function fetchBounds(_bounds, options = {}) {
+        if (!cityHasParcels()) return { status: 'ready', features: [], absentIds: [], returnsWGS84: true };
         const city = String(options.city || currentCity());
         const keys = Array.from(new Set(Array.from(options.keys || []).map(String).filter(Boolean)));
         if (!keys.length) throw new Error('Cadastral bounds transport requires repository grid keys.');
@@ -345,9 +353,17 @@
         return { status: 'ready', ids: Array.from(new Set(ids)) };
     }
 
+    // A status line through i18n (the status toast is always visible), English when the key is missing.
+    function statusText(key, fallback, params) {
+        const fullKey = `status.messages.${key}`;
+        const text = global.i18n?.t?.(fullKey, params);
+        return text && text !== fullKey ? text : fallback;
+    }
+
     async function fetchParcelData(customBounds) {
+        if (!cityHasParcels()) return null;
         if (global.skipParcelFetchUntilProposalLoaded && !customBounds) {
-            global.updateStatus?.('Waiting for proposal to load before fetching parcels…');
+            global.updateStatus?.(statusText('waiting_for_proposal_before_parcels', 'Waiting for proposal to load before fetching parcels…'));
             return null;
         }
         const repository = global.CadastralParcelRepository;
@@ -360,21 +376,20 @@
         const requestedBounds = padding > 0 ? viewBounds.pad(padding) : viewBounds;
         global._fetchParcelDataInProgress = true;
         global.ParcelsState?.setIsFetchingParcels?.(true);
-        global.updateStatus?.('Checking cadastral ground…');
+        global.updateStatus?.(statusText('checking_cadastral_ground', 'Checking cadastral ground…'));
         try {
             const result = await repository.ensureBounds(requestedBounds, {
                 onProgress: detail => {
-                    if (detail && detail.total) global.updateStatus?.(`Loading cadastral ground ${detail.done || 0}/${detail.total}…`);
+                    if (detail && detail.total) {
+                        const done = detail.done || 0;
+                        global.updateStatus?.(statusText('loading_cadastral_ground', `Loading cadastral ground ${done}/${detail.total}…`, { done, total: detail.total }));
+                    }
                 }
             });
+            const count = result.features.length;
             global.updateStatus?.(result.cached
-                ? 'Cadastral ground already loaded.'
-                : (() => {
-                    const count = result.features.length;
-                    const key = 'status.messages.loaded_cadastral_parcels';
-                    const text = global.i18n?.t?.(key, { count });
-                    return text && text !== key ? text : `Loaded ${count} cadastral parcels.`;
-                })());
+                ? statusText('cadastral_ground_already_loaded', 'Cadastral ground already loaded.')
+                : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count }));
             return result;
         } finally {
             global._fetchParcelDataInProgress = false;
@@ -405,7 +420,7 @@
         const button = typeof document !== 'undefined' ? document.getElementById('refreshParcelDataButton') : null;
         const task = () => fetchParcelData(customBounds);
         return button && typeof global.runWithButtonBusyState === 'function'
-            ? global.runWithButtonBusyState(button, 'Refreshing...', task)
+            ? global.runWithButtonBusyState(button, { key: 'common.busy.refreshing', fallback: 'Refreshing...' }, task)
             : task();
     }
 

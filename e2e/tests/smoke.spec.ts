@@ -67,13 +67,14 @@ test.describe('Smoke tests @smoke', () => {
     expect(serverErrors).toEqual([]);
   });
 
-  test('sidebar element is present', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForTimeout(2000);
+  // Was "sidebar element is present". The sidebar is gone; the map shell's entry point is the search
+  // box, whose city chip is filled from CityConfigManager — so a chip naming the booted city shows
+  // the shell was built AND wired to the city config, not merely that an element exists.
+  test('search box is mounted with a city chip naming the current city', async ({ mockApi: page }) => {
+    await page.goto('/?city=zg');
+    await waitForMapReady(page);
 
-    const sidebar = page.locator(selectors.sidebar);
-    // Sidebar may or may not be visible by default, but the element should exist
-    await expect(sidebar).toBeAttached();
+    await expect(page.locator(`${selectors.searchSlot} ${selectors.searchInput}`)).toBeVisible();
+    await expect(page.locator(selectors.searchCityChip)).toContainText('Zagreb');
   });
 });

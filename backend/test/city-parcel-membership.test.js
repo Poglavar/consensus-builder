@@ -22,9 +22,10 @@ const cityConfigSource = read('../../frontend/js/city-config.js');
 // them is what let two of them drift out of isInCity in the first place.
 function configuredCityIds() {
     const ids = new Set();
-    const pattern = /^\s{12}id:\s*'([a-z_]+)'/gm;
+    // `explore: true` marks the explore city (no cadastre, so no parcel-id space): not a city here.
+    const pattern = /^\s{12}id:\s*'([a-z_]+)',?\n(\s{12}explore:\s*true)?/gm;
     let match;
-    while ((match = pattern.exec(cityConfigSource)) !== null) ids.add(match[1]);
+    while ((match = pattern.exec(cityConfigSource)) !== null) if (!match[2]) ids.add(match[1]);
     return [...ids];
 }
 

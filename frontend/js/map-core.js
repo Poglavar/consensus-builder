@@ -102,7 +102,28 @@ const map = L.map('map', {
 const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
 const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;
 
-if (IS_PROPOSAL_DEEP_LINK) {
+// `?at=lat,lon,zoom` (the world view, the search box's "Open in <city>"): open the city at that
+// view instead of its default. Read once and stripped from the URL, so a reload does not jump back.
+// A proposal link frames its own proposal, so it ignores `at`. Invalid values are ignored.
+const AT_VIEW = (() => {
+    let raw = null;
+    try { raw = new URLSearchParams(window.location.search || '').get('at'); } catch (_) { return null; }
+    if (raw === null) return null;
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('at');
+        window.history.replaceState(window.history.state, '', url.toString());
+    } catch (error) {
+        console.warn(`[${new Date().toISOString()}] [map-core] could not strip ?at= from the URL`, error);
+    }
+    const view = window.WorldEntryModel ? window.WorldEntryModel.parseAt(raw) : null;
+    if (!view) console.warn(`[${new Date().toISOString()}] [map-core] ignoring invalid ?at=${raw}`);
+    return view;
+})();
+
+if (AT_VIEW && !IS_PROPOSAL_DEEP_LINK) {
+    map.setView([AT_VIEW.lat, AT_VIEW.lon], Number.isFinite(AT_VIEW.zoom) ? AT_VIEW.zoom : resolveInitialZoom());
+} else if (IS_PROPOSAL_DEEP_LINK) {
     // Keep parcels idle but start from city context so coverage/debug tools don't blow up
     const fallbackCenter = CITY_MAP_CONFIG.defaultCenter || DEFAULT_FALLBACK_LATLNG;
     map.setView(fallbackCenter, resolveInitialZoom());
@@ -735,7 +756,7 @@ function rebuildBuildingLayerFromPool() {
         if (id && feature?.geometry) buildingFeatureById.set(id, feature);
     });
     const features = pool.map(feature => buildingFeatureWithOutcome(feature, state));
-    // The sidebar checkbox is the source of truth for visibility. Deciding from "was the old
+    // The Layers-sheet checkbox is the source of truth for visibility. Deciding from "was the old
     // layer on the map" broke the show-buildings toggle: the corridor preload fills the pool and
     // rebuilds the layer OFF-map while the box is unticked, and the next tick inherited hidden.
     const checkbox = document.getElementById('showBuildings');
@@ -840,6 +861,8 @@ function setupMapEventHandlers() {
 
     // Add event listener for zoom
     map.on('zoomend', () => {
+        // No cadastre in the explore city: there are no parcel layers to show or hide.
+        if (MapCityConfigManager && typeof MapCityConfigManager.hasParcelData === 'function' && !MapCityConfigManager.hasParcelData()) return;
         const within = isZoomWithinParcelRange();
         if (typeof updateParcelsCheckboxByZoom === 'function') {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
@@ -935,8 +958,10 @@ function initializeMapCore() {
     parcelFetchZoomMin = Number.isFinite(zoomRange?.min) ? zoomRange.min : GLOBAL_PARCEL_ZOOM_RANGE.min;
     parcelFetchZoomMax = Number.isFinite(zoomRange?.max) ? zoomRange.max : GLOBAL_PARCEL_ZOOM_RANGE.max;
 
-    // Initial load only if within zoom range and not in proposal deep-link mode
-    const shouldSkipInitialFetch = (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded);
+    // Initial load only if within zoom range and not in proposal deep-link mode (nor in the explore
+    // city, which has no cadastre at all)
+    const cityHasNoParcels = !!(MapCityConfigManager && typeof MapCityConfigManager.hasParcelData === 'function' && !MapCityConfigManager.hasParcelData());
+    const shouldSkipInitialFetch = cityHasNoParcels || (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded);
     if (!shouldSkipInitialFetch && typeof fetchParcelDataReported === 'function') {
         const within = isZoomWithinParcelRange();
         if (typeof updateParcelsCheckboxByZoom === 'function') {
@@ -969,14 +994,7 @@ function updateMapDimensions() {
 
     try {
         const mapSize = map.getSize();
-        const sidebar = document.getElementById('sidebar');
-        const isSidebarVisible = sidebar && !sidebar.classList.contains('collapsed');
-        const sidebarWidth = isSidebarVisible ? 320 : 0;
-
-        const visibleWidth = mapSize.x - sidebarWidth;
-        const visibleHeight = mapSize.y;
-
-        dimensionsText.textContent = `${visibleWidth} × ${visibleHeight} px`;
+        dimensionsText.textContent = `${mapSize.x} × ${mapSize.y} px`;
     } catch (err) {
         console.warn('Failed to update map dimensions:', err);
     }
@@ -989,14 +1007,6 @@ map.on('moveend', updateMapDimensions);
 // Initial update
 setTimeout(updateMapDimensions, 100);
 
-// Update when sidebar is toggled
-const originalToggleSidebar = window.toggleSidebar;
-window.toggleSidebar = function () {
-    if (originalToggleSidebar) {
-        originalToggleSidebar();
-    }
-    setTimeout(updateMapDimensions, 350); // Wait for sidebar animation
-};
 
 // Hook up base map selector once DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

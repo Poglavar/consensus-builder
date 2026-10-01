@@ -252,13 +252,9 @@ class AgentBubbleManager {
         const mapBounds = mapContainer.getBoundingClientRect();
         const mapCenter = this.map.getCenter();
 
-        // Check if sidebar is collapsed
-        const sidebar = document.getElementById('sidebar');
-        const sidebarWidth = sidebar && !sidebar.classList.contains('collapsed') ? 320 : 0;
-
-        // Adjust map bounds to exclude sidebar area
-        const visibleMapWidth = mapBounds.width - sidebarWidth;
-        const visibleMapLeft = sidebarWidth;
+        // The whole map is visible: nothing docks over its left edge.
+        const visibleMapWidth = mapBounds.width;
+        const visibleMapLeft = 0;
 
         // Convert object position to screen coordinates
         let objectPoint, centerPoint;
@@ -306,7 +302,7 @@ class AgentBubbleManager {
         let tLeft = Infinity, tRight = Infinity, tTop = Infinity, tBottom = Infinity;
 
         if (dirX < 0) {
-            // Going left - check intersection with left edge (accounting for sidebar)
+            // Going left - check intersection with left edge
             tLeft = (visibleMapLeft + margin - centerPoint.x) / dirX;
         } else if (dirX > 0) {
             // Going right - check intersection with right edge (full screen width)
@@ -369,15 +365,8 @@ class AgentBubbleManager {
     onBubbleClick(bubbleData) {
         if (!this.map) return;
 
-        // On mobile, collapse sidebar if it's open
-        if (window.innerWidth <= 768) {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed')) {
-                if (typeof toggleSidebar === 'function') {
-                    toggleSidebar();
-                }
-            }
-        }
+        // Fold away an open sheet so the map is clear for the fly-to
+        if (window.MapShell) window.MapShell.closeSheets();
 
         // Safety check: validate coordinates before flying to prevent world map disaster
         if (!bubbleData.objectPosition ||

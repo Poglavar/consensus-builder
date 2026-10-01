@@ -206,7 +206,7 @@ Requires backend + frontend running. Mock blockchain interactions (wallet provid
 - Select parcels on the map
 - Open proposal form, fill details
 - Submit proposal
-- Verify proposal appears in sidebar list
+- Verify proposal appears in the proposals list (Proposals button, bottom right)
 
 **2. Proposal viewing**
 

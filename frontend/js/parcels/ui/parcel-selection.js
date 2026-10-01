@@ -91,6 +91,13 @@
             }
         }
 
+        // The parcel panel, when it is already open, stays the inspector: a click moves it to the
+        // clicked parcel as it always did. Otherwise the click ends in the parcel menu at the click
+        // point (ui/parcel-menu.js), whose actions open the panel on the tab they need. Read now:
+        // clearSelection below hides the panel on its way.
+        const parcelInfoPanel = global.document.getElementById('parcel-info-panel');
+        const parcelPanelWasOpen = !!(parcelInfoPanel && parcelInfoPanel.classList.contains('visible'));
+
         // Shift+click enters multi-select on the fly — same as ticking the "Select multiple
         // parcels" checkbox (updateUI syncs it). The currently viewed parcel is preserved as the
         // seed, and the shift-clicked parcel joins the selection below.
@@ -169,9 +176,11 @@
                 return;
             }
         }
-        const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
-        if (typeof showParcelInfoPanel === 'function') {
-            showParcelInfoPanel(feature);
+        if (parcelPanelWasOpen) {
+            const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
+            if (typeof showParcelInfoPanel === 'function') {
+                showParcelInfoPanel(feature);
+            }
         }
         global.currentParcelCoordinates = feature.geometry.coordinates;
         const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
@@ -240,12 +249,7 @@
         };
         global.window.currentParcel = global.currentParcel;
 
-
-        if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.updateCreateProposalButton) {
-            global.multiParcelSelection.updateCreateProposalButton();
-        }
-
-        global.document.getElementById('parcel-info-panel').classList.add('visible');
+        if (parcelPanelWasOpen) parcelInfoPanel.classList.add('visible');
 
         // Any parcel carrying an applied proposal doubles as that proposal's surface: opening the
         // parcel also opens the proposal's action buttons, referring to the applied one. Other
@@ -270,6 +274,10 @@
                 && typeof global.multiParcelSelection.clearSingleParcelSelection === 'function') {
                 global.multiParcelSelection.clearSingleParcelSelection();
             }
+        } else if (!parcelPanelWasOpen) {
+            // The applied proposal above is the answer when there is one (its details open and the
+            // parcel selection is handed over to it); otherwise the parcel menu is.
+            global.ParcelMenu.open({ parcelId: parcelId.toString(), feature, layer: targetLayer, latlng: e && e.latlng });
         }
         L.DomEvent.stopPropagation(e);
 

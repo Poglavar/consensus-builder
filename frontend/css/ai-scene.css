@@ -1,11 +1,11 @@
 /* AI photorealistic render (v1): the 3D-only "AI" mode button and the render modal.
-   Button owns slot 5 of the lower-left mode stack — the ladder and the rule that a button never
+   Button owns slot 5 of the left-edge mode strip — the ladder and the rule that a button never
    changes slot live at the top of map.css; modal is mobile-friendly. */
 
 #mode-ai-toggle.map-mode-ai-btn {
     position: absolute;
     left: var(--map-mode-stack-left);
-    bottom: var(--map-mode-slot-5);
+    top: var(--map-mode-slot-5);
     z-index: 1001;
     display: inline-flex;
     align-items: center;

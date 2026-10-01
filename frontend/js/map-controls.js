@@ -1,9 +1,12 @@
-// Add function to toggle sidebar sections (for checkboxes)
+// map-controls.js — behaviour of the map's layer/tool/game controls (formerly the left sidebar's,
+// now rehoused in the floating shell's sheets, see js/ui/map-shell.js): the section-checkbox layer
+// toggles, per-section control gating, block/building layer toggles, debug mode, the local-data wipe,
+// zoom gating of the parcels controls, and initializeMapControls() run from the boot in index.html.
+
+// A section's layer checkbox (#parcelsCheckbox, #gameCheckbox; data-layer names the layer) changed.
 function toggleAccordion(checkbox, options = {}) {
     const skipParcelFetch = options.skipParcelFetch === true;
-    // Checkbox is now inside the accordion-content, so we need to find the section differently
     const section = checkbox.closest('.accordion-section');
-    const header = section ? section.querySelector('.accordion-header') : null;
     const layerName = checkbox.dataset.layer;
 
     // Note: Roads section no longer has a checkbox, so it's always visible
@@ -11,7 +14,7 @@ function toggleAccordion(checkbox, options = {}) {
 
     // Handle Game section special behavior
     if (layerName === 'game') {
-        const gameHeaderSpan = header ? header.querySelector('[data-section-title="game"]') : null;
+        const gameHeaderSpan = section ? section.querySelector('[data-section-title="game"]') : null;
         const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
         const setGameHeaderKey = (key) => {
             if (!gameHeaderSpan) return;
@@ -106,9 +109,8 @@ function toggleAccordion(checkbox, options = {}) {
         }
     }
     // Proposals section no longer has a checkbox - proposals are always shown
-    // Update interactivity of this section controls if it's expanded
+    // Update interactivity of this section's controls
     try {
-        const section = header ? header.closest('.accordion-section') : null;
         if (section && typeof updateSectionControlsState === 'function') {
             updateSectionControlsState(section);
         }
@@ -119,12 +121,14 @@ function toggleAccordion(checkbox, options = {}) {
     }
 }
 
-// Update enabled/disabled state for controls inside a section based on expansion and checkbox state
+// Update enabled/disabled state for controls inside a section based on its layer checkbox. Sections
+// live in always-open sheets, so an unchecked section (game off, parcels off or zoomed out) greys
+// its controls; data-section-independent controls stay usable.
 function updateSectionControlsState(section) {
     if (!section) return;
     const sectionName = section.dataset && section.dataset.section;
     if (sectionName === 'blocks') {
-        const content = section.querySelector('.accordion-content');
+        const content = section.querySelector('.sheet-section-body');
         if (!content) return;
         content.classList.remove('section-disabled');
         const interactive = content.querySelectorAll('input, button, select, textarea');
@@ -149,12 +153,9 @@ function updateSectionControlsState(section) {
         });
         return;
     }
-    const header = section.querySelector('.accordion-header');
-    const content = section.querySelector('.accordion-content');
+    const content = section.querySelector('.sheet-section-body');
     if (!content) return;
-    // Checkbox is now inside the content, not the header
     const checkbox = content.querySelector('input[type="checkbox"][data-layer]');
-    const isExpanded = content.classList.contains('active');
 
     // If there's no checkbox (Data, Proposals sections), always enable controls
     if (!checkbox) {
@@ -185,14 +186,14 @@ function updateSectionControlsState(section) {
         return;
     }
 
-    // For sections with checkboxes, disable controls when expanded but unchecked
+    // For sections with checkboxes, disable controls while unchecked
     const isChecked = !!checkbox.checked;
     // Check if there's a section-dependent-content div (for sections like Game)
     const dependentContent = content.querySelector('.section-dependent-content');
     // If dependent content exists, only target elements within it; otherwise target all in content
     const targetContainer = dependentContent || content;
     const interactive = targetContainer.querySelectorAll('input, button, select, textarea');
-    const shouldDisable = isExpanded && !isChecked;
+    const shouldDisable = !isChecked;
 
     interactive.forEach(el => {
         try {
@@ -254,249 +255,21 @@ function updateSectionControlsState(section) {
     }
 }
 
-// Expand/collapse a section by clicking on the header
-function toggleSectionExpansion(triggerEl) {
-    if (!triggerEl) return;
-    // triggerEl can be the header itself or an element inside it
-    const header = triggerEl.classList && triggerEl.classList.contains('accordion-header')
-        ? triggerEl
-        : triggerEl.closest('.accordion-header');
-    if (!header) return;
-    const section = header.closest('.accordion-section');
-    const content = section ? section.querySelector('.accordion-content') : null;
-    if (!content) return;
-
-    const chevronIcon = header.querySelector('.accordion-chevron');
-
-    const willExpand = !content.classList.contains('active');
-    if (willExpand) {
-        content.classList.add('active');
-        if (chevronIcon) {
-            if (chevronIcon.classList.contains('fa-chevron-down')) {
-                chevronIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-            }
-        }
-        header.setAttribute('aria-expanded', 'true');
-
-        // After layout updates, scroll into view if needed (no setTimeout - use rAF)
-        const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
-        if (sidebarScrollable) {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    try {
-                        const containerRect = sidebarScrollable.getBoundingClientRect();
-                        const contentRect = content.getBoundingClientRect();
-
-                        let targetTop = sidebarScrollable.scrollTop;
-                        // If content taller than container, align top
-                        if (contentRect.height >= containerRect.height) {
-                            targetTop += (contentRect.top - containerRect.top);
-                        } else {
-                            if (contentRect.top < containerRect.top) {
-                                targetTop += (contentRect.top - containerRect.top);
-                            }
-                            if (contentRect.bottom > containerRect.bottom) {
-                                targetTop += (contentRect.bottom - containerRect.bottom);
-                            }
-                        }
-                        sidebarScrollable.scrollTo({ top: targetTop, behavior: 'smooth' });
-                    } catch (_) { }
-                });
-            });
-        }
-    } else {
-        content.classList.remove('active');
-        if (chevronIcon) {
-            if (chevronIcon.classList.contains('fa-chevron-up')) {
-                chevronIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-            }
-        }
-        header.setAttribute('aria-expanded', 'false');
-    }
-
-    // Adjust controls disabled/enabled depending on expansion and checkbox state
-    try { updateSectionControlsState(section); } catch (_) { }
-}
-
-// Add function to toggle button-based accordion sections (for Measurement and Information)
-function toggleButtonAccordion(button) {
-    const content = button.nextElementSibling;
-    // Target the chevron icon specifically (the second i.fas element or the one with chevron class)
-    const chevronIcon = button.querySelector('i.fas.fa-chevron-down, i.fas.fa-chevron-up');
-
-    if (content) {
-        if (content.classList.contains('active')) {
-            // Hide the content
-            content.classList.remove('active');
-            content.style.display = ''; // Clear inline style to let CSS take over
-            if (chevronIcon && chevronIcon.classList.contains('fa-chevron-up')) {
-                chevronIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-            }
-        } else {
-            // Show the content
-            content.classList.add('active');
-            content.style.display = ''; // Clear inline style to let CSS take over
-            if (chevronIcon && chevronIcon.classList.contains('fa-chevron-down')) {
-                chevronIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-            }
-
-            // Auto-scroll to make expanded content visible (use rAF instead of setTimeout)
-            const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
-            if (sidebarScrollable) {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        try {
-                            const containerRect = sidebarScrollable.getBoundingClientRect();
-                            const contentRect = content.getBoundingClientRect();
-                            let targetTop = sidebarScrollable.scrollTop;
-                            if (contentRect.height >= containerRect.height) {
-                                targetTop += (contentRect.top - containerRect.top);
-                            } else {
-                                if (contentRect.top < containerRect.top) {
-                                    targetTop += (contentRect.top - containerRect.top);
-                                }
-                                if (contentRect.bottom > containerRect.bottom) {
-                                    targetTop += (contentRect.bottom - containerRect.bottom);
-                                }
-                            }
-                            sidebarScrollable.scrollTo({ top: targetTop, behavior: 'smooth' });
-                        } catch (_) { }
-                    });
-                });
-            }
-        }
-    }
-}
-
-// Toggle sidebar visibility
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('collapsed');
-    const isCollapsed = sidebar.classList.contains('collapsed');
-    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
-
-    if (isCollapsed) {
-        // Hide content when collapsed
-        document.querySelectorAll('.accordion-section').forEach(section => {
-            section.style.display = 'none';
-        });
-        document.querySelector('.sidebar-header h2').style.display = 'none';
-    } else {
-        // Show content when expanded
-        document.querySelectorAll('.accordion-section').forEach(section => {
-            section.style.display = 'block';
-        });
-        document.querySelector('.sidebar-header h2').style.display = 'block';
-
-        // Re-apply sidebar configuration to hide disabled sections according to city config
-        // This ensures that sections disabled for the current city (e.g., Buenos Aires) remain hidden
-        if (typeof window.CityConfigManager !== 'undefined' &&
-            typeof window.CityConfigManager.applySidebarConfiguration === 'function') {
-            window.CityConfigManager.applySidebarConfiguration();
-            // applySidebarConfiguration already calls applyFeatureVisibility internally
-        }
-    }
-
-    // Allow time for transition before resizing map
-    setTimeout(() => {
-        if (typeof map !== 'undefined' && map.invalidateSize) {
-            map.invalidateSize();
-        }
-    }, 300);
-
-    updateSidebarToggleButtonPosition();
-}
-
-function updateSidebarToggleButtonPosition() {
-    try {
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtnDesktop = document.getElementById('toggle-sidebar-desktop');
-        if (!sidebar) {
-            return;
-        }
-
-        const isCollapsed = sidebar.classList.contains('collapsed');
-        if (toggleBtnDesktop) {
-            toggleBtnDesktop.style.left = isCollapsed ? '10px' : '330px';
-        }
-    } catch (_) { }
-}
-
-function setSidebarDisabled(isDisabled, message = '') {
-    const sidebar = document.getElementById('sidebar');
-    if (!sidebar) return;
-
-    const desktopToggle = document.getElementById('toggle-sidebar-desktop');
-    const mobileToggle = document.getElementById('toggle-sidebar-mobile');
-    const toggles = [desktopToggle, mobileToggle].filter(Boolean);
-
-    let overlay = sidebar.querySelector('.sidebar-disabled-overlay');
-
-    if (isDisabled) {
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'sidebar-disabled-overlay';
-
-            const content = document.createElement('div');
-            content.className = 'sidebar-disabled-overlay__content';
-            content.setAttribute('role', 'status');
-            content.setAttribute('aria-live', 'polite');
-
-            const spinner = document.createElement('div');
-            spinner.className = 'sidebar-disabled-overlay__spinner';
-
-            const text = document.createElement('span');
-            text.className = 'sidebar-disabled-overlay__text';
-
-            content.appendChild(spinner);
-            content.appendChild(text);
-            overlay.appendChild(content);
-            sidebar.appendChild(overlay);
-        }
-
-        const textEl = overlay.querySelector('.sidebar-disabled-overlay__text');
-        if (textEl) {
-            textEl.textContent = message || '';
-        }
-
-        overlay.style.display = 'flex';
-        sidebar.classList.add('sidebar-disabled');
-        sidebar.setAttribute('aria-busy', 'true');
-
-        toggles.forEach(btn => {
-            const prev = btn.disabled ? '1' : '0';
-            btn.setAttribute('data-prev-disabled', prev);
-            btn.disabled = true;
-        });
-    } else {
-        if (overlay) {
-            overlay.remove();
-        }
-
-        sidebar.classList.remove('sidebar-disabled');
-        sidebar.removeAttribute('aria-busy');
-
-        toggles.forEach(btn => {
-            const prev = btn.getAttribute('data-prev-disabled');
-            if (prev !== null) {
-                btn.disabled = prev === '1';
-                btn.removeAttribute('data-prev-disabled');
-            }
-        });
-    }
-}
-
 // Toggle debug mode
 function toggleDebugMode() {
     const debugCheckbox = document.getElementById('debugModeCheckbox');
     const body = document.body;
+    const statusText = (key, fallback) => {
+        const fullKey = `status.messages.${key}`;
+        const text = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(fullKey) : null;
+        return text && text !== fullKey ? text : fallback;
+    };
 
     if (debugCheckbox.checked) {
         body.classList.add('debug-mode');
         if (typeof updateStatus === 'function') {
-            updateStatus('Debug mode enabled - dangerous actions are now visible');
+            updateStatus(statusText('debug_mode_enabled', 'Debug mode enabled - dangerous actions are now visible'));
         }
-        try { if (typeof updateDataSectionVisibility === 'function') updateDataSectionVisibility(); } catch (_) { }
         if (typeof window.updateBadgeVisibility === 'function') {
             try { window.updateBadgeVisibility(); } catch (_) { }
         } else {
@@ -506,9 +279,8 @@ function toggleDebugMode() {
     } else {
         body.classList.remove('debug-mode');
         if (typeof updateStatus === 'function') {
-            updateStatus('Debug mode disabled - dangerous actions are hidden');
+            updateStatus(statusText('debug_mode_disabled', 'Debug mode disabled - dangerous actions are hidden'));
         }
-        try { if (typeof updateDataSectionVisibility === 'function') updateDataSectionVisibility(); } catch (_) { }
         if (typeof window.updateBadgeVisibility === 'function') {
             try { window.updateBadgeVisibility(); } catch (_) { }
         } else {
@@ -516,16 +288,6 @@ function toggleDebugMode() {
             if (debugBadge) debugBadge.style.display = 'none';
         }
     }
-}
-
-// Keep Data section available regardless of debug mode
-function updateDataSectionVisibility() {
-    try {
-        const dataSection = document.querySelector('.accordion-section[data-section="data"]');
-        if (!dataSection) return;
-
-        dataSection.style.display = 'block';
-    } catch (_) { }
 }
 
 // Danger: wipe all local storage data
@@ -782,36 +544,15 @@ function updateBlockButtonStates() {
     }
 }
 
-// Initialize UI
-function initializeSidebar() {
-    // Auto-collapse sidebar on mobile view (<768px)
-    try {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && window.innerWidth < 768) {
-            if (!sidebar.classList.contains('collapsed')) {
-                sidebar.classList.add('collapsed');
-                // Hide content when collapsed
-                document.querySelectorAll('.accordion-section').forEach(section => {
-                    section.style.display = 'none';
-                });
-                const headerTitle = document.querySelector('.sidebar-header h2');
-                if (headerTitle) headerTitle.style.display = 'none';
-            }
-        }
-        document.body.classList.toggle('sidebar-collapsed', sidebar ? sidebar.classList.contains('collapsed') : false);
-        updateSidebarToggleButtonPosition();
-    } catch (_) { }
-
-    // Apply city-specific sidebar configuration (disabled sections, etc.)
+// Initialize the map controls (run once from the boot in index.html)
+function initializeMapControls() {
+    // Apply city-specific section configuration (disabled sections, etc.)
     try {
         if (typeof window.CityConfigManager !== 'undefined' &&
             typeof window.CityConfigManager.applySidebarConfiguration === 'function') {
             window.CityConfigManager.applySidebarConfiguration();
         }
     } catch (_) { }
-
-    // Headers are now clickable directly via onclick attribute
-    // Chevrons are visual only, no separate click handlers needed
 
     // Initialize Parcels checkbox state by zoom policy (no auto-expand)
     const firstCheckbox = document.getElementById('parcelsCheckbox');
@@ -823,6 +564,10 @@ function initializeSidebar() {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
         }
     }
+
+    // Gate every section by its layer checkbox now: the sheets are always "expanded", so nothing
+    // else would grey the game controls before the game is enabled.
+    document.querySelectorAll('.accordion-section').forEach(section => updateSectionControlsState(section));
 
     // Initialize button states
     updateBlockButtonStates();
@@ -858,9 +603,6 @@ function initializeSidebar() {
             debugBadge.style.display = document.body.classList.contains('debug-mode') ? 'inline-flex' : 'none';
         }
     }
-
-    // Show/hide Data section depending on environment and debug mode
-    try { updateDataSectionVisibility(); } catch (_) { }
 }
 
 // Manage parcels checkbox state based on zoom policy
@@ -953,34 +695,13 @@ window.updateParcelsCheckboxByZoom = updateParcelsCheckboxByZoom;
 
 // Make functions globally available
 window.toggleAccordion = toggleAccordion;
-window.toggleButtonAccordion = toggleButtonAccordion;
-window.toggleSidebar = toggleSidebar;
 window.toggleDebugMode = toggleDebugMode;
 window.wipeLocalData = wipeLocalData;
-window.setSidebarDisabled = setSidebarDisabled;
 window.toggleLayer = toggleLayer;
 window.updateBlockButtonStates = updateBlockButtonStates;
-window.initializeSidebar = initializeSidebar;
-window.toggleSectionExpansion = toggleSectionExpansion;
-window.updateDataSectionVisibility = updateDataSectionVisibility;
+window.initializeMapControls = initializeMapControls;
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Auto-collapse sidebar on small screens (<768px)
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar && window.innerWidth < 768) {
-        if (!sidebar.classList.contains('collapsed')) {
-            sidebar.classList.add('collapsed');
-            // Hide content when collapsed
-            document.querySelectorAll('.accordion-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            const headerTitle = document.querySelector('.sidebar-header h2');
-            if (headerTitle) headerTitle.style.display = 'none';
-        }
-    }
-    document.body.classList.toggle('sidebar-collapsed', sidebar ? sidebar.classList.contains('collapsed') : false);
-    updateSidebarToggleButtonPosition();
-
     // Ensure "Show Proposed Buildings" is checked and applied on load
     try {
         const proposedCb = document.getElementById('showProposedBuildings');

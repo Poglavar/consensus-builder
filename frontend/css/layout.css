@@ -127,7 +127,7 @@ body {
 
 /* -------------------- Mobile layout tweaks -------------------- */
 @media (max-width: 768px) {
-    /* Stack layout vertically so map fills screen and sidebar overlays */
+    /* Stack layout vertically so the map fills the screen */
     body {
         flex-direction: column;
     }
@@ -142,5 +142,80 @@ body {
     .parcel-road-actions .btn {
         width: auto;
         flex: 1 1 0;
+    }
+}
+
+
+/* No text selection or tap highlight on buttons and list rows */
+.btn, .close-button, .parcel-tab-btn, .tab-btn,
+.block-item, .parcel-item, .proposal-item, .agent-link, .proposal-link {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Larger tap targets for mobile */
+@media (max-width: 768px) {
+    /* List items easier to tap */
+    .parcel-item, .proposal-item, .block-item {
+        min-height: 48px;
+        padding: 12px 15px;
+    }
+
+    /* Form inputs larger */
+    .form-group input, .form-group select {
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Checkbox/radio larger touch areas */
+    .checkbox-group label {
+        min-height: 44px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Slider controls more touch-friendly */
+    #turn-interval-slider {
+        height: 8px;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    #turn-interval-slider::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    /* Tab buttons in panels */
+    .parcel-tab-btn, .proposal-tab-btn {
+        padding: 14px 12px;
+        font-size: 15px;
+    }
+
+    .tab-btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+
+    /* Leaflet control buttons larger for touch */
+    .leaflet-control-zoom a {
+        width: 44px !important;
+        height: 44px !important;
+        line-height: 44px !important;
+        font-size: 20px !important;
+    }
+
+    /* Attribution more compact */
+    .leaflet-control-attribution {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
     }
 }

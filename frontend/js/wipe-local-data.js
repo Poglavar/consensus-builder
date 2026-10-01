@@ -2,8 +2,8 @@
     'use strict';
 
     // The one function that actually erases local data. Dependency-free and defined early, so any
-    // caller can rely on it. Deliberately NOT named `wipeLocalData`: sidebar-management.js declares
-    // a global function of that name, which used to shadow this one after load — leaving the sidebar
+    // caller can rely on it. Deliberately NOT named `wipeLocalData`: map-controls.js declares
+    // a global function of that name, which used to shadow this one after load — leaving the wipe
     // button and the city switch quietly clearing less (no localStorage, no IndexedDB drop) than the
     // boot path did. That wrapper now delegates here, so there is exactly one eraser.
     global.wipeAllLocalData = async function wipeAllLocalData(options = {}) {

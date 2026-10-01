@@ -420,7 +420,7 @@ async function detectRoadsFromWFS() {
 
     const button = document.querySelector('button[onclick="detectRoadsFromWFS()"]');
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Detecting...', trigger);
+        return runWithButtonBusyState(button, { key: 'common.busy.detecting', fallback: 'Detecting...' }, trigger);
     }
     return trigger();
 }
@@ -847,7 +847,7 @@ async function drawGUPRoads() {
     };
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Loading...', run, { restoreFocus: true });
+        return runWithButtonBusyState(button, { key: 'common.busy.loading', fallback: 'Loading...' }, run, { restoreFocus: true });
     }
     return run();
 }
@@ -906,7 +906,7 @@ async function detectRoadsFromGUP() {
     };
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Detecting...', execute, { restoreFocus: true });
+        return runWithButtonBusyState(button, { key: 'common.busy.detecting', fallback: 'Detecting...' }, execute, { restoreFocus: true });
     }
     return execute();
 }
@@ -992,7 +992,7 @@ async function detectRoadsFromOSM() {
 
     const button = document.querySelector('button[onclick="detectRoadsFromOSM()"]');
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Detecting...', execute);
+        return runWithButtonBusyState(button, { key: 'common.busy.detecting', fallback: 'Detecting...' }, execute);
     }
     return execute();
 }
@@ -1293,7 +1293,7 @@ function clearDetectedRoads() {
 // Curated road source (city-config `curatedRoads`): the backend serves the parcels the
 // road_parcel_classification materialized view already marked as roads (Zagreb only for now).
 // One bbox fetch replaces the whole client-side OSM/GUP/WFS detection for such cities, and it
-// auto-runs in the background after every parcel ingest so roads appear without the sidebar.
+// auto-runs in the background after every parcel ingest so roads appear without the Tools sheet.
 // ---------------------------------------------------------------------------
 
 let curatedRoadFetchTimer = null;
@@ -1335,17 +1335,21 @@ window.fetchCuratedRoadParcels = fetchCuratedRoadParcels;
 
 async function detectExistingRoads() {
     const controlButton = document.getElementById('detectExistingRoadsButton');
-    const originalLabel = controlButton ? controlButton.textContent : null;
+    // Restored as markup: the button holds an icon and a translatable label span.
+    const originalLabelHtml = controlButton ? controlButton.innerHTML : null;
+    const tr = (key, fallback) => {
+        const value = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+        return (typeof value === 'string' && value && value !== key) ? value : fallback;
+    };
 
-    const sidebarDisableMessage = 'Detecting existing roads...';
-
-    if (typeof window.setSidebarDisabled === 'function') {
-        try { window.setSidebarDisabled(true, sidebarDisableMessage); } catch (_) { }
+    // Lock the Roads controls (their sheets, and their upkeep in Settings) while the detectors run.
+    if (window.MapShell) {
+        window.MapShell.setSectionBusy('roads', true, tr('sidebar.roads.detectingExisting', 'Detecting existing roads...'));
     }
 
     if (controlButton) {
         controlButton.disabled = true;
-        controlButton.textContent = 'Detecting...';
+        controlButton.textContent = tr('common.busy.detecting', 'Detecting...');
     }
 
     try {
@@ -1401,11 +1405,9 @@ async function detectExistingRoads() {
         console.error('Error detecting existing roads:', error);
         updateStatus('Error detecting existing roads using all sources.');
     } finally {
-        if (typeof window.setSidebarDisabled === 'function') {
-            try { window.setSidebarDisabled(false); } catch (_) { }
-        }
+        if (window.MapShell) window.MapShell.setSectionBusy('roads', false);
         if (controlButton) {
-            controlButton.textContent = originalLabel || 'Detect Existing Roads';
+            if (originalLabelHtml) controlButton.innerHTML = originalLabelHtml;
             controlButton.disabled = false;
         }
     }

@@ -228,7 +228,6 @@ function refreshProposalData() {
 
     // Update proposal counts and status if needed
     if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
-    if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator();
 
     // Only refresh proposal info if the modal is currently open
     if (window.currentlyHighlightedProposal && window.selectedParcelInProposal) {

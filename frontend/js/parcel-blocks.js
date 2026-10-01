@@ -667,7 +667,7 @@ async function countBlocks() {
 
     const button = document.querySelector('button[onclick="countBlocks()"]');
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Forming...', run);
+        return runWithButtonBusyState(button, { key: 'common.busy.forming', fallback: 'Forming...' }, run);
     }
     return run();
 }
@@ -2069,7 +2069,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
     };
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Selecting...', run);
+        return runWithButtonBusyState(button, { key: 'common.busy.selecting', fallback: 'Selecting...' }, run);
     }
     return run();
 }
@@ -2249,7 +2249,7 @@ function animateFloodfillFromSelected(options = {}) {
     });
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Forming...', run);
+        return runWithButtonBusyState(button, { key: 'common.busy.forming', fallback: 'Forming...' }, run);
     }
     return run();
 }

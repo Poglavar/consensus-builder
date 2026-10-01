@@ -212,7 +212,9 @@ describe('share plan panel contract', () => {
     });
 
     it('disables the chrome but keeps zoom, via CSS lockdown', () => {
-        expect(proposalsCss).toContain('body.share-plan-mode #sidebar');
+        expect(proposalsCss).toContain('body.share-plan-mode .map-shell-cluster');
+        expect(proposalsCss).toContain('body.share-plan-mode .map-sheet');
+        expect(proposalsCss).toContain('body.share-plan-mode .game-pill');
         expect(proposalsCss).toContain('body.share-plan-mode .map-mode-toggle');
         const zoomRule = sourceSection(proposalsCss,
             'body.share-plan-mode .leaflet-control-container .leaflet-control-zoom', '}');

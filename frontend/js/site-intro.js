@@ -88,7 +88,16 @@
         global.openSiteIntro = openSiteIntro;
         global.closeSiteIntro = closeSiteIntro;
 
-        if (shouldShowSiteIntro(global.location?.search, readSeen())) openSiteIntro();
+        const showIfDue = () => {
+            if (shouldShowSiteIntro(global.location?.search, readSeen())) openSiteIntro();
+        };
+        // A first-visit globe (js/ui/world-entry.js) is up: the intro waits until the visitor lands
+        // in a city — after the reload into it, or when the globe closes in place.
+        if (global.WorldEntry && typeof global.WorldEntry.ownsBoot === 'function' && global.WorldEntry.ownsBoot()) {
+            global.addEventListener('worldview:landed', showIfDue, { once: true });
+        } else {
+            showIfDue();
+        }
     }
 
     const api = { STORAGE_KEY, shouldShowSiteIntro, initSiteIntro };

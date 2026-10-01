@@ -443,20 +443,8 @@
 
         removeMonitorListModal();
 
-        const sidebar = document.getElementById('sidebar');
-        if (!sidebar || sidebar.classList.contains('collapsed') || typeof global.toggleSidebar !== 'function') {
-            return;
-        }
-
-        try {
-            global.toggleSidebar();
-        } catch (_) {
-            return;
-        }
-
-        await new Promise((resolve) => {
-            global.setTimeout(resolve, 360);
-        });
+        // The Tools sheet is a bottom sheet on phones; fold it away so the drawing has the map.
+        if (global.MapShell) global.MapShell.closeSheets();
     }
 
     async function showMonitorListModal() {

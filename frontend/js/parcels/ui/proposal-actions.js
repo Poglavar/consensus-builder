@@ -302,7 +302,9 @@
             : 0;
 
         const parcelContextId = parcelIdOverride || (global.currentParcel && global.currentParcel.id);
-        if ((multiSelectActive && selectionCount > 0) || parcelContextId) {
+        // Shared with the parcel menu's "Offer my land" (ui/parcel-menu-model.js), which appears
+        // exactly when this palette — and its Ownership "Offer" tool — would.
+        if (global.ParcelMenuModel.buildPaletteAvailable({ multiSelectActive, selectionCount, parcelContextId })) {
             container.innerHTML = buildPaletteHtml();
         } else {
             container.innerHTML = '';

@@ -269,18 +269,6 @@ async function fetchServerProposalById(serverId, cityCode) {
     return normalized;
 }
 
-function syncProposalsIndicator() {
-    // Proposals are always shown now, no checkbox to sync
-    // Reset any previously set opacity on the Proposals header to keep it consistent
-    const sections = document.querySelectorAll('.accordion-section[data-section="proposals"]');
-    sections.forEach(section => {
-        const header = section.querySelector('.accordion-header');
-        if (header) {
-            header.style.opacity = ''; // Clear inline opacity
-        }
-    });
-}
-
 function getServerProposalId(proposal) {
     if (!proposal) return null;
     const candidates = [proposal.serverProposalId, proposal.proposalId, proposal.id];

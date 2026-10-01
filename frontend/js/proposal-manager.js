@@ -1107,7 +1107,6 @@ const ProposalManager = {
             _emitProposalProgress(opts.onProgress, { phase: 'corridor-strips' });
             opts._parcelMutation.afterCommit(() => {
                 try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
-                try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
             });
             // Built by _rebuildPass; defaulted here so a caller that supplies its own pass (tests
             // do) is not broken by the reporting.
@@ -1521,7 +1520,6 @@ const ProposalManager = {
                         _clearNonLiveParcelInteractionState(output.removedParcelIds || []);
                     });
                     try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
-                    try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
                 };
                 opts._parcelMutation.afterCommit(publishPresentation);
             }
@@ -3064,7 +3062,6 @@ const ProposalManager = {
         try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
         try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
         try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-        try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
 
         // Refresh only the presentation cache owned by the changed proposal.
         if (refreshAll || goalKey === 'park') {

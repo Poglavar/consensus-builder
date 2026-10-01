@@ -16,6 +16,8 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 // listed here on purpose; a new dynamic call site with an unlisted prefix fails the test.
 const DYNAMIC_KEY_PREFIXES = [
     'alerts.messages.',
+    'commandPalette.groups.',   // frontend-map-search.test.js checks every command group
+    'commandPalette.reason.',   // and every reason, in all four locales
     'gameDialogs.log.',
     'gameDialogs.log.row.',
     'modal.corridor.compass.',
@@ -33,7 +35,8 @@ const DYNAMIC_KEY_PREFIXES = [
     'proposals.roadDesignation.',
     'rowHouses.modal.',
     'sidebar.proposals.grainScore.',
-    'status.messages.'
+    'status.messages.',
+    'world.tier.'               // the four coverage tiers (frontend-map-search.test.js)
 ];
 
 // Helpers that prepend a namespace to the key they are given, per file.

@@ -20,7 +20,7 @@
 
 ### Frontend patterns
 
-- `frontend/index.html` is the loader: ES5 scripts attached to `window.*`; keep order (storage → versioning → env → map → user → sidebar → game). Append new scripts via `<script>` tags and export globals.
+- `frontend/index.html` is the loader: ES5 scripts attached to `window.*`; keep order (storage → versioning → env → map → user → map controls → game → `js/ui/*` map shell). Append new scripts via `<script>` tags and export globals.
 - i18n: add strings through existing JSON files and always include Spanish translations. Do not add translations elsewhere in the code, the json files only.
 - Map core (`js/map-core.js`) uses `CityConfigManager` to set projection, basemap, and zoom thresholds (parcels fetch ≥17). It dispatches `parcelDataLoaded` / `buildingsLayerUpdated`; respect `skipParcelFetchUntilProposalLoaded` for proposal deep links.
 - Parcel flow (`js/parcels.js` + helpers) fetches 500 m grid cells via `data-source.js`, merges into `parcelCache.grid`, and mirrors to `localStorage` (`parcel_${id}_*`, `modified_parcels`). Ownership highlighting comes from backend ownership summaries.
@@ -40,7 +40,7 @@
 
 - GeoJSON sent to UI must be WGS84 `[lng, lat]`; HTRS96 geometries stay in caches only—convert with `convertGeoJSON`, `htrs96ToWGS84`, `wgs84ToHTRS96`.
 - Custom events are the extension surface (`parcelDataLoaded`, `buildingsLayerUpdated`, worker messages from `government-plan-worker.js`). Add new cross-module signals via `CustomEvent` rather than tight coupling.
-- Sidebar/game UX follows `index.css` BEM-ish naming; add wallet/proposal controls inside existing panels (avoid new modals unless necessary).
+- There is no sidebar: the UI is map-driven (search box, floating Layers/Settings/Proposals/Tools/Activity sheets, parcel menu, selection tray, command palette). Register every new capability in `js/ui/commands.js` with a surface, and put controls inside the existing sheets/panels (avoid new modals unless necessary). Styling follows `index.css` BEM-ish naming.
 
 ### General guidelines
 

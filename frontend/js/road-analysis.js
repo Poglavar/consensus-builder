@@ -2136,19 +2136,9 @@ async function analyzeAllOSMRoadSegmentsInView() {
             return;
         }
 
-        const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
-        if (sidebarScrollable && button) {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    try {
-                        const containerRect = sidebarScrollable.getBoundingClientRect();
-                        const buttonRect = button.getBoundingClientRect();
-                        const offset = buttonRect.top - containerRect.top;
-                        const targetTop = sidebarScrollable.scrollTop + offset - (containerRect.height / 2) + (buttonRect.height / 2);
-                        sidebarScrollable.scrollTo({ top: targetTop, behavior: 'smooth' });
-                    } catch (_) { }
-                });
-            });
+        // Keep the button (and the legend that appears under it) in view in its sheet.
+        if (button) {
+            try { button.scrollIntoView({ block: 'center' }); } catch (_) { }
         }
 
         const roadLegendTitle = document.getElementById('road-legend-title');
@@ -2447,7 +2437,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
     };
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Analyzing...', runAnalysis, { restoreFocus: true });
+        return runWithButtonBusyState(button, { key: 'common.busy.analyzing', fallback: 'Analyzing...' }, runAnalysis, { restoreFocus: true });
     }
     return runAnalysis();
 }

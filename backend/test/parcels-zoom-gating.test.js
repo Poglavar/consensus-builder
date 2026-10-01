@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
-const source = readFileSync(new URL('../../frontend/js/sidebar-management.js', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../../frontend/js/map-controls.js', import.meta.url), 'utf8');
 
 function sectionOf(startMarker, endMarker) {
     const start = source.indexOf(startMarker);
@@ -34,7 +34,7 @@ describe('parcels section gating follows the zoom', () => {
     });
 
     it('greys the section through the same class the gate owns', () => {
-        const gate = sectionOf('function updateSectionControlsState(section)', 'function toggleSectionExpansion').text;
+        const gate = sectionOf('function updateSectionControlsState(section)', 'function toggleDebugMode').text;
         expect(gate).toContain("classList.add('section-disabled')");
         expect(gate).toContain("classList.remove('section-disabled')");
     });

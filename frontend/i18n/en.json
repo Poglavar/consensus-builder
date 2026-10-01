@@ -213,7 +213,16 @@
         "userFallback": "User",
         "close": "Close",
         "cancel": "Cancel",
-        "download": "Download"
+        "download": "Download",
+        "busy": {
+            "detecting": "Detecting...",
+            "loading": "Loading...",
+            "forming": "Forming...",
+            "selecting": "Selecting...",
+            "refreshing": "Refreshing...",
+            "analyzing": "Analyzing...",
+            "applying": "Applying..."
+        }
     },
     "proposals": {
         "contiguityDisabledReason": "Disabled because the parcels in the proposal are not contiguous",
@@ -315,24 +324,20 @@
             "devBadge": "Development",
             "debugBadge": "Debug",
             "aiBadge": "AI-friendly",
-            "aiBadgeTooltip": "This platform is AI-friendly, meaning that all the main functionality is accessible and usable by AI agents. Certified by the UN Bureau of Human–AI Affairs",
-            "toggle": "Toggle Sidebar"
+            "aiBadgeTooltip": "This platform is AI-friendly, meaning that all the main functionality is accessible and usable by AI agents. Certified by the UN Bureau of Human–AI Affairs"
         },
         "city": {
-            "label": "City:",
             "detectTooltip": "Use my location to choose the closest city"
         },
         "data": {
-            "title": "Data",
-            "sourceLabel": "Data source:"
+            "sourceLabel": "Data source:",
+            "baseMapLabel": "Base map:"
         },
         "game": {
             "title": "Game",
             "titlePaused": "Game (paused)",
             "enable": "Enable game mode",
             "enablePaused": "Enable game mode (paused)",
-            "datetime": "Game date and time:",
-            "turns": "Turns played:",
             "secondsBetween": "Seconds between turns:",
             "nextTurn": "Next turn in:",
             "play": "Play",
@@ -485,8 +490,6 @@
             "showClaimsCounts": "Show claims count (C)",
             "markMinted": "Mark minted",
             "selectMultiple": "Select multiple parcels",
-            "locateParcelPlaceholder": "Parcel ID",
-            "locateButton": "Locate",
             "locateSearching": "Searching…",
             "locateNotFound": "Parcel not found",
             "locateDataNotLoaded": "Parcel data not loaded",
@@ -602,7 +605,8 @@
             "analyzeOsmTooltip": "Analyze widths of visible OSM roads",
             "analysisToggleTooltip": "Show or hide the latest road width analysis",
             "analysisToggle": "Show road analysis results",
-            "legendTitle": "Road Legend"
+            "legendTitle": "Road Legend",
+            "detectingExisting": "Detecting existing roads..."
         },
         "areaMonitor": {
             "title": "Area Monitor",
@@ -3204,19 +3208,27 @@
             "loaded_cadastral_parcels": {
                 "one": "Loaded {{count}} cadastral parcel.",
                 "other": "Loaded {{count}} cadastral parcels."
-            }
+            },
+            "cadastral_ground_already_loaded": "Cadastral ground already loaded.",
+            "checking_cadastral_ground": "Checking cadastral ground…",
+            "loading_cadastral_ground": "Loading cadastral ground {{done}}/{{total}}…",
+            "waiting_for_proposal_before_parcels": "Waiting for proposal to load before fetching parcels…",
+            "debug_mode_enabled": "Debug mode enabled - dangerous actions are now visible",
+            "debug_mode_disabled": "Debug mode disabled - dangerous actions are hidden"
         }
     },
     "city": {
         "labels": {
-            "denver": "Denver, USA"
+            "denver": "Denver, USA",
+            "explore": "Explore"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",
             "success": "Location detected: {{label}}"
         },
         "switch": {
-            "confirm": "Switching city will reload the app. Your work in this city is kept and will be here when you come back.\n\nDo you want to continue?"
+            "confirm": "Switching city will reload the app. Your work in this city is kept and will be here when you come back.\n\nDo you want to continue?",
+            "cancelled": "City change cancelled"
         },
         "switchPrompt": {
             "title": "This proposal is in {requested} — you are viewing {current}",
@@ -3689,6 +3701,192 @@
             "http": "The service answered {{status}}: {{message}}",
             "noService": "Load a service URL first.",
             "badUrl": "Enter an http(s) URL of a lens member service."
+        }
+    },
+    "world": {
+        "title": "Choose a place",
+        "hint": "Drag to spin · click anywhere to see what parcel data exists there",
+        "canvasLabel": "Globe. Drag to rotate, scroll to zoom, click a place to check parcel data.",
+        "close": "Close",
+        "search": {
+            "placeholder": "Search a city or country",
+            "label": "Search places",
+            "country": "Country",
+            "noResults": "No matching place"
+        },
+        "legend": {
+            "title": "Parcel data"
+        },
+        "tier": {
+            "live": {
+                "short": "In the app",
+                "text": "Parcels, proposals and 3D are ready here."
+            },
+            "source": {
+                "short": "Open data found",
+                "text": "Open parcel data exists here, but it is not in the app yet. Explore the map without parcels, or ask for this place to be added."
+            },
+            "none": {
+                "short": "No open data",
+                "text": "We looked and found no open parcel data here. You can still explore the map, without parcels."
+            },
+            "unknown": {
+                "short": "Not researched",
+                "text": "Nobody has checked this place for open parcel data yet. You can still explore the map, without parcels."
+            }
+        },
+        "popup": {
+            "ocean": "Open water",
+            "oceanText": "No land here, so no parcels. You can still open the map at this spot."
+        },
+        "action": {
+            "open": "Open {{city}}",
+            "explore": "Explore anyway",
+            "askCity": "Ask for this city",
+            "askArea": "Ask for this area"
+        },
+        "request": {
+            "sending": "Sending…",
+            "done": "Request noted, thank you",
+            "error": "Could not send the request. Try again?"
+        },
+        "explore": {
+            "chip": "Explore · {{place}}",
+            "banner": "No parcel data here yet — you can look around; proposals need parcels.",
+            "worldView": "World view",
+            "dismiss": "Dismiss",
+            "status": "Exploring without parcel data"
+        }
+    },
+    "mapShell": {
+        "layers": "Layers",
+        "settings": "Settings",
+        "proposals": "Proposals",
+        "tools": "Tools",
+        "activity": "Activity",
+        "proposalsCount": "Proposals ({{count}})",
+        "game": {
+            "controls": "Game controls",
+            "turn": "Turn"
+        },
+        "commands": {
+            "highlightGovernment": "Highlight government parcels",
+            "highlightInstitution": "Highlight institution parcels",
+            "highlightCompany": "Highlight company parcels",
+            "highlightPrivate": "Highlight privately owned parcels",
+            "locateParcel": "Locate a parcel by id",
+            "blockFromSelected": "Detect block from the selected parcel",
+            "areaMonitorCityPlan": "Area monitor: show the city road plan",
+            "areaMonitorDraw": "Draw a monitored area",
+            "areaMonitorFromPlan": "Draw a monitored area from the plan",
+            "proposalsList": "Open the proposals list",
+            "gamePlayPause": "Play / pause the game",
+            "gameInterval": "Turn interval",
+            "activityExplorer": "Open activity explorer",
+            "statusLog": "Open the status log",
+            "chooseCity": "Choose a city",
+            "dataSource": "Data source",
+            "baseMap": "Base map",
+            "worldView": "World view"
+        },
+        "maintenance": {
+            "title": "Data & maintenance",
+            "storedTitle": "Stored in this browser"
+        }
+    },
+    "parcelMenu": {
+        "label": "Parcel actions",
+        "ownerCount": {
+            "one": "{{count}} owner",
+            "other": "{{count}} owners"
+        },
+        "actions": {
+            "propose": "Propose here",
+            "selectMore": "Select more",
+            "details": "Details",
+            "history": "History",
+            "tools": "Tools",
+            "offer": "Offer my land",
+            "view3d": "View in 3D",
+            "detectBlock": "Detect block"
+        }
+    },
+    "selectionTray": {
+        "label": "Selected parcels",
+        "count": {
+            "one": "{{count}} parcel",
+            "other": "{{count}} parcels"
+        },
+        "empty": "Click parcels to select them",
+        "actions": {
+            "propose": "Propose",
+            "clear": "Clear selection",
+            "done": "Done selecting",
+            "detectBlock": "Detect block",
+            "clearShort": "Clear",
+            "doneShort": "Done"
+        }
+    },
+    "mapSearch": {
+        "placeholder": "Search places, parcels, proposals…",
+        "label": "Search the map",
+        "open": "Search",
+        "close": "Close search",
+        "clear": "Clear",
+        "cityChip": "Current city: {{city}}. Choose another",
+        "groups": {
+            "recent": "Recent searches",
+            "cities": "Cities",
+            "parcels": "Parcels",
+            "proposals": "Proposals",
+            "places": "Places",
+            "commands": "Commands"
+        },
+        "useMyLocation": "Use my location",
+        "currentCity": "Current city",
+        "switchCity": "Opens this city (reloads the map)",
+        "parcelHint": "Find this parcel on the map",
+        "parcelNeedsMunicipality": "Add the cadastral municipality: HR-<number>-{{id}}",
+        "parcelNeedsMunicipalityHint": "Or move the map to where the parcel is, so its ids are loaded",
+        "untitledProposal": "Proposal {{id}}",
+        "inCity": "In {{city}}",
+        "proposalsLoading": "Searching proposals…",
+        "proposalsError": "Could not search proposals",
+        "proposalDownloading": "Downloading…",
+        "placesLoading": "Searching places…",
+        "placesError": "Could not reach the address search",
+        "openIn": "Open in {{city}}",
+        "outsideCities": "Outside the app's cities",
+        "attribution": "© OpenStreetMap contributors · Photon",
+        "commandsHint": "Commands…",
+        "useMyLocationHint": "Opens the city closest to you"
+    },
+    "commandPalette": {
+        "open": "Command palette",
+        "title": "Command palette",
+        "placeholder": "Type a command…",
+        "empty": "No matching command",
+        "hint": "↑↓ to move · Enter to run · Esc to close",
+        "reason": {
+            "disabledIn3D": "Not available in 3D",
+            "busy": "Busy: wait for the current task",
+            "hiddenForCity": "Not available in this city",
+            "disabled": "Not available right now"
+        },
+        "groups": {
+            "layers": "Layers",
+            "parcels": "Parcels",
+            "blocks": "Blocks",
+            "tools": "Tools",
+            "stations": "Stations",
+            "roads": "Roads",
+            "areaMonitor": "Area monitor",
+            "proposals": "Proposals",
+            "game": "Game",
+            "activity": "Activity",
+            "settings": "Settings",
+            "parcel": "Parcel",
+            "selection": "Selection"
         }
     }
 }

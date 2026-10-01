@@ -3,6 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+// The palette's "is there a parcel context" predicate lives in the parcel menu model (shared with
+// the menu's "Offer my land"); in the page it is a global loaded before the palette runs.
+const ParcelMenuModel = createRequire(import.meta.url)('../../frontend/js/ui/parcel-menu-model.js');
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const actionsSource = fs.readFileSync(
@@ -30,6 +35,7 @@ function loadActions(overrides = {}) {
     const window = {
         document: { querySelector: vi.fn(() => null), getElementById: vi.fn(() => null) },
         console,
+        ParcelMenuModel,
         ...overrides
     };
     window.window = window;

@@ -84,6 +84,30 @@
         }
     }
 
+    // The explore city (`?city=explore&at=lat,lon,zoom`): any place without parcel data, opened from
+    // the world view. Its centre is the ?at= point, else the last explored point (kept in localStorage
+    // so a reload stays put), else a world overview. Never a stored city, never a shared-link target.
+    const EXPLORE_CITY_ID = 'explore';
+    const EXPLORE_AT_KEY = 'cb_explore_at';
+    const EXPLORE_DEFAULT_VIEW = { lat: 30, lon: 15, zoom: 3 };
+    const exploreView = (function resolveExploreView() {
+        const model = (typeof window !== 'undefined' && window.WorldEntryModel) ? window.WorldEntryModel : null;
+        if (!model) return EXPLORE_DEFAULT_VIEW;
+        let fromQuery = null;
+        let fromStore = null;
+        try {
+            const params = new URLSearchParams(window.location.search || '');
+            if ((params.get('city') || '').trim().toLowerCase() === EXPLORE_CITY_ID) fromQuery = model.parseAt(params.get('at'));
+        } catch (_) { /* no location */ }
+        try { fromStore = model.parseAt(localStorage.getItem(EXPLORE_AT_KEY)); } catch (_) { /* storage blocked */ }
+        const view = fromQuery || fromStore;
+        if (!view) return EXPLORE_DEFAULT_VIEW;
+        return { lat: view.lat, lon: view.lon, zoom: Number.isFinite(view.zoom) ? view.zoom : model.EXPLORE_ZOOM.city };
+    })();
+    const exploreProjection = (typeof window !== 'undefined' && window.WorldEntryModel)
+        ? window.WorldEntryModel.utmProjectionFor(exploreView.lat, exploreView.lon)
+        : { crs: 'EPSG:3857', definition: '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +no_defs +type=crs' };
+
     const CITY_CONFIGS = {
         zagreb: {
             id: 'zagreb',
@@ -479,6 +503,52 @@
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
             }
+        },
+        // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
+        // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
+        // scripts/build-world-coverage.mjs (which skips `explore: true`).
+        explore: {
+            id: 'explore',
+            explore: true,
+            label: 'Explore',
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: exploreView.zoom
+                },
+                defaultCenter: [exploreView.lat, exploreView.lon],
+                defaultZoom: exploreView.zoom,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.1
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Measurement and buffers need metres: the UTM zone of the explored point.
+                metricCrs: exploreProjection.crs,
+                metricDefinition: exploreProjection.definition,
+                fallbackLatLng: [exploreView.lat, exploreView.lon],
+                fallbackDataset: [exploreView.lon, exploreView.lat]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.005,
+                // No cadastre: hasParcelData() is false, and the parcel fetch paths return nothing.
+                source: 'none',
+                requiresBackend: false
+            },
+            buildings: {
+                // The backend resolves buildings by city id and has no provider for 'explore'.
+                source: 'none'
+            },
+            sidebar: {
+                // Everything that needs parcels; Measure, Activity and Settings stay.
+                disabledSections: ['parcels', 'parcelBlocks', 'buildings', 'roads', 'areaMonitor', 'stations', 'proposals', 'game']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
         }
     };
 
@@ -541,7 +611,7 @@
         try {
             if (typeof localStorage !== 'undefined' && localStorage) {
                 const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored && CITY_CONFIGS[stored]) {
+                if (stored && CITY_CONFIGS[stored] && stored !== EXPLORE_CITY_ID) {
                     return stored;
                 }
             }
@@ -549,7 +619,7 @@
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
                 const stored = PersistentStorage.getItem(STORAGE_KEY);
-                if (stored && CITY_CONFIGS[stored]) {
+                if (stored && CITY_CONFIGS[stored] && stored !== EXPLORE_CITY_ID) {
                     return stored;
                 }
             }
@@ -565,7 +635,8 @@
         const queryCityId = getCityIdFromQuery();
 
         if (queryCityId && CITY_CONFIGS[queryCityId]) {
-            if (queryCityId !== storedCityId) {
+            // Exploring is not choosing a city: the pointer keeps the last real city (or none).
+            if (queryCityId !== storedCityId && queryCityId !== EXPLORE_CITY_ID) {
                 try {
                     if (typeof localStorage !== 'undefined' && localStorage) {
                         localStorage.setItem(STORAGE_KEY, queryCityId);
@@ -579,6 +650,7 @@
     }
 
     function getCityLabel(cityId) {
+        if (cityId === EXPLORE_CITY_ID) return translateCityText('city.labels.explore', 'Explore');
         const config = CITY_CONFIGS[cityId];
         return (config && config.label) ? config.label : (cityId || '');
     }
@@ -589,11 +661,21 @@
     const cityWasExplicitlyChosen = !!(getCityIdFromQuery() || getStoredCityId());
 
     let currentCityId = determineCurrentCityId();
+    // Remember where exploring happened, so a reload of ?city=explore (its ?at= is stripped after
+    // boot, js/map-core.js) opens at the same place.
+    if (currentCityId === EXPLORE_CITY_ID) rememberExploreView(exploreView);
+
+    function rememberExploreView(view) {
+        try {
+            const model = window.WorldEntryModel;
+            if (model && view) localStorage.setItem(EXPLORE_AT_KEY, model.formatAt(view));
+        } catch (_) { /* storage blocked: a reload falls back to the world overview */ }
+    }
     // Bind persistent storage to this city's database before anything reads from it. Nothing has
     // been read yet: PersistentStorage deliberately does not open a database until told which one.
     try {
         if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setScope === 'function') {
-            PersistentStorage.setScope(currentCityId, { explicit: cityWasExplicitlyChosen });
+            PersistentStorage.setScope(currentCityId, { explicit: cityWasExplicitlyChosen || currentCityId === EXPLORE_CITY_ID });
         }
     } catch (_) { /* ignore */ }
     applyCityLanguagePreference(getCurrentCityConfig());
@@ -646,7 +728,7 @@
 
 
     function setStoredCityId(id) {
-        currentCityId = CITY_CONFIGS[id] ? id : DEFAULT_CITY_ID;
+        currentCityId = CITY_CONFIGS[id] && id !== EXPLORE_CITY_ID ? id : DEFAULT_CITY_ID;
         try {
             if (typeof localStorage !== 'undefined' && localStorage) {
                 localStorage.setItem(STORAGE_KEY, currentCityId);
@@ -796,6 +878,12 @@
         return map?.parcelZoomRange || { min: 17, max: 19 };
     }
 
+    // False for the explore city: no cadastre, so nothing may fetch or draw parcels.
+    function hasParcelData() {
+        const source = getParcelSettings().source;
+        return !!source && source !== 'none';
+    }
+
     function requiresBackendDataSource() {
         return Boolean(getParcelSettings().requiresBackend);
     }
@@ -907,54 +995,49 @@
         const sectionToCheckboxId = {
             'parcelBlocks': 'parcelBlocksCheckbox'
         };
+        // Config names that differ from the markup's data-section
+        const sectionToDataSection = {
+            'parcelBlocks': 'blocks'
+        };
 
-        // Disable sections that are in the disabled list
+        // Disable sections that are in the disabled list. A section can appear in more than one
+        // sheet (Blocks and Roads have their layer toggles in Layers and their actions in Tools),
+        // so every wrapper with that data-section is hidden.
         disabledSections.forEach(sectionName => {
-            // For sections with checkboxes, disable the checkbox
             const checkboxId = sectionToCheckboxId[sectionName];
             if (checkboxId) {
                 const checkbox = document.getElementById(checkboxId);
                 if (checkbox) {
                     checkbox.disabled = true;
                     checkbox.checked = false;
-                    // Also hide the entire section
-                    const section = checkbox.closest('.accordion-section');
-                    if (section) {
-                        section.style.display = 'none';
-                    }
                 }
-            } else {
-                // For sections without checkboxes, hide the section using the data-section attribute
-                const selector = `.accordion-section[data-section="${sectionName}"]`;
-                const sections = document.querySelectorAll(selector);
-                sections.forEach(section => {
-                    section.style.display = 'none';
-                });
             }
+            const dataSection = sectionToDataSection[sectionName] || sectionName;
+            document.querySelectorAll(`.accordion-section[data-section="${dataSection}"]`).forEach(section => {
+                section.style.display = 'none';
+            });
         });
 
         // Apply feature visibility after sidebar configuration
         applyFeatureVisibility();
     }
 
-    async function handleCitySelectChange(event) {
-        const nextId = event.target.value;
-        if (!nextId || nextId === currentCityId) {
-            event.target.value = currentCityId;
-            return;
-        }
-        // Proposal drafts autosave across cities, so ordinary city navigation is not destructive.
-        const switched = await switchCity(nextId, { requireConfirmation: false });
-        if (!switched) {
-            event.target.value = currentCityId;
-        }
-    }
-
-
-    function navigateToCity(nextId) {
+    // Reload into another city. The path is kept by default, so a shared link (/proposals/<id>,
+    // /parcel/<id>) re-runs there; `clearRoute` drops it, for a plain "go to this city" (the search
+    // box) that should not carry the link being viewed into the next city.
+    function navigateToCity(nextId, options = {}) {
         try {
             const url = new URL(window.location.href);
             url.searchParams.set('city', nextId);
+            // `at` opens the next city at a given view (js/map-core.js applies and strips it);
+            // `world` (force the globe) must not follow the visitor into the city they just picked.
+            url.searchParams.delete('at');
+            url.searchParams.delete('world');
+            if (options.at && window.WorldEntryModel) url.searchParams.set('at', window.WorldEntryModel.formatAt(options.at));
+            if (options.clearRoute) {
+                if (/^\/(proposals|plans|parcel)\//.test(url.pathname)) url.pathname = '/';
+                ['proposalShare', 'shared', 'parcel'].forEach(param => url.searchParams.delete(param));
+            }
             window.location.href = url.toString();
             return true;
         } catch (_) {
@@ -968,7 +1051,9 @@
         const {
             requireConfirmation = false,
             confirmationMessage = null,
-            confirmationOptions = null
+            confirmationOptions = null,
+            clearRoute = false,
+            at = null
         } = options;
 
         if (!nextId || !CITY_CONFIGS[nextId] || nextId === currentCityId) {
@@ -988,13 +1073,13 @@
             const proceed = await confirmFn(confirmMessage, confirmationOptions || undefined);
             if (!proceed) {
                 if (typeof updateStatus === 'function') {
-                    updateStatus('City change cancelled');
+                    updateStatus(translateCityText('city.switch.cancelled', 'City change cancelled'));
                 }
                 return false;
             }
         }
 
-        return navigateToCity(nextId);
+        return navigateToCity(nextId, { clearRoute, at });
     }
 
     function renderMessageLines(container, message) {
@@ -1229,106 +1314,6 @@
 
     window.showStyledAlert = showStyledAlert;
 
-    function populateCitySelect() {
-        if (typeof document === 'undefined') {
-            return;
-        }
-        const select = document.getElementById('city-select');
-        if (!select) {
-            return;
-        }
-        // Clear existing options
-        while (select.firstChild) {
-            select.removeChild(select.firstChild);
-        }
-        Object.values(CITY_CONFIGS).forEach(config => {
-            const option = document.createElement('option');
-            option.value = config.id;
-            option.textContent = config.label;
-            select.appendChild(option);
-        });
-        select.value = currentCityId;
-        select.addEventListener('change', handleCitySelectChange);
-        buildCityDropdown(select);
-    }
-
-    // Custom dropdown over the native select: macOS anchors a native <select> popup at the
-    // selected option, so near the top of the screen it opens UPWARD with scroll arrows. This
-    // one always opens downward. The hidden native select stays the source of truth — picking
-    // an option sets its value and fires 'change', so every existing consumer keeps working.
-    function buildCityDropdown(select) {
-        const wrap = select.parentElement;
-        if (!wrap) return;
-        const existing = wrap.querySelector('.city-dropdown');
-        if (existing) existing.remove();
-
-        const dropdown = document.createElement('div');
-        dropdown.className = 'city-dropdown';
-
-        const toggle = document.createElement('button');
-        toggle.type = 'button';
-        toggle.className = 'city-dropdown-toggle';
-        toggle.setAttribute('aria-haspopup', 'listbox');
-        toggle.setAttribute('aria-expanded', 'false');
-
-        const menu = document.createElement('ul');
-        menu.className = 'city-dropdown-menu';
-        menu.setAttribute('role', 'listbox');
-        menu.hidden = true;
-
-        const labelFor = id => CITY_CONFIGS[id]?.label || id || '';
-        const syncToggleLabel = () => { toggle.textContent = labelFor(select.value); };
-
-        const closeMenu = () => {
-            menu.hidden = true;
-            toggle.setAttribute('aria-expanded', 'false');
-        };
-
-        Object.values(CITY_CONFIGS).forEach(config => {
-            const item = document.createElement('li');
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'city-dropdown-option';
-            btn.setAttribute('role', 'option');
-            btn.dataset.value = config.id;
-            btn.textContent = config.label;
-            if (config.id === select.value) btn.classList.add('is-current');
-            btn.addEventListener('click', () => {
-                closeMenu();
-                if (select.value === config.id) return;
-                select.value = config.id;
-                syncToggleLabel();
-                select.dispatchEvent(new Event('change'));
-            });
-            item.appendChild(btn);
-            menu.appendChild(item);
-        });
-
-        toggle.addEventListener('click', event => {
-            event.stopPropagation();
-            const open = menu.hidden;
-            menu.hidden = !open;
-            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-            if (open) {
-                menu.querySelectorAll('.city-dropdown-option').forEach(btn => {
-                    btn.classList.toggle('is-current', btn.dataset.value === select.value);
-                });
-            }
-        });
-        document.addEventListener('click', event => {
-            if (!dropdown.contains(event.target)) closeMenu();
-        });
-        dropdown.addEventListener('keydown', event => {
-            if (event.key === 'Escape') { closeMenu(); toggle.focus(); }
-        });
-
-        syncToggleLabel();
-        dropdown.appendChild(toggle);
-        dropdown.appendChild(menu);
-        wrap.insertBefore(dropdown, select);
-        select.classList.add('city-select-native-hidden');
-    }
-
     function haversineDistance(lat1, lon1, lat2, lon2) {
         const toRad = deg => deg * (Math.PI / 180);
         const R = 6371; // km
@@ -1366,6 +1351,7 @@
         let best = null;
         let bestDistance = Infinity;
         Object.values(CITY_CONFIGS).forEach(config => {
+            if (config.explore) return;
             if (filter && !filter(config)) return;
             const center = getCityCenter(config);
             if (!center) return;
@@ -1385,61 +1371,46 @@
         return Object.values(CITY_CONFIGS).filter(config => config.parcels?.source === source);
     }
 
-    function setupDetectCityButton() {
-        if (typeof document === 'undefined') return;
-        const button = document.getElementById('detect-city-button');
-        if (!button) return;
-        button.addEventListener('click', async () => {
-            const confirmFn = window.showStyledConfirm || showStyledConfirm;
-            const confirmMessage = translateCityText('city.detect.confirm', 'Allow Consensus Builder to use your approximate location to pick the closest city?');
-            const proceed = await confirmFn(confirmMessage);
-            if (!proceed) {
-                return;
-            }
-            if (!navigator.geolocation) {
-                showCityAlert('geolocation_is_not_supported_by_this_browser', 'Geolocation is not supported by this browser.');
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const nearest = findNearestCity(latitude, longitude);
-                    if (!nearest) {
-                        showCityAlert('unable_to_determine_the_nearest_city', 'Unable to determine the nearest city.');
-                        return;
-                    }
-                    const detectedMessage = translateCityText('city.detect.success', 'Location detected: {{label}}', { label: nearest.label });
-                    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
-                    if (typeof alertFn === 'function') {
-                        alertFn(detectedMessage);
-                    }
-                    setStoredCityId(nearest.id);
-                    if (typeof document !== 'undefined') {
-                        const select = document.getElementById('city-select');
-                        if (select) {
-                            select.value = nearest.id;
-                        }
-                    }
-                    window.location.reload();
-                },
-                (error) => {
-                    console.warn('Geolocation error:', error);
-                    showCityAlert('unable_to_detect_your_location', 'Unable to detect your location.');
-                },
-                {
-                    enableHighAccuracy: false,
-                    maximumAge: 60_000,
-                    timeout: 15_000
+    // "Use my location": ask, read the browser's position, and open the nearest configured city.
+    // The search box's "Use my location" item and the settings.detectCity command call this.
+    async function detectNearestCity() {
+        const confirmFn = window.showStyledConfirm || showStyledConfirm;
+        const confirmMessage = translateCityText('city.detect.confirm', 'Allow Consensus Builder to use your approximate location to pick the closest city?');
+        const proceed = await confirmFn(confirmMessage);
+        if (!proceed) {
+            return false;
+        }
+        if (!navigator.geolocation) {
+            showCityAlert('geolocation_is_not_supported_by_this_browser', 'Geolocation is not supported by this browser.');
+            return false;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                const nearest = findNearestCity(latitude, longitude);
+                if (!nearest) {
+                    showCityAlert('unable_to_determine_the_nearest_city', 'Unable to determine the nearest city.');
+                    return;
                 }
-            );
-        });
-    }
-
-    if (typeof document !== 'undefined') {
-        document.addEventListener('DOMContentLoaded', () => {
-            populateCitySelect();
-            setupDetectCityButton();
-        }, { once: true });
+                const detectedMessage = translateCityText('city.detect.success', 'Location detected: {{label}}', { label: nearest.label });
+                const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
+                if (typeof alertFn === 'function') {
+                    alertFn(detectedMessage);
+                }
+                setStoredCityId(nearest.id);
+                window.location.reload();
+            },
+            (error) => {
+                console.warn('Geolocation error:', error);
+                showCityAlert('unable_to_detect_your_location', 'Unable to detect your location.');
+            },
+            {
+                enableHighAccuracy: false,
+                maximumAge: 60_000,
+                timeout: 15_000
+            }
+        );
+        return true;
     }
 
     function getCityCodeForCityId(cityId) {
@@ -1492,9 +1463,25 @@
         navigateToCity,
         getCityLabel,
         getCurrentCityConfig,
-        getAvailableCities: () => Object.values(CITY_CONFIGS),
+        getAvailableCities: () => Object.values(CITY_CONFIGS).filter(config => !config.explore),
+        EXPLORE_CITY_ID,
+        isExplore: () => currentCityId === EXPLORE_CITY_ID,
+        // Whether this boot had a city chosen (?city= or a stored pointer) rather than the default:
+        // the world view opens on a first visit only (js/ui/world-entry.js).
+        wasCityChosenAtBoot: () => cityWasExplicitlyChosen,
+        // Keep a city the visitor picked on the globe without a reload (the default city it booted on).
+        // Writes only the pointer: the city is unchanged, so no cityChanged event.
+        rememberCurrentCity: () => {
+            if (currentCityId === EXPLORE_CITY_ID) return;
+            try { localStorage.setItem(STORAGE_KEY, currentCityId); } catch (_) { /* storage blocked */ }
+        },
+        rememberExploreView,
+        getCityConfig: id => CITY_CONFIGS[id] || null,
+        hasParcelData,
         getCityCodeForCityId,
         findNearestCity,
+        getCityCenter,
+        detectNearestCity,
         getCitiesByParcelSource,
         datasetToLatLng,
         latLngToDataset,

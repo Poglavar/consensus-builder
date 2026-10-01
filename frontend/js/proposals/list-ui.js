@@ -63,14 +63,6 @@ function syncMultiSelectCheckboxes(isChecked) {
     });
 }
 
-function collapseSidebarIfOpen() {
-    const sidebar = document.getElementById('sidebar');
-    if (!sidebar || sidebar.classList.contains('collapsed')) return;
-    if (typeof toggleSidebar === 'function') {
-        try { toggleSidebar(); } catch (_) { }
-    }
-}
-
 function handleDescendantItemHover(element) {
     if (!element) return;
     const type = element.getAttribute('data-descendant-type');
@@ -880,6 +872,19 @@ function resetParcelSelectionForProposalListInteraction() {
     } catch (_) { }
 }
 
+// Download a server proposal into local storage. preserveStatus:false — downloading does not apply
+// the proposal to this map, so its status must not survive the trip. Keeping the uploader's
+// "applied" made the details panel announce a proposal as on the map while no geometry had been
+// drawn, and offer "Remove from map" where "Apply to map" belonged. Shared by a list row click and
+// the map search box's proposal results.
+async function importServerProposal(serverId) {
+    const serverProposal = await fetchServerProposalById(serverId, resolveCurrentCityCode());
+    const proposal = proposalStorage.importProposal(serverProposal, { overwrite: true, preserveStatus: false });
+    if (!proposal) throw new Error(`Failed to import proposal ${serverId}`);
+    updateShowProposalsButton();
+    return proposal;
+}
+
 async function handleProposalListItemClick(event) {
     const item = event.currentTarget;
     if (!item) return;
@@ -904,18 +909,8 @@ async function handleProposalListItemClick(event) {
         const serverId = proposalIdAttr;
         try {
             updateStatus('Downloading proposal…');
-            const serverProposal = await fetchServerProposalById(serverId, resolveCurrentCityCode());
-            // preserveStatus:false — downloading does not apply the proposal to this map, so its
-            // status must not survive the trip. Keeping the uploader's "applied" made the details
-            // panel announce a proposal as on the map while no geometry had been drawn, and offer
-            // "Remove from map" where "Apply to map" belonged.
-            proposal = proposalStorage.importProposal(serverProposal, { overwrite: true, preserveStatus: false });
-            if (!proposal) {
-                updateStatus('Failed to import proposal');
-                return;
-            }
+            proposal = await importServerProposal(serverId);
             justDownloaded = true;
-            updateShowProposalsButton();
             // The card still said "Download". Downloading by clicking the ROW leaves the same card
             // on screen as downloading by its own button does, so it has to end in the same state —
             // otherwise the list keeps offering to fetch something it already holds.
@@ -1166,11 +1161,6 @@ function updateShowProposalsButton() {
 
     // no-op safety: the observer below is idempotent, and the button may only now exist
     watchProposalsSectionVisibility();
-
-    // Also sync the proposals presence indicator
-    if (typeof syncProposalsIndicator === 'function') {
-        syncProposalsIndicator();
-    }
 
     if (typeof refreshBlockInfoProposalTab === 'function') {
         try { refreshBlockInfoProposalTab(); } catch (_) { }

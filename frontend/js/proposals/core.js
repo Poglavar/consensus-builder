@@ -240,11 +240,8 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
         closeProposalList({ clearHighlights: false });
     }
 
-    if (normalized.collapseSidebar) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-            try { toggleSidebar(); } catch (_) { }
-        }
+    if (normalized.closeSheets && window.MapShell) {
+        window.MapShell.closeSheets();
     }
 
     const proposalKey = getProposalKey(proposal) || resolveProposalIdKey(proposalIdOrHash);

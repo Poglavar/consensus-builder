@@ -188,7 +188,7 @@
         if (coverEl) { try { coverEl.remove(); } catch (_) { } coverEl = null; }
     }
 
-    // Flip the photo-loading flag and refresh the lower-left mode icons so the globe shows a spinner
+    // Flip the photo-loading flag and refresh the mode-strip icons so the globe shows a spinner
     // while the photo view composes (from entry until the first seat, or until it fails/exits).
     function setPhotorealLoading(next) {
         loading = !!next;

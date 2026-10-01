@@ -1,0 +1,168 @@
+/* ========== Selection tray ==========
+   The bar at the bottom centre of the map while multi-parcel selection is on
+   (js/ui/selection-tray.js, mounted in #selection-tray-slot): count, total area and the
+   Propose / Detect block / Clear / Done actions. On phones it sits one row up, between the Game
+   pill row and the right-hand button column, and its actions drop their labels. */
+
+.selection-tray {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--map-shell-button-size);
+    box-sizing: border-box;
+    padding: 0 4px 0 14px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: #1f2937;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.selection-tray__summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* A long count line ("Click parcels to select them" in a long language) ellipsizes instead of
+   pushing the tray past the slot on a phone; the full text stays in the tray's title. */
+.selection-tray__count {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 700;
+}
+
+.selection-tray__area {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.selection-tray__area[hidden] {
+    display: none;
+}
+
+.selection-tray__actions {
+    display: flex;
+    gap: 4px;
+}
+
+.selection-tray__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 16px;
+    background: #f3f4f6;
+    color: #1f2937;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.selection-tray__action:hover {
+    background: #e5e7eb;
+}
+
+.selection-tray__action:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+}
+
+.selection-tray__action--selection-propose {
+    background: #2563eb;
+    color: #fff;
+}
+
+.selection-tray__action--selection-propose:hover {
+    background: #1d4ed8;
+}
+
+/* Which row the tray takes: the bottom row (0) when the map is wide enough for it between the Game
+   pill and the bottom-right buttons, else the row above (1). The status toast, normally in row 1,
+   always stays one row above the tray. */
+body {
+    --selection-tray-row: 0;
+}
+
+@media (max-width: 1199px) {
+    body {
+        --selection-tray-row: 1;
+    }
+}
+
+.map-shell-slot--tray {
+    bottom: calc(var(--map-shell-bottom) + var(--selection-tray-row) * (var(--map-shell-button-size) + var(--map-shell-gap)));
+}
+
+body:has(#selection-tray) .floating-status {
+    bottom: calc(var(--map-shell-bottom) + (var(--selection-tray-row) + 1) * (var(--map-shell-button-size) + var(--map-shell-gap)));
+}
+
+/* A panel docked on the right (the parcel panel after Propose) takes the right edge and pushes the
+   bottom-right buttons left of it: the tray moves up a row and centres on the map that is left. */
+@media (min-width: 768px) {
+    body:has(.right-dock-panel.visible) {
+        --selection-tray-row: 1;
+    }
+
+    body:has(.right-dock-panel.visible) .map-shell-slot--tray {
+        left: calc((100% - var(--right-dock-width) - 2 * var(--right-dock-gap)) / 2);
+    }
+}
+
+/* Phones: between the Game pill row and the right-hand button column; icons only. */
+@media (max-width: 767px) {
+    .map-shell-slot--tray {
+        left: var(--map-shell-edge);
+        right: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+        transform: none;
+        display: flex;
+        justify-content: center;
+    }
+
+    .selection-tray {
+        gap: 8px;
+        max-width: 100%;
+        padding-left: 12px;
+    }
+
+    .selection-tray__summary {
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1 1 auto;
+        gap: 0;
+        line-height: 1.15;
+    }
+
+    .selection-tray__count {
+        max-width: 100%;
+    }
+
+    .selection-tray__count,
+    .selection-tray__area {
+        font-size: 12px;
+    }
+
+    .selection-tray__action {
+        width: 32px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .selection-tray__action-label {
+        display: none;
+    }
+}
+
+/* Model/photo view: the tray's actions are 2D map flows, so it waits under the 3D canvas's
+   floating UI until the 2D map is back (the selection itself is kept). */
+body.three-mode-active .map-shell-slot--tray {
+    display: none;
+}

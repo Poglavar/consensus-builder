@@ -199,7 +199,7 @@ function clearAllMeasurements() {
 // Update the visibility of the Cancel Measurements button
 function updateCancelMeasurementsButton() {
     const button = document.getElementById('clearMeasurementsButton');
-    button.style.display = allMeasurements.length > 0 ? 'inline-block' : 'none';
+    button.style.display = allMeasurements.length > 0 ? '' : 'none';
 }
 
 // Handle mouse movement for measurement preview

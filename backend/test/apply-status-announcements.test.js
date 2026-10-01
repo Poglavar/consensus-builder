@@ -194,7 +194,7 @@ describe('the existing-buildings fetch', () => {
         expect(mapCore).toContain('async function fetchBuildings(boundsOverride = null, options = {}) {');
         expect(mapCore).toContain('const announce = options && options.announce === true;');
         expect(mapCore).toContain("if (announce && typeof updateStatus === 'function') {");
-        expect(read('../../frontend/js/sidebar-management.js'))
+        expect(read('../../frontend/js/map-controls.js'))
             .toContain('fetchBuildings(null, { announce: true })');
         // A FAILURE still speaks, asked for or not — a silent one leaves a road cutting against a
         // pool that never loaded.

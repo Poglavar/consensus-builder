@@ -150,7 +150,7 @@ function shareAppliedProposals(options) {
             try {
                 ready = showSharePlanPanel(options);
             } finally {
-                // The panel folds the sidebar away, so this is mostly for the next time it is opened —
+                // The panel folds the sheets away, so this is mostly for the next time it is opened —
                 // and for the failure path, where the button must not stay stuck spinning.
                 if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(false);
             }
@@ -1489,7 +1489,6 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 
     let existing = proposalStorage.getProposal(normalized.proposalId);
     if (existing && isProposalCurrentlyApplied(existing)) {
-        try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
         return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
     }
 

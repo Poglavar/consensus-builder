@@ -1,33 +1,5 @@
 /* ========== Game ========== */
 
-/* Game section styles */
-.game-status .metric-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.game-status.compact {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.game-status.compact .metric-group {
-    margin-bottom: 0;
-}
-
-.game-status .metric-label {
-    font-weight: 500;
-    color: #555;
-}
-
-.game-status .metric-value {
-    font-weight: 600;
-    color: #333;
-}
-
 /* Turn interval slider */
 .slider-group {
     margin-bottom: 12px;
@@ -1104,27 +1076,6 @@
         flex-shrink: 0;
         padding: 15px 20px;
         border-top: 1px solid #eee;
-    }
-    
-        /* Username display mobile positioning */
-    .username-display {
-        top: 60px; /* Move below toggle button to avoid overlap */
-    }
-    
-    /* When sidebar is collapsed, move username bubble back to top */
-    #sidebar.collapsed ~ #map-container .username-display {
-        top: 10px;
-    }
-    
-    /* Map controls mobile positioning */
-    .leaflet-top.leaflet-left {
-        top: 60px !important; /* Below toggle button */
-        left: 10px !important;
-    }
-    
-    /* When sidebar is open, move map controls */
-    #sidebar:not(.collapsed) ~ #map-container .leaflet-top.leaflet-left {
-        left: 260px !important; /* sidebar width + margin */
     }
     
     /* Leaflet control buttons larger for touch */

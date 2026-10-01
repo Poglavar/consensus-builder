@@ -93,19 +93,11 @@
         return false;
     }
 
+    // Show the Area monitor controls: open the Tools sheet on that section. Not on phones, where the
+    // bottom sheet would cover the monitored area this route just brought into view.
     function expandAreaMonitorSection() {
-        const sidebar = document.getElementById('sidebar');
-        // Don't open a closed sidebar (e.g. on mobile)
-        if (!sidebar || sidebar.classList.contains('collapsed')) return;
-        const section = document.querySelector('.accordion-section[data-section="areaMonitor"]');
-        if (!section) return;
-        const content = section.querySelector('.accordion-content');
-        if (content && !content.classList.contains('active')) {
-            const header = section.querySelector('.accordion-header');
-            if (header && typeof toggleButtonAccordion === 'function') {
-                toggleButtonAccordion(header);
-            }
-        }
+        if (global.innerWidth < 768 || !global.MapShell) return;
+        global.MapShell.revealSection('areaMonitor');
     }
 
     async function loadMonitor(monitorId, options = {}) {

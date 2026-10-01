@@ -1487,7 +1487,7 @@ function showProposalDialog(overrides = null) {
                         openProposalFromList(proposalId, {
                             closeProposalList: false,
                             closeParcelInfo: false,
-                            collapseSidebar: false
+                            closeSheets: false
                         });
                     }
                 });

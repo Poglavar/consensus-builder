@@ -213,7 +213,16 @@
         "userFallback": "Korisnik",
         "close": "Zatvori",
         "cancel": "Otkaži",
-        "download": "Preuzmi"
+        "download": "Preuzmi",
+        "busy": {
+            "detecting": "Prepoznavanje...",
+            "loading": "Učitavanje...",
+            "forming": "Oblikovanje...",
+            "selecting": "Izbor...",
+            "refreshing": "Osvežavanje...",
+            "analyzing": "Analiza...",
+            "applying": "Primena..."
+        }
     },
     "proposals": {
         "contiguityDisabledReason": "Onemogućeno jer parcele u predlogu nisu susedne",
@@ -315,8 +324,7 @@
             "devBadge": "Razvoj",
             "debugBadge": "Debug",
             "aiBadge": "Prijateljski za AI",
-            "aiBadgeTooltip": "Ova platforma je prijateljski za AI, što znači da je sva glavna funkcionalnost dostupna i upotrebljiva AI agentima. Sertifikovano od strane Biroa UN za ljudsko-AI odnose",
-            "toggle": "Prikaži/sakrij bočnu traku"
+            "aiBadgeTooltip": "Ova platforma je prijateljski za AI, što znači da je sva glavna funkcionalnost dostupna i upotrebljiva AI agentima. Sertifikovano od strane Biroa UN za ljudsko-AI odnose"
         },
         "proposals": {
             "title": "Predlozi",
@@ -435,12 +443,11 @@
             "showGameLogCount": "Prikaži dnevnik igre ({{count}})"
         },
         "city": {
-            "label": "Grad:",
             "detectTooltip": "Koristi moju lokaciju da izabereš najbliži grad"
         },
         "data": {
-            "title": "Podaci",
-            "sourceLabel": "Izvor podataka:"
+            "sourceLabel": "Izvor podataka:",
+            "baseMapLabel": "Podloga mape:"
         },
         "game": {
             "title": "Igra",
@@ -472,8 +479,6 @@
             },
             "enable": "Uključi režim igre",
             "enablePaused": "Uključi režim igre (pauzirano)",
-            "datetime": "Vreme igre:",
-            "turns": "Odigrani potezi:",
             "secondsBetween": "Sekundi između poteza:",
             "nextTurn": "Sledeći potez za:",
             "play": "Pokreni",
@@ -513,8 +518,6 @@
             "showOwnerCounts": "Prikaži broj vlasnika (O)",
             "showProposalCounts": "Prikaži broj predloga (P)",
             "selectMultiple": "Izaberi više parcela",
-            "locateParcelPlaceholder": "ID parcele",
-            "locateButton": "Pronađi",
             "locateSearching": "Pretraga…",
             "locateNotFound": "Parcela nije pronađena",
             "locateDataNotLoaded": "Podaci o parcelama nisu učitani",
@@ -632,7 +635,8 @@
             "drawOsm": "Nacrtaj puteve iz OSM-a",
             "drawOsmTooltip": "Nacrtaj OpenStreetMap puteve kao linije",
             "existingTitle": "Postojeći putevi",
-            "showLayer": "Prikaži puteve"
+            "showLayer": "Prikaži puteve",
+            "detectingExisting": "Prepoznavanje postojećih puteva..."
         },
         "areaMonitor": {
             "title": "Monitor područja",
@@ -3240,19 +3244,27 @@
                 "one": "Učitana {{count}} katastarska parcela.",
                 "few": "Učitane {{count}} katastarske parcele.",
                 "other": "Učitano {{count}} katastarskih parcela."
-            }
+            },
+            "cadastral_ground_already_loaded": "Katastarska podloga je već učitana.",
+            "checking_cadastral_ground": "Provera katastarske podloge…",
+            "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",
+            "waiting_for_proposal_before_parcels": "Čeka se učitavanje predloga pre preuzimanja parcela…",
+            "debug_mode_enabled": "Režim za otklanjanje grešaka uključen – opasne radnje su sada vidljive",
+            "debug_mode_disabled": "Režim za otklanjanje grešaka isključen – opasne radnje su skrivene"
         }
     },
     "city": {
         "labels": {
-            "denver": "Denver, SAD"
+            "denver": "Denver, SAD",
+            "explore": "Istraži"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",
             "success": "Lokacija otkrivena: {{label}}"
         },
         "switch": {
-            "confirm": "Promena grada će ponovo učitati aplikaciju. Vaš rad u ovom gradu je sačuvan i biće tu kad se vratite.\n\nŽelite li da nastavite?"
+            "confirm": "Promena grada će ponovo učitati aplikaciju. Vaš rad u ovom gradu je sačuvan i biće tu kad se vratite.\n\nŽelite li da nastavite?",
+            "cancelled": "Promena grada otkazana"
         },
         "switchPrompt": {
             "title": "Ovaj predlog je u gradu {requested} — trenutno gledate {current}",
@@ -3725,6 +3737,194 @@
             "http": "Servis je odgovorio {{status}}: {{message}}",
             "noService": "Prvo učitajte URL servisa.",
             "badUrl": "Unesite http(s) URL servisa člana sočiva."
+        }
+    },
+    "world": {
+        "title": "Izaberite mesto",
+        "hint": "Prevucite za okretanje · kliknite bilo gde da vidite koji podaci o parcelama postoje",
+        "canvasLabel": "Globus. Prevucite za okretanje, točkićem zumirajte, kliknite mesto da proverite podatke o parcelama.",
+        "close": "Zatvori",
+        "search": {
+            "placeholder": "Pretražite grad ili državu",
+            "label": "Pretraga mesta",
+            "country": "Država",
+            "noResults": "Nema takvog mesta"
+        },
+        "legend": {
+            "title": "Podaci o parcelama"
+        },
+        "tier": {
+            "live": {
+                "short": "U aplikaciji",
+                "text": "Parcele, predlozi i 3D su ovde spremni."
+            },
+            "source": {
+                "short": "Postoje otvoreni podaci",
+                "text": "Ovde postoje otvoreni podaci o parcelama, ali još nisu u aplikaciji. Istražite mapu bez parcela ili zatražite da se ovo mesto doda."
+            },
+            "none": {
+                "short": "Nema otvorenih podataka",
+                "text": "Tražili smo i nismo našli otvorene podatke o parcelama. Mapu i dalje možete istraživati, bez parcela."
+            },
+            "unknown": {
+                "short": "Nije istraženo",
+                "text": "Ovo mesto još niko nije proverio. Mapu i dalje možete istraživati, bez parcela."
+            }
+        },
+        "popup": {
+            "ocean": "Otvoreno more",
+            "oceanText": "Ovde nema kopna, pa ni parcela. Mapu ipak možete otvoriti na ovom mestu."
+        },
+        "action": {
+            "open": "Otvori {{city}}",
+            "explore": "Svejedno istraži",
+            "askCity": "Zatraži ovaj grad",
+            "askArea": "Zatraži ovo područje"
+        },
+        "request": {
+            "sending": "Šaljem…",
+            "done": "Zahtev je zabeležen, hvala",
+            "error": "Zahtev nije poslat. Pokušati ponovo?"
+        },
+        "explore": {
+            "chip": "Istraži · {{place}}",
+            "banner": "Ovde još nema podataka o parcelama — možete da razgledate; za predloge su potrebne parcele.",
+            "worldView": "Pogled na svet",
+            "dismiss": "Zatvori",
+            "status": "Istraživanje bez podataka o parcelama"
+        }
+    },
+    "mapShell": {
+        "layers": "Slojevi",
+        "settings": "Podešavanja",
+        "proposals": "Predlozi",
+        "tools": "Alati",
+        "activity": "Aktivnost",
+        "proposalsCount": "Predlozi ({{count}})",
+        "game": {
+            "controls": "Upravljanje igrom",
+            "turn": "Potez"
+        },
+        "commands": {
+            "highlightGovernment": "Istakni državne parcele",
+            "highlightInstitution": "Istakni parcele institucija",
+            "highlightCompany": "Istakni parcele firmi",
+            "highlightPrivate": "Istakni parcele u privatnom vlasništvu",
+            "locateParcel": "Pronađi parcelu po broju",
+            "blockFromSelected": "Prepoznaj blok od izabrane parcele",
+            "areaMonitorCityPlan": "Nadzor područja: prikaži gradski plan puteva",
+            "areaMonitorDraw": "Nacrtaj nadgledano područje",
+            "areaMonitorFromPlan": "Nacrtaj nadgledano područje iz plana",
+            "proposalsList": "Otvori spisak predloga",
+            "gamePlayPause": "Pokreni / pauziraj igru",
+            "gameInterval": "Razmak između poteza",
+            "activityExplorer": "Otvori pregled aktivnosti",
+            "statusLog": "Otvori dnevnik statusa",
+            "chooseCity": "Izaberi grad",
+            "dataSource": "Izvor podataka",
+            "baseMap": "Podloga mape",
+            "worldView": "Pogled na svet"
+        },
+        "maintenance": {
+            "title": "Podaci i održavanje",
+            "storedTitle": "Sačuvano u ovom pregledaču"
+        }
+    },
+    "parcelMenu": {
+        "label": "Radnje za parcelu",
+        "ownerCount": {
+            "one": "{{count}} vlasnik",
+            "few": "{{count}} vlasnika",
+            "other": "{{count}} vlasnika"
+        },
+        "actions": {
+            "propose": "Predloži ovde",
+            "selectMore": "Izaberi više",
+            "details": "Detalji",
+            "history": "Istorija",
+            "tools": "Alati",
+            "offer": "Ponudi svoje zemljište",
+            "view3d": "Prikaži u 3D-u",
+            "detectBlock": "Detektuj blok"
+        }
+    },
+    "selectionTray": {
+        "label": "Izabrane parcele",
+        "count": {
+            "one": "{{count}} parcela",
+            "few": "{{count}} parcele",
+            "other": "{{count}} parcela"
+        },
+        "empty": "Kliknite na parcele da ih izaberete",
+        "actions": {
+            "propose": "Predloži",
+            "clear": "Poništi izbor",
+            "done": "Završi izbor",
+            "detectBlock": "Detektuj blok",
+            "clearShort": "Poništi",
+            "doneShort": "Gotovo"
+        }
+    },
+    "mapSearch": {
+        "placeholder": "Traži mesta, parcele, predloge…",
+        "label": "Pretraži mapu",
+        "open": "Traži",
+        "close": "Zatvori pretragu",
+        "clear": "Obriši",
+        "cityChip": "Trenutni grad: {{city}}. Izaberi drugi",
+        "groups": {
+            "recent": "Nedavne pretrage",
+            "cities": "Gradovi",
+            "parcels": "Parcele",
+            "proposals": "Predlozi",
+            "places": "Mesta",
+            "commands": "Komande"
+        },
+        "useMyLocation": "Koristi moju lokaciju",
+        "currentCity": "Trenutni grad",
+        "switchCity": "Otvara ovaj grad (ponovo učitava mapu)",
+        "parcelHint": "Pronađi ovu parcelu na mapi",
+        "parcelNeedsMunicipality": "Dodaj katastarsku opštinu: HR-<broj>-{{id}}",
+        "parcelNeedsMunicipalityHint": "Ili pomeri mapu do parcele da se učitaju njeni brojevi",
+        "untitledProposal": "Predlog {{id}}",
+        "inCity": "U gradu {{city}}",
+        "proposalsLoading": "Tražim predloge…",
+        "proposalsError": "Pretraga predloga nije uspela",
+        "proposalDownloading": "Preuzimam…",
+        "placesLoading": "Tražim mesta…",
+        "placesError": "Pretraga adresa nije dostupna",
+        "openIn": "Otvori u gradu {{city}}",
+        "outsideCities": "Van gradova u aplikaciji",
+        "attribution": "© OpenStreetMap saradnici · Photon",
+        "commandsHint": "Komande…",
+        "useMyLocationHint": "Otvara grad najbliži tebi"
+    },
+    "commandPalette": {
+        "open": "Paleta komandi",
+        "title": "Paleta komandi",
+        "placeholder": "Upiši komandu…",
+        "empty": "Nema takve komande",
+        "hint": "↑↓ za pomeranje · Enter za pokretanje · Esc za zatvaranje",
+        "reason": {
+            "disabledIn3D": "Nije dostupno u 3D prikazu",
+            "busy": "Zauzeto: sačekaj da se završi trenutni zadatak",
+            "hiddenForCity": "Nije dostupno u ovom gradu",
+            "disabled": "Trenutno nije dostupno"
+        },
+        "groups": {
+            "layers": "Slojevi",
+            "parcels": "Parcele",
+            "blocks": "Blokovi",
+            "tools": "Alati",
+            "stations": "Stanice",
+            "roads": "Putevi",
+            "areaMonitor": "Praćenje područja",
+            "proposals": "Predlozi",
+            "game": "Igra",
+            "activity": "Aktivnost",
+            "settings": "Podešavanja",
+            "parcel": "Parcela",
+            "selection": "Izbor"
         }
     }
 }

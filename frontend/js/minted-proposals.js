@@ -333,7 +333,7 @@
                     closeProposalList: true,
                     closeParcelInfo: true,
                     closeAgentDialog: true,
-                    collapseSidebar: true
+                    closeSheets: true
                 }));
             } catch (err) {
                 console.warn('openProposalFromList failed for minted proposal', err);

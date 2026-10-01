@@ -1,0 +1,763 @@
+/* World view (js/world/globe.js): full-screen globe, search, legend, place popup, and the boot-time
+   handoff frame (js/world/handoff.js). Positions set from JS arrive as --x / --y custom properties. */
+
+.world-view {
+    --world-live: #43e6a6;
+    --world-source: #ffc24b;
+    --world-none: #f2766e;
+    --world-unknown: #cfc7b3;
+    --world-ink: #eef4ff;
+    --world-ink-dim: #a9bad8;
+    --world-glass: rgba(10, 20, 44, 0.78);
+    --world-glass-strong: rgba(9, 17, 38, 0.94);
+    --world-edge: rgba(150, 190, 255, 0.22);
+    --world-accent: #6cb4ff;
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    overflow: hidden;
+    color: var(--world-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: radial-gradient(ellipse at 50% 45%, #0d1d44 0%, #081231 45%, #030712 100%);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Top scrim: keeps the title and hint legible when land fills the top of the view. */
+.world-view::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 170px;
+    background: linear-gradient(180deg, rgba(3, 7, 18, 0.72), rgba(3, 7, 18, 0));
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.35s ease;
+}
+
+.world-view--diving::after {
+    opacity: 0;
+}
+
+.world-view__top,
+.world-view__close,
+.world-legend,
+.world-view__labels,
+.world-pin,
+.world-popup {
+    z-index: 2;
+}
+
+body.world-view-open {
+    overflow: hidden;
+}
+
+.world-view__stage,
+.world-view__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.world-view__canvas {
+    display: block;
+    cursor: grab;
+    outline: none;
+}
+
+.world-view__canvas:active {
+    cursor: grabbing;
+}
+
+.world-view__canvas:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--world-accent);
+}
+
+/* ---- top: title, search, hint ---- */
+
+.world-view__top {
+    position: absolute;
+    top: calc(18px + var(--app-safe-area-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(560px, calc(100% - 96px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+.world-view__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--world-ink-dim);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.world-view__hint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--world-ink-dim);
+    text-align: center;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.world-search {
+    position: relative;
+    width: 100%;
+    pointer-events: auto;
+}
+
+.world-search__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 52px;
+    padding: 0 20px 0 50px;
+    border: 1px solid var(--world-edge);
+    border-radius: 26px;
+    background: var(--world-glass) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23a9bad8' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 18px center;
+    color: var(--world-ink);
+    font: inherit;
+    font-size: 17px;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.world-search__input::placeholder {
+    color: var(--world-ink-dim);
+}
+
+.world-search__input:focus {
+    outline: none;
+    border-color: var(--world-accent);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(108, 180, 255, 0.25);
+}
+
+.world-search__input::-webkit-search-cancel-button {
+    filter: invert(0.8);
+}
+
+.world-search__results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    border: 1px solid var(--world-edge);
+    border-radius: 18px;
+    background: var(--world-glass-strong);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    max-height: min(360px, 55vh);
+    overflow-y: auto;
+    z-index: 3;
+}
+
+.world-search__result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.world-search__result:hover,
+.world-search__result--active {
+    background: rgba(108, 180, 255, 0.16);
+}
+
+.world-search__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.world-search__name {
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.world-search__meta {
+    font-size: 12px;
+    color: var(--world-ink-dim);
+}
+
+.world-search__empty {
+    padding: 12px;
+    font-size: 14px;
+    color: var(--world-ink-dim);
+}
+
+/* ---- close ---- */
+
+.world-view__close {
+    position: absolute;
+    top: calc(20px + var(--app-safe-area-top, 0px));
+    right: calc(20px + var(--app-safe-area-right, 0px));
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--world-edge);
+    border-radius: 50%;
+    background: var(--world-glass);
+    color: var(--world-ink);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.world-view__close:hover,
+.world-view__close:focus-visible {
+    border-color: var(--world-accent);
+    outline: none;
+}
+
+/* ---- legend ---- */
+
+.world-legend {
+    position: absolute;
+    left: calc(20px + var(--app-safe-area-left, 0px));
+    bottom: calc(20px + var(--app-safe-area-bottom, 0px));
+    padding: 12px 16px;
+    border: 1px solid var(--world-edge);
+    border-radius: 16px;
+    background: var(--world-glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.35s ease;
+}
+
+.world-legend__title {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--world-ink-dim);
+}
+
+.world-legend__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+}
+
+.world-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+}
+
+.world-tier-dot {
+    flex: none;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+.world-tier-dot--live { background: var(--world-live); box-shadow: 0 0 10px var(--world-live); }
+.world-tier-dot--source { background: var(--world-source); }
+.world-tier-dot--none { background: var(--world-none); }
+.world-tier-dot--unknown { background: var(--world-unknown); }
+
+/* ---- live-city labels ---- */
+
+.world-view__labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+.world-city-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(var(--x, -999px), var(--y, -999px));
+    padding: 3px 9px;
+    border: 1px solid rgba(67, 230, 166, 0.55);
+    border-radius: 11px;
+    background: rgba(6, 30, 32, 0.72);
+    color: #dffcf0;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.world-city-label:hover,
+.world-city-label:focus-visible {
+    background: rgba(12, 60, 50, 0.9);
+    outline: none;
+}
+
+.world-city-label--hidden {
+    visibility: hidden;
+}
+
+/* ---- pin + popup ---- */
+
+.world-pin {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    transform: translate(var(--x, -999px), var(--y, -999px));
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: rgba(108, 180, 255, 0.35);
+    box-shadow: 0 0 0 4px rgba(108, 180, 255, 0.25), 0 0 16px rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+}
+
+.world-popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    width: 310px;
+    padding: 16px 18px 18px;
+    transform: translate(var(--x, -999px), var(--y, -999px));
+    border: 1px solid var(--world-edge);
+    border-radius: 18px;
+    background: var(--world-glass-strong);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.world-popup::after {
+    content: "";
+    position: absolute;
+    left: var(--caret, 50%);
+    bottom: -8px;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    transform: rotate(45deg);
+    background: var(--world-glass-strong);
+    border-right: 1px solid var(--world-edge);
+    border-bottom: 1px solid var(--world-edge);
+}
+
+.world-popup--below::after {
+    bottom: auto;
+    top: -8px;
+    transform: rotate(225deg);
+}
+
+.world-popup--offscreen {
+    visibility: hidden;
+}
+
+.world-popup--live { border-color: rgba(67, 230, 166, 0.45); }
+.world-popup--source { border-color: rgba(255, 194, 75, 0.4); }
+
+.world-popup__close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--world-ink-dim);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.world-popup__close:hover,
+.world-popup__close:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--world-ink);
+    outline: none;
+}
+
+.world-popup__tier {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 36px 6px 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--world-ink-dim);
+}
+
+.world-popup__title {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.2;
+    padding-right: 24px;
+}
+
+.world-popup__subtitle {
+    margin: 3px 0 10px;
+    font-size: 12px;
+    color: var(--world-ink-dim);
+}
+
+.world-popup__text {
+    margin: 0 0 8px;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.world-popup__note {
+    margin: 0 0 8px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--world-ink-dim);
+}
+
+.world-popup__error {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: var(--world-none);
+}
+
+.world-popup__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.world-btn {
+    flex: 1 1 auto;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid var(--world-edge);
+    border-radius: 21px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--world-ink);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.world-btn:hover,
+.world-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--world-accent);
+    outline: none;
+}
+
+.world-btn--primary {
+    border-color: transparent;
+    background: linear-gradient(180deg, #7cc0ff, #4b8ef0);
+    color: #061430;
+}
+
+.world-popup--live .world-btn--primary {
+    background: linear-gradient(180deg, #6ff0bd, #2fc98c);
+    color: #04261a;
+}
+
+.world-btn--primary:hover,
+.world-btn--primary:focus-visible {
+    background: linear-gradient(180deg, #98cfff, #5d9cf5);
+    border-color: transparent;
+}
+
+.world-popup--live .world-btn--primary:hover,
+.world-popup--live .world-btn--primary:focus-visible {
+    background: linear-gradient(180deg, #8af5cc, #3fd89b);
+}
+
+.world-btn:disabled {
+    cursor: default;
+    opacity: 0.75;
+}
+
+/* ---- diving: chrome steps aside while the camera plunges ---- */
+
+.world-view--diving .world-view__top,
+.world-view--diving .world-legend,
+.world-view--diving .world-view__labels,
+.world-view--diving .world-view__close {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ---- phones: popup becomes a bottom sheet, legend tucks into a row ---- */
+
+@media (max-width: 600px) {
+    .world-view__top {
+        top: calc(12px + var(--app-safe-area-top, 0px));
+        width: calc(100% - 84px);
+        left: 16px;
+        transform: none;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .world-view__title {
+        font-size: 12px;
+        text-align: left;
+    }
+
+    .world-view__hint {
+        display: none;
+    }
+
+    .world-search__input {
+        height: 46px;
+        font-size: 16px;
+        padding-left: 44px;
+        background-position: 14px center;
+    }
+
+    .world-view__close {
+        top: calc(26px + var(--app-safe-area-top, 0px));
+        right: calc(12px + var(--app-safe-area-right, 0px));
+    }
+
+    .world-legend {
+        left: 12px;
+        right: 12px;
+        bottom: calc(12px + var(--app-safe-area-bottom, 0px));
+        padding: 9px 12px;
+    }
+
+    .world-legend__title {
+        display: none;
+    }
+
+    .world-legend__list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px 10px;
+    }
+
+    .world-legend__item {
+        font-size: 12px;
+    }
+
+    .world-popup.world-popup--sheet {
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        width: auto;
+        transform: none;
+        padding: 18px 18px calc(18px + var(--app-safe-area-bottom, 0px));
+        border-radius: 22px 22px 0 0;
+        border-bottom: none;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .world-popup.world-popup--sheet::after {
+        display: none;
+    }
+
+    .world-popup--sheet .world-popup__actions {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .world-view__top,
+    .world-legend,
+    .world-view__labels {
+        transition: none;
+    }
+}
+
+/* ---- boot handoff frame ---- */
+
+.world-handoff {
+    position: fixed;
+    inset: 0;
+    z-index: 25000;
+    background: #030712;
+    cursor: pointer;
+    transition: opacity 0.9s ease;
+}
+
+.world-handoff__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1);
+    transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.world-handoff--out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.world-handoff--out .world-handoff__img {
+    transform: scale(1.6);
+}
+
+/* ---- In the app (js/ui/world-entry.js) ---- */
+
+/* First visit: a dark cover from the first paint until the globe's first frame, so the default
+   city underneath never flashes before the world view. */
+body.world-view-pending::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 19999;
+    background: radial-gradient(ellipse at 50% 45%, #0d1d44 0%, #081231 45%, #030712 100%);
+}
+
+/* The explore city: no parcels, so the controls that need them are not offered. Settings, Tools
+   (Measure) and Activity stay; the mode strip goes (model/photo/AI/walk build on parcels). */
+body.explore-city #layers-button,
+body.explore-city #proposals-button,
+body.explore-city #game-pill,
+body.explore-city #cadastre-view-toggle.map-mode-toggle,
+body.explore-city #mode-2d-toggle.map-mode-toggle,
+body.explore-city #mode-3d-toggle.map-mode-toggle,
+body.explore-city #mode-realistic-toggle,
+body.explore-city #mode-ai-toggle.map-mode-ai-btn,
+body.explore-city #mode-walk-toggle.map-mode-walk-btn {
+    display: none;
+}
+
+/* Explore banner: top-centre, under the search box row. */
+.explore-banner {
+    position: absolute;
+    top: calc(var(--map-shell-edge, 10px) + var(--map-search-height, 44px) + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: min(560px, calc(100vw - 32px));
+    padding: 10px 40px 10px 14px;
+    border: 1px solid rgba(255, 194, 75, 0.55);
+    border-radius: 12px;
+    background: rgba(255, 251, 235, 0.97);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+    color: #3f2d06;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.explore-banner__text {
+    flex: 1 1 240px;
+    margin: 0;
+}
+
+.explore-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.explore-banner__btn {
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 1px solid #d6b25e;
+    border-radius: 16px;
+    background: #fff;
+    color: #3f2d06;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.explore-banner__btn--primary {
+    border-color: #b7791f;
+    background: #b7791f;
+    color: #fff;
+}
+
+.explore-banner__btn:disabled {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.explore-banner__btn:focus-visible,
+.explore-banner__close:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.explore-banner__error {
+    flex-basis: 100%;
+    margin: 0;
+    color: #b91c1c;
+}
+
+.explore-banner__close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #6b5a2e;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+@media (max-width: 767px) {
+    .explore-banner {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        max-width: none;
+        transform: none;
+        font-size: 12.5px;
+    }
+}
+
+/* "Explore · <place>" is longer than a city name (phones keep the compact chip). */
+@media (min-width: 768px) {
+    body.explore-city .map-search__chip {
+        max-width: 220px;
+    }
+}

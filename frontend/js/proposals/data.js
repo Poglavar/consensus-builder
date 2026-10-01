@@ -1884,53 +1884,21 @@ const multiParcelSelection = {
         return parcels;
     },
 
-    // Update UI based on current selection
+    // Update UI based on current selection. The selection tray (ui/selection-tray.js) is the
+    // surface of a selection; the parcel panel only follows it while the panel is open (someone
+    // asked for it: the tray's Propose, the menu's Details, the build palette). Opening the panel
+    // on every toggle would bury the map under it while the person is still picking parcels.
     updateUI() {
         syncMultiSelectCheckboxes(this.isActive);
 
-
         const count = this.selectedParcels.size;
-        if (count >= 2) {
-            this.showMultiParcelInfo();
-        } else if (count === 1 && this.isActive) {
-            // Show single parcel info even in multi-select mode
-            const parcels = this.getSelectedParcels();
-            if (parcels.length === 1) {
-                const parcel = parcels[0];
-                if (typeof showParcelInfoPanel === 'function') {
-                    // Ensure parcel-specific buttons are visible for single parcel view
-                    const parcelButtons = document.querySelector('.parcel-info-buttons');
-                    if (parcelButtons) {
-                        parcelButtons.style.display = '';
-                    }
-
-                    // Clear all tab content
-                    const infoContent = document.getElementById('info-content');
-                    const proposalsContent = document.getElementById('proposals-content');
-                    if (infoContent) infoContent.innerHTML = '';
-                    if (proposalsContent) proposalsContent.innerHTML = '';
-
-                    const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel);
-                    const feature = parcelId ? window.LiveParcelFabric?.get?.(parcelId) : null;
-                    if (feature) {
-                        showParcelInfoPanel(feature);
-                        document.getElementById('parcel-info-panel').classList.add('visible');
-                        setParcelInfoPanelTitle(
-                            window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
-                            { i18nKey: 'panel.parcel.multiSelectionTitle' }
-                        );
-                    }
-                }
-            }
-        } else if (count === 0 && this.isActive) {
-            this.hideParcelInfo();
-        } else if (!this.isActive && count === 0) {
-            // Multi-select is off and no selection - hide panel
+        const panel = document.getElementById('parcel-info-panel');
+        const panelOpen = !!(panel && panel.classList.contains('visible'));
+        if (count >= 2 || (count === 1 && this.isActive)) {
+            if (panelOpen) this.showSelectionInPanel();
+        } else if (count === 0) {
             this.hideParcelInfo();
         }
-
-        // Update create proposal button visibility
-        this.updateCreateProposalButton();
 
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions();
@@ -1955,6 +1923,43 @@ const multiParcelSelection = {
             if (typeof window !== 'undefined' && window.ParcelsUIClaim && typeof window.ParcelsUIClaim.setParcelClaimButtonsState === 'function') {
                 window.ParcelsUIClaim.setParcelClaimButtonsState('not-minted');
             }
+        }
+    },
+
+    // Show the current selection in the parcel panel (opening it): the multi-parcel summary for
+    // two or more parcels, the parcel itself for one. Used by updateUI while the panel is open and
+    // by the selection tray's Propose.
+    showSelectionInPanel() {
+        const count = this.selectedParcels.size;
+        if (count >= 2) {
+            this.showMultiParcelInfo();
+            return;
+        }
+        if (count !== 1) return;
+        const parcels = this.getSelectedParcels();
+        if (parcels.length !== 1 || typeof showParcelInfoPanel !== 'function') return;
+        const parcel = parcels[0];
+        // Ensure parcel-specific buttons are visible for single parcel view
+        const parcelButtons = document.querySelector('.parcel-info-buttons');
+        if (parcelButtons) {
+            parcelButtons.style.display = '';
+        }
+
+        // Clear all tab content
+        const infoContent = document.getElementById('info-content');
+        const proposalsContent = document.getElementById('proposals-content');
+        if (infoContent) infoContent.innerHTML = '';
+        if (proposalsContent) proposalsContent.innerHTML = '';
+
+        const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel);
+        const feature = parcelId ? window.LiveParcelFabric?.get?.(parcelId) : null;
+        if (feature) {
+            showParcelInfoPanel(feature);
+            document.getElementById('parcel-info-panel').classList.add('visible');
+            setParcelInfoPanelTitle(
+                window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
+                { i18nKey: 'panel.parcel.multiSelectionTitle' }
+            );
         }
     },
 
@@ -2035,6 +2040,7 @@ const multiParcelSelection = {
 
         // Clear the regular info content and use parcel-info-content for multi-parcel display
         document.getElementById('info-content').innerHTML = '';
+        window.ParcelsUIParcelPanel?.dropParcelHistoryCard?.(null); // one parcel's history, not the selection's
 
         const content = `
             <div class="multi-parcel-actions" style="margin-bottom: 15px; text-align: center;">
@@ -2138,18 +2144,6 @@ const multiParcelSelection = {
 
         // Clear any proposal highlights
         clearProposalHighlights();
-    },
-
-    // Update create proposal button visibility
-    updateCreateProposalButton() {
-        const button = document.getElementById('createProposalButton');
-        if (button) {
-            // Show button if we have multiple parcels selected OR a single parcel selected
-            const hasMultipleParcels = this.selectedParcels.size > 0;
-            const hasSingleParcel = typeof selectedParcelId !== 'undefined' && selectedParcelId &&
-                typeof currentParcel !== 'undefined' && currentParcel;
-            button.style.display = (hasMultipleParcels || hasSingleParcel) ? 'inline-block' : 'none';
-        }
     },
 
     // Reapply highlights to all currently selected parcels

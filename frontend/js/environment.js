@@ -88,7 +88,7 @@
                 const badge = document.getElementById('dev-badge');
                 const debugBadge = document.getElementById('debug-badge');
                 const versionBadge = document.getElementById('version-badge');
-                const container = badge ? badge.closest('.sidebar-badge-bar') : (debugBadge ? debugBadge.closest('.sidebar-badge-bar') : null);
+                const container = badge ? badge.closest('.settings-badge-bar') : (debugBadge ? debugBadge.closest('.settings-badge-bar') : null);
                 const isDebug = document.body.classList.contains('debug-mode');
 
                 // If not in debug mode, hide entire bar and exit early

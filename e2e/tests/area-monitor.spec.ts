@@ -122,45 +122,53 @@ test.describe('Area monitor @features', () => {
     await expect(page.locator('#area-monitor-list-backdrop')).toHaveCount(0);
   });
 
-  test('mobile monitor list selection collapses the sidebar before routing to the monitor', async ({ mockApi: page }) => {
+  // On phones the Tools sheet (which holds the Area Monitor list button) is a bottom sheet over the
+  // map; picking a monitor must fold it away BEFORE routing, so the monitor is drawn on a clear map.
+  // This used to assert the same of the sidebar's `collapsed` class.
+  test('mobile monitor list selection closes the Tools sheet before routing to the monitor', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
+    // Zagreb: most other cities hide the Area Monitor section.
+    await page.goto('/?city=zg');
     await waitForMapReady(page);
 
     await page.evaluate(() => {
-      const sidebar = document.getElementById('sidebar');
-      if (sidebar?.classList.contains('collapsed')) {
-        (window as any).toggleSidebar?.();
-      }
-
       const w = window as any;
       w.__openedMonitorId = null;
-      w.__sidebarCollapsedAtOpen = null;
+      w.__toolsSheetOpenAtOpen = null;
       w.AreaMonitorRouting = {
         openMonitor(id: number) {
           w.__openedMonitorId = id;
-          w.__sidebarCollapsedAtOpen = document.getElementById('sidebar')?.classList.contains('collapsed') ?? null;
+          w.__toolsSheetOpenAtOpen = w.MapShell.isOpen('tools-sheet');
         },
       };
     });
 
-    await page.evaluate(async () => {
-      const w = window as any;
-      await w.AreaMonitorUI.showMonitorListModal();
-    });
+    // The real route in: Tools button, then the list button inside the sheet.
+    await page.locator('#tools-button').click();
+    const toolsSheet = page.locator('#tools-sheet');
+    await expect(toolsSheet).toBeVisible();
+    await toolsSheet.locator('#areaMonitorListButton').click();
 
-    await expect(page.locator('#area-monitor-list-modal')).toBeVisible();
-    await page.locator('#area-monitor-list-modal').getByRole('button', { name: /Zapadni Jarunski Most/ }).click();
+    const modal = page.locator('#area-monitor-list-modal');
+    await expect(modal).toBeVisible();
+    // The list modal does not close the sheet by itself.
+    await expect(toolsSheet).toBeVisible();
+
+    // dispatchEvent sends a bare click with no pointerdown: a real click outside the sheet would close
+    // it through the shell's outside-click rule, and this test could then not tell whether the
+    // selection itself closed it.
+    await modal.getByRole('button', { name: /Zapadni Jarunski Most/ }).dispatchEvent('click');
 
     await expect.poll(async () => {
       return page.evaluate(() => (window as any).__openedMonitorId);
     }).toBe(1);
 
-    await expect(page.locator('#area-monitor-list-modal')).toHaveCount(0);
-    await expect(page.locator('#sidebar')).toHaveClass(/collapsed/);
+    await expect(modal).toHaveCount(0);
+    await expect(toolsSheet).toBeHidden();
+    await expect(page.locator('#tools-button')).toHaveAttribute('aria-expanded', 'false');
 
-    const sidebarCollapsedAtOpen = await page.evaluate(() => (window as any).__sidebarCollapsedAtOpen);
-    expect(sidebarCollapsedAtOpen).toBe(true);
+    const toolsSheetOpenAtOpen = await page.evaluate(() => (window as any).__toolsSheetOpenAtOpen);
+    expect(toolsSheetOpenAtOpen).toBe(false);
   });
 
   test('loading a monitor in the wrong city prompts and cancels cleanly', async ({ mockApi: page }) => {

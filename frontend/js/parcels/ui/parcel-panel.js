@@ -169,8 +169,17 @@
         }
     }
 
+    // The history card the parcel menu mounts under the Info tab belongs to the parcel it was
+    // opened for (ui/parcel-menu.js showHistory); drop it once the panel shows anything else.
+    function dropParcelHistoryCard(keepForParcelId) {
+        global.document.querySelectorAll('#info-tab > .proposal-parcel-history-card').forEach(card => {
+            if (!keepForParcelId || card.dataset.parcelHistoryFor !== keepForParcelId) card.remove();
+        });
+    }
+
     function showParcelInfoPanel(feature) {
         bindParcelPanelControls();
+        dropParcelHistoryCard(resolveParcelId(feature));
         const props = feature?.properties || {};
         const areaSource = props.calculatedArea
             || props.area
@@ -983,6 +992,7 @@
         global.__openParcelInfoCollapsed = false;
         const parcelInfoPanel = global.document.getElementById('parcel-info-panel');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
+        dropParcelHistoryCard(null);
         if (typeof global.clearRoadVisualization === 'function') {
             global.clearRoadVisualization();
         }
@@ -1013,10 +1023,6 @@
         // The stack panel described THIS selection — run after the state above is cleared.
         try { global.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
 
-
-        if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.updateCreateProposalButton) {
-            global.multiParcelSelection.updateCreateProposalButton();
-        }
 
         if (typeof global.neighborHighlightActive !== 'undefined' && global.neighborHighlightActive) {
             global.neighborHighlightActive = false;
@@ -1056,6 +1062,7 @@
 
     global.ParcelsUIParcelPanel = {
         showParcelInfoPanel,
+        dropParcelHistoryCard,
         resetMeasureAsRoadButton,
         hideParcelInfoPanel,
         setParcelInfoPanelMinimized

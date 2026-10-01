@@ -1,10 +1,11 @@
+// parcels/ui/locate.js — parcel layer toggles, the local parcel-data wipe, and locateParcelById (find a
+// parcel by cadastral id and select it), which the map search box uses for parcel-id results.
 (function (global) {
     'use strict';
 
     const Parcels = global.Parcels || {};
     const uiVisibility = Parcels.uiVisibility || {};
     const uiLabels = Parcels.uiLabels || {};
-    const selectionApi = Parcels.selection || {};
     const uiParcelPanel = Parcels.uiParcelPanel || global.ParcelsUIParcelPanel || {};
 
     const resolveParcelId = (feature) => {
@@ -93,79 +94,61 @@
         }
     }
 
-    // Parcel locating functionality
-    // Assumes parcelLayer and selectParcel are globally available
-    document.addEventListener('DOMContentLoaded', function () {
-        const locateInput = document.getElementById('locateParcelInput');
-        const locateButton = document.getElementById('locateParcelButton');
-        const locateError = document.getElementById('locateParcelError');
+    // Find a parcel by its cadastral id and select it (which centres the map on it). The search
+    // box (js/ui/map-search.js) calls this for parcel-id results. Resolves to
+    // { ok: true, parcelId } or { ok: false, reason: 'empty' | 'notLoaded' | 'notFound', message }.
+    // `deps` defaults to the page globals; backend/test/parcel-locate.test.js passes fakes.
+    async function locateParcelById(rawValue, deps = global) {
+        const value = String(rawValue == null ? '' : rawValue).trim();
+        if (!value) return { ok: false, reason: 'empty', message: '' };
+        const parcels = deps.Parcels || {};
+        const labels = parcels.uiLabels || {};
+        const selection = parcels.selection || {};
 
-        if (!locateInput || !locateButton || !locateError) {
-            // UI elements not present
-            return;
+        // Parcel ids are what the person is looking for, so show them.
+        const doc = deps.document;
+        const showParcelNumbersCheckbox = doc && typeof doc.getElementById === 'function'
+            ? doc.getElementById('showParcelNumbers')
+            : null;
+        if (showParcelNumbersCheckbox && !showParcelNumbersCheckbox.checked) {
+            showParcelNumbersCheckbox.checked = true;
+            const toggleParcelNumbers = labels.toggleParcelNumbers || deps.toggleParcelNumbers;
+            if (typeof toggleParcelNumbers === 'function') toggleParcelNumbers();
         }
 
-        async function locateParcel() {
-            const value = locateInput.value.trim();
-            locateError.textContent = '';
-            if (!value) return;
-
-            // Ensure the 'Show parcel ids' checkbox is checked
-            const showParcelNumbersCheckbox = document.getElementById('showParcelNumbers');
-            if (showParcelNumbersCheckbox && !showParcelNumbersCheckbox.checked) {
-                showParcelNumbersCheckbox.checked = true;
-                const toggleParcelNumbers = uiLabels.toggleParcelNumbers || global.toggleParcelNumbers;
-                if (typeof toggleParcelNumbers === 'function') {
-                    toggleParcelNumbers();
-                }
-            }
-
-            if (!global.LiveParcelFabric || !global.ParcelPresenter) {
-                locateError.textContent = t('locateDataNotLoaded', 'Parcel data not loaded');
-                return;
-            }
-
-            const selectParcel = selectionApi.selectParcel || global.selectParcel;
-
-            // Declare the id to the ground service. It decides whether this is a registry hit, an
-            // in-flight join, a known absence, or a server load; the locate UI only resolves the
-            // resulting layer. selectParcel centres the map and loads the surrounding viewport.
-            const ground = global.CadastralParcelRepository;
-            if (!ground || typeof ground.ensureIds !== 'function') {
-                locateError.textContent = t('locateNotFound', 'Parcel not found');
-                return;
-            }
-
-            locateError.textContent = t('locateSearching', 'Searching…');
-            locateButton.disabled = true;
-            try {
-                await ground.ensureIds([value]);
-                const layer = global.LiveParcelFabric.get(value)
-                    ? global.ParcelPresenter.getLayer(value)
-                    : null;
-                const foundId = layer ? (global.ParcelPresenter.getIdForLayer?.(layer) || value) : null;
-                if (foundId && typeof selectParcel === 'function') {
-                    selectParcel(foundId);
-                    locateError.textContent = '';
-                } else {
-                    locateError.textContent = t('locateNotFound', 'Parcel not found');
-                }
-            } catch (error) {
-                console.info('[locate] backend lookup failed for', value, error && error.message);
-                locateError.textContent = t('locateNotFound', 'Parcel not found');
-            } finally {
-                locateButton.disabled = false;
-            }
+        if (!deps.LiveParcelFabric || !deps.ParcelPresenter) {
+            return { ok: false, reason: 'notLoaded', message: t('locateDataNotLoaded', 'Parcel data not loaded') };
         }
 
-        locateButton.addEventListener('click', locateParcel);
-        locateInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                locateParcel();
-            }
-        });
-    });
+        // Declare the id to the ground service. It decides whether this is a registry hit, an
+        // in-flight join, a known absence, or a server load; locating only resolves the resulting
+        // layer. selectParcel centres the map and loads the surrounding viewport.
+        const ground = deps.CadastralParcelRepository;
+        if (!ground || typeof ground.ensureIds !== 'function') {
+            return { ok: false, reason: 'notFound', message: t('locateNotFound', 'Parcel not found') };
+        }
+        const selectParcel = selection.selectParcel || deps.selectParcel;
+        try {
+            await ground.ensureIds([value]);
+        } catch (error) {
+            console.info(`[${new Date().toISOString()}] [locate] lookup failed for`, value, error && error.message);
+            return { ok: false, reason: 'notFound', message: t('locateNotFound', 'Parcel not found') };
+        }
+        const layer = deps.LiveParcelFabric.get(value) ? deps.ParcelPresenter.getLayer(value) : null;
+        const foundId = layer ? ((deps.ParcelPresenter.getIdForLayer && deps.ParcelPresenter.getIdForLayer(layer)) || value) : null;
+        if (!foundId || typeof selectParcel !== 'function') {
+            return { ok: false, reason: 'notFound', message: t('locateNotFound', 'Parcel not found') };
+        }
+        selectParcel(foundId);
+        return { ok: true, parcelId: foundId };
+    }
 
     global.clearLocalParcelData = clearLocalParcelData;
     global.handleParcelLayerChange = handleParcelLayerChange;
+    global.locateParcelById = locateParcelById;
+
+    // Node: export the locator for its unit test. The browser path above is unchanged.
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = { locateParcelById };
+    }
 })(typeof window !== 'undefined' ? window : globalThis);

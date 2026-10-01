@@ -30,6 +30,12 @@
             }
         } catch (_) { /* ignore */ }
 
+        // No cadastre here (the explore city): nothing to fetch or hide.
+        if (global.CityConfigManager && typeof global.CityConfigManager.hasParcelData === 'function'
+            && !global.CityConfigManager.hasParcelData()) {
+            return;
+        }
+
         var bounds = map.getBounds();
         if (!isZoomWithinParcelRange()) {
             var layerRef = resolveParcelLayer();

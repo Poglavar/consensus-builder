@@ -9,12 +9,12 @@ body.realistic-mode-active #mode-walk-toggle {
     display: none !important;
 }
 
-/* Realistic (real-world) button — slot 4 of the lower-left mode stack, always visible. The slot
+/* Realistic (real-world) button — slot 4 of the left-edge mode strip, always visible. The slot
    ladder, and the rule that a button is hidden rather than moved, live at the top of map.css. */
 #mode-realistic-toggle.map-mode-realistic-btn {
     position: absolute;
     left: var(--map-mode-stack-left);
-    bottom: var(--map-mode-slot-4);
+    top: var(--map-mode-slot-4);
     z-index: 1001;
     display: inline-flex;
     background: white;
@@ -134,7 +134,7 @@ body.realistic-mode-active #mode-walk-toggle {
 
 /* The one-off "how do I tilt this" hint, shown a little after arriving in model or photo view and
    gone again on its own. Bottom centre, clear of .photoreal-status at the top (which carries real
-   loading state) and of the mode buttons at the lower left. */
+   loading state) and of the mode strip on the left edge. */
 #three-container .three-view-hint {
     position: absolute;
     left: 50%;
