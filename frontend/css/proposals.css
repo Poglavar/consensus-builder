@@ -264,6 +264,53 @@
     color: #475569;
 }
 
+/* Binding drift notice (binding-drift-panel.js): today's cadastre binds this published record's
+   site differently; offers Re-bind, which publishes a new derived record. */
+.proposal-binding-drift {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    background-color: #fffbeb;
+    color: #78350f;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.proposal-binding-drift-title {
+    font-weight: 600;
+}
+
+.proposal-binding-drift-title i {
+    margin-right: 4px;
+    color: #d97706;
+}
+
+.proposal-binding-drift-list {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    overflow-wrap: anywhere;
+}
+
+.proposal-binding-drift-note {
+    margin: 6px 0;
+    color: #92400e;
+}
+
+.proposal-binding-drift-rebind {
+    margin-top: 2px;
+}
+
+.proposal-binding-drift-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #1a73e8;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 /* "Fork with changed land set": floating bar while the parcel set is edited on the map. */
 .land-fork-bar {
     position: fixed;

@@ -2208,7 +2208,7 @@ async function requestCorridorDrawingTool(kind) {
         window.corridorLastClickedSegment = null;
         window.refreshSelectedCorridorSegmentHighlight?.();
     } catch (_) { }
-    // Build-through approvals for parks/squares/lakes last one drawing session only.
+    // Build-through approvals for parks/squares/lakes and plots last one drawing session only.
     if (typeof resetApprovedStructureCrossings === 'function') resetApprovedStructureCrossings();
     if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
         await ensureCorridorBuildingFootprintsLoaded();
@@ -2924,6 +2924,13 @@ async function handleRoadClick(e) {
             const detected = detectLoadedBuildingTunnelIntersections(segmentPolygon)
                 .filter(hit => !roadSurfaceBuildingIds.has(String(hit.id)));
             const hits = detected.filter(hit => !alreadyTunnelledIds.has(String(hit.id)));
+            // Subdivision/readjustment plots in the way get Build through / reroute, asked first: a
+            // house standing on such a plot would refuse the apply, so it is said here and only
+            // rerouting is offered (corridor-structures.js, proposals/plot-crossings.js).
+            if (typeof detectPlotCrossings === 'function' && typeof resolvePlotCrossings === 'function') {
+                const plotCrossings = detectPlotCrossings(segmentPolygon, hits);
+                if (!(await resolvePlotCrossings(plotCrossings, corridorDrawingIsTrack() ? 'track' : 'road'))) return;
+            }
             if (hits.length) {
                 const resolution = typeof resolveBuildingObstacles === 'function'
                     ? await resolveBuildingObstacles(hits, corridorDrawingIsTrack() ? 'track' : 'road')

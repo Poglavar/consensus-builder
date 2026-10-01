@@ -4,10 +4,18 @@
 // not fit in a query string: listed in READ_ONLY_POST_PATHS (index.js), so neither the Origin gate
 // nor the write limiter applies; it has its own rate limit instead. This is the authoritative
 // answer a publish uses; the browser's site-binding.js over loaded parcels is only a preview.
+//
+// GET /proposals/:id/binding-drift: the binding a published record's stored site would get from
+// today's cadastre, beside the one fixed at publish (proposals/binding-drift.js). Also a read, on
+// the same budget; the record is never changed — a re-bind publishes a new derived record.
 
 import { computeBinding, normalizeSiteGeometry, parseTolerance, validateSiteGeometry, BINDING_CODES } from '../proposals/binding.js';
+import { computeBindingDrift } from '../proposals/binding-drift.js';
 
 export const PROPOSAL_BINDING_PATHS = Object.freeze(['/proposals/binding', '/agent/binding']);
+// GET paths that recompute a binding, limited with the POST paths above (index.js).
+export const BINDING_DRIFT_PATH = /^\/proposals\/[^/]+\/binding-drift$/;
+const MAX_ID_LENGTH = 200;
 
 const MAX_CITY_LENGTH = 100;
 
@@ -44,4 +52,21 @@ export function setupProposalBindingRoute(app, pool) {
             }
         });
     }
+
+    app.get('/proposals/:id/binding-drift', async (req, res) => {
+        const id = String(req.params.id || '');
+        if (!id || id.length > MAX_ID_LENGTH) return res.status(400).json({ error: 'Invalid proposal id.' });
+        const started = Date.now();
+        try {
+            const result = await computeBindingDrift(pool, id);
+            if (!result) return res.status(404).json({ error: 'Proposal not found' });
+            return res.json({ ...result, queryMs: Date.now() - started });
+        } catch (error) {
+            if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
+                return res.status(error.status).json({ error: error.message, code: error.code });
+            }
+            console.error(`[${new Date().toISOString()}] Error in GET /proposals/${id}/binding-drift:`, error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
 }

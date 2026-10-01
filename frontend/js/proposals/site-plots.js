@@ -7,6 +7,10 @@
 // straight in both, and two neighbouring strips are built from the SAME pair of cut points,
 // so adjacent plots share their cut edge exactly.
 //
+// The default frontage is the edge that faces a real street (frontageFromStreets: scored on the
+// distance from the edge's midpoint to the street, how parallel they run, and the edge's length),
+// else the longest edge.
+//
 // Pure: no DOM. `turf` is options.turf, the browser global, globalThis.turf or require('@turf/turf').
 (function (root, factory) {
     const api = factory(root);
@@ -22,6 +26,12 @@
     // Strips reach this far past the site so its extreme vertices are never on a strip edge.
     const PAD_M = 1;
     const PLOT_ID_PREFIX = 'site-plot:';
+    // A street faces an edge when it runs within this distance of the edge's midpoint...
+    const FRONTAGE_STREET_MAX_DISTANCE_M = 30;
+    // ...within 30 degrees of parallel to it...
+    const FRONTAGE_MIN_PARALLEL = Math.cos(30 * Math.PI / 180);
+    // ...and outside the site (a street this far inside the edge runs through the site, not past it).
+    const FRONTAGE_INSIDE_TOLERANCE_M = 2;
 
     function T(options) {
         if (options && options.turf) return options.turf;
@@ -99,6 +109,107 @@
         const edges = frontageEdges(site, options);
         if (!edges.length) return -1;
         return edges.reduce((best, edge) => (edge.lengthM > best.lengthM ? edge : best), edges[0]).index;
+    }
+
+    function streetLinesOf(street) {
+        const g = street && street.type === 'Feature' ? street.geometry : street;
+        if (!g) return [];
+        if (g.type === 'LineString') return [g.coordinates];
+        if (g.type === 'MultiLineString') return g.coordinates;
+        return [];
+    }
+
+    // What a street feature is called, from the street sources the app reads (osm_road / Overpass:
+    // name, highway_type or highway; the Zagreb street register: street_name).
+    function streetIdentity(street) {
+        const p = (street && street.properties) || {};
+        const name = [p.name, p.street_name].find(value => typeof value === 'string' && value.trim());
+        const highway = [p.highway_type, p.highway].find(value => typeof value === 'string' && value.trim());
+        return { name: name ? name.trim() : null, highway: highway || null, id: p.osm_id ?? p.street_id ?? null };
+    }
+
+    /**
+     * How well each site edge faces a street. For every edge and every street segment within
+     * FRONTAGE_STREET_MAX_DISTANCE_M of the edge's midpoint, running within 30 degrees of parallel
+     * and not inside the site: score = parallel × (1 − distance / max) × (edge length / longest edge).
+     * An edge's score is its best segment's.
+     * @param {object} site GeoJSON Polygon/MultiPolygon (or Feature).
+     * @param {object[]} streets GeoJSON LineString/MultiLineString features (properties name/highway).
+     * @returns {{index, lengthM, score, distanceM, parallel, street: {name, highway, id}}[]} the edges
+     *   that face a street, best first.
+     */
+    function frontageScores(site, streets, options) {
+        const opts = options || {};
+        const t = T(opts);
+        if (!t) throw new Error('site-plots: turf is not available');
+        const maxDistanceM = Number.isFinite(opts.maxDistanceM) && opts.maxDistanceM > 0 ? opts.maxDistanceM : FRONTAGE_STREET_MAX_DISTANCE_M;
+        const ring = frontageRing(site, t);
+        const edges = frontageEdges(site, { turf: t });
+        if (!ring || !edges.length || !Array.isArray(streets) || !streets.length) return [];
+        const longestM = edges.reduce((max, edge) => Math.max(max, edge.lengthM), 0);
+        const interiorSide = ringAreaM2(ring, makeFrame(ring[0][0], ring[0][1])) >= 0 ? 1 : -1;
+        const scored = [];
+        for (const edge of edges) {
+            if (!(edge.lengthM > 0)) continue;
+            const mid = [(edge.a[0] + edge.b[0]) / 2, (edge.a[1] + edge.b[1]) / 2];
+            const frame = makeFrame(mid[0], mid[1]);
+            const [bx, by] = frame.toMeters(edge.b[0], edge.b[1]);
+            const [ax, ay] = frame.toMeters(edge.a[0], edge.a[1]);
+            const ux = (bx - ax) / edge.lengthM;
+            const uy = (by - ay) / edge.lengthM;
+            // Into the site: left of the edge on a counter-clockwise ring, right on a clockwise one.
+            const nx = -uy * interiorSide;
+            const ny = ux * interiorSide;
+            let best = null;
+            for (const street of streets) {
+                for (const line of streetLinesOf(street)) {
+                    if (!Array.isArray(line)) continue;
+                    for (let i = 0; i < line.length - 1; i++) {
+                        const p = line[i];
+                        const q = line[i + 1];
+                        if (!Array.isArray(p) || !Array.isArray(q)) continue;
+                        const [px, py] = frame.toMeters(p[0], p[1]);
+                        const [qx, qy] = frame.toMeters(q[0], q[1]);
+                        const dx = qx - px;
+                        const dy = qy - py;
+                        const segM = Math.hypot(dx, dy);
+                        if (!(segM > 0)) continue;
+                        let k = -(px * dx + py * dy) / (segM * segM);
+                        k = Math.max(0, Math.min(1, k));
+                        const cx = px + k * dx;
+                        const cy = py + k * dy;
+                        const distanceM = Math.hypot(cx, cy);
+                        if (distanceM > maxDistanceM) continue;
+                        if (cx * nx + cy * ny > FRONTAGE_INSIDE_TOLERANCE_M) continue;
+                        const parallel = Math.abs((dx * ux + dy * uy) / segM);
+                        if (parallel < FRONTAGE_MIN_PARALLEL) continue;
+                        const score = parallel * (1 - distanceM / maxDistanceM) * (edge.lengthM / longestM);
+                        if (!best || score > best.score) best = { score, distanceM, parallel, street: streetIdentity(street) };
+                    }
+                }
+            }
+            if (best) scored.push({ index: edge.index, lengthM: edge.lengthM, ...best });
+        }
+        return scored.sort((x, y) => y.score - x.score);
+    }
+
+    /**
+     * The default frontage of a site: the edge that best faces a street, else the longest edge.
+     * @returns {{ frontageEdgeIndex, basis: 'street', street: {name, highway, id}, distanceM, score }
+     *   | { frontageEdgeIndex, basis: 'longest' }}
+     */
+    function frontageFromStreets(site, streets, options) {
+        const best = frontageScores(site, streets, options)[0];
+        if (best) {
+            return {
+                frontageEdgeIndex: best.index,
+                basis: 'street',
+                street: best.street,
+                distanceM: Math.round(best.distanceM * 10) / 10,
+                score: best.score
+            };
+        }
+        return { frontageEdgeIndex: defaultFrontageEdge(site, options), basis: 'longest' };
     }
 
     // Axes of the cut: u along the frontage edge, v perpendicular into the site.
@@ -307,8 +418,11 @@
         ROW_PLOT_WIDTH_M,
         MIN_PLOT_WIDTH_SHARE,
         PLOT_ID_PREFIX,
+        FRONTAGE_STREET_MAX_DISTANCE_M,
         frontageEdges,
         defaultFrontageEdge,
+        frontageScores,
+        frontageFromStreets,
         cutPlots
     };
 });

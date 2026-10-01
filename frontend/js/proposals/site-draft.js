@@ -243,6 +243,72 @@
         return { coordinate: [coordinate[0], coordinate[1]], snapped: false };
     }
 
+    // [west, south, east, north] of a geometry/feature's vertices, or null.
+    function boxOf(value) {
+        let west = Infinity; let south = Infinity; let east = -Infinity; let north = -Infinity;
+        ringsOf(value).forEach(ring => (Array.isArray(ring) ? ring : []).forEach(c => {
+            if (!validCoordinate(c)) return;
+            if (c[0] < west) west = c[0];
+            if (c[0] > east) east = c[0];
+            if (c[1] < south) south = c[1];
+            if (c[1] > north) north = c[1];
+        }));
+        return finite(west) && finite(north) ? [west, south, east, north] : null;
+    }
+
+    const boxesOverlap = (a, b) => !!(a && b && a[0] <= b[2] && b[0] <= a[2] && a[1] <= b[3] && b[1] <= a[3]);
+
+    /**
+     * Snap candidates from a list of geometries, bounded to a box (the viewport) and capped: each
+     * entry keeps its box so a later snap filters by a small box around the cursor without
+     * walking every vertex. Entries whose geometry is not polygonal/linear are dropped.
+     * @returns {{ geometry, box }[]}
+     */
+    function snapTargetsInBox(geometries, box, options) {
+        const cap = finite(options && options.cap) && options.cap > 0 ? options.cap : Infinity;
+        const out = [];
+        for (const value of Array.isArray(geometries) ? geometries : []) {
+            if (out.length >= cap) break;
+            const geometry = geometryOf(value);
+            const targetBox = boxOf(geometry);
+            if (!targetBox || (box && !boxesOverlap(targetBox, box))) continue;
+            out.push({ geometry, box: targetBox });
+        }
+        return out;
+    }
+
+    /**
+     * Snap a drawn coordinate to the ground around it: parcel and building outlines. Any corner
+     * (parcel or building) within the radius wins over any edge, the nearest of each kind first;
+     * the result says which kind of outline it landed on.
+     * @param {{ parcels?: object[], buildings?: object[] }} targets geometries/features, or
+     *   snapTargetsInBox entries ({ geometry, box }: filtered here by the radius box first).
+     * @returns {{ coordinate, snapped: false } | { coordinate, snapped: 'vertex'|'edge', kind: 'parcel'|'building', distanceM }}
+     */
+    function snapToGround(coordinate, targets, options) {
+        const opts = options || {};
+        if (!validCoordinate(coordinate)) return { coordinate, snapped: false };
+        const radiusM = finite(opts.radiusM) && opts.radiusM > 0 ? opts.radiusM : 1;
+        const dLat = radiusM / 111320;
+        const dLng = radiusM / (111320 * Math.cos(coordinate[1] * Math.PI / 180));
+        const near = [coordinate[0] - dLng, coordinate[1] - dLat, coordinate[0] + dLng, coordinate[1] + dLat];
+        const kinds = [];
+        const geometries = [];
+        ['parcel', 'building'].forEach(kind => {
+            const list = targets && targets[kind === 'parcel' ? 'parcels' : 'buildings'];
+            (Array.isArray(list) ? list : []).forEach(entry => {
+                if (entry && Array.isArray(entry.box) && entry.geometry) {
+                    if (!boxesOverlap(entry.box, near)) return;
+                    geometries.push(entry.geometry);
+                } else geometries.push(entry);
+                kinds.push(kind);
+            });
+        });
+        const hit = snapCoordinate(coordinate, geometries, { radiusM });
+        if (!hit.snapped) return hit;
+        return { coordinate: hit.coordinate, snapped: hit.snapped, kind: kinds[hit.targetIndex], distanceM: hit.distanceM };
+    }
+
     /**
      * The open ground of a site over the given parcels: site minus every parcel, keeping only
      * components wider than max(toleranceM, 1 mm) (the binding rule's floor, so cadastral
@@ -362,6 +428,8 @@
         draftHasDesignGeometry,
         draftGroundIssue,
         snapCoordinate,
+        snapTargetsInBox,
+        snapToGround,
         openGroundOf,
         formatWidth,
         bindingSummary,

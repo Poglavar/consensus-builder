@@ -141,3 +141,72 @@ describe('cutPlots', () => {
         expect(() => plots.cutPlots(RECT, { plotWidthM: 20, frontageEdgeIndex: 9 })).toThrow(RangeError);
     });
 });
+
+describe('frontage from streets', () => {
+    // RECT's edges: 0 south (y = 0), 1 east (x = 100), 2 north (y = 40), 3 west (x = 0).
+    const street = (name, points, extra = {}) => ({
+        type: 'Feature',
+        properties: { name, highway_type: 'residential', ...extra },
+        geometry: { type: 'LineString', coordinates: points.map(deg) }
+    });
+
+    it('faces the street along an edge, with its name and distance', () => {
+        const result = plots.frontageFromStreets(RECT, [street('Ilica', [[-50, -8], [150, -8]])]);
+        expect(result).toMatchObject({ frontageEdgeIndex: 0, basis: 'street', street: { name: 'Ilica', highway: 'residential' } });
+        expect(result.distanceM).toBeCloseTo(8, 0);
+    });
+
+    it('picks the street side over the longest edge', () => {
+        // The south edge (index 0) ties for the longest; the street runs along the north.
+        expect(plots.defaultFrontageEdge(RECT)).toBe(0);
+        const result = plots.frontageFromStreets(RECT, [street('Vlaška', [[-20, 47], [120, 47]])]);
+        expect(result).toMatchObject({ frontageEdgeIndex: 2, basis: 'street', street: { name: 'Vlaška' } });
+    });
+
+    it('on a corner site the long edge on a street beats a short one nearer another', () => {
+        const streets = [street('Short', [[108, -30], [108, 70]]), street('Long', [[-20, 55], [120, 55]])];
+        const scores = plots.frontageScores(RECT, streets);
+        expect(scores.map(s => s.index)).toEqual([2, 1]);
+        expect(plots.frontageFromStreets(RECT, streets).street.name).toBe('Long');
+    });
+
+    it('a parallel street a little farther beats a perpendicular one at the midpoint', () => {
+        const streets = [street('Across', [[105, 20], [200, 20]]), street('Along', [[112, -40], [112, 80]])];
+        const result = plots.frontageFromStreets(RECT, streets);
+        expect(result).toMatchObject({ frontageEdgeIndex: 1, street: { name: 'Along' } });
+    });
+
+    it('falls back to the longest edge when no street faces the site', () => {
+        expect(plots.frontageFromStreets(RECT, [])).toEqual({ frontageEdgeIndex: 0, basis: 'longest' });
+        // too far
+        expect(plots.frontageFromStreets(RECT, [street('Far', [[-20, 75], [120, 75]])]).basis).toBe('longest');
+        // perpendicular only
+        expect(plots.frontageFromStreets(RECT, [street('Across', [[105, 20], [200, 20]])]).basis).toBe('longest');
+        // through the site, not past it
+        expect(plots.frontageFromStreets(RECT, [street('Through', [[-50, 20], [150, 20]])]).basis).toBe('longest');
+    });
+
+    it('reads the interior side of a clockwise ring too', () => {
+        const clockwise = site([[0, 0], [0, 40], [100, 40], [100, 0]]);
+        const edges = plots.frontageEdges(clockwise);
+        const result = plots.frontageFromStreets(clockwise, [street('Ilica', [[-50, -8], [150, -8]])]);
+        expect(result.basis).toBe('street');
+        const edge = edges[result.frontageEdgeIndex];
+        expect(toM(edge.a)[1]).toBeCloseTo(0, 6);
+        expect(toM(edge.b)[1]).toBeCloseTo(0, 6);
+    });
+
+    it('reports an unnamed street by its kind, and reads MultiLineStrings and street_name', () => {
+        const unnamed = { type: 'Feature', properties: { highway: 'service' }, geometry: { type: 'MultiLineString', coordinates: [[[-50, -6], [150, -6]].map(deg)] } };
+        expect(plots.frontageFromStreets(RECT, [unnamed]).street).toEqual({ name: null, highway: 'service', id: null });
+        const register = { type: 'Feature', properties: { street_name: 'Ulica grada Vukovara', street_id: 'Z1' }, geometry: { type: 'LineString', coordinates: [[-50, 46], [150, 46]].map(deg) } };
+        expect(plots.frontageFromStreets(RECT, [register]).street).toEqual({ name: 'Ulica grada Vukovara', highway: null, id: 'Z1' });
+    });
+
+    it('cuts the plots along the chosen street edge', () => {
+        const { frontageEdgeIndex } = plots.frontageFromStreets(RECT, [street('Vlaška', [[-20, 47], [120, 47]])]);
+        const cut = plots.cutPlots(RECT, { frontageEdgeIndex, plotWidthM: 20 });
+        expect(cut).toHaveLength(5);
+        cut.forEach(plot => expect(plot.properties.frontageM).toBeCloseTo(20, 0));
+    });
+});

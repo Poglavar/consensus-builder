@@ -35,7 +35,7 @@ import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
-import { setupProposalBindingRoute, PROPOSAL_BINDING_PATHS } from './routes/proposal-binding.js';
+import { setupProposalBindingRoute, PROPOSAL_BINDING_PATHS, BINDING_DRIFT_PATH } from './routes/proposal-binding.js';
 import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
 import { setupAgentPledgesRoute } from './routes/agent-pledges.js';
 import { setupAgentActivityRoute } from './routes/agent-activity.js';
@@ -400,6 +400,10 @@ export function createApp({
         message: { error: 'Too many requests, please try again later.' }
     });
     app.use((req, res, next) => {
+        // A drift check recomputes a binding with PostGIS: same budget as POST /proposals/binding.
+        if (req.method === 'GET' && BINDING_DRIFT_PATH.test(req.path)) {
+            return proposalBindingRateLimiter(req, res, next);
+        }
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
             if (req.method === 'POST' && req.path === '/parcels/under') {
                 return parcelsUnderRateLimiter(req, res, next);

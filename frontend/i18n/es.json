@@ -1288,6 +1288,29 @@
                 "unknownTime": "hora desconocida",
                 "sayYes": "Decir sí y ejecutar",
                 "ownerHint": "Esta oferta es tuya. Decir sí en cada una de tus parcelas en la tarjeta de la lente la ejecuta y te libera las donaciones."
+            },
+            "bindingDrift": {
+                "title": "El catastro cambió desde que esto se publicó: {{summary}}",
+                "addedOne": "+1 parcela",
+                "addedMany": "+{{count}} parcelas",
+                "removed": "−{{count}}",
+                "addedList": "Ahora también alcanza: {{list}}",
+                "removedList": "Ya no alcanza: {{list}}",
+                "coverage": "Cobertura: {{from}} → {{to}}",
+                "coverageKinds": {
+                    "complete": "completa",
+                    "partial": "parcial (terreno abierto)",
+                    "none": "sin catastro",
+                    "unknown": "desconocida"
+                },
+                "note": "Volver a vincular publica un nuevo registro con las parcelas actuales. Este queda tal como se publicó.",
+                "rebind": "Volver a vincular",
+                "reboundAs": "Vinculado de nuevo como",
+                "confirm": "¿Publicar un nuevo registro con el mismo sitio y diseño y las parcelas actuales? El registro que estás viendo no cambia.",
+                "cancel": "Cancelar",
+                "unavailable": "La vinculación actual de este registro no está disponible. Ábrelo de nuevo e inténtalo otra vez.",
+                "failed": "No se pudo volver a vincular: {{reason}}",
+                "done": "Vinculado de nuevo: publicado como registro {{id}}."
             }
         },
         "block": {
@@ -2631,6 +2654,16 @@
             "close": "Cerrar",
             "cancel": "Cancelar",
             "ok": "Aceptar"
+        },
+        "corridorPlots": {
+            "offer": "Este {{kind}} cortaría lotes de:",
+            "line": "“{{name}}”: {{plots}}, {{area}}",
+            "plotOne": "1 lote",
+            "plotMany": "{{count}} lotes",
+            "note": "El {{kind}} toma su franja de los lotes que cruza; el resto de cada lote se mantiene. Al quitarlo del mapa se devuelven. ¿Construir a través?",
+            "blocked": "Atravesaría una casa que está en un lote:",
+            "blockedLine": "“{{name}}” en “{{plot}}”",
+            "blockedNote": "Un {{kind}} nunca se construye a través de un edificio existente, así que sería rechazado. Elige otra ruta o quita primero la casa del mapa."
         }
     },
     "blockify": {
@@ -4067,9 +4100,9 @@
         "title": "Sitio",
         "titleDrawing": "Dibuja un sitio",
         "hint": {
-            "drawing": "Haz clic para añadir vértices (se ajustan a los bordes de las parcelas; mantén Alt para evitarlo). Haz clic en el primer vértice o pulsa Enter para terminar. Retroceso quita el último vértice, Esc cancela.",
+            "drawing": "Haz clic para añadir vértices (se ajustan a los contornos de parcelas y edificios; mantén Alt para evitarlo). Haz clic en el primer vértice o pulsa Enter para terminar. Retroceso quita el último vértice, Esc cancela.",
             "editing": "Arrastra los vértices para cambiar la forma; haz clic en un borde para añadir uno. Después construye en el sitio.",
-            "plots": "Los lotes se cortan a lo largo del borde de fachada (el más largo por defecto). Haz clic en otro borde del sitio para usarlo."
+            "plots": "Los lotes se cortan a lo largo del borde de fachada (por defecto el que da a una calle; si no, el más largo). Haz clic en otro borde del sitio para usarlo."
         },
         "actions": {
             "finish": "Terminar sitio",
@@ -4129,6 +4162,20 @@
             "mapBusy": "Termina primero la herramienta abierta.",
             "parcelsUnavailable": "Esas parcelas no están en el mapa.",
             "plotsUnavailable": "El corte de lotes no está disponible."
+        },
+        "snap": {
+            "parcelCorner": "Esquina de parcela",
+            "parcelEdge": "Borde de parcela",
+            "buildingCorner": "Esquina de edificio",
+            "buildingEdge": "Borde de edificio"
+        },
+        "frontage": {
+            "pending": "Buscando la calle a la que da este sitio…",
+            "user": "Fachada: el borde que elegiste.",
+            "facing": "Fachada hacia {{street}} (a {{distance}} m).",
+            "facingUnnamed": "Fachada hacia una calle sin nombre (a {{distance}} m).",
+            "longestNoStreet": "Fachada: el borde más largo (ninguna calle a menos de {{distance}} m).",
+            "longestNoData": "Fachada: el borde más largo (no hay datos de calles aquí)."
         }
     },
     "groundStats": {

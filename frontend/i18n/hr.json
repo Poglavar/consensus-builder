@@ -1271,6 +1271,29 @@
                 "unknownTime": "vrijeme nepoznato",
                 "sayYes": "Reci da i izvrši",
                 "ownerHint": "Ovo je tvoja ponuda. Kad kažeš da na svakoj svojoj čestici u kartici leće, ponuda se izvršava, a donacije se isplaćuju tebi."
+            },
+            "bindingDrift": {
+                "title": "Katastar se promijenio otkad je ovo objavljeno: {{summary}}",
+                "addedOne": "+1 čestica",
+                "addedMany": "+{{count}} čest.",
+                "removed": "−{{count}}",
+                "addedList": "Sada zahvaća i: {{list}}",
+                "removedList": "Više ne zahvaća: {{list}}",
+                "coverage": "Pokrivenost: {{from}} → {{to}}",
+                "coverageKinds": {
+                    "complete": "potpuna",
+                    "partial": "djelomična (otvoreno tlo)",
+                    "none": "bez katastra",
+                    "unknown": "nepoznata"
+                },
+                "note": "Ponovno vezanje objavljuje novi zapis s trenutačnim česticama. Ovaj ostaje kakav je objavljen.",
+                "rebind": "Ponovno veži",
+                "reboundAs": "Ponovno vezano kao",
+                "confirm": "Objaviti novi zapis s istom lokacijom i dizajnom te trenutačnim česticama? Zapis koji gledaš se ne mijenja.",
+                "cancel": "Odustani",
+                "unavailable": "Trenutačno vezanje ovog zapisa nije dostupno. Ponovno ga otvori i pokušaj opet.",
+                "failed": "Ponovno vezanje nije uspjelo: {{reason}}",
+                "done": "Ponovno vezano: objavljeno kao zapis {{id}}."
             }
         },
         "block": {
@@ -2615,6 +2638,16 @@
             "close": "Zatvori",
             "cancel": "Odustani",
             "ok": "U redu"
+        },
+        "corridorPlots": {
+            "offer": "Ova {{kind}} presjekla bi čestice iz:",
+            "line": "„{{name}}”: {{plots}}, {{area}}",
+            "plotOne": "1 čestica",
+            "plotMany": "čestica: {{count}}",
+            "note": "{{kind}} uzima svoj pojas iz čestica koje presijeca; ostatak svake čestice ostaje. Uklanjanjem s karte vraćaju se. Izgraditi kroz?",
+            "blocked": "Prošla bi kroz kuću koja stoji na čestici:",
+            "blockedLine": "„{{name}}” na „{{plot}}”",
+            "blockedNote": "{{kind}} se nikad ne gradi kroz postojeću zgradu, pa bi bila odbijena. Odaberi drugu trasu ili najprije ukloni kuću s karte."
         }
     },
     "blockify": {
@@ -4054,9 +4087,9 @@
         "title": "Lokacija",
         "titleDrawing": "Nacrtaj lokaciju",
         "hint": {
-            "drawing": "Kliknite za dodavanje kutova (prianjaju uz rubove čestica; držite Alt da ne prianjaju). Kliknite prvi kut ili pritisnite Enter za kraj. Backspace briše zadnji kut, Esc odustaje.",
+            "drawing": "Kliknite za dodavanje kutova (prianjaju uz obrise čestica i zgrada; držite Alt da ne prianjaju). Kliknite prvi kut ili pritisnite Enter za kraj. Backspace briše zadnji kut, Esc odustaje.",
             "editing": "Povucite kutove za promjenu oblika, kliknite rub za novi kut. Zatim gradite na lokaciji.",
-            "plots": "Čestice se režu uz rub pročelja (zadano najdulji). Kliknite drugi rub lokacije da ga upotrijebite."
+            "plots": "Čestice se režu uz rub pročelja (zadano onaj okrenut prema ulici, inače najdulji). Kliknite drugi rub lokacije da ga upotrijebite."
         },
         "actions": {
             "finish": "Završi lokaciju",
@@ -4116,6 +4149,20 @@
             "mapBusy": "Najprije završite otvoreni alat.",
             "parcelsUnavailable": "Te čestice nisu na karti.",
             "plotsUnavailable": "Rezanje čestica nije dostupno."
+        },
+        "snap": {
+            "parcelCorner": "Kut čestice",
+            "parcelEdge": "Rub čestice",
+            "buildingCorner": "Kut zgrade",
+            "buildingEdge": "Rub zgrade"
+        },
+        "frontage": {
+            "pending": "Tražim ulicu prema kojoj je lokacija okrenuta…",
+            "user": "Pročelje: rub koji ste odabrali.",
+            "facing": "Pročelje prema ulici {{street}} (udaljena {{distance}} m).",
+            "facingUnnamed": "Pročelje prema neimenovanoj ulici (udaljena {{distance}} m).",
+            "longestNoStreet": "Pročelje: najdulji rub (nema ulice unutar {{distance}} m).",
+            "longestNoData": "Pročelje: najdulji rub (podaci o ulicama ovdje nisu dostupni)."
         }
     },
     "groundStats": {

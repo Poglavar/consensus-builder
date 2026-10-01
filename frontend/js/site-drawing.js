@@ -1,5 +1,5 @@
 // The site tool (window.SiteTool): draw a proposal's SITE on the map — click corners, snap to parcel
-// edges, edit vertices — and see its binding as you go: bound parcels outlined, parcels reached into
+// and existing-building outlines, edit vertices — and see its binding as you go: bound parcels outlined, parcels reached into
 // by under half a metre flagged with the width, open ground hatched, a coverage label; a preview over
 // the loaded parcels first (labelled), then the server's answer (POST /proposals/binding). From the
 // site panel the build palette creates on the site: structures use it directly, a block uses it as
@@ -16,6 +16,8 @@
     // A preview binds at most this many loaded parcels (each needs an intrusion measurement).
     const PREVIEW_PARCEL_CAP = 250;
     const HATCH_ID = 'site-open-ground-hatch';
+    // Building outlines kept as snap targets: those in the viewport, at most this many.
+    const BUILDING_SNAP_CAP = 5000;
 
     const state = {
         phase: 'idle', // idle | drawing | editing | plots
@@ -43,6 +45,10 @@
         frontageIndex: null,
         plots: [],
         synthetic: new Map(),
+        buildingTargets: null, // snap entries of the building outlines in the viewport (null = stale)
+        snapKind: null,
+        frontageBasis: null, // how the frontage was chosen: { basis: 'street'|'longest'|'user'|'pending', ... }
+        frontageSeq: 0,
         mapWired: false
     };
 
@@ -125,12 +131,59 @@
         return [coordinate[0] - dLng, coordinate[1] - dLat, coordinate[0] + dLng, coordinate[1] + dLat];
     }
 
-    // Snap a coordinate to the nearest parcel corner or edge within SNAP_RADIUS_PX (Alt disables).
+    // The existing-building layers drawn on the map right now (GDI or the city's provider, DGU, OSM):
+    // whatever the Layers sheet has on. Their features are already in memory; nothing is fetched.
+    function shownBuildingLayers() {
+        return [win.buildingLayer, win.dguBuildingLayer, win.osmBuildingLayer]
+            .filter((layer, index, all) => layer && all.indexOf(layer) === index && typeof layer.eachLayer === 'function' && map().hasLayer(layer));
+    }
+
+    // Snap entries for the building outlines in the viewport, rebuilt lazily after the map moves or a
+    // building layer changes. A building the plan destroyed is not there any more: it is skipped.
+    function buildingSnapTargets() {
+        if (state.buildingTargets) return state.buildingTargets;
+        const geometries = [];
+        shownBuildingLayers().forEach(layer => layer.eachLayer(item => {
+            const feature = item && item.feature;
+            if (!feature || !feature.geometry) return;
+            if (feature.properties && feature.properties.__outcome === 'destroyed') return;
+            geometries.push(feature.geometry);
+        }));
+        const bounds = map().getBounds();
+        const box = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        state.buildingTargets = draftApi().snapTargetsInBox(geometries, box, { cap: BUILDING_SNAP_CAP });
+        log(`building snap targets: ${state.buildingTargets.length} outlines in view (of ${geometries.length} loaded)`);
+        return state.buildingTargets;
+    }
+
+    function invalidateBuildingTargets() {
+        state.buildingTargets = null;
+    }
+
+    // A building layer shown, hidden or replaced (DGU/OSM refetches swap the whole GeoJSON group);
+    // the tool's own layers live in its pane and never count.
+    function onMapLayerChange(event) {
+        const layer = event && event.layer;
+        if (!layer || !(layer instanceof win.L.GeoJSON)) return;
+        if (layer.options && layer.options.pane === PANE) return;
+        invalidateBuildingTargets();
+    }
+
+    // Snap a coordinate to the nearest parcel or building corner, else edge, within SNAP_RADIUS_PX
+    // (Alt disables). The result's `kind` says which outline it landed on.
     function snap(coordinate, event) {
         if (event && event.originalEvent && event.originalEvent.altKey) return { coordinate, snapped: false };
         const radiusM = draftApi().SNAP_RADIUS_PX * metresPerPixel(coordinate[1]);
-        const targets = liveParcelsNear(boxAround(coordinate, radiusM)).map(feature => feature.geometry);
-        return draftApi().snapCoordinate(coordinate, targets, { radiusM });
+        const parcels = liveParcelsNear(boxAround(coordinate, radiusM)).map(feature => feature.geometry);
+        return draftApi().snapToGround(coordinate, { parcels, buildings: buildingSnapTargets() }, { radiusM });
+    }
+
+    function snapLabel(snapped) {
+        const building = snapped.kind === 'building';
+        if (snapped.snapped === 'vertex') {
+            return building ? t('siteTool.snap.buildingCorner', 'Building corner') : t('siteTool.snap.parcelCorner', 'Parcel corner');
+        }
+        return building ? t('siteTool.snap.buildingEdge', 'Building edge') : t('siteTool.snap.parcelEdge', 'Parcel edge');
     }
 
     // ---- synthetic design parcels (the site as a superparcel, plots cut from it) ----
@@ -263,6 +316,8 @@
             line.on('click', event => {
                 if (event && event.originalEvent) win.L.DomEvent.stop(event.originalEvent);
                 state.frontageIndex = edge.index;
+                state.frontageBasis = { basis: 'user' };
+                state.frontageSeq += 1; // a street answer still in flight must not undo the choice
                 cutPlots();
                 renderLayers();
                 renderPanel();
@@ -368,17 +423,26 @@
         const snapped = snap([event.latlng.lng, event.latlng.lat], event);
         if (!snapped.snapped) { removeSnapMarker(); return; }
         const latlng = [snapped.coordinate[1], snapped.coordinate[0]];
+        // The marker and its label say what the corner will land on (parcel or building, corner or edge).
+        const kind = `${snapped.kind}-${snapped.snapped}`;
+        if (state.snapMarker && state.snapKind !== kind) removeSnapMarker();
         if (!state.snapMarker) {
             ensurePane();
             state.snapMarker = win.L.circleMarker(latlng, {
-                pane: PANE, renderer: state.renderer, radius: 6, className: 'site-snap-marker', interactive: false
+                pane: PANE, renderer: state.renderer, radius: 6,
+                className: `site-snap-marker site-snap-marker--${snapped.kind}`, interactive: false
             }).addTo(map());
+            state.snapMarker.bindTooltip(snapLabel(snapped), {
+                permanent: true, direction: 'right', offset: [8, 0], className: `site-snap-label site-snap-label--${snapped.kind}`
+            });
+            state.snapKind = kind;
         } else state.snapMarker.setLatLng(latlng);
     }
 
     function removeSnapMarker() {
         if (state.snapMarker) { try { map().removeLayer(state.snapMarker); } catch (_) { } }
         state.snapMarker = null;
+        state.snapKind = null;
     }
 
     function onKeyDown(event) {
@@ -404,6 +468,9 @@
         state.mapWired = true;
         map().on('click', onMapClick);
         map().on('mousemove', onMapMouseMove);
+        map().on('moveend', invalidateBuildingTargets);
+        map().on('layeradd layerremove', onMapLayerChange);
+        win.addEventListener('buildingsLayerUpdated', invalidateBuildingTargets);
         doc.addEventListener('keydown', onKeyDown);
     }
 
@@ -412,8 +479,12 @@
         state.mapWired = false;
         map().off('click', onMapClick);
         map().off('mousemove', onMapMouseMove);
+        map().off('moveend', invalidateBuildingTargets);
+        map().off('layeradd layerremove', onMapLayerChange);
+        win.removeEventListener('buildingsLayerUpdated', invalidateBuildingTargets);
         doc.removeEventListener('keydown', onKeyDown);
         removeSnapMarker();
+        invalidateBuildingTargets();
     }
 
     function finishDrawing() {
@@ -533,10 +604,10 @@
 
     function hintText() {
         if (state.phase === 'drawing') {
-            return t('siteTool.hint.drawing', 'Click to add corners (they snap to parcel edges; hold Alt not to). Click the first corner or press Enter to finish. Backspace removes the last corner, Esc cancels.');
+            return t('siteTool.hint.drawing', 'Click to add corners (they snap to parcel and building outlines; hold Alt not to). Click the first corner or press Enter to finish. Backspace removes the last corner, Esc cancels.');
         }
         if (state.phase === 'plots') {
-            return t('siteTool.hint.plots', 'Plots are cut along the frontage edge (the longest by default). Click another edge of the site to use it instead.');
+            return t('siteTool.hint.plots', 'Plots are cut along the frontage edge (by default the one facing a street, else the longest). Click another edge of the site to use it instead.');
         }
         return t('siteTool.hint.editing', 'Drag corners to reshape, click an edge to add one. Then build on the site.');
     }
@@ -632,10 +703,12 @@
             ? t('panel.parcel.build.row', 'Row houses') : t('panel.parcel.build.parcelBased', 'Detached');
         const edges = win.__sitePlots ? win.__sitePlots.frontageEdges(state.site) : [];
         const edge = edges.find(e => e.index === state.frontageIndex);
+        const basis = win.StreetFrontage ? win.StreetFrontage.basisText(state.frontageBasis) : '';
         return `
             <p class="site-panel__note">${escapeHtml(t('siteTool.plots.summary', '{{tool}}: plots {{count}}, along a {{length}} m frontage.', {
                 tool, count: state.plots.length, length: edge ? Math.round(edge.lengthM) : 0
             }))}</p>
+            ${basis ? `<p class="site-panel__note site-panel__frontage site-panel__frontage--${escapeHtml(state.frontageBasis.basis)}">${escapeHtml(basis)}</p>` : ''}
             <div class="site-panel__actions">
                 <button type="button" class="site-panel__btn site-panel__btn--primary" data-site-action="plots-continue" ${state.plots.length ? '' : 'disabled'}>${escapeHtml(t('siteTool.plots.continue', 'Design on these plots'))}</button>
                 <button type="button" class="site-panel__btn" data-site-action="plots-back">${escapeHtml(t('siteTool.plots.back', 'Back'))}</button>
@@ -761,12 +834,39 @@
         cutPlots();
         renderLayers();
         renderPanel();
+        findStreetFrontage();
+    }
+
+    // The longest edge stands in while the streets around the site are looked up; the edge that
+    // faces a street then replaces it, unless the user picked an edge meanwhile.
+    function findStreetFrontage() {
+        if (!win.StreetFrontage) { state.frontageBasis = null; return; }
+        const seq = ++state.frontageSeq;
+        state.frontageBasis = { basis: 'pending' };
+        renderPanel();
+        win.StreetFrontage.find(state.site).then(result => {
+            if (seq !== state.frontageSeq || state.phase !== 'plots') return;
+            state.frontageBasis = result;
+            if (result.frontageEdgeIndex !== state.frontageIndex && result.frontageEdgeIndex >= 0) {
+                state.frontageIndex = result.frontageEdgeIndex;
+                cutPlots();
+                renderLayers();
+            }
+            renderPanel();
+        }).catch(error => {
+            console.error('[SiteTool] frontage lookup failed', error);
+            if (seq !== state.frontageSeq) return;
+            state.frontageBasis = { basis: 'longest', reason: 'unavailable' };
+            renderPanel();
+        });
     }
 
     function leavePlots() {
         state.phase = 'editing';
         state.plotTool = null;
         state.plots = [];
+        state.frontageBasis = null;
+        state.frontageSeq += 1;
         beginEditing(state.ring);
     }
 
@@ -807,6 +907,8 @@
         state.plotTool = null;
         state.plots = [];
         state.frontageIndex = null;
+        state.frontageBasis = null;
+        state.frontageSeq += 1;
     }
 
     function claimMap() {
@@ -910,6 +1012,7 @@
             serverError: state.serverError,
             plots: state.plots.slice(),
             frontageIndex: state.frontageIndex,
+            frontageBasis: state.frontageBasis,
             synthetic: Array.from(state.synthetic.keys())
         };
     }

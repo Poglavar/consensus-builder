@@ -102,6 +102,63 @@ describe('snapCoordinate', () => {
     });
 });
 
+describe('snapToGround (parcel and building outlines)', () => {
+    const parcel = rect(0, 0, 40, 30);
+    const building = rect(5, 5, 15, 12);
+
+    it('snaps to a building corner and says it is a building', () => {
+        const hit = siteDraft.snapToGround(P(5.4, 5.3), { parcels: [parcel], buildings: [building] }, { radiusM: 1 });
+        expect(hit).toMatchObject({ snapped: 'vertex', kind: 'building' });
+        expect(hit.coordinate).toEqual(P(5, 5));
+    });
+
+    it('a building corner beats a nearer parcel edge (corners first, then edges)', () => {
+        const near = rect(20.5, 0.8, 30, 10); // its corner is 0.78 m from the cursor, the parcel edge 0.2 m
+        const hit = siteDraft.snapToGround(P(20, 0.2), { parcels: [parcel], buildings: [near] }, { radiusM: 1 });
+        expect(hit).toMatchObject({ snapped: 'vertex', kind: 'building', coordinate: P(20.5, 0.8) });
+        // the nearer corner wins whichever kind it is
+        const hit2 = siteDraft.snapToGround(P(0.3, 0.3), { parcels: [parcel], buildings: [rect(0.8, 0.8, 9, 9)] }, { radiusM: 1 });
+        expect(hit2).toMatchObject({ snapped: 'vertex', kind: 'parcel', coordinate: P(0, 0) });
+    });
+
+    it('lands on a building edge and reports the kind', () => {
+        const hit = siteDraft.snapToGround(P(10, 12.4), { parcels: [parcel], buildings: [building] }, { radiusM: 1 });
+        expect(hit).toMatchObject({ snapped: 'edge', kind: 'building' });
+        expect(turf.distance(hit.coordinate, P(10, 12), { units: 'meters' })).toBeLessThan(0.01);
+    });
+
+    it('parcel-only targets behave like snapCoordinate', () => {
+        const hit = siteDraft.snapToGround(P(0.6, 0.2), { parcels: [parcel] }, { radiusM: 1 });
+        expect(hit).toMatchObject({ snapped: 'vertex', kind: 'parcel', coordinate: P(0, 0) });
+        expect(siteDraft.snapToGround(P(20, 5), { parcels: [parcel], buildings: [building] }, { radiusM: 1 }).snapped).toBe(false);
+    });
+
+    it('takes box entries from snapTargetsInBox and filters by the radius box', () => {
+        const entries = siteDraft.snapTargetsInBox([building], null);
+        expect(entries).toHaveLength(1);
+        expect(entries[0].box[0]).toBeCloseTo(P(5, 5)[0], 12);
+        const hit = siteDraft.snapToGround(P(15.5, 12.2), { buildings: entries }, { radiusM: 1 });
+        expect(hit).toMatchObject({ snapped: 'vertex', kind: 'building', coordinate: P(15, 12) });
+    });
+});
+
+describe('snapTargetsInBox', () => {
+    const inside = rect(5, 5, 15, 12);
+    const outside = rect(500, 500, 510, 510);
+    const viewport = [P(0, 0)[0], P(0, 0)[1], P(100, 100)[0], P(100, 100)[1]];
+
+    it('keeps only outlines that overlap the box', () => {
+        const entries = siteDraft.snapTargetsInBox([inside, outside, { type: 'Feature', geometry: inside }], viewport);
+        expect(entries).toHaveLength(2);
+        expect(entries[1].geometry).toBe(inside);
+    });
+
+    it('stops at the cap and drops non-geometries', () => {
+        expect(siteDraft.snapTargetsInBox([inside, inside, inside], viewport, { cap: 2 })).toHaveLength(2);
+        expect(siteDraft.snapTargetsInBox([null, { type: 'Point', coordinates: P(1, 1) }], viewport)).toHaveLength(0);
+    });
+});
+
 describe('bindingSummary', () => {
     const A = { id: 'HR-1-A', geometry: rect(0, 0, 40, 30) };
     const B = { id: 'HR-1-B', geometry: rect(40, 0, 80, 30) };

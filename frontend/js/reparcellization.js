@@ -145,7 +145,12 @@
         // the bound parcels' parts (their owners contribute) and the open ground (no owner).
         sitePool: null,
         // Frontage edge of the "plots along a street" layout (null = the site's longest edge).
-        streetFrontageIndex: null
+        streetFrontageIndex: null,
+        // Which basis that edge stands on (StreetFrontage: street / longest / user / pending), and
+        // a counter that retires a street lookup still in flight when the editor closes or the
+        // user turns the street.
+        streetFrontageBasis: null,
+        streetFrontageSeq: 0
     };
 
     function subdivisionApi() {
@@ -439,6 +444,8 @@
         state.poolFromOutputs = false;
         state.sitePool = null;
         state.streetFrontageIndex = null;
+        state.streetFrontageBasis = null;
+        state.streetFrontageSeq += 1;
         state.nodeEdit.active = false;
         state.nodeEdit.topology = null;
         state.nodeEdit.boundaryIndex = null;
@@ -3137,6 +3144,8 @@
         if (!edges.length) return;
         const current = Number.isInteger(state.streetFrontageIndex) ? state.streetFrontageIndex : -1;
         state.streetFrontageIndex = edges[(edges.findIndex(edge => edge.index === current) + 1) % edges.length].index;
+        state.streetFrontageBasis = { basis: 'user' };
+        state.streetFrontageSeq += 1;
         pushHistory();
         refreshPreview().catch(error => console.warn('[reparcellization] turning the street failed', error));
     }
@@ -3958,11 +3967,10 @@
                 updateCommitState();
                 return;
             }
-            setStatus(
-                t('reparcellization.modal.status.streetPlotsHint', 'Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.'),
-                'info',
-                'reparcellization.modal.status.streetPlotsHint'
-            );
+            const hint = t('reparcellization.modal.status.streetPlotsHint', 'Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.');
+            const basis = window.StreetFrontage ? window.StreetFrontage.basisText(state.streetFrontageBasis) : '';
+            if (basis) setStatus(`${basis} ${hint}`, 'info');
+            else setStatus(hint, 'info', 'reparcellization.modal.status.streetPlotsHint');
         } else if (state.algorithm === 'sweep-line') {
             initSweepOrientation();
             state.slices = computeSweepSlices();
@@ -4188,6 +4196,8 @@
         let planPool = null;
         state.sitePool = null;
         state.streetFrontageIndex = null;
+        state.streetFrontageBasis = null;
+        state.streetFrontageSeq += 1;
 
         // Every opener of a subdivision lands here: the draft adapter passes `sitePool`; the create
         // dialog's Edit only has the pending plan, whose pool IS the site.
@@ -4207,6 +4217,8 @@
             state.sitePool = built;
             state.streetFrontageIndex = Number.isInteger(window.pendingReparcellizationPlan && window.pendingReparcellizationPlan.streetFrontageIndex)
                 ? window.pendingReparcellizationPlan.streetFrontageIndex : null;
+            // A saved plan's street stays where it was saved: no street lookup re-lays it.
+            state.streetFrontageBasis = state.streetFrontageIndex === null ? null : { basis: 'saved' };
             selection = { ids: built.boundParcelIds.slice(), source: 'cadastre' };
             planPool = { type: 'Feature', properties: { parcelIds: built.boundParcelIds.slice() }, geometry: built.pool.pool };
         }
@@ -4352,7 +4364,33 @@
         state.openSignature = layoutSignature();
         if (state.historyCtl) state.historyCtl.clear();
         updateUndoAffordance();
+        if (state.sitePool && !state.streetFrontageBasis && !state.initialPolygons) findStreetFrontage();
         return true;
+    }
+
+    // A new subdivision's street goes on the site edge that faces a real street (StreetFrontage);
+    // the longest edge stands in until the lookup answers. The answer re-lays the plots only while
+    // the opening layout is untouched (still the baseline), and becomes the new baseline.
+    function findStreetFrontage() {
+        if (!window.StreetFrontage || !state.superParcel) return;
+        const seq = ++state.streetFrontageSeq;
+        state.streetFrontageBasis = { basis: 'pending' };
+        if (state.algorithm === 'street-plots') {
+            setStatus(`${window.StreetFrontage.basisText(state.streetFrontageBasis)} ${t('reparcellization.modal.status.streetPlotsHint', 'Plots along a street. Turn the street to another edge, or switch to Manual to edit the plots.')}`, 'info');
+        }
+        window.StreetFrontage.find(state.superParcel.geometry).then(async result => {
+            if (seq !== state.streetFrontageSeq) return;
+            const untouched = layoutSignature() === state.openSignature;
+            state.streetFrontageBasis = result;
+            if (untouched && result.frontageEdgeIndex >= 0) state.streetFrontageIndex = result.frontageEdgeIndex;
+            if (state.algorithm !== 'street-plots') return;
+            await refreshPreview();
+            if (untouched) {
+                state.openSignature = layoutSignature();
+                if (state.historyCtl) state.historyCtl.clear();
+                updateUndoAffordance();
+            }
+        }).catch(error => console.error('[reparcellization] frontage lookup failed', error));
     }
 
     if (typeof window.pendingReparcellizationPlan === 'undefined') {

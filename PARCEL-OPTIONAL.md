@@ -38,6 +38,12 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
    tracks, stations, subdivision/readjustment) may have an empty or partial binding.
 5. **Records stay immutable.** The binding is fixed at publish/mint with its cadastre snapshot time.
    When the cadastre changes, re-binding produces a new derived record; the old one is never edited.
+   *Drift* is the difference between the stored binding and the binding the server computes now for the
+   STORED site at the record's own tolerance (`GET /proposals/:id/binding-drift`, a read). A record
+   with drift says so in its details; **Re-bind** publishes a new record with the same site and design,
+   the current binding as its declaration, and `sourceProposalId`/`replacementOfProposalId` + `rebind`
+   pointing at the source, through the ordinary publish path (server binding again). Applying the new
+   record supersedes the source like any replacement; owner acceptances never carry over.
 6. **Execution follows the binding.**
    - Bound parcels: every attested owner of every bound parcel signs (unchanged).
    - Open ground (`coverage` partial or none): no owner can consent for it, so execution additionally
@@ -812,3 +818,132 @@ HR-335266-3159/1 → road across it (surface level, Build through) → park in 2
 **Open**
 - Still no "Build through" prompt for subdivision plots (the road just builds through them, as now
   agreed); the prompt names only parks/squares/lakes.
+
+### Phase 7a — snapping to buildings, frontage from streets (2026-10-01, built, not committed, not deployed)
+
+**Built**
+- **Site corners snap to building outlines.** `site-draft.js` gained `snapToGround(coordinate,
+  { parcels, buildings }, { radiusM })` (any corner of either kind beats any edge; the result carries
+  `kind: 'parcel'|'building'`) and `snapTargetsInBox(geometries, box, { cap })` (bbox-indexed entries).
+  `site-drawing.js` collects the features of the building layers currently on the map
+  (`window.buildingLayer` = GDI or the city's provider, `dguBuildingLayer`, `osmBuildingLayer`; in
+  memory, nothing fetched; buildings the plan destroyed skipped), bounded to the viewport and capped at
+  5,000, rebuilt lazily after `moveend`, `buildingsLayerUpdated` or a GeoJSON layer being added/removed.
+  Same 12 px radius, Alt still disables. The snap marker is pink on a building, blue on a parcel, with a
+  label ("Building corner", "Parcel edge", …).
+- **Frontage faces a street.** Pure `site-plots.js frontageScores` / `frontageFromStreets(site, streets)`:
+  for each edge, the best street segment within 30 m of the edge midpoint, within 30° of parallel and not
+  inside the site (> 2 m inward); score = parallel × (1 − d/30) × (edge / longest edge); none → the longest
+  edge (`basis: 'longest'`). Street names from `name` / `street_name`, kind from `highway_type` / `highway`.
+- **Street data**: `GET /streets/near?bbox=w,s,e,n` (WGS84; `backend/streets/near.js`, registered in
+  `routes/streets.js`). Inside osm_road's extent (`ST_EstimatedExtent`, i.e. Croatia) it reads osm_road
+  (index on `geom`, frontage highway types, named service roads); elsewhere (explore cities) it asks
+  Overpass through the cell-cached proxy the OSM buildings layer already used — `osm-reference.js` now
+  exposes `createOverpassCellSource` (per-source cache, shared throttle), `fetchOsmBuildings` is built
+  from it unchanged. `/streets` (the Zagreb street register, 5,413 lines, EPSG:3765) was not used: osm_road
+  covers all of Croatia with names and highway types.
+- **UI** (`js/street-frontage.js`, `window.StreetFrontage.find/basisText`): detached/row plots on a site
+  start on the longest edge while the lookup runs ("Looking for the street…"), then move to the street
+  edge — "Frontage facing Gotalovečka ulica (7 m away)." / "Frontage: the longest edge (no street within
+  30 m)." / "… (street data is unavailable here)." (Overpass throttled or a cell missing) / "the edge you
+  chose" after a click. The subdivision editor's "Plots along a street" does the same for a new plan
+  (status line), re-laying the plots only while the opening layout is untouched and taking that as the
+  new baseline; a saved plan keeps its saved edge. i18n en/hr/es/sr (`siteTool.snap.*`,
+  `siteTool.frontage.*`, updated `siteTool.hint.drawing/plots`).
+
+**Tests**: site-draft +7 (building corner/edge kind, corner-beats-edge across kinds, box entries, viewport
+filter and cap), site-plots +8 (street side vs longest, corner site, parallel beats perpendicular, too far /
+perpendicular / through the site → longest, clockwise ring, unnamed and register names, plots cut on the
+street edge), streets-near 9 (Overpass converter and query, osm_road vs Overpass by extent, extent cached,
+bbox refusals, route). Red-checked (kind forced to parcel → 4 fail; no inside check / no length factor →
+2 fail). Full suite: 6228 passed, 6 skipped, 5 failed — all 5 in `i18n-locale-coverage` for
+`panel.proposal.bindingDrift.*` keys of the concurrent re-binding work (`binding-drift-panel.js`), not this
+phase.
+
+**Verified in a headed browser** (local backend → docker DB; session closed, servers stopped; no page
+errors). Zagreb (Trešnjevka, GDI buildings on): cursor 4 px off a GDI corner 50 px from any parcel vertex
+→ marker "Building corner", the clicked vertex equals the building vertex exactly. A 36 × 40 m site 7 m
+north of Gotalovečka ulica → Detached: frontage on the 36 m street edge (longest is 40 m), "Frontage facing
+Gotalovečka ulica (7 m away)"; clicking another edge → "the edge you chose". (A 50 m deep site reaching
+Grebengradska picked Grebengradska at 2.5 m over Gotalovečka at 7 m — both face it.) Explore Tokyo:
+Overpass first throttled → "the longest edge (street data is unavailable here)"; after the cool-off a site on
+the Shibuya tracks → "no street within 30 m"; a 40 × 50 m site beside 宮益坂 → "Frontage facing 宮益坂 (8 m
+away)" on the 40 m edge; Subdivide on it → Plots along a street with "Frontage facing 宮益坂 (8 m away)."
+in the status, Cancel closed without an unsaved-changes prompt.
+
+**Open**
+- Public Overpass is slow/throttled at times; the explore frontage then honestly falls back to the longest
+  edge. An `OVERPASS_URL` mirror (already read by the proxy) would help.
+- The subdivision's inner street runs parallel to the frontage edge (phase 4 layout); facing the real
+  street does not yet mean plots front it directly when the street goes through the middle.
+
+### Phase 7b — re-binding on cadastre drift, Build through for plots (2026-10-01, built, not committed, not deployed)
+
+**Built**
+- **Drift (rule 5).** Shared pure module `frontend/js/proposals/binding-drift.js` (UMD,
+  `window.__bindingDrift`): `bindingDrift(stored, current)` → `{ added, removed, coverageChanged,
+  coverage, openGroundM2 }` or null (open ground moving < 1 m² is not drift), `driftNotice`,
+  `deriveReboundRecord` (deep copy minus identity/consent/chain/local state, binding + declaration =
+  current, lineage, `rebind { sourceProposalId, sourceServerId, storedComputedAt, currentComputedAt,
+  added, removed, bindingKey }`), `findRebound`. Server `backend/proposals/binding-drift.js`
+  `computeBindingDrift` reads the row (`site` column, else `proposal_data.site`; `binding` column, else
+  `proposal_data.binding`), recomputes with `computeBinding` at the stored `toleranceM` and city;
+  parcel acts (`subject: 'declared-parcels'`) are re-checked with `parcelActBinding` (gone parcels are
+  `removed`). Uncheckable: `no-binding`, `no-site`, `unknown-coverage`. Route
+  `GET /proposals/:id/binding-drift` in `routes/proposal-binding.js`, rate-limited with the binding
+  reads (`BINDING_DRIFT_PATH` in index.js); nothing is written.
+- **Details panel** (`binding-drift-panel.js`, mounted from `details-panel.js` runPostRender): for a
+  record with a serial server id, the check runs after render, cached per record for the page session;
+  the notice ("The cadastre changed since this was published: +2 parcels, −1", parcel lists, coverage
+  change) offers **Re-bind** (confirm → derive → `proposalStorage.addProposal` → `uploadProposalToServer`;
+  on failure the derived local record is removed) or, once re-bound, "Re-bound as <record>".
+  `sharing.js` content fingerprint includes `rebind.bindingKey`, so the upload is not deduplicated onto
+  the source (same site and design) — re-binding twice against the same cadastre publishes once.
+- **Build through for plots.** Pure `frontend/js/proposals/plot-crossings.js` (`window.__plotCrossings`):
+  `detectPlotCrossings(edge, { pieces, buildings, lookupProposal, plotRecords, approvedIds })` → plots
+  per subdivision/readjustment (count, m² taken, kind) and `blocked` = proposal buildings the edge
+  crosses that stand on an applied plot record's ground; `plotCrossingPrompt` → message + choices
+  (Build through / Choose another route; only the latter when blocked). Glue in `corridor-structures.js`
+  (`detectPlotCrossings`/`resolvePlotCrossings`, approvals per drawing session, cleared by
+  `resetApprovedStructureCrossings`); `road-drawing.js` asks it per edge before the building prompt.
+- i18n en/hr/es/sr: `modal.corridorPlots.*`, `panel.proposal.bindingDrift.*`; CSS in proposals.css.
+
+**Decisions**
+- The derived record uses the existing replacement lineage (`sourceProposalId`/`replacementOfProposalId`)
+  plus a `rebind` block; it is added parked (not applied), so the source keeps its place on the map
+  until the user applies the re-bound record.
+- The drift check is per page session (cache); a later cadastre change is seen after a reload.
+- A house on a plot is a refusal, not a choice: the prompt names it and offers only rerouting (the
+  building prompt's surface/tunnel choice is not reached for that edge). Houses not on any plot keep the
+  building prompt. Plots count is per piece crossed (a subdivision's street piece counts as a plot).
+
+**Tests** (backend vitest): binding-drift 17 (pure drift/notice/derive/findRebound; server recompute at
+the stored tolerance with the stored site, proposal_data fallback, parcel act, uncheckable cases; route
+200/404/500, writes nothing), plot-crossings 10 (detection per proposal, readjustment vs subdivision,
+kerf and approvals, house on/off plot, prompt choices, translator, corridor-structures glue incl.
+"build" never passing a refusal, i18n keys in 4 locales), i18n-locale-coverage allowlists
+`panel.proposal.bindingDrift.coverageKinds.`. Red-checked: dropping the on-plot test, the blocked-only
+choices, the glue's refusal guard, the stored tolerance, or the open-ground drift each turn a test red.
+Full suite: **6246 passed, 6 skipped, 0 failed**.
+
+**Verified in a headed browser** (local backend → docker DB; session closed, job stopped, no page
+errors). Zagreb: park on HR-339164-2972 → Share → Upload (row 1353). Cadastre change simulated in the
+LOCAL db only: parcel `cestica_id 41085223` set `current=false` and two halves inserted
+(`HR-339164-2972/901`, `/902`, `cestica_id -990001/-990002`, `data_source 'po9-drift-test'`). Reload →
+details: "The cadastre changed since this was published: +2 parcels, −1" with both lists → Re-bind →
+confirm → "Re-bound: published as record 1354"; row 1354 declares `/901,/902` with a fresh server
+binding, same site (`ST_Equals`), `sourceProposalId` and `rebind.sourceServerId = 1353`; row 1353
+unchanged (binding, `computedAt`, `updated_at`); its notice now says "Re-bound as …". Restored: test rows
+deleted, `current=true` back; the parcel row's md5 equals the pre-test value, table count and min id
+unchanged, drift of 1353 back to none. Rows 1353/1354 stay in the local DB as test records. Explore
+Tokyo: 16,000 m² site → Subdivide (plots along a street) → road across: prompt "“Subdivide …”: 5 plots,
+727 m²" → Build through → built, 18 pieces; Detached houses on one plot → road through a house: prompt
+lists 3 plots and "“Detached-houses …” on “Subdivide …”", "it would be refused", only "Choose another
+route" → nothing added.
+
+**Open**
+- After the cadastre change (and a reload) the source record still showed as applied locally on the
+  retired parcel id; nothing tells a locally applied record that its parcel was retired (not investigated).
+- The existing building prompt still says a surface crossing "takes their ground" for building
+  proposals off plots, although such a road is refused at apply (`building-over-road`).
+- No docs-agents.md / OpenAPI entry for `GET /proposals/:id/binding-drift` yet.

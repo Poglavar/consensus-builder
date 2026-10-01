@@ -1192,6 +1192,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         setupLazyList('proposal-descendants-list', descendantItemsRemaining, renderDescendantItem);
         // Populate acceptance sections asynchronously to avoid blocking panel open
         populateAcceptanceSectionsAsync(fullProposal || proposal, ownerAcceptanceSummaryFast);
+        // A published record whose site today's cadastre binds differently gets a notice with
+        // Re-bind (binding-drift-panel.js); checked in the background, cached per record.
+        try { window.__bindingDriftPanel?.mount(detailsContent, fullProposal || proposal); } catch (error) {
+            console.warn('[showProposalInfo] binding drift check could not start', error);
+        }
     };
 
     if (detailsContent && parcelIds.length > 20) {

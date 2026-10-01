@@ -135,6 +135,9 @@ function proposalContentPayload(proposal, includeCadastre = false) {
     // Only present on site-first records, so older fingerprints and share ids do not move.
     if (proposal.site) content.site = proposal.site;
     if (Number(proposal.toleranceM) > 0) content.toleranceM = Number(proposal.toleranceM);
+    // A re-bind (binding-drift.js) carries the same site and design as its source; the binding it
+    // was derived for makes it a different record, so its upload is not deduplicated onto the source.
+    if (proposal.rebind && proposal.rebind.bindingKey) content.rebind = String(proposal.rebind.bindingKey);
     if (includeCadastre) {
         content.cadastreParcelIds = (Array.isArray(proposal.cadastreParcelIds)
             ? proposal.cadastreParcelIds : []).map(String).slice().sort();

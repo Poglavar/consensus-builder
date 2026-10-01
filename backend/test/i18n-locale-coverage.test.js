@@ -32,6 +32,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'modal.roadWidth.proposalList.typeLabels.',
     'modal.singleBuilding.',
     'panel.parcel.ownershipType.',
+    'panel.proposal.bindingDrift.coverageKinds.', // plot-crossings.test.js checks all four kinds, all locales
     'proposalDrafts.validation.issues.',
     'proposals.roadDesignation.',
     'rowHouses.modal.',

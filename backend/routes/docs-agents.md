@@ -83,6 +83,11 @@ exactly those parcels in `cadastreParcelIds` — no more, no fewer. Ask the serv
 - A building, structure, road or readjustment may have an **empty** `cadastreParcelIds` when its
   site lies on no parcel. An offer, ownership transfer, vote or road designation acts on parcels and
   always needs them.
+- A published binding is fixed. When the cadastre changes later, `GET $(base)/proposals/<id>/binding-drift`
+  recomputes the binding of the stored site at its stored tolerance and returns
+  `{ checkable, reason?, stored, current, drift: { added, removed, coverageChanged } | null }`
+  (a read, free). The record is never edited: to follow the new cadastre, publish a new record with
+  the same site and the current binding (the app's "Re-bind" does exactly that and links the two).
 
 Other ways to find parcels:
 

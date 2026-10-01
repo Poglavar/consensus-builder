@@ -1271,6 +1271,29 @@
                 "unknownTime": "vreme nepoznato",
                 "sayYes": "Reci da i izvrši",
                 "ownerHint": "Ovo je tvoja ponuda. Kad kažeš da na svakoj svojoj parceli u kartici sočiva, ponuda se izvršava, a donacije se isplaćuju tebi."
+            },
+            "bindingDrift": {
+                "title": "Katastar se promenio otkad je ovo objavljeno: {{summary}}",
+                "addedOne": "+1 parcela",
+                "addedMany": "+{{count}} parc.",
+                "removed": "−{{count}}",
+                "addedList": "Sada zahvata i: {{list}}",
+                "removedList": "Više ne zahvata: {{list}}",
+                "coverage": "Pokrivenost: {{from}} → {{to}}",
+                "coverageKinds": {
+                    "complete": "potpuna",
+                    "partial": "delimična (otvoreno tlo)",
+                    "none": "bez katastra",
+                    "unknown": "nepoznata"
+                },
+                "note": "Ponovno vezivanje objavljuje novi zapis sa trenutnim parcelama. Ovaj ostaje kakav je objavljen.",
+                "rebind": "Ponovo veži",
+                "reboundAs": "Ponovo vezano kao",
+                "confirm": "Objaviti novi zapis sa istom lokacijom i dizajnom i trenutnim parcelama? Zapis koji gledaš se ne menja.",
+                "cancel": "Otkaži",
+                "unavailable": "Trenutno vezivanje ovog zapisa nije dostupno. Ponovo ga otvori i pokušaj opet.",
+                "failed": "Ponovno vezivanje nije uspelo: {{reason}}",
+                "done": "Ponovo vezano: objavljeno kao zapis {{id}}."
             }
         },
         "block": {
@@ -2615,6 +2638,16 @@
             "close": "Zatvori",
             "cancel": "Otkaži",
             "ok": "U redu"
+        },
+        "corridorPlots": {
+            "offer": "Ovaj {{kind}} bi presekao parcele iz:",
+            "line": "„{{name}}”: {{plots}}, {{area}}",
+            "plotOne": "1 parcela",
+            "plotMany": "parcela: {{count}}",
+            "note": "{{kind}} uzima svoj pojas iz parcela koje preseca; ostatak svake parcele ostaje. Uklanjanjem sa mape vraćaju se. Izgraditi kroz?",
+            "blocked": "Prošao bi kroz kuću koja stoji na parceli:",
+            "blockedLine": "„{{name}}” na „{{plot}}”",
+            "blockedNote": "{{kind}} se nikad ne gradi kroz postojeću zgradu, pa bi bio odbijen. Izaberi drugu trasu ili prvo ukloni kuću sa mape."
         }
     },
     "blockify": {
@@ -4054,9 +4087,9 @@
         "title": "Lokacija",
         "titleDrawing": "Nacrtaj lokaciju",
         "hint": {
-            "drawing": "Kliknite da dodate uglove (prianjaju uz ivice parcela; držite Alt da ne prianjaju). Kliknite prvi ugao ili pritisnite Enter za kraj. Backspace briše poslednji ugao, Esc odustaje.",
+            "drawing": "Kliknite da dodate uglove (prianjaju uz obrise parcela i zgrada; držite Alt da ne prianjaju). Kliknite prvi ugao ili pritisnite Enter za kraj. Backspace briše poslednji ugao, Esc odustaje.",
             "editing": "Prevucite uglove da promenite oblik, kliknite ivicu za novi ugao. Zatim gradite na lokaciji.",
-            "plots": "Placevi se seku duž ivice fronta (podrazumevano najduže). Kliknite drugu ivicu lokacije da je upotrebite."
+            "plots": "Placevi se seku duž ivice fronta (podrazumevano one okrenute ka ulici, inače najduže). Kliknite drugu ivicu lokacije da je upotrebite."
         },
         "actions": {
             "finish": "Završi lokaciju",
@@ -4116,6 +4149,20 @@
             "mapBusy": "Prvo završite otvoreni alat.",
             "parcelsUnavailable": "Te parcele nisu na mapi.",
             "plotsUnavailable": "Sečenje placeva nije dostupno."
+        },
+        "snap": {
+            "parcelCorner": "Ugao parcele",
+            "parcelEdge": "Ivica parcele",
+            "buildingCorner": "Ugao zgrade",
+            "buildingEdge": "Ivica zgrade"
+        },
+        "frontage": {
+            "pending": "Tražim ulicu ka kojoj je lokacija okrenuta…",
+            "user": "Front: ivica koju ste izabrali.",
+            "facing": "Front ka ulici {{street}} (udaljena {{distance}} m).",
+            "facingUnnamed": "Front ka neimenovanoj ulici (udaljena {{distance}} m).",
+            "longestNoStreet": "Front: najduža ivica (nema ulice u krugu od {{distance}} m).",
+            "longestNoData": "Front: najduža ivica (podaci o ulicama ovde nisu dostupni)."
         }
     },
     "groundStats": {

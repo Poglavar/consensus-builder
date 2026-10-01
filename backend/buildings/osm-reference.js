@@ -27,11 +27,8 @@ const FEATURE_CAP = 8000;          // above the densest zoom-17..19 viewport; on
 const MAX_SPAN_DEG = 0.06;         // ~6.6 km — a safety valve; the frontend zoom-gates to small boxes
 const FETCH_TIMEOUT_MS = 25000;
 
-// In-memory cache, one entry per grid cell. Bounded to avoid unbounded growth.
-const cache = new Map();
-// One in-flight request per cell: a viewport spanning four cells, fired twice by two moveend events,
-// must be four Overpass calls and not eight.
-const inFlight = new Map();
+// Shared by every Overpass source here: Overpass throttles per client, not per query, so a 429 for
+// buildings must also quiet the streets source.
 let throttledUntil = 0;
 
 function cacheNow() { return Date.now(); }
@@ -131,111 +128,130 @@ function buildOverpassQuery(bbox) {
     return `[out:json][timeout:25];(way["building"]${box};relation["building"]["type"="multipolygon"]${box};);out geom;`;
 }
 
-// Fetch ONE grid cell from Overpass, with the in-flight guard. Throws with .status on failure.
-async function fetchOsmCell(cell, options) {
-    const cached = cache.get(cell.key);
-    if (cached && (cached.at + CACHE_TTL_MS) > cacheNow()) return cached.fc;
-    if (inFlight.has(cell.key)) return inFlight.get(cell.key);
+/**
+ * One Overpass-backed source served cell by cell: its own cache and in-flight guard, the shared
+ * throttle. `buildQuery(cellBbox)` is the Overpass QL for one cell; `convert(elements, cap)` turns
+ * its `out geom` elements into { features, truncated }. Returns `fetchBbox(bbox, options)`, which
+ * fetches a WGS84 bbox [minLon, minLat, maxLon, maxLat] and returns a FeatureCollection with
+ * `truncated` (a cell hit the cap) and `partial` (some cell could not be fetched). It throws (with
+ * .status and .retryAfter) only when nothing at all could be served.
+ */
+function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEATURE_CAP }) {
+    // In-memory cache, one entry per grid cell. Bounded to avoid unbounded growth.
+    const cache = new Map();
+    // One in-flight request per cell: a viewport spanning four cells, fired twice by two moveend
+    // events, must be four Overpass calls and not eight.
+    const inFlight = new Map();
 
-    const overpassUrl = options.overpassUrl || process.env.OVERPASS_URL || DEFAULT_OVERPASS_URL;
-    const request = (async () => {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-        let json;
-        try {
-            const resp = await fetch(overpassUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    // OSM's Overpass usage policy REQUIRES a descriptive User-Agent; requests without
-                    // one are rejected with HTTP 406. Node's fetch sends none, so set it explicitly.
-                    'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)'
-                },
-                body: `data=${encodeURIComponent(buildOverpassQuery(cell.bbox))}`,
-                signal: controller.signal
-            });
-            if (!resp.ok) {
-                // 429 (too many requests) and 504 (the query queue timed out) both mean the same
-                // thing to us: back off. Anything else is a genuine upstream failure.
-                if (resp.status === 429 || resp.status === 504) throttledUntil = cacheNow() + THROTTLE_COOLOFF_MS;
-                const err = new Error(`Overpass HTTP ${resp.status}: ${(await resp.text()).slice(0, 200)}`);
-                err.status = (resp.status === 429 || resp.status === 504) ? 503 : 502;
-                throw err;
+    // Fetch ONE grid cell from Overpass, with the in-flight guard. Throws with .status on failure.
+    async function fetchCell(cell, options) {
+        const cached = cache.get(cell.key);
+        if (cached && (cached.at + CACHE_TTL_MS) > cacheNow()) return cached.fc;
+        if (inFlight.has(cell.key)) return inFlight.get(cell.key);
+
+        const overpassUrl = options.overpassUrl || process.env.OVERPASS_URL || DEFAULT_OVERPASS_URL;
+        const request = (async () => {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+            let json;
+            try {
+                const resp = await fetch(overpassUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        // OSM's Overpass usage policy REQUIRES a descriptive User-Agent; requests without
+                        // one are rejected with HTTP 406. Node's fetch sends none, so set it explicitly.
+                        'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)'
+                    },
+                    body: `data=${encodeURIComponent(buildQuery(cell.bbox))}`,
+                    signal: controller.signal
+                });
+                if (!resp.ok) {
+                    // 429 (too many requests) and 504 (the query queue timed out) both mean the same
+                    // thing to us: back off. Anything else is a genuine upstream failure.
+                    if (resp.status === 429 || resp.status === 504) throttledUntil = cacheNow() + THROTTLE_COOLOFF_MS;
+                    const err = new Error(`Overpass HTTP ${resp.status} (${label}): ${(await resp.text()).slice(0, 200)}`);
+                    err.status = (resp.status === 429 || resp.status === 504) ? 503 : 502;
+                    throw err;
+                }
+                json = await resp.json();
+            } finally {
+                clearTimeout(timer);
             }
-            json = await resp.json();
-        } finally {
-            clearTimeout(timer);
-        }
-        const fc = overpassElementsToGeoJSON(json && json.elements, FEATURE_CAP);
-        if (cache.size >= CACHE_MAX_ENTRIES) cache.clear();
-        cache.set(cell.key, { at: cacheNow(), fc });
-        return fc;
-    })();
+            const fc = convert(json && json.elements, featureCap);
+            if (cache.size >= CACHE_MAX_ENTRIES) cache.clear();
+            cache.set(cell.key, { at: cacheNow(), fc });
+            return fc;
+        })();
 
-    inFlight.set(cell.key, request);
-    try {
-        return await request;
-    } finally {
-        inFlight.delete(cell.key);
+        inFlight.set(cell.key, request);
+        try {
+            return await request;
+        } finally {
+            inFlight.delete(cell.key);
+        }
     }
+
+    return async function fetchBbox(bbox, options = {}) {
+        const [w, s, e, n] = bbox;
+        if (![w, s, e, n].every(Number.isFinite)) {
+            const err = new Error('Invalid bbox');
+            err.status = 400;
+            throw err;
+        }
+        if ((e - w) > MAX_SPAN_DEG || (n - s) > MAX_SPAN_DEG || e <= w || n <= s) {
+            const err = new Error(`bbox too large or malformed for the OSM ${label} source`);
+            err.status = 400;
+            throw err;
+        }
+
+        const cells = osmCellsForBbox(bbox, options.cellDeg);
+        const cooling = throttledUntil > cacheNow();
+        const features = [];
+        const seen = new Set();
+        let truncated = false;
+        let partial = false;
+        let failure = null;
+
+        for (const cell of cells) {
+            const cached = cache.get(cell.key);
+            const fresh = cached && (cached.at + CACHE_TTL_MS) > cacheNow();
+            // While cooling off, serve what is already held and ask Overpass for nothing.
+            if (!fresh && cooling) { partial = true; continue; }
+            let fc = fresh ? cached.fc : null;
+            if (!fc) {
+                try {
+                    fc = await fetchCell(cell, options);
+                } catch (err) {
+                    failure = err;
+                    partial = true;
+                    continue;
+                }
+            }
+            if (fc.truncated) truncated = true;
+            // A feature on a cell boundary comes back in both cells.
+            for (const feature of fc.features) {
+                if (seen.has(feature.id)) continue;
+                seen.add(feature.id);
+                features.push(feature);
+            }
+        }
+
+        if (!features.length && (failure || cooling)) {
+            const err = failure || new Error('Overpass is rate-limiting us; backing off');
+            err.status = err.status || 503;
+            if (throttledUntil > cacheNow()) err.retryAfter = Math.ceil((throttledUntil - cacheNow()) / 1000);
+            throw err;
+        }
+        return { type: 'FeatureCollection', features, truncated, partial };
+    };
 }
 
 // Fetch building footprints inside a WGS84 bbox [minLon, minLat, maxLon, maxLat], cell by cell.
-// Returns a GeoJSON FeatureCollection; `truncated` when a cell hit the feature cap, `partial` when
-// some cell could not be fetched but others were already cached. Throws (with .status and
-// .retryAfter) only when nothing at all could be served.
-async function fetchOsmBuildings(bbox, options = {}) {
-    const [w, s, e, n] = bbox;
-    if (![w, s, e, n].every(Number.isFinite)) {
-        const err = new Error('Invalid bbox');
-        err.status = 400;
-        throw err;
-    }
-    if ((e - w) > MAX_SPAN_DEG || (n - s) > MAX_SPAN_DEG || e <= w || n <= s) {
-        const err = new Error('bbox too large or malformed for the OSM reference layer');
-        err.status = 400;
-        throw err;
-    }
+const fetchOsmBuildings = createOverpassCellSource({
+    label: 'buildings',
+    buildQuery: buildOverpassQuery,
+    convert: overpassElementsToGeoJSON
+});
 
-    const cells = osmCellsForBbox(bbox, options.cellDeg);
-    const cooling = throttledUntil > cacheNow();
-    const features = [];
-    const seen = new Set();
-    let truncated = false;
-    let partial = false;
-    let failure = null;
-
-    for (const cell of cells) {
-        const cached = cache.get(cell.key);
-        const fresh = cached && (cached.at + CACHE_TTL_MS) > cacheNow();
-        // While cooling off, serve what is already held and ask Overpass for nothing.
-        if (!fresh && cooling) { partial = true; continue; }
-        let fc = fresh ? cached.fc : null;
-        if (!fc) {
-            try {
-                fc = await fetchOsmCell(cell, options);
-            } catch (err) {
-                failure = err;
-                partial = true;
-                continue;
-            }
-        }
-        if (fc.truncated) truncated = true;
-        // A building on a cell boundary comes back in both cells.
-        for (const feature of fc.features) {
-            if (seen.has(feature.id)) continue;
-            seen.add(feature.id);
-            features.push(feature);
-        }
-    }
-
-    if (!features.length && (failure || cooling)) {
-        const err = failure || new Error('Overpass is rate-limiting us; backing off');
-        err.status = err.status || 503;
-        if (throttledUntil > cacheNow()) err.retryAfter = Math.ceil((throttledUntil - cacheNow()) / 1000);
-        throw err;
-    }
-    return { type: 'FeatureCollection', features, truncated, partial };
-}
-
-export { overpassElementsToGeoJSON, buildOverpassQuery, osmHeightMeters, osmCellsForBbox, fetchOsmBuildings };
+export { overpassElementsToGeoJSON, buildOverpassQuery, osmHeightMeters, osmCellsForBbox, fetchOsmBuildings, createOverpassCellSource };

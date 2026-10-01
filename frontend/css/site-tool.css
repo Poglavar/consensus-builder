@@ -10,6 +10,8 @@
     --site-touched: #9ca3af;
     --site-open: #059669;
     --site-plot: #7c3aed;
+    --site-building: #be185d;
+    --site-street: #0f766e;
 }
 
 /* The ground menu's first action (Draw a site here) is the main one. */
@@ -65,6 +67,27 @@ body.site-tool-drawing .leaflet-container {
     stroke-width: 2px;
     fill: var(--site-bound);
     fill-opacity: 0.35;
+}
+
+/* Snapped to an existing building's outline rather than a parcel's. */
+.site-snap-marker--building {
+    stroke: var(--site-building);
+    fill: var(--site-building);
+}
+
+/* What the snap marker landed on ("Building corner", "Parcel edge"): a small label beside it. */
+.leaflet-tooltip.site-snap-label {
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--site-bound);
+    border-color: var(--site-bound);
+    box-shadow: none;
+}
+
+.leaflet-tooltip.site-snap-label--building {
+    color: var(--site-building);
+    border-color: var(--site-building);
 }
 
 .site-binding-parcel {
@@ -176,6 +199,16 @@ body.site-tool-drawing .leaflet-container {
     color: #6b7280;
     font-size: 12px;
     line-height: 1.4;
+}
+
+/* Which basis the plots' frontage stands on: a street (named), or the longest edge as a fallback. */
+.site-panel__frontage--street {
+    color: var(--site-street);
+    font-weight: 600;
+}
+
+.site-panel__frontage--longest {
+    color: #92400e;
 }
 
 .site-panel__error {

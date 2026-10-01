@@ -240,6 +240,17 @@ export function buildOpenApi(base, env) {
                     }
                 }
             },
+            '/proposals/{id}/binding-drift': {
+                get: {
+                    summary: 'Whether the cadastre changed under a published proposal: its stored binding beside the binding its stored site gets today. A read, free; the record is never edited (re-bind publishes a new derived record)',
+                    operationId: 'getProposalBindingDrift',
+                    parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'Server row id or proposal id.' }],
+                    responses: {
+                        200: { description: '{ id, proposalId, checkable, reason?, stored, current, drift: { added, removed, coverageChanged, coverage, openGroundM2 } | null }' },
+                        404: { description: 'No such proposal.' }
+                    }
+                }
+            },
             '/agent/oracle/facts': {
                 get: {
                     tags: ['x402'],

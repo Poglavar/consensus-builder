@@ -1,10 +1,13 @@
-// Detects when a corridor being drawn crosses an applied park/square/lake. The drawing may continue
-// or reroute; it never changes proposal state. The eventual road snapshot wins through replay.
+// Detects when a corridor being drawn crosses an applied park/square/lake, or applied
+// subdivision/readjustment plots (proposals/plot-crossings.js). The drawing may continue or reroute;
+// it never changes proposal state. The eventual road snapshot wins through replay.
 (function attachCorridorStructures(global) {
     let promptActive = false;
 
     // Structures the user already agreed to build through in the current drawing session.
     const approvedStructureIds = new Set();
+    // Plot proposals (subdivisions/readjustments) agreed to build through, same lifetime.
+    const approvedPlotProposalIds = new Set();
 
     function structureText(key, fallback, params = {}) {
         try {
@@ -93,13 +96,86 @@
         }
     }
 
+    function appliedPlotRecords(plots) {
+        const all = global.proposalStorage?.getAllProposals?.() || [];
+        const applied = typeof global.isProposalApplied === 'function'
+            ? record => global.isProposalApplied(record)
+            : record => record.applied === true;
+        return all.filter(record => plots.isPlotRecord(record) && applied(record));
+    }
+
+    // Plots of applied subdivisions/readjustments the edge would cut (not yet agreed to), and
+    // houses on such plots it would run through. `buildingHits` are the edge's building hits
+    // (corridor-tunnel.js detectLoadedBuildingTunnelIntersections); only proposal buildings count.
+    function detectPlotCrossings(corridorRing, buildingHits) {
+        const plots = global.__plotCrossings;
+        const api = global.turf;
+        const empty = { plots: [], blocked: [] };
+        if (!plots || !api || typeof global.corridorFeatureFromLatLngRing !== 'function') return empty;
+        const corridorFeature = global.corridorFeatureFromLatLngRing(corridorRing);
+        const fabric = global.LiveParcelFabric;
+        if (!corridorFeature || !fabric || typeof fabric.queryBounds !== 'function') return empty;
+        let pieces = [];
+        try {
+            pieces = fabric.queryBounds(api.bbox(corridorFeature), { includeCorridors: false });
+        } catch (error) {
+            console.warn('[corridor-structures] plot query failed', error);
+            return empty;
+        }
+        const buildings = (Array.isArray(buildingHits) ? buildingHits : [])
+            .map(hit => hit && (hit.feature || hit))
+            .filter(feature => feature && feature.geometry && feature.properties && feature.properties.proposalId);
+        return plots.detectPlotCrossings(corridorFeature, {
+            pieces,
+            buildings,
+            lookupProposal: id => (typeof global.getProposalByIdOrHash === 'function' ? global.getProposalByIdOrHash(id) : null),
+            plotRecords: appliedPlotRecords(plots),
+            approvedIds: approvedPlotProposalIds
+        });
+    }
+
+    // Returns true when drawing may continue (nothing to ask, or Build through), false to reroute.
+    // With a house in the way only "Choose another route" is offered: the apply would refuse it.
+    async function resolvePlotCrossings(result, corridorKind = 'road') {
+        const plots = global.__plotCrossings;
+        const prompt = plots ? plots.plotCrossingPrompt(result, {
+            t: structureText,
+            corridorKind,
+            formatArea: m2 => `${Math.round(m2).toLocaleString()} m²`
+        }) : null;
+        if (!prompt) return true;
+        if (promptActive) return false;
+        promptActive = true;
+        try {
+            let answer = 'cancel';
+            if (typeof global.showStyledChoice === 'function') {
+                answer = await global.showStyledChoice(prompt.message, prompt.choices);
+            } else if (typeof global.showStyledConfirm === 'function' && !prompt.blocked) {
+                answer = (await global.showStyledConfirm(prompt.message, {
+                    okText: prompt.choices[0].label,
+                    cancelText: prompt.choices[1].label
+                })) ? 'build' : 'cancel';
+            } else if (typeof global.showStyledAlert === 'function') {
+                await global.showStyledAlert(prompt.message);
+            }
+            const accepted = answer === 'build' && !prompt.blocked;
+            if (accepted) result.plots.forEach(entry => approvedPlotProposalIds.add(entry.proposalId));
+            return accepted;
+        } finally {
+            promptActive = false;
+        }
+    }
+
     function resetApprovedStructureCrossings() {
         approvedStructureIds.clear();
+        approvedPlotProposalIds.clear();
     }
 
     Object.assign(global, {
         detectStructureCrossings,
         resolveStructureCrossings,
+        detectPlotCrossings,
+        resolvePlotCrossings,
         resetApprovedStructureCrossings
     });
 })(typeof window !== 'undefined' ? window : globalThis);

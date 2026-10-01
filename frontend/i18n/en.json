@@ -1241,6 +1241,29 @@
                 "unknownTime": "time unknown",
                 "sayYes": "Say yes to execute",
                 "ownerHint": "You own this offer. Saying yes on each of your parcels in the lens card executes it and releases the donations to you."
+            },
+            "bindingDrift": {
+                "title": "The cadastre changed since this was published: {{summary}}",
+                "addedOne": "+1 parcel",
+                "addedMany": "+{{count}} parcels",
+                "removed": "−{{count}}",
+                "addedList": "Now also reaches: {{list}}",
+                "removedList": "No longer reaches: {{list}}",
+                "coverage": "Coverage: {{from}} → {{to}}",
+                "coverageKinds": {
+                    "complete": "complete",
+                    "partial": "partial (open ground)",
+                    "none": "no cadastre",
+                    "unknown": "unknown"
+                },
+                "note": "Re-binding publishes a new record with the current parcels. This one stays as it was published.",
+                "rebind": "Re-bind",
+                "reboundAs": "Re-bound as",
+                "confirm": "Publish a new record with the same site and design and the current parcels? The record you are viewing is not changed.",
+                "cancel": "Cancel",
+                "unavailable": "The current binding of this record is not available. Reopen it and try again.",
+                "failed": "Re-binding failed: {{reason}}",
+                "done": "Re-bound: published as record {{id}}."
             }
         },
         "block": {
@@ -2580,6 +2603,16 @@
             "close": "Close",
             "cancel": "Cancel",
             "ok": "OK"
+        },
+        "corridorPlots": {
+            "offer": "This {{kind}} would cut through plots of:",
+            "line": "“{{name}}”: {{plots}}, {{area}}",
+            "plotOne": "1 plot",
+            "plotMany": "{{count}} plots",
+            "note": "The {{kind}} takes its ground out of the plots it crosses; the rest of each plot stays. Unapplying the {{kind}} gives them back. Build through?",
+            "blocked": "It would run through a house standing on a plot:",
+            "blockedLine": "“{{name}}” on “{{plot}}”",
+            "blockedNote": "A {{kind}} is never built through a standing building, so it would be refused. Choose another route, or unapply the house first."
         }
     },
     "blockify": {
@@ -4016,9 +4049,9 @@
         "title": "Site",
         "titleDrawing": "Draw a site",
         "hint": {
-            "drawing": "Click to add corners (they snap to parcel edges; hold Alt not to). Click the first corner or press Enter to finish. Backspace removes the last corner, Esc cancels.",
+            "drawing": "Click to add corners (they snap to parcel and building outlines; hold Alt not to). Click the first corner or press Enter to finish. Backspace removes the last corner, Esc cancels.",
             "editing": "Drag corners to reshape, click an edge to add one. Then build on the site.",
-            "plots": "Plots are cut along the frontage edge (the longest by default). Click another edge of the site to use it instead."
+            "plots": "Plots are cut along the frontage edge (by default the one facing a street, else the longest). Click another edge of the site to use it instead."
         },
         "actions": {
             "finish": "Finish site",
@@ -4078,6 +4111,20 @@
             "mapBusy": "Finish the tool that is open first.",
             "parcelsUnavailable": "Those parcels are not on the map.",
             "plotsUnavailable": "Plot cutting is not available."
+        },
+        "snap": {
+            "parcelCorner": "Parcel corner",
+            "parcelEdge": "Parcel edge",
+            "buildingCorner": "Building corner",
+            "buildingEdge": "Building edge"
+        },
+        "frontage": {
+            "pending": "Looking for the street this site faces…",
+            "user": "Frontage: the edge you chose.",
+            "facing": "Frontage facing {{street}} ({{distance}} m away).",
+            "facingUnnamed": "Frontage facing an unnamed street ({{distance}} m away).",
+            "longestNoStreet": "Frontage: the longest edge (no street within {{distance}} m).",
+            "longestNoData": "Frontage: the longest edge (street data is unavailable here)."
         }
     },
     "groundStats": {
