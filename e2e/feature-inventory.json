@@ -699,7 +699,7 @@
       ]
     },
     {
-      "feature": "world navigation, exploration and city request retry",
+      "feature": "world navigation, exploration, city request retry and clickable recent activity",
       "specs": [
         "tests/world-and-ground.spec.ts"
       ]

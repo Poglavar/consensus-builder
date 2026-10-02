@@ -759,3 +759,59 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
         max-width: 220px;
     }
 }
+
+/* Recent activity floats beside the planet, with no card background. */
+.world-activity {
+    position: absolute;
+    z-index: 2;
+    top: 34%;
+    right: max(24px, calc((100vw - 1500px) / 2));
+    width: 280px;
+    text-shadow: 0 1px 8px #030712;
+    touch-action: pan-y;
+}
+.world-activity__header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.world-activity__header h2 { flex: 1; margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--world-ink-dim); }
+.world-activity__viewport { height: 240px; overflow: auto; scrollbar-width: thin; }
+.world-activity--cycling .world-activity__viewport { overflow: hidden; mask-image: linear-gradient(transparent, black 8px, black calc(100% - 12px), transparent); }
+.world-activity__list { list-style: none; margin: 0; padding: 0; }
+.world-activity__list li { height: 80px; }
+.world-activity__event { box-sizing: border-box; height: 100%; padding: 10px 2px; display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: var(--world-ink); border-bottom: 1px solid rgba(150, 190, 255, .12); }
+.world-activity__event { --event-color: #6cb4ff; position: relative; padding-left: 15px; }
+.world-activity__event::before { content: ""; position: absolute; left: 0; top: 15px; width: 6px; height: 6px; border-radius: 50%; background: var(--event-color); box-shadow: 0 0 10px color-mix(in srgb, var(--event-color) 45%, transparent); }
+.world-activity__action { color: var(--event-color); }
+.world-activity__event[data-event-type="execute"], .world-activity__event[data-event-type="accept"] { --event-color: #43e6a6; }
+.world-activity__event[data-event-type="cancel"] { --event-color: #ff8c9d; }
+.world-activity__event[data-event-type="createMarket"] { --event-color: #c0a0ff; }
+.world-activity__event[data-event-type="resolve"], .world-activity__event[data-event-type="claim"], .world-activity__event[data-event-type="donate"] { --event-color: #ffc24b; }
+.world-activity__event[data-event-type="pledge"], .world-activity__event[data-event-type="fulfillPledge"] { --event-color: #66dce7; }
+.world-activity__event:hover { color: var(--event-color); }
+.world-activity__meta { display: flex; align-items: center; gap: 10px; color: var(--world-ink-dim); font-size: 11px; }
+.world-activity__location { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.world-activity__event time { white-space: nowrap; margin-left: auto; }
+.world-activity[aria-busy="true"] { cursor: progress; }
+.world-activity__action { font-size: 14px; font-weight: 600; }
+.world-activity__subject { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--world-ink-dim); }
+.world-activity__event time { color: var(--world-ink-dim); font-size: 11px; }
+.world-activity__status { font-size: 13px; color: var(--world-ink-dim); }
+.world-activity--cycling .world-activity__track { animation: world-activity-cycle var(--activity-duration) linear infinite; }
+.world-activity:hover .world-activity__track { animation-play-state: paused; }
+.world-activity--manual .world-activity__track { animation: none; transform: none; }
+.world-activity--manual .world-activity__viewport { overflow-y: auto; overflow-x: hidden; mask-image: none; overscroll-behavior: contain; }
+.world-activity a:focus-visible { outline: 2px solid var(--world-accent); outline-offset: -2px; border-radius: 4px; }
+.world-view--diving .world-activity { opacity: 0; pointer-events: none; }
+@keyframes world-activity-cycle { to { transform: translateY(-50%); } }
+@media (max-width: 1099px) {
+    .world-activity { top: auto; bottom: calc(90px + var(--app-safe-area-bottom, 0px)); right: 18px; left: 18px; width: auto; }
+    .world-activity__header { margin-bottom: 0; }
+    .world-activity__viewport { height: 144px; }
+    .world-activity__list li { height: 72px; }
+    .world-activity__event { padding: 6px 2px 6px 15px; }
+    .world-popup:not([hidden]) ~ .world-activity { visibility: hidden; }
+    .world-view:has(.world-popup:not([hidden])) .world-activity { visibility: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .world-activity--cycling .world-activity__track { animation: none; }
+    .world-activity__copy { display: none; }
+    .world-activity--cycling .world-activity__viewport { overflow: auto; mask-image: none; }
+}

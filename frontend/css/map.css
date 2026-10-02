@@ -45,6 +45,17 @@
     --map-mode-slot-6: 304px;
 }
 
+/* The perspective view owns the lower-left corner (its flat-map scale is hidden). Keep the
+   same button order and spacing, anchored above the bottom edge instead of under search. */
+body.three-mode-active {
+    --map-mode-slot-1: calc(100dvh - var(--app-safe-area-bottom, 0px) - 324px);
+    --map-mode-slot-2: calc(100dvh - var(--app-safe-area-bottom, 0px) - 276px);
+    --map-mode-slot-3: calc(100dvh - var(--app-safe-area-bottom, 0px) - 228px);
+    --map-mode-slot-4: calc(100dvh - var(--app-safe-area-bottom, 0px) - 180px);
+    --map-mode-slot-5: calc(100dvh - var(--app-safe-area-bottom, 0px) - 132px);
+    --map-mode-slot-6: calc(100dvh - var(--app-safe-area-bottom, 0px) - 84px);
+}
+
 /* The left edge the stack owns: its offset, a 40px button and a 10px gap. On phones every bottom
    sheet starts right of this, so no panel is ever drawn over (or under) the buttons. Declared on
    body, where the offset it reads is in scope. */

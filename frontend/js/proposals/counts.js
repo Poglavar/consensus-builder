@@ -33,7 +33,61 @@
         return (now - refreshedAt) >= maxAge;
     }
 
-    const api = { unionProposalCount, serverCountIsStale };
+    function summaryUpdatesAreaCount(query) {
+        return typeof query !== 'string' || query.trim() === '';
+    }
+
+    function proposalIntersectsBounds(proposal, bounds) {
+        if (!proposal || !bounds) return false;
+        const { west, south, east, north } = bounds;
+        const finite = value => typeof value === 'number' && Number.isFinite(value);
+        if (![west, south, east, north].every(finite)) return false;
+        const geometries = [proposal.geometry, proposal.site, proposal.data?.geometry,
+            proposal.siteProposal?.geometry, proposal.structureProposal?.geometry,
+            proposal.roadProposal?.geometry, proposal.roadProposal?.definition?.polygon,
+            proposal.reparcellization?.polygons];
+        let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
+        const visit = value => {
+            if (!value) return;
+            if (Array.isArray(value)) {
+                if (value.length >= 2 && finite(value[0]) && finite(value[1])) {
+                    const lon = value[0], lat = value[1];
+                    if (lon >= -180 && lon <= 180 && lat >= -90 && lat <= 90) {
+                        minLon = Math.min(minLon, lon); maxLon = Math.max(maxLon, lon);
+                        minLat = Math.min(minLat, lat); maxLat = Math.max(maxLat, lat);
+                        return;
+                    }
+                }
+                value.forEach(visit);
+                return;
+            }
+            if (typeof value !== 'object') return;
+            if (value.type === 'Feature') return visit(value.geometry);
+            if (value.type === 'FeatureCollection') return visit(value.features);
+            if (value.type === 'GeometryCollection') return visit(value.geometries);
+            if (value.coordinates) return visit(value.coordinates);
+            if (value.geometry) return visit(value.geometry);
+            if (value.features) return visit(value.features);
+            if (value.polygon) return visit(value.polygon);
+            if (value.polygons) return visit(value.polygons);
+            for (const key of ['parcelGeometry', 'parcel', 'structureGeometry', 'structure', 'buildings', 'parcels']) {
+                if (value[key]) visit(value[key]);
+            }
+            if (value.lat !== undefined && value.lon !== undefined) return visit([value.lon, value.lat]);
+        };
+        geometries.forEach(visit);
+        if (minLon === Infinity && proposal.bounds) {
+            const b = proposal.bounds;
+            const values = Array.isArray(b) ? b : [b.west ?? b.minX ?? b.minLng, b.south ?? b.minY ?? b.minLat,
+                b.east ?? b.maxX ?? b.maxLng, b.north ?? b.maxY ?? b.maxLat];
+            if (values.length === 4 && values.every(finite) && values[0] <= values[2] && values[1] <= values[3]) {
+                [minLon, minLat, maxLon, maxLat] = values;
+            }
+        }
+        return minLon !== Infinity && maxLon >= west && minLon <= east && maxLat >= south && minLat <= north;
+    }
+
+    const api = { unionProposalCount, serverCountIsStale, summaryUpdatesAreaCount, proposalIntersectsBounds };
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (typeof window !== 'undefined') global.__proposalCounts = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this));

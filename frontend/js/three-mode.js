@@ -335,9 +335,10 @@
     let displayStateSelects = { built: null, planned: null };
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
-    // Parcel isolation: clicking a parcel hides everything but that parcel and the
-    // building(s) sitting on it. null = not isolated (full scene).
+    // Parcel selection emphasizes the clicked ground while keeping the city and camera in place.
+    // Proposal isolation remains a separate view with its own framing and visibility rules.
     let isolatedParcelId = null;
+    let parcelEmphasisOriginals = new WeakMap();
     // Proposal isolation: showing a whole proposal (all its parcels + their buildings) at once,
     // reached via the [show] button in the parcel panel. null = not isolating a proposal.
     let isolatedProposalId = null;
@@ -523,6 +524,18 @@
 
     function getParcelFeatureById(parcelId) {
         return window.LiveParcelFabric?.get?.(String(parcelId)) || null;
+    }
+
+    function applyParcelEmphasis() {
+        const emphasis = window.ThreeParcelEmphasis;
+        if (!emphasis || !scene) return;
+        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId, parcelEmphasisOriginals);
+    }
+
+    function restoreParcelEmphasis() {
+        const emphasis = window.ThreeParcelEmphasis;
+        if (!emphasis || !scene) return;
+        parcelEmphasisOriginals = emphasis.apply(scene, null, parcelEmphasisOriginals);
     }
 
     // Ground-plane footprint polygon (lng/lat) of a nearby 3D building, from the convex hull of all
@@ -839,8 +852,8 @@
         wireSliderAndGain(panel);
     }
 
-    // Show only the given set of parcels (and the buildings on them). Used by both single-parcel
-    // and whole-proposal isolation. parcelFeatures are the polygons for testing existing
+    // Show only the given set of parcels (and the buildings on them). Used for whole-proposal
+    // isolation. parcelFeatures are the polygons for testing existing
     // (untagged) context buildings by footprint centre.
     function applyIsolationVisibility(parcelIdSet, parcelFeatures) {
         // flatGroup holds parcels (tagged) and roads (untagged) — show only members of the set.
@@ -877,20 +890,24 @@
     function notifyIsolationChanged() {
         try {
             window.dispatchEvent(new CustomEvent('threeModeIsolationChanged', {
-                detail: { proposalId: isolatedProposalId, parcelId: isolatedParcelId }
+                // Parcel selection now emphasizes in place; only proposal isolation removes
+                // proposal surfaces from the scene.
+                detail: { proposalId: isolatedProposalId, parcelId: null }
             }));
         } catch (_) { }
     }
 
     function isolateParcel(parcelId) {
         if (!parcelId) return;
+        // If the current view is a whole-proposal isolation, restore it before changing view type.
+        if (isolatedProposalId !== null) clearIsolation();
         isolatedParcelId = parcelId;
         isolatedProposalId = null;
         updateIsolationButton();
         updateParcelInfoPanel(parcelId);
-        const pf = getParcelFeatureById(parcelId);
-        applyIsolationVisibility(new Set([String(parcelId)]), pf ? [pf] : []);
-        frameIsolatedFeatures(pf ? [pf] : []);
+        applyParcelEmphasis();
+        // A parcel selection does not isolate photoreal proposal cuts either: all city surfaces
+        // remain present while the selected parcel receives the bright outline/fill.
         notifyIsolationChanged();
     }
 
@@ -930,6 +947,7 @@
         // figures to show, so the scene stays as it is and only the panel and camera follow it.
         const siteFeature = idSet.size ? null : proposalSiteFeature(proposal);
         if (!idSet.size && !siteFeature) return;
+        if (isolatedParcelId !== null) clearIsolation();
         isolatedProposalId = String(proposalId);
         isolatedParcelId = null;
         updateIsolationButton();
@@ -948,10 +966,16 @@
 
     function clearIsolation() {
         if (isolatedParcelId === null && isolatedProposalId === null) return;
+        const wasProposalIsolated = isolatedProposalId !== null;
         isolatedParcelId = null;
         isolatedProposalId = null;
         updateIsolationButton();
         hideParcelInfoPanel();
+        restoreParcelEmphasis();
+        if (!wasProposalIsolated) {
+            notifyIsolationChanged();
+            return;
+        }
         // Restore every flatGroup child (roads + all parcels) before re-applying the mode,
         // which may then re-hide applied-descendant parcels in Built mode.
         if (flatGroup) flatGroup.children.forEach(c => { c.visible = true; });
@@ -1705,6 +1729,7 @@
                 console.warn('[3D] proposal pick surface failed; skipping one proposal', proposalError);
             }
         });
+        applyParcelEmphasis();
     }
 
     function buildParks3D(flatTarget, decoTarget) {
@@ -2384,6 +2409,7 @@
             if (child?.userData?.isPlannedReparcelPlot) plannedFlatGroup.remove(child);
         }
         buildPlannedReparcellization3D(plannedFlatGroup);
+        applyParcelEmphasis();
     }
 
     // Recessed lakes and underground station entrances need openings in the otherwise opaque
@@ -2478,12 +2504,14 @@
 
     function rebuildParcelGround3D() {
         if (!isActive || !flatGroup) return;
+        restoreParcelEmphasis();
         for (let index = flatGroup.children.length - 1; index >= 0; index--) {
             const child = flatGroup.children[index];
             if (child?.userData?.isParcel) flatGroup.remove(child);
         }
         buildParcels3D(flatGroup);
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
+        applyParcelEmphasis();
     }
 
     // Set of parcel IDs that exist *only* because of an applied/executed proposal.
@@ -4562,8 +4590,10 @@
 
     function rebuildTreesOnly() {
         if (!isActive || !treesGroup) return;
+        restoreParcelEmphasis();
         disposeTreesGroup();
         if (treesEnabled) buildTreesGroup();
+        applyParcelEmphasis();
     }
 
     function ensureNearbyTrees() {
@@ -5275,6 +5305,7 @@
         corridorTerrainCommittedKeys = completedKeys;
         corridorGroup.visible = false;
         scene.add(group);
+        applyParcelEmphasis();
         const stationHeights = profiles.flatMap(profile => profile.stations.map(station => station.z))
             .filter(Number.isFinite);
         const minZ = stationHeights.length ? Math.min(...stationHeights) : null;
@@ -5379,6 +5410,7 @@
 
     function rebuild3DBuildingsOnly() {
         if (!isActive || !buildingGroup) return;
+        restoreParcelEmphasis();
         clearGroupChildren(buildingGroup);
         // Bump the generation so in-flight async model loads from a prior rebuild don't
         // attach their meshes to the freshly cleared group.
@@ -5416,8 +5448,8 @@
         ensureNearbyTrees();
         rebuildTreesOnly();
 
-        // Freshly rebuilt buildings default to visible; re-apply isolation if active.
-        if (isolatedParcelId !== null) isolateParcel(isolatedParcelId);
+        // Freshly rebuilt geometry gets the current selection treatment without moving the camera.
+        if (isolatedParcelId !== null) applyParcelEmphasis();
         else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
     }
 
@@ -5659,7 +5691,7 @@
         // Resize handling
         window.addEventListener('resize', handleResize, { passive: true });
 
-        // Parcel isolation: click a parcel to show only it; click empty/again or Escape to reset.
+        // Parcel selection emphasizes it in place; click empty/again or Escape to reset.
         // pointerdown records the press position so a click that ends a drag is ignored.
         parcelPointerDownHandler = (e) => { if (e.button === 0) clickDownXY = { x: e.clientX, y: e.clientY }; };
         renderer.domElement.addEventListener('pointerdown', parcelPointerDownHandler);
@@ -5941,7 +5973,7 @@
             try { controls.dispose(); } catch (_) { }
         }
         controls = null;
-        // Tear down parcel-isolation pointer listeners and reset state.
+        // Tear down 3D selection pointer listeners and reset state.
         if (renderer && renderer.domElement) {
             if (parcelClickHandler) { try { renderer.domElement.removeEventListener('click', parcelClickHandler); } catch (_) { } }
             if (parcelPointerDownHandler) { try { renderer.domElement.removeEventListener('pointerdown', parcelPointerDownHandler); } catch (_) { } }

@@ -19,6 +19,56 @@ async function sceneBuildings(page: Page) {
 }
 
 test.describe('3D rendering and controls @features', () => {
+  test('mode buttons stay lower left and parcel clicks preserve the camera while dimming context', async ({ mockApi: page }) => {
+    await mockBuildingScene(page); await openCity(page); await enter3D(page);
+    await page.locator('#three-mode-built-display').selectOption('solid');
+    await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
+    const originalBuildings = await sceneBuildings(page);
+    for (const id of ['mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle']) {
+      const box = await page.locator('#' + id).boundingBox();
+      expect(box!.x).toBeLessThan(30); expect(box!.y).toBeGreaterThan(page.viewportSize()!.height / 2);
+    }
+    const camera = () => page.evaluate(() => {
+      const { camera, controls } = (window as any).getThreeModeInternals();
+      return { position: camera.position.toArray(), target: controls.target.toArray(), zoom: camera.zoom };
+    });
+    const point = await page.evaluate(() => {
+      const w = window as any, { scene, camera, renderer } = w.getThreeModeInternals();
+      let mesh: any;
+      scene.traverse((o: any) => { if (o.isMesh && o.userData?.parcelId === 'HR-335754-1234') mesh = o; });
+      if (!mesh) throw new Error('No parcel mesh');
+      mesh.geometry.computeBoundingBox();
+      const p = mesh.geometry.boundingBox.getCenter(new w.THREE.Vector3());
+      mesh.localToWorld(p); p.project(camera);
+      const box = renderer.domElement.getBoundingClientRect();
+      return { x: box.left + (p.x + 1) * box.width / 2, y: box.top + (1 - p.y) * box.height / 2 };
+    });
+    const before = await camera();
+    await page.mouse.click(point.x, point.y);
+    await expect(page.locator('.three-mode-parcel-panel')).toBeVisible();
+    expect(await camera()).toEqual(before);
+    const buildings = await sceneBuildings(page);
+    expect(buildings).toHaveLength(2);
+    expect(buildings.map(building => building.color)).not.toEqual(originalBuildings.map(building => building.color));
+    expect(await page.evaluate(() => {
+      let selected = false;
+      (window as any).getThreeModeInternals().scene.traverse((o: any) => {
+        if (o.isMesh && o.userData?.parcelId === 'HR-335754-1234' && o.material.color?.getHex() === 0x29c8ff) selected = true;
+      });
+      return selected;
+    })).toBe(true);
+    const visible = await page.evaluate(() => {
+      let count = 0;
+      (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.userData?.isNearbyBuilding3D && o.visible && o.parent.visible) count++; });
+      return count;
+    });
+    expect(visible).toBe(2);
+    await page.locator('.three-mode-reset-btn').click();
+    await expect(page.locator('.three-mode-reset-btn')).toBeHidden();
+    expect(await camera()).toEqual(before);
+    expect((await sceneBuildings(page)).map(building => building.color)).toEqual(originalBuildings.map(building => building.color));
+    await page.screenshot({ path: '/private/tmp/colosseum-3d-parcel-emphasis.png' });
+  });
   test('3D enters with real building meshes, orbit and zoom work, and 2D returns', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);

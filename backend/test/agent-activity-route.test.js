@@ -19,6 +19,154 @@ const row = {
 };
 
 describe('agent activity', () => {
+    it('serves only public, confirmed recent events in newest-first order with real proposal links', async () => {
+        const proposalAccount = '11111111111111111111111111111111';
+        const proposalRows = [
+            { proposal_id: 'p1', city: 'zagreb', display_name: 'Pocket park', created_at: '2026-09-21T10:00:00Z',
+                proposal_data: { geometry: { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.92, 45.8], [15.92, 45.82], [15.9, 45.8]]] } } }
+        ];
+        const calls = [];
+        const pool = { query: async (sql, params = []) => {
+            calls.push({ sql, params });
+            if (sql.includes('proposal_account')) return { rows: [{ ...proposalRows[0], proposal_account: proposalAccount }] };
+            if (sql.includes('FROM proposal')) return { rows: proposalRows };
+            if (sql.includes('consensus.land_event')) return { rows: [{
+                event_id: 'verified-execution', subject_id: proposalAccount, outcome: 'executed',
+                source_observed_at: '2026-09-21T12:00:00Z', transaction_signature: 'execute-tx'
+            }] };
+            return { rows: [{ raw: { signature: 'accepted-tx' }, signature: 'accepted-tx' }] };
+        } };
+        const decode = raw => ({
+            signature: raw.signature || 'failed-tx', status: raw.failed ? 'failed' : 'success',
+            time: raw.failed ? '2026-09-21T14:00:00Z' : '2026-09-21T13:00:00Z',
+            feePayer: { address: 'wallet-1' }, instructions: [{
+                index: 0, inner: false, program: { name: 'proposal_market', address: 'market-program' },
+                action: 'accept_proposal', accounts: [{ role: 'proposal', address: proposalAccount }]
+            }]
+        });
+        const app = express();
+        setupAgentActivityRoute(app, pool, { book: { entryFor: () => null }, idls: {}, decode });
+
+        const response = await request(app).get('/activity/recent?limit=999');
+
+        expect(response.status).toBe(200);
+        expect(response.headers['cache-control']).toContain('no-store');
+        expect(response.body.source).toBe('live');
+        expect(response.body.events.map(event => event.action.type)).toEqual(['accept', 'execute', 'create']);
+        expect(response.body.events[0]).toMatchObject({
+            action: { proposalId: 'p1' }, entity: { type: 'proposal', id: 'p1' },
+            proposalName: 'Pocket park', cityId: 'zagreb', transaction: 'accepted-tx',
+            location: { lat: 45.81, lon: 15.91 }
+        });
+        expect(response.body.events[1].location).toEqual({ lat: 45.81, lon: 15.91 });
+        expect(response.body.events[2].location).toEqual({ lat: 45.81, lon: 15.91 });
+        expect(response.body.events[1]).toMatchObject({
+            id: 'verified-execution', action: { type: 'execute', proposalId: 'p1' },
+            provenance: { source: 'verified_proposal_lifecycle' }
+        });
+        expect(calls.find(call => call.sql.includes('FROM proposal') && call.sql.includes('created_at')).params).toEqual([30]);
+        expect(calls.find(call => call.sql.includes('consensus.land_event')).sql).toMatch(/event_type = 'proposal_lifecycle' AND outcome = 'executed'/);
+    });
+
+    it('uses valid stored bounds when geometry is absent and omits unusable locations', async () => {
+        const proposals = [
+            { proposal_id: 'bounded', city: 'zagreb', display_name: 'Bounds proposal', bounds: { west: 15.9, south: 45.8, east: 15.92, north: 45.82 } },
+            { proposal_id: 'unknown', city: 'nowhere', display_name: 'No coordinates', proposal_data: { geometry: { type: 'Point', coordinates: [181, 95] } }, bounds: [-200, -100, 200, 100] }
+        ];
+        const pool = { query: async sql => {
+            if (sql.includes('FROM proposal')) return { rows: proposals };
+            return { rows: [] };
+        } };
+        const app = express();
+        setupAgentActivityRoute(app, pool, { book: {}, idls: {}, decode: () => null });
+        const response = await request(app).get('/activity/recent?limit=10');
+        expect(response.status).toBe(200);
+        expect(response.body.events.find(event => event.entity.id === 'bounded').location).toEqual({ lat: 45.81, lon: 15.91 });
+        expect(response.body.events.find(event => event.entity.id === 'unknown')).not.toHaveProperty('location');
+    });
+
+    it('finds coordinates in structure, road, and reparcellization proposal bodies without spreading vertices', async () => {
+        const polygon = (west, south, east, north) => ({
+            type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+        });
+        const proposals = [
+            { proposal_id: 'structure', proposal_data: { structureProposal: { geometry: polygon(15.9, 45.8, 15.92, 45.82) } } },
+            { proposal_id: 'road', proposal_data: { roadProposal: { definition: { features: {
+                type: 'FeatureCollection', features: [{ type: 'Feature', geometry: polygon(16, 46, 16.02, 46.02) }]
+            } } } } },
+            { proposal_id: 'reparcel', proposal_data: { reparcellization: { polygons: [
+                { geometry: polygon(16.1, 46.1, 16.12, 46.12) }
+            ] } } },
+            { proposal_id: 'many', proposal_data: { geometry: { type: 'LineString', coordinates:
+                Array.from({ length: 200000 }, (_, i) => [15 + i / 1e7, 45 + i / 1e7]) } } }
+        ];
+        const pool = { query: async sql => sql.includes('FROM proposal') ? { rows: proposals } : { rows: [] } };
+        const app = express();
+        setupAgentActivityRoute(app, pool, { book: {}, idls: {}, decode: () => null });
+
+        const response = await request(app).get('/activity/recent?limit=10');
+
+        expect(response.status).toBe(200);
+        const location = id => response.body.events.find(event => event.entity.id === id)?.location;
+        expect(location('structure')).toEqual({ lat: 45.81, lon: 15.91 });
+        expect(location('road').lat).toBeCloseTo(46.01, 10);
+        expect(location('road').lon).toBeCloseTo(16.01, 10);
+        expect(location('reparcel').lat).toBeCloseTo(46.11, 10);
+        expect(location('reparcel').lon).toBeCloseTo(16.11, 10);
+        expect(location('many').lat).toBeCloseTo(45.00999995, 10);
+        expect(location('many').lon).toBeCloseTo(15.00999995, 10);
+    });
+
+    it('defaults the public activity limit to twelve and omits failed, fake, and unmapped chain actions', async () => {
+        const proposalAccount = '11111111111111111111111111111111';
+        const calls = [];
+        const pool = { query: async (sql, params = []) => {
+            calls.push({ sql, params });
+            if (sql.includes('proposal_account')) return { rows: [{ proposal_id: 'p1', proposal_account: proposalAccount, city: 'zagreb', display_name: 'Park' }] };
+            if (sql.includes('FROM proposal')) return { rows: [] };
+            if (sql.includes('consensus.land_event')) return { rows: [] };
+            return { rows: [{ raw: { status: 'failed' }, signature: 'failed' }, { raw: { status: 'success' }, signature: 'unmapped' }] };
+        } };
+        const decode = raw => ({ signature: raw.status || 'unmapped', status: raw.status || 'success', time: '2026-09-21T13:00:00Z', instructions: [{
+            inner: false, program: { name: 'proposal_market' }, action: 'create_market',
+            accounts: [{ role: 'proposal', address: 'not-a-public-proposal' }]
+        }] });
+        const app = express();
+        setupAgentActivityRoute(app, pool, { book: {}, idls: {}, decode });
+        const response = await request(app).get('/activity/recent');
+        expect(response.status).toBe(200);
+        expect(response.body.events).toEqual([]);
+        expect(calls.find(call => call.sql.includes('created_at')).params).toEqual([12]);
+        expect(calls.find(call => call.sql.includes('consensus.solana_transaction')).params).toEqual([48]);
+    });
+
+    it('includes ordinary creation and verified execution events in the scoped activity explorer', async () => {
+        const proposalAccount = '11111111111111111111111111111111';
+        const pool = { query: async (sql) => {
+            if (sql.includes('consensus.agent_run')) return { rows: [] };
+            if (sql.includes('agent_payment_id IS NOT NULL')) return { rows: [] };
+            if (sql.includes('proposal_account')) return { rows: [{
+                proposal_id: 'p1', proposal_account: proposalAccount, city: 'zagreb', display_name: 'Pocket park'
+            }] };
+            if (sql.includes('consensus.land_event')) return { rows: [{
+                event_id: 'verified-execution', subject_id: proposalAccount, outcome: 'executed',
+                source_observed_at: '2026-09-21T12:00:00Z', transaction_signature: 'execute-tx'
+            }] };
+            if (sql.includes('FROM proposal')) return { rows: [{
+                proposal_id: 'p1', city: 'zagreb', display_name: 'Pocket park', created_at: '2026-09-21T10:00:00Z'
+            }] };
+            return { rows: [] };
+        } };
+        const app = express();
+        setupAgentActivityRoute(app, pool, { book: {}, idls: {}, decode: () => null });
+
+        const response = await request(app).get('/agent/activity?proposal=p1');
+
+        expect(response.status).toBe(200);
+        expect(response.body.events.map(event => event.action.type)).toEqual(['create', 'execute']);
+        expect(response.body.events.every(event => event.entity.id === 'p1')).toBe(true);
+    });
+
     it('projects confirmed chain actions from an unfamiliar wallet as human activity', () => {
         const proposalAccount = '11111111111111111111111111111111';
         const wallet = '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM';

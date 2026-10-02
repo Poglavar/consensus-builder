@@ -12,6 +12,12 @@ describe('site intro first-visit policy', () => {
         expect(shouldShowSiteIntro('', '1')).toBe(false);
     });
 
+    it('opens activity links directly even on a first visit', () => {
+        expect(shouldShowSiteIntro('?activity=proposal%3Apark-1', null)).toBe(false);
+        expect(shouldShowSiteIntro('?focusProposal=park-1', null)).toBe(false);
+        expect(shouldShowSiteIntro('?activity=proposal%3Apark-1&intro=1', null)).toBe(true);
+    });
+
     it('supports an explicit preview query after the intro has been seen', () => {
         expect(shouldShowSiteIntro('?city=zg&intro=1', '1')).toBe(true);
         expect(shouldShowSiteIntro('?city=zg&intro', '1')).toBe(true);

@@ -399,6 +399,7 @@
         const legendList = el('ul', 'world-legend__list');
         legend.append(legendTitle, legendList);
         root.appendChild(legend);
+        const activity = global.WorldActivity.mount(root, { t, reducedMotion: reduce, coverage });
 
         const labelLayer = el('div', 'world-view__labels');
         root.appendChild(labelLayer);
@@ -432,6 +433,7 @@
                 li.append(el('span', 'world-tier-dot world-tier-dot--' + tier), el('span', '', { text: t('world.tier.' + tier + '.short', { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Not researched' }[tier]) }));
                 legendList.appendChild(li);
             });
+            activity.render();
             if (selected) renderPopup();
         }
 
@@ -466,7 +468,7 @@
             renderer.setSize(w, h, false);
             camera.aspect = w / h;
             // Nudge the globe below the search box: shift the view centre down a little.
-            camera.setViewOffset(w, h, 0, -Math.round(Math.min(48, h * 0.045)), w, h);
+            camera.setViewOffset(w, h, w >= 1100 ? Math.round(w * 0.12) : 0, w >= 1100 ? -Math.round(Math.min(48, h * 0.045)) : Math.round(h * 0.06), w, h);
             camera.updateProjectionMatrix();
             if (!cam.altitudeKm) cam.altitudeKm = fitAltitude();
             dirty = true;
@@ -921,6 +923,7 @@
                 if (raf) cancelAnimationFrame(raf);
                 if (flight) { flight.resolve(false); flight = null; }
                 resizeObserver.disconnect();
+                activity.destroy();
                 document.removeEventListener('visibilitychange', onVisibility);
                 if (global.i18n && typeof global.i18n.offChange === 'function') global.i18n.offChange(onLanguage);
                 global.removeEventListener('i18n:translationsLoaded', onLanguage);

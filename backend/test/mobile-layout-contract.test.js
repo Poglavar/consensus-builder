@@ -112,9 +112,10 @@ describe('3D and photo view', () => {
         expect(wiring.slice(0, 400)).toContain('clearIsolation()');
     });
 
-    it('frames the isolated ground when isolating a parcel or a proposal', () => {
+    it('keeps parcel selection in place while explicit proposal isolation frames its ground', () => {
         const parcel = threeMode.slice(threeMode.indexOf('function isolateParcel('), threeMode.indexOf('function frameIsolatedFeatures('));
-        expect(parcel).toContain('frameIsolatedFeatures(');
+        expect(parcel).not.toContain('frameIsolatedFeatures(');
+        expect(parcel).not.toContain('applyIsolationVisibility(');
         const proposal = threeMode.slice(threeMode.indexOf('function isolateProposal('), threeMode.indexOf('function clearIsolation('));
         expect(proposal).toContain('frameIsolatedFeatures(feats)');
     });

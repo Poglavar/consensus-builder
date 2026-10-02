@@ -1159,7 +1159,7 @@ describe('GET /proposals/count', () => {
         expect(res.body.lifecycle).toBe('Active');
 
         const call = pool.getCalls()[0];
-        expect(call.sql).toContain('COUNT(*)');
+        expect(call.sql).toContain('COUNT(DISTINCT id)');
         expect(call.params).toContain('zagreb');
         expect(call.params).toContain('Active');
     });
@@ -1172,6 +1172,56 @@ describe('GET /proposals/count', () => {
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(100);
         expect(pool.getCalls()[0].params).toHaveLength(0);
+    });
+
+    it('counts distinct proposals intersecting a validated viewport bbox without returning proposal rows', async () => {
+        pool.setResult({ rows: [{ count: '3' }] });
+
+        const res = await request(app).get('/proposals/count?city=explore&bbox=15.8,45.7,16.1,46.0');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            count: 3,
+            city: null,
+            lifecycle: null,
+            type: null,
+            author: null,
+            bbox: [15.8, 45.7, 16.1, 46]
+        });
+        const call = pool.getCalls()[0];
+        expect(call.sql).toContain('COUNT(DISTINCT id)');
+        expect(call.sql).toContain('ST_Intersects(site, ST_MakeEnvelope');
+        expect(call.sql).toContain('bounds->>');
+        expect(call.sql).not.toContain('city =');
+        expect(call.sql).not.toContain('SELECT *');
+        expect(call.params).toEqual([15.8, 45.7, 16.1, 46]);
+    });
+
+    it('keeps city filtering when a viewport bbox accompanies a known city', async () => {
+        pool.setResult({ rows: [{ count: '2' }] });
+
+        const res = await request(app).get('/proposals/count?city=zg&bbox=15,45,16,46');
+
+        expect(res.status).toBe(200);
+        expect(res.body.city).toBe('zagreb');
+        expect(pool.getCalls()[0].sql).toContain('city = $5');
+        expect(pool.getCalls()[0].params).toEqual([15, 45, 16, 46, 'zagreb']);
+    });
+
+    it.each([
+        'NaN,45,16,46',
+        '181,45,182,46',
+        '15,-91,16,46',
+        '16,45,15,46',
+        '15,47,16,46',
+        '15,45,,46',
+        '15,45,16',
+        '15,45,16,46,17'
+    ])('rejects invalid bbox %s', async (bbox) => {
+        const res = await request(app).get(`/proposals/count?bbox=${encodeURIComponent(bbox)}`);
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/bbox must be west,south,east,north/);
+        expect(pool.getCalls()).toHaveLength(0);
     });
 
     it('returns zero when the count query yields no rows and preserves unknown city codes', async () => {
@@ -1367,6 +1417,35 @@ describe('GET /proposals/summary', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ proposals: [], count: 0, limit: 100, offset: 0 });
         expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
+    });
+
+    it('filters summary rows by bbox while retaining city, sorting, and pagination', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals/summary?city=zg&bbox=15.8,45.7,16.1,46&sort=created-asc&limit=20&offset=5');
+
+        expect(res.status).toBe(200);
+        const call = pool.getCalls()[0];
+        expect(call.sql).toContain('ST_Intersects(site, ST_MakeEnvelope');
+        expect(call.sql).toContain('bounds->>');
+        expect(call.sql).toContain('city = $5');
+        expect(call.sql).toContain('ORDER BY created_at ASC LIMIT $6 OFFSET $7');
+        expect(call.params).toEqual([15.8, 45.7, 16.1, 46, 'zagreb', 20, 5]);
+    });
+
+    it('applies bbox across all cities for Explore and rejects invalid viewport bounds', async () => {
+        pool.setResult({ rows: [] });
+        const res = await request(app).get('/proposals/summary?city=explore&bbox=15,45,16,46');
+
+        expect(res.status).toBe(200);
+        expect(pool.getCalls()[0].sql).toContain('ST_Intersects(site, ST_MakeEnvelope');
+        expect(pool.getCalls()[0].sql).not.toContain('city =');
+        expect(pool.getCalls()[0].params).toEqual([15, 45, 16, 46, 100, 0]);
+
+        pool.reset?.();
+        const invalid = await request(app).get('/proposals/summary?bbox=15,91,16,92');
+        expect(invalid.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
     });
 
     it('filters by EFFECTIVE lifecycle (expired-but-stale rows excluded from ?lifecycle=Active)', async () => {

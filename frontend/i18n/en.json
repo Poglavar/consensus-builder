@@ -3492,7 +3492,8 @@
                 "anchorParcel": "Anchored parcel",
                 "attestOwnership": "Attested ownership",
                 "acceptance": "Said yes",
-                "verdict": "Submitted verdict"
+                "verdict": "Submitted verdict",
+                "execute": "Executed"
             }
         },
         "agents": {
@@ -3657,7 +3658,7 @@
             "avgPerParcel": "Avg / parcel"
         },
         "isolation": {
-            "singleParcel": "Single parcel view",
+            "singleParcel": "Selected parcel",
             "proposalView": "Proposal view",
             "exitAria": "Exit this view"
         },
@@ -3885,6 +3886,30 @@
             "worldView": "World view",
             "dismiss": "Dismiss",
             "status": "No parcel data here: click the map to draw a site and propose."
+        },
+        "activity": {
+            "title": "Latest activity",
+            "loading": "Loading activity…",
+            "empty": "No recent activity yet.",
+            "error": "Activity is temporarily unavailable.",
+            "actions": {
+                "create": "Proposal created",
+                "execute": "Proposal executed",
+                "accept": "Proposal accepted",
+                "cancel": "Proposal cancelled",
+                "createMarket": "Market opened",
+                "resolve": "Market resolved",
+                "donate": "Donation made",
+                "pledge": "Pledge made",
+                "fulfillPledge": "Pledge fulfilled",
+                "claim": "Winnings claimed"
+            },
+            "openError": "Could not open this proposal. Please try again.",
+            "location": {
+                "near": "near {{place}}",
+                "country": "in {{place}}",
+                "unknown": "Location unknown"
+            }
         }
     },
     "mapShell": {

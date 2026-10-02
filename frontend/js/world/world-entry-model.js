@@ -60,7 +60,17 @@
     // ?shared= (proposals/sharing-routes.js), ?activity= (game.js), ?scene= (ai-scene-follow.js)
     // and the view-mode params (?model/?mode3d/?3d, ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl).
     const SHARED_PATHS = [/^\/proposals\/./i, /^\/plans\/./i, /^\/parcel\/./i, /\/monitors\/\d+\/?$/];
-    const SHARED_PARAMS = ['parcel', 'proposalShare', 'shared', 'activity', 'scene', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
+    const SHARED_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
+
+    // A user zooming out through the map scale opens the globe at the last map centre. Keep the
+    // decision pure; the UI separately proves a native zoom gesture happened.
+    function shouldReturnToGlobe(input) {
+        const fromZoom = input && input.fromZoom;
+        const toZoom = input && input.toZoom;
+        return finite(fromZoom) && finite(toZoom)
+            && fromZoom > toZoom && toZoom <= 4
+            && !!input.userInitiated && !input.blocked;
+    }
 
     function isSharedRoute(loc) {
         const pathname = (loc && loc.pathname) || '';
@@ -150,6 +160,7 @@
 
     return {
         EXPLORE_CITY_ID, MIN_ZOOM, MAX_ZOOM, PARCEL_ZOOM, EXPLORE_ZOOM,
-        parseAt, formatAt, isSharedRoute, bootDecision, resolveLanding, liveCityFor, exploreZoomFor, utmProjectionFor
+        parseAt, formatAt, isSharedRoute, bootDecision, resolveLanding, liveCityFor, exploreZoomFor, utmProjectionFor,
+        shouldReturnToGlobe
     };
 });

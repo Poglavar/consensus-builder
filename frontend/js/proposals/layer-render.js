@@ -436,15 +436,16 @@ function applyBlinkToLayerGroup(layerGroup, className) {
     });
 }
 
-function addFeatureToGroup(feature, group, styleOptions, blinkClass) {
+function addFeatureToGroup(feature, group, styleOptions, blinkClass, { onClick = null } = {}) {
     if (!feature || !group) return null;
     try {
         const paneName = group.__paneName;
         const layer = L.geoJSON(feature, {
             pane: paneName || undefined,
             style: typeof styleOptions === 'function' ? styleOptions : () => ({ ...styleOptions }),
-            interactive: false
+            interactive: !!onClick
         });
+        if (onClick) layer.on('click', onClick);
         layer.addTo(group);
         if (blinkClass) {
             // Apply now (the SVG path exists synchronously after addTo) AND on the next frame so the
@@ -577,7 +578,19 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
 
         // Always show primary features for applied proposals at all zoom levels
         primaryFeatures.forEach(feature => {
-            addFeatureToGroup(feature, groups.border, primaryStyle, blink ? 'proposal-blink-twice' : null);
+            addFeatureToGroup(feature, groups.border, primaryStyle, blink ? 'proposal-blink-twice' : null, {
+                onClick: standsOnMap ? null : event => {
+                    // A selected preview is an interaction surface, not a change to the fabric.
+                    // Editing tools retain the click through normal Leaflet map bubbling.
+                    if (window.sharePlanMode || window.measureMode || window.__mapEditLock?.isHeld()
+                        || window.isParcelDrawingModeActive?.() || window.pinpointToolIsActive?.()) return;
+                    L.DomEvent.stopPropagation(event);
+                    const panel = document.getElementById('proposal-details-panel');
+                    if (panel?.classList.contains('visible')) return;
+                    focusProposalDetails(getProposalKey(proposal), { centerOnProposal: false, showDetails: true });
+                    setProposalDetailsPanelMinimized(panel, false);
+                }
+            });
         });
     }
 

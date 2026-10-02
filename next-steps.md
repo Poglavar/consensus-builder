@@ -1,112 +1,24 @@
-# Immediate release follow-up (2026-10-02)
+# Next steps
 
-1. Run one fresh-profile production journey: explore parcels/buildings, create a proposal, share it, open the link in a second profile, apply and reload. Include mobile and a real devnet wallet action; fixture-backed tests do not prove live service integration.
-2. Recheck Search Console sitemap ingestion and `/urban-planning.html` indexing. Ownership was verified and the sitemap submitted on 2026-10-02; the homepage is indexed and fresh indexing requests were accepted for both pages. The sitemap report still says “Couldn’t fetch,” despite Google’s successful live fetch and HTTP 200 XML; ingestion is not yet confirmed. Keep all visible planning copy vendor-free; competitor search terms belong only in HTML descriptions.
-3. Publish a short screen recording and a few posts showing one complete planning workflow each, with a direct map/share link and a clear invitation to try it.
-4. Observe real usage and failures, then prioritize the first-run/mobile issues below. Keep `e2e/feature-inventory.json` and headed behavioral coverage current for every new user action.
-5. Finish the live attester-service/schema setup, human-wallet and outside-participant evidence before the hackathon submission. Preserve pending court markets honestly until matching post-close evidence arrives.
+## Before submission
 
-The remaining notes below are the longer-term backlog; completed work is labeled explicitly.
+1. **Run a real-user smoke journey.** From a fresh browser profile, explore parcels and buildings, create and share a proposal, open its link in a second profile, apply it, and reload. Cover mobile and complete one real devnet wallet action; record any first-run or mobile failures.
+2. **Complete live evidence setup.** Finish the attester-service and schema setup, capture a human-wallet donation or pledge and YES/NO forecast, and obtain one paid-proposal publication from an outside participant. Make the audit require human activity evidence once it exists.
+3. **Prepare the judge package.** Record a 90–150 second workflow demo (discovery → action → shared timeline → evidence → payout), do a fresh-profile run without operator guidance, freeze the URLs, and capture a final proof manifest.
+4. **Recheck Google indexing.** Confirm sitemap ingestion and `/urban-planning.html` indexing in Search Console; the sitemap report still needs resolution. Keep visible planning copy vendor-free.
+5. **Publish workflow examples.** Post a short screen recording and a few concise posts, each showing one complete planning workflow with a direct map/share link and an invitation to try it.
+6. **Monitor the court market.** Leave the open market unchanged. If matching court evidence arrives, verify the settlement artifact preserves `stakes < close <= source time <= attestation <= resolution < claim`; keep it pending if no matching record arrives.
 
-# Hackathon next steps
+## Remaining product work
 
-What's left, roughly in priority order. Each item says why it matters, what it buys, and how big it is.
-Last updated 2026-10-02 on `colosseum-worlds-fair`. Current regression evidence: 6,366 fast tests passed (6 existing skips); 250/250 in the complete headed run, followed by 30 affected headed checks covering the final fixes. The suite now collects 253 tests. Release identity is published in `/release.json` and the API release manifest.
+7. **Choose and restore the road cross-section editor entry point.** Decide whether it belongs on road-segment handles or as a fork-to-edit action on a placed road, then implement that path.
+8. **Improve the phone panel.** Replace the cramped 33vh docked panel with a taller bottom sheet and drag handle; ensure the Game control and build palette remain usable.
+9. **Unify agent identity in Activity.** Choose wallet-or-id as the actor key, or populate run wallets from the backend address book, so one agent does not appear as multiple profiles.
+10. **Finish proposal discovery in Explore.** Add an anchor for proposals without cadastre parcels, enable photo view and 3D buildings there, and include local unpublished proposals in search while clearing the query after opening a result.
+11. **Resolve smaller UI issues.** Translate or remove the Actors search/filter; scope `actor-explorer.css`; refresh lens-console issued counts after verdicts; remove the hardcoded NYC localhost port; correct tab order; hide the ⌘K hint on touch; escape the user name before rendering and fix its 320px layout; centralize modal Escape handling; refresh How-to screenshots.
 
-## Must do for the submission
+## After submission
 
-### 1. Record a real human-wallet action on devnet
-Make a donation or pledge and a YES/NO forecast from a normal browser wallet, then turn the audit's `human_agent_activity_matrix` check from advisory into required.
-- **Why:** it is the audit's only warning; the "humans and agents share one system" claim has no human proof yet.
-- **Payoff:** high. It completes the actor matrix in the Activity explorer.
-- **Effort:** small. About 15 minutes of clicking, plus one change in the audit.
-
-### 2. See the prospective court market through
-Leave the open market alone. When a matching court record arrives, the hourly resolver settles it; then check that the settlement artifact shows the full order: `stakes < close <= source time <= attestation <= resolution < claim`.
-- **Why:** it is the strongest claim: a market settled from evidence that didn't exist when people bet.
-- **Payoff:** very high if a record arrives in time. If none does, it stays visibly pending, which is still honest.
-- **Effort:** minimal. Only monitoring; never fake a record or loosen the rule.
-
-### 3. Get an outside payer for paid proposals
-The verified-facts listing now reports 2 unique payers; the paid-proposal listing still reports 1 (every call came from project personas). A second project wallet would only be self-dealing under another name, so this needs an outside participant or agent to publish one paid proposal.
-- **Why:** with one payer, demand for paid proposals looks self-generated.
-- **Payoff:** medium.
-- **Effort:** trivial once someone outside is willing; out of our hands until then.
-
-## Do if time remains
-
-### 4. Judge path and submission package
-- Record a 90–150 s demo: discovery → action → shared timeline → evidence → payout.
-- Do one run from a fresh browser and wallet with no operator knowledge.
-- Freeze the URLs, run every suite, and capture a final proof manifest.
-- **Why:** judges spend minutes, not hours; a clear first path decides how much they actually see.
-- **Payoff:** high.
-- **Effort:** medium. About half a day: the video and the dry run need a person; the rest is a final re-run.
-
-### 5. Remaining contract and release evidence
-- Verified builds with `solana-verify`: rebuild both programs in the official Docker image, redeploy from that build, and register the verification so explorers show a "Verified build" badge. Needs ~6 SOL of temporary buffer rent; slow on an arm64 Mac, because the image is x86-only.
-- Decide whether `void_pledge` and `release_donations` should stay callable by anyone. Funds only go to the stored beneficiary or owner, but this is a design choice worth stating.
-- Keep "unaudited, devnet only" prominent.
-- **Why:** a reviewer should be able to link source → deployed program → tests without trusting the operator.
-- **Payoff:** medium for the hackathon, required before anything beyond devnet.
-- **Effort:** medium. Half a day, mostly build time.
-
-### 6. Changed-land forks — completed
-Changed-land forks retain the original as provenance without superseding or unapplying it. Site-first forks rebuild their site, cadastre references and structure geometry from the newly selected ground. Regression tests cover these behaviors; readjustment drafts also preserve per-slice ownership and the saved conditional choice.
-
-## After the hackathon
-
-### 7. More evidence sources
-Add them through the existing adapter contract, in this order:
-1. permit/register source;
-2. imagery or building-footprint change;
-3. OSM provenance verifier;
-4. text extraction, used only as supporting evidence.
-
-Never let an LLM pick the final outcome.
-- **Why:** more resolvable question types.
-- **Payoff:** high long-term, low for the hackathon.
-- **Effort:** large. Roughly a week or more per source.
-
-Also later: mainnet preparation after contract review, governance/tokenomics, more cities, and broader LLM autonomy.
-
-## Open questions from the map-UI rework (branch `new-ui`, 2026-10-01)
-
-Found during the headed test pass; each needs a decision before it is built or removed.
-
-- **Road clearance and cross-section editor has no entry point.** `openCorridorProfileEditor` lost its only
-  button in ae43c028 ("read-only details"); it still works from the console. Decide where it lives: on the
-  road segment's handles, or as a fork-to-edit action on a placed road.
-- **Proposal compare — done (branch `parcel-optional`, 2026-10-01).** The dead `showProposalCompareModal`
-  is deleted; "Compare proposals here" sets two proposals side by side for ONE parcel (what each takes,
-  what stands there afterwards, ownership flow, consent, support, status, an SVG preview). Pure logic in
-  `proposals/parcel-compare.js` (tests: `backend/test/parcel-compare.test.js`), dialog in
-  `proposals/parcel-compare-ui.js`; entry points: tick two in the parcel panel's Proposals tab, the parcel
-  menu / command palette (`parcel.compare`, with ≥2 proposals), and the "At this spot" stack.
-- **Guest rules — decided and built (branch `parcel-optional`, 2026-10-01).** Everything that stays on the
-  device is open to guests (create, edit, fork, apply, compare). A profile name is required only when
-  something leaves the device, because the record carries an author: publish/upload, share link, mint,
-  joining a public list. Acts that assert ownership (Offer my land / owner offer) need proof of ownership:
-  a connected wallet that a lens member attested as owner of the parcels; a name alone is not enough.
-  One table in `frontend/js/guest-policy.js` (tests: `backend/test/guest-policy.test.js`); gates sit in
-  `uploadProposalToServer`, the share entry points, the mint branch of `createProposal`, and
-  `requireOwnerOfferProof` for Offer.
-- **Docked panel on phones is cramped.** The parcel/details panel is 33vh and covers the Game pill; only
-  about two build-palette rows are visible. A taller bottom sheet with a drag handle is the likely fix.
-- **One agent shows as three actor profiles.** Runs say `llm`, the chain decoder says `algorithm`, older runs
-  have no wallet, and the actor key includes the controller. Either key identity on wallet-or-id only, or
-  fill run wallets from the address book on the backend.
-- **Explore city needs a no-cadastre proposal anchor.** Explore is look-only until proposals can exist
-  without parcels (the parcel-optionality work).
-- **Photo view and 3D buildings in explore.** Both go through city-specific code, so they are hidden there.
-- **Search does not find local (unpublished) proposals**, only server ones, and keeps the query after a
-  result is opened.
-- **Smaller items:** the Actors view's own search box and filter are English-only (drop it or translate);
-  `css/actor-explorer.css` has unscoped `details`/`summary`/`pre` rules that leak into the map app; the
-  lens console's issued counts don't refresh after a verdict; `canton-read.js` hardcodes `:3000` for NYC on
-  localhost; tab order goes mode strip → user bubble → search box (search should come first); the "⌘K"
-  chip shows on touch devices; the user bubble writes the user's own name via `innerHTML` (escape it);
-  the user bubble is squeezed at 320px; many in-app modals still register their own Escape listener (a
-  shared modal helper would end that bug class); the How-to guide screenshots still show the old sidebar.
-- **Not yet tested:** real wallet signing, publishing to the backend, AI image generation (costs money),
-  geolocation success, owner-offer and bids cards (no local data), and live wallet/RPC transactions. The headed suites now exercise the UI with HTTP/RPC fixtures; real publishing, paid AI generation, wallet signing and external services still need a separate live smoke run.
+12. **Add evidence adapters** in this order: permit/register, imagery or building-footprint change, OSM provenance verification, then text extraction as supporting evidence only. Keep final outcome selection deterministic and evidence-based.
+13. **Review contract and release readiness.** Decide whether `void_pledge` and `release_donations` should remain callable by anyone; complete verified builds and explorer registration when practical. Keep “unaudited, devnet only” prominent, and complete contract review before any mainnet work.
+14. **Plan broader expansion.** After contract review, assess mainnet preparation, governance/tokenomics, additional cities, and broader LLM autonomy.

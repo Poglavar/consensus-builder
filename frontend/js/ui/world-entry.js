@@ -23,7 +23,8 @@
         explorePlace: null,
         coveragePromise: null,
         banner: null,
-        request: 'idle'           // explore banner: idle | sending | done | error
+        request: 'idle',          // explore banner: idle | sending | done | error
+        userZoomIntentUntil: 0
     };
 
     const log = message => console.log(`[${new Date().toISOString()}] [world-entry] ${message}`);
@@ -84,6 +85,13 @@
     // ---- landing a pick ----
     function land(input) {
         if (state.landing) return;
+        try {
+            const url = new URL(global.location.href);
+            if (url.searchParams.has('focusProposal')) {
+                url.searchParams.delete('focusProposal');
+                global.history.replaceState(global.history.state, '', url.toString());
+            }
+        } catch (error) { console.warn('[world-entry] could not clear proposal focus from the URL', error); }
         const m = manager();
         const decision = Model.resolveLanding({
             cityId: input.cityId,
@@ -371,8 +379,47 @@
         });
     }
 
+    // Arm only on native map inputs. Leaflet emits zoomend for boot fitBounds, route cameras and
+    // proposal previews too, so zoom direction alone cannot decide whether to open the globe.
+    function wireZoomOutToGlobe() {
+        const map = global.map;
+        if (!map || typeof map.on !== 'function') return;
+        let previousZoom = map.getZoom();
+        const mark = event => {
+            if (event && event.isTrusted === false) return;
+            state.userZoomIntentUntil = Date.now() + 1200;
+        };
+        const container = map.getContainer && map.getContainer();
+        if (container) container.addEventListener('wheel', mark, { capture: true, passive: true });
+        global.addEventListener('keydown', event => {
+            const target = event.target;
+            if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName || ''))) return;
+            if (event.key === '-' || event.key === '_' || event.code === 'NumpadSubtract') mark(event);
+        }, true);
+        if (container) {
+            container.addEventListener('touchstart', event => { if (event.touches && event.touches.length >= 2) mark(event); }, { capture: true, passive: true });
+            container.addEventListener('touchmove', event => { if (event.touches && event.touches.length >= 2) mark(event); }, { capture: true, passive: true });
+        }
+        map.on('zoomend', () => {
+            const zoom = map.getZoom();
+            const userInitiated = Date.now() <= state.userZoomIntentUntil;
+            state.userZoomIntentUntil = 0;
+            const blocked = !!(global.WorldView && (global.WorldView.isOpen() || state.opening))
+                || state.landing || state.bootOpen || global.roadDrawingMode === true || !!global.sharePlanMode
+                || !!global.suppressCameraMoves || !!(global.WorldProposalEntry && global.WorldProposalEntry.isOpening && global.WorldProposalEntry.isOpening())
+                || doc.body.classList.contains('three-mode-active') || doc.body.classList.contains('realistic-mode-active')
+                || !!(global.MapShell && global.MapShell.isBlockingDialogOpen && global.MapShell.isBlockingDialogOpen());
+            if (Model.shouldReturnToGlobe({ fromZoom: previousZoom, toZoom: zoom, userInitiated, blocked })) {
+                const center = map.getCenter();
+                open({ focus: { lat: center.lat, lon: center.lng, zoom } }).catch(error => console.error('[world-entry] world view failed to open', error));
+            }
+            previousZoom = zoom;
+        });
+    }
+
     global.WorldEntry = {
         open,
+        finishNavigation: () => landed('proposal'),
         ownsBoot: () => state.bootOpen,
         explorePlaceName: () => placeName(state.explorePlace)
     };
@@ -383,6 +430,10 @@
     }
     boot();
     initExplore();
+    const booted = typeof global.whenAppBooted === 'function'
+        ? global.whenAppBooted()
+        : new Promise(resolve => global.addEventListener('appBooted', resolve, { once: true }));
+    booted.then(wireZoomOutToGlobe);
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', wireSettingsButton, { once: true });
     else wireSettingsButton();
 })(window);

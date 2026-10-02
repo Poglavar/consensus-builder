@@ -1115,30 +1115,99 @@ function updateProposalList() {
     }
 }
 
+let _proposalCountArrivalCenter = null;
+function captureProposalCountArrivalCenter() {
+    const center = typeof window !== 'undefined' ? window.map?.getCenter?.() : null;
+    if (center && typeof center.lat === 'number' && typeof center.lng === 'number' && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
+        _proposalCountArrivalCenter = [center.lat, center.lng];
+    }
+}
+
 // ONE number on the button: the union of the three list tabs (Local / Server / Blockchain). They
 // overlap — Blockchain is the minted subset of Local, and an uploaded local proposal is also a
 // server row — so the union is the server total plus the local records never uploaded. The second,
 // circled number here used to count unsaved work, which read as a contradiction of the first.
+function getProposalCountAreaContext() {
+    const manager = (typeof window !== 'undefined') ? window.CityConfigManager : null;
+    let config = null;
+    try { config = manager?.getCurrentCityConfig?.() || null; } catch (_) { }
+    const explore = !!(config?.explore || manager?.isExplore?.());
+    const map = (typeof window !== 'undefined') ? window.map : null;
+    let bounds = null;
+    if (explore && map?.getBounds) {
+        try {
+            const b = map.getBounds();
+            const values = { west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth() };
+            if (Object.values(values).every(Number.isFinite)) bounds = values;
+        } catch (_) { }
+    }
+    const cityId = config?.id || (typeof getCurrentCityId === 'function' ? getCurrentCityId() : 'city');
+    let city = cityId;
+    try {
+        if (!explore && manager?.getCityCodeForCityId) city = manager.getCityCodeForCityId(cityId) || cityId;
+    } catch (_) { }
+    const bbox = bounds ? [bounds.west, bounds.south, bounds.east, bounds.north].map(v => Number(v.toFixed(5))) : null;
+    const key = explore ? `explore:${bbox ? bbox.join(',') : 'pending'}` : `city:${city}`;
+    const center = _proposalCountArrivalCenter || config?.map?.defaultCenter || config?.defaultCenter || map?.getCenter?.();
+    const centerPair = Array.isArray(center)
+        ? center.slice(0, 2)
+        : (center && typeof center.lat === 'number' && typeof center.lng === 'number' && Number.isFinite(center.lat) && Number.isFinite(center.lng)
+            ? [center.lat, center.lng]
+            : null);
+    const arrivalKey = explore
+        ? `explore:${centerPair ? centerPair.map(v => Number(Number(v).toFixed(2)).toString()).join(',') : 'area'}`
+        : `city:${city}`;
+    return { explore, city: explore ? null : city, bounds, bbox, key, arrivalKey };
+}
+
 function proposalUnionCountNow() {
-    const local = proposalStorage.getAllProposals().map(proposal => ({
+    const counts = (typeof window !== 'undefined') ? window.__proposalCounts : null;
+    const area = getProposalCountAreaContext();
+    const records = (typeof proposalStorage !== 'undefined' && proposalStorage?.getAllProposals)
+        ? proposalStorage.getAllProposals()
+        : [];
+    const scoped = area.explore
+        ? records.filter(proposal => counts?.proposalIntersectsBounds?.(proposal, area.bounds))
+        : records;
+    const local = scoped.map(proposal => ({
         // "On server" by the same test the list card uses for its badge — a DOWNLOADED proposal
         // carries the serial as proposalId/id, and counting it as local-only would double it.
         onServer: !!(typeof getSerialProposalId === 'function' && getSerialProposalId(proposal))
     }));
-    const counts = (typeof window !== 'undefined') ? window.__proposalCounts : null;
-    return counts
-        ? counts.unionProposalCount(local, serverProposalCache.count)
-        : local.length;
+    const serverCount = typeof serverProposalCache !== 'undefined'
+        && serverProposalCache.countAreaKey === area.key
+        ? serverProposalCache.count
+        : null;
+    return {
+        area,
+        count: counts ? counts.unionProposalCount(local, serverCount) : local.length,
+        ready: Number.isFinite(serverCount) || local.length > 0
+    };
+}
+
+function markProposalCountAreaOpened() {
+    const area = getProposalCountAreaContext();
+    try { localStorage.setItem(`cb:proposal-list-opened:${area.arrivalKey}`, '1'); } catch (_) { }
+    const button = document.getElementById('showProposalsButton');
+    if (button) button.setAttribute('data-proposal-list-opened', '1');
 }
 
 function updateShowProposalsButton() {
     const button = document.getElementById('showProposalsButton');
     if (button) {
-        const totalProposals = proposalUnionCountNow();
+        const state = proposalUnionCountNow();
+        const totalProposals = state.count;
         const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
         button.setAttribute('data-i18n-key', 'sidebar.proposals.listButton');
-        button.setAttribute('data-i18n-params', JSON.stringify({ count: totalProposals }));
-        if (i18nApi && typeof i18nApi.t === 'function') {
+        button.setAttribute('data-i18n-params', JSON.stringify({ count: state.ready ? totalProposals : '…' }));
+        button.setAttribute('data-proposal-count-ready', state.ready ? '1' : '0');
+        button.setAttribute('data-proposal-area', state.area.arrivalKey);
+        let opened = false;
+        try { opened = localStorage.getItem(`cb:proposal-list-opened:${state.area.arrivalKey}`) === '1'; } catch (_) { }
+        button.setAttribute('data-proposal-list-opened', opened ? '1' : '0');
+        if (!state.ready) {
+            button.textContent = i18nApi?.t?.('sidebar.proposals.listButtonLoading', 'Proposals List (…)', {}) || 'Proposals List (…)';
+        } else if (i18nApi && typeof i18nApi.t === 'function') {
             button.textContent = i18nApi.t('sidebar.proposals.listButton', { count: totalProposals });
         } else {
             button.textContent = `Proposals List (${totalProposals})`;
@@ -1161,10 +1230,65 @@ function updateShowProposalsButton() {
 
     // no-op safety: the observer below is idempotent, and the button may only now exist
     watchProposalsSectionVisibility();
+    watchProposalCountArrival();
 
     if (typeof refreshBlockInfoProposalTab === 'function') {
         try { refreshBlockInfoProposalTab(); } catch (_) { }
     }
+}
+
+let _proposalCountArrivalWatching = false;
+let _proposalCountViewportTimer = null;
+function watchProposalCountArrival() {
+    if (typeof window === 'undefined' || _proposalCountArrivalWatching) return false;
+    _proposalCountArrivalWatching = true;
+    const refresh = () => {
+        if (typeof refreshServerProposalCount === 'function') refreshServerProposalCount();
+    };
+    const onCityChanged = () => {
+        captureProposalCountArrivalCenter();
+        if (typeof resetServerProposalCache === 'function') {
+            const area = getProposalCountAreaContext();
+            resetServerProposalCache(area.city || 'explore');
+        }
+        updateShowProposalsButton();
+        refresh();
+    };
+    window.addEventListener('cityChanged', onCityChanged);
+    window.addEventListener('worldview:landed', event => {
+        const reason = event?.detail?.reason;
+        if (reason === 'closed' || reason === 'globe failed') return;
+        captureProposalCountArrivalCenter();
+        updateShowProposalsButton();
+        refresh();
+    });
+    const attachMap = () => {
+        const map = window.map;
+        if (!map?.on || map.__proposalCountViewportWatching) return;
+        map.__proposalCountViewportWatching = true;
+        map.on('moveend zoomend', () => {
+            if (!getProposalCountAreaContext().explore) return;
+            clearTimeout(_proposalCountViewportTimer);
+            _proposalCountViewportTimer = setTimeout(() => {
+                refresh();
+                const list = document.querySelector('.proposal-list-modal');
+                if (list && list.style.display === 'block' && typeof renderProposalListModal === 'function') {
+                    renderProposalListModal();
+                }
+            }, 350);
+        });
+    };
+    let boot;
+    try { boot = typeof window.whenAppBooted === 'function' ? window.whenAppBooted() : window.whenAppBooted; } catch (_) { }
+    if (boot && typeof boot.then === 'function') {
+        boot.then(() => { attachMap(); captureProposalCountArrivalCenter(); updateShowProposalsButton(); refresh(); })
+            .catch(() => { attachMap(); captureProposalCountArrivalCenter(); refresh(); });
+    } else {
+        attachMap();
+        captureProposalCountArrivalCenter();
+        refresh();
+    }
+    return true;
 }
 
 // Half the count is local (always current) and half is the server's, which goes stale the moment

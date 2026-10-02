@@ -89,6 +89,10 @@ function isServerProposalDownloaded(summary) {
 }
 
 function resetServerProposalCache(cityCode) {
+    // Invalidate count requests that were started for the previous area. A late response must not
+    // repaint the new city's or viewport's badge.
+    serverProposalCache.countRequestId = (serverProposalCache.countRequestId || 0) + 1;
+    serverProposalCache.summaryRequestId = (serverProposalCache.summaryRequestId || 0) + 1;
     serverProposalCache.proposals = [];
     serverProposalCache.count = null;
     serverProposalCache.error = null;
@@ -100,6 +104,7 @@ function resetServerProposalCache(cityCode) {
     serverProposalCache.lastQuery = null;
     serverProposalCache.countRefreshedAt = 0;
     serverProposalCache.countLoading = false;
+    serverProposalCache.countAreaKey = null;
 }
 
 // How long the sidebar's server count may be reused before the section coming into view re-asks.
@@ -110,8 +115,12 @@ const SERVER_COUNT_MAX_AGE_MS = 15000;
     opening the list still fetches the summaries it needs. A failure keeps the previous number: a
     stale count is better than a button that empties itself because the network blinked. */
 async function refreshServerProposalCount(cityCode) {
-    const city = normalizeCityCodeForApi(cityCode || resolveCurrentCityCode());
-    if (serverProposalCache.lastCity && serverProposalCache.lastCity !== city) {
+    const area = (typeof window !== 'undefined' && typeof window.getProposalCountAreaContext === 'function')
+        ? window.getProposalCountAreaContext()
+        : null;
+    const city = normalizeCityCodeForApi(cityCode || area?.city || resolveCurrentCityCode());
+    const areaKey = area?.key || `city:${city}`;
+    if (serverProposalCache.countAreaKey && serverProposalCache.countAreaKey !== areaKey) {
         resetServerProposalCache(city);
     }
     // A summary fetch in flight is about to set the same number.
@@ -121,24 +130,37 @@ async function refreshServerProposalCount(cityCode) {
     const stale = !counts || counts.serverCountIsStale(
         serverProposalCache.countRefreshedAt, Date.now(), SERVER_COUNT_MAX_AGE_MS);
     if (!stale) return serverProposalCache.count;
+    if (area?.explore && !area.bbox) return serverProposalCache.count;
 
     serverProposalCache.countLoading = true;
+    serverProposalCache.countAreaKey = areaKey;
+    const requestId = serverProposalCache.countRequestId = (serverProposalCache.countRequestId || 0) + 1;
     try {
-        const url = `${resolveBackendBaseUrl()}/proposals/count`
-            + (city ? `?city=${encodeURIComponent(city)}` : '');
+        const params = new URLSearchParams();
+        if (area?.explore && area.bbox) params.set('bbox', area.bbox.join(','));
+        else if (city) params.set('city', city);
+        const url = `${resolveBackendBaseUrl()}/proposals/count${params.size ? `?${params}` : ''}`;
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const payload = await resp.json();
-        if (Number.isFinite(payload?.count)) {
+        const stillCurrent = serverProposalCache.countRequestId === requestId
+            && serverProposalCache.countAreaKey === areaKey
+            && (!area || typeof window.getProposalCountAreaContext !== 'function'
+                || window.getProposalCountAreaContext().key === areaKey);
+        if (stillCurrent && Number.isFinite(payload?.count)) {
             serverProposalCache.count = Number(payload.count);
             serverProposalCache.lastCity = city;
             serverProposalCache.countRefreshedAt = Date.now();
         }
     } catch (error) {
-        console.warn('[proposals] osvježavanje serverskog broja nije uspjelo:', error?.message || error);
+        if (serverProposalCache.countRequestId === requestId) {
+            console.warn('[proposals] osvježavanje serverskog broja nije uspjelo:', error?.message || error);
+        }
     } finally {
-        serverProposalCache.countLoading = false;
-        if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+        if (serverProposalCache.countRequestId === requestId) {
+            serverProposalCache.countLoading = false;
+            if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+        }
     }
     return serverProposalCache.count;
 }
@@ -168,13 +190,18 @@ function isServerListTab() {
 }
 
 async function fetchServerProposalSummaries(cityCode) {
-    const city = normalizeCityCodeForApi(cityCode || resolveCurrentCityCode());
+    const area = (typeof window !== 'undefined' && typeof window.getProposalCountAreaContext === 'function')
+        ? window.getProposalCountAreaContext()
+        : null;
+    const city = area?.explore ? '' : normalizeCityCodeForApi(cityCode || area?.city || resolveCurrentCityCode());
+    const cacheKey = area?.key || city;
     serverProposalCache.loading = true;
     serverProposalCache.error = null;
-    serverProposalCache.lastCity = city;
+    serverProposalCache.lastCity = cacheKey;
     // Record the query this fetch answers, BEFORE the await, so the render→ensure loop below sees a
     // matching signature and does not refetch in a cycle.
     serverProposalCache.lastQuery = serverListQuerySignature();
+    const requestId = serverProposalCache.summaryRequestId = (serverProposalCache.summaryRequestId || 0) + 1;
     renderProposalListModal();
 
     const backendBase = resolveBackendBaseUrl();
@@ -183,6 +210,7 @@ async function fetchServerProposalSummaries(cityCode) {
     // /proposals/count round-trip was redundant — one request, not two.
     const summaryUrl = `${backendBase}/proposals/summary?limit=${SERVER_PROPOSAL_SUMMARY_LIMIT}&offset=0`
         + (city ? `&city=${encodeURIComponent(city)}` : '')
+        + (area?.explore && area.bbox ? `&bbox=${encodeURIComponent(area.bbox.join(','))}` : '')
         + (q ? `&q=${encodeURIComponent(q)}` : '')
         + (sort ? `&sort=${encodeURIComponent(sort)}` : '');
 
@@ -200,33 +228,47 @@ async function fetchServerProposalSummaries(cityCode) {
             ? summaryPayload.proposals
             : [];
 
-        serverProposalCache.proposals = summaries
-            .map(item => normalizeServerProposalSummary(item, city))
-            .filter(Boolean);
-
-        serverProposalCache.count = Number.isFinite(summaryPayload?.count)
-            ? Number(summaryPayload.count)
-            : serverProposalCache.proposals.length;
+        const stillCurrent = serverProposalCache.summaryRequestId === requestId
+            && (!area || typeof window.getProposalCountAreaContext !== 'function'
+                || window.getProposalCountAreaContext().key === area.key);
+        if (stillCurrent) {
+            serverProposalCache.proposals = summaries
+                .map(item => normalizeServerProposalSummary(item, city || undefined))
+                .filter(Boolean);
+            if (!window.__proposalCounts || window.__proposalCounts.summaryUpdatesAreaCount(q)) {
+                serverProposalCache.count = Number.isFinite(summaryPayload?.count)
+                    ? Number(summaryPayload.count)
+                    : serverProposalCache.proposals.length;
+            }
+        }
     } catch (error) {
-        serverProposalCache.error = error?.message || 'Unable to load server proposals';
+        if (serverProposalCache.summaryRequestId === requestId) {
+            serverProposalCache.error = error?.message || 'Unable to load server proposals';
+        }
     } finally {
-        serverProposalCache.loading = false;
-        // Record the attempt, not just the success. This is what stops the re-render below from
-        // being mistaken for "we have never asked" — renderProposalListModal() calls back into
-        // ensureServerProposals(), so a city with no server proposals (or an unreachable backend)
-        // would otherwise refetch forever and sit on "Loading server proposals…".
-        serverProposalCache.lastFetchedAt = Date.now();
-        renderProposalListModal();
+        if (serverProposalCache.summaryRequestId === requestId) {
+            serverProposalCache.loading = false;
+            // Record the attempt, not just the success. This is what stops the re-render below from
+            // being mistaken for "we have never asked" — renderProposalListModal() calls back into
+            // ensureServerProposals(), so a city with no server proposals (or an unreachable backend)
+            // would otherwise refetch forever and sit on "Loading server proposals…".
+            serverProposalCache.lastFetchedAt = Date.now();
+            renderProposalListModal();
+        }
     }
 }
 
 function ensureServerProposals(cityCode) {
-    const city = normalizeCityCodeForApi(cityCode || resolveCurrentCityCode());
+    const area = (typeof window !== 'undefined' && typeof window.getProposalCountAreaContext === 'function')
+        ? window.getProposalCountAreaContext()
+        : null;
+    const city = area?.explore ? '' : normalizeCityCodeForApi(cityCode || area?.city || resolveCurrentCityCode());
+    const cacheKey = area?.key || city;
     const cacheCity = serverProposalCache.lastCity;
-    const cityChanged = cacheCity && cacheCity !== city;
+    const cityChanged = cacheCity && cacheCity !== cacheKey;
 
     if (cityChanged) {
-        resetServerProposalCache(city);
+        resetServerProposalCache(cacheKey);
     }
 
     if (serverProposalCache.loading) return;

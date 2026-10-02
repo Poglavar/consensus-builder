@@ -3543,7 +3543,8 @@
                 "anchorParcel": "Ancló la parcela",
                 "attestOwnership": "Atestiguó la propiedad",
                 "acceptance": "Dijo sí",
-                "verdict": "Presentó veredicto"
+                "verdict": "Presentó veredicto",
+                "execute": "Ejecutada"
             }
         },
         "agents": {
@@ -3708,7 +3709,7 @@
             "avgPerParcel": "Media / parcela"
         },
         "isolation": {
-            "singleParcel": "Vista de una parcela",
+            "singleParcel": "Parcela seleccionada",
             "proposalView": "Vista de la propuesta",
             "exitAria": "Salir de esta vista"
         },
@@ -3936,6 +3937,30 @@
             "worldView": "Vista del mundo",
             "dismiss": "Descartar",
             "status": "Aquí no hay datos de parcelas: haz clic en el mapa para dibujar un sitio y proponer."
+        },
+        "activity": {
+            "title": "Actividad reciente",
+            "loading": "Cargando actividad…",
+            "empty": "Todavía no hay actividad reciente.",
+            "error": "La actividad no está disponible temporalmente.",
+            "actions": {
+                "create": "Propuesta creada",
+                "execute": "Propuesta ejecutada",
+                "accept": "Propuesta aceptada",
+                "cancel": "Propuesta cancelada",
+                "createMarket": "Mercado abierto",
+                "resolve": "Mercado resuelto",
+                "donate": "Donación realizada",
+                "pledge": "Compromiso realizado",
+                "fulfillPledge": "Compromiso cumplido",
+                "claim": "Ganancias reclamadas"
+            },
+            "openError": "No se pudo abrir la propuesta. Inténtalo de nuevo.",
+            "location": {
+                "near": "cerca de {{place}}",
+                "country": "en {{place}}",
+                "unknown": "Ubicación desconocida"
+            }
         }
     },
     "mapShell": {

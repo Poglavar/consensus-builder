@@ -40,6 +40,15 @@ function topDeclarationsFor(id) {
 }
 
 describe('left-edge map mode strip', () => {
+    it('anchors the perspective mode ladder above the lower-left safe area', () => {
+        const block = SOURCES['map.css'].match(/body\.three-mode-active\s*\{([\s\S]*?)\}/)[1];
+        const offsets = STACK.map(({ slot }) => {
+            const value = block.match(new RegExp(`--map-mode-slot-${slot}:\\s*calc\\(100dvh - var\\(--app-safe-area-bottom, 0px\\) - (\\d+)px\\)`));
+            expect(value).toBeTruthy(); return Number(value[1]);
+        });
+        offsets.slice(1).forEach((offset, i) => expect(offsets[i] - offset).toBe(48));
+        expect(offsets.at(-1)).toBeGreaterThanOrEqual(36);
+    });
     it('declares one slot ladder, evenly spaced, with no repeated offset', () => {
         const root = SOURCES['map.css'].match(/:root\s*\{([\s\S]*?)\}/);
         expect(root, ':root block with the slot ladder').toBeTruthy();

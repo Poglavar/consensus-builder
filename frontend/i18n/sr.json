@@ -3528,7 +3528,8 @@
                 "anchorParcel": "Usidrena parcela",
                 "attestOwnership": "Potvrđen vlasnik",
                 "acceptance": "Rekao da",
-                "verdict": "Predata presuda"
+                "verdict": "Predata presuda",
+                "execute": "Izvršen"
             }
         },
         "agents": {
@@ -3693,7 +3694,7 @@
             "avgPerParcel": "Prosek / parceli"
         },
         "isolation": {
-            "singleParcel": "Prikaz jedne parcele",
+            "singleParcel": "Izabrana parcela",
             "proposalView": "Prikaz predloga",
             "exitAria": "Izađi iz ovog prikaza"
         },
@@ -3921,6 +3922,30 @@
             "worldView": "Pogled na svet",
             "dismiss": "Zatvori",
             "status": "Ovde nema podataka o parcelama: kliknite mapu da nacrtate lokaciju i predložite."
+        },
+        "activity": {
+            "title": "Najnovije aktivnosti",
+            "loading": "Učitavanje aktivnosti…",
+            "empty": "Još nema nedavnih aktivnosti.",
+            "error": "Aktivnosti privremeno nisu dostupne.",
+            "actions": {
+                "create": "Predlog kreiran",
+                "execute": "Predlog izvršen",
+                "accept": "Predlog prihvaćen",
+                "cancel": "Predlog otkazan",
+                "createMarket": "Tržište otvoreno",
+                "resolve": "Tržište razrešeno",
+                "donate": "Donacija uplaćena",
+                "pledge": "Obećanje dato",
+                "fulfillPledge": "Obećanje ispunjeno",
+                "claim": "Dobitak preuzet"
+            },
+            "openError": "Predlog nije moguće otvoriti. Pokušajte ponovo.",
+            "location": {
+                "near": "Okolina: {{place}}",
+                "country": "Približno: {{place}}",
+                "unknown": "Lokacija nepoznata"
+            }
         }
     },
     "mapShell": {

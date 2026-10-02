@@ -1,5 +1,9 @@
 # Memory
 
+- 2026-10-02: Arrivals show the area's proposal count and pulse until discovery; 3D parcel selection emphasizes in place while retaining context. Selected is temporary UI state, separate from applied/unapplied: an unapplied selected preview accepts clicks until another map selection or background click clears it.
+
+- 2026-10-02: The globe's color-coded recent activity includes city or approximate country locations; proposal clicks frame the existing local applied/unapplied preview with Activity reachable, and deliberate map zoom-out to level 4 returns to the globe. Wheel/swipe interaction switches the list to manual scrolling; cross-city clicks retain the globe frame until the proposal is framed, so the default world map never flashes.
+
 - 2026-10-02: Branding preference: Consensus Builder is the primary visible product name; Urban Game Theory is the project behind it and Hyperstition: Markets for Possible Cities is the hackathon theme. Keep Consensus Builder prominent in page titles, the intro, About and planning guide.
 
 - 2026-10-02: Release work stays on `colosseum-worlds-fair` in the matching worktree. Regression snapshot: 6,366 fast tests passed, 6 pre-existing skips; complete headed run 250/250, followed by 30 affected checks for final fixes. Suite collects 253 headed tests; the command inventory maps 99 UI commands across 47 specs, with broader workflows in the other specs. HTTP/RPC/wallet boundaries use fixtures; do not claim this proves live transactions, paid image generation, or production service health.

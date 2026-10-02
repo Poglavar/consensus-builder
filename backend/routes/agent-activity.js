@@ -25,6 +25,9 @@ const CHAIN_ACTIONS = Object.freeze({
     void_pledge: 'voidPledge'
 });
 const ACTIVITY_PROGRAMS = new Set(['proposal_nft', 'proposal_market', 'proposal_pledge']);
+const RECENT_CHAIN_ACTIONS = new Set([
+    'createMarket', 'accept', 'cancel', 'donate', 'pledge', 'fulfillPledge', 'claim', 'resolve'
+]);
 
 function readPersonas() {
     try {
@@ -42,6 +45,81 @@ function asLimit(value) {
 
 function accountFor(instruction, role) {
     return instruction?.accounts?.find(account => account.role === role)?.address || null;
+}
+
+function validPosition(value) {
+    return Array.isArray(value) && value.length >= 2
+        && Number.isFinite(value[0]) && Number.isFinite(value[1])
+        && Number(value[0]) >= -180 && Number(value[0]) <= 180
+        && Number(value[1]) >= -90 && Number(value[1]) <= 90;
+}
+
+function geometryBounds(value, bounds = null) {
+    if (!value || typeof value !== 'object') return bounds;
+    if (validPosition(value)) {
+        const lon = Number(value[0]);
+        const lat = Number(value[1]);
+        if (!bounds) bounds = [lon, lat, lon, lat];
+        else {
+            bounds[0] = Math.min(bounds[0], lon);
+            bounds[1] = Math.min(bounds[1], lat);
+            bounds[2] = Math.max(bounds[2], lon);
+            bounds[3] = Math.max(bounds[3], lat);
+        }
+    } else if (Array.isArray(value)) {
+        for (const item of value) bounds = geometryBounds(item, bounds);
+    } else if (value.type === 'Feature') bounds = geometryBounds(value.geometry, bounds);
+    else if (value.type === 'FeatureCollection') bounds = geometryBounds(value.features, bounds);
+    else if (value.coordinates) bounds = geometryBounds(value.coordinates, bounds);
+    else if (value.geometry) bounds = geometryBounds(value.geometry, bounds);
+    else if (value.buildings || value.parcels || value.polygons) {
+        bounds = geometryBounds(value.buildings || value.parcels || value.polygons, bounds);
+    }
+    return bounds;
+}
+
+function locationFromProposal(row = {}) {
+    const data = row.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {};
+    const geometries = [
+        data.geometry,
+        data.structureProposal?.geometry,
+        data.roadProposal?.definition?.polygon,
+        data.roadProposal?.definition?.features,
+        data.reparcellization?.polygons,
+        data.site,
+        row.site_geometry
+    ];
+    for (const candidate of geometries) {
+        const bounds = geometryBounds(candidate);
+        if (bounds) {
+            const [west, south, east, north] = bounds;
+            const lat = (south + north) / 2;
+            const lon = (west + east) / 2;
+            if (Number.isFinite(lat) && Number.isFinite(lon)) return { lat, lon };
+        }
+    }
+    for (const bounds of [data.bounds, row.bounds]) {
+        let west, south, east, north;
+        if (Array.isArray(bounds) && bounds.length === 4) [west, south, east, north] = bounds;
+        else if (bounds && typeof bounds === 'object') {
+            west = bounds.west ?? bounds.minX ?? bounds.minLng;
+            south = bounds.south ?? bounds.minY ?? bounds.minLat;
+            east = bounds.east ?? bounds.maxX ?? bounds.maxLng;
+            north = bounds.north ?? bounds.maxY ?? bounds.maxLat;
+        }
+        const corners = [[west, south], [east, north]];
+        const numbers = corners.flat();
+        if (numbers.every(Number.isFinite) && validPosition(corners[0]) && validPosition(corners[1])
+            && Number(west) <= Number(east) && Number(south) <= Number(north)) {
+            return { lat: (Number(south) + Number(north)) / 2, lon: (Number(west) + Number(east)) / 2 };
+        }
+    }
+    return undefined;
+}
+
+function withProposalLocation(event, proposal) {
+    const location = locationFromProposal(proposal);
+    return location ? { ...event, location } : event;
 }
 
 export function proposalAccountIndex(rows = []) {
@@ -142,7 +220,7 @@ export function chainEvents(rows = [], {
                 actor,
                 action,
                 entity: proposalId ? { type: 'proposal', id: proposalId } : null,
-                ok: decoded.status !== 'failed',
+                ok: decoded.status === 'success',
                 message: `${actor.name} submitted ${action.type}${proposalId ? ` for proposal ${proposalId}` : ''}.`,
                 transaction: decoded.signature,
                 occurredAt: decoded.time || null,
@@ -250,7 +328,7 @@ function proposalEvents(row) {
     const persona = String(agent.persona || 'agent');
     const wallet = agent.wallet || null;
     const controller = agent.controller || 'llm';
-    return [{
+    return [withProposalLocation({
         id: `proposal:${proposalId}:published`,
         source: 'live',
         actor: { id: wallet || persona, name: persona, kind: 'agent', controller, wallet },
@@ -262,7 +340,34 @@ function proposalEvents(row) {
         occurredAt: row.created_at,
         recordedAt: row.updated_at || row.created_at,
         runId: agent.run_id || null
-    }];
+    }, row)];
+}
+
+function publicProposalEvents(rows = []) {
+    return rows.filter(row => row.proposal_id).map(row => withProposalLocation({
+        id: `proposal:${row.proposal_id}:created`, source: 'live',
+        action: { type: 'create', proposalId: String(row.proposal_id) },
+        entity: { type: 'proposal', id: String(row.proposal_id) },
+        proposalName: row.display_name || null, cityId: row.city || null,
+        occurredAt: row.created_at || null, transaction: null,
+        message: `Proposal ${row.display_name || row.proposal_id} was created.`
+    }, row));
+}
+
+function executedProposalEvents(rows = [], proposalIdsByAccount = new Map(), proposalsById = new Map()) {
+    return rows.flatMap(row => {
+        const proposalId = proposalIdsByAccount.get(String(row.subject_id));
+        const proposal = proposalId ? proposalsById.get(String(proposalId)) : null;
+        if (!proposalId || !proposal) return [];
+        return [withProposalLocation({
+            id: row.event_id, source: 'live', action: { type: 'execute', proposalId },
+            entity: { type: 'proposal', id: proposalId }, outcome: 'executed',
+            proposalName: proposal.display_name || null, cityId: proposal.city || null,
+            occurredAt: row.source_observed_at, transaction: row.transaction_signature || null,
+            message: `Proposal ${proposal.display_name || proposalId} was executed.`,
+            provenance: { source: 'verified_proposal_lifecycle' }
+        }, proposal)];
+    });
 }
 
 // Scope filters for /agent/activity (actor, source, action, proposal, run). Chain events are decoded
@@ -351,15 +456,84 @@ function runDetail(row, costs = []) {
 export function setupAgentActivityRoute(app, pool, {
     env = process.env,
     book = buildAddressBook({ env, personas: readPersonas() }),
-    idls = loadIdls(path.join(__dirname, '..', '..', 'blockchain', 'solana', 'idl'))
+    idls = loadIdls(path.join(__dirname, '..', '..', 'blockchain', 'solana', 'idl')),
+    decode = decodeParsedTransaction
 } = {}) {
+    // A compact public feed of confirmed, useful changes. This deliberately reads public proposal
+    // rows and verified terminal oracle facts alongside successful confirmed transactions.
+    app.get('/activity/recent', async (req, res) => {
+        res.set('Cache-Control', 'no-store');
+        try {
+            const requested = Number(req.query.limit);
+            const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 30) : 12;
+            const [proposals, proposalAccounts, lifecycle, transactions] = await Promise.all([
+                pool.query(
+                    `SELECT proposal_id, city, proposal_data, bounds,
+                            ST_AsGeoJSON(site)::json AS site_geometry,
+                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
+                            created_at
+                       FROM proposal
+                      ORDER BY created_at DESC
+                      LIMIT $1`, [limit]
+                ),
+                pool.query(
+                    `SELECT proposal_id, city, proposal_data, bounds,
+                            ST_AsGeoJSON(site)::json AS site_geometry,
+                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
+                            COALESCE(onchain_data->>'proposalId',
+                                     proposal_data #>> '{onchain,proposalId}',
+                                     proposal_data #>> '{onchainData,proposalId}') AS proposal_account
+                       FROM proposal
+                      WHERE COALESCE(onchain_data->>'proposalId',
+                                     proposal_data #>> '{onchain,proposalId}',
+                                     proposal_data #>> '{onchainData,proposalId}') IS NOT NULL`
+                ),
+                pool.query(
+                    `SELECT event_id, subject_id, outcome, source_observed_at, transaction_signature
+                       FROM consensus.land_event
+                      WHERE event_type = 'proposal_lifecycle' AND outcome = 'executed'
+                      ORDER BY source_observed_at DESC
+                      LIMIT $1`, [limit]
+                ),
+                pool.query(
+                    `SELECT signature, slot, block_time, raw, created_at
+                       FROM consensus.solana_transaction
+                      WHERE cluster = 'devnet'
+                      ORDER BY block_time DESC NULLS LAST, slot DESC
+                      LIMIT $1`, [limit * 4]
+                )
+            ]);
+            const byId = new Map(proposalAccounts.rows.map(row => [String(row.proposal_id), row]));
+            const accountIds = proposalAccountIndex(proposalAccounts.rows);
+            const dbProposalEvents = publicProposalEvents(proposals.rows);
+            const executedEvents = executedProposalEvents(lifecycle.rows, accountIds, byId);
+            const confirmedChainEvents = chainEvents(transactions.rows, {
+                book, idls, proposalIdsByAccount: accountIds, decode
+            }).filter(event => event.ok === true
+                && RECENT_CHAIN_ACTIONS.has(event.action?.type)
+                && byId.has(String(event.action?.proposalId)))
+                .map(event => {
+                    const proposal = byId.get(String(event.action.proposalId));
+                    return withProposalLocation({ ...event, proposalName: proposal.display_name || null, cityId: proposal.city || null }, proposal);
+                });
+            const events = mergeEvents(dbProposalEvents, executedEvents, confirmedChainEvents)
+                .sort((a, b) => (Date.parse(b.occurredAt || b.recordedAt || 0) || 0)
+                    - (Date.parse(a.occurredAt || a.recordedAt || 0) || 0))
+                .slice(0, limit);
+            return res.json({ events, source: 'live' });
+        } catch (error) {
+            console.error('GET /activity/recent failed', error);
+            return res.status(500).json({ error: 'Failed to read recent activity', source: 'live' });
+        }
+    });
+
     app.get('/agent/activity', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
             const filters = activityFilters(req.query);
             const filtered = Object.keys(filters).length > 0;
             const window = filtered ? ACTIVITY_SCAN_WINDOW : limit;
-            const [runs, proposals, transactions, proposalAccounts] = await Promise.all([
+            const [runs, proposals, transactions, proposalAccounts, publicProposals, lifecycle] = await Promise.all([
                 pool.query(
                     `SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
                        FROM consensus.agent_run
@@ -368,7 +542,8 @@ export function setupAgentActivityRoute(app, pool, {
                     [window]
                 ),
                 pool.query(
-                    `SELECT proposal_id,
+                    `SELECT proposal_id, proposal_data, bounds,
+                            ST_AsGeoJSON(site)::json AS site_geometry,
                             COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
                             proposal_data->'agent' AS agent,
                             created_at, updated_at
@@ -390,7 +565,9 @@ export function setupAgentActivityRoute(app, pool, {
                     [window]
                 ),
                 pool.query(
-                    `SELECT proposal_id,
+                    `SELECT proposal_id, city, proposal_data, bounds,
+                            ST_AsGeoJSON(site)::json AS site_geometry,
+                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
                             COALESCE(onchain_data->>'proposalId',
                                      proposal_data #>> '{onchain,proposalId}',
                                      proposal_data #>> '{onchainData,proposalId}') AS proposal_account
@@ -398,15 +575,35 @@ export function setupAgentActivityRoute(app, pool, {
                       WHERE COALESCE(onchain_data->>'proposalId',
                                      proposal_data #>> '{onchain,proposalId}',
                                      proposal_data #>> '{onchainData,proposalId}') IS NOT NULL`
+                ),
+                pool.query(
+                    `SELECT proposal_id, city, proposal_data, bounds,
+                            ST_AsGeoJSON(site)::json AS site_geometry,
+                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
+                            created_at
+                       FROM proposal
+                      ORDER BY created_at DESC
+                      LIMIT $1`, [window]
+                ),
+                pool.query(
+                    `SELECT event_id, subject_id, outcome, source_observed_at, transaction_signature
+                       FROM consensus.land_event
+                      WHERE event_type = 'proposal_lifecycle' AND outcome = 'executed'
+                      ORDER BY source_observed_at DESC
+                      LIMIT $1`, [window]
                 )
             ]);
             const chain = chainEvents(transactions.rows, {
                 book, idls, proposalIdsByAccount: proposalAccountIndex(proposalAccounts.rows)
             });
+            const proposalIds = proposalAccountIndex(proposalAccounts.rows);
+            const publicById = new Map(proposalAccounts.rows.map(row => [String(row.proposal_id), row]));
             const events = mergeEvents(
                 chain,
                 runs.rows.flatMap(runEvents),
-                proposals.rows.flatMap(proposalEvents)
+                proposals.rows.flatMap(proposalEvents),
+                publicProposalEvents(publicProposals.rows),
+                executedProposalEvents(lifecycle.rows, proposalIds, publicById)
             ).filter(event => matchesActivityFilters(event, filters)).slice(-limit);
             res.json({
                 events, count: events.length, source: 'live',

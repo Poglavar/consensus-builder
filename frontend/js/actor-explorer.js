@@ -11,7 +11,7 @@
     // CHAIN_ACTIONS, x402 payments, run status) and agent run summaries (AgentActionEngine) emit. The explorer's action filter is built from it, so a
     // type missing here could never be filtered for.
     const ACTION_LABELS = Object.freeze({
-        create: 'Created', publish: 'Published', accept: 'Accepted', withdrawAcceptance: 'Withdrew acceptance',
+        create: 'Created', execute: 'Executed', publish: 'Published', accept: 'Accepted', withdrawAcceptance: 'Withdrew acceptance',
         donate: 'Donated', pledge: 'Pledged', stake: 'Bet / stake', createMarket: 'Opened market',
         resolve: 'Resolved market', claim: 'Claimed winnings', revokePledge: 'Revoked pledge',
         fulfillPledge: 'Fulfilled pledge', voidPledge: 'Voided pledge', refundMyDonations: 'Refunded donation',

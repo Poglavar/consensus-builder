@@ -129,7 +129,11 @@ function renderProposalListModal() {
 
     const source = proposalListState.source || 'local';
     const cityCode = resolveCurrentCityCode();
-    const allProposals = proposalStorage.getAllProposals();
+    const area = typeof getProposalCountAreaContext === 'function' ? getProposalCountAreaContext() : null;
+    const allStoredProposals = proposalStorage.getAllProposals();
+    const allProposals = area?.explore && window.__proposalCounts?.proposalIntersectsBounds
+        ? allStoredProposals.filter(proposal => window.__proposalCounts.proposalIntersectsBounds(proposal, area.bounds))
+        : allStoredProposals;
 
     // Check and update expiry status for all proposals
     allProposals.forEach(proposal => {
@@ -155,14 +159,15 @@ function renderProposalListModal() {
     const localDatasets = buildDatasets(localAugmented);
 
     // Server dataset handling
-    const normalizedCity = normalizeCityCodeForApi(cityCode);
-    if (serverProposalCache.lastCity && serverProposalCache.lastCity !== normalizedCity) {
-        resetServerProposalCache(normalizedCity);
+    const normalizedCity = area?.explore ? '' : normalizeCityCodeForApi(area?.city || cityCode);
+    const cacheKey = area?.key || normalizedCity;
+    if (serverProposalCache.lastCity && serverProposalCache.lastCity !== cacheKey) {
+        resetServerProposalCache(cacheKey);
     }
     // Always fetch count/summaries once per city so the server tab badge is populated immediately.
     // Keyed on "did we ask?" rather than "is count null?": a failed fetch leaves count null, and
     // this function is re-entered from that fetch's own finally block.
-    const needsFetch = serverProposalCache.lastCity !== normalizedCity || !serverProposalCache.lastFetchedAt;
+    const needsFetch = serverProposalCache.lastCity !== cacheKey || !serverProposalCache.lastFetchedAt;
     if (!serverProposalCache.loading && needsFetch) {
         fetchServerProposalSummaries(normalizedCity);
     } else if (source === 'server') {
@@ -600,6 +605,7 @@ function renderProposalListModal() {
 }
 
 async function showAllProposalsModal() {
+    if (typeof markProposalCountAreaOpened === 'function') markProposalCountAreaOpened();
     resetParcelSelectionForProposalListInteraction();
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
 

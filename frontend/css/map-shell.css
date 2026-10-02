@@ -115,6 +115,19 @@
     display: none;
 }
 
+.map-shell-badge.is-unopened {
+    animation: map-shell-proposals-arrival-pulse 1.45s ease-in-out infinite;
+}
+
+@keyframes map-shell-proposals-arrival-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.44); }
+    50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(37, 99, 235, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-shell-badge.is-unopened { animation: none; }
+}
+
 /* The Activity button's running dot: the in-UI simulation is running (js/ui/simulation-indicator.js).
    It rides on the button's top-right corner; reduced motion keeps the dot and drops the pulse. */
 .map-shell-running-dot {

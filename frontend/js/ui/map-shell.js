@@ -247,10 +247,15 @@
             const params = JSON.parse(source.getAttribute('data-i18n-params') || '{}');
             count = Number.isFinite(Number(params.count)) ? Number(params.count) : 0;
         } catch (_) { count = 0; }
-        badge.textContent = String(count);
-        badge.hidden = count <= 0;
+        badge.textContent = `(${count})`;
+        const ready = source.getAttribute('data-proposal-count-ready') !== '0';
+        const opened = source.getAttribute('data-proposal-list-opened') === '1';
+        badge.hidden = !ready;
+        badge.classList.toggle('is-unopened', ready && count > 0 && !opened);
         if (button) {
-            button.setAttribute('aria-label', t('mapShell.proposalsCount', `Proposals (${count})`, { count }));
+            button.setAttribute('aria-label', ready
+                ? t('mapShell.proposalsCount', `Proposals (${count})`, { count })
+                : t('mapShell.proposals', 'Proposals'));
         }
     }
 
@@ -258,7 +263,9 @@
         const source = doc.getElementById('showProposalsButton');
         if (!source || typeof win.MutationObserver !== 'function') return;
         new win.MutationObserver(syncProposalsBadge)
-            .observe(source, { attributes: true, attributeFilter: ['data-i18n-params'] });
+            .observe(source, { attributes: true, attributeFilter: [
+                'data-i18n-params', 'data-proposal-count-ready', 'data-proposal-area', 'data-proposal-list-opened'
+            ] });
         // Its aria-label is translated text: redo it on a language switch too.
         if (win.i18n && typeof win.i18n.onChange === 'function') win.i18n.onChange(syncProposalsBadge);
         win.addEventListener('i18n:translationsLoaded', syncProposalsBadge);

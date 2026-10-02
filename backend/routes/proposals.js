@@ -307,6 +307,19 @@ function boundsValidator(value) {
     return { ok: false, error: 'bounds must be an array or an object.' };
 }
 
+function parseProposalViewportBbox(raw) {
+    if (raw === undefined) return { ok: true, value: null };
+    const pieces = typeof raw === 'string' ? raw.split(',').map(value => value.trim()) : [];
+    const bbox = pieces.map(value => Number(value));
+    if (bbox.length !== 4 || pieces.some(value => value === '') || !bbox.every(Number.isFinite)
+        || bbox[0] < -180 || bbox[0] > 180 || bbox[2] < -180 || bbox[2] > 180
+        || bbox[1] < -90 || bbox[1] > 90 || bbox[3] < -90 || bbox[3] > 90
+        || bbox[0] > bbox[2] || bbox[1] > bbox[3]) {
+        return { ok: false, error: 'bbox must be west,south,east,north in ordered WGS84 coordinates.' };
+    }
+    return { ok: true, value: bbox };
+}
+
 // The frontend stores lens as `[{address, name}, ...]`, but older callers and on-chain reads
 // produce plain string arrays. Accept both shapes; preserve the input value as-is for JSONB storage.
 function lensArrayValidator(value) {
@@ -1035,6 +1048,7 @@ export function setupProposalsRoute(app, pool) {
         q,
         sort,
         baseSelect,
+        spatialBounds,
         includePagination = true,
         limit,
         offset
@@ -1042,6 +1056,26 @@ export function setupProposalsRoute(app, pool) {
         let sql = baseSelect || '';
         const params = [];
         const clauses = [];
+
+        if (spatialBounds) {
+            const first = params.length + 1;
+            params.push(...spatialBounds);
+            const boundsWest = `COALESCE(bounds->>'west', bounds->>'minX', bounds->>'minLng', bounds->>0)`;
+            const boundsSouth = `COALESCE(bounds->>'south', bounds->>'minY', bounds->>'minLat', bounds->>1)`;
+            const boundsEast = `COALESCE(bounds->>'east', bounds->>'maxX', bounds->>'maxLng', bounds->>2)`;
+            const boundsNorth = `COALESCE(bounds->>'north', bounds->>'maxY', bounds->>'maxLat', bounds->>3)`;
+            const safeNumber = (value) => `(CASE WHEN ${value} ~ '^-?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?$' THEN (${value})::double precision END)`;
+            const west = safeNumber(boundsWest);
+            const south = safeNumber(boundsSouth);
+            const east = safeNumber(boundsEast);
+            const north = safeNumber(boundsNorth);
+            clauses.push(`(
+                (site IS NOT NULL AND site && ST_MakeEnvelope($${first}, $${first + 1}, $${first + 2}, $${first + 3}, 4326)
+                    AND ST_Intersects(site, ST_MakeEnvelope($${first}, $${first + 1}, $${first + 2}, $${first + 3}, 4326)))
+                OR (${west} <= $${first + 2} AND ${east} >= $${first}
+                    AND ${south} <= $${first + 3} AND ${north} >= $${first + 1})
+            )`);
+        }
 
         if (city) {
             clauses.push(`city = $${params.length + 1}`);
@@ -1100,9 +1134,15 @@ export function setupProposalsRoute(app, pool) {
         try {
             const filters = parseFilters(req);
             if (filters.lifecycleError) return res.status(400).json({ error: filters.lifecycleError });
+            const parsedBbox = parseProposalViewportBbox(req.query.bbox);
+            if (!parsedBbox.ok) return res.status(400).json({ error: parsedBbox.error });
+            const spatialBounds = parsedBbox.value;
+            const city = filters.city === 'explore' ? null : filters.city;
             const { sql, params } = buildFilterQuery({
                 ...filters,
-                baseSelect: '\n            SELECT COUNT(*) AS count FROM proposal',
+                city,
+                spatialBounds,
+                baseSelect: '\n            SELECT COUNT(DISTINCT id) AS count FROM proposal',
                 includePagination: false
             });
 
@@ -1111,10 +1151,11 @@ export function setupProposalsRoute(app, pool) {
 
             res.json({
                 count,
-                city: filters.city || null,
+                city: city || null,
                 lifecycle: filters.lifecycle || null,
                 type: filters.type || null,
-                author: filters.author || null
+                author: filters.author || null,
+                ...(spatialBounds ? { bbox: spatialBounds } : {})
             });
         } catch (err) {
             console.error('Error in GET /proposals/count:', err);
@@ -1169,9 +1210,14 @@ export function setupProposalsRoute(app, pool) {
         try {
             const filters = parseFilters(req);
             if (filters.lifecycleError) return res.status(400).json({ error: filters.lifecycleError });
+            const parsedBbox = parseProposalViewportBbox(req.query.bbox);
+            if (!parsedBbox.ok) return res.status(400).json({ error: parsedBbox.error });
+            const city = filters.city === 'explore' ? null : filters.city;
 
             const { sql, params } = buildFilterQuery({
                 ...filters,
+                city,
+                spatialBounds: parsedBbox.value,
                 baseSelect: `
             SELECT
                 id,

@@ -62,6 +62,33 @@ describe('unionProposalCount — jedan broj za tri kartice', () => {
     });
 });
 
+describe('proposalIntersectsBounds — proposal area totals', () => {
+    const bounds = { west: 15.9, south: 45.7, east: 16.1, north: 45.9 };
+    it('uses stored bounds and nested building geometry without converting missing coordinates to zero', () => {
+        expect(counts.proposalIntersectsBounds({ bounds: [15.95, 45.75, 16, 45.8] }, bounds)).toBe(true);
+        expect(counts.proposalIntersectsBounds({ geometry: { buildings: [{ type: 'Feature', geometry: { type: 'Point', coordinates: [16, 45.8] } }] } }, bounds)).toBe(true);
+        expect(counts.proposalIntersectsBounds({ geometry: { type: 'Point', coordinates: [null, null] } }, { west: -1, south: -1, east: 1, north: 1 })).toBe(false);
+        expect(counts.proposalIntersectsBounds({ geometry: { type: 'Point', coordinates: [0, 0] } }, { west: null, south: null, east: 1, north: 1 })).toBe(false);
+    });
+    it('includes a GeoJSON proposal whose geometry overlaps the viewport', () => {
+        expect(counts.proposalIntersectsBounds({ geometry: {
+            type: 'Polygon', coordinates: [[[15.95, 45.75], [16.2, 45.75], [16.2, 46], [15.95, 46], [15.95, 45.75]]]
+        } }, bounds)).toBe(true);
+    });
+    it('includes known proposal geometry formats and excludes offscreen or geometry-less records', () => {
+        expect(counts.proposalIntersectsBounds({ siteProposal: { geometry: {
+            type: 'Point', coordinates: [16, 45.8]
+        } } }, bounds)).toBe(true);
+        expect(counts.proposalIntersectsBounds({ geometry: {
+            type: 'Point', coordinates: [17, 46]
+        } }, bounds)).toBe(false);
+        expect(counts.proposalIntersectsBounds({ proposalId: 'no-shape' }, bounds)).toBe(false);
+    });
+    it('treats an unavailable viewport as unknown rather than inventing an area match', () => {
+        expect(counts.proposalIntersectsBounds({ geometry: { type: 'Point', coordinates: [16, 45.8] } }, null)).toBe(false);
+    });
+});
+
 describe('serverCountIsStale — kad ponovno pitati', () => {
     it('nikad pitano je uvijek zastarjelo', () => {
         expect(counts.serverCountIsStale(0, 1000, 15000)).toBe(true);
@@ -75,6 +102,14 @@ describe('serverCountIsStale — kad ponovno pitati', () => {
     it('iza prozora se pita', () => {
         expect(counts.serverCountIsStale(1000, 16000, 15000)).toBe(true);
         expect(counts.serverCountIsStale(1000, 16001, 15000)).toBe(true);
+    });
+});
+
+describe('area proposal count and filtered summaries', () => {
+    it('only lets an unfiltered summary replace the full-area count', () => {
+        expect(counts.summaryUpdatesAreaCount('')).toBe(true);
+        expect(counts.summaryUpdatesAreaCount('   ')).toBe(true);
+        expect(counts.summaryUpdatesAreaCount('park')).toBe(false);
     });
 });
 
@@ -108,6 +143,44 @@ describe('osvježavanje serverskog broja', () => {
         await run('sibenik');
         expect(fetchSpy).toHaveBeenCalledWith('http://backend/proposals/count?city=sibenik');
         expect(serverProposalCache.count).toBe(42);
+    });
+
+    it('requests the active Explore viewport bounds instead of a city total', async () => {
+        const context = { explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:15.9,45.7,16.1,45.9' };
+        const { run, fetchSpy, serverProposalCache } = harness();
+        // Rebuild the isolated function with the browser's current area context exposed.
+        const body = sliceBetween(serverSync, "// How long the sidebar's server count", '// The sort keys the SERVER can order by');
+        const contextualRun = new Function('normalizeCityCodeForApi', 'resolveCurrentCityCode', 'resolveBackendBaseUrl',
+            'serverProposalCache', 'resetServerProposalCache', 'window', 'fetch', 'console',
+            'updateShowProposalsButton', `${body} return refreshServerProposalCount;`)(
+            city => city, () => 'explore', () => 'http://backend', serverProposalCache, vi.fn(),
+            { __proposalCounts: counts, getProposalCountAreaContext: () => context }, fetchSpy,
+            { warn: vi.fn(), error: vi.fn() }, vi.fn());
+        await contextualRun();
+        expect(fetchSpy).toHaveBeenCalledWith('http://backend/proposals/count?bbox=15.9%2C45.7%2C16.1%2C45.9');
+    });
+
+    it('does not apply a count response after the user has moved to another Explore viewport', async () => {
+        let context = { explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:old' };
+        let resolveResponse;
+        const response = new Promise(resolve => { resolveResponse = resolve; });
+        const cache = {
+            proposals: [], count: null, loading: false, error: null,
+            lastCity: 'explore', lastFetchedAt: 0, lastQuery: null,
+            countRefreshedAt: 0, countLoading: false
+        };
+        const fetchSpy = vi.fn(() => response);
+        const refresh = new Function('normalizeCityCodeForApi', 'resolveCurrentCityCode', 'resolveBackendBaseUrl',
+            'serverProposalCache', 'resetServerProposalCache', 'window', 'fetch', 'console',
+            'updateShowProposalsButton', `${sliceBetween(serverSync, "// How long the sidebar's server count", '// The sort keys the SERVER can order by')} return refreshServerProposalCount;`)(
+            city => city, () => 'explore', () => 'http://backend', cache, vi.fn(),
+            { __proposalCounts: counts, getProposalCountAreaContext: () => context }, fetchSpy,
+            { warn: vi.fn(), error: vi.fn() }, vi.fn());
+        const pending = refresh();
+        context = { ...context, bbox: [16.3, 45.7, 16.5, 45.9], key: 'explore:new' };
+        resolveResponse({ ok: true, json: async () => ({ count: 99 }) });
+        await pending;
+        expect(cache.count).toBeNull();
     });
 
     it('NE dira lastFetchedAt ni keširane retke', async () => {
@@ -161,16 +234,66 @@ describe('gumb u bočnoj traci', () => {
         const fn = sliceBetween(listUi, 'function updateShowProposalsButton() {', 'function watchProposalsSectionVisibility');
         expect(fn).not.toContain('proposal-unsaved-count');
         expect(fn).not.toContain('appendChild');
-        expect(fn.match(/button\.textContent =/g)).toHaveLength(2);   // i18n grana + zamjenska
-        expect(fn).toContain('const totalProposals = proposalUnionCountNow();');
+        expect(fn.match(/button\.textContent =/g)).toHaveLength(3);   // loading + i18n + fallback
+        expect(fn).toContain('const state = proposalUnionCountNow();');
+        expect(fn).toContain("'data-proposal-count-ready'");
     });
 
     it('broji "na serveru" istim testom kojim kartica crta svoju značku', () => {
         // p.serverProposalId je uže: PREUZET prijedlog nosi serijski broj kao proposalId/id, pa bi
         // ga uži test proglasio samo-lokalnim i zbrojio dvaput.
-        const fn = sliceBetween(listUi, 'function proposalUnionCountNow() {', 'function updateShowProposalsButton');
+        const fn = sliceBetween(listUi, 'function proposalUnionCountNow() {', 'function markProposalCountAreaOpened');
         expect(fn).toContain('getSerialProposalId(proposal)');
-        expect(fn).toContain('counts.unionProposalCount(local, serverProposalCache.count)');
+        expect(fn).toContain('counts.unionProposalCount(local, serverCount)');
+        expect(fn).toContain('proposalIntersectsBounds');
+    });
+
+    it('starts a fresh city or Explore-area count after app arrival', () => {
+        expect(listUi).toContain("window.addEventListener('cityChanged', onCityChanged)");
+        expect(listUi).toContain("window.addEventListener('worldview:landed'");
+        expect(listUi).toContain("map.on('moveend zoomend'");
+        expect(listUi).toContain('refreshServerProposalCount()');
+        expect(listUi).toContain('window.whenAppBooted()');
+    });
+
+    it('waits for delayed app boot before attaching the viewport listener and fetching Explore count', async () => {
+        const body = sliceBetween(listUi, 'function watchProposalCountArrival() {', '// Half the count is local');
+        let resolveBoot;
+        const bootPromise = new Promise(resolve => { resolveBoot = resolve; });
+        const fakeMap = { on: vi.fn() };
+        const fakeWindow = {
+            whenAppBooted: vi.fn(() => bootPromise),
+            addEventListener: vi.fn(),
+            map: null
+        };
+        const refresh = vi.fn();
+        const update = vi.fn();
+        const watch = new Function('window', 'getProposalCountAreaContext', 'updateShowProposalsButton',
+            'refreshServerProposalCount', 'captureProposalCountArrivalCenter', 'setTimeout', 'clearTimeout',
+            `let _proposalCountArrivalWatching = false; let _proposalCountViewportTimer = null; ${body} return watchProposalCountArrival;`)(
+            fakeWindow, () => ({ explore: true }), update, refresh, vi.fn(), setTimeout, clearTimeout);
+        watch();
+        expect(fakeWindow.whenAppBooted).toHaveBeenCalledTimes(1);
+        expect(refresh).not.toHaveBeenCalled();
+        fakeWindow.map = fakeMap;
+        resolveBoot();
+        await bootPromise;
+        await Promise.resolve();
+        expect(fakeMap.on).toHaveBeenCalledWith('moveend zoomend', expect.any(Function));
+        expect(update).toHaveBeenCalled();
+        expect(refresh).toHaveBeenCalled();
+    });
+
+    it('uses the entered Explore center for the pulse key, not the current pan center', () => {
+        const contextHelper = sliceBetween(listUi, 'function getProposalCountAreaContext() {', 'function proposalUnionCountNow');
+        const getContext = new Function('window', 'getCurrentCityId', 'normalizeCityCodeForApi',
+            `let _proposalCountArrivalCenter = [44.8, 16.1]; ${contextHelper} return getProposalCountAreaContext;`)(
+            { CityConfigManager: { isExplore: () => true, getCurrentCityConfig: () => ({ id: 'explore', explore: true, map: { defaultCenter: [44.8, 16.1] } }) },
+                map: { getBounds: () => ({ getWest: () => 15.9, getSouth: () => 44.7, getEast: () => 16.2, getNorth: () => 44.9 }),
+                    getCenter: () => ({ lat: 45.1, lng: 17.2 }) } }, () => 'explore', city => city);
+        const area = getContext();
+        expect(area.arrivalKey).toBe('explore:44.8,16.1');
+        expect(area.key).toBe('explore:15.9,44.7,16.2,44.9');
     });
 
     it('osvježava se kad sekcija postane vidljiva, i lokalno i sa servera', () => {

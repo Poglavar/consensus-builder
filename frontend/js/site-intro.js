@@ -6,7 +6,11 @@
 
     function shouldShowSiteIntro(search, seenValue) {
         let forced = false;
-        try { forced = new URLSearchParams(search || '').has('intro'); } catch (_) { /* ignore */ }
+        try {
+            const params = new URLSearchParams(search || '');
+            forced = params.has('intro');
+            if (!forced && (params.get('activity') || params.get('focusProposal'))) return false;
+        } catch (_) { /* ignore */ }
         return forced || seenValue !== '1';
     }
 

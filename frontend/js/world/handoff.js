@@ -4,7 +4,8 @@
 // the map read as one motion. The record lives in sessionStorage and is ignored after 30 s.
 //
 // API (window.WorldHandoff)
-//   store({ dataUrl, cityId, center: [lat, lon], zoom })   `at` is stamped here (our own event time)
+//   store({ dataUrl, cityId, center: [lat, lon], zoom, proposalId? })
+//   proposalReady(id) releases a proposal handoff after selection/framing, including failures
 //   peek() -> record | null                                a fresh record, without consuming it
 //   play({ dataUrl })                                      the same fade without a reload: shows the
 //                                                          frame now and fades it once the map has drawn
@@ -97,7 +98,17 @@
             overlay.classList.add('world-handoff--out');
         };
         overlay.addEventListener('click', () => fade('clicked'));
-        whenMapDrawn().then(() => fade('map drawn'), error => {
+        // A proposal route downloads after app boot. Keep the frame until its own camera is ready,
+        // then wait for tiles at that destination rather than revealing the default city/world view.
+        const focused = record.proposalId ? new Promise(resolve => {
+            const onReady = event => {
+                if (event.detail.proposalId !== record.proposalId) return;
+                global.removeEventListener('worldproposal:ready', onReady);
+                resolve();
+            };
+            global.addEventListener('worldproposal:ready', onReady);
+        }) : Promise.resolve();
+        focused.then(whenMapDrawn).then(() => fade('map drawn'), error => {
             console.error('[' + new Date().toISOString() + '] [world-handoff] waiting for the map failed', error);
             fade('map wait failed');
         });
@@ -111,7 +122,8 @@
         show(record);
     }
 
-    global.WorldHandoff = { store, peek: read, play: show, KEY, MAX_AGE_MS };
+    global.WorldHandoff = { store, peek: read, play: show,
+        proposalReady: proposalId => global.dispatchEvent(new CustomEvent('worldproposal:ready', { detail: { proposalId } })), KEY, MAX_AGE_MS };
 
     if (document.body) boot();
     else document.addEventListener('DOMContentLoaded', boot, { once: true });

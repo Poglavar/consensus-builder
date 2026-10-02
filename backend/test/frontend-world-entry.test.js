@@ -47,7 +47,7 @@ describe('shared routes and first visit', () => {
         { pathname: '/proposals/12' }, { pathname: '/proposals/1,2,3' }, { pathname: '/proposals/my-plan' },
         { pathname: '/plans/my-plan/score' }, { pathname: '/parcel/HR-335240-1323/2' }, { pathname: '/monitors/4' },
         { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: '?proposalShare=abc' },
-        { pathname: '/', search: '?shared=abc' }, { pathname: '/', search: '?activity=agent:7' },
+        { pathname: '/', search: '?shared=abc' }, { pathname: '/', search: '?focusProposal=abc' }, { pathname: '/', search: '?activity=agent:7' },
         { pathname: '/', search: '?scene=slug' }, { pathname: '/', search: '?photo' }, { pathname: '/', search: '?model=1' }
     ];
     const plain = [
@@ -81,6 +81,17 @@ describe('shared routes and first visit', () => {
             .toEqual({ open: true, closable: true, firstVisit: false, forced: true });
         expect(Model.bootDecision({ cityChosen: false, sharedRoute: false, search: '?world=1' }).closable).toBe(false);
         expect(Model.bootDecision({ cityChosen: true, sharedRoute: false, search: '?world=0' }).open).toBe(false);
+    });
+});
+
+describe('zoom out return to globe', () => {
+    it('opens only after a user zooms out to zoom 4 or below without a blocker', () => {
+        expect(Model.shouldReturnToGlobe({ fromZoom: 5, toZoom: 4, userInitiated: true })).toBe(true);
+        expect(Model.shouldReturnToGlobe({ fromZoom: 4, toZoom: 3, userInitiated: true })).toBe(true);
+        expect(Model.shouldReturnToGlobe({ fromZoom: 6, toZoom: 5, userInitiated: true })).toBe(false);
+        expect(Model.shouldReturnToGlobe({ fromZoom: 3, toZoom: 4, userInitiated: true })).toBe(false);
+        expect(Model.shouldReturnToGlobe({ fromZoom: 5, toZoom: 4, userInitiated: false })).toBe(false);
+        expect(Model.shouldReturnToGlobe({ fromZoom: 5, toZoom: 4, userInitiated: true, blocked: true })).toBe(false);
     });
 });
 

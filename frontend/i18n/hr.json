@@ -3528,7 +3528,8 @@
                 "anchorParcel": "Usidrena čestica",
                 "attestOwnership": "Potvrđen vlasnik",
                 "acceptance": "Rekao da",
-                "verdict": "Predana presuda"
+                "verdict": "Predana presuda",
+                "execute": "Izvršen"
             }
         },
         "agents": {
@@ -3693,7 +3694,7 @@
             "avgPerParcel": "Prosjek / čestici"
         },
         "isolation": {
-            "singleParcel": "Prikaz jedne čestice",
+            "singleParcel": "Odabrana čestica",
             "proposalView": "Prikaz prijedloga",
             "exitAria": "Izađi iz ovog prikaza"
         },
@@ -3921,6 +3922,30 @@
             "worldView": "Pogled na svijet",
             "dismiss": "Zatvori",
             "status": "Ovdje nema podataka o česticama: kliknite kartu da nacrtate lokaciju i predložite."
+        },
+        "activity": {
+            "title": "Najnovije aktivnosti",
+            "loading": "Učitavanje aktivnosti…",
+            "empty": "Još nema nedavnih aktivnosti.",
+            "error": "Aktivnosti privremeno nisu dostupne.",
+            "actions": {
+                "create": "Prijedlog stvoren",
+                "execute": "Prijedlog izvršen",
+                "accept": "Prijedlog prihvaćen",
+                "cancel": "Prijedlog otkazan",
+                "createMarket": "Tržište otvoreno",
+                "resolve": "Tržište razriješeno",
+                "donate": "Donacija uplaćena",
+                "pledge": "Obećanje dano",
+                "fulfillPledge": "Obećanje ispunjeno",
+                "claim": "Dobitak preuzet"
+            },
+            "openError": "Prijedlog nije moguće otvoriti. Pokušajte ponovno.",
+            "location": {
+                "near": "Okolica: {{place}}",
+                "country": "Približno: {{place}}",
+                "unknown": "Lokacija nepoznata"
+            }
         }
     },
     "mapShell": {
