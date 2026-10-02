@@ -25,21 +25,21 @@ describe('hackathon public proof routes', () => {
                 frontend: { manifest: 'https://urbangametheory.xyz/release.json' },
                 programs: [
                     { name: 'ProposalPledge', lastDeployedSlot: 503098918, binarySha256: '649c6fda6c9cc2bd5e224772ca562dfb6576a2f46ca46498ad271f5bf39d053c' },
-                    { name: 'ProposalMarket', lastDeployedSlot: 503099080, binarySha256: '3039d28d7ea30161d418f0ac02924e97085b902d0d420e6d3cd0197d8ba91c0e' },
+                    { name: 'ProposalMarket', lastDeployedSlot: 506423834, binarySha256: '3b797f63e285bdd4df953e55b4a9217c65d0d7fe1c1aeaf34ce3ceaa37fee62c' },
                     {
                         name: 'ProposalNFT', address: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-                        programDataAddress: 'GS6Tjof9kJCSUPLGJU2qDQH7VA1rTmJi6TdF1Fnn9RMP', lastDeployedSlot: 501070500,
-                        binarySha256: '977590f5a6255ff62b77eecaea065f2016304272ea0f1e18d0e0e2987ee9e1b3',
-                        idlAddress: 'EXYuUatUDNoa2TMXYGmnEWWJMxrhDxbetT3AR33Xw3zq', idlSha256: null
+                        programDataAddress: 'GS6Tjof9kJCSUPLGJU2qDQH7VA1rTmJi6TdF1Fnn9RMP', lastDeployedSlot: 506424114,
+                        binarySha256: '14b0a11546bca4d0df55a0f903513eaed3e1e6578a0505f0e00960cc2033623d',
+                        idlAddress: 'EXYuUatUDNoa2TMXYGmnEWWJMxrhDxbetT3AR33Xw3zq', idlSha256: '6e2688cd8a07be8f91ac38cb99bd6390b1a27cc04735be15a7d2d8666bf14a2e'
                     },
                     {
                         name: 'ParcelNFT', address: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
-                        programDataAddress: '6FghjCzxbcwxeAFfDTQcUzk8RzJCQXS6d5fZMLxfJbTn', lastDeployedSlot: 450670421,
-                        binarySha256: '34a0d0bbb74383599144a3d87478873c97ab03f23e1145a00baff6344d824959',
+                        programDataAddress: '6FghjCzxbcwxeAFfDTQcUzk8RzJCQXS6d5fZMLxfJbTn', lastDeployedSlot: 506424160,
+                        binarySha256: '80e3bd056f96eeafc381aa1a13624cc08a27684f4b40516143bb622f197d1719',
                         idlAddress: 'EjG4tuNWepkUJZmpFkLT4jdPn7S6n4NZkqduF2RJRRSL'
                     }
                 ],
-                verifiedAt: '2026-09-30'
+                verifiedAt: '2026-10-01'
             },
             publicProof: {
                 manifest: 'https://api.example.test/hackathon/proof.json',
@@ -67,12 +67,10 @@ describe('hackathon public proof routes', () => {
             statusReader: () => buildProspectiveMarketStatus({ now: Date.parse('2026-09-22T20:00:00Z') })
         });
         const { body } = await request(app).get('/hackathon/proof.json');
-        // The manifest pins what is DEPLOYED on devnet. The working IDLs are lens-model v2 (built, not
-        // deployed), so the pins are compared against the deployed snapshots under idl/legacy until the
-        // v2 programs ship; then the pins move to the working files and the snapshots stay as history.
+        // The manifest pins the deployed interfaces, read back after the v3 devnet upgrade.
         const files = {
-            ProposalPledge: 'proposal_pledge.json', ProposalMarket: 'legacy/proposal_market.v1.json',
-            ProposalNFT: 'legacy/proposal_nft.v1.json', ParcelNFT: 'legacy/parcel_nft.v1.json'
+            ProposalPledge: 'proposal_pledge.json', ProposalMarket: 'proposal_market.json',
+            ProposalNFT: 'proposal_nft.json', ParcelNFT: 'parcel_nft.json'
         };
         expect(body.releaseArtifacts.programs.map(program => program.name)).toEqual(Object.keys(files));
         for (const program of body.releaseArtifacts.programs) {

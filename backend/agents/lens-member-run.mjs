@@ -60,10 +60,14 @@ export function lensMemberCommand(persona, { live = false, owners = null, port =
         keypairPath = expandHome(persona.keypairPath);
         if (!keypairPath) throw new Error(`${persona.name} has no keypairPath`);
         args.push('--keypair', keypairPath, '--cluster', 'devnet');
+        if (service.publicUrl) {
+            args.push('--announce', 'https://api.urbangametheory.xyz', '--public-url', service.publicUrl, '--name', persona.name);
+        }
     } else if (owners) {
         args.push('--owners', owners);
     }
     const env = service.priceUsdc ? { LENS_OWNERSHIP_PRICE_USDC: String(service.priceUsdc) } : {};
+    if (live && service.publicUrl) env.LENS_PUBLIC_BASE_URL = service.publicUrl;
     // A member that issues verdicts (kind "lifecycle") reads its operator token from the variable the
     // service block names, e.g. AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN, the same one the proposer's retire
     // phase sends, so the two cannot drift apart.

@@ -61,39 +61,39 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
                 network: 'solana:devnet',
                 address: ADDRESSES.ProposalMarket,
                 programDataAddress: 'AGmZusPm3FuiPkgMBY5dG1ZMfXKptqDjG3aMrgTpqhx7',
-                lastDeployedSlot: 503099080,
-                binarySha256: '3039d28d7ea30161d418f0ac02924e97085b902d0d420e6d3cd0197d8ba91c0e',
+                lastDeployedSlot: 506423834,
+                binarySha256: '3b797f63e285bdd4df953e55b4a9217c65d0d7fe1c1aeaf34ce3ceaa37fee62c',
                 // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/proposal_market.json.
                 idlAddress: '66R6QbYprREJcxd2saTTEWmMUPpyx6ixx2KtBCDYGMJZ',
-                idlSha256: '38a6d44d2d1bdcbffcd9aeb72e8152bb674521582ee58c3be6a5162f3c4262e8',
+                idlSha256: '952bc83dab15ecf55135be9eea87fda258ed440ca3a0aae873ce9739903145a5',
                 upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
             }, {
-                // Pre-hackathon programs, pinned the same way (2026-09-30: `solana program show`, then
+                // Programs pinned from the 2026-10-01 devnet upgrade (`solana program show`, then
                 // `solana program dump` + SHA-256; the two above re-read unchanged that day).
                 name: 'ProposalNFT',
                 network: 'solana:devnet',
                 address: ADDRESSES.ProposalNFT,
                 programDataAddress: 'GS6Tjof9kJCSUPLGJU2qDQH7VA1rTmJi6TdF1Fnn9RMP',
-                lastDeployedSlot: 501070500,
-                binarySha256: '977590f5a6255ff62b77eecaea065f2016304272ea0f1e18d0e0e2987ee9e1b3',
-                // On-chain Anchor IDL account, but stale: no checked-in file equals it, so no idlSha256.
+                lastDeployedSlot: 506424114,
+                binarySha256: '14b0a11546bca4d0df55a0f903513eaed3e1e6578a0505f0e00960cc2033623d',
+                // On-chain Anchor IDL account matches the checked-in v3 interface.
                 idlAddress: 'EXYuUatUDNoa2TMXYGmnEWWJMxrhDxbetT3AR33Xw3zq',
-                idlSha256: null,
+                idlSha256: '6e2688cd8a07be8f91ac38cb99bd6390b1a27cc04735be15a7d2d8666bf14a2e',
                 upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-                note: 'The on-chain IDL predates cancel_and_refund and distribute_funds, both of which the deployed binary implements; blockchain/solana/idl/proposal_nft.json lists the same seven instructions as the binary. mint_and_fund is identical in both.'
+                note: 'Deployed v3: site-first proposals, attested owner consent, open-ground verdict clearance and recorded payouts.'
             }, {
                 name: 'ParcelNFT',
                 network: 'solana:devnet',
                 address: ADDRESSES.ParcelNFT,
                 programDataAddress: '6FghjCzxbcwxeAFfDTQcUzk8RzJCQXS6d5fZMLxfJbTn',
-                lastDeployedSlot: 450670421,
-                binarySha256: '34a0d0bbb74383599144a3d87478873c97ab03f23e1145a00baff6344d824959',
+                lastDeployedSlot: 506424160,
+                binarySha256: '80e3bd056f96eeafc381aa1a13624cc08a27684f4b40516143bb622f197d1719',
                 // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/parcel_nft.json.
                 idlAddress: 'EjG4tuNWepkUJZmpFkLT4jdPn7S6n4NZkqduF2RJRRSL',
-                idlSha256: 'dabfa95a1f2d1a627864924f1514570b74c257c27bc9e51105ada5e9f26ed7eb',
+                idlSha256: 'd648c176ad3469f4d9ed5af9c51c806d953331b13cc1313315fec763cc97c1c6',
                 upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
             }],
-            verifiedAt: '2026-09-30'
+            verifiedAt: '2026-10-01'
         },
         surfaces: {
             pitch: 'https://urbangametheory.xyz/deck.html',

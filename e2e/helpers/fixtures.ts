@@ -48,6 +48,8 @@ async function seedStoredCity(page: Page, cityId: string | null): Promise<void> 
   await page.addInitScript((id) => {
     try {
       if (!localStorage.getItem('cb_current_city')) localStorage.setItem('cb_current_city', id);
+      // City-focused regressions start after the welcome flow. First-visit specs opt out with seedCity: null.
+      localStorage.setItem('cb_site_intro_seen_v1', '1');
     } catch (_) { /* about:blank and opaque origins have no storage */ }
   }, cityId);
 }

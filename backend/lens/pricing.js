@@ -35,7 +35,8 @@ export function readLensPricingConfig(env = process.env) {
         usesCdp,
         payTo: value('X402_PAY_TO'),
         priceUsdc,
-        price: `$${priceUsdc}`
+        price: `$${priceUsdc}`,
+        publicBaseUrl: value('LENS_PUBLIC_BASE_URL')
     };
 }
 
@@ -72,6 +73,8 @@ export function createLensPricing({ dryRun, env = process.env, facilitatorClient
         });
     const gate = paymentMiddleware({
         [`POST ${LENS_OWNERSHIP_PATH}`]: {
+            // Pin the public resource when nginx strips the member prefix.
+            ...(config.publicBaseUrl ? { resource: `${config.publicBaseUrl.replace(/\/+$/, '')}${LENS_OWNERSHIP_PATH}` } : {}),
             accepts: {
                 scheme: 'exact',
                 network: config.network,

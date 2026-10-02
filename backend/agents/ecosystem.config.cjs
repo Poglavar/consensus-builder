@@ -3,6 +3,13 @@
 // their keys exist) and the (inactive) notary-01 and lifecycle-01 lens members. Secrets stay in backend/.env
 // or protected key files; deploy-backend.sh deliberately restarts only the API app, so operators
 // activate these jobs separately.
+const lensEnv = {
+  NODE_ENV: 'production',
+  X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+  X402_FACILITATOR_URL: 'https://api.cdp.coinbase.com/platform/v2/x402',
+  X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
+};
+
 module.exports = {
   apps: [{
     name: 'consensus-builder-agents',
@@ -21,6 +28,7 @@ module.exports = {
       AGENT_DAILY_ACTION_CAP: '13',
       AGENT_DAILY_USDC_CAP: '0.35',
       AGENT_PROPOSAL_FEE_USDC: '0.05',
+      AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://127.0.0.1:3096',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
@@ -150,9 +158,7 @@ module.exports = {
     instances: 1,
     autorestart: false,
     kill_timeout: 30000,
-    env: {
-      NODE_ENV: 'production'
-    },
+    env: lensEnv,
     error_file: '/root/code/consensus-builder/backend/logs/lens-member-error.log',
     out_file: '/root/code/consensus-builder/backend/logs/lens-member.log',
     merge_logs: true,
@@ -172,9 +178,7 @@ module.exports = {
     instances: 1,
     autorestart: false,
     kill_timeout: 30000,
-    env: {
-      NODE_ENV: 'production'
-    },
+    env: lensEnv,
     error_file: '/root/code/consensus-builder/backend/logs/lens-member-error.log',
     out_file: '/root/code/consensus-builder/backend/logs/lens-member.log',
     merge_logs: true,

@@ -108,11 +108,13 @@ describe('lens member x402 pricing', () => {
     });
 
     it('challenges at the configured price, then issues once the payment settles', async () => {
-        const { app, fake, issuer } = setup({ ...env, LENS_OWNERSHIP_PRICE_USDC: '0.02' });
+        const publicBaseUrl = 'https://api.example.test/lens-members/notary';
+        const { app, fake, issuer } = setup({ ...env, LENS_OWNERSHIP_PRICE_USDC: '0.02', LENS_PUBLIC_BASE_URL: publicBaseUrl });
         const body = await signedBody(app);
         const challenge = await request(app).post('/lens/ownership').send(body);
         expect(challenge.status).toBe(402);
         const required = decodePaymentRequiredHeader(challenge.headers['payment-required']);
+        expect(required.resource.url).toBe(`${publicBaseUrl}/lens/ownership`);
         expect(required.accepts[0]).toMatchObject({ network: NETWORK, payTo: treasury.address, amount: '20000' });
         expect(issuer.accounts.size).toBe(0);
 

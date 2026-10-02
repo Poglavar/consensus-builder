@@ -6,9 +6,10 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 
 async function addEditableSquare(page: Page, suffix: string): Promise<{ proposalId: string; parcelId: string }> {
+  await page.waitForFunction(() => !!(window as any).proposalStorage && !!(window as any).CadastralParcelRepository);
   return page.evaluate(async (key) => {
     const w = window as any;
-    const parcelId = `HR-335754-EDIT-${key}`;
+    const parcelId = 'HR-335754-1234';
     const proposalId = `e2e-edit-${key}`;
     const ring = [
       [15.9819, 45.8000],
@@ -17,18 +18,7 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
       [15.9819, 45.8005],
       [15.9819, 45.8000],
     ];
-    await w.ingestCadastralParcelFeatures([{
-      type: 'Feature',
-      properties: {
-        parcelId,
-        parcel_id: parcelId,
-        id: parcelId,
-        BROJ_CESTICE: `EDIT-${key}`,
-        maticni_broj_ko: '335754',
-        MATICNI_BROJ_KO: '335754',
-      },
-      geometry: { type: 'Polygon', coordinates: [ring] },
-    }]);
+    await w.CadastralParcelRepository.ensureIds([parcelId]);
 
     w.proposalStorage.addProposal({
       proposalId,
@@ -38,11 +28,11 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
       offerCurrency: 'EUR',
       city: 'zg',
       goal: 'square',
-      status: 'Active',
-      parentParcelIds: [parcelId],
+      lifecycleStatus: 'Active',
+      applied: false,
+      cadastreParcelIds: [parcelId],
       structureProposal: {
         kind: 'square',
-        status: 'unapplied',
         geometry: { type: 'Polygon', coordinates: [ring] },
       },
     });
@@ -152,10 +142,9 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await page.evaluate((parcelId) => {
       const w = window as any;
       // The actions container is part of the parcel panel's dynamic content — open it first.
-      const layer = (w.parcelLayerById instanceof Map && w.parcelLayerById.get(parcelId))
-        || (typeof w.resolveParcelLayerById === 'function' ? w.resolveParcelLayerById(parcelId) : null);
+      const layer = w.ParcelPresenter.getLayer(parcelId);
       const showPanel = w.Parcels?.uiParcelPanel?.showParcelInfoPanel || w.showParcelInfoPanel;
-      if (layer?.feature && typeof showPanel === 'function') showPanel(layer.feature);
+      showPanel(w.LiveParcelFabric.get(parcelId));
       document.getElementById('parcel-info-panel')?.classList.add('visible');
       w.currentParcel = { id: parcelId, layer: layer || null, isRoad: false };
       w.renderParcelProposalActions(parcelId);
@@ -166,26 +155,32 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     const palette = page.locator('.parcel-build-palette');
     await expect(palette).toBeVisible();
-    // Every buildable type plus the terms-first Offer entry; no legacy Create proposal button.
-    await expect(palette.locator('.parcel-build-btn')).toHaveCount(9);
+    // Rules, structures, transport, and ownership tools; no retired Create proposal button.
+    await expect(palette.locator('.parcel-build-btn')).toHaveCount(15);
     await expect(page.locator('#createProposalFromParcelButton')).toHaveCount(0);
 
-    const created = await page.evaluate(async (parcelId) => {
+    await palette.locator('.parcel-build-btn--park').click();
+    await expect.poll(() => page.evaluate((sourceId) => {
+      return (window as any).proposalStorage.getAllProposals().some((proposal: any) =>
+        proposal.proposalId !== sourceId && proposal.structureProposal?.kind === 'park' && proposal.applied);
+    }, source.proposalId)).toBe(true);
+
+    const created = await page.evaluate((sourceId) => {
       const w = window as any;
-      const id = await w.instantCreateStructureFromSelection('park', [parcelId]);
-      const proposal = id ? w.getProposalByIdOrHash(id) : null;
+      const proposal = w.proposalStorage.getAllProposals().find((record: any) =>
+        record.proposalId !== sourceId && record.structureProposal?.kind === 'park');
       return {
-        id,
+        id: proposal?.proposalId,
         title: proposal?.title || null,
         kind: proposal?.structureProposal?.kind || null,
-        status: proposal?.structureProposal?.status || null,
+        applied: proposal?.applied,
       };
-    }, source.parcelId);
+    }, source.proposalId);
 
     expect(created.id).toBeTruthy();
     expect(created.title).toMatch(/\d{4}-\d{4}$/); // auto-named "Park 1207-0148"
     expect(created.kind).toBe('park');
-    expect(created.status).toBe('applied');
+    expect(created.applied).toBe(true);
   });
 
   test('"Create proposal" on an object opens the prefilled terms dialog', async ({ mockApi: page }) => {
@@ -200,23 +195,28 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await expect(modal.locator('#proposalName')).toHaveValue('Source square propose');
   });
 
-  test('proposals on an original parcel also list on its synthetic descendants', async ({ mockApi: page }) => {
+  test('proposal lookup follows live parcel provenance and ignores fabricated descendant IDs', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     const source = await addEditableSquare(page, 'ancestry');
 
-    const matches = await page.evaluate(({ proposalId, parcelId }) => {
+    const matches = await page.evaluate(async ({ proposalId, parcelId }) => {
       const w = window as any;
       const direct = w.proposalStorage.getProposalsForParcel(parcelId).map((p: any) => p.proposalId);
-      const slice = w.proposalStorage.getProposalsForParcel(`${parcelId}#p-abc123-1`).map((p: any) => p.proposalId);
-      const nested = w.proposalStorage.getProposalsForParcel(`${parcelId}#p-abc123-1#p-def456-2`).map((p: any) => p.proposalId);
+      await w.ProposalManager.applyProposal(proposalId);
+      const descendants = w.LiveParcelFabric.producedBy(proposalId).map((feature: any) => ({
+        id: feature.properties.parcelId,
+        proposals: w.proposalStorage.getProposalsForParcel(feature.properties.parcelId).map((p: any) => p.proposalId),
+      }));
+      const fabricated = w.proposalStorage.getProposalsForParcel(`${parcelId}#p-abc123-1`).map((p: any) => p.proposalId);
       const unrelated = w.proposalStorage.getProposalsForParcel('HR-000000-OTHER').map((p: any) => p.proposalId);
-      return { direct, slice, nested, unrelated, proposalId };
+      return { direct, descendants, fabricated, unrelated, proposalId };
     }, source);
 
     expect(matches.direct).toContain(matches.proposalId);
-    expect(matches.slice).toContain(matches.proposalId);
-    expect(matches.nested).toContain(matches.proposalId);
+    expect(matches.descendants.length).toBeGreaterThan(0);
+    for (const descendant of matches.descendants) expect(descendant.proposals).toContain(matches.proposalId);
+    expect(matches.fabricated).not.toContain(matches.proposalId);
     expect(matches.unrelated).not.toContain(matches.proposalId);
   });
 
@@ -277,15 +277,8 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await waitForMapReady(page);
     const result = await page.evaluate(async () => {
       const w = window as any;
-      const parcelId = 'HR-335754-EDIT-instant';
-      const ring = [
-        [15.9819, 45.8000], [15.9825, 45.8000], [15.9825, 45.8005], [15.9819, 45.8005], [15.9819, 45.8000],
-      ];
-      await w.ingestCadastralParcelFeatures([{
-        type: 'Feature',
-        properties: { parcelId, parcel_id: parcelId, id: parcelId, BROJ_CESTICE: 'EDIT-instant', maticni_broj_ko: '335754' },
-        geometry: { type: 'Polygon', coordinates: [ring] },
-      }]);
+      const parcelId = 'HR-335754-1234';
+      await w.CadastralParcelRepository.ensureIds([parcelId]);
 
       const segment = [{ lat: 45.8001, lng: 15.9820 }, { lat: 45.8004, lng: 15.9823 }];
       const draft = w.proposalDraftStore.createDraft({
@@ -305,7 +298,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
       return {
         createdId,
         title: proposal?.title || null,
-        roadStatus: proposal?.roadProposal?.status || null,
+        applied: proposal?.applied,
         draftGone: !w.proposalDraftStore.getDraft(draft.id),
         dialogOpen: !!document.querySelector('.create-proposal-modal'),
       };
@@ -316,7 +309,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     expect(result.title).toMatch(/\d{4}-\d{4}$/);
     expect(result.draftGone).toBe(true);
     expect(result.dialogOpen).toBe(false);
-    expect(result.roadStatus).toBe('applied');
+    expect(result.applied).toBe(true);
   });
 
   test('an applied proposal surface is selectable in 3D without opening the 2D action panel', async ({ mockApi: page }) => {
@@ -326,11 +319,9 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     const source = await addEditableSquare(page, 'three');
-    await page.evaluate((proposalId) => {
+    await page.evaluate(async (proposalId) => {
       const w = window as any;
-      const proposal = w.getProposalByIdOrHash(proposalId);
-      proposal.status = 'Applied';
-      if (proposal.structureProposal) proposal.structureProposal.status = 'applied';
+      await w.ProposalManager.applyProposal(proposalId);
       w.map.fitBounds([[45.7999, 15.9818], [45.8006, 15.9826]], { animate: false });
       w.enterThreeMode();
     }, source.proposalId);

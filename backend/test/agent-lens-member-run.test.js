@@ -27,6 +27,16 @@ describe('lens-member persona runner', () => {
         expect(() => lensMemberCommand(persona, { live: true, owners: 'x.json' })).toThrow(/dry-run registry/);
     });
 
+    it('announces the live member at its public service URL', () => {
+        const persona = loadLensMemberPersona('notary-01');
+        const { args } = lensMemberCommand(persona, { live: true });
+        expect(args).toEqual(expect.arrayContaining([
+            '--announce', 'https://api.urbangametheory.xyz',
+            '--public-url', persona.service.publicUrl, '--name', 'notary-01'
+        ]));
+        expect(lensMemberCommand(persona).args).not.toContain('--announce');
+    });
+
     it('refuses personas that are not lens members', () => {
         expect(() => loadLensMemberPersona('densifier-01')).toThrow(/not lens-member/);
         expect(() => loadLensMemberPersona('nobody')).toThrow(/no persona named/);

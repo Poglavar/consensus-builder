@@ -30,6 +30,7 @@
       "service": {
         "port": 3095,
         "url": "http://127.0.0.1:3095",
+        "publicUrl": "https://api.urbangametheory.xyz/lens-members/notary",
         "kind": "owner-consent",
         "priceUsdc": "0.01",
         "credentialName": "LensMember",
@@ -68,6 +69,7 @@
       "service": {
         "port": 3096,
         "url": "http://127.0.0.1:3096",
+        "publicUrl": "https://api.urbangametheory.xyz/lens-members/lifecycle",
         "kind": "lifecycle",
         "credentialName": "LensMember",
         "identity": "devnet-registry",

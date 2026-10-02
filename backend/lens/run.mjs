@@ -124,7 +124,7 @@ async function main() {
     const authority = keypair ? keypair.publicKey.toBase58() : Keypair.generate().publicKey.toBase58();
     const issuer = dryRun
         ? createFakeIssuer({ authority, clock })
-        : await loadSasIssuer({ keypair, rpcUrl: values.rpc || CLUSTERS[values.cluster] });
+        : await loadSasIssuer({ keypair, rpcUrl: values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster] });
 
     let identity;
     if (values.identity === 'certilia') {
