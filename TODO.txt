@@ -3,7 +3,8 @@ Release follow-up — 2026-10-02 (current priorities: next-steps.md)
 + Fix 12 app regressions uncovered by coverage, plus circular simulation play/pause and localized generic ownership labels.
 + Add search metadata, vendor-free visible planning page, sitemap and robots discovery.
 - Production fresh-profile/mobile share-and-apply journey, with real API/RPC and normal human wallet.
-- Submit sitemap and inspect Search Console indexing; measure search impressions before further SEO changes.
++ Verify Search Console ownership, submit sitemap and request indexing of the homepage/planning page (2026-10-02).
+- Recheck sitemap report (currently “Couldn’t fetch” despite successful Google live fetch) and planning-page indexing; measure search impressions before further SEO changes.
 - Record short workflow demos and begin public posts inviting real users to try a shared plan.
 - Final human-wallet/outside-payer evidence and hackathon submission proof manifest.
 

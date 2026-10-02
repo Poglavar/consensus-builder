@@ -1,7 +1,7 @@
 # Immediate release follow-up (2026-10-02)
 
 1. Run one fresh-profile production journey: explore parcels/buildings, create a proposal, share it, open the link in a second profile, apply and reload. Include mobile and a real devnet wallet action; fixture-backed tests do not prove live service integration.
-2. Submit `https://urbangametheory.xyz/sitemap.xml` in Search Console and check indexing of `/urban-planning.html`. Keep all visible planning copy vendor-free; competitor search terms belong only in HTML descriptions.
+2. Recheck Search Console sitemap ingestion and `/urban-planning.html` indexing. Ownership was verified and the sitemap submitted on 2026-10-02; the homepage is indexed and fresh indexing requests were accepted for both pages. The sitemap report still says “Couldn’t fetch,” despite Google’s successful live fetch and HTTP 200 XML; ingestion is not yet confirmed. Keep all visible planning copy vendor-free; competitor search terms belong only in HTML descriptions.
 3. Publish a short screen recording and a few posts showing one complete planning workflow each, with a direct map/share link and a clear invitation to try it.
 4. Observe real usage and failures, then prioritize the first-run/mobile issues below. Keep `e2e/feature-inventory.json` and headed behavioral coverage current for every new user action.
 5. Finish the live attester-service/schema setup, human-wallet and outside-participant evidence before the hackathon submission. Preserve pending court markets honestly until matching post-close evidence arrives.

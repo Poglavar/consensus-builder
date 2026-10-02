@@ -4,7 +4,7 @@ See [next-steps.md](next-steps.md) for the ordered release/hackathon plan and [T
 
 Completed: broad headed coverage, 12 app regression fixes, circular simulation control, generic-owner localization, and crawlable planning/search entry points. Visible product copy must remain vendor-free.
 
-Next: a fresh-profile production share/apply/reload and human-wallet journey; Search Console sitemap submission/indexing; short demos and public posts; outside participants; mobile first-run refinements based on actual feedback. Keep external-service coverage separate from fixture-backed UI coverage.
+Next: a fresh-profile production share/apply/reload and human-wallet journey; Search Console sitemap ingestion and planning-page indexing follow-up (ownership verified, sitemap submitted, both indexing requests accepted 2026-10-02; sitemap report still “Couldn’t fetch” despite successful Google live fetch); short demos and public posts; outside participants; mobile first-run refinements based on actual feedback. Keep external-service coverage separate from fixture-backed UI coverage.
 
 Notes for [urbangametheory.xyz](http://urbangametheory.xyz)
 
