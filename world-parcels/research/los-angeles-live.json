@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "description": "Bounded verification of live Los Angeles County assessor parcel queries and source terms.",
+  "cityId": "los_angeles",
+  "sourceId": "us-ca-lacounty-assessor-parcels",
+  "checkedAt": "2026-10-02",
+  "endpoint": "https://public.gis.lacounty.gov/public/rest/services/LACounty_Cache/LACounty_Parcel/MapServer/0",
+  "metadata": {
+    "nativeSrid": 3857,
+    "outputSrid": 4326,
+    "idField": "AIN",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "maxRecordCount": 1000,
+    "supportsPagination": true,
+    "supportsOrderBy": true
+  },
+  "licence": {
+    "url": "https://egis-lacounty.hub.arcgis.com/pages/terms-of-use",
+    "confirmed": "County terms read in a headed browser permit copying, publishing, distributing, adapting, and commercial or personal use; county endorsement is excluded and recommended citation is given."
+  },
+  "verifiedParcelResponse": {
+    "bbox": [
+      -118.2445,
+      34.0515,
+      -118.2425,
+      34.053
+    ],
+    "pageSize": 3,
+    "parcelCount": 10,
+    "nativeIds": [
+      "5149001915",
+      "5161005906",
+      "5161014901",
+      "5161014902",
+      "5161015902",
+      "5161015907",
+      "5161015908",
+      "5161015909",
+      "5161015910",
+      "5161015911"
+    ],
+    "complete": true,
+    "idLookupCount": 10,
+    "absentIds": [],
+    "responseFile": "los-angeles-live-response.json"
+  },
+  "identityLimits": "AIN is a 10-character assessor identifier; bounded samples establish neither countywide completeness nor globally unique IDs. Conflicting geometries fail closed in the adapter.",
+  "scope": "Los Angeles County only; adjacent counties require separate providers. Assessment polygons are not a legal survey or separate condominium title boundaries.",
+  "browserVerification": {
+    "initialLoaded": 627,
+    "afterPanRetained": 1141,
+    "returnCached": true,
+    "uncachedFootprintHttpStatus": 200,
+    "uncachedFootprintCount": 4,
+    "bindingHttpStatus": 200,
+    "bindingCoverage": "complete",
+    "boundParcelId": "US-CA-LA-5149001004",
+    "globePopup": "Live city with source streaming description and Open city action",
+    "globeHandoff": "Open city navigates to its configured source at zoom 19 and streams parcels"
+  }
+}

@@ -77,7 +77,13 @@ describe('isInCity covers every configured city', () => {
             colorado: 'US-CO-12345',
             new_york: 'US-NY-1-100',
             toronto: 'CA-ON-TORONTO-5455132',
-            bogota: 'CO-BOGOTA-006106001009'
+            bogota: 'CO-BOGOTA-006106001009',
+            los_angeles: 'US-CA-LA-5149001915',
+            miami: 'US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}',
+            washington_dc: 'US-DC-{1B157667-518C-4B56-9DFC-1DAEC1559EAB}',
+            paris: 'FR-PCI-75105000AD0011',
+            melbourne: 'AU-VIC-PARCEL-152244627',
+            cape_town: 'ZA-CCT-C0160007000951650000000000'
         };
         configuredCityIds().forEach(city => {
             expect(sample[city], `no sample parcel id for configured city ${city}`).toBeTruthy();

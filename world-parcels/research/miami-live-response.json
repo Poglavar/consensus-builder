@@ -1,0 +1,3925 @@
+{
+  "description": "Bounded canonical Miami-Dade adapter output; GlobalID identity preserves separate polygons with repeated FOLIO.",
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{8EF3C94D-1433-4EB4-A9BF-BD3042838B08}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19398229919337,
+              25.77371735921536
+            ],
+            [
+              -80.19399800489984,
+              25.774032831908254
+            ],
+            [
+              -80.19414270676916,
+              25.7740293825727
+            ],
+            [
+              -80.19413404265401,
+              25.773855359038684
+            ],
+            [
+              -80.1941181899205,
+              25.773855846782673
+            ],
+            [
+              -80.19411468216704,
+              25.773785427500403
+            ],
+            [
+              -80.19413053640466,
+              25.77378494062471
+            ],
+            [
+              -80.19412694997936,
+              25.77371289678892
+            ],
+            [
+              -80.19398229919337,
+              25.77371735921536
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{8EF3C94D-1433-4EB4-A9BF-BD3042838B08}",
+        "id": "US-FL-MIAMI-DADE-{8EF3C94D-1433-4EB4-A9BF-BD3042838B08}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{8EF3C94D-1433-4EB4-A9BF-BD3042838B08}",
+        "parcelNumber": "0101120301011",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 9505,
+          "GLOBALID": "{8EF3C94D-1433-4EB4-A9BF-BD3042838B08}",
+          "FOLIO": "0101120301011",
+          "PARCEL": "1011"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{7622011D-0528-4C78-BF05-7445F9F0F12A}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19207777252977,
+              25.77474205361583
+            ],
+            [
+              -80.19207978921966,
+              25.774810816447715
+            ],
+            [
+              -80.19217157502935,
+              25.774807479726665
+            ],
+            [
+              -80.19216903019458,
+              25.774738735801396
+            ],
+            [
+              -80.19207777252977,
+              25.77474205361583
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{7622011D-0528-4C78-BF05-7445F9F0F12A}",
+        "id": "US-FL-MIAMI-DADE-{7622011D-0528-4C78-BF05-7445F9F0F12A}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{7622011D-0528-4C78-BF05-7445F9F0F12A}",
+        "parcelNumber": "0101110601040",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 15464,
+          "GLOBALID": "{7622011D-0528-4C78-BF05-7445F9F0F12A}",
+          "FOLIO": "0101110601040",
+          "PARCEL": "1040"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{C529A9E5-CD33-4C35-B1B6-64A76A4CD0D3}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19203760445588,
+              25.773780718706558
+            ],
+            [
+              -80.19205413438613,
+              25.774092459674232
+            ],
+            [
+              -80.19214455218085,
+              25.774089247082035
+            ],
+            [
+              -80.1922790588522,
+              25.77408446967499
+            ],
+            [
+              -80.19226601125045,
+              25.773772434576575
+            ],
+            [
+              -80.19225281852198,
+              25.77345690470162
+            ],
+            [
+              -80.19211830929963,
+              25.773461602468384
+            ],
+            [
+              -80.19202085934133,
+              25.773465006944807
+            ],
+            [
+              -80.19203760445588,
+              25.773780718706558
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{C529A9E5-CD33-4C35-B1B6-64A76A4CD0D3}",
+        "id": "US-FL-MIAMI-DADE-{C529A9E5-CD33-4C35-B1B6-64A76A4CD0D3}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{C529A9E5-CD33-4C35-B1B6-64A76A4CD0D3}",
+        "parcelNumber": "0101120201010",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 39662,
+          "GLOBALID": "{C529A9E5-CD33-4C35-B1B6-64A76A4CD0D3}",
+          "FOLIO": "0101120201010",
+          "PARCEL": "1010"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{DF1E2666-8E99-4435-841B-802CFEDFC0B5}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19389924517002,
+              25.775584985010564
+            ],
+            [
+              -80.19375327895577,
+              25.77558830566279
+            ],
+            [
+              -80.19377075268875,
+              25.77598588328369
+            ],
+            [
+              -80.19391627431406,
+              25.775982802273095
+            ],
+            [
+              -80.19403467683556,
+              25.775980295014946
+            ],
+            [
+              -80.19405787643835,
+              25.77597980378486
+            ],
+            [
+              -80.19404522697387,
+              25.77558166120289
+            ],
+            [
+              -80.19389924517002,
+              25.775584985010564
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{DF1E2666-8E99-4435-841B-802CFEDFC0B5}",
+        "id": "US-FL-MIAMI-DADE-{DF1E2666-8E99-4435-841B-802CFEDFC0B5}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{DF1E2666-8E99-4435-841B-802CFEDFC0B5}",
+        "parcelNumber": "0101100601010",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 40180,
+          "GLOBALID": "{DF1E2666-8E99-4435-841B-802CFEDFC0B5}",
+          "FOLIO": "0101100601010",
+          "PARCEL": "1010"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{B9248D34-12B8-47DE-B6AC-5F54FF857AA2}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19476927447572,
+              25.774224705284905
+            ],
+            [
+              -80.19480069288274,
+              25.775008258263284
+            ],
+            [
+              -80.1955242390826,
+              25.774994946304005
+            ],
+            [
+              -80.19549981523765,
+              25.774203109771186
+            ],
+            [
+              -80.19476927447572,
+              25.774224705284905
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{B9248D34-12B8-47DE-B6AC-5F54FF857AA2}",
+        "id": "US-FL-MIAMI-DADE-{B9248D34-12B8-47DE-B6AC-5F54FF857AA2}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{B9248D34-12B8-47DE-B6AC-5F54FF857AA2}",
+        "parcelNumber": "0101110501060",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 42976,
+          "GLOBALID": "{B9248D34-12B8-47DE-B6AC-5F54FF857AA2}",
+          "FOLIO": "0101110501060",
+          "PARCEL": "1060"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{236B9929-9144-4E41-90AF-CBE7B5CFE371}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19433387009332,
+              25.775162709243926
+            ],
+            [
+              -80.19434989319103,
+              25.775574723231045
+            ],
+            [
+              -80.1945035888606,
+              25.775571224147846
+            ],
+            [
+              -80.19449371540237,
+              25.775159078788448
+            ],
+            [
+              -80.19433387009332,
+              25.775162709243926
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{236B9929-9144-4E41-90AF-CBE7B5CFE371}",
+        "id": "US-FL-MIAMI-DADE-{236B9929-9144-4E41-90AF-CBE7B5CFE371}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{236B9929-9144-4E41-90AF-CBE7B5CFE371}",
+        "parcelNumber": "0101100601100",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 46090,
+          "GLOBALID": "{236B9929-9144-4E41-90AF-CBE7B5CFE371}",
+          "FOLIO": "0101100601100",
+          "PARCEL": "1100"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{49574DDD-7058-4134-9505-6A775A0B5844}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19273369925392,
+              25.77375546781957
+            ],
+            [
+              -80.19274676356324,
+              25.774067852920712
+            ],
+            [
+              -80.19290294423423,
+              25.774062302892464
+            ],
+            [
+              -80.19288987706436,
+              25.77374980291565
+            ],
+            [
+              -80.19273369925392,
+              25.77375546781957
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{49574DDD-7058-4134-9505-6A775A0B5844}",
+        "id": "US-FL-MIAMI-DADE-{49574DDD-7058-4134-9505-6A775A0B5844}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{49574DDD-7058-4134-9505-6A775A0B5844}",
+        "parcelNumber": "0101120201050",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 46558,
+          "GLOBALID": "{49574DDD-7058-4134-9505-6A775A0B5844}",
+          "FOLIO": "0101120201050",
+          "PARCEL": "1050"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{E086C6AE-EC6A-41F9-88E4-20E5864795EA}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.1941450177997,
+              25.774233333778326
+            ],
+            [
+              -80.19415891376092,
+              25.77460258109405
+            ],
+            [
+              -80.19431687178309,
+              25.774597589315302
+            ],
+            [
+              -80.19447184521331,
+              25.774592692270353
+            ],
+            [
+              -80.1944579842596,
+              25.77422436082178
+            ],
+            [
+              -80.19430299404576,
+              25.7742288050099
+            ],
+            [
+              -80.1941450177997,
+              25.774233333778326
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{E086C6AE-EC6A-41F9-88E4-20E5864795EA}",
+        "id": "US-FL-MIAMI-DADE-{E086C6AE-EC6A-41F9-88E4-20E5864795EA}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{E086C6AE-EC6A-41F9-88E4-20E5864795EA}",
+        "parcelNumber": "0101110501080",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 53922,
+          "GLOBALID": "{E086C6AE-EC6A-41F9-88E4-20E5864795EA}",
+          "FOLIO": "0101110501080",
+          "PARCEL": "1080"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{D699E2C3-0616-4E79-B45F-0490D69DF491}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19449371540237,
+              25.775159078788448
+            ],
+            [
+              -80.1945035888606,
+              25.775571224147846
+            ],
+            [
+              -80.194656016453,
+              25.775567753134776
+            ],
+            [
+              -80.19464146272703,
+              25.775155724079923
+            ],
+            [
+              -80.19449371540237,
+              25.775159078788448
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{D699E2C3-0616-4E79-B45F-0490D69DF491}",
+        "id": "US-FL-MIAMI-DADE-{D699E2C3-0616-4E79-B45F-0490D69DF491}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{D699E2C3-0616-4E79-B45F-0490D69DF491}",
+        "parcelNumber": "0101100601091",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 59163,
+          "GLOBALID": "{D699E2C3-0616-4E79-B45F-0490D69DF491}",
+          "FOLIO": "0101100601091",
+          "PARCEL": "1091"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{BED0F88E-0157-46B8-9836-30E3FBBFAE97}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19226601125045,
+              25.773772434576575
+            ],
+            [
+              -80.1922790588522,
+              25.77408446967499
+            ],
+            [
+              -80.1924417255404,
+              25.774078689097333
+            ],
+            [
+              -80.19260037036564,
+              25.774073055054714
+            ],
+            [
+              -80.19258731177331,
+              25.773760779858755
+            ],
+            [
+              -80.19260249358149,
+              25.77376022871852
+            ],
+            [
+              -80.19258931724171,
+              25.773445148267154
+            ],
+            [
+              -80.19257413562725,
+              25.77344567670975
+            ],
+            [
+              -80.19241548597518,
+              25.773451221296046
+            ],
+            [
+              -80.19225281852198,
+              25.77345690470162
+            ],
+            [
+              -80.19226601125045,
+              25.773772434576575
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{BED0F88E-0157-46B8-9836-30E3FBBFAE97}",
+        "id": "US-FL-MIAMI-DADE-{BED0F88E-0157-46B8-9836-30E3FBBFAE97}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{BED0F88E-0157-46B8-9836-30E3FBBFAE97}",
+        "parcelNumber": "0101120201030",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 71785,
+          "GLOBALID": "{BED0F88E-0157-46B8-9836-30E3FBBFAE97}",
+          "FOLIO": "0101120201030",
+          "PARCEL": "1030"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19369624620555,
+              25.77372617954776
+            ],
+            [
+              -80.19370479502058,
+              25.774039823580388
+            ],
+            [
+              -80.19383199389861,
+              25.77403678965554
+            ],
+            [
+              -80.19399800489984,
+              25.774032831908254
+            ],
+            [
+              -80.19398229919337,
+              25.77371735921536
+            ],
+            [
+              -80.19412694997936,
+              25.77371289678892
+            ],
+            [
+              -80.1941112258237,
+              25.773397014735156
+            ],
+            [
+              -80.193966543902,
+              25.773400857769825
+            ],
+            [
+              -80.19380055731055,
+              25.773405268047163
+            ],
+            [
+              -80.19368758286936,
+              25.773408267970026
+            ],
+            [
+              -80.19369624620555,
+              25.77372617954776
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}",
+        "id": "US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}",
+        "parcelNumber": "0101120201070",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 72054,
+          "GLOBALID": "{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}",
+          "FOLIO": "0101120201070",
+          "PARCEL": "1070"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{DDC972DF-CE0C-4745-BFC5-9015A5853BAC}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19337870119189,
+              25.774631319522012
+            ],
+            [
+              -80.19338124692777,
+              25.774700061381438
+            ],
+            [
+              -80.19353239885069,
+              25.774694686240622
+            ],
+            [
+              -80.193530903527,
+              25.774625904463576
+            ],
+            [
+              -80.1935228090081,
+              25.77425361076228
+            ],
+            [
+              -80.19336489020341,
+              25.77425840106053
+            ],
+            [
+              -80.19337870119189,
+              25.774631319522012
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{DDC972DF-CE0C-4745-BFC5-9015A5853BAC}",
+        "id": "US-FL-MIAMI-DADE-{DDC972DF-CE0C-4745-BFC5-9015A5853BAC}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{DDC972DF-CE0C-4745-BFC5-9015A5853BAC}",
+        "parcelNumber": "0101110601140",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 74264,
+          "GLOBALID": "{DDC972DF-CE0C-4745-BFC5-9015A5853BAC}",
+          "FOLIO": "0101110601140",
+          "PARCEL": "1140"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{F6A71D54-00E8-41A2-899B-2EB1DC7A285D}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.193227040568,
+              25.77477438223927
+            ],
+            [
+              -80.19322958526753,
+              25.77484312409271
+            ],
+            [
+              -80.19338633970635,
+              25.774837549232554
+            ],
+            [
+              -80.1935353887552,
+              25.774832247553302
+            ],
+            [
+              -80.19353389343038,
+              25.774763465777486
+            ],
+            [
+              -80.19338379398084,
+              25.774768805311005
+            ],
+            [
+              -80.193227040568,
+              25.77477438223927
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{F6A71D54-00E8-41A2-899B-2EB1DC7A285D}",
+        "id": "US-FL-MIAMI-DADE-{F6A71D54-00E8-41A2-899B-2EB1DC7A285D}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{F6A71D54-00E8-41A2-899B-2EB1DC7A285D}",
+        "parcelNumber": "0101110601110",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 74425,
+          "GLOBALID": "{F6A71D54-00E8-41A2-899B-2EB1DC7A285D}",
+          "FOLIO": "0101110601110",
+          "PARCEL": "1110"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{15032B1B-783B-42F9-9831-0C31C95F4530}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.1921792106849,
+              25.7750137113332
+            ],
+            [
+              -80.19218175552676,
+              25.77508245525599
+            ],
+            [
+              -80.19231518338233,
+              25.77507760495724
+            ],
+            [
+              -80.192477897364,
+              25.77507168723507
+            ],
+            [
+              -80.19246279584853,
+              25.774663897340556
+            ],
+            [
+              -80.19230007705875,
+              25.77466968176438
+            ],
+            [
+              -80.19216664884608,
+              25.774674427851128
+            ],
+            [
+              -80.19216903019458,
+              25.774738735801396
+            ],
+            [
+              -80.19217157502935,
+              25.774807479726665
+            ],
+            [
+              -80.19217284753304,
+              25.774841853065205
+            ],
+            [
+              -80.19217539256036,
+              25.774910596990615
+            ],
+            [
+              -80.1921792106849,
+              25.7750137113332
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{15032B1B-783B-42F9-9831-0C31C95F4530}",
+        "id": "US-FL-MIAMI-DADE-{15032B1B-783B-42F9-9831-0C31C95F4530}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{15032B1B-783B-42F9-9831-0C31C95F4530}",
+        "parcelNumber": "0101110601070",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 77314,
+          "GLOBALID": "{15032B1B-783B-42F9-9831-0C31C95F4530}",
+          "FOLIO": "0101110601070",
+          "PARCEL": "1070"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{BEADB77E-F5DC-4AFF-B484-5E44B77EE4F7}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19431687178309,
+              25.774597589315302
+            ],
+            [
+              -80.19432080233256,
+              25.774702075089454
+            ],
+            [
+              -80.19447577760431,
+              25.774697178568914
+            ],
+            [
+              -80.19462340405764,
+              25.774692513931686
+            ],
+            [
+              -80.19462002165301,
+              25.77458800952812
+            ],
+            [
+              -80.19447184521331,
+              25.774592692270353
+            ],
+            [
+              -80.19431687178309,
+              25.774597589315302
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{BEADB77E-F5DC-4AFF-B484-5E44B77EE4F7}",
+        "id": "US-FL-MIAMI-DADE-{BEADB77E-F5DC-4AFF-B484-5E44B77EE4F7}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{BEADB77E-F5DC-4AFF-B484-5E44B77EE4F7}",
+        "parcelNumber": "0101110501050",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 116822,
+          "GLOBALID": "{BEADB77E-F5DC-4AFF-B484-5E44B77EE4F7}",
+          "FOLIO": "0101110501050",
+          "PARCEL": "1050"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{AA7904CC-2BB4-4A07-BF6D-461B9060A977}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19371489777977,
+              25.774506492290403
+            ],
+            [
+              -80.19371771219443,
+              25.77461652053931
+            ],
+            [
+              -80.19385924631463,
+              25.7746120474933
+            ],
+            [
+              -80.19401235325326,
+              25.774607211787956
+            ],
+            [
+              -80.19415891376092,
+              25.77460258109405
+            ],
+            [
+              -80.1941450177997,
+              25.774233333778326
+            ],
+            [
+              -80.19399844203355,
+              25.774237535353926
+            ],
+            [
+              -80.19384531998912,
+              25.774241922510615
+            ],
+            [
+              -80.19385500633535,
+              25.77450206568515
+            ],
+            [
+              -80.19371489777977,
+              25.774506492290403
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{AA7904CC-2BB4-4A07-BF6D-461B9060A977}",
+        "id": "US-FL-MIAMI-DADE-{AA7904CC-2BB4-4A07-BF6D-461B9060A977}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{AA7904CC-2BB4-4A07-BF6D-461B9060A977}",
+        "parcelNumber": "0101110501090",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 141757,
+          "GLOBALID": "{AA7904CC-2BB4-4A07-BF6D-461B9060A977}",
+          "FOLIO": "0101110501090",
+          "PARCEL": "1090"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{EF9082E2-C286-4D97-9665-31901F4213DD}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19271915517781,
+              25.775207540045187
+            ],
+            [
+              -80.19274062396495,
+              25.775623159952286
+            ],
+            [
+              -80.19281653032681,
+              25.775620413792286
+            ],
+            [
+              -80.19280289837617,
+              25.775328648880517
+            ],
+            [
+              -80.1927950660878,
+              25.77520489657387
+            ],
+            [
+              -80.19271915517781,
+              25.775207540045187
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{EF9082E2-C286-4D97-9665-31901F4213DD}",
+        "id": "US-FL-MIAMI-DADE-{EF9082E2-C286-4D97-9665-31901F4213DD}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{EF9082E2-C286-4D97-9665-31901F4213DD}",
+        "parcelNumber": "0101100501110",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 151804,
+          "GLOBALID": "{EF9082E2-C286-4D97-9665-31901F4213DD}",
+          "FOLIO": "0101100501110",
+          "PARCEL": "1110"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{3A6C699D-7AB0-48B4-A3FD-204C4AD59DE3}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.1950290741908,
+              25.77514692144736
+            ],
+            [
+              -80.19494607568065,
+              25.775148805522324
+            ],
+            [
+              -80.1948722980409,
+              25.775150480744216
+            ],
+            [
+              -80.1948015781296,
+              25.775152087042716
+            ],
+            [
+              -80.19480837280172,
+              25.77543840105129
+            ],
+            [
+              -80.1948813768222,
+              25.775438763553208
+            ],
+            [
+              -80.19495519823414,
+              25.77543912744547
+            ],
+            [
+              -80.19504047312086,
+              25.77543954709322
+            ],
+            [
+              -80.19512675301368,
+              25.775439971562133
+            ],
+            [
+              -80.19511988705096,
+              25.775144857178297
+            ],
+            [
+              -80.1950290741908,
+              25.77514692144736
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{3A6C699D-7AB0-48B4-A3FD-204C4AD59DE3}",
+        "id": "US-FL-MIAMI-DADE-{3A6C699D-7AB0-48B4-A3FD-204C4AD59DE3}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{3A6C699D-7AB0-48B4-A3FD-204C4AD59DE3}",
+        "parcelNumber": "0101100602040",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 151856,
+          "GLOBALID": "{3A6C699D-7AB0-48B4-A3FD-204C4AD59DE3}",
+          "FOLIO": "0101100602040",
+          "PARCEL": "2040"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{892E579F-6150-435B-B8D8-3F011EEDB246}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19210406726829,
+              25.77553880273591
+            ],
+            [
+              -80.19210773370021,
+              25.775646051406344
+            ],
+            [
+              -80.19221080327108,
+              25.77564232370208
+            ],
+            [
+              -80.19234785418271,
+              25.77563736676687
+            ],
+            [
+              -80.19250641308828,
+              25.775631630247805
+            ],
+            [
+              -80.19248492865283,
+              25.775215693149406
+            ],
+            [
+              -80.19232635940571,
+              25.775221215513927
+            ],
+            [
+              -80.1922904363385,
+              25.77522246553081
+            ],
+            [
+              -80.19230639672305,
+              25.77553148241712
+            ],
+            [
+              -80.19220526771059,
+              25.77553514134841
+            ],
+            [
+              -80.19210406726829,
+              25.77553880273591
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{892E579F-6150-435B-B8D8-3F011EEDB246}",
+        "id": "US-FL-MIAMI-DADE-{892E579F-6150-435B-B8D8-3F011EEDB246}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{892E579F-6150-435B-B8D8-3F011EEDB246}",
+        "parcelNumber": "0101100501150",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 164635,
+          "GLOBALID": "{892E579F-6150-435B-B8D8-3F011EEDB246}",
+          "FOLIO": "0101100501150",
+          "PARCEL": "1150"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{0A45FD24-B521-43AB-83A7-33AD96BE3CC6}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19208584271124,
+              25.775017105474518
+            ],
+            [
+              -80.19208786016081,
+              25.775085868995962
+            ],
+            [
+              -80.19218175552676,
+              25.77508245525599
+            ],
+            [
+              -80.1921792106849,
+              25.7750137113332
+            ],
+            [
+              -80.19208584271124,
+              25.775017105474518
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{0A45FD24-B521-43AB-83A7-33AD96BE3CC6}",
+        "id": "US-FL-MIAMI-DADE-{0A45FD24-B521-43AB-83A7-33AD96BE3CC6}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{0A45FD24-B521-43AB-83A7-33AD96BE3CC6}",
+        "parcelNumber": "0101110601010",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 176756,
+          "GLOBALID": "{0A45FD24-B521-43AB-83A7-33AD96BE3CC6}",
+          "FOLIO": "0101110601010",
+          "PARCEL": "1010"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{C8CF5C98-3BCE-4F55-9A18-DD9E807A2DAA}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19458353021349,
+              25.773698817957765
+            ],
+            [
+              -80.19459944617633,
+              25.774018489551196
+            ],
+            [
+              -80.1946758213707,
+              25.774016667535808
+            ],
+            [
+              -80.19465987916317,
+              25.773696464631804
+            ],
+            [
+              -80.19458353021349,
+              25.773698817957765
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{C8CF5C98-3BCE-4F55-9A18-DD9E807A2DAA}",
+        "id": "US-FL-MIAMI-DADE-{C8CF5C98-3BCE-4F55-9A18-DD9E807A2DAA}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{C8CF5C98-3BCE-4F55-9A18-DD9E807A2DAA}",
+        "parcelNumber": "0101120301050",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 179694,
+          "GLOBALID": "{C8CF5C98-3BCE-4F55-9A18-DD9E807A2DAA}",
+          "FOLIO": "0101120301050",
+          "PARCEL": "1050"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{96109011-9D02-4B57-B98C-DEBA74F96081}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19280289837617,
+              25.775328648880517
+            ],
+            [
+              -80.19281653032681,
+              25.775620413792286
+            ],
+            [
+              -80.19281865525323,
+              25.775620336850626
+            ],
+            [
+              -80.19283543788376,
+              25.77561973404229
+            ],
+            [
+              -80.19281425361856,
+              25.775204229555538
+            ],
+            [
+              -80.19279719041849,
+              25.775204822380385
+            ],
+            [
+              -80.1927950660878,
+              25.77520489657387
+            ],
+            [
+              -80.19280289837617,
+              25.775328648880517
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{96109011-9D02-4B57-B98C-DEBA74F96081}",
+        "id": "US-FL-MIAMI-DADE-{96109011-9D02-4B57-B98C-DEBA74F96081}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{96109011-9D02-4B57-B98C-DEBA74F96081}",
+        "parcelNumber": "0101100501120",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 184619,
+          "GLOBALID": "{96109011-9D02-4B57-B98C-DEBA74F96081}",
+          "FOLIO": "0101100501120",
+          "PARCEL": "1120"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{8B6C022A-F899-4B44-81CC-5E8054006AAF}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19263776635523,
+              25.77465767344224
+            ],
+            [
+              -80.19265285932809,
+              25.77506532675012
+            ],
+            [
+              -80.19278948973458,
+              25.77506035931491
+            ],
+            [
+              -80.19293967811213,
+              25.775054900526587
+            ],
+            [
+              -80.1930611271017,
+              25.775050483838395
+            ],
+            [
+              -80.19304604213515,
+              25.77464315317884
+            ],
+            [
+              -80.19292458871512,
+              25.774647471995213
+            ],
+            [
+              -80.19291069253165,
+              25.774272169573756
+            ],
+            [
+              -80.19276047384851,
+              25.774276723698286
+            ],
+            [
+              -80.19277439860934,
+              25.77465281297878
+            ],
+            [
+              -80.19263776635523,
+              25.77465767344224
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{8B6C022A-F899-4B44-81CC-5E8054006AAF}",
+        "id": "US-FL-MIAMI-DADE-{8B6C022A-F899-4B44-81CC-5E8054006AAF}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{8B6C022A-F899-4B44-81CC-5E8054006AAF}",
+        "parcelNumber": "0101110601090",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 186424,
+          "GLOBALID": "{8B6C022A-F899-4B44-81CC-5E8054006AAF}",
+          "FOLIO": "0101110601090",
+          "PARCEL": "1090"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{8075E0E8-504E-4DB6-B5A2-FB5522C43652}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19207588352135,
+              25.77467765691837
+            ],
+            [
+              -80.19207777252977,
+              25.77474205361583
+            ],
+            [
+              -80.19216903019458,
+              25.774738735801396
+            ],
+            [
+              -80.19216664884608,
+              25.774674427851128
+            ],
+            [
+              -80.19207588352135,
+              25.77467765691837
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{8075E0E8-504E-4DB6-B5A2-FB5522C43652}",
+        "id": "US-FL-MIAMI-DADE-{8075E0E8-504E-4DB6-B5A2-FB5522C43652}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{8075E0E8-504E-4DB6-B5A2-FB5522C43652}",
+        "parcelNumber": "0101110601050",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 189767,
+          "GLOBALID": "{8075E0E8-504E-4DB6-B5A2-FB5522C43652}",
+          "FOLIO": "0101110601050",
+          "PARCEL": "1050"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{B4AFCD5F-D781-419A-A3E3-EF1302AA6CE2}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19342467856164,
+              25.77566724939455
+            ],
+            [
+              -80.19342743696498,
+              25.77571060977352
+            ],
+            [
+              -80.19343300960716,
+              25.7757982019651
+            ],
+            [
+              -80.19357775792132,
+              25.77579269484175
+            ],
+            [
+              -80.19357163682763,
+              25.775661931293854
+            ],
+            [
+              -80.19342519583275,
+              25.775667230423455
+            ],
+            [
+              -80.19342467856164,
+              25.77566724939455
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{B4AFCD5F-D781-419A-A3E3-EF1302AA6CE2}",
+        "id": "US-FL-MIAMI-DADE-{B4AFCD5F-D781-419A-A3E3-EF1302AA6CE2}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{B4AFCD5F-D781-419A-A3E3-EF1302AA6CE2}",
+        "parcelNumber": "0101100501070",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 192422,
+          "GLOBALID": "{B4AFCD5F-D781-419A-A3E3-EF1302AA6CE2}",
+          "FOLIO": "0101100501070",
+          "PARCEL": "1070"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{3B696354-DA8B-4C78-B806-D285D41DD6E0}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19208079935812,
+              25.77484519950695
+            ],
+            [
+              -80.19208281604976,
+              25.774913962337923
+            ],
+            [
+              -80.19217539256036,
+              25.774910596990615
+            ],
+            [
+              -80.19217284753304,
+              25.774841853065205
+            ],
+            [
+              -80.19208079935812,
+              25.77484519950695
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{3B696354-DA8B-4C78-B806-D285D41DD6E0}",
+        "id": "US-FL-MIAMI-DADE-{3B696354-DA8B-4C78-B806-D285D41DD6E0}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{3B696354-DA8B-4C78-B806-D285D41DD6E0}",
+        "parcelNumber": "0101110601030",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 195536,
+          "GLOBALID": "{3B696354-DA8B-4C78-B806-D285D41DD6E0}",
+          "FOLIO": "0101110601030",
+          "PARCEL": "1030"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{8EAA2C3D-4E22-4DE2-813E-4D9CAB3C3F4E}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19246279584853,
+              25.774663897340556
+            ],
+            [
+              -80.192477897364,
+              25.77507168723507
+            ],
+            [
+              -80.19263999678425,
+              25.775065794981327
+            ],
+            [
+              -80.19262490089368,
+              25.774658130307717
+            ],
+            [
+              -80.19246279584853,
+              25.774663897340556
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{8EAA2C3D-4E22-4DE2-813E-4D9CAB3C3F4E}",
+        "id": "US-FL-MIAMI-DADE-{8EAA2C3D-4E22-4DE2-813E-4D9CAB3C3F4E}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{8EAA2C3D-4E22-4DE2-813E-4D9CAB3C3F4E}",
+        "parcelNumber": "0101110601080",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 211108,
+          "GLOBALID": "{8EAA2C3D-4E22-4DE2-813E-4D9CAB3C3F4E}",
+          "FOLIO": "0101110601080",
+          "PARCEL": "1080"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{0778AC99-4BA9-42D3-989A-A7F350826A5E}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19206474033703,
+              25.774297813454687
+            ],
+            [
+              -80.19207588352135,
+              25.77467765691837
+            ],
+            [
+              -80.19216664884608,
+              25.774674427851128
+            ],
+            [
+              -80.19230007705875,
+              25.77466968176438
+            ],
+            [
+              -80.19228605782698,
+              25.774291104954482
+            ],
+            [
+              -80.19215260458412,
+              25.774295150695874
+            ],
+            [
+              -80.19206474033703,
+              25.774297813454687
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{0778AC99-4BA9-42D3-989A-A7F350826A5E}",
+        "id": "US-FL-MIAMI-DADE-{0778AC99-4BA9-42D3-989A-A7F350826A5E}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{0778AC99-4BA9-42D3-989A-A7F350826A5E}",
+        "parcelNumber": "0141370740001",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 211159,
+          "GLOBALID": "{0778AC99-4BA9-42D3-989A-A7F350826A5E}",
+          "FOLIO": "0141370740001",
+          "PARCEL": "0001"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{CEFC7172-9331-444A-9F4B-F382F1B0BCB3}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19311423403289,
+              25.77560964336269
+            ],
+            [
+              -80.19296757065453,
+              25.77561494922513
+            ],
+            [
+              -80.1928931190981,
+              25.77561766140428
+            ],
+            [
+              -80.19283543788376,
+              25.77561973404229
+            ],
+            [
+              -80.19281865525323,
+              25.775620336850626
+            ],
+            [
+              -80.19281653032681,
+              25.775620413792286
+            ],
+            [
+              -80.19274062396495,
+              25.775623159952286
+            ],
+            [
+              -80.19266497272933,
+              25.775625895623147
+            ],
+            [
+              -80.19268565834263,
+              25.77602627611196
+            ],
+            [
+              -80.19283932396179,
+              25.776020429036723
+            ],
+            [
+              -80.19298822445383,
+              25.77601476446896
+            ],
+            [
+              -80.19313487478009,
+              25.776009186661476
+            ],
+            [
+              -80.19325761770081,
+              25.77600451631833
+            ],
+            [
+              -80.19323698980745,
+              25.775605201972766
+            ],
+            [
+              -80.19311423403289,
+              25.77560964336269
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{CEFC7172-9331-444A-9F4B-F382F1B0BCB3}",
+        "id": "US-FL-MIAMI-DADE-{CEFC7172-9331-444A-9F4B-F382F1B0BCB3}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{CEFC7172-9331-444A-9F4B-F382F1B0BCB3}",
+        "parcelNumber": "0101100501040",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 220906,
+          "GLOBALID": "{CEFC7172-9331-444A-9F4B-F382F1B0BCB3}",
+          "FOLIO": "0101100501040",
+          "PARCEL": "1040"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{E8295E73-AEFA-421F-8E61-4330D3D8D84D}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19419292570136,
+              25.77557829688931
+            ],
+            [
+              -80.19420544336919,
+              25.77597668033488
+            ],
+            [
+              -80.19436539789318,
+              25.775973294134243
+            ],
+            [
+              -80.19434989319103,
+              25.775574723231045
+            ],
+            [
+              -80.19419292570136,
+              25.77557829688931
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{E8295E73-AEFA-421F-8E61-4330D3D8D84D}",
+        "id": "US-FL-MIAMI-DADE-{E8295E73-AEFA-421F-8E61-4330D3D8D84D}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{E8295E73-AEFA-421F-8E61-4330D3D8D84D}",
+        "parcelNumber": "0101100601030",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 246273,
+          "GLOBALID": "{E8295E73-AEFA-421F-8E61-4330D3D8D84D}",
+          "FOLIO": "0101100601030",
+          "PARCEL": "1030"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{7D4BD521-1F99-4539-9D9E-95BB84ADAD54}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19429235519002,
+              25.77370779837417
+            ],
+            [
+              -80.19430816977423,
+              25.774025436912392
+            ],
+            [
+              -80.1944534310439,
+              25.774021970589782
+            ],
+            [
+              -80.19449900329016,
+              25.774020886073874
+            ],
+            [
+              -80.19448312236038,
+              25.773701916245862
+            ],
+            [
+              -80.194437567638,
+              25.77370332052095
+            ],
+            [
+              -80.19429235519002,
+              25.77370779837417
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{7D4BD521-1F99-4539-9D9E-95BB84ADAD54}",
+        "id": "US-FL-MIAMI-DADE-{7D4BD521-1F99-4539-9D9E-95BB84ADAD54}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{7D4BD521-1F99-4539-9D9E-95BB84ADAD54}",
+        "parcelNumber": "0101120301030",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 246622,
+          "GLOBALID": "{7D4BD521-1F99-4539-9D9E-95BB84ADAD54}",
+          "FOLIO": "0101120301030",
+          "PARCEL": "1030"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{05480E54-637D-43C8-BEA6-20A5DEE91E5F}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19248492865283,
+              25.775215693149406
+            ],
+            [
+              -80.19250641308828,
+              25.775631630247805
+            ],
+            [
+              -80.19266497272933,
+              25.775625895623147
+            ],
+            [
+              -80.19274062396495,
+              25.775623159952286
+            ],
+            [
+              -80.19271915517781,
+              25.775207540045187
+            ],
+            [
+              -80.19264349881539,
+              25.775210174227908
+            ],
+            [
+              -80.19248492865283,
+              25.775215693149406
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{05480E54-637D-43C8-BEA6-20A5DEE91E5F}",
+        "id": "US-FL-MIAMI-DADE-{05480E54-637D-43C8-BEA6-20A5DEE91E5F}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{05480E54-637D-43C8-BEA6-20A5DEE91E5F}",
+        "parcelNumber": "0101100501130",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 251801,
+          "GLOBALID": "{05480E54-637D-43C8-BEA6-20A5DEE91E5F}",
+          "FOLIO": "0101100501130",
+          "PARCEL": "1130"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{0627CE4C-30B4-4730-907D-D62BC3B98704}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19472059456378,
+              25.773380828852947
+            ],
+            [
+              -80.1946442658743,
+              25.773382855439724
+            ],
+            [
+              -80.19465987916317,
+              25.773696464631804
+            ],
+            [
+              -80.1946758213707,
+              25.774016667535808
+            ],
+            [
+              -80.19467709894099,
+              25.774016636603882
+            ],
+            [
+              -80.19475216160714,
+              25.774014847350266
+            ],
+            [
+              -80.19491543776694,
+              25.774010952176987
+            ],
+            [
+              -80.19489941200463,
+              25.773689076903803
+            ],
+            [
+              -80.19488384796205,
+              25.77337649130395
+            ],
+            [
+              -80.19472059456378,
+              25.773380828852947
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{0627CE4C-30B4-4730-907D-D62BC3B98704}",
+        "id": "US-FL-MIAMI-DADE-{0627CE4C-30B4-4730-907D-D62BC3B98704}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{0627CE4C-30B4-4730-907D-D62BC3B98704}",
+        "parcelNumber": "0101120301060",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 274909,
+          "GLOBALID": "{0627CE4C-30B4-4730-907D-D62BC3B98704}",
+          "FOLIO": "0101120301060",
+          "PARCEL": "1060"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{CB5517CE-373D-4F0A-8D13-14879482886A}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19291069253165,
+              25.774272169573756
+            ],
+            [
+              -80.19292458871512,
+              25.774647471995213
+            ],
+            [
+              -80.19304604213515,
+              25.77464315317884
+            ],
+            [
+              -80.19307175844034,
+              25.77464223791547
+            ],
+            [
+              -80.19314766633418,
+              25.77463953731932
+            ],
+            [
+              -80.19313381052822,
+              25.77426540562893
+            ],
+            [
+              -80.19305788922726,
+              25.77426770893145
+            ],
+            [
+              -80.19291069253165,
+              25.774272169573756
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{CB5517CE-373D-4F0A-8D13-14879482886A}",
+        "id": "US-FL-MIAMI-DADE-{CB5517CE-373D-4F0A-8D13-14879482886A}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{CB5517CE-373D-4F0A-8D13-14879482886A}",
+        "parcelNumber": "0101110601100",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 283031,
+          "GLOBALID": "{CB5517CE-373D-4F0A-8D13-14879482886A}",
+          "FOLIO": "0101110601100",
+          "PARCEL": "1100"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{704697E6-B8BB-411D-AAAF-D445730B60C3}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19207978921966,
+              25.774810816447715
+            ],
+            [
+              -80.19208079935812,
+              25.77484519950695
+            ],
+            [
+              -80.19217284753304,
+              25.774841853065205
+            ],
+            [
+              -80.19217157502935,
+              25.774807479726665
+            ],
+            [
+              -80.19207978921966,
+              25.774810816447715
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{704697E6-B8BB-411D-AAAF-D445730B60C3}",
+        "id": "US-FL-MIAMI-DADE-{704697E6-B8BB-411D-AAAF-D445730B60C3}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{704697E6-B8BB-411D-AAAF-D445730B60C3}",
+        "parcelNumber": "0101110601060",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 283272,
+          "GLOBALID": "{704697E6-B8BB-411D-AAAF-D445730B60C3}",
+          "FOLIO": "0101110601060",
+          "PARCEL": "1060"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{92C6ED76-ACE6-4B10-A131-4C5237E5236E}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.1921123960259,
+              25.775782357084083
+            ],
+            [
+              -80.19212147452815,
+              25.77604773858701
+            ],
+            [
+              -80.19223152680706,
+              25.776043553723646
+            ],
+            [
+              -80.19236856758083,
+              25.776038338960582
+            ],
+            [
+              -80.19235486647531,
+              25.77577313316525
+            ],
+            [
+              -80.19221782924765,
+              25.775778346049368
+            ],
+            [
+              -80.1921123960259,
+              25.775782357084083
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{92C6ED76-ACE6-4B10-A131-4C5237E5236E}",
+        "id": "US-FL-MIAMI-DADE-{92C6ED76-ACE6-4B10-A131-4C5237E5236E}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{92C6ED76-ACE6-4B10-A131-4C5237E5236E}",
+        "parcelNumber": "0141370560001",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 288991,
+          "GLOBALID": "{92C6ED76-ACE6-4B10-A131-4C5237E5236E}",
+          "FOLIO": "0141370560001",
+          "PARCEL": "0001"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{07337771-5ACE-43D6-8610-2F230E86FA32}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19209348192524,
+              25.77522932406008
+            ],
+            [
+              -80.19210406726829,
+              25.77553880273591
+            ],
+            [
+              -80.19220526771059,
+              25.77553514134841
+            ],
+            [
+              -80.19230639672305,
+              25.77553148241712
+            ],
+            [
+              -80.1922904363385,
+              25.77522246553081
+            ],
+            [
+              -80.19218929844747,
+              25.77522598787428
+            ],
+            [
+              -80.19209348192524,
+              25.77522932406008
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{07337771-5ACE-43D6-8610-2F230E86FA32}",
+        "id": "US-FL-MIAMI-DADE-{07337771-5ACE-43D6-8610-2F230E86FA32}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{07337771-5ACE-43D6-8610-2F230E86FA32}",
+        "parcelNumber": "0101100501140",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 292942,
+          "GLOBALID": "{07337771-5ACE-43D6-8610-2F230E86FA32}",
+          "FOLIO": "0101100501140",
+          "PARCEL": "1140"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{9ED0A251-77DB-4DC6-9FF8-1190F420662A}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19464146272703,
+              25.775155724079923
+            ],
+            [
+              -80.194656016453,
+              25.775567753134776
+            ],
+            [
+              -80.19481135475887,
+              25.77556421707715
+            ],
+            [
+              -80.19480975615258,
+              25.77549678492856
+            ],
+            [
+              -80.19480837280172,
+              25.77543840105129
+            ],
+            [
+              -80.1948015781296,
+              25.775152087042716
+            ],
+            [
+              -80.19471300662451,
+              25.775154098689494
+            ],
+            [
+              -80.19464146272703,
+              25.775155724079923
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{9ED0A251-77DB-4DC6-9FF8-1190F420662A}",
+        "id": "US-FL-MIAMI-DADE-{9ED0A251-77DB-4DC6-9FF8-1190F420662A}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{9ED0A251-77DB-4DC6-9FF8-1190F420662A}",
+        "parcelNumber": "0101100601090",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 296148,
+          "GLOBALID": "{9ED0A251-77DB-4DC6-9FF8-1190F420662A}",
+          "FOLIO": "0101100601090",
+          "PARCEL": "1090"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{268122C2-5061-4880-A60D-9C3B7BC618D7}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19322194873342,
+              25.774636894390067
+            ],
+            [
+              -80.193227040568,
+              25.77477438223927
+            ],
+            [
+              -80.19338379398084,
+              25.774768805311005
+            ],
+            [
+              -80.19353389343038,
+              25.774763465777486
+            ],
+            [
+              -80.19353239885069,
+              25.774694686240622
+            ],
+            [
+              -80.19338124692777,
+              25.774700061381438
+            ],
+            [
+              -80.19337870119189,
+              25.774631319522012
+            ],
+            [
+              -80.19336489020341,
+              25.77425840106053
+            ],
+            [
+              -80.19320810791059,
+              25.77426315243595
+            ],
+            [
+              -80.19313381052822,
+              25.77426540562893
+            ],
+            [
+              -80.19314766633418,
+              25.77463953731932
+            ],
+            [
+              -80.19322194873342,
+              25.774636894390067
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{268122C2-5061-4880-A60D-9C3B7BC618D7}",
+        "id": "US-FL-MIAMI-DADE-{268122C2-5061-4880-A60D-9C3B7BC618D7}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{268122C2-5061-4880-A60D-9C3B7BC618D7}",
+        "parcelNumber": "0141370420001",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 304435,
+          "GLOBALID": "{268122C2-5061-4880-A60D-9C3B7BC618D7}",
+          "FOLIO": "0141370420001",
+          "PARCEL": "0001"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{B8616B4A-6238-456C-8373-522C90E263E2}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19288987706436,
+              25.77374980291565
+            ],
+            [
+              -80.19290294423423,
+              25.774062302892464
+            ],
+            [
+              -80.19304822557062,
+              25.774057141403638
+            ],
+            [
+              -80.19303515324076,
+              25.773744533760084
+            ],
+            [
+              -80.19288987706436,
+              25.77374980291565
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{B8616B4A-6238-456C-8373-522C90E263E2}",
+        "id": "US-FL-MIAMI-DADE-{B8616B4A-6238-456C-8373-522C90E263E2}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{B8616B4A-6238-456C-8373-522C90E263E2}",
+        "parcelNumber": "0101120201060",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 309613,
+          "GLOBALID": "{B8616B4A-6238-456C-8373-522C90E263E2}",
+          "FOLIO": "0101120201060",
+          "PARCEL": "1060"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{EC07093A-2B9D-45E0-A76F-FDC6044C367F}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19303515324076,
+              25.773744533760084
+            ],
+            [
+              -80.19304822557062,
+              25.774057141403638
+            ],
+            [
+              -80.19319729375748,
+              25.774051843253936
+            ],
+            [
+              -80.19335822756541,
+              25.77404612460738
+            ],
+            [
+              -80.19351262712843,
+              25.774040638507177
+            ],
+            [
+              -80.19350557615056,
+              25.773727464129653
+            ],
+            [
+              -80.19349850780858,
+              25.773413376732616
+            ],
+            [
+              -80.19333200764491,
+              25.77341919503707
+            ],
+            [
+              -80.19317107229246,
+              25.773424817882976
+            ],
+            [
+              -80.19302199922168,
+              25.773430027436596
+            ],
+            [
+              -80.19287671599453,
+              25.773435104129284
+            ],
+            [
+              -80.19272053144678,
+              25.77344056264322
+            ],
+            [
+              -80.19273369925392,
+              25.77375546781957
+            ],
+            [
+              -80.19288987706436,
+              25.77374980291565
+            ],
+            [
+              -80.19303515324076,
+              25.773744533760084
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{EC07093A-2B9D-45E0-A76F-FDC6044C367F}",
+        "id": "US-FL-MIAMI-DADE-{EC07093A-2B9D-45E0-A76F-FDC6044C367F}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{EC07093A-2B9D-45E0-A76F-FDC6044C367F}",
+        "parcelNumber": "0101120201070",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 311113,
+          "GLOBALID": "{EC07093A-2B9D-45E0-A76F-FDC6044C367F}",
+          "FOLIO": "0101120201070",
+          "PARCEL": "1070"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{00849331-7427-4FCE-8322-A80C2E151904}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19481135475887,
+              25.77556421707715
+            ],
+            [
+              -80.194656016453,
+              25.775567753134776
+            ],
+            [
+              -80.1945035888606,
+              25.775571224147846
+            ],
+            [
+              -80.19434989319103,
+              25.775574723231045
+            ],
+            [
+              -80.19436539789318,
+              25.775973294134243
+            ],
+            [
+              -80.19451314622862,
+              25.775970164326033
+            ],
+            [
+              -80.19467011634514,
+              25.775966840369147
+            ],
+            [
+              -80.19482083197101,
+              25.7759636491186
+            ],
+            [
+              -80.1951387765965,
+              25.775956914532017
+            ],
+            [
+              -80.19513725068711,
+              25.775891262697858
+            ],
+            [
+              -80.19513576459629,
+              25.775827309313257
+            ],
+            [
+              -80.19513401241709,
+              25.77575207092568
+            ],
+            [
+              -80.19513233067208,
+              25.775679763732043
+            ],
+            [
+              -80.19513077663379,
+              25.77561287692932
+            ],
+            [
+              -80.19512947591609,
+              25.77555697207297
+            ],
+            [
+              -80.19481135475887,
+              25.77556421707715
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{00849331-7427-4FCE-8322-A80C2E151904}",
+        "id": "US-FL-MIAMI-DADE-{00849331-7427-4FCE-8322-A80C2E151904}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{00849331-7427-4FCE-8322-A80C2E151904}",
+        "parcelNumber": "0101100601040",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 320608,
+          "GLOBALID": "{00849331-7427-4FCE-8322-A80C2E151904}",
+          "FOLIO": "0101100601040",
+          "PARCEL": "1040"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{DF23E81A-1439-4C83-8FBA-5A2A7DD1C0EA}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19328072002988,
+              25.775803995398313
+            ],
+            [
+              -80.19329101467108,
+              25.77600324570003
+            ],
+            [
+              -80.19344225800273,
+              25.775997488762613
+            ],
+            [
+              -80.19358519578472,
+              25.775992053279538
+            ],
+            [
+              -80.19357775792132,
+              25.77579269484175
+            ],
+            [
+              -80.19343300960716,
+              25.7757982019651
+            ],
+            [
+              -80.19343196460946,
+              25.77579824122503
+            ],
+            [
+              -80.19328072002988,
+              25.775803995398313
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{DF23E81A-1439-4C83-8FBA-5A2A7DD1C0EA}",
+        "id": "US-FL-MIAMI-DADE-{DF23E81A-1439-4C83-8FBA-5A2A7DD1C0EA}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{DF23E81A-1439-4C83-8FBA-5A2A7DD1C0EA}",
+        "parcelNumber": "0101100501050",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 321969,
+          "GLOBALID": "{DF23E81A-1439-4C83-8FBA-5A2A7DD1C0EA}",
+          "FOLIO": "0101100501050",
+          "PARCEL": "1050"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{F40EA4FF-1A71-4B58-9607-8412B9CBCC92}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19432080233256,
+              25.774702075089454
+            ],
+            [
+              -80.19433266136706,
+              25.775017228426833
+            ],
+            [
+              -80.19448770824721,
+              25.775014191133856
+            ],
+            [
+              -80.19463371889677,
+              25.775011329097634
+            ],
+            [
+              -80.19462340405764,
+              25.774692513931686
+            ],
+            [
+              -80.19447577760431,
+              25.774697178568914
+            ],
+            [
+              -80.19432080233256,
+              25.774702075089454
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{F40EA4FF-1A71-4B58-9607-8412B9CBCC92}",
+        "id": "US-FL-MIAMI-DADE-{F40EA4FF-1A71-4B58-9607-8412B9CBCC92}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{F40EA4FF-1A71-4B58-9607-8412B9CBCC92}",
+        "parcelNumber": "0101110501040",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 324865,
+          "GLOBALID": "{F40EA4FF-1A71-4B58-9607-8412B9CBCC92}",
+          "FOLIO": "0101110501040",
+          "PARCEL": "1040"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{1540DFF2-17CC-4A5C-824A-9FE0671325CD}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19448312236038,
+              25.773701916245862
+            ],
+            [
+              -80.19449900329016,
+              25.774020886073874
+            ],
+            [
+              -80.19459944617633,
+              25.774018489551196
+            ],
+            [
+              -80.19458353021349,
+              25.773698817957765
+            ],
+            [
+              -80.19448312236038,
+              25.773701916245862
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{1540DFF2-17CC-4A5C-824A-9FE0671325CD}",
+        "id": "US-FL-MIAMI-DADE-{1540DFF2-17CC-4A5C-824A-9FE0671325CD}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{1540DFF2-17CC-4A5C-824A-9FE0671325CD}",
+        "parcelNumber": "0101120301040",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 324925,
+          "GLOBALID": "{1540DFF2-17CC-4A5C-824A-9FE0671325CD}",
+          "FOLIO": "0101120301040",
+          "PARCEL": "1040"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{FCF9DAC0-F4B8-4D59-B6AE-5213F5F3FAF8}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19372474560463,
+              25.77489154565793
+            ],
+            [
+              -80.19372826089784,
+              25.77502907118832
+            ],
+            [
+              -80.19387482865379,
+              25.775026199588716
+            ],
+            [
+              -80.19400369925377,
+              25.775023674152276
+            ],
+            [
+              -80.19399852717649,
+              25.774886180371233
+            ],
+            [
+              -80.19386965520705,
+              25.774888705626324
+            ],
+            [
+              -80.19372474560463,
+              25.77489154565793
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{FCF9DAC0-F4B8-4D59-B6AE-5213F5F3FAF8}",
+        "id": "US-FL-MIAMI-DADE-{FCF9DAC0-F4B8-4D59-B6AE-5213F5F3FAF8}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{FCF9DAC0-F4B8-4D59-B6AE-5213F5F3FAF8}",
+        "parcelNumber": "0101110501010",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 337424,
+          "GLOBALID": "{FCF9DAC0-F4B8-4D59-B6AE-5213F5F3FAF8}",
+          "FOLIO": "0101110501010",
+          "PARCEL": "1010"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{35501DD5-2AE5-4878-A428-CFBA75EBCC71}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19235486647531,
+              25.77577313316525
+            ],
+            [
+              -80.19236856758083,
+              25.776038338960582
+            ],
+            [
+              -80.19252711097549,
+              25.776032307267887
+            ],
+            [
+              -80.19268565834263,
+              25.77602627611196
+            ],
+            [
+              -80.19266497272933,
+              25.775625895623147
+            ],
+            [
+              -80.19250641308828,
+              25.775631630247805
+            ],
+            [
+              -80.19234785418271,
+              25.77563736676687
+            ],
+            [
+              -80.19235486647531,
+              25.77577313316525
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{35501DD5-2AE5-4878-A428-CFBA75EBCC71}",
+        "id": "US-FL-MIAMI-DADE-{35501DD5-2AE5-4878-A428-CFBA75EBCC71}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{35501DD5-2AE5-4878-A428-CFBA75EBCC71}",
+        "parcelNumber": "0101100501030",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 362845,
+          "GLOBALID": "{35501DD5-2AE5-4878-A428-CFBA75EBCC71}",
+          "FOLIO": "0101100501030",
+          "PARCEL": "1030"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{19A733B5-D80E-44CC-85EA-7880F8897E9E}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19258731177331,
+              25.773760779858755
+            ],
+            [
+              -80.19260037036564,
+              25.774073055054714
+            ],
+            [
+              -80.19274676356324,
+              25.774067852920712
+            ],
+            [
+              -80.19273369925392,
+              25.77375546781957
+            ],
+            [
+              -80.19261767557832,
+              25.77375967774969
+            ],
+            [
+              -80.19260249358149,
+              25.77376022871852
+            ],
+            [
+              -80.19258731177331,
+              25.773760779858755
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{19A733B5-D80E-44CC-85EA-7880F8897E9E}",
+        "id": "US-FL-MIAMI-DADE-{19A733B5-D80E-44CC-85EA-7880F8897E9E}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{19A733B5-D80E-44CC-85EA-7880F8897E9E}",
+        "parcelNumber": "0101120201040",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 380011,
+          "GLOBALID": "{19A733B5-D80E-44CC-85EA-7880F8897E9E}",
+          "FOLIO": "0101120201040",
+          "PARCEL": "1040"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{AF232637-104C-448B-BC96-2B34D151B2ED}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19413404265401,
+              25.773855359038684
+            ],
+            [
+              -80.19414270676916,
+              25.7740293825727
+            ],
+            [
+              -80.19429905396058,
+              25.774025653315743
+            ],
+            [
+              -80.19430816977423,
+              25.774025436912392
+            ],
+            [
+              -80.19429235519002,
+              25.77370779837417
+            ],
+            [
+              -80.19428324352991,
+              25.773708078251463
+            ],
+            [
+              -80.19412694997936,
+              25.77371289678892
+            ],
+            [
+              -80.19413053640466,
+              25.77378494062471
+            ],
+            [
+              -80.19411468216704,
+              25.773785427500403
+            ],
+            [
+              -80.1941181899205,
+              25.773855846782673
+            ],
+            [
+              -80.19413404265401,
+              25.773855359038684
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{AF232637-104C-448B-BC96-2B34D151B2ED}",
+        "id": "US-FL-MIAMI-DADE-{AF232637-104C-448B-BC96-2B34D151B2ED}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{AF232637-104C-448B-BC96-2B34D151B2ED}",
+        "parcelNumber": "0101120301020",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 389943,
+          "GLOBALID": "{AF232637-104C-448B-BC96-2B34D151B2ED}",
+          "FOLIO": "0101120301020",
+          "PARCEL": "1020"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{5531B4F8-C465-4B59-A632-190B7F175076}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19370823322414,
+              25.774245851021476
+            ],
+            [
+              -80.19371489777977,
+              25.774506492290403
+            ],
+            [
+              -80.19385500633535,
+              25.77450206568515
+            ],
+            [
+              -80.19384531998912,
+              25.774241922510615
+            ],
+            [
+              -80.19370823322414,
+              25.774245851021476
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{5531B4F8-C465-4B59-A632-190B7F175076}",
+        "id": "US-FL-MIAMI-DADE-{5531B4F8-C465-4B59-A632-190B7F175076}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{5531B4F8-C465-4B59-A632-190B7F175076}",
+        "parcelNumber": "0101110501100",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 413299,
+          "GLOBALID": "{5531B4F8-C465-4B59-A632-190B7F175076}",
+          "FOLIO": "0101110501100",
+          "PARCEL": "1100"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{0499F118-E576-492F-9E0A-5061BC7ABB4D}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19401235325326,
+              25.774607211787956
+            ],
+            [
+              -80.19402800615495,
+              25.775023198170288
+            ],
+            [
+              -80.19417463070764,
+              25.77502032365972
+            ],
+            [
+              -80.19433266136706,
+              25.775017228426833
+            ],
+            [
+              -80.19432080233256,
+              25.774702075089454
+            ],
+            [
+              -80.19431687178309,
+              25.774597589315302
+            ],
+            [
+              -80.19415891376092,
+              25.77460258109405
+            ],
+            [
+              -80.19401235325326,
+              25.774607211787956
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{0499F118-E576-492F-9E0A-5061BC7ABB4D}",
+        "id": "US-FL-MIAMI-DADE-{0499F118-E576-492F-9E0A-5061BC7ABB4D}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{0499F118-E576-492F-9E0A-5061BC7ABB4D}",
+        "parcelNumber": "0101110501030",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 425387,
+          "GLOBALID": "{0499F118-E576-492F-9E0A-5061BC7ABB4D}",
+          "FOLIO": "0101110501030",
+          "PARCEL": "1030"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{7E0F0BC1-BFCF-4B3C-AAC7-BAF300CBE96F}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19304604213515,
+              25.77464315317884
+            ],
+            [
+              -80.1930611271017,
+              25.775050483838395
+            ],
+            [
+              -80.1930868436378,
+              25.77504954742479
+            ],
+            [
+              -80.193237028962,
+              25.77504408779619
+            ],
+            [
+              -80.19322958526753,
+              25.77484312409271
+            ],
+            [
+              -80.193227040568,
+              25.77477438223927
+            ],
+            [
+              -80.19322194873342,
+              25.774636894390067
+            ],
+            [
+              -80.19314766633418,
+              25.77463953731932
+            ],
+            [
+              -80.19307175844034,
+              25.77464223791547
+            ],
+            [
+              -80.19304604213515,
+              25.77464315317884
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{7E0F0BC1-BFCF-4B3C-AAC7-BAF300CBE96F}",
+        "id": "US-FL-MIAMI-DADE-{7E0F0BC1-BFCF-4B3C-AAC7-BAF300CBE96F}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{7E0F0BC1-BFCF-4B3C-AAC7-BAF300CBE96F}",
+        "parcelNumber": "0101110601120",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 443254,
+          "GLOBALID": "{7E0F0BC1-BFCF-4B3C-AAC7-BAF300CBE96F}",
+          "FOLIO": "0101110601120",
+          "PARCEL": "1120"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{AE5EB654-9301-4E2A-A597-58ACD57C85CF}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19373516685823,
+              25.775176304835416
+            ],
+            [
+              -80.19374723430627,
+              25.77545084006888
+            ],
+            [
+              -80.19389336048857,
+              25.7754475139434
+            ],
+            [
+              -80.19404085922223,
+              25.77544415503561
+            ],
+            [
+              -80.19403213742396,
+              25.77516956216832
+            ],
+            [
+              -80.19388160642384,
+              25.77517298182746
+            ],
+            [
+              -80.19373516685823,
+              25.775176304835416
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{AE5EB654-9301-4E2A-A597-58ACD57C85CF}",
+        "id": "US-FL-MIAMI-DADE-{AE5EB654-9301-4E2A-A597-58ACD57C85CF}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{AE5EB654-9301-4E2A-A597-58ACD57C85CF}",
+        "parcelNumber": "0101100601130",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 444664,
+          "GLOBALID": "{AE5EB654-9301-4E2A-A597-58ACD57C85CF}",
+          "FOLIO": "0101100601130",
+          "PARCEL": "1130"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{B13187CF-7570-4AA1-A944-2759FF22C5FC}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19281425361856,
+              25.775204229555538
+            ],
+            [
+              -80.19283543788376,
+              25.77561973404229
+            ],
+            [
+              -80.1928931190981,
+              25.77561766140428
+            ],
+            [
+              -80.19287509628015,
+              25.775202111178153
+            ],
+            [
+              -80.19281425361856,
+              25.775204229555538
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{B13187CF-7570-4AA1-A944-2759FF22C5FC}",
+        "id": "US-FL-MIAMI-DADE-{B13187CF-7570-4AA1-A944-2759FF22C5FC}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{B13187CF-7570-4AA1-A944-2759FF22C5FC}",
+        "parcelNumber": "0101100501090",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 462707,
+          "GLOBALID": "{B13187CF-7570-4AA1-A944-2759FF22C5FC}",
+          "FOLIO": "0101100501090",
+          "PARCEL": "1090"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{4036FDA6-38AF-40D0-8888-1896B4E9A271}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19287509628015,
+              25.775202111178153
+            ],
+            [
+              -80.1928931190981,
+              25.77561766140428
+            ],
+            [
+              -80.1928931204324,
+              25.775617688752554
+            ],
+            [
+              -80.19296757065453,
+              25.77561494922513
+            ],
+            [
+              -80.19294663841552,
+              25.77521200798927
+            ],
+            [
+              -80.19294611304841,
+              25.775199637026436
+            ],
+            [
+              -80.19287509628015,
+              25.775202111178153
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{4036FDA6-38AF-40D0-8888-1896B4E9A271}",
+        "id": "US-FL-MIAMI-DADE-{4036FDA6-38AF-40D0-8888-1896B4E9A271}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{4036FDA6-38AF-40D0-8888-1896B4E9A271}",
+        "parcelNumber": "0101100501100",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 463618,
+          "GLOBALID": "{4036FDA6-38AF-40D0-8888-1896B4E9A271}",
+          "FOLIO": "0101100501100",
+          "PARCEL": "1100"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{F3A68B5E-9A2D-40F8-A916-CFA52AC114FB}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19355476017266,
+              25.775593736283117
+            ],
+            [
+              -80.19342164651444,
+              25.775598521700026
+            ],
+            [
+              -80.19342467856164,
+              25.77566724939455
+            ],
+            [
+              -80.19342519583275,
+              25.775667230423455
+            ],
+            [
+              -80.19357163682763,
+              25.775661931293854
+            ],
+            [
+              -80.19356842194479,
+              25.775593211185264
+            ],
+            [
+              -80.19355476017266,
+              25.775593736283117
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{F3A68B5E-9A2D-40F8-A916-CFA52AC114FB}",
+        "id": "US-FL-MIAMI-DADE-{F3A68B5E-9A2D-40F8-A916-CFA52AC114FB}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{F3A68B5E-9A2D-40F8-A916-CFA52AC114FB}",
+        "parcelNumber": "0101100501080",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 463658,
+          "GLOBALID": "{F3A68B5E-9A2D-40F8-A916-CFA52AC114FB}",
+          "FOLIO": "0101100501080",
+          "PARCEL": "1080"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{5F22975C-3308-4B87-90FF-2D35562EDAD5}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19399852717649,
+              25.774886180371233
+            ],
+            [
+              -80.19400369925377,
+              25.775023674152276
+            ],
+            [
+              -80.19402800615495,
+              25.775023198170288
+            ],
+            [
+              -80.19401235325326,
+              25.774607211787956
+            ],
+            [
+              -80.19385924631463,
+              25.7746120474933
+            ],
+            [
+              -80.19371771219443,
+              25.77461652053931
+            ],
+            [
+              -80.19372474560463,
+              25.77489154565793
+            ],
+            [
+              -80.19386965520705,
+              25.774888705626324
+            ],
+            [
+              -80.19399852717649,
+              25.774886180371233
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{5F22975C-3308-4B87-90FF-2D35562EDAD5}",
+        "id": "US-FL-MIAMI-DADE-{5F22975C-3308-4B87-90FF-2D35562EDAD5}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{5F22975C-3308-4B87-90FF-2D35562EDAD5}",
+        "parcelNumber": "0101110501020",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 488445,
+          "GLOBALID": "{5F22975C-3308-4B87-90FF-2D35562EDAD5}",
+          "FOLIO": "0101110501020",
+          "PARCEL": "1020"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{BEA7CA4A-975B-45E0-9981-3BD0003969CA}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.1944579842596,
+              25.77422436082178
+            ],
+            [
+              -80.19447184521331,
+              25.774592692270353
+            ],
+            [
+              -80.19462002165301,
+              25.77458800952812
+            ],
+            [
+              -80.19460811549912,
+              25.774220058607934
+            ],
+            [
+              -80.1944579842596,
+              25.77422436082178
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{BEA7CA4A-975B-45E0-9981-3BD0003969CA}",
+        "id": "US-FL-MIAMI-DADE-{BEA7CA4A-975B-45E0-9981-3BD0003969CA}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{BEA7CA4A-975B-45E0-9981-3BD0003969CA}",
+        "parcelNumber": "0101110501070",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 508189,
+          "GLOBALID": "{BEA7CA4A-975B-45E0-9981-3BD0003969CA}",
+          "FOLIO": "0101110501070",
+          "PARCEL": "1070"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{F389DE57-4803-48D9-B6E6-80867342CB95}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19328072002988,
+              25.775803995398313
+            ],
+            [
+              -80.19343196460946,
+              25.77579824122503
+            ],
+            [
+              -80.19343300960716,
+              25.7757982019651
+            ],
+            [
+              -80.19342743696498,
+              25.77571060977352
+            ],
+            [
+              -80.19342467856164,
+              25.77566724939455
+            ],
+            [
+              -80.19342164651444,
+              25.775598521700026
+            ],
+            [
+              -80.19355476017266,
+              25.775593736283117
+            ],
+            [
+              -80.19355475867388,
+              25.775593705150925
+            ],
+            [
+              -80.19353593332542,
+              25.7751914870174
+            ],
+            [
+              -80.1934008618734,
+              25.775196191243737
+            ],
+            [
+              -80.19324959267212,
+              25.77520145862944
+            ],
+            [
+              -80.1930934291219,
+              25.775206897154
+            ],
+            [
+              -80.19294675201003,
+              25.77521200432042
+            ],
+            [
+              -80.19294663841552,
+              25.77521200798927
+            ],
+            [
+              -80.19296757065453,
+              25.77561494922513
+            ],
+            [
+              -80.19311423403289,
+              25.77560964336269
+            ],
+            [
+              -80.19323698980745,
+              25.775605201972766
+            ],
+            [
+              -80.1932703869964,
+              25.77560399480977
+            ],
+            [
+              -80.19328072002988,
+              25.775803995398313
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{F389DE57-4803-48D9-B6E6-80867342CB95}",
+        "id": "US-FL-MIAMI-DADE-{F389DE57-4803-48D9-B6E6-80867342CB95}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{F389DE57-4803-48D9-B6E6-80867342CB95}",
+        "parcelNumber": "0101100501060",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 512939,
+          "GLOBALID": "{F389DE57-4803-48D9-B6E6-80867342CB95}",
+          "FOLIO": "0101100501060",
+          "PARCEL": "1060"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{0935B140-10E2-4801-B06F-043C5DC7AAC5}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19322958526753,
+              25.77484312409271
+            ],
+            [
+              -80.193237028962,
+              25.77504408779619
+            ],
+            [
+              -80.19339377976607,
+              25.775038387385564
+            ],
+            [
+              -80.19353975551088,
+              25.775033080020037
+            ],
+            [
+              -80.1935353887552,
+              25.774832247553302
+            ],
+            [
+              -80.19338633970635,
+              25.774837549232554
+            ],
+            [
+              -80.19322958526753,
+              25.77484312409271
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{0935B140-10E2-4801-B06F-043C5DC7AAC5}",
+        "id": "US-FL-MIAMI-DADE-{0935B140-10E2-4801-B06F-043C5DC7AAC5}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{0935B140-10E2-4801-B06F-043C5DC7AAC5}",
+        "parcelNumber": "0101110601125",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 518100,
+          "GLOBALID": "{0935B140-10E2-4801-B06F-043C5DC7AAC5}",
+          "FOLIO": "0101110601125",
+          "PARCEL": "1125"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{974DC934-80D0-4A8E-8FFF-2E06AC71A6CC}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19489941200463,
+              25.773689076903803
+            ],
+            [
+              -80.19491543776694,
+              25.774010952176987
+            ],
+            [
+              -80.19506145135735,
+              25.77400747204132
+            ],
+            [
+              -80.19504537759374,
+              25.773684574409153
+            ],
+            [
+              -80.19489941200463,
+              25.773689076903803
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{974DC934-80D0-4A8E-8FFF-2E06AC71A6CC}",
+        "id": "US-FL-MIAMI-DADE-{974DC934-80D0-4A8E-8FFF-2E06AC71A6CC}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{974DC934-80D0-4A8E-8FFF-2E06AC71A6CC}",
+        "parcelNumber": "0141370470001",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 523720,
+          "GLOBALID": "{974DC934-80D0-4A8E-8FFF-2E06AC71A6CC}",
+          "FOLIO": "0141370470001",
+          "PARCEL": "0001"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{A4696778-4A28-4BCC-BB68-B939CA8B600C}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19210773370021,
+              25.775646051406344
+            ],
+            [
+              -80.1921123960259,
+              25.775782357084083
+            ],
+            [
+              -80.19221782924765,
+              25.775778346049368
+            ],
+            [
+              -80.19235486647531,
+              25.77577313316525
+            ],
+            [
+              -80.19234785418271,
+              25.77563736676687
+            ],
+            [
+              -80.19221080327108,
+              25.77564232370208
+            ],
+            [
+              -80.19210773370021,
+              25.775646051406344
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{A4696778-4A28-4BCC-BB68-B939CA8B600C}",
+        "id": "US-FL-MIAMI-DADE-{A4696778-4A28-4BCC-BB68-B939CA8B600C}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{A4696778-4A28-4BCC-BB68-B939CA8B600C}",
+        "parcelNumber": "0101100501010",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 534570,
+          "GLOBALID": "{A4696778-4A28-4BCC-BB68-B939CA8B600C}",
+          "FOLIO": "0101100501010",
+          "PARCEL": "1010"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{0EE648AE-DADD-40A3-B4D6-403183BB9E32}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19404085922223,
+              25.77544415503561
+            ],
+            [
+              -80.19404522697387,
+              25.77558166120289
+            ],
+            [
+              -80.19419292570136,
+              25.77557829688931
+            ],
+            [
+              -80.19434989319103,
+              25.775574723231045
+            ],
+            [
+              -80.19433387009332,
+              25.775162709243926
+            ],
+            [
+              -80.19417997499545,
+              25.775166204301904
+            ],
+            [
+              -80.19403213742396,
+              25.77516956216832
+            ],
+            [
+              -80.19404085922223,
+              25.77544415503561
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{0EE648AE-DADD-40A3-B4D6-403183BB9E32}",
+        "id": "US-FL-MIAMI-DADE-{0EE648AE-DADD-40A3-B4D6-403183BB9E32}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{0EE648AE-DADD-40A3-B4D6-403183BB9E32}",
+        "parcelNumber": "0101100601110",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 550269,
+          "GLOBALID": "{0EE648AE-DADD-40A3-B4D6-403183BB9E32}",
+          "FOLIO": "0101100601110",
+          "PARCEL": "1110"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{8C3B17FE-23F7-472B-A84D-C3D5A5E7693E}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19208281604976,
+              25.774913962337923
+            ],
+            [
+              -80.19208584271124,
+              25.775017105474518
+            ],
+            [
+              -80.1921792106849,
+              25.7750137113332
+            ],
+            [
+              -80.19217539256036,
+              25.774910596990615
+            ],
+            [
+              -80.19208281604976,
+              25.774913962337923
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{8C3B17FE-23F7-472B-A84D-C3D5A5E7693E}",
+        "id": "US-FL-MIAMI-DADE-{8C3B17FE-23F7-472B-A84D-C3D5A5E7693E}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{8C3B17FE-23F7-472B-A84D-C3D5A5E7693E}",
+        "parcelNumber": "0101110601020",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 555882,
+          "GLOBALID": "{8C3B17FE-23F7-472B-A84D-C3D5A5E7693E}",
+          "FOLIO": "0101110601020",
+          "PARCEL": "1020"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{89FDFC50-ACC6-4A85-9193-BD81DC5F5DBC}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19480975615258,
+              25.77549678492856
+            ],
+            [
+              -80.19481135475887,
+              25.77556421707715
+            ],
+            [
+              -80.19512947591609,
+              25.77555697207297
+            ],
+            [
+              -80.1951279875495,
+              25.775493018673
+            ],
+            [
+              -80.19512675301368,
+              25.775439971562133
+            ],
+            [
+              -80.19504047312086,
+              25.77543954709322
+            ],
+            [
+              -80.19495519823414,
+              25.77543912744547
+            ],
+            [
+              -80.1948813768222,
+              25.775438763553208
+            ],
+            [
+              -80.19480837280172,
+              25.77543840105129
+            ],
+            [
+              -80.19480975615258,
+              25.77549678492856
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{89FDFC50-ACC6-4A85-9193-BD81DC5F5DBC}",
+        "id": "US-FL-MIAMI-DADE-{89FDFC50-ACC6-4A85-9193-BD81DC5F5DBC}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{89FDFC50-ACC6-4A85-9193-BD81DC5F5DBC}",
+        "parcelNumber": "0141370300010",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 558696,
+          "GLOBALID": "{89FDFC50-ACC6-4A85-9193-BD81DC5F5DBC}",
+          "FOLIO": "0141370300010",
+          "PARCEL": "0010"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{9CC5FF42-F2E8-4933-B424-BE6F2F915684}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19262490089368,
+              25.774658130307717
+            ],
+            [
+              -80.19263999678425,
+              25.775065794981327
+            ],
+            [
+              -80.19265285932809,
+              25.77506532675012
+            ],
+            [
+              -80.19263776635523,
+              25.77465767344224
+            ],
+            [
+              -80.19277439860934,
+              25.77465281297878
+            ],
+            [
+              -80.19276047384851,
+              25.774276723698286
+            ],
+            [
+              -80.19261094544765,
+              25.774281256907827
+            ],
+            [
+              -80.1924488100221,
+              25.774286172931884
+            ],
+            [
+              -80.19228605782698,
+              25.774291104954482
+            ],
+            [
+              -80.19230007705875,
+              25.77466968176438
+            ],
+            [
+              -80.19246279584853,
+              25.774663897340556
+            ],
+            [
+              -80.19262490089368,
+              25.774658130307717
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{9CC5FF42-F2E8-4933-B424-BE6F2F915684}",
+        "id": "US-FL-MIAMI-DADE-{9CC5FF42-F2E8-4933-B424-BE6F2F915684}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{9CC5FF42-F2E8-4933-B424-BE6F2F915684}",
+        "parcelNumber": "0101110601160",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 565997,
+          "GLOBALID": "{9CC5FF42-F2E8-4933-B424-BE6F2F915684}",
+          "FOLIO": "0101110601160",
+          "PARCEL": "1160"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{B34E9DC1-E418-4852-8097-3D8697BC464C}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19374723430627,
+              25.77545084006888
+            ],
+            [
+              -80.19375327895577,
+              25.77558830566279
+            ],
+            [
+              -80.19389924517002,
+              25.775584985010564
+            ],
+            [
+              -80.19404522697387,
+              25.77558166120289
+            ],
+            [
+              -80.19404085922223,
+              25.77544415503561
+            ],
+            [
+              -80.19389336048857,
+              25.7754475139434
+            ],
+            [
+              -80.19374723430627,
+              25.77545084006888
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{B34E9DC1-E418-4852-8097-3D8697BC464C}",
+        "id": "US-FL-MIAMI-DADE-{B34E9DC1-E418-4852-8097-3D8697BC464C}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{B34E9DC1-E418-4852-8097-3D8697BC464C}",
+        "parcelNumber": "0101100601120",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 568510,
+          "GLOBALID": "{B34E9DC1-E418-4852-8097-3D8697BC464C}",
+          "FOLIO": "0101100601120",
+          "PARCEL": "1120"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-FL-MIAMI-DADE-{2A1489CA-B7E4-41AE-A72C-86D1AACD8362}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.19404522697387,
+              25.77558166120289
+            ],
+            [
+              -80.19405787643835,
+              25.77597980378486
+            ],
+            [
+              -80.19420544336919,
+              25.77597668033488
+            ],
+            [
+              -80.19419292570136,
+              25.77557829688931
+            ],
+            [
+              -80.19404522697387,
+              25.77558166120289
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-FL-MIAMI-DADE-{2A1489CA-B7E4-41AE-A72C-86D1AACD8362}",
+        "id": "US-FL-MIAMI-DADE-{2A1489CA-B7E4-41AE-A72C-86D1AACD8362}",
+        "sourceId": "us-fl-miamidade-pa-parcels",
+        "sourceParcelId": "{2A1489CA-B7E4-41AE-A72C-86D1AACD8362}",
+        "parcelNumber": "0101100601020",
+        "cadMunicipalityName": "miami",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 570174,
+          "GLOBALID": "{2A1489CA-B7E4-41AE-A72C-86D1AACD8362}",
+          "FOLIO": "0101100601020",
+          "PARCEL": "1020"
+        }
+      }
+    }
+  ],
+  "complete": true,
+  "sourceId": "us-fl-miamidade-pa-parcels",
+  "returnsWGS84": true
+}

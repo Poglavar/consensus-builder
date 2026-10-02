@@ -3333,6 +3333,12 @@
             "colorado": "Denver, SAD",
             "new_york": "New York, SAD",
             "bogota": "Bogotá, Kolumbija",
+            "los_angeles": "Los Angeles, SAD",
+            "miami": "Miami, SAD",
+            "washington_dc": "Washington, D.C., SAD",
+            "paris": "Pariz, Francuska",
+            "melbourne": "Melbourne, Australija",
+            "cape_town": "Cape Town, Južnoafrička Republika",
             "toronto": "Toronto, Kanada",
             "denver": "Denver, SAD",
             "explore": "Istraži"

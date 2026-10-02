@@ -1,0 +1,160 @@
+{
+  "description": "Approved cadastral Vicmap Parcel source for Melbourne; distinct from Vicmap Property polygons.",
+  "checkedAt": "2026-10-02",
+  "sourceId": "au-vic-vicmap-parcel",
+  "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/0",
+  "sourceScope": "Victoria cadastral parcel map polygons; distinct from local-government property assessment units. Other Australian states use separate datasets. Only Approved (A) parcel and version records are ground; Proposed (P) records are excluded. Crown and government-road parcels remain included. Only G (unrestricted ground) and S (ground surface affected by strata) levels are ground; above/below strata are excluded.",
+  "officialUrls": [
+    "https://www.land.vic.gov.au/maps-and-spatial/spatial-data/vicmap-catalogue/vicmap-property",
+    "https://www.land.vic.gov.au/maps-and-spatial/spatial-data/how-to-access-spatial-data/licensing",
+    "https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871",
+    "https://www.arcgis.com/sharing/rest/content/items/b62e9a7b32fc49f090c2644b2a7ed871?f=json"
+  ],
+  "identity": {
+    "allFeatureCount": 4306490,
+    "parcelPfiNullCount": 0,
+    "distinctNonNullParcelPfiCount": 4306490,
+    "distinctVsRows": "equal; no duplicated non-null parcel_pfi detected in this aggregation",
+    "duplicateOtherIdExample": {
+      "OBJECTID": 509851,
+      "parcel_pfi": "202329928",
+      "parcel_id": "7082d07d-66ca-11ed-89ee-4951419bd691",
+      "alsoUsedBy": {
+        "OBJECTID": 510170,
+        "parcel_pfi": "808572"
+      }
+    }
+  },
+  "nativeIdField": "parcel_pfi",
+  "canonicalPrefix": "AU-VIC-PARCEL-",
+  "displayField": "parcel_spi",
+  "license": {
+    "name": "CC BY 4.0",
+    "evidence": "Exact service item licenseInfo explicitly names CC BY 4.0.",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": "State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84."
+  },
+  "statusEvidence": {
+    "source": "Vicmap Parcel FeatureServer layer 0 PARCEL_MP; current service item b62e9a7b32fc49f090c2644b2a7ed871; source licensing is CC BY 4.0 (confirmed by parent from official item licenseInfo).",
+    "referenceTable": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/12/query",
+    "registeredProposedStatusCodes": [
+      {
+        "field": "parcel_status",
+        "code": "A",
+        "lookup": "APPROVED",
+        "description": "Approved"
+      },
+      {
+        "field": "parcel_status",
+        "code": "P",
+        "lookup": "PROPOSED",
+        "description": "Proposed"
+      }
+    ],
+    "versionStatusCodes": "parv_status uses the same current status lookup and grouped live values matched parcel_status.",
+    "statewideStatusCounts": {
+      "parcel_status": {
+        "A": 4184771,
+        "P": 121719
+      },
+      "parv_status": {
+        "A": 4184771,
+        "P": 121719
+      }
+    },
+    "crownReferenceTable": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/4/query",
+    "crownStatusCounts": {
+      "null": 4189049,
+      "C": 96499,
+      "G": 20942
+    },
+    "crownCodeMeanings": {
+      "C": "Crown Land Parcel which may include a Special Reserve",
+      "G": "Government Road Parcel created through Land Act, VicRoads Act and Local Government Act",
+      "V": "Vested/appropriated by public authority",
+      "E": "Pre-emptive Right",
+      "K": "Crown Special Survey Area",
+      "M": "Description-only parcel, e.g. road closed by shire"
+    },
+    "scope": "Official Vicmap catalogue says product contains registered and proposed parcels; DataVic parcel-table metadata says it includes both freehold and Crown parcels. To render current cadastral ground, include only approved A status in parcel_status and parv_status; retain Crown-status categories to represent complete cadastre. A is labeled Approved in lookup, so do not overstate it as a distinct legal registration indicator.",
+    "doNotUseParcelRegDateAsRegisteredFilter": "Statewide, parcel_status A with parcel_reg_date NULL count 1,029,582; A with a registration date count 3,155,189; all P rows (121,719) had null parcel_reg_date. Thus requiring non-null registration date would drop many approved current rows.",
+    "completeCbdSample": {
+      "bboxWgs84": [
+        144.9615,
+        -37.8143,
+        144.9665,
+        -37.8105
+      ],
+      "totalCount": 2362,
+      "pages": [
+        2000,
+        362
+      ],
+      "statusCounts": {
+        "A": 2356,
+        "P": 6
+      },
+      "parvStatusCounts": {
+        "A": 2356,
+        "P": 6
+      },
+      "proposedParcelPfis": [
+        "458838252",
+        "458838253",
+        "459588698",
+        "459588699",
+        "459588700",
+        "460411895"
+      ],
+      "overlapCheck": "Local positive-area geometry intersections (Turf clipping) against all approved A geometries in the complete bbox: each of the six proposed PFIs overlaps at least one approved polygon. Examples: proposed 458838252 intersects approved 216457672 by ~774.696 m2; 460411895 intersects 216457672 by ~30.819 m2. Exclude P to avoid proposed geometry overlying current approved fabric.",
+      "fieldCounts": {
+        "parcel_crown_status": {
+          "null": 2328,
+          "C": 16,
+          "G": 18
+        },
+        "parcel_desc_type": {
+          "14": 38,
+          "15": 2324
+        },
+        "parcel_road": {
+          "N": 2308,
+          "Y": 54
+        }
+      }
+    },
+    "recommendedFilter": "parcel_status = 'A' AND parv_status = 'A' (exclude proposed P; do not use parcel_reg_date for registration filtering; do not restrict Crown status for full-cadastre scope)."
+  },
+  "verification": {
+    "bbox": [
+      144.9615,
+      -37.8143,
+      144.9665,
+      -37.8105
+    ],
+    "completeFeatureCount": 2337,
+    "exactIdCount": 3,
+    "absentIds": [],
+    "forcedTinyPages": "Two verification attempts with pageSize=3 timed out after 15 seconds. Normal pageSize=2000 viewport, IDs, footprint and binding succeeded; failure remains an error, not a cached absence.",
+    "exampleIds": [
+      "AU-VIC-PARCEL-203170179",
+      "AU-VIC-PARCEL-211701420",
+      "AU-VIC-PARCEL-206067539"
+    ],
+    "bboxPages": 2,
+    "returnedLevels": [
+      "G",
+      "S"
+    ]
+  },
+  "responseFile": "melbourne-live-response.json",
+  "browser": {
+    "initialCanonicalParcels": 10658,
+    "retainedAfterPan": 19454,
+    "returnCached": true,
+    "footprintComplete": true,
+    "footprintFeatureCount": 5,
+    "bindingCoverage": "complete",
+    "scope": "Final approved G/S surface-level filter; viewport and authoritative binding reverified."
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "description": "City of Cape Town live cadastral source contract, identity and bounded query verification.",
+  "checkedAt": "2026-10-02",
+  "sourceId": "za-cct-land-parcels",
+  "endpoint": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0",
+  "sourceScope": "City of Cape Town municipal cadastral parcels; duplicate address rows with the same SG26 code and identical geometry collapse to one parcel. Conflicting geometry fails closed. Other South African municipalities use separate sources.",
+  "catalogueItem": {
+    "title": "Land Parcels",
+    "itemId": "7c59bb7a1b724d11a70d3db591233df1",
+    "itemUrl": "https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about",
+    "sharingRestUrl": "https://www.arcgis.com/sharing/rest/content/items/7c59bb7a1b724d11a70d3db591233df1?f=json",
+    "catalogueQueryUrl": "https://odp-cctegis.opendata.arcgis.com/api/search/v1/collections/dataset/items?q=land%20parcels&limit=4",
+    "source": "City of Cape Town",
+    "owner": "cctgis",
+    "access": "public",
+    "descriptionSummary": "City cadastre information populated by various departments; detailed parcel geometries, unique identifiers and legal/administrative attributes. Hub item says spatial layers are served live from internal systems; the item's Last Updated/Publish Date describes metadata only.",
+    "portalExtentWgs84": [
+      18.158,
+      -34.379,
+      18.907,
+      -33.466
+    ],
+    "downloadFormatsAdvertised": [
+      "CSV",
+      "Shapefile",
+      "GeoJSON",
+      "KML",
+      "File Geodatabase"
+    ],
+    "licenseInfoUrl": "https://www.capetown.gov.za/General/Terms-of-use-open-data",
+    "licenseInfoUrlObservedStatus": 404,
+    "licenseField": "custom",
+    "reuseAndAttributionAssessment": "The dataset metadata points to the City's open-data terms, but that exact URL currently returns HTTP 404. The City Open Data Policy says portal Terms of Use will conform with open-data principles and access is free without prior registration; however the linked operative dataset terms could not be read. The general City website Terms of Use page is broader website content language (all-rights-reserved; limits redistribution/commercial exploitation) and does not clearly resolve reuse rights for this specific open-data layer. Do not assign an OS/CC/open-government license or claim commercial reuse permission until the dataset-specific terms are recovered/confirmed. Cautious attribution if later permitted: City of Cape Town, Land Parcels, via City of Cape Town Open Data Portal.",
+    "officialTermsAndPolicyUrls": [
+      "https://www.capetown.gov.za/General/Terms-of-use-open-data",
+      "https://www.capetown.gov.za/general/terms-of-use/",
+      "https://resource.capetown.gov.za/documentcentre/Documents/Bylaws%20and%20policies/Open_Data_Policy.pdf",
+      "https://www.capetown.gov.za/city-connect/all-city-online-services/open-data-portal/"
+    ],
+    "termsEvidence": [
+      "The dataset-specific Terms of Use URL returns 404 with/without trailing slash and case variant at check date.",
+      "Official Open Data Policy search-indexed clause 7.6 says portal use is subject to Terms of Use which conform with open-data principles; clause 7.7 says access is free and does not require prior registration. It does not supply a clear dataset reuse license or attribution text.",
+      "The current general Terms of Use page says website/content copyright is City property, permits personal non-commercial extracts/copies with acknowledgment, and says distribution/commercial exploitation requires express written permission. It is a general web-content notice; applicability to this separately licensed Open Data Portal dataset is unresolved."
+    ],
+    "accessInformation": "Development Management, Business Enablement, City of Cape Town (as shown in ArcGIS sharing item)",
+    "serviceItemModifiedEpochMs": 1781844693000
+  },
+  "layerMetadata": {
+    "layerName": "Land Parcels",
+    "serviceItemId": "7c59bb7a1b724d11a70d3db591233df1",
+    "geometryType": "esriGeometryPolygon",
+    "objectIdField": "OBJECTID",
+    "globalIdField": "(none)",
+    "maxRecordCount": 2000,
+    "supportsPagination": true,
+    "supportsStatistics": true,
+    "supportsHavingClause": true,
+    "supportsCountDistinctAdvertised": true,
+    "layerSpatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    },
+    "outSR4326Observed": true,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "nullable": false,
+        "uniqueIndex": true
+      },
+      {
+        "name": "SG26_CODE",
+        "type": "esriFieldTypeString",
+        "length": 26,
+        "nullable": false,
+        "uniqueIndex": false
+      },
+      {
+        "name": "SL_LAND_PRCL_KEY",
+        "type": "esriFieldTypeInteger",
+        "nullable": true,
+        "uniqueIndex": false
+      },
+      {
+        "name": "PRTY_NMBR",
+        "type": "esriFieldTypeString",
+        "length": 15,
+        "nullable": true,
+        "uniqueIndex": false
+      },
+      {
+        "name": "STR_NAME",
+        "type": "esriFieldTypeString",
+        "length": 50,
+        "nullable": true
+      },
+      {
+        "name": "ZONING",
+        "type": "esriFieldTypeString",
+        "length": 1024,
+        "nullable": true
+      }
+    ],
+    "otherFields": [
+      "ADR_NO",
+      "ADR_NO_SFX",
+      "LU_STR_NAME_TYPE",
+      "OFC_SBRB_NAME",
+      "ALT_NAME",
+      "WARD_NAME",
+      "LU_LGL_STS_DSCR",
+      "SUB_CNCL_NMBR",
+      "Shape__Area",
+      "Shape__Length"
+    ],
+    "nativeStableKeyCandidate": "SG26_CODE (26-char Surveyor-General cadastral code); do not confuse with volatile OBJECTID. Old research's 21-char note is stale.",
+    "sampleKeyPattern": "^[A-Z0-9]{26}$ (sampled values uppercase alphanumeric, including terminal RE suffix; whole-layer exhaustive pattern validation not performed)",
+    "sourceScope": "City of Cape Town metropolitan municipality, not all South Africa. Hub item polygon extent bounds the metro area.",
+    "parcelType": "City cadastre / cadastral erf or land parcel polygons with legal-status and address/zoning attributes; not ownership/owner names.",
+    "updateCadence": "No reliable cadence. Hub item's narrative says live from internal systems; metadata dates refer to metadata only."
+  },
+  "identity": {
+    "rowCount": 849218,
+    "SG26_CODENullCount": 0,
+    "SG26_CODEBlankCount": 0,
+    "PRTY_NMBRNullCount": 0,
+    "PRTY_NMBRBlankCount": 0,
+    "SL_LAND_PRCL_KEYNullCount": 0,
+    "SG26RepeatedValuesPresent": true,
+    "globalExamples": [
+      {
+        "key": "C06700240002764200000000RE",
+        "rows": 66,
+        "SL_LAND_PRCL_KEY": 1081819,
+        "PRTY_NMBR": "27642-RE"
+      },
+      {
+        "key": "C0670021000189920000000000",
+        "rows": 31
+      },
+      {
+        "key": "C06700240002763500000000RE",
+        "rows": 27
+      },
+      {
+        "key": "C0160035000617660000000000",
+        "rows": 15
+      }
+    ],
+    "repeatedGroupGeometryChecks": [
+      {
+        "sg26Code": "C06700240002764200000000RE",
+        "rows": 66,
+        "geometryType": "MultiPolygon",
+        "distinctExactGeometries": 1,
+        "sameInternalKey": true,
+        "sameParcelNumber": true,
+        "varyingAddressNumbersAndStreetNames": true
+      },
+      {
+        "sg26Code": "C0670021000189920000000000",
+        "rows": 31,
+        "geometryType": "Polygon",
+        "distinctExactGeometries": 1,
+        "sameInternalKey": true,
+        "sameParcelNumber": true
+      },
+      {
+        "sg26Code": "C06700240002763500000000RE",
+        "rows": 27,
+        "geometryType": "Polygon",
+        "distinctExactGeometries": 1,
+        "sameInternalKey": true,
+        "sameParcelNumber": true
+      },
+      {
+        "sg26Code": "C0160035000617660000000000",
+        "rows": 15,
+        "geometryType": "Polygon",
+        "distinctExactGeometries": 1,
+        "sameInternalKey": true,
+        "sameParcelNumber": true
+      }
+    ],
+    "uniquenessAssessment": "SG26_CODE, SL_LAND_PRCL_KEY and PRTY_NMBR all have repeated values globally; they are not unique feature-row keys. In four sampled repeated SG26_CODE groups, all returned rows had identical geometry; rows carried repeated cadastral IDs but varying address values. The current adapter by-ID geometry dedup would collapse these to one canonical parcel feature; this makes SG26_CODE viable as a parcel identity for those repeated groups. This does not prove every repeated-key group has identical geometry; any repeat with differing geometry would trigger the adapter's conflicting-geometry error and requires a check on the larger source area.",
+    "countDistinctStatisticAttempt": "ArcGIS returned invalid outStatistics for countdistinct despite advertising supportsCountDistinct=true; no whole-layer distinct-key total established.",
+    "duplicateAggregates": "Whole-layer grouped aggregate confirms many duplicate key groups (response exceeded result transfer limit); OBJECTID is the only field with unique index."
+  },
+  "verification": {
+    "bbox": [
+      18.418,
+      -33.927,
+      18.42,
+      -33.9255
+    ],
+    "pageSize": 3,
+    "bboxPages": 4,
+    "exactIdPages": 4,
+    "featureCount": 10,
+    "exactLookupCount": 10,
+    "absentIds": [],
+    "broaderViewports": [
+      {
+        "bbox": [
+          18.415,
+          -33.93,
+          18.425,
+          -33.92
+        ],
+        "canonicalCount": 1368,
+        "complete": true
+      },
+      {
+        "bbox": [
+          18.45,
+          -33.935,
+          18.46,
+          -33.925
+        ],
+        "canonicalCount": 2139,
+        "complete": true
+      }
+    ],
+    "repeatedAddressGroup": {
+      "nativeId": "C06700240002764200000000RE",
+      "rawRows": 66,
+      "canonicalParcels": 1
+    }
+  },
+  "license": {
+    "url": "https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about",
+    "note": "Official public open-data item; named reuse licence not established. Linked City open-data terms page returned 404 at verification.",
+    "attribution": "City of Cape Town, Land Parcels. Adapted to WGS84."
+  },
+  "responseFile": "cape-town-live-response.json",
+  "browser": {
+    "initialCanonicalParcels": 703,
+    "retainedAfterPan": 1068,
+    "returnCached": true,
+    "footprintComplete": true,
+    "footprintFeatureCount": 5,
+    "bindingCoverage": "complete"
+  }
+}

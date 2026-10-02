@@ -13,6 +13,19 @@ const data = JSON.parse(readFileSync(path.join(REPO, 'frontend/data/world-covera
 const coverage = WorldCoverage.create(data);
 
 describe('tierAt', () => {
+    it.each([
+        ['los_angeles', 'us-ca-lacounty-assessor-parcels', 34.0522, -118.2437, 'Los Angeles', 33.74, -117.88],
+        ['miami', 'us-fl-miamidade-pa-parcels', 25.7749, -80.1936, 'Miami', 26.12, -80.14],
+        ['washington_dc', 'us-dc-dcgis-tax-lots', 38.91025, -77.0425, 'Washington', 38.89, -77.08],
+        ['paris', 'fr-ign-parcellaire-express', 48.8491, 2.3556, 'Paris', 48.85, 2.7],
+        ['melbourne', 'au-vic-vicmap-parcel', -37.8136, 144.9631, 'Melbourne', -38.15, 144.96],
+        ['cape_town', 'za-cct-land-parcels', -33.9258, 18.4194, 'Cape Town', -33.9258, 18.75]
+    ])('routes %s through its source and respects its bounded entry area', (cityId, sourceId, lat, lon, name, outsideLat, outsideLon) => {
+        expect(coverage.tierAt(lat, lon)).toMatchObject({ kind: 'live-city', cityId, sourceId });
+        expect(coverage.searchPlaces(name)[0]).toMatchObject({ cityId, sourceId });
+        expect(coverage.tierAt(outsideLat, outsideLon).cityId).not.toBe(cityId);
+    });
+
     it('opens Bogotá through its source and keeps neighbouring municipalities outside the entry area', () => {
         expect(coverage.tierAt(4.60975, -74.08175)).toMatchObject({ kind: 'live-city', cityId: 'bogota', sourceId: 'co-bogota-uaecd-lote' });
         expect(coverage.searchPlaces('bogota')[0]).toMatchObject({ cityId: 'bogota', sourceId: 'co-bogota-uaecd-lote', dataVersion: '2021-12' });

@@ -172,7 +172,7 @@ describe('computeBinding', () => {
     });
 
     it('says unknown outside the cadastre it holds, and none only for a city with no cadastre', async () => {
-        const unknown = (await computeBinding(cadastre({ inRegion: false }), { site: SITE, city: 'paris' })).binding;
+        const unknown = (await computeBinding(cadastre({ inRegion: false }), { site: SITE, city: 'unconfigured_city' })).binding;
         expect(unknown).toMatchObject({ coverage: 'unknown', parcels: [], unknownM2: 9000, unsurveyedM2: 0 });
         expect(unknown.reason).toMatch(/cannot be bound/);
         const none = (await computeBinding(cadastre({ inRegion: false }), { site: SITE, city: 'explore' })).binding;

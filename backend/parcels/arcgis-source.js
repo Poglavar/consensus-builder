@@ -1,36 +1,8 @@
 // Adapts a fixed ArcGIS parcel layer to complete, canonical WGS84 parcel collections.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
-import { HttpError, wgs84BboxAreaKm2 } from '../utils/helpers.js';
-
-function upstreamError(message, status = 502) {
-    const error = new Error(message);
-    error.status = status;
-    error.code = 'parcel-source-unavailable';
-    return error;
-}
-
-export function validateBounds(bbox, maxKm2 = 25) {
-    if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(value => typeof value === 'number' && Number.isFinite(value))) {
-        throw new HttpError(400, 'Expected a finite WGS84 bbox: west,south,east,north.');
-    }
-    const [w, s, e, n] = bbox;
-    if (w < -180 || e > 180 || s < -90 || n > 90 || w >= e || s >= n) {
-        throw new HttpError(400, 'Invalid WGS84 bbox.');
-    }
-    if (wgs84BboxAreaKm2(w, s, e, n) > maxKm2) throw new HttpError(400, 'Parcel query area is too large; request viewport cells.');
-    return bbox;
-}
-
-function validateGeometry(geometry) {
-    if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type) || !Array.isArray(geometry.coordinates)) return false;
-    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
-    return polygons.length > 0 && polygons.every(polygon => polygon.length > 0 && polygon.every(ring =>
-        Array.isArray(ring) && ring.length >= 4 && ring.every(point => Array.isArray(point)
-            && point.length >= 2 && typeof point[0] === 'number' && typeof point[1] === 'number'
-            && Number.isFinite(point[0]) && Number.isFinite(point[1])
-            && Math.abs(point[0]) <= 180 && Math.abs(point[1]) <= 90)
-        && ring[0][0] === ring.at(-1)[0] && ring[0][1] === ring.at(-1)[1]));
-}
+import { HttpError } from '../utils/helpers.js';
+import { upstreamError, validateBounds, validateGeometry, canonicalParcelFeature } from './source-contract.js';
+export { validateBounds } from './source-contract.js';
 
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, idField, objectIdField, idPrefix, outFields } = descriptor;
@@ -41,6 +13,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const idPattern = descriptor.idPattern ? new RegExp(descriptor.idPattern) : null;
     const identifier = /^[A-Za-z_][A-Za-z0-9_]*$/;
     if (!id || !idPrefix || !identifier.test(idField) || !identifier.test(objectIdField)
+        || (descriptor.parcelNumberField && (!identifier.test(descriptor.parcelNumberField) || !outFields.includes(descriptor.parcelNumberField)))
         || !['integer', 'string'].includes(idType)
         || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid ArcGIS parcel source descriptor.');
 
@@ -51,16 +24,30 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         return /^(0|[1-9][0-9]*)$/.test(text) && Number.isSafeInteger(Number(text));
     }
 
+    // Fixed catalogue filters keep planned/versioned records out of authoritative ground.
+    const attributeFilters = Object.entries(descriptor.attributeFilters || {}).map(([field, value]) => [field, Array.isArray(value) ? value : [value]]);
+    if (attributeFilters.some(([field, values]) => !identifier.test(field) || !outFields.includes(field)
+        || !values.length || values.length > 80 || values.some(value => typeof value !== 'string' || !value || value.length > 256))) {
+        throw new Error('Invalid ArcGIS parcel attribute filter.');
+    }
+    const baseWhere = attributeFilters.length
+        ? attributeFilters.map(([field, values]) => {
+            const literals = values.map(value => `'${value.replaceAll("'", "''")}'`);
+            return literals.length === 1 ? `${field} = ${literals[0]}` : `${field} IN (${literals.join(',')})`;
+        }).join(' AND ')
+        : '1=1';
+
     async function query(params) {
         const byId = new Map();
         const seenObjects = new Set();
         let offset = 0;
         for (;;) {
             const search = new URLSearchParams({
-                where: '1=1', outFields: outFields.join(','), returnGeometry: 'true',
+                where: baseWhere, outFields: outFields.join(','), returnGeometry: 'true',
                 outSR: '4326', f: 'geojson', orderByFields: objectIdField,
                 resultRecordCount: String(pageSize), resultOffset: String(offset), ...params
             });
+            if (attributeFilters.length && params.where) search.set('where', `(${baseWhere}) AND (${params.where})`);
             const signal = AbortSignal.timeout(15000);
             let payload;
             try {
@@ -78,6 +65,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             if (offset + page.length > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
             for (const feature of page) {
                 const props = feature.properties || {};
+                if (attributeFilters.some(([field, values]) => !values.includes(props[field]))) throw upstreamError('Parcel provider returned a record outside the configured ground status.');
                 const nativeId = props[idField];
                 if (!validNativeId(nativeId)) {
                     throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
@@ -89,15 +77,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 }
                 seenObjects.add(String(objectId));
                 const parcelId = `${idPrefix}${nativeId}`;
-                const canonical = {
-                    type: 'Feature', id: parcelId, geometry: feature.geometry,
-                    properties: {
-                        parcelId, id: parcelId, sourceId: id, sourceParcelId: String(nativeId),
-                        parcelNumber: String(nativeId), cadMunicipalityName: descriptor.cityId || null,
-                        ownershipType: 'unknown',
-                        sourceProperties: Object.fromEntries(outFields.filter(field => field in props).map(field => [field, props[field]]))
-                    }
-                };
+                const canonical = canonicalParcelFeature(descriptor, feature, nativeId);
                 const previous = byId.get(parcelId);
                 if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(canonical.geometry)) {
                     throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
@@ -105,8 +85,8 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 byId.set(parcelId, canonical);
             }
             // Some ArcGIS GeoJSON services omit the flag even for a truncated full page.
-            const hasMore = payload.exceededTransferLimit === true
-                || (typeof payload.exceededTransferLimit !== 'boolean' && page.length === pageSize);
+            const limitFlag = payload.exceededTransferLimit ?? payload.properties?.exceededTransferLimit;
+            const hasMore = limitFlag === true || (typeof limitFlag !== 'boolean' && page.length === pageSize);
             if (!hasMore) break;
             if (!page.length || offset + page.length >= maxFeatures) throw upstreamError('Parcel provider returned incomplete pagination.');
             offset += page.length;

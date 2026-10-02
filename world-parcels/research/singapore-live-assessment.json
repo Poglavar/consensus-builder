@@ -1,0 +1,44 @@
+{
+  "description": "Current Singapore source assessment; research only, no runtime source enabled.",
+  "checkedAt": "2026-10-02",
+  "dataset": {
+    "title": "SLA Cadastral Land Parcel (2026)",
+    "datasetId": "d_e7395d743076a2bcc487b0d12b9bf33b",
+    "url": "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+    "agency": "Singapore Land Authority",
+    "description": "National cadastral polygons for surveyed land parcels/lots; approximate coordinated boundaries (nearest cm). Data from Nov 2025; updated weekly, most recently 28 Sep 2026 per the official page.",
+    "format": "GeoJSON full dataset download, about 138.1 MB per current page (previous local research saw 144,795,983 bytes).",
+    "license": "Official page says free forever for personal or commercial use under the Open Data Licence.",
+    "sampleFields": [
+      "OBJECTID_1",
+      "LOT_KEY",
+      "INC_CRC",
+      "FMEL_UPD_D",
+      "SHAPE_1.AREA",
+      "SHAPE_1.LEN"
+    ],
+    "sampleStableId": "LOT_KEY (from existing local sample record; official page attribute legend also shows LOT_KEY as text)."
+  },
+  "apiAssessment": {
+    "documentedDataGovDatasetEndpoints": [
+      "dataset metadata",
+      "list/search rows (for tabular datasets)",
+      "initiate download",
+      "poll download"
+    ],
+    "downloadFilters": "Official download guide describes optional column/row filters (EQ, LIKE, ILIKE); no geometry/bbox/spatial filter is documented for this GeoJSON dataset.",
+    "viewportQuery": "No official public SLA/data.gov.sg ArcGIS FeatureServer or WFS viewport query for the full cadastral parcel dataset was found in this bounded search.",
+    "oneMap": "SLA OneMap is authoritative and offers interactive LandQuery for a clicked location or entered lot; the official page describes ownership/tenure lookup and weekly updates, not a public bulk parcel-geometry bbox endpoint.",
+    "currentConnectivity": "Browser sources read successfully. Direct requests to data.gov.sg v2 metadata and poll-download endpoints returned HTTP 403 from this environment; no current presigned URL/download was fetched. Existing local evidence from 2026-09-29 records poll-download returning a short-lived URL and an HTTP 206 range read of 14 KB (16 features) from a 144,795,983-byte GeoJSON snapshot.",
+    "recommendation": "Treat as an authoritative weekly refreshed national snapshot for server-side ingest into a spatial index, then serve local viewport queries. It is not currently a direct live viewport source based on published APIs found. Recheck SLA/OneMap developer documentation or contact SLA if a live service is required."
+  },
+  "officialUrls": [
+    "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+    "https://guide.data.gov.sg/developer-guide/dataset-apis/download-dataset",
+    "https://guide.data.gov.sg/developer-guide/dataset-apis",
+    "https://www.sla.gov.sg/geospatial/onemap/",
+    "https://www.onemap.gov.sg/land?service=landquery",
+    "https://www.sla.gov.sg/geospatial/digitised-land-information/"
+  ],
+  "runtimeStatus": "research-only"
+}

@@ -32,8 +32,8 @@ parcels or loaded cells.
 
 The existing cadastral repository deduplicates in-flight cell reads, retains immutable parcels
 for the session and progressively integrates successful cells into the live fabric. Its callers
-keep using bounds, IDs and footprints. New ArcGIS cities need descriptors and city configuration;
-WFS, OGC API Features and provider-specific proxy protocols can add adapters behind this gateway.
+keep using bounds, IDs and footprints. New ArcGIS and WFS cities need descriptors and city configuration;
+OGC API Features and provider-specific proxy protocols can add adapters behind this gateway.
 Existing imported providers remain supported at the transport boundary.
 
 Server proposal binding uses the same executable provider, fetches authoritative parcels and
@@ -97,3 +97,99 @@ bounded raw response are saved in `research/bogota-live-2021-mirror.json` and
 The conservative 12 km globe entry area does not establish full district coverage. This source
 contains historical lots, which can contain several properties; it supplies no ownership or
 building data. Neighbouring municipalities such as Soacha need their own sources.
+
+## Los Angeles, Miami-Dade and Washington, D.C.
+
+These three providers use the same ArcGIS gateway and viewport-cell streaming, with no parcel
+imports. Their native projections, string queries and pagination stay inside the adapter; city
+config selects the provider and local metric CRS. Each map links its authority and data terms.
+
+Los Angeles uses the County Assessor's 10-character `AIN`. Its county GIS terms permit copying,
+distributing, adapting and commercial/personal use, and give a recommended citation. A bounded
+query paged ten parcels and resolved all ten by ID. The headed browser loaded 627 parcels,
+retained 1,141 after panning, reused cells on return, and obtained a complete server binding.
+County scope excludes adjacent counties; this does not establish separate condominium title
+boundaries or a legal survey. Evidence is in `research/los-angeles-live.json` and its response file.
+
+Miami-Dade uses the original County Property Appraiser service. Its 13-character `FOLIO` is a
+**display number, not a row identifier**: the downtown sample contained spatially separate
+polygons sharing one folio, and a full-layer query found 5,124 blank folios. Canonical IDs preserve
+the exact brace-wrapped `GLOBALID`. All 596,304 queried rows had non-null GlobalIDs and a grouped
+query returned no duplicate GlobalIDs; this is observed evidence, not an enforced constraint.
+A bounded adapter query returned 68 polygons and resolved three by exact ID. The browser loaded
+258 parcels, retained 322 after panning, reused cells on return, and obtained a complete binding.
+The official public item supplies an accuracy/reliance disclaimer; no named open-data licence is
+claimed. Broward and Palm Beach counties require separate sources. Details and the canonical
+sample are in `research/miami-live.json` and `research/miami-live-response.json`.
+
+Washington uses DCGIS **tax lots**, which are assessment polygons rather than surveyed/record
+lots. `SSL` preserves its internal spaces for display but is not unique: `1223    0815` labels two
+different polygons. Canonical IDs use `GLOBALID`; total and distinct counts both returned 30,867.
+The layer's published licence is CC BY 4.0. Seven polygons completed the bounded viewport query;
+three resolved by exact ID. The browser loaded 188 parcels, retained 369 after panning, reused
+cells on return, and obtained a complete binding. The conservative central entry radius is 2 km;
+Virginia and Maryland require separate sources. Evidence is in `research/washington-dc-live.json`
+and its response file.
+
+The adapter's optional `parcelNumberField` separates display labels from durable parcel identity.
+Duplicate labels therefore retain every polygon; conflicting geometry under one stable ID still
+fails closed. Headless tests exercise this distinction, GUID punctuation through the HTTP gateway,
+paging, source-specific binding, saved-proposal membership and globe/deep-link routing.
+
+Chicago remains research-only. The saved Clerk extract is dated 2021; newer official service
+candidates timed out during this check and their identities/reuse terms remain unverified.
+`research/chicago-live-candidates.json` records the next endpoints to investigate.
+
+## Paris, Melbourne and Cape Town
+
+Paris uses IGN/DGFiP Parcellaire Express PCI through the official Géoplateforme WFS 2.0
+endpoint. The adapter fixes longitude/latitude order with `CRS:84`, sorts by `idu`, and requires
+consistent numeric match/return counts before publishing a complete cell. It reconstructs pages
+at the fixed endpoint rather than following supplied links. Exact IDs use CQL; the API Carto
+candidate ignored an `idu` parameter and was not selected. Canonical IDs are
+`FR-PCI-<idu>`; four-character parcel numbers remain display labels. Eight parcels paged in three
+requests and all eight resolved again. A second bounded Lyon check returned and resolved 61
+parcels, but only Paris is configured as a globe entry. The source covers vectorised French
+cadastre, with possible gaps and alignment limitations. Map attribution links IGN/DGFiP,
+source updates and Licence Ouverte 2.0. The browser loaded 393 parcels, retained 720 after a pan,
+reused cells on return, and obtained complete footprint and server-binding results. Evidence is
+saved in `research/paris-live-wfs.json` and `research/paris-live-response.json`.
+
+Melbourne selects **Vicmap Parcel**, rather than the previously researched Vicmap Property
+polygons. Native string `parcel_pfi` is the identity and `parcel_spi` is the display label,
+including its backslash separators. A statewide snapshot counted 4,306,490 rows and the same
+number of distinct non-null PFIs; another GUID-like field, `parcel_id`, was not unique. The
+source item explicitly supplies CC BY 4.0. Both `parcel_status` and `parv_status` must be `A`
+(Approved); `P` (Proposed) is excluded, including from exact-ID reads. Returned records are
+checked against that filter too. This is the official approval code, not an inferred registration
+date: many approved rows have no registration date. Crown and government-road categories are
+retained. The ground source also keeps only `parv_z_level` G (unrestricted ground) and S
+(ground surface affected by strata). Above/below-ground A*/B* strata overlap surface parcels
+in the checked CBD sample and are excluded from this 2D ground source. Two forced three-row-page checks timed out; normal service pages, exact lookup,
+footprint and binding succeeded. The final CBD surface-level query returned 2,337 approved parcels over two normal pages,
+and three resolved again by ID. The final browser check loaded 10,658 parcels and retained
+19,454 after a pan, with cached reads on return and complete authoritative binding.
+Evidence is in `research/melbourne-live.json`; its response file explicitly
+contains three examples rather than pretending to be a complete viewport.
+
+Cape Town's `SG26_CODE` is a 26-character cadastral identity and `PRTY_NMBR` is a display label.
+The service repeats parcels across address records: one tested 66-row group has identical
+geometry and becomes one canonical parcel. Distinct geometry under the same ID fails closed.
+ArcGIS transfer-limit flags can appear under collection `properties`; the adapter now reads
+that location as well as the top level. Ten parcels completed four forced pages and all ten
+resolved again. Two broader queries returned 1,368 and 2,139 canonical parcels without identity
+conflicts. The browser loaded 703 parcels, retained 1,068 after a pan, reused cells on return,
+and received complete footprint and binding results. The official public item links open-data
+terms whose target returned 404 during verification; the descriptor records that uncertainty
+and claims no named CC licence. Map attribution links the City's dataset metadata. Evidence is
+in `research/cape-town-live.json` and `research/cape-town-live-response.json`.
+
+These entries use bounded city radii; France, Australia and South Africa are not marked as
+fully live countries. Melbourne and Cape Town use southern-hemisphere metric projections.
+No parcel table was imported and no proposal was saved during verification.
+
+Singapore's official weekly cadastral GeoJSON download is a candidate for a refreshed spatially
+indexed snapshot adapter; no documented bbox geometry endpoint was verified. Sydney's SIX
+service has an automated-retrieval restriction, while another current official service required
+a token and listed no licence. Both remain research-only, with current findings saved in
+`research/singapore-live-assessment.json` and `research/sydney-live-assessment.json`.

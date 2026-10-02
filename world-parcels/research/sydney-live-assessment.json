@@ -1,0 +1,92 @@
+{
+  "description": "Current Sydney source assessment; research only, no runtime source enabled.",
+  "city": "Sydney",
+  "assessmentDate": "2026-10-02",
+  "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+  "service": "NSW Cadastre public MapServer layer 9 “Lot”, DCS Spatial Services; ArcGIS 10.51; polygon; source spatial ref 102100/latest 3857; metadata output formats include JSON/geoJSON; extent statewide.",
+  "metadataUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9?f=pjson",
+  "nativeFields": {
+    "objectid": "lower-case native name objectid, alias OBJECTID, OID (volatile; not canonical)",
+    "cadid": "lower-case integer; candidate native cadastre identifier; uniqueness not proven",
+    "lotidstring": "lower-case string length 50, sample legal lot label e.g. 9//DP11050; business/display identifier, uniqueness not proven",
+    "lotnumber": "lower-case string length 6",
+    "plannumber": "lower-case integer"
+  },
+  "sourceSemantics": "NSW Spatial Services says it is custodian of the authoritative state cadastre and maintains the digital cadastral database. This is legal cadastral lot data, distinct from valuation/property/assessment polygons.",
+  "license": {
+    "officialTerms": "https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions",
+    "dataLicense": "Creative Commons Attribution; attribution ©Department of Customer Service [date of extraction]",
+    "additionalLimit": "Terms also say do not use a robot/spider/site retrieval application to retrieve or index any portion of the web service; this conflicts with automated server-side app polling/queries unless clarified or separate permission applies. Terms warn data current only at transmission time and as-is."
+  },
+  "queryVerification": {
+    "result": "not freshly verified",
+    "shellAttempt": "urllib requests failed at DNS resolution in this environment",
+    "webAttempt": "live ArcGIS metadata opened and is crawled today; web tool marked query URLs inaccessible",
+    "oldSample": {
+      "bboxWgs84": [
+        151.079,
+        -33.859,
+        151.08,
+        -33.858
+      ],
+      "featureCountReturned": 3,
+      "exceededTransferLimit": true,
+      "complete": false,
+      "retrieved": "2026-09-29",
+      "sample": [
+        {
+          "objectid": 3537226,
+          "cadid": 100098447,
+          "lotidstring": "9//DP11050",
+          "lotnumber": "9",
+          "plannumber": 11050
+        },
+        {
+          "objectid": 3537227,
+          "cadid": 100098448,
+          "lotidstring": "8//DP11050",
+          "lotnumber": "8",
+          "plannumber": 11050
+        },
+        {
+          "objectid": 3537228,
+          "cadid": 100098449,
+          "lotidstring": "7//DP11050",
+          "lotnumber": "7",
+          "plannumber": 11050
+        }
+      ],
+      "crsRequested": "WGS84 output; response file source SR metadata 3857",
+      "geometryClosedRings": true,
+      "exactIdLookup": "not attempted now",
+      "aggregateNullDuplicateCounts": "not attempted now"
+    },
+    "freshCompleteBbox": null,
+    "exactCandidateIdLookup": null,
+    "nullAndDuplicateAggregates": null,
+    "accessDecision": "No new automated query sent. Official service terms at https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions include clause 2.1.6 barring use of a robot, spider, site search/retrieval application, or other device to retrieve/index any portion of the Spatial Web Services. Direct automated bbox/ID/aggregate calls would conflict absent permission; saved prior sample is retained as historical evidence only."
+  },
+  "recommendation": "Semantically suitable legal cadastre candidate with CC-BY data license and required ©Department of Customer Service [date of extraction] attribution; not ready for app query until Spatial Services confirms automated retrieval is allowed (or an expressly licensed/open static download route is used), and complete bbox, exact stable-ID lookup, null and duplicate aggregates are verified.",
+  "identityAssessment": "Layer 9 exposes lower-case `cadid` integer, `lotidstring` string composite legal label (e.g. 9//DP11050), and objectid OID. Existing 2026-09-29 sample had cadid 100098447 / lotidstring 9//DP11050. Neither cadid nor lotidstring was queried today or checked for nulls/duplicates. Do not call either a verified unique canonical key. objectid is the service OID and should not be used as canonical.",
+  "serviceCurrentness": "Official ArcGIS layer metadata was crawled today and declares NSW Cadastre layer “Lot”, ArcGIS 10.51, polygon source spatial reference 102100/3857, extent statewide; metadata crawl does not prove current feature content or runtime query availability. The saved feature query (2026-09-29) was only a 3-row sample and had exceededTransferLimit=true.",
+  "officialAlternatives": [
+    {
+      "candidate": "NSW Land Parcel and Property Theme - GDA2020 FeatureServer Lot (layer 8)",
+      "endpoint": "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme_multiCRS/FeatureServer/8",
+      "sourceCatalog": "https://www.data.nsw.gov.au/data/dataset/1-079705a7798742e6b13b6da2171e5991",
+      "metadata": "Data.NSW says state-wide, daily updated, changes take up to 2 days to publish, current Land Parcel/Property Theme; record last updated 2026-07-08. FeatureServer metadata indexed today; query in existing investigation returned HTTP 499 token required. Catalog License = Not Specified (not confirmed open license). No runnable public alternative established."
+    },
+    {
+      "candidate": "Data.NSW Cadastral Fabric",
+      "url": "https://data.nsw.gov.au/data/dataset/nsw-foundation-spatial-data-framework-land-parcel-and-property-cadastral-fabric",
+      "what-it-is": "CC Attribution record, but only attached PDF product description, published and last updated 2018-10-19; not a current geometry download."
+    },
+    {
+      "candidate": "Data.NSW Spatial Services - NSW Cadastre",
+      "url": "https://data.nsw.gov.au/data/dataset/spatial-services-nsw-cadastre",
+      "what-it-is": "Catalog says current land titles and CC Attribution; resource is the same maps.six NSW Cadastre Web MapServer, last catalog metadata update 2021-04-20; not a separate API/download. Its service is inside the Spatial Web Services terms."
+    }
+  ],
+  "termsScopeNote": "Official terms URL: https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions. Sections 1.1-1.2 scope the SWS as DCS Spatial Services-provided online spatial data access and bind use to terms. Clause 2.1.6 reads: “use any robot, spider, site search/retrieval application, or other device to retrieve or index any portion of the SWS.” This expressly mentions retrieval separately from indexing, so a plain reading is broader than website crawling and includes automated API retrieval; this is an interpretation, not formal legal advice. Search result identifies maps.six layer as the catalogued NSW Cadastre Web Service; no separate current freely licensed, service-compatible download located.",
+  "runtimeStatus": "research-only"
+}

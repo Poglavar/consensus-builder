@@ -3297,6 +3297,12 @@
             "colorado": "Denver, USA",
             "new_york": "New York, USA",
             "bogota": "Bogotá, Colombia",
+            "los_angeles": "Los Angeles, USA",
+            "miami": "Miami, USA",
+            "washington_dc": "Washington, D.C., USA",
+            "paris": "Paris, France",
+            "melbourne": "Melbourne, Australia",
+            "cape_town": "Cape Town, South Africa",
             "toronto": "Toronto, Canada",
             "denver": "Denver, USA",
             "explore": "Explore"

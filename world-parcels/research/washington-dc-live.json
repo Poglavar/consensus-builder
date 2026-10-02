@@ -1,0 +1,123 @@
+{
+  "checkedAt": "2026-10-02",
+  "sourceId": "us-dc-dcgis-tax-lots",
+  "name": "DC GIS Property and Land — Tax Lots (layer 39)",
+  "endpoint": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/FeatureServer/39",
+  "catalogueUrl": "https://opendata.dc.gov/datasets/DCGIS::tax-lots",
+  "licenceUrl": "https://creativecommons.org/licenses/by/4.0",
+  "publisher": "Department of Buildings; data developed with DC GIS/OCTO, Department of Buildings/Office of Surveyor, and Office of Tax and Revenue/RPTA",
+  "catalogueModified": "2026-09-19T09:58:32.000Z",
+  "layerMetadataRevision": "2026-09-26T09:48:47",
+  "updateFrequency": "weekly (layer metadata)",
+  "scope": "District of Columbia tax-assessment polygons; tax lots are not surveyed/legal lots.",
+  "fields": {
+    "objectIdField": "OBJECTID (esriFieldTypeOID)",
+    "globalIdField": "GLOBALID (esriFieldTypeGlobalID, length 38)",
+    "businessField": "SSL (esriFieldTypeString, length 255)",
+    "geometry": "esriGeometryPolygon",
+    "serverSpatialReference": "102100 / 3857",
+    "requestedOutput": "outSR=4326 verified"
+  },
+  "querySupport": {
+    "maxRecordCount": 2000,
+    "supportsPagination": true,
+    "supportsOrderBy": true,
+    "supportsStatistics": true,
+    "supportsHavingClause": true,
+    "supportsCountDistinct": true,
+    "supportedQueryFormats": [
+      "JSON",
+      "geoJSON",
+      "PBF"
+    ]
+  },
+  "counts": {
+    "totalTaxLotFeatures": 30867,
+    "distinctGlobalIds": 30867,
+    "duplicateGlobalIdAggregate": "group by GLOBALID with HAVING COUNT(OBJECTID)>1 returned zero features"
+  },
+  "bboxSample": {
+    "bboxLonLat": [
+      -77.0435,
+      38.9095,
+      -77.0415,
+      38.911
+    ],
+    "returnedFeatureCount": 3,
+    "exceededTransferLimit": true,
+    "features": [
+      {
+        "OBJECTID": 780622,
+        "GLOBALID": "{1B157667-518C-4B56-9DFC-1DAEC1559EAB}",
+        "SSL": "0114E   0800"
+      },
+      {
+        "OBJECTID": 784629,
+        "GLOBALID": "{FBE6D1D5-68FE-46C5-AAEB-C6D35F02AFA4}",
+        "SSL": "0136    0802"
+      },
+      {
+        "OBJECTID": 785036,
+        "GLOBALID": "{201321BA-9941-4348-8532-EA8B47F0F824}",
+        "SSL": "0136    0807"
+      }
+    ],
+    "exactGlobalIdInQuery": "GLOBALID IN ('{1B157667-518C-4B56-9DFC-1DAEC1559EAB}') returned OBJECTID 780622."
+  },
+  "sslCollision": {
+    "SSL": "1223    0815",
+    "featureCount": 2,
+    "rows": [
+      {
+        "OBJECTID": 794696,
+        "GLOBALID": "{BC8AB6E7-30CC-4D37-A0DF-0796C776867B}",
+        "STATEDAREA": null
+      },
+      {
+        "OBJECTID": 809736,
+        "GLOBALID": "{F8FE44A9-5C12-462B-9A17-2CC61B39E6FA}",
+        "STATEDAREA": 1260
+      }
+    ],
+    "geometryComparison": "different spatial rings; same SSL resolves to spatially distinct polygons",
+    "exactWhere": "SSL = '1223    0815'"
+  },
+  "exactSpaceCheck": {
+    "SSL": "0114E   0800",
+    "exactWhere": "SSL = '0114E   0800'",
+    "returnedOBJECTID": 780622,
+    "note": "SSL preserves leading zeroes and interior spaces; do not trim or collapse whitespace."
+  },
+  "limitations": [
+    "SSL is not unique in Tax Lots and cannot serve alone as canonical source ID.",
+    "GLOBALID was non-null in all sampled rows, is a 38-character brace-wrapped uppercase UUID, passed exact quoted IN filtering, and had equal total and distinct counts (30,867).",
+    "Source covers DC, not the broader Maryland/Virginia metro."
+  ],
+  "description": "DC tax-lot identity, exact-ID and complete viewport verification; duplicate SSL polygons retain separate GlobalIDs.",
+  "cityId": "washington_dc",
+  "adapterVerification": {
+    "bbox": [
+      -77.0435,
+      38.9095,
+      -77.0415,
+      38.911
+    ],
+    "parcelCount": 7,
+    "complete": true,
+    "idLookupCount": 3,
+    "absentIds": [],
+    "responseFile": "washington-dc-live-response.json"
+  },
+  "browserVerification": {
+    "initialLoaded": 188,
+    "afterPanRetained": 369,
+    "returnCached": true,
+    "uncachedFootprintHttpStatus": 200,
+    "uncachedFootprintComplete": true,
+    "bindingHttpStatus": 200,
+    "bindingCoverage": "complete",
+    "boundParcelId": "US-DC-{A15188F9-041D-4A60-8467-BD9D4A47A832}",
+    "globePopup": "Live city with source streaming description and Open city action",
+    "globeHandoff": "Open city navigates to its configured source at zoom 19 and streams parcels"
+  }
+}

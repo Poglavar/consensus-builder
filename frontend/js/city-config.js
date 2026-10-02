@@ -573,6 +573,210 @@
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        los_angeles: {
+            id: 'los_angeles',
+            label: translateCityText('city.labels.los_angeles', 'Los Angeles, USA'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [34.0522, -118.2437],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [34.0522, -118.2437],
+                fallbackDataset: [-118.2437, 34.0522]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'us-ca-lacounty-assessor-parcels',
+                idPrefix: 'US-CA-LA-',
+                requiresBackend: true,
+                ownership: false,
+                // Conservative county entry area; adjacent counties need their own providers.
+                liveRadiusKm: 15,
+                attribution: '<a href="https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about">County of Los Angeles · Assessor parcels · accessed Oct 2, 2026</a> · <a href="https://egis-lacounty.hub.arcgis.com/pages/terms-of-use">Terms of use</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        miami: {
+            id: 'miami',
+            label: translateCityText('city.labels.miami', 'Miami, USA'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [25.7749, -80.1936],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [25.7749, -80.1936],
+                fallbackDataset: [-80.1936, 25.7749]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'us-fl-miamidade-pa-parcels',
+                idPrefix: 'US-FL-MIAMI-DADE-',
+                requiresBackend: true,
+                ownership: false,
+                // Conservative county entry area; adjacent counties need their own providers.
+                liveRadiusKm: 12,
+                attribution: '<a href="https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about">Miami-Dade County GIS · Property Appraiser parcels · data terms</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        washington_dc: {
+            id: 'washington_dc',
+            label: translateCityText('city.labels.washington_dc', 'Washington, D.C., USA'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.91025, -77.0425],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [38.91025, -77.0425],
+                fallbackDataset: [-77.0425, 38.91025]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'us-dc-dcgis-tax-lots',
+                idPrefix: 'US-DC-',
+                requiresBackend: true,
+                ownership: false,
+                // Central D.C. entry area; Maryland and Virginia use different parcel sources.
+                liveRadiusKm: 2,
+                attribution: '<a href="https://opendata.dc.gov/datasets/DCGIS::tax-lots">District of Columbia · DCGIS tax lots</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        paris: {
+            id: 'paris',
+            label: translateCityText('city.labels.paris', 'Paris, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.8491, 2.3556],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [48.8491, 2.3556],
+                fallbackDataset: [2.3556, 48.8491]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express',
+                idPrefix: 'FR-PCI-',
+                requiresBackend: true,
+                ownership: false,
+                // Conservative globe entry area; source scope is recorded in the backend catalogue.
+                liveRadiusKm: 15,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP · Parcellaire Express · data &amp; updates</a> · <a href="https://www.data.gouv.fr/pages/legal/licences/etalab-2.0">Licence Ouverte 2.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        melbourne: {
+            id: 'melbourne',
+            label: translateCityText('city.labels.melbourne', 'Melbourne, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-37.8136, 144.9631],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32755',
+                metricDefinition: '+proj=utm +zone=55 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-37.8136, 144.9631],
+                fallbackDataset: [144.9631, -37.8136]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'au-vic-vicmap-parcel',
+                idPrefix: 'AU-VIC-PARCEL-',
+                requiresBackend: true,
+                ownership: false,
+                // Conservative globe entry area; source scope is recorded in the backend catalogue.
+                liveRadiusKm: 20,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria · DTP · Vicmap Parcel</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cape_town: {
+            id: 'cape_town',
+            label: translateCityText('city.labels.cape_town', 'Cape Town, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-33.9258, 18.4194],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32734',
+                metricDefinition: '+proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-33.9258, 18.4194],
+                fallbackDataset: [18.4194, -33.9258]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'za-cct-land-parcels',
+                idPrefix: 'ZA-CCT-',
+                requiresBackend: true,
+                ownership: false,
+                // Conservative globe entry area; source scope is recorded in the backend catalogue.
+                liveRadiusKm: 12,
+                attribution: '<a href="https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about">City of Cape Town · Land Parcels · data terms</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

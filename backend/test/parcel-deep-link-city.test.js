@@ -33,6 +33,12 @@ describe('parcelIdToCityId — prefixes that are unambiguous', () => {
     it('maps each one-city country prefix', () => {
         expect(route.parcelIdToCityId('CA-ON-TORONTO-5455132')).toBe('toronto');
         expect(route.parcelIdToCityId('CO-BOGOTA-006106001009')).toBe('bogota');
+        expect(route.parcelIdToCityId('US-CA-LA-5149001915')).toBe('los_angeles');
+        expect(route.parcelIdToCityId('US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}')).toBe('miami');
+        expect(route.parcelIdToCityId('US-DC-{1B157667-518C-4B56-9DFC-1DAEC1559EAB}')).toBe('washington_dc');
+        expect(route.parcelIdToCityId('FR-PCI-75105000AD0011')).toBe('paris');
+        expect(route.parcelIdToCityId('AU-VIC-PARCEL-152244627')).toBe('melbourne');
+        expect(route.parcelIdToCityId('ZA-CCT-C0160007000951650000000000')).toBe('cape_town');
         expect(route.parcelIdToCityId('US-NY-1000010001')).toBe('new_york');
         expect(route.parcelIdToCityId('US-CO-12345')).toBe('colorado');
         expect(route.parcelIdToCityId('SI-1234-56')).toBe('ljubljana');

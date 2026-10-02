@@ -1,0 +1,172 @@
+{
+  "description": "Three exact-ID examples from a complete live Approved surface-level query; this excerpt is not a complete viewport.",
+  "bbox": [
+    144.9615,
+    -37.8143,
+    144.9665,
+    -37.8105
+  ],
+  "sampledFromCompleteFeatureCount": 2337,
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "AU-VIC-PARCEL-203170179",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              144.962276894237,
+              -37.811431861655
+            ],
+            [
+              144.962087128727,
+              -37.8114869690099
+            ],
+            [
+              144.961994251909,
+              -37.8112844983012
+            ],
+            [
+              144.962493066624,
+              -37.8111379962306
+            ],
+            [
+              144.96258709059,
+              -37.8113417618326
+            ],
+            [
+              144.962348693883,
+              -37.8114110078726
+            ],
+            [
+              144.962276894237,
+              -37.811431861655
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "AU-VIC-PARCEL-203170179",
+        "id": "AU-VIC-PARCEL-203170179",
+        "sourceId": "au-vic-vicmap-parcel",
+        "sourceParcelId": "203170179",
+        "parcelNumber": "3\\LP34689",
+        "cadMunicipalityName": "melbourne",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 72354,
+          "parcel_pfi": "203170179",
+          "parcel_spi": "3\\LP34689",
+          "parcel_ufi": 888530120,
+          "parcel_status": "A",
+          "parv_status": "A",
+          "parv_z_level": "G"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "AU-VIC-PARCEL-211701420",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              144.964880192168,
+              -37.8127901800685
+            ],
+            [
+              144.964858679313,
+              -37.812742641067
+            ],
+            [
+              144.965073533871,
+              -37.8126812823121
+            ],
+            [
+              144.965095256931,
+              -37.8127297311705
+            ],
+            [
+              144.964880192168,
+              -37.8127901800685
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "AU-VIC-PARCEL-211701420",
+        "id": "AU-VIC-PARCEL-211701420",
+        "sourceId": "au-vic-vicmap-parcel",
+        "sourceParcelId": "211701420",
+        "parcelNumber": "1\\TP387843",
+        "cadMunicipalityName": "melbourne",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 75197,
+          "parcel_pfi": "211701420",
+          "parcel_spi": "1\\TP387843",
+          "parcel_ufi": 860944026,
+          "parcel_status": "A",
+          "parv_status": "A",
+          "parv_z_level": "G"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "AU-VIC-PARCEL-206067539",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              144.964343859315,
+              -37.8137487792697
+            ],
+            [
+              144.964264262293,
+              -37.8135772879494
+            ],
+            [
+              144.964268178049,
+              -37.8135762873037
+            ],
+            [
+              144.964345102584,
+              -37.8137484102381
+            ],
+            [
+              144.964343859315,
+              -37.8137487792697
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "AU-VIC-PARCEL-206067539",
+        "id": "AU-VIC-PARCEL-206067539",
+        "sourceId": "au-vic-vicmap-parcel",
+        "sourceParcelId": "206067539",
+        "parcelNumber": "3\\TP845167",
+        "cadMunicipalityName": "melbourne",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 76289,
+          "parcel_pfi": "206067539",
+          "parcel_spi": "3\\TP845167",
+          "parcel_ufi": 764203250,
+          "parcel_status": "A",
+          "parv_status": "A",
+          "parv_z_level": "G"
+        }
+      }
+    }
+  ],
+  "complete": false,
+  "sourceId": "au-vic-vicmap-parcel",
+  "returnsWGS84": true,
+  "absentIds": []
+}

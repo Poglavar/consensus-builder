@@ -1,0 +1,53 @@
+{
+  "description": "Current official French WFS parcel source contract and bounded live verification for Paris.",
+  "checkedAt": "2026-10-02",
+  "sourceId": "fr-ign-parcellaire-express",
+  "endpoint": "https://data.geopf.fr/wfs/ows",
+  "officialUrls": [
+    "https://www.data.gouv.fr/datasets/parcellaire-express-pci",
+    "https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/diffusion/wfs/"
+  ],
+  "sourceScope": "IGN assembly of vectorised DGFiP cadastral parcels across France; Paris and Lyon bounded samples verified. Non-vectorised areas and cadastral alignment gaps remain possible; globe enables Paris only.",
+  "identity": {
+    "nativeField": "idu",
+    "canonicalPrefix": "FR-PCI-",
+    "displayField": "numero",
+    "note": "14-character cadastral identifier; internal WFS feature ID is pagination evidence only."
+  },
+  "license": {
+    "name": "Licence Ouverte 2.0",
+    "url": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+    "attribution": "IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84."
+  },
+  "verification": {
+    "bbox": [
+      2.355,
+      48.849,
+      2.356,
+      48.8495
+    ],
+    "pageSize": 3,
+    "bboxPages": 3,
+    "featureCount": 8,
+    "exactIdPages": 3,
+    "exactLookupCount": 8,
+    "absentIds": [],
+    "secondRegion": "Lyon bounded query returned 61 parcels, all 61 resolved by exact ID; Paris globe entry enabled only.",
+    "apiCartoFinding": "API Carto supports geometry and cadastral field filters but idu query parameter was ignored; direct WFS CQL supports exact native-ID lookup."
+  },
+  "adapterContract": {
+    "version": "WFS 2.0.0",
+    "crs": "CRS:84 longitude/latitude",
+    "paging": "count/startIndex sorted by idu, numeric numberMatched/numberReturned required; counts must remain unchanged",
+    "nextLinks": "Ignored; requests rebuilt against the fixed HTTPS endpoint."
+  },
+  "browser": {
+    "initialParcels": 393,
+    "retainedAfterPan": 720,
+    "returnCached": true,
+    "footprintComplete": true,
+    "bindingCoverage": "complete",
+    "globeEntryVerified": true
+  },
+  "responseFile": "paris-live-response.json"
+}
