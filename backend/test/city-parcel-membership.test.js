@@ -69,7 +69,8 @@ describe('isInCity covers every configured city', () => {
             ljubljana: 'SI-1234-56',
             buenos_aires: '001-002-3A',
             colorado: 'US-CO-12345',
-            new_york: 'US-NY-1-100'
+            new_york: 'US-NY-1-100',
+            toronto: 'CA-ON-TORONTO-5455132'
         };
         configuredCityIds().forEach(city => {
             expect(sample[city], `no sample parcel id for configured city ${city}`).toBeTruthy();

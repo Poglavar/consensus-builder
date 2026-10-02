@@ -3347,6 +3347,7 @@
             "buenos_aires": "Buenos Aires, Argentina",
             "colorado": "Denver, EE. UU.",
             "new_york": "Nueva York, EE. UU.",
+            "toronto": "Toronto, Canadá",
             "denver": "Denver, EE. UU.",
             "explore": "Explorar"
         },
@@ -3896,6 +3897,7 @@
         "tier": {
             "live": {
                 "short": "En la app",
+                "streamText": "Las parcelas se cargan desde la fuente local al acercar y mover el mapa. Los municipios cercanos pueden usar datos diferentes.",
                 "text": "Parcelas, propuestas y 3D están listos aquí."
             },
             "source": {

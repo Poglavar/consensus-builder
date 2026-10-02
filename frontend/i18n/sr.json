@@ -3332,6 +3332,7 @@
             "buenos_aires": "Buenos Ajres, Argentina",
             "colorado": "Denver, SAD",
             "new_york": "Njujork, SAD",
+            "toronto": "Toronto, Kanada",
             "denver": "Denver, SAD",
             "explore": "Istraži"
         },
@@ -3881,6 +3882,7 @@
         "tier": {
             "live": {
                 "short": "U aplikaciji",
+                "streamText": "Parcele se učitavaju iz lokalnog izvora dok približavate i pomerate kartu. Susedne opštine mogu koristiti druge podatke.",
                 "text": "Parcele, predlozi i 3D su ovde spremni."
             },
             "source": {

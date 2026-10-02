@@ -94,14 +94,14 @@
         const countryByCc = new Map(countries.map(c => [c.cc, c]));
         const liveCities = data.liveCities;
         // Registry cities that a configured city already covers are the same place under another name.
-        const cities = data.cities.filter(city => !liveCities.some(l => haversineKm(l.lat, l.lon, city.lat, city.lon) <= LIVE_RADIUS_KM));
+        const cities = data.cities.filter(city => !liveCities.some(l => haversineKm(l.lat, l.lon, city.lat, city.lon) <= (l.radiusKm ?? LIVE_RADIUS_KM)));
         const countryName = cc => (countryByCc.get(cc) || {}).name || cc || '';
 
         function nearest(list, lat, lon, maxKm) {
             let best = null; let bestKm = maxKm;
             for (const item of list) {
                 const km = haversineKm(lat, lon, item.lat, item.lon);
-                if (km <= bestKm) { best = item; bestKm = km; }
+                if (km <= bestKm && km <= (item.radiusKm ?? Infinity)) { best = item; bestKm = km; }
             }
             return best;
         }
@@ -121,7 +121,7 @@
         function livePlace(live, lat, lon) {
             return {
                 kind: 'live-city', tier: 'live', cityId: live.id, name: live.name, country: countryName(live.cc), cc: live.cc,
-                note: '', lat, lon, placeKey: 'live:' + live.id
+                note: '', lat, lon, placeKey: 'live:' + live.id, ...(live.sourceId ? { sourceId: live.sourceId } : {})
             };
         }
 
@@ -170,7 +170,8 @@
         const searchIndex = [].concat(
             liveCities.map(l => ({
                 kind: 'live-city', priority: 0, tier: 'live', cityId: l.id, name: l.name, country: countryName(l.cc), cc: l.cc,
-                lat: l.lat, lon: l.lon, placeKey: 'live:' + l.id, keys: [normalizeText(l.name), normalizeText(l.label)]
+                lat: l.lat, lon: l.lon, placeKey: 'live:' + l.id, keys: [normalizeText(l.name), normalizeText(l.label)],
+                ...(l.sourceId ? { sourceId: l.sourceId } : {})
             })),
             cities.map(c => ({
                 kind: 'city', priority: 1, tier: c.tier, name: c.name, country: countryName(c.cc), cc: c.cc, note: c.note,

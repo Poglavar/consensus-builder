@@ -43,7 +43,8 @@ const CITY_PARCEL_ID_PREFIXES = {
     ljubljana: 'SI-',
     buenos_aires: 'AR-',
     colorado: 'US-CO-',
-    new_york: 'US-NY-'
+    new_york: 'US-NY-',
+    toronto: 'CA-ON-TORONTO-'
 };
 
 function isInCity(parcelId, cityId) {

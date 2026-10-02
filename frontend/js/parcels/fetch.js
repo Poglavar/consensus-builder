@@ -55,7 +55,9 @@
 
     // The explore city (city-config `parcels.source: 'none'`) has no cadastre: every fetch path
     // answers "nothing here" instead of asking a parcel service about a place it does not cover.
-    function cityHasParcels() {
+    function cityHasParcels(city) {
+        const config = cityConfig(city || currentCity());
+        if (config) return !!config.parcels?.source && config.parcels.source !== 'none';
         const manager = global.CityConfigManager;
         return !manager || typeof manager.hasParcelData !== 'function' || manager.hasParcelData();
     }
@@ -63,6 +65,8 @@
     function cityConfig(city) {
         try {
             const manager = global.CityConfigManager;
+            const configured = manager?.getCityConfig?.(city);
+            if (configured) return configured;
             const configs = manager?.getAvailableCities?.() || [];
             return configs.find(config => String(config?.id || '') === String(city || '')) || null;
         } catch (_) {
@@ -170,16 +174,29 @@
 
     async function fetchByIds(parcelIds, options = {}) {
         const ids = Array.from(new Set(Array.from(parcelIds || []).map(String).filter(Boolean)));
-        if (!ids.length || !cityHasParcels()) return { status: 'ready', complete: true, features: [], absentIds: ids, returnsWGS84: true };
         const city = String(options.city || currentCity());
+        if (!ids.length || !cityHasParcels(city)) return { status: 'ready', complete: true, features: [], absentIds: ids, returnsWGS84: true };
         const source = currentSource();
+        const provider = cityConfig(city)?.parcels;
         let features;
         let returnsWGS84 = true;
-        if (city === 'buenos_aires') features = await requestOneByOne(ids, 'parcel-ba', 'smp');
-        else if (city === 'belgrade') features = await requestOneByOne(ids, 'parcel-bg', 'parcel_id');
-        else if (city === 'colorado') features = await requestOneByOne(ids, 'parcel-co', 'parcel_id');
-        else if (city === 'ljubljana') features = await requestOneByOne(ids, 'parcel-lj', 'parcel_id');
-        else if (city === 'new_york') features = await requestOneByOne(ids, 'parcel-nyc', 'parcel_id');
+        const importedIdParameters = { 'parcel-ba': 'smp', 'parcel-bg': 'parcel_id', 'parcel-co': 'parcel_id', 'parcel-lj': 'parcel_id', 'parcel-nyc': 'parcel_id' };
+        if (provider?.source === 'parcel-source') {
+            features = [];
+            for (const batch of chunks(ids)) {
+                const payload = await responseJson(`${backendBase()}/parcel-sources/${encodeURIComponent(provider.sourceId)}?${new URLSearchParams({ ids: batch.join(',') })}`, {
+                    headers: { Accept: 'application/json' }, cache: 'no-store'
+                });
+                if (payload.complete !== true || !Array.isArray(payload.features) || !Array.isArray(payload.absentIds)) {
+                    throw new Error('Parcel source returned an incomplete ID response.');
+                }
+                const accounted = new Set([...payload.features.map(normalizeFeatureId), ...payload.absentIds]);
+                if (batch.some(id => !accounted.has(id))) throw new Error('Parcel source omitted requested IDs.');
+                features.push(...payload.features);
+            }
+        } else if (importedIdParameters[provider?.source]) {
+            features = await requestOneByOne(ids, provider.source, importedIdParameters[provider.source]);
+        }
         else if (source === 'oss.uredjenazemlja.hr') {
             features = await requestOssIds(ids);
             returnsWGS84 = false;
@@ -235,6 +252,7 @@
         const features = [];
         while (more) {
             const request = builder ? builder(bbox, { count, startIndex, latLonBbox, city: context.city }) : null;
+            if (builder && !request) throw new Error('Parcel source is unavailable for this city.');
             returnsWGS84 = request ? request.returnsWGS84 === true : false;
             const url = request ? request.url : `${OSS_URL}?${new URLSearchParams({
                 token: OSS_TOKEN,
@@ -249,6 +267,9 @@
                 startIndex: String(startIndex)
             })}`;
             const payload = await responseJson(url, {}, { notFoundIsEmpty: true });
+            if (request?.completeResponse && (payload.complete !== true || !Array.isArray(payload.features))) {
+                throw new Error('Parcel source returned an incomplete viewport response.');
+            }
             const page = Array.isArray(payload.features) ? payload.features : [];
             features.push(...page);
             const returned = Number(payload.numberReturned ?? page.length);
@@ -262,8 +283,8 @@
     }
 
     async function fetchBounds(_bounds, options = {}) {
-        if (!cityHasParcels()) return { status: 'ready', features: [], absentIds: [], returnsWGS84: true };
         const city = String(options.city || currentCity());
+        if (!cityHasParcels(city)) return { status: 'ready', features: [], absentIds: [], returnsWGS84: true };
         const keys = Array.from(new Set(Array.from(options.keys || []).map(String).filter(Boolean)));
         if (!keys.length) throw new Error('Cadastral bounds transport requires repository grid keys.');
         const gridSize = Number(cityConfig(city)?.parcels?.gridSize
@@ -299,7 +320,11 @@
         const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
         if (!geom || !geom.type) throw new Error('Cadastral footprint geometry is missing.');
         const parcelsOnly = options.parcelsOnly === true;
-        const response = await fetch(`${backendBase()}/parcels/under`, {
+        const provider = cityConfig(options.city || currentCity())?.parcels;
+        const path = provider?.source === 'parcel-source'
+            ? `/parcel-sources/${encodeURIComponent(provider.sourceId)}/under`
+            : '/parcels/under';
+        const response = await fetch(`${backendBase()}${path}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({ geometry: geom, srid: options.srid || 4326, ...(parcelsOnly ? { parcelsOnly: true } : {}) })
@@ -312,6 +337,7 @@
             throw error;
         }
         const payload = await response.json();
+        if (provider?.source === 'parcel-source' && payload.complete !== true) throw new Error('Parcel source returned an incomplete footprint response.');
         if (!Array.isArray(payload.features)) throw new Error('/parcels/under response has no features array.');
         return {
             status: 'ready',

@@ -5,7 +5,8 @@
 // found by the same inward-buffer bisection (not ST_MaximumInscribedCircle, whose fixed tolerance of
 // 1/1000 of the extent mis-measures a long thin sliver, and which needs GEOS >= 3.9).
 //
-// Only the Croatian cadastre (`parcel`, countrywide, ids HR-<ko>-<number>) is bindable here. A site
+// The Croatian cadastre (`parcel`, countrywide, ids HR-<ko>-<number>) uses PostGIS. Executable live
+// sources resolve their own authoritative parcels and use the shared binding rule. A site
 // outside every cadastral municipality (`cadastral_municipality`) gets coverage 'unknown' — the
 // server cannot see that region's cadastre, which is not the same as there being none — except for
 // a city configured with no cadastre at all (explore), which gets 'none'.
@@ -16,6 +17,8 @@
 import { createRequire } from 'node:module';
 import { INVALID_FOOTPRINT, footprintParts, footprintQueryParams, hasFootprint } from './footprint.js';
 import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
+import { parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
+import { computeSourceBinding, computeSourceParcelActBinding } from '../parcels/source-binding.js';
 
 const requireCjs = createRequire(import.meta.url);
 const siteBindingApi = requireCjs('../../frontend/js/proposals/site-binding.js');
@@ -284,6 +287,16 @@ function unboundBinding({ coverage, toleranceM, siteM2, reason, parcels = [], co
  */
 export async function computeBinding(db, { site = null, parts = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, now = () => new Date() } = {}) {
     const params = siteQueryParams({ site, parts });
+    const provider = parcelSourceForCity(city);
+    if (provider) {
+        const metricSrid = provider.descriptor.metricSrid;
+        if (!Number.isInteger(metricSrid)) throw new Error('Parcel source metric SRID is missing.');
+        const footprint = site || JSON.parse((await db.query(
+            `WITH ${SITE_CTE.replaceAll('3765', String(metricSrid))} SELECT ST_AsGeoJSON(ST_Transform(g, 4326)) AS geometry FROM site`, params
+        )).rows[0]?.geometry || 'null');
+        if (!footprint) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
+        return computeSourceBinding(provider.adapter, { site: footprint, toleranceM, sourceId: provider.descriptor.id, now });
+    }
     const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
     const counted = Number((await db.query(BINDING_COUNT_SQL, params)).rows[0]?.parcels || 0);
     if (counted > MAX_BINDING_PARCELS) {
@@ -339,10 +352,12 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
 /**
  * The binding of a parcel act with no geometry of its own: its site IS its declared parcels, so the
  * binding is the declaration by construction. The server only checks that every declared id is a
- * current HR parcel (unknown ids come back as `extra`). Declarations naming non-HR parcels cannot be
- * verified here: coverage 'unknown', declaration kept as sent.
+ * current HR parcel (unknown ids come back as `extra`). Executable sources resolve their own IDs.
+ * Other declarations remain unverified: coverage 'unknown', declaration kept as sent.
  */
-export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, now = () => new Date() } = {}) {
+export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, now = () => new Date() } = {}) {
+    const provider = parcelSourceForCity(city) || parcelSourceForIds(declaredIds);
+    if (provider) return computeSourceParcelActBinding(provider.adapter, declaredIds, { toleranceM, sourceId: provider.descriptor.id, now });
     const computedAt = now().toISOString();
     const parsed = declaredIds.map(parseHrParcelId);
     if (parsed.some(value => !value)) {
@@ -417,7 +432,9 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
         if (hasFootprint(parts)) {
             const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
             const [polygons, lines] = footprintQueryParams(parts);
-            const outside = Number((await db.query(FOOTPRINT_OUTSIDE_SITE_SQL,
+            const provider = parcelSourceForCity(city);
+            const outsideSql = provider ? FOOTPRINT_OUTSIDE_SITE_SQL.replaceAll('3765', String(provider.descriptor.metricSrid)) : FOOTPRINT_OUTSIDE_SITE_SQL;
+            const outside = Number((await db.query(outsideSql,
                 [polygons, lines, JSON.stringify(normalizeSiteGeometry(site)), floorM])).rows[0]?.outside_m2 || 0);
             if (outside > 0) {
                 return {
@@ -434,7 +451,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
     } else if (hasFootprint(parts)) {
         result = await computeBinding(db, { parts, toleranceM, city, now });
     } else {
-        const act = await parcelActBinding(db, declared, { toleranceM, now });
+        const act = await parcelActBinding(db, declared, { toleranceM, city, now });
         if (act.extra.length) {
             return {
                 ok: false,

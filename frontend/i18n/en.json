@@ -3296,6 +3296,7 @@
             "buenos_aires": "Buenos Aires, Argentina",
             "colorado": "Denver, USA",
             "new_york": "New York, USA",
+            "toronto": "Toronto, Canada",
             "denver": "Denver, USA",
             "explore": "Explore"
         },
@@ -3845,6 +3846,7 @@
         "tier": {
             "live": {
                 "short": "In the app",
+                "streamText": "Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.",
                 "text": "Parcels, proposals and 3D are ready here."
             },
             "source": {

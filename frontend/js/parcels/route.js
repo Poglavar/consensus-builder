@@ -32,6 +32,9 @@
         const id = (rawId || '').toString().trim().toUpperCase();
         if (!id) return null;
         if (id.startsWith('HR-')) return null;
+        const configured = global.CityConfigManager?.getAvailableCities?.()
+            .find(city => city.parcels?.idPrefix && id.startsWith(city.parcels.idPrefix.toUpperCase()));
+        if (configured) return configured.id;
         if (id.startsWith('US-NY-')) return 'new_york';
         if (id.startsWith('US-CO-')) return 'colorado';
         if (id.startsWith('SI-')) return 'ljubljana';

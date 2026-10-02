@@ -125,7 +125,10 @@ export function parseCityConfigs(source) {
         const center = new RegExp(`defaultCenter:\\s*\\[\\s*${num}\\s*,\\s*${num}\\s*\\]`).exec(text)
             || new RegExp(`fallbackLatLng:\\s*\\[\\s*${num}\\s*,\\s*${num}\\s*\\]`).exec(text);
         if (!id || !center) throw new Error(`city-config entry without id or centre: ${text.slice(0, 60)}`);
-        return { id, name: label.split(',')[0].trim(), label, lat: Number(center[1]), lon: Number(center[2]) };
+        const sourceId = /\bsourceId:\s*'([^']+)'/.exec(text)?.[1];
+        const radius = /\bliveRadiusKm:\s*(\d+(?:\.\d+)?)/.exec(text)?.[1];
+        return { id, name: label.split(',')[0].trim(), label, lat: Number(center[1]), lon: Number(center[2]),
+            ...(sourceId ? { sourceId } : {}), ...(radius ? { radiusKm: Number(radius) } : {}) };
     });
 }
 
@@ -258,7 +261,8 @@ export function buildCoverage({ registry, countries, cityConfigSource, tolerance
 
     const liveCities = parseCityConfigs(cityConfigSource).map(city => {
         const country = [...byCode.values()].find(e => e.rings.length && pointInRings(city.lat, city.lon, e.rings));
-        return { id: city.id, name: city.name, label: city.label, cc: country ? country.cc : null, lat: city.lat, lon: city.lon };
+        return { id: city.id, name: city.name, label: city.label, cc: country ? country.cc : null, lat: city.lat, lon: city.lon,
+            ...(city.sourceId ? { sourceId: city.sourceId } : {}), ...(city.radiusKm ? { radiusKm: city.radiusKm } : {}) };
     }).sort((a, b) => a.id.localeCompare(b.id));
 
     const countryList = [...byCode.values()]

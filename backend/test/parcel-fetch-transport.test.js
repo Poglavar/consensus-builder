@@ -7,6 +7,7 @@ const source = readFileSync(new URL('../../frontend/js/parcels/fetch.js', import
 function bootTransport(city, fetch) {
     const window = {
         fetch,
+        CityConfigManager: { getCityConfig: () => ({ id: city, parcels: { source: 'parcel-bg' } }) },
         getBackendBase: () => 'https://api.urbangametheory.xyz',
         getCurrentCityId: () => city,
         getCurrentDataSource: () => 'backend'

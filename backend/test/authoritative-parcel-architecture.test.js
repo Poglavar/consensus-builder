@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { parse } from '@babel/parser';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
@@ -27,9 +28,39 @@ describe('authoritative parcel source contracts', () => {
     });
 
     it('keeps cadastral transport and arbitrary ingestion private', () => {
-        const transportFiles = files.filter(path => (
-            /fetch\s*\([\s\S]{0,180}\/(?:parcels\/under|road-parcels)\b/.test(read(path))
-        )).map(rel);
+        // Resolve local URL variables as well as inline URLs; moving a URL into `path` must not
+        // hide a transport, while an unrelated fetch in a city config must not count as one.
+        const targetsParcels = source => {
+            let found = false;
+            const urlText = (node, bindings, seen = new Set()) => {
+                if (!node) return '';
+                if (node.type === 'Identifier') {
+                    if (seen.has(node.name)) return '';
+                    return urlText(bindings.get(node.name), bindings, new Set([...seen, node.name]));
+                }
+                if (node.type === 'StringLiteral') return node.value;
+                if (node.type === 'TemplateLiteral') return node.quasis.map(q => q.value.raw).join('')
+                    + node.expressions.map(n => urlText(n, bindings, seen)).join('');
+                if (node.type === 'ConditionalExpression') return urlText(node.consequent, bindings, seen) + urlText(node.alternate, bindings, seen);
+                if (node.type === 'BinaryExpression') return urlText(node.left, bindings, seen) + urlText(node.right, bindings, seen);
+                return '';
+            };
+            const walkAst = (node, bindings = new Map()) => {
+                if (!node || typeof node.type !== 'string') return;
+                if (/Function/.test(node.type)) bindings = new Map(bindings);
+                if (node.type === 'VariableDeclarator' && node.id.type === 'Identifier') bindings.set(node.id.name, node.init);
+                if (node.type === 'CallExpression' && ['fetch', 'responseJson'].includes(node.callee.name)) {
+                    found ||= /\/(?:parcels\/under|road-parcels|parcel-sources)\b/.test(urlText(node.arguments[0], bindings));
+                }
+                for (const value of Object.values(node)) {
+                    if (Array.isArray(value)) value.forEach(child => walkAst(child, bindings));
+                    else if (value && typeof value === 'object') walkAst(value, bindings);
+                }
+            };
+            walkAst(parse(source, { sourceType: 'script' }));
+            return found;
+        };
+        const transportFiles = files.filter(path => targetsParcels(read(path))).map(rel);
         expect(transportFiles).toEqual(['parcels/fetch.js']);
 
         const publicIngestion = /\b(?:ingestCadastralParcelFeatures|acceptFeatures)\b/;

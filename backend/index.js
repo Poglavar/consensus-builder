@@ -20,6 +20,7 @@ import { setupParcelBgRoute } from './routes/parcel-bg.js';
 import { setupParcelLjRoute } from './routes/parcel-lj.js';
 import { setupParcelCoRoute } from './routes/parcel-co.js';
 import { setupParcelNycRoute } from './routes/parcel-nyc.js';
+import { setupParcelSourcesRoute } from './routes/parcel-sources.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
@@ -231,6 +232,7 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/proposals/batch',
     '/proposals/binding'
 ]);
+const PARCEL_SOURCE_UNDER_PATH = /^\/parcel-sources\/[^/]+\/under$/;
 
 // Canton is off unless explicitly enabled: its OAuth client is currently rejected (invalid_grant)
 // and every /canton/* request failed. Disabled means the routes are not registered at all, so
@@ -341,7 +343,7 @@ export function createApp({
         if (isAgentPath(req.path)) return next();
         // A read-only POST changes nothing, so there is nothing to forge. The agent docs send headless
         // callers to POST /parcels/under and /buildings/footprints, and without this they got a 403.
-        if (req.method === 'POST' && READ_ONLY_POST_PATHS.has(req.path)) return next();
+        if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || PARCEL_SOURCE_UNDER_PATH.test(req.path))) return next();
 
         const origin = req.get('origin') || req.get('referer');
         if (!origin) {
@@ -405,7 +407,7 @@ export function createApp({
             return proposalBindingRateLimiter(req, res, next);
         }
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-            if (req.method === 'POST' && req.path === '/parcels/under') {
+            if (req.method === 'POST' && (req.path === '/parcels/under' || PARCEL_SOURCE_UNDER_PATH.test(req.path))) {
                 return parcelsUnderRateLimiter(req, res, next);
             }
             if (req.method === 'POST' && PROPOSAL_BINDING_PATHS.includes(req.path)) {
@@ -446,6 +448,7 @@ export function createApp({
     setupParcelLjRoute(app, activePool);
     setupParcelCoRoute(app, activePool);
     setupParcelNycRoute(app, activePool);
+    setupParcelSourcesRoute(app);
     setupBuildingsRoute(app, activePool);
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);

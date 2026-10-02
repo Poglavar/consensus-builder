@@ -472,6 +472,7 @@
     }
 
     async function fetchOwnersFromBackend(parcelId) {
+        if (global.CityConfigManager?.getCurrentCityConfig?.()?.parcels?.ownership === false) return [];
         if (typeof global.getBackendBase !== 'function') {
             throw new Error('Backend base helper unavailable for ownership lookup');
         }

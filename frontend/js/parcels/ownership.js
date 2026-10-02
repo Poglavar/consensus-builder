@@ -79,6 +79,7 @@
     }
 
     async function fetchOwnershipDetails(parcelId, options = {}) {
+        if (global.CityConfigManager?.getCurrentCityConfig?.()?.parcels?.ownership === false) return null;
         const normalizedParcelId = global.normalizeParcelIdValue ? global.normalizeParcelIdValue(parcelId) : parcelId;
         if (!normalizedParcelId) throw new Error('Invalid parcelId');
         const bypassCache = options.bypassCache || false;
@@ -155,4 +156,3 @@
     global.ownershipCache = ownershipCache;
     global.ownershipErrors = ownershipErrors;
 })(typeof window !== 'undefined' ? window : globalThis);
-

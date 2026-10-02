@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "description": "Executable parcel providers; research-only sources remain in registry.json until an adapter is verified.",
+  "sources": [
+    {
+      "id": "ca-on-toronto-property-boundary",
+      "name": "City of Toronto Property Boundary",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-ON-TORONTO-",
+      "outFields": ["OBJECTID", "PARCELID", "FEATURE_TYPE", "DATE_EFFECTIVE", "DATE_EXPIRY"],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "cityId": "toronto",
+      "countryCode": "CA",
+      "metricSrid": 32617,
+      "scope": "City of Toronto municipal parcel fabric; surrounding municipalities are separate sources",
+      "evidenceFile": "research/toronto.json",
+      "attribution": "Contains information licensed under the Open Government Licence – Toronto.",
+      "licenceUrl": "https://open.toronto.ca/open-data-license/",
+      "catalogueUrl": "https://open.toronto.ca/dataset/property-boundaries/"
+    }
+  ]
+}

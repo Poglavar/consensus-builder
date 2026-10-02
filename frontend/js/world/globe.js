@@ -658,6 +658,8 @@
             const text = el('p', 'world-popup__text', {
                 text: place.kind === 'ocean'
                     ? t('world.popup.oceanText', 'No land here, so no parcels. You can still open the map at this spot.')
+                    : place.sourceId
+                        ? t('world.tier.live.streamText', 'Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.')
                     : t('world.tier.' + tier + '.text', texts[tier])
             });
             popup.append(close, badge, titleNode, subtitle, text);

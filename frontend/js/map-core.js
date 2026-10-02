@@ -98,6 +98,8 @@ function resolveInitialZoom() {
 const map = L.map('map', {
     zoomControl: false  // Disable default zoom control
 });
+const parcelSourceAttribution = CURRENT_CITY_CONFIG?.parcels?.attribution;
+if (parcelSourceAttribution) map.attributionControl.addAttribution(parcelSourceAttribution);
 
 const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
 const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;

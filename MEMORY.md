@@ -442,3 +442,5 @@
   strip is drawn as a freeform parcel owned by the city/public. Road cross-section editor opens from an
   "Edit cross section" action on a clicked road.
 - 2026-10-02: The user requires headed browser coverage for every app functionality; maintain the UI command/workflow index in `e2e/feature-inventory.json` alongside behavioral specs, with external HTTP/RPC services mocked at their protocol boundaries.
+
+- 2026-10-02: Live parcel providers use executable backend descriptors and adapters behind a WGS84 bounds/IDs/footprint contract; Toronto streams without a parcel import, and authoritative proposal binding resolves the same source. Keep native parcel identity stable across endpoint changes; retain authored cadastral IDs only as provenance and consent anchors.

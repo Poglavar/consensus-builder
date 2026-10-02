@@ -41,7 +41,7 @@ export function setupProposalBindingRoute(app, pool) {
                 });
                 return res.json({ binding, queryMs: Date.now() - started });
             } catch (error) {
-                if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
+                if (error && error.code && Number.isInteger(error.status)) {
                     return res.status(error.status).json({ error: error.message, code: error.code, ...(error.count ? { count: error.count } : {}) });
                 }
                 const badInput = /GeoJSON|geometry|parse|invalid/i.test(String(error && error.message));
@@ -62,7 +62,7 @@ export function setupProposalBindingRoute(app, pool) {
             if (!result) return res.status(404).json({ error: 'Proposal not found' });
             return res.json({ ...result, queryMs: Date.now() - started });
         } catch (error) {
-            if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
+            if (error && error.code && Number.isInteger(error.status)) {
                 return res.status(error.status).json({ error: error.message, code: error.code });
             }
             console.error(`[${new Date().toISOString()}] Error in GET /proposals/${id}/binding-drift:`, error);

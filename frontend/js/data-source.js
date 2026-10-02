@@ -126,101 +126,30 @@
         // Force backend when on production host to avoid OSS fetches and ExceptionReports
         const forcedBackend = isProdHost();
 
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-ba') {
+        const source = cityParcelsConfig?.source;
+        if (source === 'none') return null;
+        if (source === 'parcel-source') {
+            if (!cityParcelsConfig.sourceId) throw new Error('Parcel source ID is missing.');
+            const path = `/parcel-sources/${encodeURIComponent(cityParcelsConfig.sourceId)}`;
+            const params = new URLSearchParams({ bbox: options.latLonBbox || bbox });
+            return { url: `${getBackendBase()}${path}?${params}`, source, returnsWGS84: true,
+                completeResponse: true, disablePagination: true };
+        }
+        const importedSources = {
+            'parcel-ba': {}, 'parcel-bg': { disablePagination: true },
+            'parcel-lj': { disablePagination: true }, 'parcel-co': {}, 'parcel-nyc': {}
+        };
+        if (source && Object.prototype.hasOwnProperty.call(importedSources, source)) {
             const base = getBackendBase().replace(/\/$/, '');
             const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (startIndex !== undefined) {
-                params.set('offset', startIndex);
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-ba${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-ba`;
-            return { url, isOSS: false, source: 'parcel-ba', ownershipBase: ownershipUrl, returnsWGS84: true };
+            if (options.latLonBbox) params.set('bbox', options.latLonBbox);
+            if (options.parcelId || options.parcel_id) params.set('parcel_id', options.parcelId || options.parcel_id);
+            if (startIndex !== undefined) params.set('offset', startIndex);
+            params.set('limit', count);
+            return { url: `${base}/${source}?${params}`, ownershipBase: `${base}/${source}`,
+                isOSS: false, source, returnsWGS84: true, ...importedSources[source] };
         }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-bg') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-bg${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-bg`;
-            return { url, isOSS: false, source: 'parcel-bg', ownershipBase: ownershipUrl, disablePagination: true, returnsWGS84: true };
-        }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-lj') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-lj${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-lj`;
-            return { url, isOSS: false, source: 'parcel-lj', ownershipBase: ownershipUrl, disablePagination: true, returnsWGS84: true };
-        }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-co') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (startIndex !== undefined) {
-                params.set('offset', startIndex);
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-co${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-co`;
-            return { url, isOSS: false, source: 'parcel-co', ownershipBase: ownershipUrl, returnsWGS84: true };
-        }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-nyc') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (startIndex !== undefined) {
-                params.set('offset', startIndex);
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-nyc${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-nyc`;
-            return { url, isOSS: false, source: 'parcel-nyc', ownershipBase: ownershipUrl, returnsWGS84: true };
-        }
+        if (source && source !== 'oss-wfs') throw new Error(`Unsupported parcel source: ${source}`);
 
         const dataSource = forcedBackend ? 'api.urbangametheory.xyz' : getDataSource();
         if (dataSource === 'oss.uredjenazemlja.hr') {

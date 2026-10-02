@@ -504,6 +504,40 @@
                 url: 'https://urbangametheory.xyz/codechecker/'
             }
         },
+        toronto: {
+            id: 'toronto',
+            label: 'Toronto, Canada',
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.6535, -79.3825],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.6535, -79.3825],
+                fallbackDataset: [-79.3825, 43.6535]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.005,
+                source: 'parcel-source',
+                sourceId: 'ca-on-toronto-property-boundary',
+                idPrefix: 'CA-ON-TORONTO-',
+                requiresBackend: true,
+                ownership: false,
+                // Conservative globe entry area; adjacent municipalities need their own adapters.
+                liveRadiusKm: 15,
+                attribution: '<a href="https://open.toronto.ca/dataset/property-boundaries/">City of Toronto Property Boundary</a> · <a href="https://open.toronto.ca/open-data-license/">Open Government Licence – Toronto</a>'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

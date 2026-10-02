@@ -13,6 +13,12 @@ const data = JSON.parse(readFileSync(path.join(REPO, 'frontend/data/world-covera
 const coverage = WorldCoverage.create(data);
 
 describe('tierAt', () => {
+    it('opens the Toronto streaming source and respects its limited entry area', () => {
+        expect(coverage.tierAt(43.6535, -79.3825)).toMatchObject({ kind: 'live-city', cityId: 'toronto', sourceId: 'ca-on-toronto-property-boundary' });
+        expect(coverage.searchPlaces('toronto')[0]).toMatchObject({ cityId: 'toronto', sourceId: 'ca-on-toronto-property-boundary' });
+        expect(coverage.tierAt(43.85, -79.32).cityId).not.toBe('toronto');
+        expect(coverage.tierAt(43.59, -79.64).cityId).not.toBe('toronto');
+    });
     it('opens a configured city near its centre', () => {
         const place = coverage.tierAt(45.83, 16.05); // eastern Zagreb, a few km from the centre
         expect(place).toMatchObject({ kind: 'live-city', tier: 'live', cityId: 'zagreb', cc: 'HR', country: 'Croatia' });
