@@ -504,6 +504,41 @@
                 url: 'https://urbangametheory.xyz/codechecker/'
             }
         },
+        bogota: {
+            id: 'bogota',
+            label: 'Bogotá, Colombia',
+            currency: { locale: 'es-CO', code: 'COP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [4.60975, -74.08175],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [4.60975, -74.08175],
+                fallbackDataset: [-74.08175, 4.60975]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'co-bogota-uaecd-lote',
+                dataVersion: '2021-12',
+                idPrefix: 'CO-BOGOTA-',
+                requiresBackend: true,
+                ownership: false,
+                // A conservative entry area within Bogotá D.C.; Soacha uses separate data.
+                liveRadiusKm: 12,
+                attribution: '<a href="https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9">IDECA/UAECD lots · Dec 2021 · CAR mirror</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         toronto: {
             id: 'toronto',
             label: 'Toronto, Canada',

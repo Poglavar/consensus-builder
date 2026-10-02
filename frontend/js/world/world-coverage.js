@@ -121,7 +121,8 @@
         function livePlace(live, lat, lon) {
             return {
                 kind: 'live-city', tier: 'live', cityId: live.id, name: live.name, country: countryName(live.cc), cc: live.cc,
-                note: '', lat, lon, placeKey: 'live:' + live.id, ...(live.sourceId ? { sourceId: live.sourceId } : {})
+                note: '', lat, lon, placeKey: 'live:' + live.id, ...(live.sourceId ? { sourceId: live.sourceId } : {}),
+                ...(live.dataVersion ? { dataVersion: live.dataVersion } : {})
             };
         }
 
@@ -171,7 +172,7 @@
             liveCities.map(l => ({
                 kind: 'live-city', priority: 0, tier: 'live', cityId: l.id, name: l.name, country: countryName(l.cc), cc: l.cc,
                 lat: l.lat, lon: l.lon, placeKey: 'live:' + l.id, keys: [normalizeText(l.name), normalizeText(l.label)],
-                ...(l.sourceId ? { sourceId: l.sourceId } : {})
+                ...(l.sourceId ? { sourceId: l.sourceId } : {}), ...(l.dataVersion ? { dataVersion: l.dataVersion } : {})
             })),
             cities.map(c => ({
                 kind: 'city', priority: 1, tier: c.tier, name: c.name, country: countryName(c.cc), cc: c.cc, note: c.note,

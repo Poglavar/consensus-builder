@@ -37,9 +37,19 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const pageSize = descriptor.pageSize || 2000;
     const maxFeatures = descriptor.maxFeatures || 10000;
     const maxBboxKm2 = descriptor.maxBboxKm2 || 25;
+    const idType = descriptor.idType || 'integer';
+    const idPattern = descriptor.idPattern ? new RegExp(descriptor.idPattern) : null;
     const identifier = /^[A-Za-z_][A-Za-z0-9_]*$/;
     if (!id || !idPrefix || !identifier.test(idField) || !identifier.test(objectIdField)
+        || !['integer', 'string'].includes(idType)
         || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid ArcGIS parcel source descriptor.');
+
+    function validNativeId(value) {
+        const text = String(value ?? '');
+        if (idType === 'string') return typeof value === 'string' && text.length > 0
+            && text.length <= 256 && (!idPattern || idPattern.test(text));
+        return /^(0|[1-9][0-9]*)$/.test(text) && Number.isSafeInteger(Number(text));
+    }
 
     async function query(params) {
         const byId = new Map();
@@ -69,7 +79,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             for (const feature of page) {
                 const props = feature.properties || {};
                 const nativeId = props[idField];
-                if (!/^[0-9]+$/.test(String(nativeId ?? '')) || !Number.isSafeInteger(Number(nativeId))) {
+                if (!validNativeId(nativeId)) {
                     throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
                 }
                 if (!validateGeometry(feature.geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
@@ -94,7 +104,10 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 }
                 byId.set(parcelId, canonical);
             }
-            if (payload.exceededTransferLimit !== true) break;
+            // Some ArcGIS GeoJSON services omit the flag even for a truncated full page.
+            const hasMore = payload.exceededTransferLimit === true
+                || (typeof payload.exceededTransferLimit !== 'boolean' && page.length === pageSize);
+            if (!hasMore) break;
             if (!page.length || offset + page.length >= maxFeatures) throw upstreamError('Parcel provider returned incomplete pagination.');
             offset += page.length;
         }
@@ -112,8 +125,9 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         const native = unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
             const tail = value.slice(idPrefix.length);
-            if (!/^(0|[1-9][0-9]*)$/.test(tail) || !Number.isSafeInteger(Number(tail))) throw new HttpError(400, 'Invalid parcel ID.');
-            return tail;
+            if (!validNativeId(tail)) throw new HttpError(400, 'Invalid parcel ID.');
+            // Native string keys must retain leading zeroes and use SQL string literals.
+            return idType === 'string' ? `'${tail.replaceAll("'", "''")}'` : tail;
         });
         const result = await query({ where: `${idField} IN (${native.join(',')})` });
         if (result.features.some(feature => !unique.includes(feature.properties.parcelId))) throw upstreamError('Parcel ID query returned unexpected parcels.');

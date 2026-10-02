@@ -32,6 +32,7 @@ beforeAll(() => {
 describe('parcelIdToCityId — prefixes that are unambiguous', () => {
     it('maps each one-city country prefix', () => {
         expect(route.parcelIdToCityId('CA-ON-TORONTO-5455132')).toBe('toronto');
+        expect(route.parcelIdToCityId('CO-BOGOTA-006106001009')).toBe('bogota');
         expect(route.parcelIdToCityId('US-NY-1000010001')).toBe('new_york');
         expect(route.parcelIdToCityId('US-CO-12345')).toBe('colorado');
         expect(route.parcelIdToCityId('SI-1234-56')).toBe('ljubljana');

@@ -8,6 +8,7 @@
       "adapter": "arcgis",
       "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
       "idField": "PARCELID",
+      "idType": "integer",
       "objectIdField": "OBJECTID",
       "idPrefix": "CA-ON-TORONTO-",
       "outFields": ["OBJECTID", "PARCELID", "FEATURE_TYPE", "DATE_EFFECTIVE", "DATE_EXPIRY"],
@@ -22,6 +23,33 @@
       "attribution": "Contains information licensed under the Open Government Licence – Toronto.",
       "licenceUrl": "https://open.toronto.ca/open-data-license/",
       "catalogueUrl": "https://open.toronto.ca/dataset/property-boundaries/"
+    },
+    {
+      "id": "co-bogota-uaecd-lote",
+      "name": "Bogotá IDECA/UAECD lots — CAR mirror, December 2021",
+      "adapter": "arcgis",
+      "endpoint": "https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9",
+      "originEndpoint": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer/0",
+      "publisher": "Corporación Autónoma Regional de Cundinamarca (CAR), using IDECA/UAECD data",
+      "dataVersion": "2021-12",
+      "caCertificate": "./certificates/geotrust-ev-rsa-ca-g2.pem",
+      "idField": "LotCodigo",
+      "idType": "string",
+      "idPattern": "^[0-9]{12}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CO-BOGOTA-",
+      "outFields": ["OBJECTID", "LotCodigo", "ManzCodigo", "LotDispers", "LotILDispe", "LotUPredia", "LotDistrit"],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "cityId": "bogota",
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "scope": "December 2021 copy of Bogotá Distrito Capital urban and rural lots, explicitly selected for the prototype. A lot may contain multiple properties; neighbouring municipalities are separate sources.",
+      "evidenceFile": "research/bogota-live-2021-mirror.json",
+      "attribution": "IDECA/UAECD Lote — December 2021, served by CAR, CC BY 4.0. Adapted to canonical WGS84 parcel features.",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "catalogueUrl": "https://datosabiertos.bogota.gov.co/dataset/lote"
     }
   ]
 }

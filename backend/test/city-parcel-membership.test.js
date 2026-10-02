@@ -13,10 +13,15 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createContext, runInContext } from 'node:vm';
 
 const read = relative => readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8');
 const storageSource = read('../../frontend/js/proposals/storage.js');
 const cityConfigSource = read('../../frontend/js/city-config.js');
+const cityContext = { URLSearchParams, console };
+cityContext.window = cityContext;
+runInContext(cityConfigSource, createContext(cityContext));
+const cityManager = cityContext.CityConfigManager;
 
 // The cities the app actually offers, taken from the config rather than restated here — restating
 // them is what let two of them drift out of isInCity in the first place.
@@ -31,7 +36,7 @@ function configuredCityIds() {
 
 // isInCity's own table and the function itself, lifted out of the classic script so the real source
 // is what gets exercised.
-function loadIsInCity() {
+function loadIsInCity(manager = cityManager) {
     const start = storageSource.indexOf('const CITY_PARCEL_ID_PREFIXES');
     expect(start).toBeGreaterThan(-1);
     const marker = '\nfunction isInCity(';
@@ -41,7 +46,7 @@ function loadIsInCity() {
     expect(end).toBeGreaterThan(-1);
     const snippet = storageSource.slice(start, end + 2);
     // eslint-disable-next-line no-new-func
-    return new Function(`${snippet}; return { isInCity, CITY_PARCEL_ID_PREFIXES };`)();
+    return new Function('CityConfigManager', `${snippet}; return { isInCity, CITY_PARCEL_ID_PREFIXES };`)(manager);
 }
 
 const { isInCity, CITY_PARCEL_ID_PREFIXES } = loadIsInCity();
@@ -55,7 +60,8 @@ describe('isInCity covers every configured city', () => {
     });
 
     it('knows a parcel-id space for each of them', () => {
-        const known = new Set([...Object.keys(CITY_PARCEL_ID_PREFIXES), 'buenos_aires']);
+        const configuredPrefixes = cityManager.getAvailableCities().filter(city => city.parcels?.idPrefix).map(city => city.id);
+        const known = new Set([...Object.keys(CITY_PARCEL_ID_PREFIXES), ...configuredPrefixes, 'buenos_aires']);
         const unhandled = configuredCityIds().filter(id => !known.has(id));
         expect(unhandled).toEqual([]);
     });
@@ -70,12 +76,21 @@ describe('isInCity covers every configured city', () => {
             buenos_aires: '001-002-3A',
             colorado: 'US-CO-12345',
             new_york: 'US-NY-1-100',
-            toronto: 'CA-ON-TORONTO-5455132'
+            toronto: 'CA-ON-TORONTO-5455132',
+            bogota: 'CO-BOGOTA-006106001009'
         };
         configuredCityIds().forEach(city => {
             expect(sample[city], `no sample parcel id for configured city ${city}`).toBeTruthy();
             expect(isInCity(sample[city], city), `${city} refuses its own parcel`).toBe(true);
         });
+    });
+
+    it('uses a new source prefix from city config without another proposal-storage entry', () => {
+        const { isInCity: configured } = loadIsInCity({
+            getCityConfig: city => city === 'future_city' ? { parcels: { idPrefix: 'XX-FUTURE-' } } : null
+        });
+        expect(configured('XX-FUTURE-00001', 'future_city')).toBe(true);
+        expect(configured('CO-BOGOTA-006106001009', 'future_city')).toBe(false);
     });
 });
 

@@ -3332,6 +3332,7 @@
             "buenos_aires": "Buenos Aires, Argentina",
             "colorado": "Denver, SAD",
             "new_york": "New York, SAD",
+            "bogota": "Bogotá, Kolumbija",
             "toronto": "Toronto, Kanada",
             "denver": "Denver, SAD",
             "explore": "Istraži"
@@ -3882,6 +3883,7 @@
         "tier": {
             "live": {
                 "short": "U aplikaciji",
+                "datedStreamText": "Čestice se učitavaju dok približavate i pomičete kartu. Podaci su iz {{version}}; današnje granice mogu se razlikovati.",
                 "streamText": "Čestice se učitavaju iz lokalnog izvora dok približavate i pomičete kartu. Susjedne općine mogu koristiti druge podatke.",
                 "text": "Čestice, prijedlozi i 3D ovdje su spremni."
             },

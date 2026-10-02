@@ -26,15 +26,9 @@ function resolveProposalResourceUrl(url) {
     }
 }
 
-// Which national parcel-id space each city draws from. Croatia's cities share ONE countrywide
-// dataset, so they share one prefix and cannot be told apart by id — the same rule Zagreb has
-// always used, now stated once rather than per city.
-//
-// This map must cover every city in city-config.js. A city missing from it does not degrade, it
-// fails silently and totally: isInCity answers false for the city's own parcels, rebuildAppliedFabric
-// then filters out every applied proposal there, and the fabric replays zero of them — so proposals
-// mark themselves applied, cut nothing, and vanish on reload, with no error anywhere. Šibenik and
-// Split sat in exactly that state; a test now asserts this map and the config list stay in step.
+// Imported providers' parcel-id spaces. Executable providers declare their prefix in city config,
+// so adding or changing a source does not require changing proposal storage. Croatia's cities
+// share one national dataset; Buenos Aires also accepts its original bare SMP identifiers.
 const CITY_PARCEL_ID_PREFIXES = {
     zagreb: 'HR-',
     split: 'HR-',
@@ -43,8 +37,7 @@ const CITY_PARCEL_ID_PREFIXES = {
     ljubljana: 'SI-',
     buenos_aires: 'AR-',
     colorado: 'US-CO-',
-    new_york: 'US-NY-',
-    toronto: 'CA-ON-TORONTO-'
+    new_york: 'US-NY-'
 };
 
 function isInCity(parcelId, cityId) {
@@ -60,12 +53,13 @@ function isInCity(parcelId, cityId) {
         return upper.startsWith('AR-') || baPattern.test(upper);
     }
 
-    const prefix = CITY_PARCEL_ID_PREFIXES[city];
+    const configuredPrefix = typeof CityConfigManager !== 'undefined'
+        ? CityConfigManager.getCityConfig?.(city)?.parcels?.idPrefix : null;
+    const prefix = configuredPrefix || CITY_PARCEL_ID_PREFIXES[city];
     if (prefix) return upper.startsWith(prefix);
 
     // Unknown city: refuse the parcel rather than silently letting cross-city
-    // ids through. Every configured city is enumerated above, so reaching
-    // this point means either an unconfigured city or a caller passing junk.
+    // ids through. Reaching this point means an unconfigured city or missing source metadata.
     return false;
 }
 

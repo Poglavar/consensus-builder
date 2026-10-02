@@ -7,7 +7,9 @@ The globe's `source` tier means a verified sample exists; it does not enable a r
 
 Executable providers are declared in `backend/parcels/source-catalog.json`, packaged with the
 backend. The first provider is Toronto's municipal Property Boundary layer; it reads the
-City's ArcGIS service directly and does not import parcel rows into our database.
+City's ArcGIS service directly and does not import parcel rows into our database. Bogotá also
+streams through this gateway, using the explicitly selected December 2021 CAR mirror of
+IDECA/UAECD lots.
 
 ## Runtime contract
 
@@ -23,7 +25,8 @@ The gateway exposes three provider-independent reads:
 Adapters return complete WGS84 Polygon/MultiPolygon FeatureCollections with stable canonical
 `properties.parcelId`, `sourceId` and `sourceParcelId`. Provider fields live under
 `sourceProperties`; app consumers do not depend on their names. ID responses explicitly list
-`absentIds`. Pagination is completed before a cell is published. Limits, timeout, malformed
+`absentIds`. Pagination is completed before a cell is published, including a further read when
+a full GeoJSON page omits ArcGIS's transfer-limit flag. Limits, timeout, malformed
 geometry, repeated pages and upstream errors fail the request; failures never become missing
 parcels or loaded cells.
 
@@ -65,3 +68,32 @@ their own providers. Ownership and building data are not supplied by this parcel
 Source attribution and a licence link are shown on the map. Original evidence and its
 uncertainties remain in `research/toronto.json`; the City's service and Open Data pages are
 linked by the executable descriptor.
+
+## Bogotá verification and scope
+
+The current UAECD endpoint timed out from both the laptop and development server on 2026-10-02.
+The user selected CAR's reachable mirror, whose layer explicitly identifies IDECA version
+12.21 (December 2021). The globe popup and map attribution display this date. There is no
+automatic failover between datasets. The current official catalogue also offers an August 2026
+snapshot, recorded as a candidate for later investigation.
+
+Bogotá's `LotCodigo` is a 12-character string. Canonical IDs keep all leading zeroes:
+`CO-BOGOTA-006106001009`. Provider field case, string SQL literals and projection from the
+mirror's native EPSG:9377 to WGS84 stay inside the adapter. Proposal city membership reads
+the source prefix from city config, so each new live city needs no proposal-storage branch.
+
+The mirror sends an incomplete/mismatched TLS chain. Its provider-scoped HTTPS transport
+adds the GeoTrust intermediate from DigiCert to the normal roots; hostname and certificate
+verification remain enabled. The bundled intermediate expires in July 2030; replacing the
+provider endpoint or its certificate configuration is a catalogue/transport change.
+
+A bounded live sample returned three lots with complete pagination and resolved all three
+again by exact ID. The headed browser loaded 1,159 lots, retained 2,568 after panning and
+reused cached cells on return. An uncached footprint read and server binding of an actual
+streamed lot completed successfully. Evidence, certificate provenance, source scope and the
+bounded raw response are saved in `research/bogota-live-2021-mirror.json` and
+`research/bogota-car-2021-response.json`. No Bogotá parcel table was imported.
+
+The conservative 12 km globe entry area does not establish full district coverage. This source
+contains historical lots, which can contain several properties; it supplies no ownership or
+building data. Neighbouring municipalities such as Soacha need their own sources.

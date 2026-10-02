@@ -13,6 +13,11 @@ const data = JSON.parse(readFileSync(path.join(REPO, 'frontend/data/world-covera
 const coverage = WorldCoverage.create(data);
 
 describe('tierAt', () => {
+    it('opens Bogotá through its source and keeps neighbouring municipalities outside the entry area', () => {
+        expect(coverage.tierAt(4.60975, -74.08175)).toMatchObject({ kind: 'live-city', cityId: 'bogota', sourceId: 'co-bogota-uaecd-lote' });
+        expect(coverage.searchPlaces('bogota')[0]).toMatchObject({ cityId: 'bogota', sourceId: 'co-bogota-uaecd-lote', dataVersion: '2021-12' });
+        expect(coverage.tierAt(4.58, -74.22).cityId).not.toBe('bogota');
+    });
     it('opens the Toronto streaming source and respects its limited entry area', () => {
         expect(coverage.tierAt(43.6535, -79.3825)).toMatchObject({ kind: 'live-city', cityId: 'toronto', sourceId: 'ca-on-toronto-property-boundary' });
         expect(coverage.searchPlaces('toronto')[0]).toMatchObject({ cityId: 'toronto', sourceId: 'ca-on-toronto-property-boundary' });
