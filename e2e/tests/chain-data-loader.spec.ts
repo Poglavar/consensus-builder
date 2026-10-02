@@ -5,6 +5,7 @@ import {
   injectMockEvmWallet,
   injectMockSolanaWallet,
   stubEvmChainDataReads,
+  waitForBlockchainRuntime,
 } from '../helpers/blockchain';
 
 test.describe('Chain data loaders @features', () => {
@@ -63,6 +64,7 @@ test.describe('Chain data loaders @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'metamask');
+    await waitForBlockchainRuntime(page, ['ChainDataLoader', 'ethers']);
     await stubEvmChainDataReads(page);
 
     const parcels = await page.evaluate(async () => {
@@ -105,6 +107,7 @@ test.describe('Chain data loaders @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'metamask');
+    await waitForBlockchainRuntime(page, ['ChainDataLoader', 'ethers']);
     await stubEvmChainDataReads(page);
 
     const proposals = await page.evaluate(async () => {
@@ -126,7 +129,7 @@ test.describe('Chain data loaders @features', () => {
     expect(proposals).toEqual([
       {
         proposalId: '11',
-        parentParcelIds: ['HR-335754-1234'],
+        cadastreParcelIds: ['HR-335754-1234'],
         isConditional: false,
         imageURI: 'ipfs://proposal-1',
         acceptancePossible: true,
@@ -142,7 +145,7 @@ test.describe('Chain data loaders @features', () => {
       },
       {
         proposalId: '12',
-        parentParcelIds: ['HR-335754-1235'],
+        cadastreParcelIds: ['HR-335754-1235'],
         isConditional: true,
         imageURI: 'ipfs://proposal-2',
         acceptancePossible: false,
@@ -167,6 +170,7 @@ test.describe('Chain data loaders @features', () => {
 
     await page.goto('/');
     await waitForMapReady(page);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'solanaWeb3']);
 
     const parcels = await page.evaluate(async () => {
       const globalWindow = window as typeof window & {
@@ -249,6 +253,7 @@ test.describe('Chain data loaders @features', () => {
 
     await page.goto('/');
     await waitForMapReady(page);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'solanaWeb3']);
 
     const proposals = await page.evaluate(async () => {
       const globalWindow = window as typeof window & {
@@ -302,6 +307,8 @@ test.describe('Chain data loaders @features', () => {
           ...encodeU64(10n),
           ...encodeU64(2n),
           ...encodeVecString([]),
+          // The current account layout appends LensCore's Vec<Pubkey> and bump after accepted parcels.
+          ...new Uint8Array(5),
         ];
         return new Uint8Array(bytes);
       };
@@ -335,7 +342,7 @@ test.describe('Chain data loaders @features', () => {
       {
         proposalId: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
         proposalIdNum: '1',
-        parentParcelIds: ['HR-335754-1234'],
+        cadastreParcelIds: ['HR-335754-1234'],
         isConditional: false,
         imageURI: 'ipfs://proposal-image',
         acceptancePossible: true,
@@ -350,6 +357,12 @@ test.describe('Chain data loaders @features', () => {
         owner: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
         acceptedParcels: [],
         lens: [],
+        lensError: null,
+        verdictMayExecute: false,
+        siteHash: null,
+        openGround: false,
+        openGroundCleared: false,
+        layoutVersion: 0,
       },
     ]);
   });

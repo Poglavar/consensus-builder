@@ -7,6 +7,7 @@ import {
   stubEvmAcceptWithdrawSuccess,
   stubEvmProposalMintSuccess,
   stubSolanaBridgeSuccess,
+  waitForBlockchainRuntime,
 } from '../helpers/blockchain';
 
 test.describe('Proposal chain bridge @features', () => {
@@ -114,6 +115,7 @@ test.describe('Proposal chain bridge @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaProposalChainBridge', 'SolanaChainDataLoader', 'solanaWeb3']);
 
     const result = await page.evaluate(async () => {
       (window as typeof window & {
@@ -233,7 +235,7 @@ test.describe('Proposal chain bridge @features', () => {
     });
   });
 
-  test('SolanaProposalChainBridge supports mint, contribute, accept, and withdraw with mocked connection methods', async ({ mockApi: page }) => {
+  test('SolanaProposalChainBridge mints and contributes through confirmed transactions', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, {
       publicKey: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
       providerName: 'phantom',
@@ -242,6 +244,7 @@ test.describe('Proposal chain bridge @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaProposalChainBridge', 'SolanaChainDataLoader', 'solanaWeb3']);
     await stubSolanaBridgeSuccess(page, {
       signature: '5N2o4X1mockSignature',
       cluster: 'devnet',
@@ -255,12 +258,10 @@ test.describe('Proposal chain bridge @features', () => {
         SolanaProposalChainBridge?: {
           mintProposal?: (options: unknown) => Promise<unknown>;
           contributeToProposal?: (options: unknown) => Promise<unknown>;
-          acceptProposal?: (options: unknown) => Promise<unknown>;
-          withdrawAcceptance?: (options: unknown) => Promise<unknown>;
         };
       }).SolanaProposalChainBridge;
 
-      if (!bridge || !bridge.mintProposal || !bridge.contributeToProposal || !bridge.acceptProposal || !bridge.withdrawAcceptance) {
+      if (!bridge || !bridge.mintProposal || !bridge.contributeToProposal) {
         throw new Error('SolanaProposalChainBridge is not fully available');
       }
 
@@ -273,16 +274,7 @@ test.describe('Proposal chain bridge @features', () => {
         proposalId: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
         amount: '0.5',
       });
-      const accepted = await bridge.acceptProposal({
-        proposalId: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-        parcelId: 'HR-335754-1234',
-      });
-      const withdrawn = await bridge.withdrawAcceptance({
-        proposalId: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-        parcelId: 'HR-335754-1234',
-      });
-
-      return { minted, contributed, accepted, withdrawn };
+      return { minted, contributed };
     });
 
     expect(result.minted).toMatchObject({
@@ -301,20 +293,6 @@ test.describe('Proposal chain bridge @features', () => {
       contractAddress: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
       explorerUrl: 'https://explorer.solana.com/tx/5N2o4X1mockSignature?cluster=devnet',
     });
-    expect(result.accepted).toEqual({
-      transactionHash: '5N2o4X1mockSignature',
-      chainId: 'solana-devnet',
-      cluster: 'devnet',
-      contractAddress: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-      explorerUrl: 'https://explorer.solana.com/tx/5N2o4X1mockSignature?cluster=devnet',
-    });
-    expect(result.withdrawn).toEqual({
-      transactionHash: '5N2o4X1mockSignature',
-      chainId: 'solana-devnet',
-      cluster: 'devnet',
-      contractAddress: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-      explorerUrl: 'https://explorer.solana.com/tx/5N2o4X1mockSignature?cluster=devnet',
-    });
   });
 
   test('SolanaProposalChainBridge encodes SOL amounts exactly and simulates before signing', async ({ mockApi: page }) => {
@@ -326,6 +304,7 @@ test.describe('Proposal chain bridge @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaProposalChainBridge', 'SolanaChainDataLoader', 'solanaWeb3']);
     await stubSolanaBridgeSuccess(page, {
       signature: '5N2o4X1mockSignature',
       cluster: 'devnet',
@@ -347,8 +326,6 @@ test.describe('Proposal chain bridge @features', () => {
         SolanaProposalChainBridge?: {
           mintProposal?: (options: unknown) => Promise<unknown>;
           contributeToProposal?: (options: unknown) => Promise<unknown>;
-          acceptProposal?: (options: unknown) => Promise<unknown>;
-          withdrawAcceptance?: (options: unknown) => Promise<unknown>;
           distributeFunds?: (options: unknown) => Promise<unknown>;
         };
       };
@@ -356,7 +333,7 @@ test.describe('Proposal chain bridge @features', () => {
       const bridge = globalWindow.SolanaProposalChainBridge;
       const loader = globalWindow.SolanaChainDataLoader;
       const provider = globalWindow.solanaWalletManager?.getProvider?.();
-      if (!bridge || !bridge.mintProposal || !bridge.contributeToProposal || !bridge.acceptProposal || !bridge.withdrawAcceptance || !bridge.distributeFunds || !loader || !provider) {
+      if (!bridge || !bridge.mintProposal || !bridge.contributeToProposal || !loader || !provider) {
         throw new Error('Solana bridge test dependencies are not available');
       }
 
@@ -441,29 +418,12 @@ test.describe('Proposal chain bridge @features', () => {
         proposalId: proposalProgramId,
         amount: '1.25',
       });
-      await bridge.acceptProposal({
-        proposalId: proposalProgramId,
-        parcelId: 'HR-335754-1234',
-      });
-      await bridge.withdrawAcceptance({
-        proposalId: proposalProgramId,
-        parcelId: 'HR-335754-1234',
-      });
-      await bridge.distributeFunds({
-        proposalId: proposalProgramId,
-        acceptedParcels: ['HR-335754-1234'],
-        recipientAccounts: {
-          'HR-335754-1234': walletAddress,
-        },
-      });
-
       return {
         events,
         mintLamports: readMintLamports(simulatedInstructions[0].data),
         contributeLamports: readContributeLamports(simulatedInstructions[1].data),
-        acceptKeys: simulatedInstructions[2].keys,
-        withdrawKeys: simulatedInstructions[3].keys,
-        distributeKeys: simulatedInstructions[4].keys,
+        contributeKeys: simulatedInstructions[1].keys,
+        proposalProgramId,
         parcelProgramId,
         walletAddress,
       };
@@ -471,14 +431,8 @@ test.describe('Proposal chain bridge @features', () => {
 
     expect(result.mintLamports).toBe('500000000');
     expect(result.contributeLamports).toBe('1250000000');
-    expect(result.events.slice(0, 4)).toEqual(['simulate', 'sign', 'send', 'confirm']);
-    expect(result.acceptKeys).toHaveLength(4);
-    expect(result.withdrawKeys).toHaveLength(4);
-    expect(result.acceptKeys[2]).toBe(result.parcelProgramId);
-    expect(result.withdrawKeys[2]).toBe(result.parcelProgramId);
-    expect(result.distributeKeys).toHaveLength(4);
-    expect(result.distributeKeys[1]).toBe(result.parcelProgramId);
-    expect(result.distributeKeys[3]).toBe(result.walletAddress);
+    expect(result.events).toEqual(['simulate', 'sign', 'send', 'confirm', 'simulate', 'sign', 'send', 'confirm']);
+    expect(result.contributeKeys).toEqual([result.proposalProgramId, result.walletAddress]);
   });
 
   test('mintParcelSolana short-circuits when the parcel is already minted and caches the result', async ({ mockApi: page }) => {

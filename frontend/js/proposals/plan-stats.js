@@ -72,7 +72,9 @@
         const read = (id, fallback, scale = 1) => {
             const input = modal ? modal.querySelector(id) : null;
             const value = Number(input && input.value);
-            return Number.isFinite(value) && value > 0 ? value * scale : fallback;
+            const minimum = input && input.min !== '' && input.min !== undefined ? Number(input.min) : 0;
+            return input && input.value.trim() !== '' && Number.isFinite(value) && value >= minimum
+                ? value * scale : fallback;
         };
         return {
             appliedOnly: true,

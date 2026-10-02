@@ -8,11 +8,14 @@ const require = createRequire(import.meta.url);
 const {
     resolveDrawShortcut,
     resolveOwnerDisplayName,
+    resolveOwnerLabel,
+    genericOwnerKind,
     normalizePlotOwners,
     plotIsAssigned,
     readjustmentInputFeatures
 } = require('../../frontend/js/reparcellization-ui-state.js');
 const source = readFileSync(new URL('../../frontend/js/reparcellization.js', import.meta.url), 'utf8');
+const locale = code => JSON.parse(readFileSync(new URL(`../../frontend/i18n/${code}.json`, import.meta.url), 'utf8'));
 
 describe('saved readjustment inputs', () => {
     const original = { type: 'Feature', properties: { parcelId: 'HR-335550-1791/69', owner: 'Original owner' } };
@@ -57,12 +60,33 @@ describe('land-readjustment UI state', () => {
             .toBe('Ada Lovelace');
     });
 
+    it('localizes known generic owner labels while retaining source-stable identities', () => {
+        const samples = {
+            en: { private: 'Private owner', public: 'Public land' },
+            es: { private: 'Propietario privado', public: 'Suelo público' },
+            hr: { private: 'Privatni vlasnik', public: 'Javno zemljište' },
+            sr: { private: 'Privatni vlasnik', public: 'Javno zemljište' }
+        };
+        for (const [language, expected] of Object.entries(samples)) {
+            const dictionary = locale(language);
+            const translate = (key, fallback) => key.split('.').reduce((value, part) => value?.[part], dictionary) || fallback;
+            const privateOwner = resolveOwnerLabel('Privatni vlasnik', 'Owner of parcel', translate);
+            const publicLand = resolveOwnerLabel('Public land', 'Owner of parcel', translate);
+            expect(privateOwner.displayName).toBe(expected.private);
+            expect(publicLand.displayName).toBe(expected.public);
+            expect(privateOwner.identityName).toBe('Privatni vlasnik');
+            expect(publicLand.identityName).toBe('Public land');
+        }
+        expect(resolveOwnerLabel('REPUBLIKA HRVATSKA', 'Owner', (_key, fallback) => fallback))
+            .toEqual({ displayName: 'REPUBLIKA HRVATSKA', identityName: 'REPUBLIKA HRVATSKA' });
+        expect(genericOwnerKind('Republika Hrvatska')).toBeNull();
+    });
+
     it('wires the pure decisions into icon-free shortcut-labelled controls and the owner ledger', () => {
         expect(source).toContain('data-reparcel-undo>${t(\'reparcellization.modal.drawUndo\', \'Undo point\')} (U)</button>');
         expect(source).toContain('data-reparcel-finish>${t(\'reparcellization.modal.drawFinish\', \'Finish plot\')} (F)</button>');
         expect(source).toContain('data-reparcel-cancel-draw>${t(\'reparcellization.modal.drawCancel\', \'Cancel\')} (C)</button>');
         expect(source).toContain('const action = resolveDrawShortcut({');
-        expect(source).toContain('resolveOwnerDisplayName(slot.displayName,');
     });
 });
 

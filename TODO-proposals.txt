@@ -411,3 +411,15 @@ The "from me" proposals are labeled "Accepted" but "Not funded", which is why th
 
 Conceptual: should we either 1) attach a lens to the proposal when people offer to fund or 2) make each offer to fund a separate "to me" counter-proposal with its own lens?
 How do we deal with multiple offers? Do we lock the proposal after it is funded?
+
+## Regression status — 2026-10-02
+
+Verified in the headed regression suite: forking an applied proposal leaves the source applied and
+rebuilds the replacement from its selected live site; proposal browsing preserves the source record.
+Readjustment forks retain the per-replacement-parcel ownership lock, and draft prefill preserves the
+selected conditional term. Proposal geometry edits record erase and drag changes so Undo restores
+the removed shape or its original position (`proposal-browsing.spec.ts`, `proposal-terms.spec.ts`,
+`proposal-editor.spec.ts`; fast draft and edit-history characterizations also pass).
+
+Still open: the broader mobile readjustment redesign, single-owner readjustment flow, ownership
+transfer settlement, and chained proposal sharing described above are not closed by those regressions.

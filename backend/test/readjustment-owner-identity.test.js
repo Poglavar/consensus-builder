@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const source = read('../../frontend/js/reparcellization.js');
 const { normalizeOwnerSlots } = require('../../frontend/js/reparcellization-shares.js');
-const { resolveOwnerDisplayName, readjustmentInputFeatures } = require('../../frontend/js/reparcellization-ui-state.js');
+const { resolveOwnerLabel, readjustmentInputFeatures } = require('../../frontend/js/reparcellization-ui-state.js');
 const contributions = require('../../frontend/js/proposals/readjustment-contributions.js');
 
 // English strings with {{param}} interpolation — enough for the two keys these functions read.
@@ -40,7 +40,7 @@ function loadEditorOwnerIdentity() {
     const state = {};
     // eslint-disable-next-line no-new-func
     const factory = new Function(
-        't', 'resolveOwnerDisplayName', 'window', 'computeFeatureArea', 'getParcelLandValue',
+        't', 'resolveOwnerLabel', 'window', 'computeFeatureArea', 'getParcelLandValue',
         'ensureParcelOwnerSlots', 'normalizeOwnerSlots', 'state', 'pickOwnerColor',
         'liveSelectionFeatures',
         `${body} return { ownerIdentityForSlot, buildOwnerShares };`
@@ -62,7 +62,7 @@ function loadEditorOwnerIdentity() {
     };
     const api = factory(
         t,
-        resolveOwnerDisplayName,
+        resolveOwnerLabel,
         editorWindow,
         feature => Number(feature?.properties?.calculatedArea) || 0,
         (feature, area) => Number(feature?.properties?.estimatedMarketPrice) || (Number(area) || 0) * 100,
@@ -144,6 +144,15 @@ describe('who an owner is, in a readjustment', () => {
         const a = ownerIdentityForSlot(realSlot('GRAD ŠIBENIK'), 'HR-1-100', 'Owner of 100');
         const b = ownerIdentityForSlot(realSlot('JAVNO DOBRO U OPĆOJ UPORABI - GRAD ŠIBENIK'), 'HR-1-100', 'Owner of 100');
         expect(a.ownerKey).not.toBe(b.ownerKey);
+    });
+
+    it('localizes generic labels without changing their persisted owner key', () => {
+        const first = ownerIdentityForSlot(realSlot('Privatni vlasnik'), 'HR-1-100', 'Owner of 100');
+        const second = ownerIdentityForSlot(realSlot('Privatni vlasnik'), 'HR-1-101', 'Owner of 101');
+        expect(first.displayName).toBe('Private owner');
+        expect(second.displayName).toBe('Private owner');
+        expect(first.ownerKey).toBe(second.ownerKey);
+        expect(first.ownerKey).toBe(contributions.ownerKeyOf({ name: 'Privatni vlasnik' }));
     });
 
     it('does NOT merge unreadable parcels — an unknown owner is unknown per parcel', () => {

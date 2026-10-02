@@ -156,6 +156,7 @@
     function removeDecoration(type, index) {
         const list = state.decorations?.[type];
         if (!Array.isArray(list) || index < 0 || index >= list.length) return;
+        recordHistory();
         list.splice(index, 1);
         render();
     }
@@ -256,6 +257,7 @@
             pane: EDITOR_PANE,
             zIndexOffset: options.zIndexOffset || 500
         }).addTo(group);
+        marker.on('dragstart', recordHistory);
         marker.on('dragend', () => {
             const next = marker.getLatLng();
             const nextCoord = [next.lng, next.lat];

@@ -5468,6 +5468,7 @@
         disposeScene();
         // Restore the flag after dispose
         pendingIntroAutoRotate = preserveAutoRotate;
+        isTransitioning3D = true;
 
         const width = Math.max(1, threeContainer.clientWidth || 800);
         const height = Math.max(1, threeContainer.clientHeight || 600);
@@ -5624,6 +5625,15 @@
         const start = performance.now();
         const duration = 700; // ms
         function tiltStep(now) {
+            // A shared scene can arrive while the initial tilt is running.
+            // Finish entry at its saved pose instead of overwriting it on the next frame.
+            if (pendingRestoreView && applyGeoCameraView(pendingRestoreView)) {
+                pendingRestoreView = null;
+                pendingIntroAutoRotate = false;
+                renderer.render(scene, camera);
+                startLoop();
+                return;
+            }
             const t = Math.min(1, (now - start) / duration);
             const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // easeInOutQuad
             const pitch = finalPitchRad * ease;
@@ -6618,7 +6628,16 @@
             return true;
         } catch (_) { return false; }
     }
-    window.applyThree3DGeoView = applyGeoCameraView;
+    window.applyThree3DGeoView = function (view) {
+        if (!view || !isActive) return false;
+        if (isTransitioning3D) {
+            pendingRestoreView = view;
+            pendingIntroAutoRotate = false;
+            return true;
+        }
+        stopIntroAutoRotate();
+        return applyGeoCameraView(view);
+    };
 
     // Capture the current 3D scene as a PNG data URL, for the AI photorealistic render.
     // The renderer is created without preserveDrawingBuffer, so we force a fresh synchronous

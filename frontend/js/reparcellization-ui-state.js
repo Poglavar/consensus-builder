@@ -21,6 +21,45 @@
         return !name || reserved.has(name.toLocaleLowerCase()) ? String(fallbackName || 'Owner') : name;
     }
 
+    const GENERIC_OWNER_LABELS = {
+        private: new Set([
+            'private owner', 'private individual', 'propietario privado', 'propietario particular', 'titular privado',
+            'privatni vlasnik', 'privatni posjednik', 'privatna osoba', 'приватни власник', 'приватни поседник', 'приватна особа'
+        ]),
+        public: new Set([
+            'public land', 'public property', 'suelo publico', 'dominio publico', 'javno zemljiste', 'javna zemlja',
+            'javno dobro', 'javna svojina', 'јавно земљиште', 'јавна својина'
+        ])
+    };
+
+    function genericOwnerKind(rawName) {
+        const normalized = String(rawName || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .toLocaleLowerCase().replace(/[.!,:;]+$/g, '').replace(/\s+/g, ' ');
+        if (GENERIC_OWNER_LABELS.private.has(normalized)) return 'private';
+        if (GENERIC_OWNER_LABELS.public.has(normalized)) return 'public';
+        return null;
+    }
+
+    // Translate known source-level generic labels for display, while returning a locale-independent
+    // name for identity derivation. Actual names remain verbatim.
+    function resolveOwnerLabel(rawName, fallbackName, translate, reservedLabels = []) {
+        const kind = genericOwnerKind(rawName);
+        if (kind) {
+            const key = kind === 'public' ? 'reparcellization.modal.publicLand' : 'common.privateOwner';
+            const fallback = kind === 'public' ? 'Public land' : 'Private owner';
+            return {
+                displayName: typeof translate === 'function' ? translate(key, fallback) : fallback,
+                identityName: String(rawName || '').trim()
+            };
+        }
+        const name = resolveOwnerDisplayName(rawName, fallbackName, reservedLabels);
+        const sourceName = String(rawName || '').trim();
+        const reserved = new Set(['unassigned', ...(Array.isArray(reservedLabels) ? reservedLabels : [reservedLabels])]
+            .map(value => String(value || '').trim().toLocaleLowerCase())
+            .filter(Boolean));
+        return { displayName: name, identityName: sourceName && !reserved.has(sourceName.toLocaleLowerCase()) ? sourceName : name };
+    }
+
     // A plot carries its owner two ways: the singular ownerKey/displayName (exactly one owner) and
     // owners[] (shares split between several). Both are written on save, and the editor keeps them
     // in lockstep — but a plan authored anywhere else (an imported UPU, an older save) may carry
@@ -98,7 +137,8 @@
     }
 
     const api = {
-        resolveDrawShortcut, resolveOwnerDisplayName, normalizePlotOwners, plotIsAssigned, readjustmentInputFeatures,
+        resolveDrawShortcut, resolveOwnerDisplayName, resolveOwnerLabel, genericOwnerKind,
+        normalizePlotOwners, plotIsAssigned, readjustmentInputFeatures,
         safePlanColor, ownerLegendCellHtml, cashOfferInputHtml, newPlotOwnerHtml
     };
     if (typeof window !== 'undefined') window.__reparcellizationUiState = api;

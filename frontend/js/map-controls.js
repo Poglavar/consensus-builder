@@ -686,6 +686,11 @@ function updateParcelsCheckboxByZoom(within) {
         if (parcelsSection) {
             const parcelCheckboxes = parcelsSection.querySelectorAll('input[type="checkbox"]');
             parcelCheckboxes.forEach(cb => {
+                // Claims counts are not implemented; zoom must preserve their disabled gate.
+                if (cb.id === 'showClaimsCounts') {
+                    cb.disabled = true;
+                    return;
+                }
                 if (cb.id === 'showAdParcelsCheckbox') {
                     cb.disabled = false;
                     return;

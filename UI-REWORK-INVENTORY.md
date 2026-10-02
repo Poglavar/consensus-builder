@@ -206,6 +206,14 @@ initBlockchainSync); road/corridor scripts; import map (three 0.184.0 jsDelivr, 
 esm.sh) + window.whenThreeReady(); more scripts; lazy 3D stack loader (__ensure3DModeStack) + mode
 shim; area-monitor/*, unsaved-work-guard, boot-ready.js (removes body.app-loading).
 
+## Behavioral coverage update — 2026-10-02
+
+The 250-case headed regression suite passed. It includes the Activity simulation running-dot flow,
+road cross-section/lane edits, track-gauge edits, parcel ownership rendering, proposal forks and
+terms, and map-driven designer controls. Generic private/public owner labels are covered in headed
+English and Croatian UI flows; the pure locale-dictionary checks cover English, Spanish, Croatian,
+and Serbian. Spanish and Serbian UI rendering have not had headed verification in this pass.
+
 ## 11. three.js
 
 Not vendored: import map → jsDelivr three@0.184.0. window.whenThreeReady() dynamically imports three,

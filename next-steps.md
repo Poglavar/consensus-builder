@@ -1,7 +1,17 @@
+# Immediate release follow-up (2026-10-02)
+
+1. Run one fresh-profile production journey: explore parcels/buildings, create a proposal, share it, open the link in a second profile, apply and reload. Include mobile and a real devnet wallet action; fixture-backed tests do not prove live service integration.
+2. Submit `https://urbangametheory.xyz/sitemap.xml` in Search Console and check indexing of `/urban-planning.html`. Keep all visible planning copy vendor-free; competitor search terms belong only in HTML descriptions.
+3. Publish a short screen recording and a few posts showing one complete planning workflow each, with a direct map/share link and a clear invitation to try it.
+4. Observe real usage and failures, then prioritize the first-run/mobile issues below. Keep `e2e/feature-inventory.json` and headed behavioral coverage current for every new user action.
+5. Finish the live attester-service/schema setup, human-wallet and outside-participant evidence before the hackathon submission. Preserve pending court markets honestly until matching post-close evidence arrives.
+
+The remaining notes below are the longer-term backlog; completed work is labeled explicitly.
+
 # Hackathon next steps
 
 What's left, roughly in priority order. Each item says why it matters, what it buys, and how big it is.
-Last updated 2026-09-23, after deploying `97122e6` and upgrading both devnet programs.
+Last updated 2026-10-02 on `colosseum-worlds-fair`. Current regression evidence: 6,366 fast tests passed (6 existing skips); 250/250 in the complete headed run, followed by 30 affected headed checks covering the final fixes. The suite now collects 253 tests. Release identity is published in `/release.json` and the API release manifest.
 
 ## Must do for the submission
 
@@ -41,11 +51,8 @@ The verified-facts listing now reports 2 unique payers; the paid-proposal listin
 - **Payoff:** medium for the hackathon, required before anything beyond devnet.
 - **Effort:** medium. Half a day, mostly build time.
 
-### 6. Decide how land forks relate to their original
-"Fork with changed land" is built and live, but it still behaves like a counterproposal: the submit button says "Create replacement proposal", and applying a fork parks the original even when the land barely overlaps. Designs (parks, buildings) also carry their geometry over unchanged instead of being re-fitted to the new parcels.
-- **Why:** a fork on different land is arguably a competing proposal, not a replacement; parking the original may surprise its author.
-- **Payoff:** medium. It makes competing proposals over overlapping land coherent.
-- **Effort:** small once decided; the lineage record (`landFork`) already carries the relation and counts.
+### 6. Changed-land forks — completed
+Changed-land forks retain the original as provenance without superseding or unapplying it. Site-first forks rebuild their site, cadastre references and structure geometry from the newly selected ground. Regression tests cover these behaviors; readjustment drafts also preserve per-slice ownership and the saved conditional choice.
 
 ## After the hackathon
 
@@ -102,5 +109,4 @@ Found during the headed test pass; each needs a decision before it is built or r
   the user bubble is squeezed at 320px; many in-app modals still register their own Escape listener (a
   shared modal helper would end that bug class); the How-to guide screenshots still show the old sidebar.
 - **Not yet tested:** real wallet signing, publishing to the backend, AI image generation (costs money),
-  geolocation success, owner-offer and bids cards (no local data), and the Playwright suites (updated for
-  the new UI, never run).
+  geolocation success, owner-offer and bids cards (no local data), and live wallet/RPC transactions. The headed suites now exercise the UI with HTTP/RPC fixtures; real publishing, paid AI generation, wallet signing and external services still need a separate live smoke run.

@@ -59,6 +59,50 @@ describe('proposal replacement supersession', () => {
         expect(replacement.supersedesProposalIds).toBeUndefined();
     });
 
+    it('does not treat a disjoint land fork as an alternative to its applied source', () => {
+        const source = {
+            proposalId: 'source', applied: true, goal: 'park',
+            structureProposal: { kind: 'park', geometry: turf.polygon([[[15.9, 45.8], [15.901, 45.8], [15.901, 45.801], [15.9, 45.801], [15.9, 45.8]]]) }
+        };
+        const fork = {
+            proposalId: 'fork', sourceProposalId: 'source', landFork: { relation: 'disjoint' }, applied: true, goal: 'park',
+            structureProposal: { kind: 'park', geometry: turf.polygon([[[16.0, 45.8], [16.001, 45.8], [16.001, 45.801], [16.0, 45.801], [16.0, 45.8]]]) }
+        };
+        const records = [source, fork];
+
+        expect([...proposalReplacementFamilyIds(fork, records)]).toEqual(['fork']);
+        expect([...proposalReplacementFamilyIds(source, records)]).toEqual(['source']);
+        expect(collectAppliedProposalAlternatives(fork, records, {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        })).toEqual([]);
+        expect(collectAppliedProposalAlternatives(source, records, {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        })).toEqual([]);
+
+        const overlappingFork = {
+            ...fork,
+            proposalId: 'overlapping-fork',
+            structureProposal: { kind: 'park', geometry: source.structureProposal.geometry }
+        };
+        expect(collectAppliedProposalAlternatives(overlappingFork, [source, overlappingFork], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        }).map(record => record.proposalId)).toEqual(['source']);
+        expect(source.applied).toBe(true);
+    });
+
+    it('keeps an applied source standing for a changed-land counterproposal', () => {
+        const source = { proposalId: 'source', applied: true, appliedAt: 'before', buildingProposal: {} };
+        const replacement = {
+            proposalId: 'fork', sourceProposalId: 'source', applied: true, buildingProposal: {},
+            landFork: { originParcelIds: ['HR-1'], relation: 'disjoint' }
+        };
+        const records = new Map([['source', source], ['fork', replacement]]);
+        const before = structuredClone(source);
+
+        expect(commitReplacementSupersession(replacement, 'fork', id => records.get(id))).toBeNull();
+        expect(source).toEqual(before);
+    });
+
     it('leaves an already-unapplied source alone', () => {
         const source = { proposalId: 'source', applied: false };
         const replacement = { proposalId: 'replacement', sourceProposalId: 'source' };

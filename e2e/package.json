@@ -10,7 +10,8 @@
     "test:smoke": "playwright test --grep @smoke",
     "test:core": "playwright test --grep @core",
     "test:features": "playwright test --grep @features",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "check:features": "node scripts/check-feature-inventory.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",

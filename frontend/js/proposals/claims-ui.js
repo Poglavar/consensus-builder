@@ -27,6 +27,11 @@
     function openBaseParcel(parcelId) {
         try {
             const id = String(parcelId);
+            // The ownership anchor takes over the dock. Close the proposal before
+            // opening its ground, otherwise the proposal card covers the parcel tabs.
+            if (typeof global.hideProposalDetailsPanel === 'function') {
+                global.hideProposalDetailsPanel();
+            }
             const liveFeature = global.LiveParcelFabric?.get?.(id) || null;
 
             // A cadastral anchor is selectable only when it is itself a live parcel.

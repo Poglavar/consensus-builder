@@ -423,7 +423,7 @@
             const isUnknown = /^unknown owner$/i.test(rawName);
             const name = (isPlaceholder || isUnknown || !rawName)
                 ? fallbackLabel
-                : rawName;
+                : localizeGenericOwnerName(rawName, fallbackLabel);
 
             // Handle both actualShareText and percentageShare (backend format)
             // Always prefer percentageShare if it exists, as it's the authoritative source from backend
@@ -459,6 +459,16 @@
             </div>
         `;
         }).join('');
+    }
+
+    function localizeGenericOwnerName(rawName, fallbackName) {
+        const helper = global.__reparcellizationUiState?.resolveOwnerLabel;
+        if (typeof helper !== 'function') return rawName;
+        const translate = (key, fallback) => {
+            const value = global.i18n?.t?.(key);
+            return value && value !== key ? value : fallback;
+        };
+        return helper(rawName, fallbackName, translate).displayName;
     }
 
     async function fetchOwnersFromBackend(parcelId) {

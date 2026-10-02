@@ -210,6 +210,7 @@
         "logout": "Cerrar sesión",
         "unknown": "Desconocido",
         "unknownOwner": "Propietario desconocido",
+        "privateOwner": "Propietario privado",
         "userFallback": "Usuario",
         "close": "Cerrar",
         "cancel": "Cancelar",
@@ -321,7 +322,7 @@
     },
     "sidebar": {
         "header": {
-            "title": "Urban Game Theory",
+            "title": "Consensus Builder",
             "devBadge": "Desarrollo",
             "debugBadge": "Depuración",
             "aiBadge": "Amigable con IA",
@@ -685,7 +686,7 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "Acerca de",
-            "aboutParagraph": "Urban Game Theory es un mercado para cambios reales del suelo: personas y agentes proponen, financian y pronostican cambios en parcelas reales, mientras los registros públicos resuelven qué ocurrió. Abre la <a href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a href=\"/deck.html\">presentación</a> o consulta <a href=\"roadmap.html\" target=\"_blank\">la hoja de ruta</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> es una herramienta gratuita de planificación urbana en el mapa, creada por Urban Game Theory. Hyperstition: Markets for Possible Cities es su proyecto de hackathon. Explora parcelas reales, compara propuestas comunitarias de zonificación y desarrollo, y suma apoyo de las personas afectadas. Descubre el <a href=\"/urban-planning.html\">proceso de planificación urbana abierta</a>, abre la <a href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a href=\"/deck.html\">presentación</a> o consulta <a href=\"roadmap.html\" target=\"_blank\">la hoja de ruta</a>.",
             "instructionsTitle": "Empieza aquí",
             "instructionsParagraph": "<strong>Dibuja el cambio y después construye consenso.</strong> Al terminar un diseño se crea una propuesta local ya aplicada. Examínala, retírala del mapa, compártela o crea una variante editable cuando deban cambiar el diseño o las condiciones. Lee la <a href=\"how-to-use.html\" target=\"_blank\">guía paso a paso</a> o consulta qué funciona hoy y qué viene después en la <a href=\"roadmap.html\" target=\"_blank\">hoja de ruta</a>.",
             "advancedTitle": "Opciones avanzadas",
@@ -1495,9 +1496,9 @@
             "close": "Cerrar introducción",
             "before": "Parcelas existentes",
             "after": "Manzana propuesta",
-            "eyebrow": "Las ciudades cambian parcela a parcela",
+            "eyebrow": "Consensus Builder · Las ciudades cambian parcela a parcela",
             "title": "Da forma a una ciudad en la que podamos ponernos de acuerdo",
-            "lead": "Consensus Builder convierte ideas sobre el suelo y el desarrollo en propuestas que las personas afectadas pueden ver, comparar, apoyar y aceptar.",
+            "lead": "Consensus Builder es software gratuito de planificación urbana para explorar parcelas reales y crear propuestas comunitarias de zonificación y desarrollo. Compara ideas en el mapa, comparte un plan y suma apoyo de las personas afectadas. Hyperstition es su proyecto de hackathon para una planificación urbana abierta.",
             "groundTitle": "Empieza por el territorio real",
             "groundBody": "Explora parcelas catastrales, edificios, calles y propiedad.",
             "proposeTitle": "Haz visible el cambio",
@@ -1507,7 +1508,7 @@
             "cta": "Explorar el mapa"
         },
         "welcome": {
-            "kicker": "Urban Game Theory",
+            "kicker": "Consensus Builder · Urban Game Theory",
             "title": "Un mercado para cambios reales del suelo",
             "statement": "Personas y agentes proponen, financian y pronostican cambios en parcelas reales, mientras los registros públicos resuelven qué ocurrió.",
             "flowLabel": "Flujo del producto",

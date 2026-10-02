@@ -145,3 +145,7 @@ UNFINISHED
 - budgets are going negative
 -  Fix how we purge parcels
 - if a turn finishes mid flight it will disappear/reset the bubble... we need a duplicate/detached bubble for the flight
+
+Status clarification (2026-10-02): the simulation running dot on the Activity button is implemented
+and passed its headed check (`map-shell.spec.ts`). The unread-count circle requested above is a
+different username-bubble feature and remains open.

@@ -17,8 +17,20 @@ export const test = base.extend<{
   mockApi: Page;
   /** Page with clean storage (localStorage + IndexedDB cleared) */
   cleanPage: Page;
+  uncaughtPageErrors: void;
 }>({
   seedCity: ['new_york', { option: true }],
+
+  // Includes fresh tabs used to open shared links, and tests that use `page` directly.
+  uncaughtPageErrors: [async ({ context }, use) => {
+    const errors: string[] = [];
+    const watch = (page: Page) => page.on('pageerror', error => errors.push(error.message));
+    context.pages().forEach(watch);
+    context.on('page', watch);
+    await use();
+    context.off('page', watch);
+    assertNoPageErrors(errors);
+  }, { auto: true }],
 
   mockApi: async ({ page, seedCity }, use) => {
     await mockAllApiRoutes(page);

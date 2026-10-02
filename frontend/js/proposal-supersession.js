@@ -43,6 +43,9 @@
             adjacency.get(right).add(left);
         };
         (Array.isArray(records) ? records : []).forEach(record => {
+            // Keep fork provenance in the record, but do not make the source a toggleable
+            // replacement-family member. The relation must be ignored in both directions.
+            if (record?.landFork) return;
             const id = proposalRecordId(record);
             const sourceId = proposalReplacementSourceId(record);
             if (id && sourceId) link(id, sourceId);
@@ -147,6 +150,10 @@
 
     function commitReplacementSupersession(replacement, replacementId, findProposal) {
         if (!replacement || typeof findProposal !== 'function') return null;
+        // A changed-land fork is a counterproposal, not a replacement that takes over the source's
+        // applied state. Keep the source standing; ordinary copied/replacement proposals still
+        // use the supersession path below.
+        if (replacement.landFork) return null;
         const sourceId = proposalReplacementSourceId(replacement);
         const resolvedReplacementId = proposalRecordId(replacement, replacementId);
         if (!sourceId || !resolvedReplacementId || sourceId === resolvedReplacementId) return null;

@@ -695,8 +695,8 @@ opens; game mode off greys only the settings and titles the section "(paused)"; 
 ("Open activity explorer (55)", 159 events) and Actors open; reduced-motion emulation → dot without
 animation; hr labels; explore city (Tokyo) has no simulation section and its palette keeps only the
 explorer/actors/status-log commands; 3D lock disables and restores the section; share-plan mode
-locks the sheet; no page errors. **Not run**: Playwright (map-shell.spec.ts updated: the Game row
-dropped from the sheet table, a new simulation/running-dot test).
+locks the sheet; no page errors. On 2026-10-02 the `map-shell.spec.ts` simulation/running-dot scenario
+also passed in the 250-case headed regression suite.
 
 Full suite: 428 files (1 skipped) / 5874 tests passed, 2 skipped.
 

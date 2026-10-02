@@ -8,28 +8,26 @@ and which parties or systems must be trusted.
 
 | Program | Address | Role | Schema |
 |---|---|---|---|
-| ParcelNFT | [`4zad…kV1`](https://explorer.solana.com/address/4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1?cluster=devnet) | Parcel anchors: v1 (deployed) mints a first-come certificate with an `owner`; v2 (built) mints it ownerless | [`parcel_nft.json`](../blockchain/solana/idl/parcel_nft.json) |
-| ProposalNFT | [`3WsV…xbg`](https://explorer.solana.com/address/3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg?cluster=devnet) | Proposal lifecycle; v1 (deployed) accepts by certificate holder, v2 (built) by attested owner signature | [`proposal_nft.json`](../blockchain/solana/idl/proposal_nft.json) |
-| ProposalMarket | [`GDYn…YDRB`](https://explorer.solana.com/address/GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB?cluster=devnet) | Parimutuel YES/NO stake and claims; v2 (built) also resolves Expired → NO | [`proposal_market.json`](../blockchain/solana/idl/proposal_market.json) |
+| ParcelNFT | [`4zad…kV1`](https://explorer.solana.com/address/4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1?cluster=devnet) | v2 deployed 2026-10-01 UTC: ownerless parcel anchors | [`parcel_nft.json`](../blockchain/solana/idl/parcel_nft.json) |
+| ProposalNFT | [`3WsV…xbg`](https://explorer.solana.com/address/3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg?cluster=devnet) | v3 deployed 2026-10-01 UTC: attested owner acceptance, verdict settlement, and parcel-optional site proposals | [`proposal_nft.json`](../blockchain/solana/idl/proposal_nft.json) |
+| ProposalMarket | [`GDYn…YDRB`](https://explorer.solana.com/address/GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB?cluster=devnet) | v2 deployed 2026-10-01 UTC: Expired resolves NO; proposal-scoped lens check for external markets | [`proposal_market.json`](../blockchain/solana/idl/proposal_market.json) |
 | ProposalPledge | [`1jES…rp6g`](https://explorer.solana.com/address/1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g?cluster=devnet) | Escrowed donations and revocable soft pledges | [`proposal_pledge.json`](../blockchain/solana/idl/proposal_pledge.json) |
 
 The canonical address book is [`frontend/contracts/addresses.json`](../frontend/contracts/addresses.json),
 mirrored in [`blockchain/solana/Anchor.toml`](../blockchain/solana/Anchor.toml), each program's
 `declare_id!`, and the generated IDLs. Contract tests fail when these representations diverge.
 
-The public hackathon manifest also pins the exact mutable devnet deployments inspected on
-2026-09-23 (the two hackathon programs) and 2026-09-30 (the two older ones, with the first two re-read
-unchanged), rather than treating a stable program address as a version:
+The public proof manifest pins the current mutable devnet deployments. Rechecked on 2026-10-02, the current executable account data was fetched and matched to the built v2/v3 binaries. These
+are SHA-256 hashes of the complete deployed executable bytes:
 
-| Program | ProgramData | Last deployed slot | Deployed binary SHA-256 |
-|---|---|---:|---|
-| ProposalPledge | `EtV7…SyZQ` | `503098918` | `649c6fda…9d053c` |
-| ProposalMarket | `AGmZ…qhx7` | `503099080` | `3039d28d…ba91c0e` |
-| ProposalNFT | `GS6T…9RMP` | `501070500` | `977590f5…e9e1b3` |
-| ParcelNFT | `6Fgh…JbTn` | `450670421` | `34a0d0bb…824959` |
+| Program version | ProgramData | Slot | Finalized upgrade transaction | Deployed binary SHA-256 |
+|---|---|---:|---|---|
+| ParcelNFT v2 | `6FghjCzxbcwxeAFfDTQcUzk8RzJCQXS6d5fZMLxfJbTn` | `506424160` | [4TteJm7846WAB41aetkeou6tfETNGyaSpPL5vAX2DN3iNmfbcx8f3NM9zmodhkuZKbgPg7cfhY8i8qFGcF1qYWmX](https://explorer.solana.com/tx/4TteJm7846WAB41aetkeou6tfETNGyaSpPL5vAX2DN3iNmfbcx8f3NM9zmodhkuZKbgPg7cfhY8i8qFGcF1qYWmX?cluster=devnet) | `80e3bd056f96eeafc381aa1a13624cc08a27684f4b40516143bb622f197d1719` |
+| ProposalMarket v2 | `AGmZusPm3FuiPkgMBY5dG1ZMfXKptqDjG3aMrgTpqhx7` | `506423834` | [5qkDUvJLge3MHedxFHZedTzEmJJDhkfTmbJEhEBYPbR5SiFxjzTZAb6xq2NXBKCb6rRwTYGThDbuwPuEZZe3zGbG](https://explorer.solana.com/tx/5qkDUvJLge3MHedxFHZedTzEmJJDhkfTmbJEhEBYPbR5SiFxjzTZAb6xq2NXBKCb6rRwTYGThDbuwPuEZZe3zGbG?cluster=devnet) | `3b797f63e285bdd4df953e55b4a9217c65d0d7fe1c1aeaf34ce3ceaa37fee62c` |
+| ProposalNFT v3 | `GS6Tjof9kJCSUPLGJU2qDQH7VA1rTmJi6TdF1Fnn9RMP` | `506424114` | [XyGxp9USG2qtiF7CDkVsqukHzew2joRSZEbowrZU7pweduYkgSmneGe8nk6oSJp1DYpHvWR2hFQPoCATH8x85oW](https://explorer.solana.com/tx/XyGxp9USG2qtiF7CDkVsqukHzew2joRSZEbowrZU7pweduYkgSmneGe8nk6oSJp1DYpHvWR2hFQPoCATH8x85oW?cluster=devnet) | `14b0a11546bca4d0df55a0f903513eaed3e1e6578a0505f0e00960cc2033623d` |
 
-All four remain upgradeable by `AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ`. These hashes identify
-what devnet executed; they do not claim a reproducible source-to-binary build or an audited program.
+Earlier transaction proofs below and in `HACKATHON.md` remain historical evidence for the v1 flows
+they exercised; they do not verify the upgraded lens or parcel-optional instructions.
 The 2026-09-23 upgrades (commit `361cf41`) made every market and donation vault `init_if_needed`, so
 pre-creating a vault's predictable token account can no longer block a proposal's donations or market.
 Live proof (`blockchain/solana/scripts/vault-precreate-proof.mjs --live`): a second wallet
@@ -40,9 +38,7 @@ and the [market](https://explorer.solana.com/tx/398Z39Qmps26Z9iV4rn3K9RGHaD2ysZa
 ProposalPledge, ProposalMarket and ParcelNFT also publish their current Anchor IDL on-chain
 (`4PJB…Zb7X`, `66R6…MJZ`, `EjG4…RRSL`); `anchor idl fetch <program> --provider.cluster devnet`
 returns JSON equal to `blockchain/solana/idl/*.json`, whose SHA-256s the manifest pins as `idlSha256`.
-ProposalNFT's on-chain IDL (`EXYu…w3zq`) is stale: it predates `cancel_and_refund` and
-`distribute_funds`, which the deployed binary implements, so the manifest pins no `idlSha256` for it
-and `blockchain/solana/idl/proposal_nft.json` is the one to use.
+ProposalNFT's on-chain IDL (`EXYu…w3zq`) was upgraded to the v3 interface; the current manifest pins its `idlSha256` alongside `blockchain/solana/idl/proposal_nft.json`.
 
 The devnet USDC mint used by the demo is
 [`4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`](https://explorer.solana.com/address/4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU?cluster=devnet).
@@ -211,17 +207,17 @@ markets. Both match the fixed parser in `ExternalMarket`; dynamic adapter loadin
 ## Lens model and the trust boundary
 
 Design of record: [`lens-model.md`](../lens-model.md). Program detail:
-[`blockchain/solana/README.md`](../blockchain/solana/README.md#lens-model-v2--built-and-tested-on-localnet-not-deployed-to-devnet-yet).
+[`blockchain/solana/README.md`](../blockchain/solana/README.md#lens-model-v2--deployed-to-devnet-verified-2026-10-02).
 
 ### Deployed versus built
 
-| Part | State on 2026-10-01 |
+| Part | State on 2026-10-02 |
 |---|---|
-| ParcelNFT, ProposalNFT, ProposalMarket **v1** | **Deployed on devnet** (table above). v1 is what every devnet transaction so far ran. |
-| ParcelNFT, ProposalNFT, ProposalMarket **v2** (lens model) | **Built, not deployed.** Tested on localnet (136 tests, SAS mocked at its real program id). The checked-in IDLs already describe v2, so v2 clients fail against devnet until each program is upgraded. |
-| Program ids | **Unchanged.** v2 ships as an in-place upgrade of the same four addresses; no new program is created. |
-| `ParcelOwnership-v1`, `ProposalVerdict-v1` SAS schemas | Defined (parsers, `GET /lenses/schemas`); registration on devnet is migration step 1. |
-| Attester directory, reference lens member, picker, member console, MCP tools | Built in this branch; they become meaningful once v2 is deployed. |
+| ParcelNFT **v2**, ProposalMarket **v2**, ProposalNFT **v3** | **Deployed on devnet** at the existing program IDs; current executable bytes were verified against the corresponding built binaries on 2026-10-02. ProposalNFT v3 includes the v2 attested-owner behavior. |
+| Program ids | **Unchanged.** These are in-place upgrades at the existing four addresses; no new program was created. |
+| `ParcelOwnership-v1`, `ProposalVerdict-v1` SAS schemas | Defined in code and parsed by the programs. Devnet registration has not been independently verified. |
+| Attester directory, reference lens member, picker, member console, MCP tools | Implemented in this branch. Their presence does not prove schema registration or a completed real owner-attestation journey. |
+| Real attested-owner economic journey | **Not yet verified end to end.** A real-human ownership attestation, owner-signed acceptance, and resulting payment/distribution have not been demonstrated as a complete devnet journey. |
 
 ### Vocabulary
 
@@ -303,15 +299,16 @@ ProposalVerdict-v1:  string proposalAccount, string verdict, string evidenceRef,
 
 - The current market trusts the deployed ProposalNFT program and Solana consensus. Resolution is
   permissionless, but the market accepts only ProposalNFT `Executed` as YES and `Cancelled` as NO.
-- **Deployed v1:** `Executed` means the signer holding each parcel's on-chain certificate accepted.
-  Certificates are first-come mints with no authority behind them, so on devnet today a proposer can
-  decide its own ProposalNFT-status market. Treat v1 execution as a demonstration of the lifecycle,
-  not as evidence of land-owner consent.
-- **Built v2 (not deployed):** `Executed` means every attested owner signed, each under an
+- **Historical v1 behavior:** before the 2026-10-02 upgrade, `Executed` meant the signer holding
+  each parcel's on-chain certificate accepted. Earlier v1 transaction proofs remain demonstrations
+  of that lifecycle, not evidence of land-owner consent. The deployed v2/v3 code instead requires
+  attested-owner signatures for parcel consent.
+- **Deployed v2/v3 code:** `Executed` means every attested owner signed, each under an
   ownership attestation from a member of the proposal's own lens. The trust therefore moves to the
   lens the proposer chose: a reader must judge the listed members, not the program. A lens made of
   the proposer's own key proves nothing, which is why the directory, the picker and the audit
-  surface who is in each lens.
+  surface who is in each lens. The deployed program bytes are verified, but schema registration and
+  a real attested-owner journey remain unverified.
 - The new `ExternalMarket` code trusts Solana consensus, the SAS program, one committed credential,
   schema and issuer, plus the exact parcel/operation mapping in the hashed recipe. Any caller can
   resolve, but cannot select the outcome; the attestation payload selects it.
@@ -319,10 +316,8 @@ ProposalVerdict-v1:  string proposalAccount, string verdict, string evidenceRef,
   market's exact schema is accepted. Existing V1 markets accept the four-string court payload. V2
   adds `sourceObservedAt`; the upgraded source enforces that it is not earlier than market close or
   later than resolution. The program records the evidence address and full-account SHA-256.
-- On deployed v1 an app-level `Expired` label is not terminal on-chain. Until execution or
-  cancellation, market stakes can remain locked indefinitely because the program has no deadline.
-  Built v2 makes Expired an on-chain state reachable by a lens member's `expired` verdict, and the
-  market resolves it NO.
+- Legacy v1 proposal state has no on-chain Expired transition. In the deployed v2/v3 code, a lens
+  member's `expired` verdict makes Expired terminal, and the deployed market v2 resolves it NO.
 - Donations move devnet USDC into program escrow immediately; cancellation or expiry lets each
   donor refund their receipts. Soft pledges hold no funds and remain revocable until fulfilled after
   execution.
@@ -388,11 +383,14 @@ registered, the devnet market program is upgraded, the dedicated court attester 
 `Atps…kaNQ` was then opened and staked on both sides with a 2026-09-22 21:00 UTC close. The earlier
 attestations cannot resolve it; only a matching record officially published after that close can.
 
-**Built, not deployed:** lens model v2 of ParcelNFT, ProposalNFT and ProposalMarket (136 localnet
-tests), the two lens SAS schemas, the attester directory, the reference lens member service, the
-lens picker and member console, and the MCP lens tools. Deployment is one program at a time under
-the same ids, after which the attested canonical case runs and the audit's lens checks
-(`attested_execution`, `no_self_lens`, `attester_diversity`) move from advisory to required.
+**Deployed programs; live lens journey pending:** ParcelNFT v2, ProposalMarket v2, and ProposalNFT
+v3 are live at their existing IDs, and their deployed binary hashes are recorded above. The
+`ParcelOwnership-v1` and `ProposalVerdict-v1` lens schemas' devnet registration has not been
+independently verified. No real human-owner attestation → signed acceptance → economic distribution
+journey has been demonstrated end to end. The attested canonical case and audit checks
+(`attested_execution`, `no_self_lens`, `attester_diversity`) remain outstanding. The reference member
+service, lens picker, member console, and MCP lens tools are implemented; they are not evidence that
+the service is active in production or that a live owner flow has completed.
 
 **Next:** complete the open prospective court market from a later matching record, then
 package the existing proposal, funding, market and verified-fact contracts for more autonomous agent

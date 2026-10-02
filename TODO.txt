@@ -1,3 +1,12 @@
+Release follow-up — 2026-10-02 (current priorities: next-steps.md)
++ Expand headed coverage to all inventoried UI commands and planning workflows; 253 collected tests, complete 250/250 baseline and 30 affected final checks passed.
++ Fix 12 app regressions uncovered by coverage, plus circular simulation play/pause and localized generic ownership labels.
++ Add search metadata, vendor-free visible planning page, sitemap and robots discovery.
+- Production fresh-profile/mobile share-and-apply journey, with real API/RPC and normal human wallet.
+- Submit sitemap and inspect Search Console indexing; measure search impressions before further SEO changes.
+- Record short workflow demos and begin public posts inviting real users to try a shared plan.
+- Final human-wallet/outside-payer evidence and hackathon submission proof manifest.
+
 ------------
 TODO Legend:
 - to do

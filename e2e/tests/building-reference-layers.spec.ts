@@ -20,10 +20,20 @@ const GDI_FEATURE = {
   geometry: {
     type: 'Polygon',
     coordinates: [[
-      [15.9700, 45.8100], [15.9704, 45.8100], [15.9704, 45.8103], [15.9700, 45.8103], [15.9700, 45.8100],
+      [15.98208, 45.80008], [15.98224, 45.80008], [15.98224, 45.80022], [15.98208, 45.80022], [15.98208, 45.80008],
     ]],
   },
 };
+
+async function installSurveyRoutes(page: import('@playwright/test').Page) {
+  await page.route('**/buildings**', async route => {
+    const url = new URL(route.request().url());
+    if (url.pathname !== '/buildings') return route.continue();
+    const source = url.searchParams.get('source');
+    const feature = source === 'dgu' ? DGU_FEATURE : GDI_FEATURE;
+    return route.fulfill({ json: { type: 'FeatureCollection', source, truncated: false, features: [feature] } });
+  });
+}
 
 // The same building as the CADASTRE has it — different key space entirely. If this ever ends up in
 // the pool, detection is scanning the wrong survey again.
@@ -69,8 +79,8 @@ test.describe('Building reference layers @features', () => {
       };
       const applied = (records: any[]) => ([{
         proposalId: 'p1',
-        status: 'applied',
-        roadProposal: { status: 'applied', definition: { demolishedBuildings: records } },
+        applied: true,
+        roadProposal: { definition: { demolishedBuildings: records } },
       }]);
 
       const razed = w.collectCarveRecords(applied([{ id: '61075', geometry: footprint }]));
@@ -91,89 +101,76 @@ test.describe('Building reference layers @features', () => {
   });
 
   test('detection reads the POOL, so cutting is independent of every layer toggle', async ({ mockApi: page }) => {
+    await installSurveyRoutes(page);
     await page.goto('/?city=zg');
     await waitForMapReady(page);
+    await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
+    await page.locator('#layers-button').click();
+    const gdi = page.locator('#showBuildings');
+    const dgu = page.locator('#showBuildingsDgu');
+    await gdi.check();
+    await dgu.check();
+    await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.object_id === 61075))).toBe(true);
 
-    const result = await page.evaluate(([gdi]) => {
-      const w = window as any;
-      // Put one GDI building in the pool — the DATA — and rebuild the display layer from it.
-      w.buildingFeaturePool = [gdi];
-
-      const detectedWith = (gdiOn: boolean, dguOn: boolean) => {
-        const gdiBox = document.getElementById('showBuildings') as HTMLInputElement;
-        const dguBox = document.getElementById('showBuildingsDgu') as HTMLInputElement;
-        gdiBox.checked = gdiOn;
-        dguBox.checked = dguOn;
-        w.rebuildBuildingLayerFromPool();
-        // A corridor ring straight through the building.
-        const ring = [
-          { lat: 45.8099, lng: 15.9698 },
-          { lat: 45.8099, lng: 15.9706 },
-          { lat: 45.8104, lng: 15.9706 },
-          { lat: 45.8104, lng: 15.9698 },
-        ];
-        return w.detectLoadedBuildingTunnelIntersections(ring).map((hit: any) => hit.id);
-      };
-
-      return {
-        bothOff: detectedWith(false, false),
-        gdiOnly: detectedWith(true, false),
-        dguOnly: detectedWith(false, true),
-        both: detectedWith(true, true),
-        // And the layer really was hidden in the bothOff case — i.e. the toggle does something.
-        layerHiddenWhenOff: (() => {
-          const gdiBox = document.getElementById('showBuildings') as HTMLInputElement;
-          gdiBox.checked = false;
-          w.rebuildBuildingLayerFromPool();
-          return !w.map.hasLayer(w.buildingLayer);
-        })(),
-      };
-    }, [GDI_FEATURE]);
+    const detect = () => page.evaluate(() => {
+      const ring = [
+        { lat: 45.79998, lng: 15.98198 },
+        { lat: 45.79998, lng: 15.98234 },
+        { lat: 45.80030, lng: 15.98234 },
+        { lat: 45.80030, lng: 15.98198 },
+      ];
+      return (window as any).detectLoadedBuildingTunnelIntersections(ring).map((hit: any) => hit.id);
+    });
+    const both = await detect();
+    await gdi.uncheck();
+    await expect.poll(() => page.evaluate(() => !(window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
+    const dguOnly = await detect();
+    await dgu.uncheck();
+    const bothOff = await detect();
+    await gdi.check();
+    const gdiOnly = await detect();
 
     // The corridor cuts the same building no matter what is switched on. This is the assertion the
     // whole refactor exists for: detection used to read window.buildingLayer, so unticking a box
     // literally removed buildings from the set that could be demolished.
-    expect(result.bothOff).toEqual(['61075']);
-    expect(result.gdiOnly).toEqual(['61075']);
-    expect(result.dguOnly).toEqual(['61075']);
-    expect(result.both).toEqual(['61075']);
-    expect(result.layerHiddenWhenOff).toBe(true);
+    expect(bothOff).toEqual(['61075']);
+    expect(gdiOnly).toEqual(['61075']);
+    expect(dguOnly).toEqual(['61075']);
+    expect(both).toEqual(['61075']);
   });
 
-  test('both reference layers can be on at once — that is how you see the surveys disagree', async ({ mockApi: page }) => {
+  test('both reference layers load and render returned survey geometry when checked', async ({ mockApi: page }) => {
+    await installSurveyRoutes(page);
     await page.goto('/?city=zg');
     await waitForMapReady(page);
+    await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
+    await page.locator('#layers-button').click();
+    await page.locator('#showBuildings').check();
+    await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.object_id === 61075))).toBe(true);
+    await expect.poll(() => page.evaluate(() => {
+      let found = false;
+      (window as any).map.eachLayer((layer: any) => layer.eachLayer?.((child: any) => { if (child.feature?.properties?.object_id === 61075) found = true; }));
+      return found;
+    })).toBe(true);
 
-    const result = await page.evaluate(() => {
-      const gdi = document.getElementById('showBuildings') as HTMLInputElement | null;
-      const dgu = document.getElementById('showBuildingsDgu') as HTMLInputElement | null;
-      if (!gdi || !dgu) return { ok: false };
-      gdi.checked = true;
-      gdi.dispatchEvent(new Event('change'));
-      dgu.checked = true;
-      dgu.dispatchEvent(new Event('change'));
-      return { ok: true, gdiOn: gdi.checked, dguOn: dgu.checked };
-    });
-
-    expect(result.ok).toBe(true);
-    expect(result.gdiOn).toBe(true);
-    expect(result.dguOn).toBe(true);
+    await page.locator('#showBuildingsDgu').check();
+    await expect.poll(() => page.evaluate(() => (window as any).dguBuildingLayer?.getLayers?.().some((layer: any) => layer.feature?.properties?.zgrada_id === 999888))).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).dguBuildingLayer))).toBe(true);
   });
 
-  test('B opens the picker every time, prefilled with what is on the map', async ({ mockApi: page }) => {
+  test('B opens the picker prefilled from the live survey checkboxes', async ({ mockApi: page }) => {
+    await installSurveyRoutes(page);
     await page.goto('/?city=zg');
     await waitForMapReady(page);
+    await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
+    await page.locator('#layers-button').click();
+    await page.locator('#showBuildings').check();
+    await page.locator('#showBuildingsDgu').uncheck();
+    await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
 
-    // GDI on, DGU off: the dialog must open showing exactly that, not a fresh guess.
-    await page.evaluate(() => {
-      const gdi = document.getElementById('showBuildings') as HTMLInputElement;
-      gdi.checked = true;
-      gdi.dispatchEvent(new Event('change'));
-      const dgu = document.getElementById('showBuildingsDgu') as HTMLInputElement;
-      dgu.checked = false;
-      dgu.dispatchEvent(new Event('change'));
-    });
-
+    // Move keyboard focus out of the survey checkbox and close the layers sheet, as a user would
+    // before invoking the global B shortcut.
+    await page.locator('#layers-button').click();
     await page.keyboard.press('b');
     const dialog = page.locator('.building-layers-dialog');
     await expect(dialog).toBeVisible();
@@ -191,19 +188,20 @@ test.describe('Building reference layers @features', () => {
     await expect(dialog).toHaveCount(0);
   });
 
-  test('Enter applies the checked surveys; Escape leaves the map alone', async ({ mockApi: page }) => {
+  test('Enter applies checked surveys; Escape discards dialog edits', async ({ mockApi: page }) => {
+    await installSurveyRoutes(page);
     await page.goto('/?city=zg');
     await waitForMapReady(page);
+    await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
+    await page.locator('#layers-button').click();
+    await page.locator('#showBuildings').uncheck();
+    await page.locator('#showBuildingsDgu').uncheck();
+    await page.locator('#layers-button').click();
 
     const layerState = () => page.evaluate(() => ({
       gdi: (document.getElementById('showBuildings') as HTMLInputElement).checked,
       dgu: (document.getElementById('showBuildingsDgu') as HTMLInputElement).checked,
     }));
-
-    await page.evaluate(() => {
-      (document.getElementById('showBuildings') as HTMLInputElement).checked = false;
-      (document.getElementById('showBuildingsDgu') as HTMLInputElement).checked = false;
-    });
 
     // Tick GDI and DGU, confirm with Enter — the action button is focused, so Enter is Show.
     await page.keyboard.press('b');

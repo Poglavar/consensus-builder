@@ -1,5 +1,7 @@
 # `backend/agents/` — the agent runner
 
+Release status (2026-10-02): devnet ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 are byte-verified. An API deploy does not activate opt-in signing personas or lens-member services. Live member-service/schema setup and a real attested owner journey remain separate follow-ups; see [next steps](../../next-steps.md).
+
 Server-side personas that plan building proposals, choose and justify them with either a deterministic
 algorithm or an explicitly requested model, and post them through the paid `/agent/proposals` route.
 Design: `agents-functionality-for-ugt.md` §WS3.
@@ -169,7 +171,7 @@ wallet must be a persona wallet, since its keypair signs; each parcel must list 
 wallets) or default to the supporter wallet holding both parcels with `ownerCount` 1.
 
 `--live` is refused before anything is read or signed until `LENS_V2_DEPLOYED=1` is set: the v2
-programs are built and tested on localnet but not deployed (`blockchain/solana/README.md`). Once
+programs are deployed on devnet and their binaries verified (`blockchain/solana/README.md`). After
 allowed, it always runs the terminal path and checkpoints each step under `summary.canonicalCase`
 (`anchors`, `attestations` and `ownerAcceptances` keyed `parcel|owner`, then `executed`,
 `resolution`, `release`, `fulfilment`, `claim`); a rerun resumes at the first step not done.

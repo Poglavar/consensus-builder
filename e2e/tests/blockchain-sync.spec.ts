@@ -4,6 +4,7 @@ import {
   connectWalletByConnectorId,
   injectMockEvmWallet,
   injectMockSolanaWallet,
+  waitForBlockchainRuntime,
 } from '../helpers/blockchain';
 
 test.describe('Blockchain sync @features', () => {
@@ -17,6 +18,7 @@ test.describe('Blockchain sync @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'metamask');
+    await waitForBlockchainRuntime(page, ['BlockchainSync', 'ethers', 'walletManager']);
 
     const result = await page.evaluate(async () => {
       const globalWindow = window as typeof window & {
@@ -228,8 +230,7 @@ test.describe('Blockchain sync @features', () => {
     });
     expect(result.addedProposals[0]).toMatchObject({
       proposalId: '31337-0x8a791620dd6260079bf849dc5567adc3f2fdc318-7',
-      parentParcelIds: ['HR-335754-1234'],
-      status: 'Active',
+      cadastreParcelIds: ['HR-335754-1234'],
       isMinted: true,
       nft: {
         chain: '31337',
@@ -248,6 +249,7 @@ test.describe('Blockchain sync @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaBlockchainSync', 'SolanaChainDataLoader', 'solanaWeb3']);
 
     const result = await page.evaluate(async () => {
       const globalWindow = window as typeof window & {
@@ -284,7 +286,7 @@ test.describe('Blockchain sync @features', () => {
 
       const existingProposal = {
         proposalId: 'local-solana-proposal',
-        parentParcelIds: ['HR-335754-1234'],
+        cadastreParcelIds: ['HR-335754-1234'],
       };
 
       globalWindow.getCityConfig = () => ({
@@ -329,7 +331,7 @@ test.describe('Blockchain sync @features', () => {
       });
       globalWindow.SolanaChainDataLoader.parseProposalAccount = (_data: Uint8Array, address: string) => ({
         proposalId: address,
-        parentParcelIds: ['HR-335754-1234'],
+        cadastreParcelIds: ['HR-335754-1234'],
         isConditional: false,
         imageURI: 'ipfs://solana-proposal',
         acceptancePossible: true,
@@ -370,7 +372,7 @@ test.describe('Blockchain sync @features', () => {
     expect(result.metrics.importCalls).toHaveLength(1);
     expect(result.metrics.importCalls[0]).toMatchObject({
       proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
-      parentParcelIds: ['HR-335754-1234'],
+      cadastreParcelIds: ['HR-335754-1234'],
       status: 'Active',
       chainId: 'solana-devnet',
       contractAddress: '3wsvs6lklo4yslalvxkdwud37fccje2yu9fvh1nmfxbg',

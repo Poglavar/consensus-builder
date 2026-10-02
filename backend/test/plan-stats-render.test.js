@@ -236,6 +236,18 @@ describe('a plan on open ground', () => {
 });
 
 describe('changing an assumption', () => {
+    it('accepts zero housing share without falling back to the default', async () => {
+        const window = openDialog(plan);
+        await window.showPlanStatsModal();
+        const floorArea = slot(window, 'floor-area');
+        const input = window.document.getElementById('plan-stats-housing-share');
+        input.value = '0';
+        input.listeners.input.forEach(fn => fn());
+        expect(digits(slot(window, 'apartments'))).toBe(0);
+        expect(digits(slot(window, 'people'))).toBe(0);
+        expect(slot(window, 'floor-area')).toBe(floorArea);
+    });
+
     it('moves every derived figure at once', async () => {
         const window = openDialog(plan);
         await window.showPlanStatsModal();

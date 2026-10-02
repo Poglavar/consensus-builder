@@ -5,8 +5,7 @@ import { waitForMapReady } from '../helpers/app';
  * Game mode. gameState.save()/load() go through PersistentStorage (IndexedDB) and executeGameTurn()
  * drives agents against the live map, so both need a browser.
  *
- * Two `typeof x === 'function'` roll-calls were dropped from this file — every function they named
- * is now called for real by the two tests below.
+ * These checks exercise persistence through IndexedDB and a real simulation turn.
  */
 
 test.describe('Game mode @features', () => {
@@ -16,9 +15,7 @@ test.describe('Game mode @features', () => {
 
     const result = await page.evaluate(async () => {
       const w = window as any;
-      if (!w.gameState || typeof w.gameState.save !== 'function') return { skip: true };
-
-      w.gameState.addLogEntry('E2E test log entry', false);
+      w.gameState.addLogEntry('E2E test log entry', false, { action: { type: 'e2e-save-round-trip' } });
       const turnBefore = w.gameState.currentTurn;
       w.gameState.save();
 
@@ -27,15 +24,11 @@ test.describe('Game mode @features', () => {
       w.gameState.load();
 
       return {
-        skip: false,
         turnRestored: w.gameState.currentTurn === turnBefore,
-        logHasEntry: w.gameState.gameLog.some((e: any) =>
-          (e.text || e.message || '').includes('E2E test log entry')
-        ),
+        logHasEntry: w.gameState.gameLog.some((e: any) => e.messageHtml?.includes('E2E test log entry')),
       };
     });
 
-    test.skip(result.skip === true, 'Game save/load not available');
     expect(result.turnRestored).toBe(true);
     expect(result.logHasEntry).toBe(true);
   });
@@ -46,27 +39,13 @@ test.describe('Game mode @features', () => {
 
     const result = await page.evaluate(async () => {
       const w = window as any;
-      if (typeof w.executeGameTurn !== 'function' || !w.gameState) return { skip: true };
-
-      // Initialize game if needed
-      if (typeof w.initializeGame === 'function' && !w.gameState.isInitialized) {
-        try { w.initializeGame(); } catch (_) {}
-      }
+      if (!w.gameState.isInitialized) w.initializeGame();
 
       const turnBefore = w.gameState.currentTurn;
-      try {
-        await w.executeGameTurn();
-      } catch (_) {
-        // Turn may fail if agents/parcels not fully set up in static mode
-        return { skip: false, advanced: w.gameState.currentTurn > turnBefore, error: true };
-      }
-      return { skip: false, advanced: w.gameState.currentTurn > turnBefore, error: false };
+      await w.executeGameTurn();
+      return { advanced: w.gameState.currentTurn > turnBefore };
     });
 
-    test.skip(result.skip === true, 'Game turn execution not available');
-    // Turn should advance even if agent actions fail
-    if (!result.error) {
-      expect(result.advanced).toBe(true);
-    }
+    expect(result.advanced).toBe(true);
   });
 });

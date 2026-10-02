@@ -2251,7 +2251,7 @@ async function settleProposalSupport(idOrHash, action) {
             releaseDonations: 'Escrowed donations were released to the proposal owner.'
         };
         const message = messages[action] || 'Proposal support updated successfully.';
-        showProposalAlertMessage('proposal_boost_success', message, {}, linkOptions);
+        showProposalAlertMessage(`proposal_support_${action}_success`, message, {}, linkOptions);
         await recordHumanProposalSupport({
             wallet, action, proposalId: proposal.proposalId || proposal.tokenId || nftInfo.tokenId,
             result, message: `${proposalSupportActor(wallet).name}: ${message}`

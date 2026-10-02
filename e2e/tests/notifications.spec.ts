@@ -14,7 +14,7 @@ test.describe('Notification and alert system @features', () => {
     await waitForMapReady(page);
 
     const hasFunction = await page.evaluate(() => typeof (window as any).showStyledAlert === 'function');
-    test.skip(!hasFunction, 'showStyledAlert not loaded');
+
 
     // Fire the alert — it returns a promise (resolved when user confirms)
     await page.evaluate(() => {
@@ -46,7 +46,7 @@ test.describe('Notification and alert system @features', () => {
     await waitForMapReady(page);
 
     const hasFunction = await page.evaluate(() => typeof (window as any).showStyledAlert === 'function');
-    test.skip(!hasFunction, 'showStyledAlert not loaded');
+
 
     await page.evaluate(() => {
       (window as any).showStyledAlert('Dismissable alert');
@@ -75,7 +75,7 @@ test.describe('Notification and alert system @features', () => {
 
     const result = await page.evaluate(() => {
       const w = window as any;
-      if (typeof w.updateStatus !== 'function') return { skip: true };
+
       w.updateStatus('E2E test status message');
       // Find status element — typically #status or .status-bar
       const statusEl = document.getElementById('status') ||
@@ -88,7 +88,6 @@ test.describe('Notification and alert system @features', () => {
       };
     });
 
-    test.skip(result.skip === true, 'updateStatus not loaded');
     // The message must actually reach the status bar. (This used to end in `expect(true).toBe(true)`,
     // so a missing status element passed silently.)
     expect(result.found).toBe(true);

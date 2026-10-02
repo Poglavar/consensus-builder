@@ -46,6 +46,23 @@ type MockEvmLoaderOptions = {
   proposalContractAddress?: string;
 };
 
+/** Wait for the app's versioned local scripts and on-demand wallet vendors to finish loading. */
+export async function waitForBlockchainRuntime(page: Page, globals: string[] = []): Promise<void> {
+  await page.evaluate(async () => {
+    const ensureWalletVendors = (window as typeof window & {
+      ensureWalletVendors?: () => Promise<boolean>;
+    }).ensureWalletVendors;
+    if (ensureWalletVendors) await ensureWalletVendors();
+  });
+
+  if (globals.length) {
+    await page.waitForFunction((requiredGlobals) => {
+      const runtime = window as typeof window & Record<string, unknown>;
+      return requiredGlobals.every((name) => runtime[name] !== undefined && runtime[name] !== null);
+    }, globals);
+  }
+}
+
 export async function injectMockEvmWallet(page: Page, options: MockEvmWalletOptions = {}): Promise<void> {
   await page.addInitScript((initOptions: MockEvmWalletOptions) => {
     const account = initOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
@@ -422,7 +439,7 @@ export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBri
     globalWindow.SolanaChainDataLoader.parseProposalAccount = () => ({
       acceptancePossible: true,
       status: 'Active',
-      parentParcelIds: ['HR-335754-1234'],
+      cadastreParcelIds: ['HR-335754-1234'],
       acceptedParcels: [],
     });
     globalWindow.SolanaChainDataLoader.getParcelMintStatus = async () => ({

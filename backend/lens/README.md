@@ -1,5 +1,7 @@
 # Reference lens member
 
+Release status (2026-10-02): supporting devnet program upgrades are byte-verified. Production member services and schema registration are separate from the API/frontend deploy and have not been verified live in this release. Complete that setup and a real owner-signed journey before treating fixture-backed tests as attestation evidence.
+
 A **lens** is the list of public keys a proposal names at mint: whose attestations that proposal's
 contract will accept. A **lens member** is one key in such a list, a notary, a court, a cadastre
 office, a permit register or an imagery service, that states facts about parcels and proposals as
@@ -69,8 +71,7 @@ Without `--owners` the registry is read from `consensus.lens_devnet_owner` via t
 1. Register the credential and the two schemas under the member's key (dry run first):
    `node scripts/register-lens-schemas.mjs --keypair <member.json> --schemas ownership,verdict`,
    then the same with `--live`. Use the same `--credential-name` as the member (default `LensMember`).
-2. `npm install sas-lib` in `backend/` (not a dependency by default; the live issuer loads it on demand
-   and says so if it is missing).
+2. Run `npm ci` in `backend/`; `sas-lib` is a declared dependency, loaded by the live issuer.
 3. Set `X402_NETWORK`, `X402_FACILITATOR_URL`, `X402_PAY_TO` (and CDP credentials for the CDP
    facilitator), optionally `LENS_OWNERSHIP_PRICE_USDC` (default `0.01`) and `LENS_OPERATOR_TOKEN`.
    Without the x402 settings a live member answers 503 on `POST /lens/ownership` instead of issuing free.

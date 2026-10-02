@@ -1,3 +1,11 @@
+# Current priorities — 2026-10-02
+
+See [next-steps.md](next-steps.md) for the ordered release/hackathon plan and [TEST.md](TEST.md) for current evidence and limits. The historical ideas below remain a backlog, not release blockers.
+
+Completed: broad headed coverage, 12 app regression fixes, circular simulation control, generic-owner localization, and crawlable planning/search entry points. Visible product copy must remain vendor-free.
+
+Next: a fresh-profile production share/apply/reload and human-wallet journey; Search Console sitemap submission/indexing; short demos and public posts; outside participants; mobile first-run refinements based on actual feedback. Keep external-service coverage separate from fixture-backed UI coverage.
+
 Notes for [urbangametheory.xyz](http://urbangametheory.xyz)
 
 - (You) \-\> you, and align it vertically

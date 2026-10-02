@@ -17,7 +17,7 @@ test.describe('Multi-city data adapters @core', () => {
 
     const available = await page.evaluate(() => {
       const w = window as any;
-      if (!w.CityConfigManager?.getAvailableCities) return { skip: true };
+
       const cities = w.CityConfigManager.getAvailableCities();
       return {
         skip: false,
@@ -26,7 +26,6 @@ test.describe('Multi-city data adapters @core', () => {
       };
     });
 
-    test.skip(available.skip === true, 'CityConfigManager not available');
     expect(available.count).toBeGreaterThanOrEqual(2);
   });
 
@@ -61,7 +60,7 @@ test.describe('Multi-city data adapters @core', () => {
 
     const centers = await page.evaluate(() => {
       const w = window as any;
-      if (!w.CityConfigManager?.getAvailableCities) return { skip: true };
+
       const cities = w.CityConfigManager.getAvailableCities();
       return {
         skip: false,
@@ -72,7 +71,6 @@ test.describe('Multi-city data adapters @core', () => {
       };
     });
 
-    test.skip(centers.skip === true, 'City configs not available');
     // All centers should be unique (no two cities at same coordinates)
     const coords = centers.centers.map((c: any) => `${c.center[0]},${c.center[1]}`);
     const uniqueCoords = new Set(coords);

@@ -216,6 +216,12 @@ function onProposalOwnerOfferChange() {
     const on = !!(checkbox && checkbox.checked && !checkbox.disabled);
     window.proposalOwnerOfferMode = on;
     if (explain) explain.hidden = !on;
+    // An owner offering unchanged land still changes ownership. Initialize the
+    // visible ownership facet so submission and the stored goal agree.
+    if (on && !getSelectedProposalTool()) {
+        setProposalOwnershipMode('third-party');
+        syncProposalFacets();
+    }
 }
 
 function resolveProposalAuthorName() {

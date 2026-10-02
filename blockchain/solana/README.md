@@ -13,11 +13,13 @@ Solana equivalents of the EVM ParcelNFT and ProposalNFT contracts.
 - **crates/sas_attestation**: byte-level SAS account readers shared by proposal_nft and
   proposal_market (not a program)
 
-## Lens model v2 — built and tested on localnet, NOT deployed to devnet yet
+## Lens model v2 — deployed to devnet; verified 2026-10-02
 
-Design of record: [`lens-model.md`](../../lens-model.md). The checked-in IDLs in `idl/` describe
-this v2 source; the programs live on devnet are still v1 until each is upgraded (one at a time,
-see below). Clients built from these IDLs will fail against devnet until then.
+Design of record: [`lens-model.md`](../../lens-model.md). The checked-in IDLs describe the deployed
+source: ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 (v3 includes the v2 lens acceptance and
+verdict behavior). Their current executable bytes were fetched from devnet and matched the builds;
+transaction signatures and hashes are in [`docs/protocol.md`](../../docs/protocol.md). This verifies
+program deployment, not registration of the lens SAS schemas or a complete human-owner journey.
 
 ### What changed
 
@@ -112,7 +114,7 @@ as SAS does. Rebuild it with `cargo build-sbf --manifest-path tests/mock_sas/Car
 `tests/mock_sas/target/deploy/mock_sas.so` to `tests/fixtures/`. Never deploy it. Tests read the
 validator's clock (`chainNow`), never `Date.now()`, because the localnet clock drifts from the host.
 
-## proposal_nft v3, parcel-optional proposals — built and tested on localnet, NOT deployed
+## proposal_nft v3, parcel-optional proposals — deployed to devnet; verified 2026-10-02
 
 Design: [`PARCEL-OPTIONAL.md`](../../PARCEL-OPTIONAL.md) (Chain, phase 5) and
 [`lens-model.md`](../../lens-model.md) ("proposal_nft v3"). A proposal is about a site; its parcel
@@ -184,6 +186,9 @@ anchor deploy
 The same IDs are pinned in `Anchor.toml`, each program's `declare_id!()`, the generated IDLs, and
 `frontend/contracts/addresses.json`. Backend contract tests fail when those copies diverge. See
 [`docs/protocol.md`](../../docs/protocol.md) for roles, Explorer links, recipe schemas, and trust assumptions.
+
+Current devnet versions are ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3. Earlier transaction
+proofs describe the prior v1 behavior and must not be read as proof of lens-based owner consent.
 
 ## Program ids and `anchor keys sync` — do NOT run it here
 

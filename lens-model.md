@@ -5,6 +5,13 @@ Design of record for making the proposal lens real on Solana. Written 2026-10-01
 replaces the parcel-ownership model with three separated concepts and splits the work into
 workstreams with interface contracts so teams can build in parallel.
 
+**Deployment update (2026-10-02):** ParcelNFT v2 and ProposalMarket v2, plus ProposalNFT v3
+(including the v2 lens acceptance flow), are now deployed at their existing devnet IDs. The current
+deployed bytes were verified against the builds; transaction signatures and hashes are recorded in
+[`docs/protocol.md`](docs/protocol.md). This does not verify devnet registration of the two lens
+schemas or a complete real-human ownership-attestation, owner-signature and economic-distribution
+journey. Earlier V1 proofs remain evidence only for the V1 flows they exercised.
+
 ## Vocabulary
 
 - **Lens.** A list of public keys attached to one proposal at mint. It is passive: it only says whose
@@ -25,7 +32,7 @@ workstreams with interface contracts so teams can build in parallel.
 
 ## Why
 
-Today a proposal executes when the signer holding each parcel's on-chain certificate calls
+Before the 2026-10-02 program upgrades, a proposal executed when the signer holding each parcel's on-chain certificate called
 `accept_proposal` (`proposal_nft/src/lib.rs:97-133`). Certificates are first-come mints with no
 authority behind them (`parcel_nft/src/lib.rs:13-28`), so a proposer can mint the certificates and
 accept its own proposal, and every ProposalNFT-status market is proposer-decidable. The lens is
@@ -144,17 +151,19 @@ frontend parser decode a prefix of it and must keep working.
 - `create_external_market` gains an optional `proposal` account: when present, `trusted_attester`
   must be in that proposal's lens. Existing market accounts and the legacy layout are untouched.
 
-### Built state (2026-10-01)
+### V2 lens program deployment (2026-10-02)
 
 All three programs are built with a shared `crates/sas_attestation` parser crate and pass 139 localnet
 tests (proposal_nft 39, proposal_market 26, proposal_pledge 68, parcel_nft 6). The attestation's schema
 must equal the SAS schema PDA for `ParcelOwnership` or `ProposalVerdict` version 1 under the member's
 credential; attestations must carry a strictly future expiry (0 counts as expired). `verdict_may_execute`
-is appended after `bump` inside the fixed account, which every existing prefix decoder tolerates; the
-38 devnet proposals all carry a zero byte there. `mint_and_fund` gained the trailing bool, so v1 clients
-must send it. The external market takes the optional proposal as remaining account 0. Not deployed.
+is appended after `bump` inside the fixed account, which every existing prefix decoder tolerates.
+`mint_and_fund` gained the trailing bool, so v1 clients must send it. The external market takes the
+optional proposal as remaining account 0. ParcelNFT v2 and ProposalMarket v2 are deployed, as is
+ProposalNFT v3; current binary hashes and finalized transactions are in `docs/protocol.md`. The two
+lens SAS schemas' devnet registration and a real-human attested-owner economic flow remain unverified.
 
-### proposal_nft v3: parcel-optional proposals (2026-10-01, built, not deployed)
+### proposal_nft v3: parcel-optional proposals (2026-10-02, deployed)
 
 A proposal is about a site; its `parcel_ids` are the site's cadastral binding (PARCEL-OPTIONAL.md)
 and may be empty. Ground the binding does not cover is **open ground**: no owner can consent for it,

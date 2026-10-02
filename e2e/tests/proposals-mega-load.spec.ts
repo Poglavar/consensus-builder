@@ -10,7 +10,7 @@
 // is comfortably above that and small enough to keep test runtime sane.
 
 import { test, expect } from '../helpers/fixtures';
-import { waitForMapReady, zoomToParcelLevel } from '../helpers/app';
+import { openCity } from '../helpers/runtime';
 
 const MEGA_PARCEL_COUNT = 320;
 
@@ -18,58 +18,33 @@ test.describe('Mega proposal loading @features', () => {
   test('300+ ancestor proposal opens without blocking the main thread', async ({ mockApi: page }) => {
     test.setTimeout(60_000);
 
-    await page.goto('/?city=zg');
-    await waitForMapReady(page);
-    await zoomToParcelLevel(page);
+    // Supply test cadastral facts over the same parcelIds transport used in production. The
+    // repository remains responsible for normalization, caching, fabric seeding and presentation.
+    await page.route('**/parcels/parcelIds**', async route => {
+      const ids = new URL(route.request().url()).searchParams.get('ids')?.split(',') ?? [];
+      if (!ids.every(id => id.includes('MEGA'))) return route.continue();
+      const cols = Math.ceil(Math.sqrt(MEGA_PARCEL_COUNT));
+      const features = ids.map(id => {
+        const index = Number(id.slice(id.lastIndexOf('MEGA') + 4));
+        const row = Math.floor(index / cols), col = index % cols;
+        const lng = 15.9800 + col * 0.00012, lat = 45.8000 + row * 0.00009;
+        return { type: 'Feature', properties: { parcelId: id, parcel_number: `MEGA${index}`, maticni_broj_ko: '335754' }, geometry: { type: 'Polygon', coordinates: [[[lng,lat],[lng+0.00011,lat],[lng+0.00011,lat+0.00008],[lng,lat+0.00008],[lng,lat]]] } };
+      });
+      await route.fulfill({ json: { type: 'FeatureCollection', features } });
+    });
+
+    await openCity(page);
 
     const result = await page.evaluate(async (count: number) => {
       const w = window as any;
 
-      if (typeof w.ingestCadastralParcelFeatures !== 'function') {
-        return { error: 'ingestCadastralParcelFeatures missing' };
-      }
-      if (typeof w.openProposalFromList !== 'function') {
-        return { error: 'openProposalFromList missing' };
-      }
-
-      // Build a grid of small adjacent parcels around a Zagreb anchor.
-      const cols = Math.ceil(Math.sqrt(count));
-      const cellLng = 0.00012;
-      const cellLat = 0.00009;
-      const baseLng = 15.9800;
-      const baseLat = 45.8000;
-      const features: any[] = [];
+      if (!w.CadastralParcelRepository?.ensureIds || !w.openProposalFromList) throw new Error('Parcel repository or proposal-list action is unavailable');
       const parentIds: string[] = [];
       for (let i = 0; i < count; i++) {
-        const r = Math.floor(i / cols);
-        const c = i % cols;
-        const lng0 = baseLng + c * cellLng;
-        const lat0 = baseLat + r * cellLat;
-        const lng1 = lng0 + cellLng * 0.95;
-        const lat1 = lat0 + cellLat * 0.95;
         const id = `HR-335754-MEGA${String(i).padStart(4, '0')}`;
         parentIds.push(id);
-        features.push({
-          type: 'Feature',
-          properties: {
-            parcelId: id, parcel_id: id, id,
-            BROJ_CESTICE: `MEGA${i}`,
-            maticni_broj_ko: '335754', MATICNI_BROJ_KO: '335754',
-          },
-          geometry: {
-            type: 'Polygon',
-            coordinates: [[
-              [lng0, lat0],
-              [lng1, lat0],
-              [lng1, lat1],
-              [lng0, lat1],
-              [lng0, lat0],
-            ]],
-          },
-        });
       }
-
-      await w.ingestCadastralParcelFeatures(features);
+      await w.CadastralParcelRepository.ensureIds(parentIds);
 
       const proposalSeed = {
         proposalId: 'e2e-mega-proposal-load',
@@ -77,8 +52,8 @@ test.describe('Mega proposal loading @features', () => {
         // Use 'parcelBased' rather than a road, so we exercise the generic ancestor-list
         // path rather than the road-corridor branch.
         goal: 'parcelBased',
-        status: 'Active',
-        parentParcelIds: parentIds,
+        lifecycleStatus: 'Active',
+        cadastreParcelIds: parentIds,
       };
       const added = w.proposalStorage.addProposal(proposalSeed);
       const pid = added?.proposalId || proposalSeed.proposalId;
@@ -122,11 +97,9 @@ test.describe('Mega proposal loading @features', () => {
       stop = true;
 
       // showProposalInfo renders into #proposal-details-panel; assert the panel is present AND
-      // contains the proposal-specific ancestors list rendered for this proposal.
+      // visible for this proposal. The list is lazy-rendered and fills as it is scrolled.
       const panel = document.getElementById('proposal-details-panel');
-      const ancestorsList = document.getElementById('proposal-parent-parcels-list');
-      const panelVisible = !!panel;
-      const ancestorsListPresent = !!ancestorsList;
+      const panelVisible = !!panel && panel.classList.contains('visible');
 
       return {
         pid,
@@ -135,11 +108,9 @@ test.describe('Mega proposal loading @features', () => {
         frameTicks,
         longestFrameGapMs: Math.round(longestFrameGapMs),
         panelVisible,
-        ancestorsListPresent,
       };
     }, MEGA_PARCEL_COUNT);
 
-    expect(result.error, `setup: ${result.error}`).toBeUndefined();
     expect(result.parentCount).toBe(MEGA_PARCEL_COUNT);
 
     // Wall-clock budget: very generous so this is not a flaky perf gate. We are not testing
@@ -153,6 +124,16 @@ test.describe('Mega proposal loading @features', () => {
 
     // Details panel must actually be visible at the end and showing the ancestor list.
     expect(result.panelVisible).toBe(true);
-    expect(result.ancestorsListPresent).toBe(true);
+    const panel = page.locator('#proposal-details-panel');
+    const minimizeButton = page.locator('#proposal-details-minimize');
+    if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {
+      await minimizeButton.click();
+    }
+    await expect(panel.locator('.panel-body')).toBeVisible();
+    const ancestorsList = page.locator('#proposal-parent-parcels-list');
+    await expect(ancestorsList).toBeVisible();
+    const firstAncestor = ancestorsList.locator('[data-parcel-id]').first();
+    await expect(firstAncestor).toHaveAttribute('data-parcel-id', 'HR-335754-MEGA0000');
+    await expect(firstAncestor.locator('.parcel-number')).toContainText('Parcel MEGA0');
   });
 });

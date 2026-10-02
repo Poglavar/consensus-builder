@@ -99,3 +99,9 @@ UNFINISHED
 - progress bar for counting blocks
 - Croatian block names
 - splitting a parcel that has already been split by a previous proposal -- does it correctly remove the ancestor?
+## Regression status — 2026-10-02
+
+The headed suite verifies interactive 3D camera orbit/zoom and restoration of camera parameters for
+shared AI scenes arriving immediately or after 900/1800 ms (`3d-mode.spec.ts`, `ai-render.spec.ts`).
+The separate request above to preserve the 2D framing when switching into 3D remains open: these
+checks do not compare the initial 2D view with the 3D entry framing.

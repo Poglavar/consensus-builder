@@ -210,6 +210,7 @@
         "logout": "Log Out",
         "unknown": "Unknown",
         "unknownOwner": "Unknown owner",
+        "privateOwner": "Private owner",
         "userFallback": "User",
         "close": "Close",
         "cancel": "Cancel",
@@ -321,7 +322,7 @@
     },
     "sidebar": {
         "header": {
-            "title": "Urban Game Theory",
+            "title": "Consensus Builder",
             "devBadge": "Development",
             "debugBadge": "Debug",
             "aiBadge": "AI-friendly",
@@ -663,7 +664,7 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "About",
-            "aboutParagraph": "<strong>Hyperstition: Markets for Possible Cities</strong> is Urban Game Theory's hackathon build by Consensus Builder. Humans and agents imagine, propose, fund and forecast changes to real parcels; public records decide which possible futures became real. Open the <a href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a href=\"/deck.html\">pitch deck</a>, or see <a href=\"roadmap.html\" target=\"_blank\">the roadmap</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> is Urban Game Theory's free, map-based urban planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a href=\"/urban-planning.html\">open city planning workflow</a>, open the <a href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a href=\"/deck.html\">pitch deck</a>, or see <a href=\"roadmap.html\" target=\"_blank\">the roadmap</a>.",
             "instructionsTitle": "Start here",
             "instructionsParagraph": "<strong>Draw the change, then build consent.</strong> Finishing a design creates an applied local proposal. Inspect it, unapply it, share it, or fork it into an editable replacement when the design or terms need to change. Read the <a href=\"how-to-use.html\" target=\"_blank\">step-by-step guide</a>, or see what works today and what comes next on the <a href=\"roadmap.html\" target=\"_blank\">roadmap</a>.",
             "advancedTitle": "Advanced Options",
@@ -1446,9 +1447,9 @@
             "close": "Close introduction",
             "before": "Existing parcels",
             "after": "Proposed block",
-            "eyebrow": "Cities change parcel by parcel",
+            "eyebrow": "Consensus Builder · Cities change parcel by parcel",
             "title": "Shape a city people can agree on",
-            "lead": "Consensus Builder turns land and development ideas into proposals that the people they affect can see, compare, support, and accept.",
+            "lead": "Consensus Builder is free urban planning software for exploring real parcels and sketching community zoning and development proposals. Compare ideas on the map, share a plan, and build support with the people affected. Hyperstition is its hackathon project for open city planning.",
             "groundTitle": "Start with the real ground",
             "groundBody": "Explore cadastral parcels, buildings, streets, and ownership.",
             "proposeTitle": "Make change visible",
@@ -1458,7 +1459,7 @@
             "cta": "Explore the map"
         },
         "welcome": {
-            "kicker": "Urban Game Theory · Consensus Builder",
+            "kicker": "Consensus Builder · Urban Game Theory",
             "title": "Hyperstition: Markets for Possible Cities",
             "statement": "Humans and agents imagine, propose, fund and forecast changes to real parcels. Public records decide which possible futures became real.",
             "flowLabel": "Product flow",

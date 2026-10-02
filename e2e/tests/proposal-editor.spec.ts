@@ -4,6 +4,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
+import { clickMapPoint } from '../helpers/runtime';
 
 async function addEditableSquare(page: Page, suffix: string): Promise<{ proposalId: string; parcelId: string }> {
   await page.waitForFunction(() => !!(window as any).proposalStorage && !!(window as any).CadastralParcelRepository);
@@ -55,14 +56,13 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     const place = async (tool: string, lng: number, lat: number) => {
       await editor.locator(`[data-tool="${tool}"]`).click();
-      await page.evaluate(({ lng, lat }) => {
-        const w = window as any;
-        w.map.fire('click', { latlng: w.L.latLng(lat, lng) });
-      }, { lng, lat });
+      await clickMapPoint(page, lng, lat);
     };
     await place('fountain', 15.98210, 45.80020);
     await place('tree', 15.98225, 45.80025);
     await place('bench', 15.98235, 45.80030);
+    await place('stall', 15.98230, 45.80015);
+    await place('statue', 15.98215, 45.80035);
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toBeHidden();
 
@@ -77,9 +77,11 @@ test.describe('SimCity proposal lifecycle @core', () => {
       return {
         hasFountain: (saved.fountains || []).length >= 1,
         hasTree: (saved.trees || []).length >= 1,
-        hasBench: (saved.benches || []).length >= 1
+        hasBench: (saved.benches || []).length >= 1,
+        hasStall: (saved.stalls || []).length >= 1,
+        hasStatue: (saved.statues || []).length >= 1
       };
-    }, source.proposalId)).toEqual({ hasFountain: true, hasTree: true, hasBench: true });
+    }, source.proposalId)).toEqual({ hasFountain: true, hasTree: true, hasBench: true, hasStall: true, hasStatue: true });
   });
 
   test('the park geometry editor places trees, flowerbeds, ponds, and footpaths', async ({ mockApi: page }) => {
@@ -102,19 +104,13 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     const place = async (tool: string, lng: number, lat: number) => {
       await editor.locator(`[data-tool="${tool}"]`).click();
-      await page.evaluate(({ lng, lat }) => {
-        const w = window as any;
-        w.map.fire('click', { latlng: w.L.latLng(lat, lng) });
-      }, { lng, lat });
+      await clickMapPoint(page, lng, lat);
     };
     await place('tree', 15.98205, 45.80020);
     await place('flowerbed', 15.98218, 45.80020);
     await place('pond', 15.98234, 45.80028);
     await place('path', 15.98202, 45.80010);
-    await page.evaluate(() => {
-      const w = window as any;
-      w.map.fire('click', { latlng: w.L.latLng(45.80040, 15.98242) });
-    });
+    await clickMapPoint(page, 15.98242, 45.80040);
     await editor.locator('[data-action="finish-path"]').click();
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toBeHidden();
@@ -335,4 +331,39 @@ test.describe('SimCity proposal lifecycle @core', () => {
     const panel = page.locator('#proposal-details-panel');
     await expect(panel).toBeHidden();
   });
+});
+
+test('structure furniture can be dragged, erased and restored with Undo; cancelling leaves the source unchanged', async ({ mockApi: page }) => {
+  await page.goto('/?city=zg');
+  await waitForMapReady(page);
+  const source = await addEditableSquare(page, 'pointer-controls');
+  const original = await page.evaluate(id => JSON.stringify((window as any).getProposalByIdOrHash(id)), source.proposalId);
+  await page.evaluate(id => (window as any).editProposalGeometry(id), source.proposalId);
+  const editor = page.locator('.structure-geometry-editor');
+  await expect(editor).toBeVisible();
+  await editor.locator('[data-tool="tree"]').click();
+  await clickMapPoint(page, 15.98220, 45.80025);
+  const trees = page.locator('.structure-geometry-icon.is-tree');
+  const count = await trees.count();
+  await editor.locator('[data-tool="erase"]').click();
+  await trees.last().click();
+  await expect(trees).toHaveCount(count - 1);
+  await page.keyboard.press('Meta+z');
+  await expect(trees).toHaveCount(count);
+  await editor.locator('[data-tool="tree"]').click();
+  const tree = trees.last();
+  const before = await tree.boundingBox();
+  expect(before).toBeTruthy();
+  await page.mouse.move(before!.x + before!.width / 2, before!.y + before!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(before!.x + before!.width / 2 + 20, before!.y + before!.height / 2 + 10, { steps: 8 });
+  await page.mouse.up();
+  const after = await tree.boundingBox();
+  expect(after!.x - before!.x).toBeGreaterThan(10);
+  await page.keyboard.press('Meta+z');
+  await expect.poll(async () => (await trees.last().boundingBox())!.x).toBeCloseTo(before!.x, 0);
+  await editor.locator('[data-action="cancel"]').last().click();
+  await expect(editor).toBeHidden();
+  expect(await page.evaluate(id => JSON.stringify((window as any).getProposalByIdOrHash(id)), source.proposalId)).toBe(original);
+  expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);
 });

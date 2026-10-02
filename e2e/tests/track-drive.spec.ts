@@ -1,0 +1,31 @@
+import { test, expect } from '../helpers/fixtures';
+import { openCity, drawCorridor, showProposal } from '../helpers/runtime';
+import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
+
+test('published track opens the configured cab simulator with the actual uploaded track ID', async ({ mockApi: page }) => {
+  const server = createSharedProposalServer();
+  await attachSharedProposalServer(page, server);
+  await openCity(page);
+  await page.locator('#username-display').click();
+  await page.locator('#username-input').fill('Track author');
+  await page.locator('#welcome-submit-btn').click();
+  const id = await drawCorridor(page, 'track');
+  await showProposal(page, id);
+  await page.locator('.btn-share-proposal').click();
+  await page.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
+  await expect(page.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+/);
+  const uploaded = [...server.records.keys()][0];
+  expect(uploaded).toBeTruthy();
+  await page.locator('.share-modal-overlay .close-circle-btn').click();
+  const base = await page.evaluate(() => (window as any).CityConfigManager.getDriveConfig().url);
+  await page.context().route(`${base}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>Cab simulator fixture</title>' }));
+  const opened = page.context().waitForEvent('page');
+  await page.locator('.btn-drive-proposal').click();
+  const child = await opened;
+  await child.waitForURL(url => url.href.startsWith(base));
+  const url = new URL(child.url());
+  expect(url.searchParams.get('st3d')).toBe('cab');
+  expect(url.searchParams.get('track')).toBe(uploaded);
+  expect(url.searchParams.get('proposals')?.split(',')).toContain(uploaded);
+  await child.close();
+});

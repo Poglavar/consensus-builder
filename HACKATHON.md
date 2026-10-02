@@ -1,6 +1,8 @@
 <!-- This manifest defines the reviewable scope of the Colosseum World's Fair build. -->
 # Hyperstition: Markets for Possible Cities
 
+Release update (2026-10-02): the UI regression suite collects 253 headed tests across 64 specs; the complete 250-test run and 30 affected final checks passed, alongside 6,366 fast tests (6 existing skips). The 99-command inventory maps 47 specs. Fixture-backed HTTP/RPC tests cover the app workflows, while a fresh production/human-wallet journey remains a separate next step. Current SEO entry points are a vendor-free planning guide, descriptive metadata and a sitemap. See [TEST.md](TEST.md) and [next-steps.md](next-steps.md).
+
 **An Urban Game Theory project by Consensus Builder · Colosseum World's Fair 2026**
 
 Follow the project on X: [@UrbanGameTheory](https://x.com/UrbanGameTheory)
@@ -211,7 +213,7 @@ git diff 3ee1855...colosseum-worlds-fair
     The supporter persona holds the devnet ownership certificates of both parcels, so this proves the
     executed mechanics and YES payout, not real-owner consent.
     Item 35 replaces that certificate caveat with an attested consent chain.
-35. **Lens model: attested execution** — *built, not yet deployed.* Design of record
+35. **Lens model: attested execution** — *programs upgraded on devnet; live attested human journey still to verify.* Design of record
     [`lens-model.md`](lens-model.md); trust boundary in [`docs/protocol.md`](docs/protocol.md#lens-model-and-the-trust-boundary).
     Parcels become ownerless anchors, the lens becomes a passive list of trusted attesters stored on
     each proposal, a lens member attests each owner (`ParcelOwnership-v1`, SAS), and every attested
@@ -226,8 +228,9 @@ git diff 3ee1855...colosseum-worlds-fair
     x402-priced ownership attestations behind a wallet challenge); the lens picker in the create
     dialog; the member console ([`lens.html`](frontend/lens.html)); and MCP tools
     (`ugt_list_attesters`, `ugt_mint_proposal` with a lens, `ugt_request_ownership`). Program ids are
-    unchanged: v2 is an in-place upgrade still to be deployed, one program at a time. Until then
-    devnet runs v1, and the public audit reports `attested_execution`, `no_self_lens` and
+    unchanged: ParcelNFT v2, ProposalMarket v2 and parcel-optional ProposalNFT v3 were upgraded in place.
+    On 2026-10-02, fresh devnet dumps matched the local binaries (ignoring zero account padding).
+    This is program-version evidence, not proof of a complete attested owner action; the audit reports `attested_execution`, `no_self_lens` and
     `attester_diversity` as advisory.
 
 ### Live external-market integration proof
@@ -260,7 +263,7 @@ numbered feature list.
 | Contract tests | Anchor suites for the two existing programs | Market and pledge suites, including wrong-owner, wrong-mint, account-substitution and pre-created-vault cases (110 local-validator tests) |
 | Paying to act | None | x402 pay-to-propose and paid verified facts, both listed on the hosted Bazaar |
 | Agents | None | Deterministic and LLM-controlled personas, a supporter, an MCP tool surface over the same executors, and cost-ledgered runs (`backend/agents`, +4,768 lines) |
-| Evidence and resolution | Lens trust concept and EVM (EAS) ownership-attestation scripts; nothing resolved a market | **Lens model** (built, not yet deployed): the proposal's lens is the list of attesters it trusts, lens members attest ownership over SAS, owners sign acceptance, parcels carry no ownership (item 35). Live on devnet: proposal-lifecycle oracle, court attestations (SAS), recipe-bound resolution, and a genuinely prospective court market |
+| Evidence and resolution | Lens trust concept and EVM (EAS) ownership-attestation scripts; nothing resolved a market | **Lens model** (programs upgraded on devnet; live attested consent journey remains to verify): the proposal's lens is the list of attesters it trusts, lens members attest ownership over SAS, owners sign acceptance, parcels carry no ownership (item 35). Live on devnet: proposal-lifecycle oracle, court attestations (SAS), recipe-bound resolution, and a genuinely prospective court market |
 | Activity and proof | Local game log for the simulation | One activity format and explorer for humans, algorithms and LLMs; public proof manifest, operations endpoint, canonical case page, and public audit command |
 | Tests overall | Existing backend suite | +10,438 lines of backend tests across 80 files |
 

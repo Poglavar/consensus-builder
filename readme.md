@@ -1,11 +1,11 @@
-# Urban Game Theory
+# Consensus Builder
 
 ## Hyperstition: Markets for Possible Cities
 
 > Humans and agents imagine, propose, fund, and forecast changes to exact parcels. Public records
 > decide which possible futures became real.
 
-Urban Game Theory connects four workflows that are normally separate—mapping, proposals, funding,
+Consensus Builder, an Urban Game Theory project, connects four workflows that are normally separate—mapping, proposals, funding,
 and prediction markets—through one canonical parcel identity. Humans, deterministic agents, and
 LLM-controlled agents use the same proposal, wallet, and activity interfaces.
 
@@ -19,7 +19,7 @@ commits, and features built during the hackathon.
 - [Live pitch deck](https://urbangametheory.xyz/deck.html)
 - [Five-minute demo center](https://urbangametheory.xyz/hackathon-demo.html)
 - [Executed YES case](https://urbangametheory.xyz/proposals/hackathon-executed-borovje-2026) — the counterpart of the cancelled canonical case, shown beside it in the demo center with every devnet transaction linked.
-- [Lens model](lens-model.md) — soulbound parcels, a list of trusted attesters per proposal, attested execution; built and tested on localnet, not yet deployed to devnet.
+- [Lens model](lens-model.md) — soulbound parcels, a list of trusted attesters per proposal, attested execution; programs upgraded on devnet, with live member-service and human-owner verification still to complete.
 - [Agent/x402 quickstart](https://api.urbangametheory.xyz/docs/agents)
 - [Unified human and agent activity](https://urbangametheory.xyz/actor-explorer.html)
 - [Follow @UrbanGameTheory on X](https://x.com/UrbanGameTheory)
@@ -92,7 +92,11 @@ npm test
 
 The frontend is static and has no compilation step. See
 [`docs/hackathon-build.md`](docs/hackathon-build.md) for the focused hackathon test set, local
-serving, optional Solana build, and requirements for running the database-backed API.
+serving, optional Solana build, and requirements for running the database-backed API. Current
+regression results and coverage boundaries are recorded in [`TEST.md`](TEST.md): 6,366 fast tests
+passed (6 skipped), and the headed browser suite has 253 distinct collected cases across 64 specs.
+The UI feature inventory indexes 99 command IDs; indexed coverage describes intended review scope,
+while only passing headed runs verify those actions.
 
 ## Security status
 

@@ -28,6 +28,21 @@ npm test
 The backend suite uses Vitest. Network, signing, database, and live-ledger behavior is mocked unless
 a test explicitly documents an opt-in environment flag.
 
+The complete fast suite for this revision passed 6,366 tests with 6 skipped. The headed Playwright
+suite covers 253 distinct collected cases across 64 specs; its full run passed 250/250, and
+focused headed runs passed 30 affected checks covering the added circle, SEO, and localization flows. The runs overlap.
+See [`TEST.md`](../TEST.md) for coverage scope and limitations. To run the browser suite visibly:
+
+```sh
+cd e2e
+npm run test:headed
+```
+
+The browser fixtures exercise real UI actions against deterministic local API responses. Wallet
+providers and RPC calls are mocked, so browser results do not establish live API parity, wallet
+signing, RPC availability, or a real devnet transaction lifecycle. The separate opt-in transaction
+flows later in this guide cover those operations when explicitly enabled.
+
 For only the hackathon protocol and documentation contracts:
 
 ```sh

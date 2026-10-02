@@ -74,9 +74,9 @@ describe('reparcellization.js wiring', () => {
         const rawInMarkup = source.split('\n')
             .filter(line => line.includes('<') && /\$\{\s*(entry|o|owner|slice)\.(displayName|ownerKey|color)/.test(line));
         expect(rawInMarkup).toEqual([]);
-        expect(source).toContain('ownerLegendCellHtml(entry, color)');
+        expect(source).toContain('ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)');
         expect(source).toContain('cashOfferInputHtml(entry.ownerKey, cashOffer)');
-        expect(source).toContain('newPlotOwnerHtml(o,');
+        expect(source).toContain('newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) },');
     });
 
     it('escapes Leaflet string tooltips (Leaflet renders them as HTML)', () => {

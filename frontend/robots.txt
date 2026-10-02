@@ -2,3 +2,4 @@
 # /llms.txt. The JSON API at https://api.urbangametheory.xyz serves its own robots.txt and llms.txt.
 User-agent: *
 Allow: /
+Sitemap: https://urbangametheory.xyz/sitemap.xml

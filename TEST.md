@@ -1,6 +1,6 @@
 # Test Plan
 
-This document outlines the current automated test coverage and the remaining testing strategy for the Consensus Builder application.
+This document records current automated coverage and the remaining verification boundaries for the Consensus Builder application.
 
 ## Architecture Overview
 
@@ -64,48 +64,43 @@ Run with:
 
 Tooling: Playwright in `e2e/`
 
-Current coverage (107 tests across 24 spec files, 91 passing / 16 skipped):
+Current audited results:
 
-Core (14 files):
-- `smoke.spec.ts` — app loads without critical JS errors, map visible, globals initialized, no 5xx
-- `map-navigation.spec.ts` — basemap tiles, zoom in/out, pan, parcel fetch at zoom ≥17
-- `city-switching.spec.ts` — default city, city API, setCurrentCityId event dispatch, persistence
-- `parcels.spec.ts` — parcel loading, polygon rendering, click interaction
-- `parcel-selection.spec.ts` — ownership highlighting, classification functions
-- `proposals-create.spec.ts` — ProposalManager init, programmatic creation, storage functions
-- `proposals-lifecycle.spec.ts` — apply/unapply functions, PersistentStorage round-trip
-- `proposals-sharing.spec.ts` — sharing utilities, base64 round-trip, escapeHtml, backend URL
-- `road-tools.spec.ts` — lineIntersection, isPointInPolygon, road detection module
-- `i18n.spec.ts` — language switching (en/es/sr/hr), persistence, translation function
-- `sidebar.spec.ts` — sidebar element, toggle button, toggling, init function
-- `wallet.spec.ts` — wallet module loaded, mock EVM provider, Solana web3 library
-- `data-source.spec.ts` — data source functions, default resolution, storage
-- `3d-mode.spec.ts` — Three.js loaded, 3D functions, scene creation
+- **Fast suite:** 6,366 passed, 6 skipped. This count is from the complete fast test run recorded for
+  this revision; use the commands below to rerun it.
+- **Headed browser coverage:** 253 distinct collected cases across 64 spec files. The full headed
+  run passed 250/250 cases; 30 affected checks across focused headed runs passed the added circle, SEO, and
+  localization flows. Those runs overlap, so do not add their pass counts as unique tests.
+- **Feature inventory:** 99 UI command IDs are mapped to specs in `e2e/feature-inventory.json`.
+  The inventory checker verifies that the registry and index agree; it does not establish that a
+  command works. Only behavioral assertions in a passing headed run provide that evidence.
+- **Recent regressions:** real map/layer controls and dataset actions; parcel and proposal journeys;
+  proposal editor and readjustment controls; road/area-monitor workflows; 3D, photo and walking
+  controls; search, localization, responsive map UI, SEO publication metadata, and persistence.
 
-Extended (10 files):
-- `share-roundtrip.spec.ts` — base64url encode/decode, compress/inflate, full payload round-trip, deepClone, buildCityQueryParam
-- `persistent-storage.spec.ts` — IndexedDB set/get, JSON round-trip, removeItem, forEach, length, reload persistence
-- `deep-links.spec.ts` — ?city= params for all cities, invalid param fallback, stored preference override
-- `game-mode.spec.ts` — gameState, control functions, save/load round-trip, executeGameTurn
-- `multi-city.spec.ts` — all 6 cities available, per-city config validation, distinct centers, backend URL resolution
-- `area-monitor.spec.ts` — Draw/Map/UI/Routing modules, drawing activation, event dispatch
-- `measurement.spec.ts` — measureMode flag, toggle on/off, clearAllMeasurements
-- `reparcellization.spec.ts` — ProposalManager, ensureParcelId format, ID input handling
-- `gov-roads.spec.ts` — worker functions, CustomEvent dispatch, Web Worker API
-- `reload-persistence.spec.ts` — proposals, city, and language survive browser reload
+The browser suite uses Playwright with local frontend serving and fixture-backed API responses. It
+checks user actions and observable UI, map-layer, storage, geometry, and request effects. Fixture
+responses do not prove that live production APIs or datasets return the same content. Wallet/RPC
+providers are mocked for browser coverage, so these tests do not verify real wallet signing, RPC
+availability, or live devnet transaction completion. Refer to the blockchain test sections and
+`docs/hackathon-build.md` for the separate local-validator and explicitly opt-in live transaction
+paths.
 
 Run with:
 
-- `cd e2e && npm test` (uses `npx serve` for static frontend, or reuses running server)
-- `cd e2e && npm run test:headed` (visible browser)
+- `cd backend && npm test` (fast backend and frontend characterization suite)
+- `cd e2e && npm test` (headless Playwright; configured local frontend/API fixtures)
+- `cd e2e && npm run test:headed` (headed Playwright)
+- `cd e2e && npm run check:features` (check 99 command IDs are represented in the feature inventory)
 - `cd e2e && npm run test:smoke` (smoke tests only)
 - `cd e2e && npm run test:core` (core tests only)
 - `cd e2e && npm run test:features` (feature tests only)
 
-Recent gap coverage added:
-
-- `e2e/tests/area-monitor.spec.ts` now also verifies the area monitor detail panel DOM and list modal behavior against mocked `/area-monitors` API responses
-- `backend/scripts/smoke-production-bbox.mjs` checks live production `/parcels?bbox=...` response shape, CORS header presence, sequential timings, and a small concurrent burst
+The e2e spec directory is the current coverage index; the old pre-redesign spec list has been
+removed because its filenames and assertions no longer match the suite. For live read-only parcel
+API smoke coverage, `backend/scripts/smoke-production-bbox.mjs` checks the production
+`/parcels?bbox=...` response shape, CORS header, timings, and a small concurrent burst. That single
+smoke check does not replace fixture-backed UI coverage or establish broad production API parity.
 
 ---
 
@@ -199,7 +194,10 @@ Use a dedicated test PostgreSQL database. Seed with fixture data before each sui
 
 Requires backend + frontend running. Mock blockchain interactions (wallet providers, RPC calls) to avoid real chain dependency.
 
-### Priority flows
+### Remaining verification priorities
+
+The headed suite now covers these flows against deterministic local fixtures. The following are
+still distinct live/integration gaps; do not infer their completion from UI coverage:
 
 **1. Proposal creation**
 
@@ -264,19 +262,25 @@ Target pure logic that can be tested without DOM or network. Will require extrac
 
 ---
 
-## What we skip (for now)
+## Deliberate limits and outstanding coverage
 
 - **Visual regression testing** — overkill given the current stage
 - **Load/stress testing** — backend traffic is low
-- **Full E2E with real chains** — use local nodes (Hardhat, solana-test-validator) or mocks instead
+- **Full E2E with real chains** — browser specs mock wallet providers and RPC. Use local nodes
+  (`solana-test-validator`, or Hardhat if retained) for contract integration, and the documented
+  explicitly opted-in devnet path only when live transaction verification is intended.
 - **Accessibility testing** — can add later
 
 ---
 
 ## Implementation order
 
-1. **Frontend Playwright tests** — most setup effort, but covers the user-facing flows
-2. **Frontend unit tests** — requires refactoring globals into modules, do incrementally
-3. **Expand backend API coverage** — proposals are covered first; add parcels and supporting routes next
-4. **Expand EVM coverage if Hardhat remains in use** — otherwise keep Foundry as the primary Solidity test runner
-5. **Expand Solana program coverage** — keep adding state-transition and failure-path tests as programs evolve
+1. **Production API parity** — add read-only live checks for critical endpoints beyond parcel bbox,
+   while keeping fixture-backed UI tests deterministic.
+2. **Opt-in wallet/RPC integration** — verify one real, low-value devnet transaction lifecycle
+   separately from browser tests that use mocked providers.
+3. **Review skipped cases** — document their prerequisites or restore the relevant runtime coverage.
+4. **Pure frontend logic** — extract and test browser-global calculations incrementally where the
+   current characterization tests still depend on DOM or script globals.
+5. **Contract state transitions** — keep Foundry and Anchor tests aligned with deployed program
+   behavior; retain Hardhat only if that toolchain remains active.

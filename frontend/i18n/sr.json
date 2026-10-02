@@ -210,6 +210,7 @@
         "logout": "Odjava",
         "unknown": "Nepoznato",
         "unknownOwner": "Nepoznat vlasnik",
+        "privateOwner": "Privatni vlasnik",
         "userFallback": "Korisnik",
         "close": "Zatvori",
         "cancel": "Otkaži",
@@ -321,7 +322,7 @@
     },
     "sidebar": {
         "header": {
-            "title": "Urban Game Theory",
+            "title": "Consensus Builder",
             "devBadge": "Razvoj",
             "debugBadge": "Debug",
             "aiBadge": "Prijateljski za AI",
@@ -693,7 +694,7 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "O projektu",
-            "aboutParagraph": "Urban Game Theory je tržište za stvarne promene zemljišta: ljudi i agenti predlažu, finansiraju i prognoziraju promene na stvarnim parcelama, dok javni registri potvrđuju šta se zaista dogodilo. Otvorite <a href=\"/hackathon-demo.html\">demonstraciju uživo</a>, pročitajte <a href=\"/deck.html\">prezentaciju</a> ili pogledajte <a href=\"roadmap.html\" target=\"_blank\">plan razvoja</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> je besplatan alat za urbanističko planiranje na mapi, koji je pokrenuo Urban Game Theory. Hyperstition: Markets for Possible Cities je njegov hackathon projekat. Istražite stvarne parcele, uporedite predloge zoniranja i razvoja i gradite podršku ljudi na koje promene utiču. Pročitajte o <a href=\"/urban-planning.html\">otvorenom planiranju grada</a>, otvorite <a href=\"/hackathon-demo.html\">demonstraciju uživo</a>, pročitajte <a href=\"/deck.html\">prezentaciju</a> ili pogledajte <a href=\"roadmap.html\" target=\"_blank\">plan razvoja</a>.",
             "instructionsTitle": "Počni ovde",
             "instructionsParagraph": "<strong>Nacrtaj promenu, zatim gradi konsenzus.</strong> Završeni dizajn stvara primenjeni lokalni predlog. Pregledaj ga, skloni sa mape, podeli ili napravi izmenjivu varijantu kada želiš da promeniš dizajn ili uslove. Pročitaj <a href=\"kako-koristiti.html\" target=\"_blank\">vodič korak po korak</a> ili pogledaj šta radi danas i šta sledi u <a href=\"roadmap.html\" target=\"_blank\">planu razvoja</a>.",
             "advancedTitle": "Napredne opcije",
@@ -1451,9 +1452,9 @@
             "close": "Zatvori uvod",
             "before": "Postojeće parcele",
             "after": "Predloženi blok",
-            "eyebrow": "Grad se menja parcelu po parcelu",
+            "eyebrow": "Consensus Builder · Grad se menja parcelu po parcelu",
             "title": "Oblikujte grad oko kog ljudi mogu da se dogovore",
-            "lead": "Consensus Builder pretvara ideje o zemljištu i razvoju u predloge koje ljudi na koje utiču mogu da vide, uporede, podrže i prihvate.",
+            "lead": "Consensus Builder je besplatan alat za urbanističko planiranje na mapi: istražite stvarne parcele i pravite predloge razvoja i zoniranja u zajednici. Uporedite ideje, podelite plan i gradite podršku ljudi na koje promene utiču. Hyperstition je njegov hackathon projekat za otvoreno planiranje grada.",
             "groundTitle": "Počnite od stvarnog prostora",
             "groundBody": "Istražite katastarske parcele, zgrade, ulice i vlasništvo.",
             "proposeTitle": "Učinite promenu vidljivom",
@@ -1463,7 +1464,7 @@
             "cta": "Otvorite mapu"
         },
         "welcome": {
-            "kicker": "Urban Game Theory",
+            "kicker": "Consensus Builder · Urban Game Theory",
             "title": "Tržište za stvarne promene zemljišta",
             "statement": "Ljudi i agenti predlažu, finansiraju i prognoziraju promene na stvarnim parcelama, dok javni registri potvrđuju šta se zaista dogodilo.",
             "flowLabel": "Tok proizvoda",

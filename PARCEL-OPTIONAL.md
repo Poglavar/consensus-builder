@@ -1,3 +1,7 @@
+# Current status — 2026-10-02
+
+The phase notes below record their original development dates; “not committed/not deployed” labels in those historical sections are superseded by this release status. The implementation is integrated on `colosseum-worlds-fair`; its site-first/open-ground/subdivision workflows have headed coverage. Changed-land forks now retain their provenance source without superseding it and rebuild the selected site/cadastre/structure geometry. ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 are upgraded on devnet: fresh program dumps match the built binaries, with zero allocation padding excluded. Live wallet/attestation integration still needs separate production evidence. Refer to [TEST.md](TEST.md), [docs/protocol.md](docs/protocol.md), and [next-steps.md](next-steps.md) for the current verification and follow-up.
+
 # Proposals on a site; parcels as a derived binding (branch `parcel-optional`)
 
 A proposal is a geometric/material fact about a place. Its subject is its **site**: the ground it

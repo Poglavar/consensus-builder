@@ -1,0 +1,36 @@
+/* The how-to guide shell is a nested scroller; the public landing page uses normal document flow. */
+html.urban-planning-page {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+body.urban-planning-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+}
+
+body.urban-planning-page .main-content {
+    overflow: visible;
+}
+
+body.urban-planning-page .intro-with-visual > img {
+    height: auto;
+    aspect-ratio: 2 / 1;
+}
+
+@media (min-width: 769px) {
+    body.urban-planning-page .sidebar {
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    body.urban-planning-page .main-content {
+        flex: 1 0 auto;
+    }
+}

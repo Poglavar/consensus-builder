@@ -839,7 +839,42 @@
             return false;
         }
         const store = global.proposalDraftStore;
-        store.updateDraft(session.draftId, { fields: { selectedParcelIds: liveIds.map(String) } }, { coalesceKey: 'land-fork-selection' });
+        const draft = store.getDraft(session.draftId);
+        const fields = { selectedParcelIds: liveIds.map(String) };
+        const patch = { fields };
+        // A site-first record normally publishes its authored site and binding instead of the
+        // transient map selection. When a changed-land fork replaces that selection, carry the
+        // new ground through the same site path so its geometry and parcel declaration agree.
+        if (draft?.sourceSnapshot?.site && global.__siteDraft?.siteFromFeatures) {
+            const site = siteOfLiveSelection(liveIds);
+            const fabric = global.LiveParcelFabric;
+            if (!site || !fabric?.cadastreIdsForParcelIds) {
+                renderLandForkBar();
+                return false;
+            }
+            fields.site = site;
+            fields.cadastreParcelIds = fabric.cadastreIdsForParcelIds(liveIds).map(String);
+            // Publishing recomputes the binding for the new site on the server.
+            fields.binding = null;
+            const structure = draft.editorPayload?.structureProposal;
+            if (structure && STRUCTURE_KIND_LABELS[structure.kind]) {
+                let geometry = polygonOfSite(site);
+                let lakeGraphics = null;
+                if (structure.kind === 'lake' && typeof global.buildLakeGraphicsFromGeometry === 'function') {
+                    lakeGraphics = global.buildLakeGraphicsFromGeometry(geometry);
+                    if (!lakeGraphics?.geometry) {
+                        reportDisconnectedStructureSelection();
+                        return false;
+                    }
+                    geometry = lakeGraphics.geometry;
+                }
+                patch.editorPayload = {
+                    structureProposal: { ...structure, geometry, lakeGraphics }
+                };
+                patch.previewGeometry = geometry;
+            }
+        }
+        store.updateDraft(session.draftId, patch, { coalesceKey: 'land-fork-selection' });
         const draftId = session.draftId;
         const origin = session.origin;
         endLandForkSession();
@@ -1472,6 +1507,7 @@
 
     function applyDraftFacetsToProposalDialog(draft) {
         const fields = draft.fields || {};
+        const readjust = draft.goal === 'reparcellization' || fields.parcels === 'readjust';
         if (fields.acquisitionMode && typeof global.setProposalAcquisitionMode === 'function') {
             global.setProposalAcquisitionMode(fields.acquisitionMode);
         }
@@ -1479,7 +1515,8 @@
             global.setProposalBoundaryMode(fields.boundaryAdjustment, { unlock: true });
         }
         if (fields.ownership && typeof global.setProposalOwnershipMode === 'function') {
-            global.setProposalOwnershipMode(fields.ownership, { unlock: true });
+            global.setProposalOwnershipMode(readjust ? 'per-slice' : fields.ownership,
+                readjust ? { lock: true } : { unlock: true });
         }
         if (fields.recipientScope) {
             global.document?.querySelectorAll?.('input[name="proposalRecipientScope"]')?.forEach(input => {
@@ -1491,6 +1528,13 @@
             recipient.value = fields.recipientAddress;
         }
         if (typeof global.onProposalOwnershipChange === 'function') global.onProposalOwnershipChange();
+        if (readjust && typeof global.setProposalOwnershipMode === 'function') {
+            global.showProposalPerSliceOption?.(true);
+            global.setProposalOwnershipMode('per-slice', { lock: true });
+        }
+        // Ownership initialization resets payment defaults; retain the draft's saved choice.
+        const conditional = global.document?.getElementById('proposalConditionalCheckbox');
+        if (conditional && typeof fields.isConditional === 'boolean') conditional.checked = fields.isConditional;
         const name = global.document?.getElementById('proposalName');
         const description = global.document?.getElementById('proposalDescription');
         if (name) name.value = fields.name || '';
@@ -1772,7 +1816,10 @@
             // atomic path above because their junction can also mutate existing authored records.
             try {
                 const stored = global.proposalStorage?.getProposal?.(proposalId) || proposal;
-                const supersededIds = [stored.sourceProposalId, stored.replacementOfProposalId]
+                // Changed-land forks are counterproposals: their source remains standing while
+                // only the new proposal's own ground is materialised. Ordinary replacements
+                // still release and replay their source's scope.
+                const supersededIds = stored.landFork ? [] : [stored.sourceProposalId, stored.replacementOfProposalId]
                     .filter(Boolean).map(String);
                 global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
                 global.proposalStorage?.save?.();

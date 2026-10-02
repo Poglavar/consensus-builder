@@ -95,6 +95,11 @@ function handleMeasureClick(e) {
         // Draw the final measurement line
         if (measureMouseLine) {
             map.removeLayer(measureMouseLine);
+            measureMouseLine = null;
+        }
+        if (measureMouseMarker) {
+            map.removeLayer(measureMouseMarker);
+            measureMouseMarker = null;
         }
 
         measureLine = L.polyline([measureStartPoint, measureEndPoint], {

@@ -1,43 +1,43 @@
 import { test, expect } from '../helpers/fixtures';
-import { waitForMapReady } from '../helpers/app';
+import { openCity, clickMapPoint } from '../helpers/runtime';
 
-/**
- * Measurement tool. toggleMeasureTool() rewires the Leaflet map's click/mousemove handlers and the
- * container cursor, so it needs a real map — it cannot be unit-tested in node.
- *
- * Two tests were dropped from this file: an existence check (`typeof toggleMeasureTool === 'function'`),
- * and a `clearAllMeasurements` test that could never actually run — `allMeasurements` is a module-scoped
- * `let` in measurement-tool.js, so it is never on `window` and the test's own guard skipped it on
- * every run.
- */
+test.describe('Map measurement and pinpoint @features', () => {
+  test('two real clicks measure distance; Clear removes the line and markers', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#tools-button').click();
+    await page.locator('#measureButton').click();
+    await page.locator('#tools-button').click();
+    await clickMapPoint(page, 15.982, 45.8001);
+    await clickMapPoint(page, 15.9824, 45.8001);
+    await expect(page.locator('.measurement-label')).toHaveCount(1);
+    const distance = parseFloat(await page.locator('.measurement-label').innerText());
+    expect(distance).toBeGreaterThan(25);
+    expect(distance).toBeLessThan(40);
+    await expect(page.locator('.measurement-marker')).toHaveCount(2);
+    await page.locator('#tools-button').click();
+    await page.locator('#clearMeasurementsButton').click();
+    await expect(page.locator('.measurement-label')).toHaveCount(0);
+    await expect(page.locator('.measurement-marker')).toHaveCount(0);
+    await expect(page.locator('.measurement-line')).toHaveCount(0);
+    await page.locator('#measureButton').click();
+    expect(await page.evaluate(() => (window as any).measureMode)).toBe(false);
+  });
 
-test.describe('Measurement tool @features', () => {
-  test('toggleMeasureTool activates and deactivates', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      if (typeof w.toggleMeasureTool !== 'function') return { skip: true };
-
-      const before = w.measureMode;
-      w.toggleMeasureTool();
-      const afterFirst = w.measureMode;
-      w.toggleMeasureTool();
-      const afterSecond = w.measureMode;
-
-      return {
-        skip: false,
-        before,
-        afterFirst,
-        afterSecond,
-        toggled: afterFirst !== before,
-        restoredOrToggled: afterSecond !== afterFirst,
-      };
-    });
-
-    test.skip(result.skip === true, 'toggleMeasureTool not available');
-    expect(result.toggled).toBe(true);
-    expect(result.restoredOrToggled).toBe(true);
+  test('pinpoint reports coordinates and the cadastral parcel under the cursor; Escape exits', async ({ mockApi: page }) => {
+    const diagnostics: string[] = [];
+    page.on('console', message => { if (message.text().startsWith('[whatIsHere]')) diagnostics.push(message.text()); });
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await openCity(page);
+    await page.locator('#tools-button').click();
+    await page.locator('#pinpointButton').click();
+    await page.locator('#tools-button').click();
+    await clickMapPoint(page, 15.9822, 45.80025);
+    await expect(page.locator('.pinpoint-readout')).toContainText('45.800');
+    await expect.poll(() => diagnostics.join(' ')).toContain('parcel(s) cover this point');
+    const coordinates = await page.locator('.pinpoint-readout').innerText();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(coordinates);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.pinpoint-readout')).toBeHidden();
+    expect(await page.evaluate(() => (window as any).pinpointToolIsActive())).toBe(false);
   });
 });

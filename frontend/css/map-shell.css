@@ -642,6 +642,8 @@ body.debug-mode .map-sheet .btn-danger,
     flex: 0 0 auto;
     width: 28px;
     height: 28px;
+    min-height: 0;
+    box-sizing: border-box;
     padding: 0;
     border: 1px solid var(--sheet-border);
     border-radius: 50%;

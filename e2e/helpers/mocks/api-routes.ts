@@ -70,6 +70,10 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
   await mockBuildingsRoute(page);
   await mockPlannedRoadsRoute(page);
   await mockStreetsRoute(page);
+  await page.route('**/road-parcels**', route => {
+    if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
+    return route.fulfill({ json: { type: 'FeatureCollection', features: [] } });
+  });
 }
 
 export async function mockHealthRoute(page: Page): Promise<void> {
@@ -93,11 +97,30 @@ export async function mockAreaMonitorsRoute(page: Page): Promise<void> {
       return;
     }
 
-    if (method === 'GET' && /\/area-monitors\/1$/.test(url.pathname)) {
+    if (method === 'GET' && /\/area-monitors\/\d+\/?$/.test(url.pathname)) {
+      const id = Number(url.pathname.match(/area-monitors\/(\d+)/)?.[1]);
+      const detail = id === 1 ? sampleAreaMonitorDetail : id === 2 ? {
+        ...sampleAreaMonitorDetail,
+        monitor: { ...sampleAreaMonitorDetail.monitor, id: 2, name: 'Vukovarska Corridor' },
+      } : null;
+      if (!detail) {
+        route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'Area monitor not found' }) });
+        return;
+      }
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(sampleAreaMonitorDetail),
+        body: JSON.stringify(detail),
+      });
+      return;
+    }
+
+    // The detail loader paints this independent GeoJSON read after the metadata request.
+    if (method === 'GET' && /\/area-monitors\/\d+\/overlay\/?$/.test(url.pathname)) {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/geo+json',
+        body: JSON.stringify({ type: 'FeatureCollection', features: [] }),
       });
       return;
     }
@@ -111,8 +134,8 @@ export async function mockAreaMonitorsRoute(page: Page): Promise<void> {
       return;
     }
 
-    if (method === 'HEAD' && /\/area-monitors\/1$/.test(url.pathname)) {
-      route.fulfill({ status: 200, body: '' });
+    if (method === 'HEAD' && /\/area-monitors\/\d+\/?$/.test(url.pathname)) {
+      route.fulfill({ status: url.pathname.match(/area-monitors\/(\d+)/)?.[1] === '1' || url.pathname.match(/area-monitors\/(\d+)/)?.[1] === '2' ? 200 : 404, body: '' });
       return;
     }
 
@@ -129,7 +152,7 @@ export async function mockParcelsRoute(page: Page): Promise<void> {
     }
 
     // Return parcel data for any parcel request
-    if (request.method() === 'GET') {
+    if (request.method() === 'GET' || (request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/parcels/under'))) {
       route.fulfill({
         status: 200,
         contentType: 'application/json',

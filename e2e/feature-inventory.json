@@ -1,0 +1,803 @@
+{
+  "description": "Feature-to-spec review index. Associations document intended behavioral coverage; only a passing headed run verifies it. Native sheet/menu tests also exercise commands that alias those actions.",
+  "commands": [
+    {
+      "id": "layers.parcels",
+      "specs": [
+        "tests/parcels.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.adParcels",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.parcelIds",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.ownerCounts",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.proposalCounts",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.markMinted",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.ownership.government",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.ownership.institution",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.ownership.company",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.ownership.private",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "parcels.locate",
+      "specs": [
+        "tests/search-and-commands.spec.ts"
+      ]
+    },
+    {
+      "id": "parcels.coverage",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "parcels.refresh",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "parcels.clearLocal",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.blocks",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.blockNames",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.parks",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.squares",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.buildings",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.buildingsDgu",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.buildingsOsm",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.proposedBuildings",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.governmentRoadPlan",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.osmRoadLines",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.gupRoadLines",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.dguUsagePolygons",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.roadCentrelines",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.roadAnalysis",
+      "specs": [
+        "tests/road-plan-analysis.spec.ts"
+      ]
+    },
+    {
+      "id": "tools.measure",
+      "specs": [
+        "tests/measurement.spec.ts"
+      ]
+    },
+    {
+      "id": "tools.pinpoint",
+      "specs": [
+        "tests/measurement.spec.ts"
+      ]
+    },
+    {
+      "id": "tools.clearMeasurements",
+      "specs": [
+        "tests/measurement.spec.ts"
+      ]
+    },
+    {
+      "id": "blocks.reform",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "blocks.fromSelected",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "blocks.list",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "blocks.clear",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "stations.bus",
+      "specs": [
+        "tests/proposal-creation.spec.ts"
+      ]
+    },
+    {
+      "id": "stations.tram",
+      "specs": [
+        "tests/proposal-creation.spec.ts"
+      ]
+    },
+    {
+      "id": "stations.underground",
+      "specs": [
+        "tests/proposal-creation.spec.ts"
+      ]
+    },
+    {
+      "id": "stations.elevated",
+      "specs": [
+        "tests/proposal-creation.spec.ts"
+      ]
+    },
+    {
+      "id": "stations.cancel",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.detectExisting",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.drawOsm",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.detectOsm",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.drawGup",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.detectGup",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.drawDgu",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.detectDgu",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.clear",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.applyGovernmentPlan",
+      "specs": [
+        "tests/road-plan-analysis.spec.ts"
+      ]
+    },
+    {
+      "id": "roads.analyzeOsm",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "areaMonitor.cityPlan",
+      "specs": [
+        "tests/road-plan-analysis.spec.ts"
+      ]
+    },
+    {
+      "id": "areaMonitor.draw",
+      "specs": [
+        "tests/area-monitor-authoring.spec.ts"
+      ]
+    },
+    {
+      "id": "areaMonitor.fromPlan",
+      "specs": [
+        "tests/road-plan-analysis.spec.ts"
+      ]
+    },
+    {
+      "id": "areaMonitor.list",
+      "specs": [
+        "tests/area-monitor-authoring.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.list",
+      "specs": [
+        "tests/proposal-browsing.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.planStats",
+      "specs": [
+        "tests/plan-stats.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.grainScore",
+      "specs": [
+        "tests/world-and-ground.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.minted",
+      "specs": [
+        "tests/minted-proposals.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.sharePlan",
+      "specs": [
+        "tests/proposals-sharing.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.clearLocal",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "activity.explorer",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "activity.agents",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "game.enable",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "game.playPause",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "game.interval",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "game.new",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "activity.statusLog",
+      "specs": [
+        "tests/search-and-commands.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.propose",
+      "specs": [
+        "tests/proposal-creation.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.selectMore",
+      "specs": [
+        "tests/multi-parcel-selection.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.details",
+      "specs": [
+        "tests/parcel-info-panel.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.history",
+      "specs": [
+        "tests/proposal-browsing.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.compare",
+      "specs": [
+        "tests/proposal-browsing.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.tools",
+      "specs": [
+        "tests/parcel-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.offer",
+      "specs": [
+        "tests/proposal-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.view3d",
+      "specs": [
+        "tests/3d-mode.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.detectBlock",
+      "specs": [
+        "tests/dataset-tools.spec.ts"
+      ]
+    },
+    {
+      "id": "parcel.useAsSite",
+      "specs": [
+        "tests/site-drawing.spec.ts"
+      ]
+    },
+    {
+      "id": "ground.drawSite",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "ground.road",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "ground.track",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "ground.busStation",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "ground.tramStation",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "ground.undergroundStation",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "ground.elevatedStation",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "road.crossSection",
+      "specs": [
+        "tests/designer-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "site.draw",
+      "specs": [
+        "tests/site-drawing.spec.ts"
+      ]
+    },
+    {
+      "id": "selection.propose",
+      "specs": [
+        "tests/multi-parcel-selection.spec.ts"
+      ]
+    },
+    {
+      "id": "selection.useAsSite",
+      "specs": [
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "selection.clear",
+      "specs": [
+        "tests/multi-parcel-selection.spec.ts"
+      ]
+    },
+    {
+      "id": "selection.done",
+      "specs": [
+        "tests/multi-parcel-selection.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.city",
+      "specs": [
+        "tests/world-and-ground.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.detectCity",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "world.open",
+      "specs": [
+        "tests/world-and-ground.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.commandPalette",
+      "specs": [
+        "tests/search-and-commands.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.dataSource",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.baseMap",
+      "specs": [
+        "tests/basemap-layers.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.wipeLocalData",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.debugMode",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.siteIntro",
+      "specs": [
+        "tests/search-and-commands.spec.ts"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "feature": "map navigation, zoom, city changes and basemaps",
+      "specs": [
+        "tests/map-navigation.spec.ts",
+        "tests/city-switching.spec.ts",
+        "tests/multi-city.spec.ts",
+        "tests/basemap-layers.spec.ts"
+      ]
+    },
+    {
+      "feature": "sheet closing, focus and keyboard palette",
+      "specs": [
+        "tests/map-shell.spec.ts",
+        "tests/search-and-commands.spec.ts"
+      ]
+    },
+    {
+      "feature": "parcels, owner data, labels, live-fabric rendering and persistence",
+      "specs": [
+        "tests/parcels.spec.ts",
+        "tests/parcel-info-panel.spec.ts",
+        "tests/layer-behavior.spec.ts",
+        "tests/reload-persistence.spec.ts"
+      ]
+    },
+    {
+      "feature": "all structure and station creation types, apply/unapply and reload",
+      "specs": [
+        "tests/proposal-creation.spec.ts"
+      ]
+    },
+    {
+      "feature": "roads and rails, speed, strips, gauge and undo",
+      "specs": [
+        "tests/corridor-creation.spec.ts",
+        "tests/designer-controls.spec.ts"
+      ]
+    },
+    {
+      "feature": "building rules, exclusion volumes and readjustment design",
+      "specs": [
+        "tests/designer-controls.spec.ts"
+      ]
+    },
+    {
+      "feature": "site draw, redraw, undo and selected/open ground",
+      "specs": [
+        "tests/site-drawing.spec.ts",
+        "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "feature": "structure furniture tools, pointer drag, erase, undo and cancellation",
+      "specs": [
+        "tests/proposal-editor.spec.ts"
+      ]
+    },
+    {
+      "feature": "consent, withdrawal, execution, support, owner offers, minting and markets",
+      "specs": [
+        "tests/proposal-actions.spec.ts"
+      ]
+    },
+    {
+      "feature": "proposal browsing, filter/sort, forks, history and comparison",
+      "specs": [
+        "tests/proposal-browsing.spec.ts"
+      ]
+    },
+    {
+      "feature": "individual/whole-plan publication, fresh-device import and replay",
+      "specs": [
+        "tests/proposals-sharing.spec.ts"
+      ]
+    },
+    {
+      "feature": "3D meshes, camera, display modes, facades, exclusions, trees and isolation",
+      "specs": [
+        "tests/3d-mode.spec.ts",
+        "tests/designer-controls.spec.ts"
+      ]
+    },
+    {
+      "feature": "photoreal entry/exit and walking-app handoff",
+      "specs": [
+        "tests/photo-and-walk.spec.ts"
+      ]
+    },
+    {
+      "feature": "AI image capture, height map, render retry, share and download",
+      "specs": [
+        "tests/ai-render.spec.ts"
+      ]
+    },
+    {
+      "feature": "plan arithmetic, assumptions and urbanist inspection",
+      "specs": [
+        "tests/plan-stats.spec.ts",
+        "tests/world-and-ground.spec.ts"
+      ]
+    },
+    {
+      "feature": "world navigation, exploration and city request retry",
+      "specs": [
+        "tests/world-and-ground.spec.ts"
+      ]
+    },
+    {
+      "feature": "profile, avatars, identity persistence and logout outcomes",
+      "specs": [
+        "tests/profile.spec.ts"
+      ]
+    },
+    {
+      "feature": "wallet connect/disconnect, chain routing and transactions",
+      "specs": [
+        "tests/wallet.spec.ts",
+        "tests/blockchain-sync.spec.ts",
+        "tests/proposal-chain-bridge.spec.ts"
+      ]
+    },
+    {
+      "feature": "area monitoring draw/create/retry, list, details and routes",
+      "specs": [
+        "tests/area-monitor.spec.ts",
+        "tests/area-monitor-authoring.spec.ts",
+        "tests/road-plan-analysis.spec.ts"
+      ]
+    },
+    {
+      "feature": "simulation and in-app activity explorer",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
+      "feature": "settings, maintenance confirmations, accepted clears and geolocation",
+      "specs": [
+        "tests/settings-maintenance.spec.ts"
+      ]
+    },
+    {
+      "feature": "languages and resilience",
+      "specs": [
+        "tests/i18n.spec.ts",
+        "tests/resilience.spec.ts"
+      ]
+    },
+    {
+      "feature": "actor/transaction/Lens/Canton explorers, deck, roadmap and demo",
+      "specs": [
+        "tests/supporting-pages.spec.ts"
+      ]
+    },
+    {
+      "feature": "Lens directory, pasted keys, coverage filtering and failed ownership-proof gates",
+      "specs": [
+        "tests/lens-picker.spec.ts"
+      ]
+    },
+    {
+      "feature": "advanced proposal terms, recipient selection and per-slice ownership",
+      "specs": [
+        "tests/proposal-terms.spec.ts"
+      ]
+    },
+    {
+      "feature": "consumed cadastral ground, breadcrumbs and cadastral view",
+      "specs": [
+        "tests/cadastre-view.spec.ts"
+      ]
+    },
+    {
+      "feature": "parcel road measurements, visualization and external builder handoff",
+      "specs": [
+        "tests/parcel-tools.spec.ts"
+      ]
+    },
+    {
+      "feature": "published track cab-simulator handoff",
+      "specs": [
+        "tests/track-drive.spec.ts"
+      ]
+    },
+    {
+      "feature": "pledge creation, revocation, fulfillment, expired settlement and donation release/refund",
+      "specs": [
+        "tests/proposal-support-actions.spec.ts"
+      ]
+    },
+    {
+      "feature": "existing EVM parcel NFT claim portal handoff",
+      "specs": [
+        "tests/parcel-claim-portal.spec.ts"
+      ]
+    }
+  ],
+  "boundaries": [
+    "HTTP and RPC dependencies use protocol fixtures; application geometry, rendering, storage, routing, instruction construction and UI handlers remain real.",
+    "External walking, cab simulator, Parcel Builder and NFT claim portal apps are verified at their navigation boundaries.",
+    "Screenshot-authoring utility capture-howto is opt-in and excluded from regression runs.",
+    "Claims counts, area-monitor uploads and outlier visualization are unavailable controls; tests assert their supported disabled gates."
+  ]
+}

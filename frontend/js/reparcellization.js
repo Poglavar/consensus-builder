@@ -2,7 +2,7 @@
     const reparcellizationUiState = window.__reparcellizationUiState;
     if (!reparcellizationUiState
         || typeof reparcellizationUiState.resolveDrawShortcut !== 'function'
-        || typeof reparcellizationUiState.resolveOwnerDisplayName !== 'function'
+        || typeof reparcellizationUiState.resolveOwnerLabel !== 'function'
         || typeof reparcellizationUiState.normalizePlotOwners !== 'function'
         || typeof reparcellizationUiState.plotIsAssigned !== 'function'
         || typeof reparcellizationUiState.readjustmentInputFeatures !== 'function'
@@ -12,7 +12,7 @@
     }
     const {
         resolveDrawShortcut,
-        resolveOwnerDisplayName,
+        resolveOwnerLabel,
         normalizePlotOwners,
         plotIsAssigned,
         readjustmentInputFeatures,
@@ -30,6 +30,11 @@
             id = window.ParcelPresenter?.getIdForLayer?.(parcelOrId) || null;
         }
         return id ? window.LiveParcelFabric?.get?.(String(id)) || null : null;
+    }
+
+    function ownerDisplayName(rawName, fallbackName) {
+        const fallback = fallbackName || t('reparcellization.modal.unassigned', 'Unassigned');
+        return resolveOwnerLabel(rawName, fallback, (key, value) => t(key, value)).displayName;
     }
 
     function liveSelectionFeatures(selection) {
@@ -62,6 +67,7 @@
         slices: [],
         hasFitBounds: false,
         resizeHandler: null,
+        resizeTimer: null,
         escHandler: null,
         commitBtns: [],
         subtitleEl: null,
@@ -306,6 +312,8 @@
     }
 
     function destroyMap() {
+        clearTimeout(state.resizeTimer);
+        state.resizeTimer = null;
         exitCompare();
         destroySweepOrientation();
         if (state.previewLayer) {
@@ -762,7 +770,10 @@
                 updateSweepDirLine();
             }
         });
-        setTimeout(() => map.invalidateSize(), 150);
+        state.resizeTimer = setTimeout(() => {
+            state.resizeTimer = null;
+            if (state.map === map) map.invalidateSize();
+        }, 150);
     }
 
     function formatArea(area) {
@@ -954,7 +965,7 @@
                     const tr = document.createElement('tr');
                     tr.className = 'reparcel-ledger-row--no-owner';
                     tr.innerHTML = `
-                    <td>${ownerLegendCellHtml(entry, color)}</td>
+                    <td>${ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)}</td>
                     <td class="area-cell">${formatArea(ledger.contributed)}</td>
                     <td class="area-cell">${formatArea(ledger.assignedArea)}</td>
                     <td class="area-cell bal-even" title="${escapeHtml(t('reparcellization.modal.noOwnerBalance', 'Open ground has no owner: nothing is owed or paid.'))}">—</td>
@@ -970,7 +981,7 @@
                 const cashOffer = getCashOffer(entry.ownerKey, ledger);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${ownerLegendCellHtml(entry, color)}</td>
+                    <td>${ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)}</td>
                     <td class="area-cell">${formatLedgerMetric(ledger.contributed)}</td>
                     <td class="area-cell">${formatLedgerMetric(ledger.assigned)}</td>
                     <td class="area-cell ${balClass}">${balSign}${formatLedgerMetric(ledger.cashBalance)}</td>
@@ -1012,7 +1023,7 @@
                     : [{ displayName: slice.displayName, color: slice.color }];
                 const unassignedLabel = t('reparcellization.modal.unassigned', 'Unassigned');
                 const ownerHtml = owners
-                    .map(o => newPlotOwnerHtml(o, { publicKey: PUBLIC_LAND_KEY, unassignedLabel }))
+                    .map(o => newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) }, { publicKey: PUBLIC_LAND_KEY, unassignedLabel }))
                     .join('');
                 const tr = document.createElement('tr');
                 tr.className = 'reparcel-newplot-row';
@@ -2931,7 +2942,7 @@
             if (owner.ownerKey === PUBLIC_LAND_KEY) swatch.style.border = '1px solid #9ca3af';
 
             const nameSpan = document.createElement('span');
-            nameSpan.textContent = owner.displayName;
+            nameSpan.textContent = ownerDisplayName(owner.displayName);
 
             row.appendChild(checkbox);
             row.appendChild(swatch);
@@ -3044,8 +3055,8 @@
             const primary = slice.owners[0];
             slice.ownerKey = primary.ownerKey;
             slice.displayName = slice.owners.length > 1
-                ? slice.owners.map(o => o.displayName).join(' + ')
-                : primary.displayName;
+                ? slice.owners.map(o => ownerDisplayName(o.displayName)).join(' + ')
+                : ownerDisplayName(primary.displayName);
             slice.color = blendOwnerColors(slice.owners);
         }
 
@@ -3064,8 +3075,8 @@
                     // Update tooltip
                     layer.unbindTooltip();
                     const ownerNames = Array.isArray(slice.owners) && slice.owners.length
-                        ? slice.owners.map(o => o.displayName).join(', ')
-                        : slice.displayName;
+                        ? slice.owners.map(o => ownerDisplayName(o.displayName)).join(', ')
+                        : ownerDisplayName(slice.displayName);
                     layer.bindTooltip(escapeHtml(ownerNames), { sticky: true, className: 'reparcel-slice-tooltip' });
                 }
                 layerIndex++;
@@ -3414,13 +3425,13 @@
                     properties: {
                         ownerKey: slice.ownerKey,
                         color: slice.color,
-                        displayName: slice.displayName,
+                        displayName: ownerDisplayName(slice.displayName),
                         percent: slice.percent,
                         sliceIndex: idx,
                         isMultiOwner: Array.isArray(slice.owners) && slice.owners.length > 1,
                         ownerNames: (Array.isArray(slice.owners) && slice.owners.length)
-                            ? slice.owners.map(o => o.displayName).join(', ')
-                            : slice.displayName
+                            ? slice.owners.map(o => ownerDisplayName(o.displayName)).join(', ')
+                            : ownerDisplayName(slice.displayName)
                     },
                     geometry: slice.geometry
                 }))
@@ -3635,11 +3646,13 @@
                 displayName: String(fallbackName || unassigned)
             };
         }
-        const displayName = resolveOwnerDisplayName(slot.displayName, fallbackName, [unassigned]);
+        const { displayName, identityName } = resolveOwnerLabel(
+            slot.displayName, fallbackName, (key, fallback) => t(key, fallback), [unassigned]
+        );
         const contributions = (typeof window !== 'undefined') ? window.__readjustmentContributions : null;
         const key = (contributions && typeof contributions.ownerKeyOf === 'function')
-            ? contributions.ownerKeyOf({ name: displayName })
-            : String(displayName).trim().replace(/\s+/g, ' ').toLowerCase();
+            ? contributions.ownerKeyOf({ name: identityName })
+            : String(identityName).trim().replace(/\s+/g, ' ').toLowerCase();
         return { ownerKey: key || `parcel:${parcelId}:owner`, displayName };
     }
 

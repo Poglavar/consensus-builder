@@ -1,13 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const baseURL = process.env.BASE_URL || 'http://localhost:8080';
+const serverURL = new URL(baseURL);
+
 export default defineConfig({
   testDir: './tests',
+  // Screenshot authoring is an opt-in utility, not regression coverage.
+  testIgnore: process.env.CAPTURE_HOWTO ? [] : ['**/capture-howto.spec.ts'],
   outputDir: './test-results',
 
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: 0,
+  workers: 1,
 
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
@@ -15,10 +20,10 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:8080',
+    baseURL,
     actionTimeout: 10_000,
     navigationTimeout: 30_000,
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
   },
@@ -28,8 +33,9 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        channel: process.env.CI ? undefined : 'chrome',
         launchOptions: {
-          args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+          args: ['--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding', '--disable-background-timer-throttling'],
         },
       },
     },
@@ -37,8 +43,8 @@ export default defineConfig({
 
   /* Start a static file server if no external server is running */
   webServer: {
-    command: 'npx serve ../frontend -l 8080 --no-clipboard',
-    url: 'http://localhost:8080',
+    command: `npx serve ../frontend -l ${serverURL.port || '8080'} --no-clipboard`,
+    url: serverURL.origin,
     reuseExistingServer: true,
     timeout: 15_000,
   },

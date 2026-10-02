@@ -111,3 +111,10 @@ UNFINISHED
 - clear roads from local storage: clear all road markings from local storage. Parcels remain.
 - OSM road lines: Show or hide road lines drawn from OpenStreetMap
 - We lost all road widths in Analyze All Roads!
+
+## Regression status — 2026-10-02
+
+Road and track authoring coverage passed in the 250-case headed regression suite. The tests exercise
+road cross-section preset and lane editing through an applied corridor, and track gauge changes
+through a finished track (`designer-controls.spec.ts`). The remaining items under UNFINISHED are
+still open; this validation does not implement the requested road-grid, source, or proposal workflows.

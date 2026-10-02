@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { connectWalletByConnectorId, injectMockEvmWallet } from '../helpers/blockchain';
+import { connectWalletByConnectorId, injectMockEvmWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 
 test.describe('Minted proposals modal @features', () => {
   test('openMintedProposalsModal shows a wallet-required error when no wallet is connected', async ({ mockApi: page }) => {
@@ -33,6 +33,12 @@ test.describe('Minted proposals modal @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'metamask');
+    await waitForBlockchainRuntime(page, ['ChainDataLoader', 'ethers']);
+
+    // This test supplies the chain reads below; stop wallet events from also querying a configured RPC.
+    await page.evaluate(() => (window as typeof window & {
+      BlockchainSync?: { shutdown?: () => void };
+    }).BlockchainSync?.shutdown?.());
 
     await page.evaluate(() => {
       const globalWindow = window as typeof window & {
@@ -52,7 +58,7 @@ test.describe('Minted proposals modal @features', () => {
       globalWindow.ChainDataLoader.getProposalsFromChain = async () => ([
         {
           proposalId: '11',
-          parentParcelIds: ['HR-335754-1234'],
+          cadastreParcelIds: ['HR-335754-1234'],
           imageURI: '/uploads/metadata/proposal-11.json',
           status: 'Active',
           lens: ['0x1234567890abcdef1234567890abcdef12345678'],
@@ -62,7 +68,7 @@ test.describe('Minted proposals modal @features', () => {
         },
         {
           proposalId: '12',
-          parentParcelIds: ['HR-335754-1235', 'HR-335754-1236'],
+          cadastreParcelIds: ['HR-335754-1235', 'HR-335754-1236'],
           imageURI: '/uploads/metadata/proposal-12.json',
           status: 'Executed',
           lens: ['0xabcdefabcdefabcdefabcdefabcdefabcdefabcd'],

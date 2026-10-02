@@ -58,7 +58,7 @@ test.describe('Government road plan worker @features', () => {
       });
     });
 
-    await page.goto('/');
+    await page.goto('/?city=zg&reduceMotion=1');
     await waitForMapReady(page);
 
     await page.evaluate(() => {
@@ -75,14 +75,8 @@ test.describe('Government road plan worker @features', () => {
       };
     });
 
-    await page.evaluate(() => {
-      const checkbox = document.getElementById('showGovernmentRoadPlan') as HTMLInputElement | null;
-      if (!checkbox) {
-        throw new Error('Government road plan checkbox not found.');
-      }
-      checkbox.checked = true;
-      checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-    });
+    await page.locator('#layers-button').click();
+    await page.locator('#showGovernmentRoadPlan').check();
 
     await page.waitForFunction(() => {
       const w = window as any;

@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal } from '../helpers/blockchain';
+import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { selectors } from '../helpers/selectors';
 
 test.describe('Wallet connection @features', () => {
@@ -12,6 +12,7 @@ test.describe('Wallet connection @features', () => {
   test('the wallet CDN libraries (ethers + solanaWeb3) are loaded', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
+    await waitForBlockchainRuntime(page, ['ethers', 'solanaWeb3', 'walletManager']);
 
     const walletModule = await page.evaluate(() => {
       const w = window as any;
