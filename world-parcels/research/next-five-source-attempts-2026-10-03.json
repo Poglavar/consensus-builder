@@ -248,6 +248,61 @@
         "DSQFL yields conflicting polygon geometries within three bounded spatial cells; the full spatial read cannot be accepted until these same-key geometry conflicts are resolved or represented safely."
       ],
       "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    },
+    {
+      "sourceId": "us-il-cook-county-clerk-parcels-2021",
+      "city": "Chicago",
+      "operation": "3x3 viewport plus 0.004-degree pan; bounded Socrata paging and exact native PIN10 reads with conflict-type diagnosis",
+      "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+      "result": {
+        "underlyingHttp200s": 246,
+        "networkFetchFailures": 1,
+        "cellsComplete": 15,
+        "cellsAttempted": 18,
+        "cellTimeouts": 1,
+        "cellIntegrityConflicts": 2,
+        "candidateDistinctPIN10": 1459,
+        "exactReadBatchesComplete": 17,
+        "exactReadBatchesConflicted": 2,
+        "exactIDsPresentInCompletedBatches": 1299,
+        "exactAbsentIds": 0,
+        "conflictingPIN10sAcrossFailedBatches": 7,
+        "conflictingGroupsAllParceltype1": true,
+        "currentParcel2025RoutePreviouslyTimedOut": true
+      },
+      "technicalBlockers": [
+        "Current 2025 ArcGIS route timed out during prior direct reachability review; current runtime coverage is unproven.",
+        "The 2021 Socrata grid had one cell timeout and two cells failed same-PIN10 geometry checks.",
+        "Two exact-ID batches failed due multiple parceltype=1 polygons per PIN10; filtering to published baseparcel type does not resolve the key conflicts."
+      ],
+      "evidenceFile": "research/chicago-live-hold-2026-10-03.json"
+    },
+    {
+      "sourceId": "br-recife-prefeitura-lotes",
+      "city": "Recife",
+      "operation": "Alternative ArcGIS layer 3: 3x3 viewport plus 0.004-degree pan using native SEQIMOVEL; exact retained-ID round trips",
+      "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "result": {
+        "underlyingHttpErrors": 0,
+        "underlyingHttp200s": 65,
+        "cellsComplete": 5,
+        "cellsAttempted": 18,
+        "cellsMissingOrInvalidSEQIMOVEL": 12,
+        "cellsGeometryConflictUnderSEQIMOVEL": 1,
+        "retainedDistinctSEQIMOVELs": 226,
+        "exactReads": 226,
+        "exactAbsent": 0,
+        "exactBatches": [
+          80,
+          80,
+          66
+        ]
+      },
+      "technicalBlockers": [
+        "Only 5 of 18 bounded cells completed; 12 contained rows with missing or invalid SEQIMOVEL and one had conflicting geometry under SEQIMOVEL.",
+        "All 226 IDs collected from complete cells exact-read, but successful exact reads do not establish complete spatial coverage or resolve the key issue."
+      ],
+      "evidenceFile": "research/recife-seqimovel-live-hold-2026-10-03.json"
     }
   ],
   "adapterClarifications": [

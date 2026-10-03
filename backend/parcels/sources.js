@@ -10,7 +10,20 @@ import { createHttpsJsonFetch } from './https-json-fetch.js';
 export const parcelSourceCatalog = JSON.parse(readFileSync(new URL('./source-catalog.json', import.meta.url), 'utf8'));
 const certificateFetches = new Map();
 
+function validateCityMetrics(descriptor) {
+    const metrics = descriptor.metricSridByCity;
+    if (metrics === undefined) return;
+    if (!metrics || typeof metrics !== 'object' || Array.isArray(metrics)
+        || !Array.isArray(descriptor.cityIds)
+        || Object.keys(metrics).length !== descriptor.cityIds.length
+        || descriptor.cityIds.some(city => !Object.hasOwn(metrics, city))
+        || Object.values(metrics).some(srid => !Number.isSafeInteger(srid) || srid <= 0)) {
+        throw new Error('Invalid parcel source city metric projections.');
+    }
+}
+
 export function createParcelSource(descriptor, options = {}) {
+    validateCityMetrics(descriptor);
     const factory = { arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
         'geojson-snapshot': createGeojsonSnapshotParcelSource, socrata: createSocrataParcelSource }[descriptor.adapter];
     if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
@@ -26,7 +39,10 @@ export function createParcelSource(descriptor, options = {}) {
 
 export function parcelSourceForCity(city) {
     const descriptor = parcelSourceCatalog.sources.find(source => source.cityIds.includes(city));
-    return descriptor ? { descriptor, adapter: createParcelSource(descriptor) } : null;
+    if (!descriptor) return null;
+    const adapter = createParcelSource(descriptor);
+    // Keep adapter/cache identity tied to the original shared provider; only binding's projection varies.
+    return { descriptor: descriptor.metricSridByCity ? { ...descriptor, metricSrid: descriptor.metricSridByCity[city] } : descriptor, adapter };
 }
 
 export function parcelSourceForIds(ids) {

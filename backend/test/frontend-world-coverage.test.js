@@ -19,9 +19,13 @@ describe('tierAt', () => {
         ['birmingham', 'gb-arcgis-geodom-land-registry-inspire-2021', 52.4975, -1.978, 'Birmingham', 52.4975, -1.6],
         ['lusaka', 'zm-lusaka-mtendere-east-agol-unofficial', -15.40478133, 28.38004999, 'Lusaka', -15.40478133, 28.8],
         ['osaka', 'jp-moj-geospatial-2026', 34.677750586, 135.532507321, 'Osaka', 34.67775, 135.9],
+        ['tokyo', 'jp-moj-geospatial-2026', 35.696623934, 139.766899192, 'Tokyo', 35.44, 139.64],
+        ['nagoya', 'jp-moj-geospatial-2026', 35.163716454, 136.984010139, 'Nagoya', 35.16, 137.3],
         ['los_angeles', 'us-ca-lacounty-assessor-parcels', 34.0522, -118.2437, 'Los Angeles', 33.74, -117.88],
         ['miami', 'us-fl-miamidade-pa-parcels', 25.7749, -80.1936, 'Miami', 26.12, -80.14],
         ['washington_dc', 'us-dc-dcgis-tax-lots', 38.91025, -77.0425, 'Washington', 38.89, -77.08],
+        ['cotonou', 'bj-andf-efoncier-geoserver', 6.38646680667236, 2.3895186609943, 'Cotonou', 6.38, 2.8],
+        ['dortmund', 'de-nrw-lika-flurstueck', 51.51494, 7.466, 'Dortmund', 51.51494, 7.8],
         ['bamako', 'ml-sprdf-ninacad-parcelle-wfs', 12.6765, -8.04225, 'Bamako', 12.8, -8.04],
         ['luanda', 'ao-arcgis-luanda-agt-property-polygons', -8.83675, 13.234, 'Luanda', -9.05, 13.23],
         ['lima', 'pe-sedapal-publicaciones-lotes', -12.015, -76.96825, 'Lima', -12.2, -76.97],
@@ -36,7 +40,8 @@ describe('tierAt', () => {
         ['san_francisco', 'us-ca-sf-datasf-active-parcels', 37.79125, -122.4065, 'San Francisco', 37.8, -122.27],
         ['antwerp', 'be-vlaanderen-grb-adp', 51.2110, 4.4010, 'Antwerp', 50.85, 4.35],
         ['amsterdam', 'nl-pdok-brk-kadastrale-kaart', 52.3725, 4.9000, 'Amsterdam', 52.37, 5.25],
-        ['cape_town', 'za-cct-land-parcels', -33.9258, 18.4194, 'Cape Town', -33.9258, 18.75]
+        ['cape_town', 'za-cct-land-parcels', -33.9258, 18.4194, 'Cape Town', -33.9258, 18.75],
+        ['montreal', 'ca-qc-cadastre-bd-allegee', 45.50375, -73.569, 'Montreal', 45.50375, -73.4]
     ])('routes %s through its source and respects its bounded entry area', (cityId, sourceId, lat, lon, name, outsideLat, outsideLon) => {
         expect(coverage.tierAt(lat, lon)).toMatchObject({ kind: 'live-city', cityId, sourceId });
         expect(coverage.searchPlaces(name)[0]).toMatchObject({ cityId, sourceId });
@@ -67,8 +72,8 @@ describe('tierAt', () => {
         expect(['split', 'sibenik']).toContain(dubrovnik.cityId);
     });
 
-    it('marks Tokyo as a verified open source', () => {
-        expect(coverage.tierAt(35.69, 139.69)).toMatchObject({ kind: 'city', tier: 'source', name: 'Tokyo', cc: 'JP', placeKey: 'geonames:1850147' });
+    it('opens Tokyo through its configured partial-ward entry', () => {
+        expect(coverage.tierAt(35.696623934, 139.766899192)).toMatchObject({ kind: 'live-city', tier: 'live', name: 'Tokyo', cc: 'JP', placeKey: 'live:tokyo' });
     });
 
     it('marks Jakarta as researched with nothing open', () => {
@@ -137,8 +142,8 @@ describe('nameAt (the explore chip)', () => {
 
     it('falls back to the country away from any registry city (Yokohama is not Tokyo)', () => {
         expect(coverage.nameAt(35.44, 139.64, 14)).toMatchObject({ kind: 'country', name: 'Japan', cc: 'JP' });
-        // Still "Tokyo" for coverage, which reaches further than a name does.
-        expect(coverage.tierAt(35.44, 139.64)).toMatchObject({ kind: 'city', name: 'Tokyo' });
+        // A bounded configured entry does not advertise its city at Yokohama.
+        expect(coverage.tierAt(35.44, 139.64)).toMatchObject({ kind: 'country', name: 'Japan' });
     });
 
     it('has no name on open water or for a continent-wide view (the default world view is over Libya)', () => {

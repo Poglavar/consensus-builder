@@ -3362,15 +3362,20 @@
             "lyon": "Lyon, Francuska",
             "rotterdam": "Rotterdam, Nizozemska",
             "cologne": "Köln, Njemačka",
+            "cotonou": "Cotonou, Benin",
             "bamako": "Bamako, Mali",
             "cali": "Cali, Kolumbija",
             "lima": "Lima, Peru",
             "luanda": "Luanda, Angola",
             "sydney": "Sydney, Australija",
             "sao_paulo": "São Paulo, Brazil",
+            "tokyo": "Tokio, Japan",
+            "nagoya": "Nagoya, Japan",
             "osaka": "Osaka, Japan",
             "birmingham": "Birmingham, Ujedinjeno Kraljevstvo",
-            "lusaka": "Lusaka, Zambija"
+            "lusaka": "Lusaka, Zambija",
+            "montreal": "Montreal, Kanada",
+            "dortmund": "Dortmund, Njemačka"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",

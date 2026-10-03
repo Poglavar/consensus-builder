@@ -1,0 +1,235 @@
+/* ========== Shared primitives ==========
+   The components every surface is built from: the dialog, the base form controls, the toast, the
+   status/lifecycle badge and the section kicker. Buttons are the `.btn` family in utilities.css
+   (kept there so its position in the cascade does not change); sheets are `.map-sheet`
+   (map-shell.css); right-dock panels are `.right-dock-panel` (panels.css). Rules and roles in
+   docs/design-language.md. Everything here takes its values from tokens.css. */
+
+/* ---- Dialog ----
+   <div class="cb-dialog-overlay"><div class="cb-dialog cb-dialog--sm" role="dialog" aria-modal="true" aria-labelledby="…">
+     <div class="cb-dialog__header"><h2 class="cb-dialog__title">…</h2><button class="close-circle-btn">×</button></div>
+     <div class="cb-dialog__body">…</div>
+     <div class="cb-dialog__footer"><button class="btn">Cancel</button><button class="btn btn-primary">Done</button></div>
+   </div></div> */
+.cb-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--cb-z-dialog);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--cb-space-4);
+    box-sizing: border-box;
+    background: var(--cb-backdrop);
+}
+
+.cb-dialog-overlay[hidden] {
+    display: none;
+}
+
+.cb-dialog-overlay--top {
+    z-index: var(--cb-z-dialog-top);
+}
+
+.cb-dialog-overlay--confirm {
+    z-index: var(--cb-z-confirm);
+}
+
+.cb-dialog {
+    --cb-dialog-width: 520px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(var(--cb-dialog-width), 100%);
+    max-height: calc(100dvh - 2 * var(--cb-space-4));
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: var(--cb-radius-xl);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-lg);
+    color: var(--cb-text);
+    font-family: var(--cb-font-sans);
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
+}
+
+.cb-dialog--sm { --cb-dialog-width: 420px; }
+.cb-dialog--lg { --cb-dialog-width: 760px; }
+.cb-dialog--xl { --cb-dialog-width: 1100px; }
+
+.cb-dialog__header {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-4) var(--cb-space-5);
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.cb-dialog__title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--cb-text-xl);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 1.25;
+    color: var(--cb-text-strong);
+    overflow-wrap: anywhere;
+}
+
+.cb-dialog__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--cb-space-5);
+    overflow: auto;
+}
+
+.cb-dialog__body > :first-child { margin-top: 0; }
+.cb-dialog__body > :last-child { margin-bottom: 0; }
+
+.cb-dialog__footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-3) var(--cb-space-5);
+    border-top: 1px solid var(--cb-line);
+}
+
+.cb-dialog__footer .btn {
+    margin: 0;
+}
+
+/* A confirm with no header: the message is the body, the buttons the footer. */
+.cb-dialog--message .cb-dialog__body {
+    font-size: var(--cb-text-lg);
+    color: var(--cb-text);
+}
+
+@media (max-width: 767.98px) {
+    .cb-dialog-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .cb-dialog {
+        width: 100%;
+        max-height: 92dvh;
+        border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
+    }
+
+    .cb-dialog__footer {
+        padding-bottom: calc(var(--cb-space-3) + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* ---- Form controls ----
+   The base every input gets; components add layout, not looks. */
+input[type="text"],
+input[type="search"],
+input[type="number"],
+input[type="url"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="datetime-local"],
+select,
+textarea {
+    font: inherit;
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
+    color: var(--cb-text);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-sm);
+    padding: 6px 10px;
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+input[type="text"]:focus-visible,
+input[type="search"]:focus-visible,
+input[type="number"]:focus-visible,
+input[type="url"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="password"]:focus-visible,
+input[type="date"]:focus-visible,
+input[type="datetime-local"]:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 1px;
+    border-color: var(--cb-focus);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+    cursor: not-allowed;
+}
+
+::placeholder {
+    color: var(--cb-text-faint);
+    opacity: 1;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* ---- Toast ----
+   One look for every transient message: a dark pill, centred. The two mounts today
+   (#floating-status and .ephemeral-message) both take this class. */
+.cb-toast {
+    display: inline-block;
+    max-width: min(520px, calc(100vw - 2 * var(--cb-space-4)));
+    padding: 6px 14px;
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-inverse);
+    color: var(--cb-inverse-ink);
+    box-shadow: var(--cb-shadow-md);
+    font-family: var(--cb-font-sans);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Lifecycle / status badge ----
+   <span class="cb-badge cb-badge--applied">Applied</span>; the modifier is the lifecycle rung. */
+.cb-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-1);
+    height: 20px;
+    padding: 0 var(--cb-space-2);
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 20px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.cb-badge--draft { background: var(--cb-surface-2); color: var(--cb-text-muted); }
+.cb-badge--applied { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
+.cb-badge--published { background: var(--cb-info-soft); color: var(--cb-info-soft-ink); }
+.cb-badge--minted { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
+.cb-badge--executed { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
+.cb-badge--expired,
+.cb-badge--withdrawn { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
+
+/* ---- Section kicker ----
+   The small uppercase label above a group of controls (the sheets' "Highlight by ownership type"). */
+.cb-kicker {
+    margin: 0 0 var(--cb-space-2);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    letter-spacing: var(--cb-tracking-caps);
+    text-transform: uppercase;
+    color: var(--cb-text-muted);
+}

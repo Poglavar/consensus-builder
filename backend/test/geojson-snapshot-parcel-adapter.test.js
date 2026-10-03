@@ -145,3 +145,53 @@ describe('GeoJSON snapshot parcel source', () => {
         expect(() => createGeojsonSnapshotParcelSource({ ...descriptor, maxSnapshotBytes: 0 })).toThrow();
     });
 });
+
+describe('multiple published snapshot resources', () => {
+    const resource = (value, west = 135.5) => ({ endpoint: `https://example.org/${value}.geojson`,
+        bbox: [west, 34.68, west + .01, 34.69], idNamespace: { field: 'city', value },
+        expectedEtag: '"verified"', expectedSnapshotFeatures: 1 });
+    const multi = changes => ({ ...descriptor, snapshots: [resource('27128'), resource('13101', 139.5)], ...changes });
+    const featureFor = (value, west = 135.5) => ({ ...feature(), properties: { ...feature().properties, city: value }, geometry: square(west) });
+    const fetcher = (fail = false) => vi.fn(async url => {
+        const city = new URL(url).pathname.slice(1).split('.')[0];
+        return city === '13101' && fail ? new Response('unavailable', { status: 503 })
+            : response(collection([featureFor(city, city === '13101' ? 139.5 : 135.5)]), { headers: { ETag: '"verified"' } });
+    });
+    it('selects bounds, footprint and IDs without fetching unrelated failures', async () => {
+        const fetchImpl = fetcher(true), source = createGeojsonSnapshotParcelSource(multi(), { fetchImpl });
+        expect((await source.queryBounds(bounds)).features[0].id).toBe(nativeId('H001'));
+        expect((await source.queryGeometry(square())).features).toHaveLength(1);
+        expect((await source.queryIds([nativeId('H001')])).features).toHaveLength(1);
+        const unknown = descriptor.idPrefix + encodeSnapshotNativeId(['unknown', 'map', 'id']);
+        expect((await source.queryIds([unknown])).absentIds).toEqual([unknown]);
+        expect((await source.queryBounds([140, 35, 140.001, 35.001])).features).toEqual([]);
+        expect(fetchImpl).toHaveBeenCalledOnce();
+        await expect(source.queryBounds([139.5, 34.68, 139.501, 34.681])).rejects.toThrow(/503/);
+        const other = descriptor.idPrefix + encodeSnapshotNativeId(['13101', '大阪~中央 / 図1', 'H001']);
+        await expect(source.queryIds([nativeId('H001'), other])).rejects.toThrow(/503/);
+    });
+    it('combines namespaces, validates every ID first and enforces aggregate limits', async () => {
+        const fetchImpl = fetcher(), source = createGeojsonSnapshotParcelSource(multi(), { fetchImpl });
+        const other = descriptor.idPrefix + encodeSnapshotNativeId(['13101', '大阪~中央 / 図1', 'H001']);
+        await expect(source.queryIds([nativeId('H001'), 'bad-prefix'])).rejects.toMatchObject({ status: 400 });
+        expect(fetchImpl).not.toHaveBeenCalled();
+        expect((await source.queryIds([nativeId('H001'), other])).features).toHaveLength(2);
+        await expect(source.queryIds(Array(81).fill(other))).rejects.toMatchObject({ status: 400 });
+        const capped = createGeojsonSnapshotParcelSource(multi({ maxFeatures: 1 }), { fetchImpl: fetcher() });
+        await expect(capped.queryIds([nativeId('H001'), other])).rejects.toThrow(/feature limit/);
+    });
+    it('rejects foreign native namespaces and polygons outside the declared extent', async () => {
+        for (const bad of [featureFor('foreign'), featureFor('27128', 135.52)]) {
+            const fetchImpl = async () => response(collection([bad]), { headers: { ETag: '"verified"' } });
+            await expect(createGeojsonSnapshotParcelSource(multi(), { fetchImpl }).queryBounds(bounds)).rejects.toThrow(/namespace|extent/);
+        }
+    });
+    it('rejects repeated configuration namespaces/endpoints, invalid namespace fields and extents', () => {
+        for (const snapshots of [[resource('27128'), resource('27128', 139.5)],
+            [resource('27128'), { ...resource('13101'), endpoint: resource('27128').endpoint }],
+            [{ ...resource('27128'), idNamespace: { field: 'notPublished', value: '27128' } }],
+            [{ ...resource('27128'), bbox: [135, 35, 134, 34] }]]) {
+            expect(() => createGeojsonSnapshotParcelSource(multi({ snapshots }))).toThrow();
+        }
+    });
+});

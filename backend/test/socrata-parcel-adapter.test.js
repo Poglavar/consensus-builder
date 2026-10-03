@@ -33,6 +33,25 @@ describe('Socrata parcel adapter', () => {
         }
         expect(fetchImpl.mock.calls[0][1].redirect).toBe('error');
     });
+    it('allows only the fixed Socrata row ID and update timestamp system fields', async () => {
+        const systemDescriptor = { ...descriptor, idField: 'pin10', idPattern: '^[0-9]{10}$', idPrefix: 'US-IL-COOK-PIN10-',
+            objectIdField: ':id', versionField: ':updated_at', geometryField: 'the_geom',
+            outFields: ['pin10', 'parceltype', ':id', ':updated_at'], attributeFilters: {}, pageSize: 2 };
+        const timestamp = '2022-02-28T19:59:18.593Z';
+        const row = { pin10: '1614403016', parceltype: '1', ':id': 'row-wefx_rbh9-hg4h', ':updated_at': timestamp,
+            the_geom: polygon() };
+        const fetchImpl = responses([[{ matched: '1', revision: timestamp }], [row], [{ matched: '1', revision: timestamp }]]);
+        const r = await createSocrataParcelSource(systemDescriptor, { fetchImpl }).queryBounds(bounds);
+        expect(r.features.map(f => f.id)).toEqual(['US-IL-COOK-PIN10-1614403016']);
+        const urls = fetchImpl.mock.calls.map(([url]) => new URL(url));
+        expect(urls[0].searchParams.get('$select')).toBe('count(*) as matched,max(:updated_at) as revision');
+        expect(urls[1].searchParams.get('$select')).toBe('the_geom,pin10,parceltype,:id,:updated_at');
+        expect(urls[1].searchParams.get('$order')).toBe('pin10,:id');
+        expect(() => createSocrataParcelSource({ ...systemDescriptor, versionField: ':version', outFields: ['pin10', 'parceltype', ':id', ':version'] }, { fetchImpl }))
+            .toThrow(/Invalid Socrata parcel source descriptor/);
+        expect(() => createSocrataParcelSource({ ...systemDescriptor, idField: ':id' }, { fetchImpl }))
+            .toThrow(/Invalid Socrata parcel source descriptor/);
+    });
     it('preserves leading-zero IDs and reports explicit absence after stable exact-query counts', async () => {
         const fetchImpl = responses([count('1'), [row('0257001')], count('1')]);
         const r = await createSocrataParcelSource(descriptor, { fetchImpl }).queryIds(['US-CA-SF-0257001', 'US-CA-SF-0257002']);

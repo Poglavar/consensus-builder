@@ -123,7 +123,7 @@ describe('where a globe pick lands', () => {
         expect(Model.liveCityFor({ place: osijek, currentCityId: 'split', sameCadastre: true })).toBe('split');
         expect(Model.liveCityFor({ place: osijek, currentCityId: 'new_york', sameCadastre: false })).toBe(osijek.cityId);
         expect(Model.liveCityFor({ place: coverage.tierAt(45.83, 16.05), currentCityId: 'split', sameCadastre: true })).toBe('zagreb');
-        expect(Model.liveCityFor({ place: coverage.tierAt(35.69, 139.69), currentCityId: 'split', sameCadastre: false })).toBeNull();
+        expect(Model.liveCityFor({ place: coverage.tierAt(35.696623934, 139.766899192), currentCityId: 'split', sameCadastre: false })).toBe('tokyo');
         // ... and then lands in place, at the spot.
         const point = { lat: 45.55, lon: 18.69, place: osijek };
         expect(Model.resolveLanding({ cityId: 'split', point, currentCityId: 'split', cityView: zagrebView }))

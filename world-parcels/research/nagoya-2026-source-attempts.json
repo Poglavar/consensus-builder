@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-03",
+  "city": "nagoya",
+  "attempts": [
+    {
+      "municipalityCode": "23106",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23106/23106_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "bytes": 10064816,
+      "expectedEtag": "\"65deb159f336309057bc151f583b1d28-2\"",
+      "outcome": "ambiguous-native-identity",
+      "detail": "The full in-memory package repeated the published municipality/map-sheet/ID composite before acceptance; aborted rather than inventing a key. Full duplicate count was not computed."
+    },
+    {
+      "code": "23102",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-23102",
+      "title": "愛知県-名古屋市東区",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23102/23102_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E6%9D%B1%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "bytes": 1645577,
+      "etag": "\"fa6ba73d655a98650952cd891524b394\"",
+      "lastModified": "Fri, 07 Aug 2026 05:48:38 GMT",
+      "count": 2039,
+      "unique": 1650,
+      "duplicates": 389,
+      "conflicts": 389,
+      "outcome": "ambiguous-native-identity",
+      "detail": "Published municipality/map-sheet/ID composite evaluated across complete resource in memory."
+    },
+    {
+      "code": "23101",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-23101",
+      "title": "愛知県-名古屋市千種区",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23101/23101_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E5%8D%83%E7%A8%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "bytes": 224196,
+      "etag": "\"48f56c86e848d68d7a509bef0e9bd8d2\"",
+      "lastModified": "Fri, 07 Aug 2026 05:48:27 GMT",
+      "count": 284,
+      "unique": 284,
+      "duplicates": 0,
+      "conflicts": 0,
+      "outcome": "unique-native-identity",
+      "detail": "Published municipality/map-sheet/ID composite evaluated across complete resource in memory."
+    },
+    {
+      "code": "23105",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-23105",
+      "title": "愛知県-名古屋市中村区",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23105/23105_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "bytes": 9737346,
+      "etag": "\"44ef4d2a6d2c6011b87164ff1533009f-2\"",
+      "lastModified": "Fri, 07 Aug 2026 05:49:11 GMT",
+      "count": 12252,
+      "unique": 6581,
+      "duplicates": 5671,
+      "conflicts": 5671,
+      "outcome": "ambiguous-native-identity",
+      "detail": "Published municipality/map-sheet/ID composite evaluated across complete resource in memory."
+    }
+  ]
+}

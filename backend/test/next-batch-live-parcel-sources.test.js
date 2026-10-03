@@ -25,6 +25,17 @@ const cases = [
         geometry: SQUARE(7.012, 51.455, 7.0122, 51.4552)
     },
     {
+        city: 'dortmund',
+        sourceId: 'de-nrw-lika-flurstueck',
+        nativeId: '05913000000012345678',
+        metricSrid: 32632,
+        descriptorContract: {
+            adapter: 'ogc-api', idField: 'flstkennz', idFromFeatureId: true,
+            idPrefix: 'DE-NRW-', pagination: 'offset', metricSrid: 32632
+        },
+        geometry: SQUARE(7.465, 51.514, 7.4652, 51.5142)
+    },
+    {
         city: 'san_francisco',
         sourceId: 'us-ca-sf-datasf-active-parcels',
         nativeId: '0256005',

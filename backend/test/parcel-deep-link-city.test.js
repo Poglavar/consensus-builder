@@ -32,13 +32,15 @@ beforeAll(() => {
 describe('parcelIdToCityId — prefixes that are unambiguous', () => {
     it('maps each one-city country prefix', () => {
         expect(route.parcelIdToCityId('CA-ON-TORONTO-5455132')).toBe('toronto');
+        expect(route.parcelIdToCityId('CA-QC-CADASTRE-11111111-2222-3333-4444-555555555555')).toBe('montreal');
         expect(route.parcelIdToCityId('AU-NSW-11111')).toBe('sydney');
         expect(route.parcelIdToCityId('BR-SP-GEOSAMPA-1958754')).toBe('sao_paulo');
         expect(route.parcelIdToCityId('GB-HMLR-23394370')).toBe('birmingham');
         expect(route.parcelIdToCityId('ZM-LUSAKA-GID-11111111-2222-3333-4444-555555555555')).toBe('lusaka');
-        expect(route.parcelIdToCityId('JP-MOJ-2026-27128~sheet1~H000000001')).toBe('osaka');
+        expect(route.parcelIdToCityId('JP-MOJ-2026-27128~sheet1~H000000001')).toBeNull();
         expect(route.parcelIdToCityId('AO-LUANDA-AGT-11111111-2222-3333-4444-555555555555')).toBe('luanda');
         expect(route.parcelIdToCityId('ML-NINACAD-00103010001')).toBe('bamako');
+        expect(route.parcelIdToCityId('BJ-ANDF-101413974')).toBe('cotonou');
         expect(route.parcelIdToCityId('CO-CALI-NPN-760010100010000100010000000000')).toBe(null);
         expect(route.parcelIdToCityId('PE-SEDAPAL-LOT-{11111111-2222-3333-4444-555555555555}')).toBe('lima');
         expect(route.parcelIdToCityId('CO-BOGOTA-006106001009')).toBe('bogota');
@@ -196,12 +198,16 @@ describe('shared parcel sources resolve city from geometry', () => {
         delete globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__;
     });
     it.each([
+        ['JP-MOJ-2026-27128~sheet1~H000000001', 135.532507321, 34.677750586, 'osaka', 'tokyo'],
+        ['JP-MOJ-2026-13101~sheet1~H000000001', 139.766899192, 35.696623934, 'tokyo', 'tokyo'],
+        ['JP-MOJ-2026-23101~sheet1~H000000001', 136.984010139, 35.163716454, 'nagoya', 'tokyo'],
         ['FR-PCI-69385000AA0001', 4.8357, 45.764, 'lyon', 'paris'],
         ['FR-PCI-75105000AD0011', 2.3556, 48.8491, 'paris', 'paris'],
         ['NL-BRK-11460432670000', 4.4792, 51.9225, 'rotterdam', 'amsterdam'],
         ['NL-BRK-11460432670000', 4.9, 52.3725, 'amsterdam', 'amsterdam'],
         ['DE-NRW-05344102100105______', 6.9603, 50.9375, 'cologne', 'essen'],
-        ['DE-NRW-05344102100105______', 7.0123, 51.4556, 'essen', 'essen']
+        ['DE-NRW-05344102100105______', 7.0123, 51.4556, 'essen', 'essen'],
+        ['DE-NRW-05913000000012345678', 7.466, 51.51494, 'dortmund', 'essen']
     ])('places %s from exact geometry in %s', async (id, lng, lat, target, lookupCity) => {
         locateIds.mockResolvedValue({ status: 'ready', features: [
             { id, geometry: { type: 'Polygon', coordinates: [[[lng, lat]]] } }

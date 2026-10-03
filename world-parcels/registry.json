@@ -110,7 +110,7 @@
       "name": "MOJ registry-map 2026 polygons converted by Geospatial Information Center",
       "operator": "Geospatial Information Center / AIGID, derived from Japan Ministry of Justice",
       "countryCode": "JP",
-      "scope": "Municipality and ward packages across Japan, public-coordinate sheets only; only Osaka Chuo ward sampled here",
+      "scope": "2026 converted MOJ public-coordinate packages; only Osaka Chuo, Tokyo Chiyoda and Nagoya Chikusa verified and enabled. Partial ward coverage, not complete cities or Japan.",
       "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
       "method": "GET",
       "responseFormat": "GeoJSON FeatureCollection",
@@ -118,7 +118,9 @@
       "verificationStatus": "verified_nonempty_sample_partial_coverage",
       "reuseStatus": "CC_BY_catalog;_source_terms_to_review",
       "verifiedCityIds": [
-        "geonames:1853909"
+        "geonames:1853909",
+        "geonames:1850147",
+        "wup2025:5245"
       ],
       "evidenceFile": "research/osaka.json",
       "integrationAttempts": [
@@ -137,15 +139,57 @@
           "outcome": "success",
           "detail": "2051653 bytes, 2487 unique CityCode/map-sheet/ID composites, 18 complete cells, all 2487 exact reads, complete absence and footprint verified; zero geometry conflicts. One bounded upstream read; five-minute transient-memory cache. Chuo public-coordinate sheets only.",
           "evidenceFile": "research/osaka-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23106/23106_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "operation": "Full published municipality/map-sheet/ID composite validation",
+          "outcome": "ambiguous-native-identity",
+          "detail": "The full in-memory package repeated the published municipality/map-sheet/ID composite before acceptance; aborted rather than inventing a key. Full duplicate count was not computed.",
+          "evidenceFile": "research/nagoya-2026-source-attempts.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23102/23102_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E6%9D%B1%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "operation": "Full published municipality/map-sheet/ID composite validation",
+          "outcome": "ambiguous-native-identity",
+          "detail": "Published municipality/map-sheet/ID composite evaluated across complete resource in memory. Conflicting repeated native keys: 389",
+          "evidenceFile": "research/nagoya-2026-source-attempts.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23105/23105_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "operation": "Full published municipality/map-sheet/ID composite validation",
+          "outcome": "ambiguous-native-identity",
+          "detail": "Published municipality/map-sheet/ID composite evaluated across complete resource in memory. Conflicting repeated native keys: 5671",
+          "evidenceFile": "research/nagoya-2026-source-attempts.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/13/aigid-moj-13101/13101_%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%999%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "operation": "Pinned 2026 public-coordinate snapshot; 18 viewport/pan cells and every native composite ID exact reread",
+          "outcome": "success",
+          "detail": "236 unique native IDs, all exact reads complete, no geometry conflicts; selected ward public-coordinate sheets only.",
+          "evidenceFile": "research/tokyo-2026-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23101/23101_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E5%8D%83%E7%A8%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "operation": "Pinned 2026 public-coordinate snapshot; 18 viewport/pan cells and every native composite ID exact reread",
+          "outcome": "success",
+          "detail": "284 unique native IDs, all exact reads complete, no geometry conflicts; selected ward public-coordinate sheets only.",
+          "evidenceFile": "research/nagoya-2026-live.json"
         }
       ],
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "osaka"
+          "osaka",
+          "tokyo",
+          "nagoya"
         ],
-        "reason": "Bounded transient-memory snapshot adapter verified all 2487 published composite native keys across 32 exact batches and 18 complete viewport cells; pinned 2026 ETag and feature count. Limited to Chuo ward public-coordinate sheets.",
-        "evidenceFile": "research/osaka-live.json",
+        "reason": "Three pinned public-coordinate ward packages verified: all 3007 published composite IDs round-trip without conflicts; 54 complete viewport/pan cells. Partial Osaka Chuo, Tokyo Chiyoda and Nagoya Chikusa scope.",
+        "evidenceFile": "research/japan-2026-live.json",
         "technicalBlockers": [],
         "termsAreInformational": true
       }
@@ -718,18 +762,28 @@
           "outcome": "timeout",
           "detail": "Saved 2021 extract retained; newer service candidates timed out and their identities and terms are unverified.",
           "evidenceFile": "research/chicago-live-candidates.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+          "operation": "3x3 viewport plus 0.004-degree pan; bounded Socrata paging and exact native PIN10 reads with conflict-type diagnosis",
+          "outcome": "technical-hold",
+          "detail": "15 of 18 cells completed; one cell timed out and two cells rejected conflicting same-PIN10 geometries. Two exact-ID batches also conflicted; each conflicting key was confirmed to be parceltype=1 (Baseparcel), so the documented type filter does not resolve the identity issue. The current 2025 route remains unverified after prior timeouts.",
+          "evidenceFile": "research/chicago-live-hold-2026-10-03.json"
         }
       ],
       "liveIntegration": {
         "status": "held",
-        "evidenceFile": "research/chicago-live-candidates.json",
-        "reason": "Current runtime endpoint and identity unverified; newer candidates timed out.",
+        "evidenceFile": "research/chicago-live-hold-2026-10-03.json",
+        "reason": "No reliable complete current runtime source is established. The official 2021 Socrata candidate failed the bounded/exact acceptance gate: a cell timeout and repeated geometry conflicts under PIN10 remain even among published parceltype=1 Baseparcel rows.",
         "previousAssessment": {
           "reason": "No current verified runtime endpoint.",
           "evidenceFile": "research/chicago-live-candidates.json"
         },
         "technicalBlockers": [
-          "Current runtime endpoint and identity unverified; newer candidates timed out."
+          "Current 2025 ArcGIS service routes timed out during prior direct requests; coverage and exact identity remain unverified.",
+          "The 2021 candidate completed only 15 of 18 cells; one cell timed out and two cells failed same-PIN10 geometry integrity checks.",
+          "Two exact-ID batches contained conflicting geometry for PIN10s that are all parceltype=1; first-winner geometry handling would be lossy."
         ],
         "termsAreInformational": true
       }
@@ -751,20 +805,18 @@
       ],
       "evidenceFile": "research/cotonou.json",
       "liveIntegration": {
-        "status": "held",
+        "status": "enabled",
         "cityIds": [
           "cotonou"
         ],
-        "reason": "Fresh geometry, complete paging and exact native-ID lookup require validation; newest check returned only three NUP properties.",
-        "evidenceFile": "research/cotonou-live-assessment.json",
+        "reason": "18 complete viewport/pan cells, all 2374 published NUP exact-ID round trips and genuine footprint read verified without geometry conflicts. Cotonou samples only; national coverage remains unverified.",
+        "evidenceFile": "research/cotonou-live.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true,
         "previousAssessment": {
           "reason": "Official technical source, but service reuse rights, personal-data implications, version/currentness, and broader coverage are unresolved.",
           "evidenceFile": "research/cotonou-live-assessment.json"
-        },
-        "technicalBlockers": [
-          "Fresh geometry, complete paging and exact native-ID lookup require validation; newest check returned only three NUP properties."
-        ],
-        "termsAreInformational": true
+        }
       },
       "integrationAttempts": [
         {
@@ -783,6 +835,14 @@
           "outcome": "reuse-unresolved",
           "detail": "ANDF cadastre page https://andf.bj/cadastre/ says cadastral data is available for public consultation and duplication except personal/confidential data; its text describes online/private access subject to conditions and fees. GeoServer AccessConstraints/Fees NONE is a service default, not a license.",
           "evidenceFile": "research/cotonou-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+          "operation": "Forced 25-row viewport paging, 0.004-degree pan, every native NUP in exact batches of 80 and genuine footprint query",
+          "outcome": "success",
+          "detail": "18 complete cells, 2374 unique NUP identifiers and all exact reads verified without conflicts; footprint returned 7 complete intersecting parcels. Source conditions informational; only bounded Cotonou entry enabled.",
+          "evidenceFile": "research/cotonou-live.json"
         }
       ]
     },
@@ -942,7 +1002,26 @@
       "verifiedCityIds": [
         "wup2025:8285"
       ],
-      "evidenceFile": "research/fortaleza.json"
+      "evidenceFile": "research/fortaleza.json",
+      "integrationAttempts": [
+        {
+          "endpoint": "https://dados.fortaleza.ce.gov.br/dataset/9d2863b7-c238-4b25-bf01-a2c82d4d0b9c/resource/39e0185f-1a69-4fde-8680-4a47b38a552f/download/pirf-zeis-pici-lotes-zeis-pici.geojson",
+          "operation": "current-snapshot-read",
+          "outcome": "dns-failure",
+          "detail": "Direct authorized network request returned ENOTFOUND/getaddrinfo; curl independently returned exit 6. No HTTP response; does not establish parcel absence.",
+          "checkedAt": "2026-10-03",
+          "evidenceFile": "research/batch-six-root-source-attempts.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Current published snapshot host failed DNS resolution; geometry and complete native-ID reads require a reachable source.",
+        "evidenceFile": "research/batch-six-root-source-attempts.json",
+        "technicalBlockers": [
+          "Current published snapshot host failed DNS resolution; geometry and complete native-ID reads require a reachable source."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "ec-guayaquil-rural-predios-agol-thirdparty",
@@ -1444,16 +1523,29 @@
           "outcome": "technical-hold",
           "detail": "Exact lookups for the retained DSQFL keys pass, but three spatial cells contain conflicting geometry for a DSQFL value and fail closed.",
           "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+          "operation": "Alternative ArcGIS layer 3: 3x3 viewport plus 0.004-degree pan using native SEQIMOVEL; exact retained-ID round trips",
+          "outcome": "technical-hold",
+          "detail": "Only 5/18 cells completed. Twelve cells returned missing or invalid SEQIMOVEL values and one returned conflicting geometry under SEQIMOVEL; all 226 IDs retained from complete cells exact-read with no absences, which does not remedy incomplete spatial coverage.",
+          "evidenceFile": "research/recife-seqimovel-live-hold-2026-10-03.json"
         }
       ],
       "liveIntegration": {
         "status": "held",
-        "reason": "Exact lookups for the retained DSQFL keys pass, but three spatial cells contain conflicting geometry for a DSQFL value and fail closed.",
-        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "reason": "Both alternative ArcGIS identities fail full spatial validation: DSQFL conflicts in the earlier candidate, while native SEQIMOVEL produced only 5/18 complete cells due missing/invalid IDs and a same-key geometry conflict.",
+        "evidenceFile": "research/recife-seqimovel-live-hold-2026-10-03.json",
         "technicalBlockers": [
-          "DSQFL yields conflicting polygon geometries within three bounded spatial cells; the full spatial read cannot be accepted until these same-key geometry conflicts are resolved or represented safely."
+          "DSQFL yields conflicting polygon geometries within three bounded spatial cells; the full spatial read cannot be accepted until these same-key geometry conflicts are resolved or represented safely.",
+          "Alternative SEQIMOVEL layer completed only 5/18 cells; 12 cells contained missing/invalid native IDs and one had conflicting geometry. Exact-reading retained IDs does not establish complete coverage."
         ],
-        "termsAreInformational": true
+        "termsAreInformational": true,
+        "previousAssessment": {
+          "reason": "DSQFL conflicts within the earlier bounded viewport.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        }
       }
     },
     {
@@ -1788,18 +1880,28 @@
           "outcome": "unsupported-query",
           "detail": "No public live bbox endpoint verified; weekly GeoJSON download needs a refreshed spatial index.",
           "evidenceFile": "research/singapore-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+          "operation": "current runtime API and published viewport capability review",
+          "outcome": "technical-hold",
+          "detail": "Current poll-download metadata call returned HTTP 201/code 0 with a download URL, but the URL was not fetched; datastore search returned an empty envelope and OneMap WMS lists LandLot as not queryable. No public live viewport query endpoint is verified; weekly GeoJSON remains a snapshot-ingest path.",
+          "evidenceFile": "research/singapore-live-2026-10-03.json",
+          "httpStatus": 201
         }
       ],
       "liveIntegration": {
         "status": "held",
-        "evidenceFile": "research/singapore-live-assessment.json",
-        "reason": "No direct viewport service verified; full GeoJSON snapshot needs a refreshed spatial index.",
+        "evidenceFile": "research/singapore-live-2026-10-03.json",
+        "reason": "No public vector bbox-plus-exact-LOT_KEY endpoint was verified; the available path is a large weekly GeoJSON snapshot that needs spatial indexing.",
         "previousAssessment": {
           "reason": "No verified direct viewport service.",
           "evidenceFile": "research/singapore-live-assessment.json"
         },
         "technicalBlockers": [
-          "No direct viewport service verified; full GeoJSON snapshot needs a refreshed spatial index."
+          "The public data.gov.sg dataset is a large snapshot download rather than a published spatial-query service.",
+          "No official small-area vector export or bbox-plus-exact-LOT_KEY endpoint was found in the documented SLA/OneMap services."
         ],
         "termsAreInformational": true
       }
@@ -2133,7 +2235,36 @@
       "verifiedCityIds": [
         "geonames:1261481"
       ],
-      "evidenceFile": "research/retry/cities/new-delhi.json"
+      "evidenceFile": "research/retry/cities/new-delhi.json",
+      "integrationAttempts": [
+        {
+          "endpoint": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+          "operation": "complete-snapshot-native-key-audit",
+          "outcome": "conflicting-native-identity",
+          "httpStatus": 200,
+          "detail": "Full snapshot read after initial 15-second request timeout. All rings pass validation, but published IDs and their pair identify different polygons. No polygons or lessee/address values retained.",
+          "checkedAt": "2026-10-03",
+          "evidenceFile": "research/batch-six-root-source-attempts.json"
+        },
+        {
+          "endpoint": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/VacantLand_37.js",
+          "operation": "small-alternate-snapshot",
+          "outcome": "native-identity-unverified",
+          "httpStatus": 200,
+          "detail": "Only row OBJECTID and descriptive Name/area fields; no documented durable cadastral identifier. Not enabled as parcel ground.",
+          "checkedAt": "2026-10-03",
+          "evidenceFile": "research/batch-six-root-source-attempts.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Published full-snapshot native identifiers and their pair repeat with conflicting geometry; the small alternative exposes no verified durable cadastral identifier.",
+        "evidenceFile": "research/batch-six-root-source-attempts.json",
+        "technicalBlockers": [
+          "Published full-snapshot native identifiers and their pair repeat with conflicting geometry; the small alternative exposes no verified durable cadastral identifier."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "tr-tkgm-parselsorgu-api",
@@ -2267,29 +2398,24 @@
       "name": "cadastre_bd_allegee: GO01_Polygones_Lots (lots du cadastre renove, Registre public Cadastre Quebec, version 9 August 2026)",
       "operator": "Gouvernement du Quebec (ArcGIS Online org 'dgti_geo')",
       "countryCode": "CA",
-      "scope": "Quebec (layer extent lon -79.6..-57.1, lat 45.0..62.4)",
+      "scope": "Quebec-wide generalized renewed-cadastre lot polygons; Montreal is an indicative entry area only, not a Montreal-specific layer. Geometry is indicative and has no legal value; some polygons may represent complementary plans.",
       "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
       "method": "ArcGIS REST query",
       "responseFormat": "Esri JSON",
       "crs": "EPSG:4326 via outSR (native NAD83 4269)",
       "verificationStatus": "verified_nonempty_sample",
-      "reuseStatus": "Indicative-only warning; check Quebec open licence before reuse.",
+      "reuseStatus": "Terms are informational and do not block use; retain publisher attribution and clearly state geometry is indicative and has no legal value.",
       "verifiedCityIds": [
         "wup2025:3645"
       ],
-      "evidenceFile": "research/subnational/CA/QC.json",
+      "evidenceFile": "research/montreal-live-2026-10-03.json",
       "liveIntegration": {
-        "status": "held",
-        "evidenceFile": "research/montreal-live-assessment.json",
-        "reason": "Geometry/paging requests timed out; complete bounded read and identifier uniqueness unresolved.",
-        "previousAssessment": {
-          "reason": "Exact geometry reuse rights unresolved; identity and complete paging verification incomplete.",
-          "evidenceFile": "research/montreal-live-assessment.json"
-        },
-        "technicalBlockers": [
-          "Geometry/paging requests timed out; complete bounded read and identifier uniqueness unresolved."
+        "status": "enabled",
+        "cityIds": [
+          "montreal"
         ],
-        "termsAreInformational": true
+        "evidenceFile": "research/montreal-live-2026-10-03.json",
+        "reason": "Enabled for the bounded Montreal globe entry after complete cell coverage and exact GlobalID round trips; the Quebec-wide layer is indicative and has no legal value."
       },
       "integrationAttempts": [
         {
@@ -2316,6 +2442,15 @@
           "outcome": "reuse-unresolved",
           "detail": "No named open licence supplied for hosted cadastral geometry; official Données Québec FAQ says Infolot is not available as open data.",
           "evidenceFile": "research/montreal-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+          "operation": "18-cell bounded viewport, all observed GlobalID exact round trips, and under-route verification",
+          "outcome": "success",
+          "detail": "All 18 base/pan cells complete; 534 unique GlobalIDs exact-read with no absences or geometry conflicts; /under returned 26 complete features; 75 requests HTTP 200 with no timeouts.",
+          "evidenceFile": "research/montreal-live-2026-10-03.json",
+          "httpStatus": 200
         }
       ]
     },
@@ -2554,7 +2689,7 @@
       "name": "Geobasis NRW ALKIS parcels",
       "operator": "Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
       "countryCode": "DE",
-      "scope": "North Rhine-Westphalia ALKIS cadastral map; only bounded Essen entry enabled. Other German states need separate sources. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
+      "scope": "North Rhine-Westphalia ALKIS cadastral map. Bounded Essen, Cologne and Dortmund entries are enabled; this is not a Germany-wide source. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
       "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
       "method": "GET",
       "responseFormat": "GeoJSON FeatureCollection",
@@ -2562,18 +2697,21 @@
       "verificationStatus": "verified_nonempty_sample",
       "reuseStatus": "DL_DE_ZERO_2_0",
       "verifiedCityIds": [
-        "geonames:2928810"
+        "geonames:2928810",
+        "geonames:2935517"
       ],
       "evidenceFile": "research/essen-live.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
           "essen",
-          "cologne"
+          "cologne",
+          "dortmund"
         ],
         "evidenceFile": "research/essen-live.json",
         "additionalCityEvidence": {
-          "cologne": "research/cologne-live.json"
+          "cologne": "research/cologne-live.json",
+          "dortmund": "research/dortmund-live-2026-10-03.json"
         }
       },
       "integrationAttempts": [
@@ -2602,6 +2740,15 @@
           "outcome": "success",
           "detail": "45 complete parcels; all resolved by exact ID, no absences. Reuses existing verified licence and identity contract.",
           "evidenceFile": "research/cologne-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+          "operation": "Dortmund 18-cell bounded viewport and all observed native flstkennz exact reads, plus /under route",
+          "outcome": "success",
+          "detail": "All 18 base/pan cells complete; 1,105 native feature IDs passed 14 exact-read batches (<=80 each) with no absences, geometry mismatches or cross-cell conflicts. The /under route returned 18 complete features. All 33 provider requests returned HTTP 200, with zero timeouts.",
+          "evidenceFile": "research/dortmund-live-2026-10-03.json",
+          "httpStatus": 200
         }
       ]
     },
@@ -2744,6 +2891,36 @@
           "evidenceFile": "research/sao-paulo-live.json"
         }
       ]
+    },
+    {
+      "sourceId": "br-fortaleza-sefin-lotes-tipo",
+      "name": "Fortaleza SEFIN lots-type vector catalogue",
+      "operator": "SEFIN Fortaleza",
+      "countryCode": "BR",
+      "scope": "Official vector catalogue candidate; no current geometry or native identity verified.",
+      "endpoint": "https://ide.sefin.fortaleza.ce.gov.br/camadas/USO_SOLO%3Alotes_tipo",
+      "verificationStatus": "not_verified",
+      "reuseStatus": "Source conditions unverified and informational.",
+      "evidenceFile": "research/batch-six-root-source-attempts.json",
+      "integrationAttempts": [
+        {
+          "endpoint": "https://ide.sefin.fortaleza.ce.gov.br/camadas/USO_SOLO%3Alotes_tipo",
+          "operation": "official-vector-catalogue",
+          "outcome": "dns-failure",
+          "detail": "Official catalogue advertises vector layer; direct curl returned could not resolve host. No WFS geometry or native ID verified.",
+          "checkedAt": "2026-10-03",
+          "evidenceFile": "research/batch-six-root-source-attempts.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Vector catalogue host failed DNS resolution; current geometry and stable native identity remain unverified.",
+        "evidenceFile": "research/batch-six-root-source-attempts.json",
+        "technicalBlockers": [
+          "Vector catalogue host failed DNS resolution; current geometry and stable native identity remain unverified."
+        ],
+        "termsAreInformational": true
+      }
     }
   ],
   "countryCoverage": [
@@ -3244,9 +3421,10 @@
       "researchOrder": 3,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "jp-moj-esri-touki-2023"
+        "jp-moj-esri-touki-2023",
+        "jp-moj-geospatial-2026"
       ],
-      "researchFile": "research/tokyo.json"
+      "researchFile": "research/tokyo-2026-live.json"
     },
     {
       "cityId": "geonames:1261481",
@@ -4004,9 +4182,10 @@
       "researchOrder": 49,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "jp-moj-esri-touki-2023"
+        "jp-moj-esri-touki-2023",
+        "jp-moj-geospatial-2026"
       ],
-      "researchFile": "research/nagoya.json"
+      "researchFile": "research/nagoya-2026-live.json"
     },
     {
       "cityId": "wup2025:3664",
@@ -6625,6 +6804,25 @@
         "hr-dgu-oss-dkp-cestice"
       ],
       "researchFile": "research/zagreb.json"
+    },
+    {
+      "cityId": "geonames:2935517",
+      "name": "Dortmund",
+      "country": "Germany",
+      "countryCode": "DE",
+      "centerLatLon": [
+        51.51494,
+        7.466
+      ],
+      "citySource": "https://www.geonames.org/2935517/dortmund.html",
+      "researchOrder": 202,
+      "outsideUnQueue": true,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "de-nrw-lika-flurstueck"
+      ],
+      "researchFile": "research/dortmund-live-2026-10-03.json",
+      "mergeNote": "User-authorized follow-on outside the original 61-city candidate cohort (26/61 integrated, 35 remaining); reuses the verified North Rhine-Westphalia regional source, not a Germany-wide provider."
     }
   ],
   "countryProbes": [

@@ -1,0 +1,382 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03T10:43:25.987Z",
+  "sourceId": "de-nrw-lika-flurstueck",
+  "city": "Dortmund",
+  "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+  "centerLatLon": [
+    51.51494,
+    7.466
+  ],
+  "adapter": "existing OGC API Features adapter",
+  "descriptor": {
+    "idField": "flstkennz",
+    "idFromFeatureId": true,
+    "idType": "string",
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32632
+  },
+  "grid": {
+    "cellWidthDegrees": 0.0025,
+    "baseCells": 9,
+    "panCells": 9,
+    "attemptedCells": 18,
+    "completeCells": 18,
+    "failedCells": 0,
+    "cells": [
+      {
+        "pan": "base",
+        "row": -1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 89,
+        "elapsedMs": 591,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": -1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 54,
+        "elapsedMs": 138,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": -1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 37,
+        "elapsedMs": 146,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": 0,
+        "col": -1,
+        "complete": true,
+        "featureCount": 119,
+        "elapsedMs": 170,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": 0,
+        "col": 0,
+        "complete": true,
+        "featureCount": 95,
+        "elapsedMs": 151,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": 0,
+        "col": 1,
+        "complete": true,
+        "featureCount": 102,
+        "elapsedMs": 152,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": 1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 137,
+        "elapsedMs": 160,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": 1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 135,
+        "elapsedMs": 157,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "base",
+        "row": 1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 112,
+        "elapsedMs": 152,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": -1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 112,
+        "elapsedMs": 160,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": -1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 72,
+        "elapsedMs": 143,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": -1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 88,
+        "elapsedMs": 169,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": 0,
+        "col": -1,
+        "complete": true,
+        "featureCount": 63,
+        "elapsedMs": 155,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": 0,
+        "col": 0,
+        "complete": true,
+        "featureCount": 22,
+        "elapsedMs": 129,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": 0,
+        "col": 1,
+        "complete": true,
+        "featureCount": 23,
+        "elapsedMs": 129,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": 1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 52,
+        "elapsedMs": 137,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": 1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 42,
+        "elapsedMs": 134,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      },
+      {
+        "pan": "northEast",
+        "row": 1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 74,
+        "elapsedMs": 132,
+        "requestCount": 1,
+        "geometryConflicts": 0
+      }
+    ]
+  },
+  "spatialRead": {
+    "uniqueNativeFeatureIds": 1105,
+    "crossCellGeometryConflicts": 0
+  },
+  "exactIdentity": {
+    "batchSize": 80,
+    "batchCount": 14,
+    "batches": [
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 154,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 151,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 167,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 150,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 146,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 145,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 154,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 147,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 157,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 148,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 147,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 150,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 151,
+        "requestCount": 1
+      },
+      {
+        "inputIds": 65,
+        "features": 65,
+        "absentIds": 0,
+        "geometryMismatches": 0,
+        "complete": true,
+        "elapsedMs": 148,
+        "requestCount": 1
+      }
+    ],
+    "featureTotal": 1105,
+    "absentTotal": 0,
+    "geometryMismatchTotal": 0,
+    "allComplete": true
+  },
+  "under": {
+    "httpStatus": 200,
+    "complete": true,
+    "featureCount": 18,
+    "error": null,
+    "elapsedMs": 150,
+    "requestCount": 1
+  },
+  "network": {
+    "requestCount": 33,
+    "httpStatuses": [
+      200
+    ],
+    "maxRequestMs": 514,
+    "timeouts": 0
+  },
+  "persistence": "Metadata only; no parcel IDs, geometries, or personal fields recorded.",
+  "rolloutCohort": {
+    "originalCandidateCityCount": 61,
+    "integratedOriginalCandidateCount": 26,
+    "remainingOriginalCandidateCount": 35,
+    "partOfOriginalCandidateCohort": false,
+    "configuredAppCountsAfterAddition": {
+      "cities": 38,
+      "sources": 24,
+      "sourceCityMemberships": 30,
+      "countries": 22
+    },
+    "note": "Dortmund is a user-authorized follow-on outside the original 61-city candidate cohort. The four cities integrated in that cohort bring it to 26/61, leaving 35; Dortmund is additional."
+  },
+  "cityCenterSource": "GeoNames Dortmund record (2935517), matching the configured city center."
+}

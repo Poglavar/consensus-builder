@@ -6,6 +6,8 @@ import { encodeSnapshotNativeId } from '../parcels/geojson-snapshot-source.js';
 afterEach(() => vi.unstubAllGlobals());
 
 const cases = [
+    { city: 'montreal', source: 'ca-qc-cadastre-bd-allegee', srid: 32618, native: '11111111-2222-3333-4444-555555555555',
+        prefix: 'CA-QC-CADASTRE-', label: '1 340 551', bounds: [-73.57, 45.503, -73.568, 45.5045] },
     { city: 'sydney', source: 'au-nsw-six-cadastre-lot', srid: 32756, native: 100098447,
         prefix: 'AU-NSW-', label: '9//DP11050', bounds: [151.078, -33.86, 151.081, -33.857] },
     { city: 'sao_paulo', source: 'br-sp-geosampa-lote-cidadao', srid: 32723, native: 1958754,
@@ -15,7 +17,7 @@ const cases = [
     { city: 'lusaka', source: 'zm-lusaka-mtendere-east-agol-unofficial', srid: 32735,
         native: '11111111-2222-3333-4444-555555555555', prefix: 'ZM-LUSAKA-GID-', label: '42', bounds: [28.379, -15.406, 28.382, -15.403] },
     { city: 'osaka', source: 'jp-moj-geospatial-2026', srid: 32653,
-        components: ['27128', 'sheet~1', 'H000000001'], prefix: 'JP-MOJ-2026-', label: '21-1', bounds: [135.5, 34.68, 135.503, 34.683] }
+        components: ['27128', 'sheet~1', 'H000000001'], prefix: 'JP-MOJ-2026-', label: '21-1', bounds: [135.532, 34.677, 135.534, 34.679] }
 ];
 function fixture(descriptor, sample) {
     const [west, south] = sample.bounds;
@@ -32,7 +34,7 @@ function fixture(descriptor, sample) {
     // A pinned snapshot has an expected full collection size; other synthetic native IDs live far from the test footprint.
     for (let i = 1; i < (descriptor.expectedSnapshotFeatures || 1); i++) features.push({ ...raw,
         properties: { ...properties, [descriptor.idFields[2]]: 'other' + i },
-        geometry: { type: 'Polygon', coordinates: [[[140, 35], [140.0001, 35], [140.0001, 35.0001], [140, 35.0001], [140, 35]]] } });
+        geometry: { type: 'Polygon', coordinates: [[[135.521, 34.674], [135.5211, 34.674], [135.5211, 34.6741], [135.521, 34.6741], [135.521, 34.674]]] } });
     const fetchImpl = vi.fn(async (url, options) => {
         const params = options?.method === 'POST' ? new URLSearchParams(options.body) : new URL(url).searchParams;
         const payload = params.has('returnCountOnly') ? { count: 1 }
@@ -67,6 +69,17 @@ describe.each(cases)('$city configured live source', sample => {
             for (const [url] of fetchImpl.mock.calls) {
                 expect(new URL(url).searchParams.get('where')).toContain("INSPIREID <> 'No LR Title Detected'");
             }
+        }
+        if (sample.city === 'montreal') {
+            expect(descriptor.idField).toBe('GlobalID');
+            expect(descriptor.objectIdField).toBe('OBJECTID');
+            expect(descriptor.boundsQueryMode).toBe('object-ids');
+            expect(descriptor.pageSize).toBe(50);
+            expect(descriptor.parcelNumberField).toBe('NO_LOT');
+            expect(descriptor.outFields).toEqual(['OBJECTID', 'GlobalID', 'NO_LOT']);
+            expect(fetchImpl.mock.calls.some(([url]) => new URL(url).searchParams.get('returnIdsOnly') === 'true')).toBe(true);
+            const exactCall = fetchImpl.mock.calls.at(-1);
+            expect(new URL(exactCall[0]).searchParams.get('where')).toContain("GlobalID IN ('{11111111-2222-3333-4444-555555555555}')");
         }
         if (sample.city === 'lusaka') {
             expect(descriptor.idField).toBe('GlobalID');

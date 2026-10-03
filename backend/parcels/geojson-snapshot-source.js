@@ -7,6 +7,73 @@ const caches = new WeakMap();
 const CACHE_MS = 5 * 60 * 1000;
 const encodePart = value => encodeURIComponent(value).replaceAll('~', '%7E');
 const validPart = value => typeof value === 'string' && value.length > 0 && value.length <= 256 && value.trim() === value;
+const validExtent = value => Array.isArray(value) && value.length === 4 && value.every(Number.isFinite)
+    && value[0] >= -180 && value[2] <= 180 && value[1] >= -90 && value[3] <= 90
+    && value[0] < value[2] && value[1] < value[3];
+const overlaps = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+
+function createMultiSnapshotSource(descriptor, options) {
+    const resources = descriptor.snapshots;
+    if (!Array.isArray(resources) || !resources.length || resources.length > 80
+        || !Array.isArray(descriptor.idFields)) throw new Error('Invalid parcel snapshot resources.');
+    const namespaceField = resources[0]?.idNamespace?.field;
+    if (!descriptor.idFields.includes(namespaceField)
+        || resources.some(resource => !validExtent(resource.bbox) || resource.idNamespace?.field !== namespaceField
+            || !validPart(resource.idNamespace?.value) || resource.expectedEtag === undefined
+            || resource.expectedSnapshotFeatures === undefined)
+        || new Set(resources.map(resource => resource.idNamespace.value)).size !== resources.length
+        || new Set(resources.map(resource => resource.endpoint)).size !== resources.length) {
+        throw new Error('Invalid parcel snapshot namespaces or extents.');
+    }
+    const children = resources.map(resource => ({ resource, adapter: createGeojsonSnapshotParcelSource({
+        ...descriptor, ...resource, snapshots: undefined
+    }, options) }));
+    const maxFeatures = descriptor.maxFeatures ?? 10000;
+    function combine(results, extra = {}) {
+        const byId = new Map();
+        for (const result of results) {
+            if (!result.complete) throw upstreamError('Parcel snapshot returned incomplete coverage.');
+            for (const feature of result.features) {
+                const old = byId.get(feature.id);
+                if (old && JSON.stringify(old.geometry) !== JSON.stringify(feature.geometry)) {
+                    throw upstreamError('Parcel snapshots returned conflicting native identity.');
+                }
+                byId.set(feature.id, feature);
+            }
+        }
+        if (byId.size > maxFeatures) throw upstreamError('Parcel query exceeds feature limit.');
+        return { type: 'FeatureCollection', features: [...byId.values()], complete: true,
+            sourceId: descriptor.id, returnsWGS84: true, ...extra };
+    }
+    async function queryBounds(bbox) {
+        validateBounds(bbox, descriptor.maxBboxKm2 || 25, descriptor);
+        return combine(await Promise.all(children.filter(child => overlaps(child.resource.bbox, bbox))
+            .map(child => child.adapter.queryBounds(bbox))));
+    }
+    async function queryGeometry(geometry) {
+        if (!validateGeometry(geometry)) throw new HttpError(400, 'Provide a valid WGS84 Polygon or MultiPolygon.');
+        const bbox = geometryBbox(geoFeature(geometry));
+        validateBounds(bbox, descriptor.maxBboxKm2 || 25, descriptor);
+        return combine(await Promise.all(children.filter(child => overlaps(child.resource.bbox, bbox))
+            .map(child => child.adapter.queryGeometry(geometry))));
+    }
+    async function queryIds(ids) {
+        if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 parcel IDs.');
+        const unique = [...new Set(ids)], groups = new Map();
+        // Validate the whole request before any resource fetch, including unknown namespaces.
+        for (const id of unique) {
+            if (typeof id !== 'string' || !id.startsWith(descriptor.idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
+            const parts = decodeSnapshotNativeId(id.slice(descriptor.idPrefix.length), descriptor.idFields.length);
+            const namespace = parts[descriptor.idFields.indexOf(namespaceField)];
+            const child = children.find(item => item.resource.idNamespace.value === namespace);
+            if (child) { if (!groups.has(child)) groups.set(child, []); groups.get(child).push(id); }
+        }
+        const result = combine(await Promise.all([...groups].map(([child, group]) => child.adapter.queryIds(group))));
+        const found = new Set(result.features.map(feature => feature.id));
+        return { ...result, absentIds: unique.filter(id => !found.has(id)) };
+    }
+    return Object.freeze({ queryBounds, queryIds, queryGeometry });
+}
 
 export function encodeSnapshotNativeId(values) {
     if (!Array.isArray(values) || !values.length || values.some(value =>
@@ -28,6 +95,7 @@ export function decodeSnapshotNativeId(value, componentCount) {
 }
 
 export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetch, now = Date.now } = {}) {
+    if (descriptor.snapshots !== undefined) return createMultiSnapshotSource(descriptor, { fetchImpl, now });
     const { id, endpoint, idPrefix, idFields, outFields } = descriptor;
     const maxSnapshotBytes = descriptor.maxSnapshotBytes ?? 3 * 1024 * 1024;
     const maxSnapshotFeatures = descriptor.maxSnapshotFeatures ?? 5000;
@@ -44,6 +112,9 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
             || descriptor.expectedSnapshotFeatures < 0 || descriptor.expectedSnapshotFeatures > maxSnapshotFeatures))
         || (descriptor.expectedEtag !== undefined && (typeof descriptor.expectedEtag !== 'string'
             || !/^"[^"\r\n]+"$/.test(descriptor.expectedEtag)))
+        || (descriptor.idNamespace !== undefined && (!idFields.includes(descriptor.idNamespace?.field)
+            || !validPart(descriptor.idNamespace?.value)))
+        || (descriptor.bbox !== undefined && !validExtent(descriptor.bbox))
         || limits.some(limit => !Number.isSafeInteger(limit) || limit <= 0)) {
         throw new Error('Invalid GeoJSON snapshot parcel source descriptor.');
     }
@@ -97,6 +168,14 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
             const byId = new Map(), indexed = [];
             for (const feature of collection.features) {
                 if (feature?.type !== 'Feature' || !validateGeometry(feature.geometry)) throw upstreamError('Parcel snapshot returned invalid polygon geometry.');
+                if (descriptor.idNamespace && String(feature.properties?.[descriptor.idNamespace.field]) !== descriptor.idNamespace.value) {
+                    throw upstreamError('Parcel snapshot returned a foreign native namespace.');
+                }
+                const extent = geometryBbox(feature);
+                if (descriptor.bbox && (extent[0] < descriptor.bbox[0] || extent[1] < descriptor.bbox[1]
+                    || extent[2] > descriptor.bbox[2] || extent[3] > descriptor.bbox[3])) {
+                    throw upstreamError('Parcel snapshot polygon lies outside its verified extent.');
+                }
                 let nativeId;
                 try { nativeId = encodeSnapshotNativeId(idFields.map(field => feature.properties?.[field])); }
                 catch (_) { throw upstreamError('Parcel snapshot returned invalid native parcel identity.'); }

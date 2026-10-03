@@ -1,0 +1,113 @@
+/* ========== Design tokens ==========
+   The one place the app takes its colours, type, radii, shadows, spacing and stacking from. The
+   values are the map shell's (css/map-shell.css, parcel-menu.css, selection-tray.css), the dialect
+   every other surface migrates to; the rules are in docs/design-language.md. Loaded first by
+   index.html's CSS loader and by index.css. New CSS takes its values from here, never a literal;
+   a surface that needs a value this file lacks adds the token here first
+   (backend/test/design-tokens.test.js ratchets the literal count per file downwards). */
+
+:root {
+    /* ---- Colour roles ---- */
+    --cb-bg: #f3f4f6;               /* page ground behind cards and sheet bodies */
+    --cb-surface: #ffffff;          /* cards, sheets, dialogs, buttons */
+    --cb-surface-2: #f3f4f6;        /* hover rows, muted chips, input ground when disabled */
+    --cb-surface-3: #e5e7eb;        /* pressed rows, dividers on surface-2 */
+    --cb-glass: rgba(255, 255, 255, 0.97); /* floating map chrome */
+    --cb-text: #1f2937;
+    --cb-text-strong: #111827;
+    --cb-text-muted: #6b7280;
+    --cb-text-faint: #9ca3af;
+    --cb-line: #e5e7eb;
+    --cb-line-strong: #d1d5db;
+    --cb-line-glass: rgba(0, 0, 0, 0.15);
+
+    --cb-primary: #2563eb;
+    --cb-primary-hover: #1d4ed8;
+    --cb-primary-ink: #ffffff;
+    --cb-primary-soft: #eff6ff;
+    --cb-primary-soft-ink: #1e40af;
+
+    --cb-success: #16a34a;
+    --cb-success-hover: #15803d;
+    --cb-success-ink: #ffffff;
+    --cb-success-soft: #ecfdf5;
+    --cb-success-soft-ink: #166534;
+
+    --cb-warning: #b45309;
+    --cb-warning-soft: #fffbeb;
+    --cb-warning-soft-ink: #92400e;
+
+    --cb-danger: #b91c1c;
+    --cb-danger-hover: #991b1b;
+    --cb-danger-ink: #ffffff;
+    --cb-danger-soft: #fef2f2;
+    --cb-danger-soft-ink: #991b1b;
+
+    --cb-info-soft: #f0f9ff;
+    --cb-info-soft-ink: #075985;
+
+    --cb-inverse: #1f2937;          /* active pills, dark toasts */
+    --cb-inverse-ink: #ffffff;
+    --cb-focus: #2563eb;
+    --cb-focus-ring: rgba(37, 99, 235, 0.2);
+    --cb-backdrop: rgba(15, 23, 42, 0.45);
+
+    /* ---- Type ---- */
+    --cb-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --cb-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --cb-text-xs: 11px;             /* badges, kickers */
+    --cb-text-sm: 12px;             /* facts, captions, status */
+    --cb-text-md: 13px;             /* dense rows */
+    --cb-text-base: 14px;           /* controls, body in chrome */
+    --cb-text-lg: 16px;             /* panel body, dialog body */
+    --cb-text-xl: 18px;             /* dialog and sheet titles */
+    --cb-text-2xl: 22px;            /* page-level titles */
+    --cb-weight-normal: 400;
+    --cb-weight-medium: 500;
+    --cb-weight-semibold: 600;
+    --cb-weight-bold: 700;
+    --cb-leading: 1.4;
+    --cb-tracking-caps: 0.06em;     /* uppercase kickers and section labels */
+
+    /* ---- Shape ---- */
+    --cb-radius-sm: 6px;            /* inputs, chips, small cards */
+    --cb-radius-md: 8px;            /* buttons, rows */
+    --cb-radius-lg: 12px;           /* sheets, menus, cards, panels */
+    --cb-radius-xl: 16px;           /* dialogs */
+    --cb-radius-pill: 999px;        /* floating pills, badges */
+    --cb-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --cb-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.18);
+    --cb-shadow-lg: 0 16px 50px rgba(15, 23, 42, 0.35);
+
+    /* ---- Space (4px grid) ---- */
+    --cb-space-1: 4px;
+    --cb-space-2: 8px;
+    --cb-space-3: 12px;
+    --cb-space-4: 16px;
+    --cb-space-5: 20px;
+    --cb-space-6: 24px;
+    --cb-space-7: 32px;
+    --cb-space-8: 40px;
+
+    /* ---- Controls ---- */
+    --cb-control-height-sm: 28px;
+    --cb-control-height: 36px;
+    --cb-control-height-lg: 44px;
+
+    /* ---- Stacking ladder (the only z-index values new CSS may use) ---- */
+    --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */
+    --cb-z-popover: 1050;           /* parcel menu, dropdowns over the map */
+    --cb-z-sheet: 1600;             /* sheets */
+    --cb-z-panel: 2000;             /* right-dock panels, editors */
+    --cb-z-dialog: 12000;           /* dialogs */
+    --cb-z-dialog-top: 13000;       /* a dialog opened from a dialog */
+    --cb-z-confirm: 30000;          /* confirm / alert over everything */
+    --cb-z-banner: 100000;          /* multi-tab and explore banners */
+    --cb-z-toast: 100001;
+
+    /* Native checkboxes, radios and ranges follow the primary colour everywhere. */
+    accent-color: var(--cb-primary);
+}
+
+/* The breakpoint cannot be a custom property; it is written once here for reference and asserted
+   by backend/test/design-tokens.test.js: phones are (max-width: 767.98px), desktop (min-width: 768px). */

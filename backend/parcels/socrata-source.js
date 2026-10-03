@@ -6,9 +6,12 @@ import { upstreamError, validateBounds, validateGeometry, canonicalParcelFeature
 export function createSocrataParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, idField, idPrefix, outFields, geometryField, versionField, objectIdField } = descriptor;
     const base = new URL(endpoint);
-    const field = /^[A-Za-z_][A-Za-z0-9_]*$/;
+    const nativeField = name => /^[A-Za-z_][A-Za-z0-9_]*$/.test(name);
+    const field = name => nativeField(name) || [':id', ':updated_at'].includes(name);
     if (!id || !idPrefix || descriptor.idType !== 'string' || !Array.isArray(outFields)
-        || ![idField, geometryField, versionField, objectIdField, ...outFields].every(name => field.test(name))
+        || ![idField, geometryField, versionField, objectIdField, ...outFields].every(field)
+        || !nativeField(idField) || !nativeField(geometryField)
+        || (descriptor.parcelNumberField && !nativeField(descriptor.parcelNumberField))
         || !outFields.includes(idField) || !outFields.includes(versionField) || !outFields.includes(objectIdField)
         || (descriptor.parcelNumberField && !outFields.includes(descriptor.parcelNumberField))
         || outFields.includes(geometryField) || base.protocol !== 'https:' || base.search || base.hash || base.username || base.password) throw new Error('Invalid Socrata parcel source descriptor.');

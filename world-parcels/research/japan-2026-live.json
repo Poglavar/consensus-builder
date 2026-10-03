@@ -1,0 +1,718 @@
+{
+  "checkedAt": "2026-10-03T10:22:57.289Z",
+  "descriptor": {
+    "id": "jp-moj-geospatial-2026",
+    "adapter": "geojson-snapshot",
+    "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+    "idPrefix": "JP-MOJ-2026-",
+    "idFields": [
+      "市区町村C",
+      "地図名",
+      "ID"
+    ],
+    "outFields": [
+      "ID",
+      "市区町村C",
+      "大字コード",
+      "丁目コード",
+      "小字コード",
+      "予備コード",
+      "市区町村名",
+      "大字名",
+      "丁目名",
+      "地番",
+      "精度区分",
+      "座標値種別",
+      "地図名",
+      "座標系",
+      "測地系判別"
+    ],
+    "parcelNumberField": "地番",
+    "maxSnapshotBytes": 3145728,
+    "maxSnapshotFeatures": 3000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "expectedSnapshotFeatures": 2487,
+    "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+    "name": "MOJ public-coordinate map sheets — Osaka, Tokyo and Nagoya, 2026",
+    "countryCode": "JP",
+    "cityIds": [
+      "osaka",
+      "tokyo",
+      "nagoya"
+    ],
+    "metricSrid": 32653,
+    "dataVersion": "2026",
+    "scope": "Partial 2026 converted MOJ public-coordinate registry-map packages: Osaka Chuo ward (2487 polygons), Tokyo Chiyoda ward (236) and Nagoya Chikusa ward (284). Only these three verified packages are enabled; sheets without public coordinates are omitted. No citywide or Japan-wide completeness is claimed. Pinned snapshots use five-minute transient-memory caching, without parcel writes to disk or a database.",
+    "licenceNote": "Geospatial Information Center catalogue lists CC BY; underlying Ministry of Justice data and conversion-publisher conditions also apply. Publisher warns that public-coordinate sheets only are converted and some geometries may be misplaced. Conditions are informational.",
+    "licenceUrl": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/",
+    "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128",
+    "attribution": "Japan Ministry of Justice registry-map data; Geospatial Information Center / AIGID conversion, 2026. Osaka Chuo ward public-coordinate sheets only; adapted to WGS84.",
+    "evidenceFile": "research/japan-2026-live.json",
+    "snapshots": [
+      {
+        "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+        "bbox": [
+          135.520892868,
+          34.673960373,
+          135.535326678,
+          34.695122165
+        ],
+        "idNamespace": {
+          "field": "市区町村C",
+          "value": "27128"
+        },
+        "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+        "expectedSnapshotFeatures": 2487,
+        "maxSnapshotBytes": 3145728,
+        "maxSnapshotFeatures": 3000
+      },
+      {
+        "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/13/aigid-moj-13101/13101_%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%999%E7%B3%BB_%E7%AD%86R_2026.geojson",
+        "bbox": [
+          139.743406757,
+          35.673049887,
+          139.775413613,
+          35.702415611
+        ],
+        "idNamespace": {
+          "field": "市区町村C",
+          "value": "13101"
+        },
+        "expectedEtag": "\"f6ca82248a5cc33967dfd22022ea8723\"",
+        "expectedSnapshotFeatures": 236,
+        "maxSnapshotBytes": 3145728,
+        "maxSnapshotFeatures": 3000
+      },
+      {
+        "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23101/23101_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E5%8D%83%E7%A8%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+        "bbox": [
+          136.976276393,
+          35.160693342,
+          136.986396858,
+          35.165507393
+        ],
+        "idNamespace": {
+          "field": "市区町村C",
+          "value": "23101"
+        },
+        "expectedEtag": "\"48f56c86e848d68d7a509bef0e9bd8d2\"",
+        "expectedSnapshotFeatures": 284,
+        "maxSnapshotBytes": 3145728,
+        "maxSnapshotFeatures": 3000
+      }
+    ],
+    "metricSridByCity": {
+      "osaka": 32653,
+      "tokyo": 32654,
+      "nagoya": 32653
+    }
+  },
+  "results": [
+    {
+      "city": "osaka",
+      "center": {
+        "lat": 34.677750586,
+        "lon": 135.532507321
+      },
+      "cells": [
+        {
+          "bbox": [
+            135.528757321,
+            34.674000586000005,
+            135.531257321,
+            34.676500586
+          ],
+          "count": 391,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.531257321,
+            34.674000586000005,
+            135.533757321,
+            34.676500586
+          ],
+          "count": 217,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.533757321,
+            34.674000586000005,
+            135.536257321,
+            34.676500586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.528757321,
+            34.676500586,
+            135.531257321,
+            34.679000586
+          ],
+          "count": 341,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.531257321,
+            34.676500586,
+            135.533757321,
+            34.679000586
+          ],
+          "count": 304,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.533757321,
+            34.676500586,
+            135.536257321,
+            34.679000586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.528757321,
+            34.679000586,
+            135.531257321,
+            34.681500586
+          ],
+          "count": 146,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.531257321,
+            34.679000586,
+            135.533757321,
+            34.681500586
+          ],
+          "count": 184,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.533757321,
+            34.679000586,
+            135.536257321,
+            34.681500586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.532757321,
+            34.674000586000005,
+            135.535257321,
+            34.676500586
+          ],
+          "count": 57,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.535257321,
+            34.674000586000005,
+            135.537757321,
+            34.676500586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.537757321,
+            34.674000586000005,
+            135.54025732099998,
+            34.676500586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.532757321,
+            34.676500586,
+            135.535257321,
+            34.679000586
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.535257321,
+            34.676500586,
+            135.537757321,
+            34.679000586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.537757321,
+            34.676500586,
+            135.54025732099998,
+            34.679000586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.532757321,
+            34.679000586,
+            135.535257321,
+            34.681500586
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.535257321,
+            34.679000586,
+            135.537757321,
+            34.681500586
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            135.537757321,
+            34.679000586,
+            135.54025732099998,
+            34.681500586
+          ],
+          "count": 0,
+          "complete": true
+        }
+      ],
+      "unique": 2487,
+      "observed": 1475,
+      "exact": {
+        "batches": 32,
+        "resolved": 2487,
+        "geometryConflicts": 0
+      },
+      "under": {
+        "complete": true,
+        "count": 9
+      }
+    },
+    {
+      "city": "tokyo",
+      "center": {
+        "lat": 35.696623934,
+        "lon": 139.766899192
+      },
+      "cells": [
+        {
+          "bbox": [
+            139.76314919200001,
+            35.692873934000005,
+            139.765649192,
+            35.695373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.765649192,
+            35.692873934000005,
+            139.768149192,
+            35.695373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.768149192,
+            35.692873934000005,
+            139.770649192,
+            35.695373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.76314919200001,
+            35.695373934,
+            139.765649192,
+            35.697873934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.765649192,
+            35.695373934,
+            139.768149192,
+            35.697873934
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.768149192,
+            35.695373934,
+            139.770649192,
+            35.697873934
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.76314919200001,
+            35.697873934,
+            139.765649192,
+            35.700373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.765649192,
+            35.697873934,
+            139.768149192,
+            35.700373934
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.768149192,
+            35.697873934,
+            139.770649192,
+            35.700373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.767149192,
+            35.692873934000005,
+            139.769649192,
+            35.695373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.769649192,
+            35.692873934000005,
+            139.772149192,
+            35.695373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.772149192,
+            35.692873934000005,
+            139.774649192,
+            35.695373934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.767149192,
+            35.695373934,
+            139.769649192,
+            35.697873934
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.769649192,
+            35.695373934,
+            139.772149192,
+            35.697873934
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.772149192,
+            35.695373934,
+            139.774649192,
+            35.697873934
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.767149192,
+            35.697873934,
+            139.769649192,
+            35.700373934
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.769649192,
+            35.697873934,
+            139.772149192,
+            35.700373934
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "bbox": [
+            139.772149192,
+            35.697873934,
+            139.774649192,
+            35.700373934
+          ],
+          "count": 65,
+          "complete": true
+        }
+      ],
+      "unique": 236,
+      "observed": 90,
+      "exact": {
+        "batches": 3,
+        "resolved": 236,
+        "geometryConflicts": 0
+      },
+      "under": {
+        "complete": true,
+        "count": 3
+      }
+    },
+    {
+      "city": "nagoya",
+      "center": {
+        "lat": 35.163716454,
+        "lon": 136.984010139
+      },
+      "cells": [
+        {
+          "bbox": [
+            136.980260139,
+            35.159966454000006,
+            136.982760139,
+            35.162466454000004
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.982760139,
+            35.159966454000006,
+            136.985260139,
+            35.162466454000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.985260139,
+            35.159966454000006,
+            136.987760139,
+            35.162466454000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.980260139,
+            35.162466454000004,
+            136.982760139,
+            35.164966454
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.982760139,
+            35.162466454000004,
+            136.985260139,
+            35.164966454
+          ],
+          "count": 205,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.985260139,
+            35.162466454000004,
+            136.987760139,
+            35.164966454
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.980260139,
+            35.164966454,
+            136.982760139,
+            35.167466454
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.982760139,
+            35.164966454,
+            136.985260139,
+            35.167466454
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.985260139,
+            35.164966454,
+            136.987760139,
+            35.167466454
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98426013899999,
+            35.159966454000006,
+            136.98676013899998,
+            35.162466454000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98676013899998,
+            35.159966454000006,
+            136.98926013899998,
+            35.162466454000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98926013899998,
+            35.159966454000006,
+            136.99176013899998,
+            35.162466454000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98426013899999,
+            35.162466454000004,
+            136.98676013899998,
+            35.164966454
+          ],
+          "count": 179,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98676013899998,
+            35.162466454000004,
+            136.98926013899998,
+            35.164966454
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98926013899998,
+            35.162466454000004,
+            136.99176013899998,
+            35.164966454
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98426013899999,
+            35.164966454,
+            136.98676013899998,
+            35.167466454
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98676013899998,
+            35.164966454,
+            136.98926013899998,
+            35.167466454
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            136.98926013899998,
+            35.164966454,
+            136.99176013899998,
+            35.167466454
+          ],
+          "count": 0,
+          "complete": true
+        }
+      ],
+      "unique": 284,
+      "observed": 273,
+      "exact": {
+        "batches": 4,
+        "resolved": 284,
+        "geometryConflicts": 0
+      },
+      "under": {
+        "complete": true,
+        "count": 6
+      }
+    }
+  ],
+  "networkRequests": 3,
+  "unknownNamespaceAbsence": true,
+  "scope": "Only Osaka Chuo, Tokyo Chiyoda and Nagoya Chikusa public-coordinate packages; no citywide or national completeness claim.",
+  "description": "Metadata-only complete shared-snapshot verification; no parcel polygons retained.",
+  "sourceConditionsEvidence": "research/osaka.json"
+}

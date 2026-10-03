@@ -3326,15 +3326,20 @@
             "lyon": "Lyon, France",
             "rotterdam": "Rotterdam, Netherlands",
             "cologne": "Cologne, Germany",
+            "cotonou": "Cotonou, Benin",
             "bamako": "Bamako, Mali",
             "cali": "Cali, Colombia",
             "lima": "Lima, Peru",
             "luanda": "Luanda, Angola",
             "sydney": "Sydney, Australia",
             "sao_paulo": "São Paulo, Brazil",
+            "tokyo": "Tokyo, Japan",
+            "nagoya": "Nagoya, Japan",
             "osaka": "Osaka, Japan",
             "birmingham": "Birmingham, United Kingdom",
-            "lusaka": "Lusaka, Zambia"
+            "lusaka": "Lusaka, Zambia",
+            "montreal": "Montreal, Canada",
+            "dortmund": "Dortmund, Germany"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",

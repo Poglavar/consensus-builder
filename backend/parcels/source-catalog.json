@@ -33,6 +33,38 @@
       ]
     },
     {
+      "id": "ca-qc-cadastre-bd-allegee",
+      "name": "Quebec cadastre renovated-lot polygons (GO01_Polygones_Lots)",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+      "idField": "GlobalID",
+      "idType": "string",
+      "idPattern": "^\\{?[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}?$",
+      "idQueryBraces": true,
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-QC-CADASTRE-",
+      "parcelNumberField": "NO_LOT",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID",
+        "NO_LOT"
+      ],
+      "boundsQueryMode": "object-ids",
+      "pageSize": 50,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CA",
+      "metricSrid": 32618,
+      "scope": "Quebec-wide generalized renewed-cadastre lot polygons; Montreal is an indicative entry area only, not a Montreal-specific layer. Geometry is indicative and has no legal value; some polygons may represent complementary plans.",
+      "evidenceFile": "research/montreal-live-2026-10-03.json",
+      "licenceNote": "Reuse terms are informational; integration is enabled based on verified public endpoint behavior. Preserve attribution and the indicative-only caveat.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55",
+      "attribution": "Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.",
+      "cityIds": [
+        "montreal"
+      ]
+    },
+    {
       "id": "co-bogota-uaecd-lote",
       "name": "Bogotá IDECA/UAECD lots — CAR mirror, December 2021",
       "adapter": "arcgis",
@@ -380,14 +412,15 @@
       "maxBboxKm2": 25,
       "countryCode": "DE",
       "metricSrid": 32632,
-      "scope": "North Rhine-Westphalia ALKIS cadastral map; bounded Essen and Cologne entries enabled. Other German states need separate sources. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
-      "evidenceFile": "research/essen-live.json",
+      "scope": "North Rhine-Westphalia ALKIS cadastral map; bounded Essen, Cologne and Dortmund globe entries enabled. Other German states need separate sources. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
+      "evidenceFile": "research/dortmund-live-2026-10-03.json",
       "attribution": "Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
       "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
       "catalogueUrl": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json",
       "cityIds": [
         "essen",
-        "cologne"
+        "cologne",
+        "dortmund"
       ]
     },
     {
@@ -782,19 +815,110 @@
       "maxBboxKm2": 25,
       "expectedSnapshotFeatures": 2487,
       "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
-      "name": "Osaka Chuo ward MOJ public-coordinate map sheets — 2026",
+      "name": "MOJ public-coordinate map sheets — Osaka, Tokyo and Nagoya, 2026",
       "countryCode": "JP",
       "cityIds": [
-        "osaka"
+        "osaka",
+        "tokyo",
+        "nagoya"
       ],
       "metricSrid": 32653,
       "dataVersion": "2026",
-      "scope": "Partial Osaka Chuo ward coverage: 2,487 public-coordinate registry-map polygons in the 2026 converted release. Sheets without public coordinates are omitted; this is not citywide or Japan-wide coverage. A verified snapshot is refreshed into transient memory every five minutes, without parcel writes to disk or a database.",
+      "scope": "Partial 2026 converted MOJ public-coordinate registry-map packages: Osaka Chuo ward (2487 polygons), Tokyo Chiyoda ward (236) and Nagoya Chikusa ward (284). Only these three verified packages are enabled; sheets without public coordinates are omitted. No citywide or Japan-wide completeness is claimed. Pinned snapshots use five-minute transient-memory caching, without parcel writes to disk or a database.",
       "licenceNote": "Geospatial Information Center catalogue lists CC BY; underlying Ministry of Justice data and conversion-publisher conditions also apply. Publisher warns that public-coordinate sheets only are converted and some geometries may be misplaced. Conditions are informational.",
       "licenceUrl": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/",
       "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128",
       "attribution": "Japan Ministry of Justice registry-map data; Geospatial Information Center / AIGID conversion, 2026. Osaka Chuo ward public-coordinate sheets only; adapted to WGS84.",
-      "evidenceFile": "research/osaka-live.json"
+      "evidenceFile": "research/japan-2026-live.json",
+      "snapshots": [
+        {
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "bbox": [
+            135.520892868,
+            34.673960373,
+            135.535326678,
+            34.695122165
+          ],
+          "idNamespace": {
+            "field": "市区町村C",
+            "value": "27128"
+          },
+          "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+          "expectedSnapshotFeatures": 2487,
+          "maxSnapshotBytes": 3145728,
+          "maxSnapshotFeatures": 3000
+        },
+        {
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/13/aigid-moj-13101/13101_%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%999%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "bbox": [
+            139.743406757,
+            35.673049887,
+            139.775413613,
+            35.702415611
+          ],
+          "idNamespace": {
+            "field": "市区町村C",
+            "value": "13101"
+          },
+          "expectedEtag": "\"f6ca82248a5cc33967dfd22022ea8723\"",
+          "expectedSnapshotFeatures": 236,
+          "maxSnapshotBytes": 3145728,
+          "maxSnapshotFeatures": 3000
+        },
+        {
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23101/23101_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E5%8D%83%E7%A8%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "bbox": [
+            136.976276393,
+            35.160693342,
+            136.986396858,
+            35.165507393
+          ],
+          "idNamespace": {
+            "field": "市区町村C",
+            "value": "23101"
+          },
+          "expectedEtag": "\"48f56c86e848d68d7a509bef0e9bd8d2\"",
+          "expectedSnapshotFeatures": 284,
+          "maxSnapshotBytes": 3145728,
+          "maxSnapshotFeatures": 3000
+        }
+      ],
+      "metricSridByCity": {
+        "osaka": 32653,
+        "tokyo": 32654,
+        "nagoya": 32653
+      }
+    },
+    {
+      "id": "bj-andf-efoncier-geoserver",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+      "featureType": "efb:efb_parcel",
+      "idField": "nup",
+      "idType": "string",
+      "idPrefix": "BJ-ANDF-",
+      "outFields": [
+        "nup",
+        "local_parcel_identification",
+        "commune_name"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32631,
+      "name": "ANDF e-Foncier cadastral parcels — Cotonou",
+      "cityIds": [
+        "cotonou"
+      ],
+      "countryCode": "BJ",
+      "idPattern": "^[0-9]+$",
+      "parcelNumberField": "local_parcel_identification",
+      "scope": "Verified bounded Cotonou cadastral parcel samples from the ANDF e-Foncier service. Only the configured Cotonou entry is enabled; coverage beyond the tested cells and national completeness are unverified.",
+      "licenceNote": "ANDF describes public consultation and duplication except personal or confidential information, with online/private access subject to conditions and fees. GeoServer Fees NONE / AccessConstraints NONE are service defaults, not a reuse licence. Publisher conditions remain informational.",
+      "licenceUrl": "https://andf.bj/cadastre/",
+      "catalogueUrl": "https://cadastre.andf.bj/",
+      "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.",
+      "evidenceFile": "research/cotonou-live.json"
     }
   ]
 }

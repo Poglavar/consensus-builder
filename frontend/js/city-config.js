@@ -573,6 +573,33 @@
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        montreal: {
+            id: 'montreal',
+            label: translateCityText('city.labels.montreal', 'Montreal, Canada'),
+            currency: { locale: 'fr-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.50375, -73.569],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [45.50375, -73.569], fallbackDataset: [-73.569, 45.50375]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 2,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre rénové</a> · indicative geometry only; no legal value'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         los_angeles: {
             id: 'los_angeles',
             label: translateCityText('city.labels.los_angeles', 'Los Angeles, USA'),
@@ -1078,6 +1105,73 @@
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        dortmund: {
+            id: 'dortmund',
+            label: translateCityText('city.labels.dortmund', 'Dortmund, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.51494, 7.466],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32632',
+                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.51494, 7.466],
+                fallbackDataset: [7.466, 51.51494]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'de-nrw-lika-flurstueck',
+                idPrefix: 'DE-NRW-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cotonou: {
+            id: 'cotonou',
+            label: translateCityText('city.labels.cotonou', 'Cotonou, Benin'),
+            currency: { locale: 'fr-BJ', code: 'XOF' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [6.38646680667236, 2.3895186609943],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [6.38646680667236, 2.3895186609943],
+                fallbackDataset: [2.3895186609943, 6.38646680667236]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'bj-andf-efoncier-geoserver',
+                idPrefix: 'BJ-ANDF-',
+                requiresBackend: true,
+                ownership: false,
+                // Bounded Cotonou entry; national service coverage is not established here.
+                liveRadiusKm: 8,
+                attribution: '<a href="https://cadastre.andf.bj/">ANDF e-Foncier cadastral parcels</a> · <a href="https://andf.bj/cadastre/">publisher conditions</a> · verified Cotonou samples · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         bamako: {
             id: 'bamako',
             label: translateCityText('city.labels.bamako', 'Bamako, Mali'),
@@ -1107,6 +1201,56 @@
                 // Conservative globe entry area; adjacent municipalities need their own adapters.
                 liveRadiusKm: 5,
                 attribution: '<a href="https://ninacad.sprdf.ml/">SPRDF / NINACAD · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tokyo: {
+            id: 'tokyo',
+            label: translateCityText('city.labels.tokyo', 'Tokyo, Japan'),
+            currency: { locale: 'ja-JP', code: 'JPY' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.696623934, 139.766899192], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32654',
+                metricDefinition: '+proj=utm +zone=54 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [35.696623934, 139.766899192], fallbackDataset: [139.766899192, 35.696623934]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'jp-moj-geospatial-2026', idPrefix: 'JP-MOJ-2026-',
+                dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-13101">MOJ / Geospatial Information Center · 2026</a> · Tokyo Chiyoda ward public-coordinate sheets only · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        nagoya: {
+            id: 'nagoya',
+            label: translateCityText('city.labels.nagoya', 'Nagoya, Japan'),
+            currency: { locale: 'ja-JP', code: 'JPY' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.163716454, 136.984010139], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32653',
+                metricDefinition: '+proj=utm +zone=53 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [35.163716454, 136.984010139], fallbackDataset: [136.984010139, 35.163716454]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'jp-moj-geospatial-2026', idPrefix: 'JP-MOJ-2026-',
+                dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-23101">MOJ / Geospatial Information Center · 2026</a> · Nagoya Chikusa ward public-coordinate sheets only · adapted'
             },
             buildings: { source: 'none' },
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },

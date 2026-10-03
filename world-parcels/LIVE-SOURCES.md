@@ -452,3 +452,81 @@ footprint reads and authoritative proposal binding. Failed probes for Indonesian
 Amman, Japan's older query service, Recife, South Africa, Guayaquil and Kuala Lumpur are
 retained as metadata-only source-linked attempts. Earlier reuse-related holds are historical;
 current integration policy uses technical blockers and informational source notices.
+
+## Tokyo and Nagoya — 2026-10-03 continuation
+
+Tokyo Chiyoda (236 polygons) and Nagoya Chikusa (284) join the existing Osaka Chuo package
+through one `jp-moj-geospatial-2026` provider. Existing Osaka IDs remain unchanged: all three
+use published municipality code, map-sheet name and sheet ID in `JP-MOJ-2026-`. Verified
+resource extents select bounds queries; the municipality component selects exact-ID resources.
+Each resource has its own ETag/count pin, namespace check and full polygon-extent validation.
+Selected-resource failures abort the query; unavailable unrelated resources are not fetched.
+Unknown municipality IDs are absent from these explicitly limited packages, not proof of
+countrywide cadastral absence. Cache entries stay in memory for five minutes. Tokyo binding
+uses EPSG:32654; Osaka and Nagoya use EPSG:32653 without splitting provider identity.
+
+The actual combined adapter passed 54 viewport/pan cells and all 3,007 exact native-ID reads
+with no geometry conflicts. Nagoya Naka, Higashi and Nakamura packages repeated the three-part
+native key; these failed attempts remain recorded rather than inventing replacement keys.
+CC BY catalogue metadata and conversion warnings remain source information: only public-coordinate
+sheets are converted and some source geometries may be misplaced. Coverage is partial for
+these named wards and is not complete for Tokyo, Nagoya, Osaka or Japan. This continuation
+stays local until the next requested release. Evidence: `research/japan-2026-live.json`, the
+per-city metadata files and `research/nagoya-2026-source-attempts.json`.
+
+## Cotonou — 2026-10-03 continuation
+
+The ANDF e-Foncier provider streams Cotonou samples using the published `nup` string
+identifier in `BJ-ANDF-`; local parcel labels remain separate. Forced 25-row viewport
+paging and a 0.004-degree pan passed all 18 cells; all 2,374 native IDs resolved exactly
+without geometry conflicts. A genuine exact parcel footprint returned seven complete
+intersecting records. The service is official but this verification does not establish
+complete Cotonou or national Benin coverage. ANDF consultation/duplication conditions
+and personal/confidential-information exceptions are informational source notices;
+GeoServer Fees NONE / AccessConstraints NONE are defaults, not a reuse licence.
+Evidence: `research/cotonou-live.json`; earlier holds remain unchanged in their dated
+research and attempt history. New Delhi duplicate native keys and Fortaleza DNS failures
+are separately appended from `research/batch-six-root-source-attempts.json`.
+
+
+## Dortmund — 2026-10-03 continuation
+
+Dortmund reuses the existing Geobasis NRW ALKIS OGC API source. The published
+`flstkennz` GeoJSON feature ID remains the stable NRW-wide identity in `DE-NRW-`;
+parcel labels and row/version fields do not replace it. A 3×3 grid and a 0.004° pan
+at 0.0025° cell width completed 18/18 cells. All 1,105 observed IDs passed 14
+exact-read batches of up to 80, with no absent IDs, conflicting geometries or
+cross-cell conflicts. The `/under` route returned 18 complete features. All 33
+provider requests returned HTTP 200; none timed out (maximum 514 ms).
+
+This verifies the tested Dortmund entry area within the NRW regional source; it does
+not establish complete NRW or Germany coverage. Dortmund was a user-authorized follow-on outside the original 61-city candidate
+cohort. Four cities integrated from that cohort bring it to 26/61, leaving 35;
+Dortmund is additional. After this addition, the app has 38 configured cities,
+24 parcel sources, 30 source-city memberships and 22 countries. These totals describe
+the current app, not progress against the original cohort. Evidence:
+`research/dortmund-live-2026-10-03.json`.
+
+## Five-city continuation accounting — 2026-10-03
+
+This batch adds Tokyo, Nagoya, Montreal, Cotonou and Dortmund. Four belong to the
+original 61 positive city probes: 26 are now integrated and 35 remain. Dortmund
+is an additional verified city through the existing NRW regional provider. The app
+has 38 configured city entries across 22 countries and territories, backed by 24
+executable providers and 30 provider-city memberships; eight entries use older adapters.
+See `research/batch-six-live-cities-2026-10-03.json` for the explicit cohort mapping.
+
+All five passed complete viewport and exact-native-ID checks plus manual headed-browser
+rendering, pan/cache, footprint lookup and proposal binding. The broad headless run
+passed 1,632 checks with four database-dependent checks skipped; its stale Tokyo
+source-only expectation was corrected and the focused 31-check suite passed. The
+final post-Dortmund subset passed 199 checks across 13 files. Sources and their
+successes/failures are recorded; no parcel database imports were made.
+
+Cook County/Chicago remains held after seven PIN10 groups identified different baseparcel
+polygons; documented baseparcel filtering does not resolve those conflicts. Recife's
+alternate SEQIMOVEL field has missing or conflicting values in 13 of 18 cells.
+New Delhi's full snapshot repeats native IDs across distinct polygons. Fortaleza's
+hosts failed DNS resolution from the authorized network route; Singapore still lacks
+a verified bounded vector/exact-key service. These are technical holds with source
+conditions kept informational, and prior attempts remain in the registry history.
