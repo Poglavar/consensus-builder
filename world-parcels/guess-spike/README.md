@@ -109,6 +109,44 @@ The 32-update learning check improved training-only whole-parcel F1 from 0.337 t
 
 Cleanup preserves almost all previous matches while removing overlaps and many candidates. Additional quality training improves precision but loses recall and coverage; after cleanup it does not beat the previous adapter's whole-parcel F1. Retain the previous adapter plus cleanup as the better current SAM comparison, with score 0.3, mask threshold 0.5, IoU NMS 0.7 and minimum area 64 pixels. OSM still has higher shape precision (32.5%) and whole-parcel F1 (0.195). A larger, more varied training sample and fresh geographic holdout are needed before claiming a transferable improvement. Runs and artifacts remain under ignored `output/parcel-learning-check/`; metered training/inference API charges were $0.
 
+## Expanded data and fresh geography
+
+`prepare_sam3_expanded.py` adds 64 geographically varied training tiles to the original 32 and exports 16 fresh validation and 16 fresh test tiles. The new 2×2 blocks cover four parcel-density strata. Every new block is at least 500 m from previously examined imagery and other new blocks; parcel source IDs cannot cross splits, and the new holdouts exclude all previous parcel IDs. The export contains 3,121 training, 544 validation and 570 test mask instances. These are clipped instances; the test set contains 468 unique source parcels in four geographic blocks. Imagery and cadastral quality gates are unchanged, and database access is read-only.
+
+`sam3_expanded_train.py` starts from the previous best adapter and uses the original 128×128 mask/box assignment loss, learning rate 1e-4 and four additional epochs (384 updates). The initial adapter participates in validation selection. The cleanup grid and whole-parcel micro F1 selection rule are unchanged. Each validation tile is scored separately before pooling counts, so full probability grids do not accumulate in memory. The fresh test set is evaluated after checkpoint selection.
+
+The executed feature path uses `sam3_stream_features.py`: a frozen FP16 image backbone on MPS, a four-tile float32 RAM cache, and frozen float32 neck features feeding float32 trainable heads. The text encoder runs on CPU. Both the previous and expanded adapters use this same inference path. On four original training tiles, the precision smoke check retained the original adapter's match counts and whole-parcel F1, with under 0.005% mean mask-pixel differences. This check did not use holdout tiles or select a checkpoint. The optional `sam3_compact_features.py` instead stores lossless float32 backbone tensors on disk; four serialized tensors reproduced the original cached FPN levels exactly. Transient swap pressure stopped the disk-cache approach, so the full experiment uses streaming. Original experiment caches remain intact.
+
+Runs preserve a 1 GiB free-space reserve, hash inputs/model/executed sources, and checkpoint every four updates. `--resume` requires the same recipe. Generated data, adapters, optimizer checkpoints, audits and reports stay under ignored `output/`. Run from the repository root with the existing ML Python environment:
+
+```sh
+PARCEL_SPIKE=world-parcels/guess-spike
+PARCEL_EXPERIMENT="$PARCEL_SPIKE/output/parcel-expanded-check"
+python "$PARCEL_SPIKE/prepare_sam3_expanded.py" --run \
+  --imagery ../zagreb-parkiralista/data/tiles/cdof2022 \
+  --db-env ../cadastre-data/.env \
+  --prior-dataset "$PARCEL_SPIKE/output/sam3-finetune/dataset/manifest.json" \
+  --output "$PARCEL_EXPERIMENT/dataset"
+python "$PARCEL_SPIKE/sam3_expanded_train.py" --run --stream \
+  --backbone-device mps --backbone-dtype float16 --device mps \
+  --epochs 4 --learning-rate 0.0001 \
+  --dataset "$PARCEL_EXPERIMENT/dataset" \
+  --prior-dataset "$PARCEL_SPIKE/output/sam3-finetune/dataset" \
+  --cache "$PARCEL_SPIKE/output/sam3-model-cache-fast" \
+  --initial "$PARCEL_SPIKE/output/parcel-learning-check/sam3-pilot-02/best.pt" \
+  --output "$PARCEL_EXPERIMENT/run-01"
+python "$PARCEL_SPIKE/sam3_expanded_report.py" --run \
+  --dataset "$PARCEL_EXPERIMENT/dataset" \
+  --experiment "$PARCEL_EXPERIMENT/run-01" \
+  --output "$PARCEL_SPIKE/output/parcel-learning-check/report/expanded"
+```
+
+The static report recomputes metrics from saved masks and shows raw/cleaned predictions, an OSM baseline, and pooled results by test density. This experiment changes dataset size and additional optimization together, so it cannot isolate the effect of dataset size. It remains a single-city comparison using 2022 imagery and current cadastral geometry, with OSM as a separate baseline rather than model input.
+
+The completed expanded run did not improve validation performance. Whole-parcel micro F1 was 0.158 for the starting adapter, then 0.089, 0.105, 0.136 and 0.115 after the four additional epochs. Validation therefore retained epoch 0; the expanded-run report panels show the starting adapter, not a newly selected trained checkpoint.
+
+On the fresh test set, the retained cleaned SAM adapter matched 105/570 masks (precision 14.6%, recall 18.4%, F1 0.163). The OSM baseline matched 85/570 (precision 28.0%, recall 14.9%, F1 0.195). More SAM matches came with many more false positives. This result does not rule out other objectives, learning rates or encoder adaptation. A completed `--resume` replay skipped all 384 training updates and reproduced all 80 prediction archives exactly at the array level; the selected adapter and training journal were unchanged. Metered API cost was $0.
+
 ## Reproduce
 
 Requires local PostgreSQL `geodata` credentials in `cadastre-data/.env`, the CDOF cache at `zagreb-parkiralista/data/tiles/cdof2022`, Python packages `numpy`, `Pillow`, `scipy`, `opencv-python`, and the existing backend Node dependencies. Run from this repository root:
@@ -117,7 +155,7 @@ Requires local PostgreSQL `geodata` credentials in `cadastre-data/.env`, the CDO
 bash world-parcels/guess-spike/extract.sh 2971 33018
 python3 world-parcels/guess-spike/guess.py \
   world-parcels/guess-spike/output/tile_2971_33018/input.json \
-  /Users/simun/Code/zagreb-parkiralista/data/tiles/cdof2022/tile_2971_33018.tif \
+  ../zagreb-parkiralista/data/tiles/cdof2022/tile_2971_33018.tif \
   world-parcels/guess-spike/output/tile_2971_33018
 python3 world-parcels/guess-spike/evaluate.py \
   world-parcels/guess-spike/output/tile_2971_33018/input.json \

@@ -5,7 +5,8 @@ from pathlib import Path
 
 from sam3_expanded_report import (block_comparison, cleaned_outcome, compare_summary, config_label,
                                   block_row_html, geographic_block_counts, precision_smoke_summary,
-                                  prediction_caption, read_method_masks, runtime_summary,
+                                  interpretation_claims, prediction_caption, read_method_masks, runtime_summary,
+                                  selected_checkpoint_note,
                                   validate_scope)
 
 
@@ -101,6 +102,17 @@ class ExpandedReportTests(unittest.TestCase):
         self.assertIn('10 → 12', cleaned_outcome(previous, expanded))
         self.assertIn('lower', cleaned_outcome(expanded, previous))
         self.assertIn('the same', cleaned_outcome(previous, previous))
+        note = selected_checkpoint_note(0)
+        self.assertIn('Starting adapter retained', note)
+        self.assertIn('none of the four additional epochs improved validation parcel F1', note)
+        self.assertIn('show the starting adapter', note)
+        later = selected_checkpoint_note(2)
+        self.assertIn('additional epoch 2', later)
+        self.assertNotIn('Starting adapter retained', later)
+        claims = interpretation_claims()
+        self.assertTrue(any('zero by construction' in claim for claim in claims))
+        self.assertTrue(any('No gap filling' in claim for claim in claims))
+        self.assertTrue(any('not a complete legal parcel fabric' in claim for claim in claims))
 
     def test_runtime_note_uses_recipe_and_precision_smoke_is_training_only(self):
         note = runtime_summary({'vision_device': 'mps', 'backbone_dtype': 'float16',

@@ -490,3 +490,7 @@ snapshot reader; pin fixed editions by ETag and expected feature count so revise
 files cannot silently become authoritative absence. Osaka 2026 Chuo sheets use the reversible
 published municipality-code/map-name/sheet-ID composite in the `JP-MOJ-2026-` namespace;
 a sheet-local ID alone repeats across maps. Keep edition and limited coverage in source notices.
+
+### Expanded parcel-learning experiment (2026-10-03)
+
+Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validation/test sets; all four additional epochs lost validation parcel F1 versus the starting adapter (0.158), so retain the original adapter. Fresh-test cleaned SAM F1 was 0.163 versus OSM 0.195; this configuration does not justify replacing the baseline. Data, checkpoints and comparison reports remain ignored under `world-parcels/guess-spike/output/`; the review page is `/expanded/` in the existing comparison viewer.

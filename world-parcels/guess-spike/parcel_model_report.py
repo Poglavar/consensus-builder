@@ -372,7 +372,9 @@ def build(args):
     html_doc = ['<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
                 '<title>Parcel model experiments</title><link rel="stylesheet" href="report.css"><main>',
                 '<h1>Parcel model experiments</h1>',
-                ('<p class="note"><a href="quality/">Open the latest SAM 3 mask-quality and overlap comparison</a></p>'
+                ('<p class="note"><a href="expanded/">Open the expanded SAM 3 training comparison on fresh geographic areas</a></p>'
+                 if (args.output / 'expanded' / 'index.html').is_file() else ''),
+                ('<p class="note"><a href="quality/">Open the SAM 3 mask-quality and overlap comparison</a></p>'
                  if (args.output / 'quality' / 'index.html').is_file() else ''),
                 outcome,
                 '<p class="note">Tiny fits use only their training tiles and diagnose whether a small model subset can learn at all. The geographical comparison reuses the same eight previously explored test tiles; it is a comparison set, not a pristine holdout.</p>',

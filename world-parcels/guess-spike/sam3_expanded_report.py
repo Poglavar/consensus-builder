@@ -123,12 +123,30 @@ def geographic_block_counts(dataset):
 
 def cleaned_outcome(previous, expanded):
     old_f1, new_f1 = previous['shape_f1'], expanded['shape_f1']
-    direction = 'higher' if new_f1 > old_f1 else 'lower' if new_f1 < old_f1 else 'the same'
+    direction = 'higher than' if new_f1 > old_f1 else 'lower than' if new_f1 < old_f1 else 'the same as'
     delta = new_f1 - old_f1
     return (f"On this fresh test set, the expanded cleaned model's whole-parcel micro F1 is {direction} "
-            f"than the previous cleaned model ({old_f1:.3f} → {new_f1:.3f}, {delta:+.3f}); "
+            f"the previous cleaned model ({old_f1:.3f} → {new_f1:.3f}, {delta:+.3f}); "
             f"matched parcels are {previous['shape_matches']} → {expanded['shape_matches']} "
             f"out of {previous['reference_shapes']} reference parcels.")
+
+
+def selected_checkpoint_note(best_epoch, additional_epochs=4):
+    if best_epoch == 0:
+        return ('Starting adapter retained: none of the four additional epochs improved validation parcel F1. '
+                'Expanded-run selected panels therefore show the starting adapter.')
+    if best_epoch is None:
+        return 'The selected expanded-run epoch was not recorded.'
+    return (f'The expanded-run panels show the adapter selected after additional epoch {best_epoch} '
+            f'of up to {additional_epochs} epochs.')
+
+
+def interpretation_claims():
+    return [
+        'Exclusive cleanup makes prediction overlap zero by construction; this is not evidence of learned accuracy.',
+        'No gap filling is applied.',
+        'Predictions are not a complete legal parcel fabric.',
+    ]
 
 
 def config_label(selected):
@@ -292,6 +310,7 @@ def build(dataset: Path, prior_dataset: Path, experiment: Path, output: Path,
                   'additional_training_tiles': 64, 'warm_start': 'Best adapter trained on the previous 32-tile set',
                   'selection': 'Fresh validation whole-parcel micro F1; 2 m boundary F1 breaks ties',
                   'best_epoch': result.get('best_epoch'),
+                  'selected_checkpoint_note': selected_checkpoint_note(result.get('best_epoch')),
                   'technical_run': runtime_summary(recipe),
                   'precision_smoke': precision,
                   'previous_cleanup_config': (result.get('baseline_selected') or {}).get('config'),
@@ -302,11 +321,13 @@ def build(dataset: Path, prior_dataset: Path, experiment: Path, output: Path,
                   'inputs': 'OSM is used only for its separate baseline and is not model input.',
                   'metered_api_usd': 0},
         'metric_definition': 'Shape counts use one-to-one instance matching at IoU ≥ 0.5. Shape precision, recall, and F1 are micro-aggregated over whole parcels; boundary F1 uses a 2 m tolerance; coverage and overlap are tile means.',
+        'interpretation_claims': interpretation_claims(),
         'methods': summaries,
         'geographic_block_comparisons': block_results,
         'cleaned_comparison': {'outcome': cleaned_outcome(summaries['previous-cleaned'], summaries['expanded-cleaned']),
                                'previous': summaries['previous-cleaned'],
                                'expanded': summaries['expanded-cleaned']},
+        'selected_checkpoint_note': selected_checkpoint_note(result.get('best_epoch')),
         'recorded_methods': recorded_methods,
         'images': images,
         'provenance': {'selected_epoch': result.get('best_epoch'),
@@ -365,7 +386,9 @@ def build(dataset: Path, prior_dataset: Path, experiment: Path, output: Path,
                           f"cleaned matches ({old['matched_instances']}) and parcel F1 ({old['shape_f1']:.3f}) "
                           f"between float32 CPU and float16 GPU features; mean mask-pixel difference was "
                           f"{old_difference:.4f}%. It used no validation or test tiles and did not select the model.")
-    page = f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(payload['title'])}</title><link rel="stylesheet" href="report.css"><main><h1>{html.escape(payload['title'])}</h1><p>This experiment adds 64 geographically varied training tiles to the previous 32, then runs four more epochs (384 adapter updates) from the previous best adapter. Since the data volume and additional optimization changed together, this comparison cannot isolate dataset size as the cause of a difference.</p><p>Train/validation/test: 96/16/16 tiles. The test set covers {training['test_geographic_blocks']} geographic blocks of four neighboring tiles each, at least 500 m from earlier tiles. Cadastral parcel IDs are disjoint from prior data and between holdout splits.</p><p>Zagreb 2022 RGB orthophotos are compared with current cadastral geometry, so later parcel changes can create apparent errors. OSM appears only as a separate baseline and was not model input. Metered API cost: $0.</p><p class="note">Cyan shows predicted parcel edges; pink shows cadastral edges. The primary comparison is whole-parcel micro F1. {outcome}{html.escape(precision_note)}</p><section><h2>Fresh test results</h2><p>{html.escape(payload['metric_definition'])}</p><div class="table-wrap"><table><thead><tr><th>Method</th><th>Parcel F1</th><th>Predicted</th><th>Matches / refs</th><th>Precision</th><th>Recall</th><th>Boundary F1</th><th>Coverage</th><th>Overlap</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>{block_table}<section><h2>Selection on fresh validation</h2><p>Best expanded-adapter epoch: {html.escape(str(result.get('best_epoch', 'Not recorded')))}. Both cleanup configurations were chosen by validation whole-parcel micro F1, with 2 m boundary F1 as the tie-breaker.</p><p>Previous adapter cleanup: <code>{previous_config}</code></p><p>Expanded adapter cleanup: <code>{expanded_config}</code></p></section><section><h2>Run details</h2><p>{html.escape(training['technical_run'])}</p><p>The precision check above is a training-only diagnostic, separate from validation selection and fresh-test evaluation.</p></section>{''.join(sections)}<footer><a href="report-data.json">Download report data and provenance</a>. Click any panel image to open its full-size PNG. Metrics were recalculated from saved binary masks before this report was written.</footer></main></html>'''
+    checkpoint_note = html.escape(training['selected_checkpoint_note'])
+    claims_html = ''.join(f'<li>{html.escape(claim)}</li>' for claim in payload['interpretation_claims'])
+    page = f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(payload['title'])}</title><link rel="stylesheet" href="report.css"><main><h1>{html.escape(payload['title'])}</h1><p>This experiment adds 64 geographically varied training tiles to the previous 32, then performs four more epochs (384 adapter updates) from the previous best adapter. The test panels use the adapter selected on validation. Since data volume and additional optimization changed together, this comparison cannot isolate dataset size as the cause of a difference.</p><p>Train/validation/test: 96/16/16 tiles. The test set covers {training['test_geographic_blocks']} geographic blocks of four neighboring tiles each, at least 500 m from earlier tiles. Cadastral parcel IDs are disjoint from prior data and between holdout splits.</p><p>Zagreb 2022 RGB orthophotos are compared with current cadastral geometry, so later parcel changes can create apparent errors. OSM appears only as a separate baseline and was not model input. Metered API cost: $0.</p><p class="note">Cyan shows predicted parcel edges; pink shows cadastral edges. The primary comparison is whole-parcel micro F1. {checkpoint_note} {outcome}</p><section><h2>Fresh test results</h2><p>{html.escape(payload['metric_definition'])}</p><div class="table-wrap"><table><thead><tr><th>Method</th><th>Parcel F1</th><th>Predicted</th><th>Matches / refs</th><th>Precision</th><th>Recall</th><th>Boundary F1</th><th>Coverage</th><th>Overlap</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>{block_table}<section><h2>Selection on fresh validation</h2><p>Best expanded-adapter epoch: {html.escape(str(result.get('best_epoch', 'Not recorded')))}. {checkpoint_note} Both cleanup configurations were chosen by validation whole-parcel micro F1, with 2 m boundary F1 as the tie-breaker.</p><p>Previous adapter cleanup: <code>{previous_config}</code></p><p>Expanded adapter cleanup: <code>{expanded_config}</code></p></section><section><h2>Run details</h2><p>{html.escape(training['technical_run'])}</p><p>{html.escape(precision_note.strip())}</p><p>The precision check is a training-only diagnostic, separate from validation selection and fresh-test evaluation.</p><ul>{claims_html}</ul></section>{''.join(sections)}<footer><a href="report-data.json">Download report data and provenance</a>. Click any panel image to open its full-size PNG. Metrics were recalculated from saved binary masks before this report was written.</footer></main></html>'''
     (output / 'index.html').write_text(page)
     return payload
 
