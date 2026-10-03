@@ -23,7 +23,7 @@ export function createParcelSource(descriptor, options = {}) {
 }
 
 export function parcelSourceForCity(city) {
-    const descriptor = parcelSourceCatalog.sources.find(source => source.cityId === city);
+    const descriptor = parcelSourceCatalog.sources.find(source => source.cityIds.includes(city));
     return descriptor ? { descriptor, adapter: createParcelSource(descriptor) } : null;
 }
 

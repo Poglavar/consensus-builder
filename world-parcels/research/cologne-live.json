@@ -1,0 +1,41 @@
+{
+  "description": "Additional city enabled through a shared verified provider without changing canonical parcel IDs.",
+  "sourceId": "de-nrw-lika-flurstueck",
+  "cityId": "cologne",
+  "checkedAt": "2026-10-03",
+  "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+  "adapter": "ogc-api",
+  "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
+  "catalogueUrl": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json",
+  "bboxWgs84": [
+    6.9598,
+    50.937,
+    6.9608,
+    50.938
+  ],
+  "bboxCount": 45,
+  "forcedPageSize": 3,
+  "complete": true,
+  "exactIdCount": 45,
+  "absentIds": [],
+  "responseFile": "research/cologne-live-response.json",
+  "identity": "Same provider-native key and prefix used by every city served by this source. City is a viewport entry, not part of parcel identity.",
+  "scope": "Bounded city entry only; no whole-country live coverage claim.",
+  "routing": "Ambiguous parcel prefixes are resolved by exact geometry through the repository’s read-only locateIds; lookup cannot publish ground into the wrong city repository.",
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "surface": "Owned headed Chrome against local frontend 5638 / API 4638",
+    "actualGlobeButtonOpened": true,
+    "exactGeometryResolvedCity": "cologne",
+    "underFootprintComplete": true,
+    "bindingCoverage": "complete",
+    "uncaughtBrowserErrors": 0,
+    "proposalSaved": false,
+    "loadedParcels": 777,
+    "retainedAfterPan": 911,
+    "newCellRequests": 7,
+    "cachedReturnRequests": 0,
+    "deepLinkStartCity": "essen",
+    "deepLinkParcelId": "DE-NRW-05495800600698______"
+  }
+}

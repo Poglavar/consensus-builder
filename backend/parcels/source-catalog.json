@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "description": "Executable parcel providers; research-only sources remain in registry.json until an adapter is verified.",
+  "schemaVersion": 2,
+  "description": "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.",
   "sources": [
     {
       "id": "ca-on-toronto-property-boundary",
@@ -21,14 +21,16 @@
       "pageSize": 2000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "toronto",
       "countryCode": "CA",
       "metricSrid": 32617,
       "scope": "City of Toronto municipal parcel fabric; surrounding municipalities are separate sources",
       "evidenceFile": "research/toronto.json",
       "attribution": "Contains information licensed under the Open Government Licence – Toronto.",
       "licenceUrl": "https://open.toronto.ca/open-data-license/",
-      "catalogueUrl": "https://open.toronto.ca/dataset/property-boundaries/"
+      "catalogueUrl": "https://open.toronto.ca/dataset/property-boundaries/",
+      "cityIds": [
+        "toronto"
+      ]
     },
     {
       "id": "co-bogota-uaecd-lote",
@@ -56,14 +58,16 @@
       "pageSize": 2000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "bogota",
       "countryCode": "CO",
       "metricSrid": 32618,
       "scope": "December 2021 copy of Bogotá Distrito Capital urban and rural lots, explicitly selected for the prototype. A lot may contain multiple properties; neighbouring municipalities are separate sources.",
       "evidenceFile": "research/bogota-live-2021-mirror.json",
       "attribution": "IDECA/UAECD Lote — December 2021, served by CAR, CC BY 4.0. Adapted to canonical WGS84 parcel features.",
       "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "catalogueUrl": "https://datosabiertos.bogota.gov.co/dataset/lote"
+      "catalogueUrl": "https://datosabiertos.bogota.gov.co/dataset/lote",
+      "cityIds": [
+        "bogota"
+      ]
     },
     {
       "id": "us-ca-lacounty-assessor-parcels",
@@ -83,14 +87,16 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "los_angeles",
       "countryCode": "US",
       "metricSrid": 32611,
       "scope": "Los Angeles County only; county assessor polygons do not establish coverage of adjacent counties or separate condominium title boundaries.",
       "evidenceFile": "research/los-angeles-live.json",
       "attribution": "County of Los Angeles, Assessor parcels. Enterprise GIS Repository. Accessed October 2, 2026. Adapted to WGS84.",
       "licenceUrl": "https://egis-lacounty.hub.arcgis.com/pages/terms-of-use",
-      "catalogueUrl": "https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about"
+      "catalogueUrl": "https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about",
+      "cityIds": [
+        "los_angeles"
+      ]
     },
     {
       "id": "us-fl-miamidade-pa-parcels",
@@ -111,7 +117,6 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "miami",
       "countryCode": "US",
       "metricSrid": 32617,
       "scope": "Miami-Dade County only; does not cover Broward or Palm Beach counties. Property assessment polygons are approximate.",
@@ -120,7 +125,10 @@
       "licenceUrl": "https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about",
       "licenceNote": "Official public dataset supplies data for use subject to an accuracy/reliance disclaimer; no named open-data licence is stated.",
       "catalogueUrl": "https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about",
-      "parcelNumberField": "FOLIO"
+      "parcelNumberField": "FOLIO",
+      "cityIds": [
+        "miami"
+      ]
     },
     {
       "id": "us-dc-dcgis-tax-lots",
@@ -145,14 +153,16 @@
       "pageSize": 2000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "washington_dc",
       "countryCode": "US",
       "metricSrid": 32618,
       "scope": "District of Columbia assessment tax lots, not legal survey/record lots. SSL numbers are not unique; each GlobalID identifies a separate polygon. Adjacent Virginia and Maryland jurisdictions need separate sources.",
       "evidenceFile": "research/washington-dc-live.json",
       "attribution": "District of Columbia, DCGIS Tax Lots, CC BY 4.0. Adapted to WGS84.",
       "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "catalogueUrl": "https://opendata.dc.gov/datasets/DCGIS::tax-lots"
+      "catalogueUrl": "https://opendata.dc.gov/datasets/DCGIS::tax-lots",
+      "cityIds": [
+        "washington_dc"
+      ]
     },
     {
       "id": "fr-ign-parcellaire-express",
@@ -179,15 +189,18 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "paris",
       "countryCode": "FR",
       "metricSrid": 32631,
-      "scope": "IGN assembly of vectorised DGFiP cadastral parcels across France; Paris and Lyon bounded samples verified. Non-vectorised areas and cadastral alignment gaps remain possible; globe enables Paris only.",
+      "scope": "IGN assembly of vectorised DGFiP cadastral parcels across France; bounded Paris and Lyon globe entries are enabled and verified. Non-vectorised areas and cadastral alignment gaps remain possible.",
       "evidenceFile": "research/paris-live-wfs.json",
       "attribution": "IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.",
       "licenceUrl": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
       "catalogueUrl": "https://www.data.gouv.fr/datasets/parcellaire-express-pci",
-      "parcelNumberField": "numero"
+      "parcelNumberField": "numero",
+      "cityIds": [
+        "paris",
+        "lyon"
+      ]
     },
     {
       "id": "au-vic-vicmap-parcel",
@@ -212,7 +225,6 @@
       "pageSize": 2000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "melbourne",
       "countryCode": "AU",
       "metricSrid": 32755,
       "scope": "Victoria cadastral parcel map polygons; distinct from local-government property assessment units. Other Australian states use separate datasets. Only Approved (A) parcel and version records are ground; Proposed (P) records are excluded. Crown and government-road parcels remain included. Only G (unrestricted ground) and S (ground surface affected by strata) levels are ground; above/below strata are excluded.",
@@ -227,7 +239,10 @@
           "G",
           "S"
         ]
-      }
+      },
+      "cityIds": [
+        "melbourne"
+      ]
     },
     {
       "id": "za-cct-land-parcels",
@@ -248,7 +263,6 @@
       "pageSize": 2000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "cape_town",
       "countryCode": "ZA",
       "metricSrid": 32734,
       "scope": "City of Cape Town municipal cadastral parcels; duplicate address rows with the same SG26 code and identical geometry collapse to one parcel. Conflicting geometry fails closed. Other South African municipalities use separate sources.",
@@ -257,7 +271,10 @@
       "licenceUrl": "https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about",
       "licenceNote": "Official public open-data item; named reuse licence not established. Linked City open-data terms page returned 404 at verification.",
       "catalogueUrl": "https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about",
-      "parcelNumberField": "PRTY_NMBR"
+      "parcelNumberField": "PRTY_NMBR",
+      "cityIds": [
+        "cape_town"
+      ]
     },
     {
       "id": "nl-pdok-brk-kadastrale-kaart",
@@ -288,14 +305,17 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "amsterdam",
       "countryCode": "NL",
       "metricSrid": 32631,
-      "scope": "National Dutch cadastral map; only the bounded Amsterdam globe entry is enabled. Valid (G) records only. Boundaries are indicative and unsuitable for survey measurements or establishing legal title.",
+      "scope": "National Dutch cadastral map; bounded Amsterdam and Rotterdam globe entries are enabled. Valid (G) records only. Boundaries are indicative and unsuitable for survey measurements or establishing legal title.",
       "evidenceFile": "research/amsterdam-live.json",
       "attribution": "Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.",
       "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "catalogueUrl": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart"
+      "catalogueUrl": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+      "cityIds": [
+        "amsterdam",
+        "rotterdam"
+      ]
     },
     {
       "id": "be-vlaanderen-grb-adp",
@@ -318,14 +338,16 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "antwerp",
       "countryCode": "BE",
       "metricSrid": 32631,
       "scope": "Flanders GRB administrative cadastral-map objects; permanent OIDN identity, UIDN version metadata and CAPAKEY cadastral association. Graphic depiction corrected to terrain, not a legal survey boundary. Only bounded Antwerp globe entry is enabled; Brussels and Wallonia need separate sources.",
       "evidenceFile": "research/antwerp-live.json",
       "attribution": "Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.",
       "licenceUrl": "https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik",
-      "catalogueUrl": "https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb"
+      "catalogueUrl": "https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb",
+      "cityIds": [
+        "antwerp"
+      ]
     },
     {
       "id": "de-nrw-lika-flurstueck",
@@ -356,14 +378,17 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "essen",
       "countryCode": "DE",
       "metricSrid": 32632,
-      "scope": "North Rhine-Westphalia ALKIS cadastral map; only bounded Essen entry enabled. Other German states need separate sources. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
+      "scope": "North Rhine-Westphalia ALKIS cadastral map; bounded Essen and Cologne entries enabled. Other German states need separate sources. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
       "evidenceFile": "research/essen-live.json",
       "attribution": "Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
       "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
-      "catalogueUrl": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json"
+      "catalogueUrl": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json",
+      "cityIds": [
+        "essen",
+        "cologne"
+      ]
     },
     {
       "id": "us-ca-sf-datasf-active-parcels",
@@ -393,14 +418,16 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "san_francisco",
       "countryCode": "US",
       "metricSrid": 32610,
       "scope": "City and County of San Francisco current recorded-map ground footprints only. Active Public Works map rows are grouped by the documented mapblklot ground key after identical-geometry checks; blklot identifies assessment rows, not separate condominium ground. Retired and assessment-only records excluded. Adjacent counties need separate sources.",
       "evidenceFile": "research/san-francisco-live.json",
       "attribution": "City and County of San Francisco / DataSF, Parcels – Active and Retired. PDDL 1.0. Adapted to WGS84 ground footprints.",
       "licenceUrl": "https://opendatacommons.org/licenses/pddl/1-0/",
-      "catalogueUrl": "https://data.sf.gov/d/acdm-wktn"
+      "catalogueUrl": "https://data.sf.gov/d/acdm-wktn",
+      "cityIds": [
+        "san_francisco"
+      ]
     },
     {
       "id": "de-be-alkis-flurstuecke-wfs",
@@ -429,14 +456,16 @@
       "pageSize": 1000,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
-      "cityId": "berlin",
       "countryCode": "DE",
       "metricSrid": 32633,
       "scope": "Land Berlin ALKIS cadastral parcels; Brandenburg and the wider metropolitan area need separate sources. The native fsko cadastral key identifies ground, uuid is the separate object ID and beg records object version start.",
       "evidenceFile": "research/berlin-live.json",
       "attribution": "Land Berlin / Geoportal Berlin, ALKIS Flurstücke. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
       "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
-      "catalogueUrl": "https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7"
+      "catalogueUrl": "https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7",
+      "cityIds": [
+        "berlin"
+      ]
     },
     {
       "id": "hk-landsd-lot-index-api",
@@ -466,14 +495,16 @@
       "maxBboxWidthM": 750,
       "maxBboxHeightM": 600,
       "minRequestIntervalMs": 1000,
-      "cityId": "hong_kong",
       "countryCode": "HK",
       "metricSrid": 32650,
       "scope": "Lands Department iC1000 private-lot index only. Government Land Allocations and Short-Term Tenancies are separate collections and are not enabled here. Native lotid is distinct from transport WFS FID and the displayed lot name. Only bounded Hong Kong entry enabled; boundaries are indicative, not legal survey proof.",
       "evidenceFile": "research/hong-kong-live.json",
       "attribution": "Map from Lands Department. © Government of the Hong Kong SAR / CSDI. Adapted to WGS84. Official Lands Department logo displayed on map face.",
       "licenceUrl": "https://portal.csdi.gov.hk/csdi-webpage/doc/TNC",
-      "catalogueUrl": "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI"
+      "catalogueUrl": "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+      "cityIds": [
+        "hong_kong"
+      ]
     }
   ]
 }

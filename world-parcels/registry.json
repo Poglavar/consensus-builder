@@ -142,7 +142,80 @@
       "verifiedCityIds": [
         "geonames:2240449"
       ],
-      "evidenceFile": "research/luanda.json"
+      "evidenceFile": "research/luanda.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "luanda"
+        ],
+        "reason": "Reuse terms and layer authority unresolved; bracketed GlobalID query semantics need adapter verification.",
+        "evidenceFile": "research/luanda-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0?f=pjson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Current service/layer schema retrieved; metadata declares GlobalID_1 GlobalID field and a unique index; no reuse terms or publisher description.",
+          "evidenceFile": "research/luanda-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://www.arcgis.com/sharing/rest/content/items/93db765728ef423a9de9accaeb71b4fa?f=json",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Public item; owner ANGOLA_GGPEN; licenseInfo null; item modified 2026-07-27 (ArcGIS timestamp).",
+          "evidenceFile": "research/luanda-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?geometry={xmin:13.233,ymin:-8.8375,xmax:13.235,ymax:-8.836,spatialReference:{wkid:4326}}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=GlobalID_1,ID_AGT,ID_GGPEN,Municipio,Comuna&returnGeometry=true&resultRecordCount=3&f=geojson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Maianga polygons; ID_AGT empty on all three; three distinct GlobalID_1 and ID_GGPEN values; no owner fields requested.",
+          "evidenceFile": "research/luanda-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?where=GlobalID_1='{cd6a291d-870c-4126-b2e1-c82a723f5d79}'&outFields=OBJECTID,GlobalID_1,ID_AGT,ID_GGPEN,Municipio,Comuna&returnGeometry=true&outSR=4326&f=geojson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Exact brace-wrapped GlobalID_1 lookup returned a Polygon; canonical value serialized without braces.",
+          "evidenceFile": "research/luanda-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?where=ID_GGPEN='05117aa3c4701d9a4c3eb1ea4498d0213521'&outFields=OBJECTID,GlobalID_1,ID_AGT,ID_GGPEN,Municipio,Comuna&returnGeometry=true&outSR=4326&f=geojson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Exact ID_GGPEN sample lookup returned same Polygon; no uniqueness contract/index established.",
+          "evidenceFile": "research/luanda-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?where=GlobalID_1='cd6a291d-870c-4126-b2e1-c82a723f5d79'&outFields=GlobalID_1&returnGeometry=false&f=geojson",
+          "operation": "Bounded source assessment request",
+          "outcome": "query-rejected",
+          "detail": "ArcGIS SQL error 400: invalid where parameter; brace-wrapped form succeeds.",
+          "evidenceFile": "research/luanda-live-assessment.json",
+          "httpStatus": 200,
+          "upstreamErrorCode": 400
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query",
+          "operation": "Runtime readiness and reuse review",
+          "outcome": "held",
+          "detail": "Reuse terms and layer authority unresolved; bracketed GlobalID query semantics need adapter verification.",
+          "evidenceFile": "research/luanda-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "co-bogota-uaecd-lote",
@@ -202,7 +275,34 @@
       "verifiedCityIds": [
         "geonames:3936456"
       ],
-      "evidenceFile": "research/lima.json"
+      "evidenceFile": "research/lima.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "lima"
+        ],
+        "reason": "Third-party copy has no reuse terms or documented permanent native key; a separate official SEDAPAL candidate is recorded.",
+        "evidenceFile": "research/lima-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0?f=json",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Third-party layer schema rechecked; no GlobalID and no reuse terms.",
+          "evidenceFile": "research/lima-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0/query",
+          "operation": "Runtime readiness and reuse review",
+          "outcome": "held",
+          "detail": "Third-party copy has no reuse terms or documented permanent native key; a separate official SEDAPAL candidate is recorded.",
+          "evidenceFile": "research/lima-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "tr-tkgm-parsel-sorgu-api",
@@ -236,7 +336,52 @@
       "verifiedCityIds": [
         "wup2025:374"
       ],
-      "evidenceFile": "research/bamako.json"
+      "evidenceFile": "research/bamako.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "bamako"
+        ],
+        "reason": "Reuse rights unresolved; only 6 of 74 bbox rows freshly paged, no complete adapter read.",
+        "evidenceFile": "research/bamako-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&maxFeatures=3&outputFormat=application%2Fjson&srsName=EPSG%3A4326&sortBy=ninacad&startIndex=0&bbox=-8.0430%2C12.6755%2C-8.0415%2C12.6775%2CEPSG%3A4326",
+          "operation": "bounded geometry/page 1, maxFeatures=3, sortBy=ninacad, startIndex=0",
+          "outcome": "success-sample",
+          "detail": "3 Polygon features. First exact property ID ninacad=00103010001 (string); feature ID parcelle.4022706; WGS84 geometry.",
+          "evidenceFile": "research/bamako-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&maxFeatures=3&outputFormat=application%2Fjson&srsName=EPSG%3A4326&sortBy=ninacad&startIndex=3&bbox=-8.0430%2C12.6755%2C-8.0415%2C12.6775%2CEPSG%3A4326",
+          "operation": "same bbox/page 2",
+          "outcome": "success-sample",
+          "detail": "3 additional feature IDs/ninacad values, no overlap with page 1. Count consistent. Only 6 of 74 rows paged; full query enumeration not attempted.",
+          "evidenceFile": "research/bamako-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&maxFeatures=2&outputFormat=application%2Fjson&srsName=EPSG%3A4326&CQL_FILTER=ninacad%3D%2700103010001%27",
+          "operation": "exact native ID lookup, CQL_FILTER ninacad='00103010001'",
+          "outcome": "success-sample",
+          "detail": "Returns the same parcel ID parcelle.4022706 and closed Polygon geometry. Confirms exact string lookup and one match.",
+          "evidenceFile": "research/bamako-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+          "operation": "Runtime readiness and reuse review",
+          "outcome": "held",
+          "detail": "Reuse rights unresolved; only 6 of 74 bbox rows freshly paged, no complete adapter read.",
+          "evidenceFile": "research/bamako-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "id-big-satupeta-hak-milik-jawa-barat",
@@ -1138,7 +1283,88 @@
       "verifiedCityIds": [
         "wup2025:1455"
       ],
-      "evidenceFile": "research/santo-domingo.json"
+      "evidenceFile": "research/santo-domingo.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "santo_domingo"
+        ],
+        "reason": "Published terms restrict reuse and modification; historical geometry and no documented permanent native key. Unsorted paging repeated rows.",
+        "evidenceFile": "research/santo-domingo-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+          "operation": "bounded GeoJSON page, WFS 1.0.0, maxFeatures=3, default order/startIndex=0",
+          "outcome": "success-sample",
+          "detail": "3 MultiPolygon features. Default response CRS EPSG:32619. Example record: ParcelasHistoricas.29244, PARCELA=1-A, PROVINCIA=Distrito Nacional, MUNICIPIO=Santo Domingo de Guzman, DC=4.",
+          "evidenceFile": "research/santo-domingo-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=1&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+          "operation": "bounded output CRS probe EPSG:4326, maxFeatures=1",
+          "outcome": "success-sample",
+          "detail": "GeoJSON declares EPSG:4326; coordinate order is longitude, latitude.",
+          "evidenceFile": "research/santo-domingo-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=1&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+          "operation": "bounded output CRS probe CRS:84, maxFeatures=1",
+          "outcome": "success-sample",
+          "detail": "GeoJSON declares CRS:84; coordinates are lon/lat.",
+          "evidenceFile": "research/santo-domingo-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=2&outputFormat=application%2Fjson&featureID=ParcelasHistoricas.29244",
+          "operation": "exact GeoServer feature-ID lookup",
+          "outcome": "success-sample",
+          "detail": "Returns exactly feature ID ParcelasHistoricas.29244 and the same parcel attributes/geometry. This is a GeoServer feature ID, not a documented cadastral key.",
+          "evidenceFile": "research/santo-domingo-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=2&outputFormat=application%2Fjson&CQL_FILTER=PARCELA%3D%271-A%27+AND+PROVINCIA%3D%27Distrito+Nacional%27+AND+MUNICIPIO%3D%27Santo+Domingo+de+Guzman%27+AND+DC%3D%274%27",
+          "operation": "exact property-filter probe (natural-key combination)",
+          "outcome": "request-failed",
+          "detail": "Exact CQL property lookup was blocked; no parcel-field exact lookup confirmed.",
+          "evidenceFile": "research/santo-domingo-live-assessment.json",
+          "httpStatus": 403
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs",
+          "operation": "Runtime readiness and reuse review",
+          "outcome": "held",
+          "detail": "Published terms restrict reuse and modification; historical geometry and no documented permanent native key. Unsorted paging repeated rows.",
+          "evidenceFile": "research/santo-domingo-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=9&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+          "operation": "Five-page bbox enumeration without stable sorting",
+          "outcome": "paging-repeated-records",
+          "detail": "All returned HTTP 200 with totalFeatures=numberMatched=13 and page lengths 3,3,3,3,1, but the offset-9 page repeated the initial page IDs. Unsorted paging therefore omitted records despite apparently complete counts.",
+          "httpStatus": 200,
+          "evidenceFile": "research/santo-domingo-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=9&sortBy=PARCELA&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+          "operation": "Five-page bbox enumeration sorted by PARCELA",
+          "outcome": "success-sample",
+          "detail": "All returned HTTP 200; page lengths 3,3,3,3,1; matched=13 on each; 13 unique GeoServer feature IDs, no repeated IDs. Explicit ordering repairs pagination for this tested snapshot/box, but repeatability on future updates is unproven.",
+          "httpStatus": 200,
+          "evidenceFile": "research/santo-domingo-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "id-bigsatupeta-hakmilik-jawa-tengah",
@@ -1626,9 +1852,13 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "paris"
+          "paris",
+          "lyon"
         ],
-        "evidenceFile": "research/paris-live-wfs.json"
+        "evidenceFile": "research/paris-live-wfs.json",
+        "additionalCityEvidence": {
+          "lyon": "research/lyon-live.json"
+        }
       },
       "integrationAttempts": [
         {
@@ -1639,6 +1869,14 @@
           "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
           "evidenceFile": "research/paris-live-wfs.json",
           "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://data.geopf.fr/wfs/ows",
+          "operation": "lyon bounded three-row-page geometry and exact native-ID round trip",
+          "outcome": "success",
+          "detail": "9 complete parcels; all resolved by exact ID, no absences. Reuses existing verified licence and identity contract.",
+          "evidenceFile": "research/lyon-live.json"
         }
       ]
     },
@@ -1700,9 +1938,13 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "amsterdam"
+          "amsterdam",
+          "rotterdam"
         ],
-        "evidenceFile": "research/amsterdam-live.json"
+        "evidenceFile": "research/amsterdam-live.json",
+        "additionalCityEvidence": {
+          "rotterdam": "research/rotterdam-live.json"
+        }
       },
       "integrationAttempts": [
         {
@@ -1722,6 +1964,14 @@
           "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
           "evidenceFile": "research/amsterdam-live.json",
           "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+          "operation": "rotterdam bounded three-row-page geometry and exact native-ID round trip",
+          "outcome": "success",
+          "detail": "7 complete parcels; all resolved by exact ID, no absences. Reuses existing verified licence and identity contract.",
+          "evidenceFile": "research/rotterdam-live.json"
         }
       ]
     },
@@ -1834,9 +2084,13 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "essen"
+          "essen",
+          "cologne"
         ],
-        "evidenceFile": "research/essen-live.json"
+        "evidenceFile": "research/essen-live.json",
+        "additionalCityEvidence": {
+          "cologne": "research/cologne-live.json"
+        }
       },
       "integrationAttempts": [
         {
@@ -1856,6 +2110,103 @@
           "detail": "Five complete parcels over two forced bbox pages and two exact-ID pages. flstkennz is a named x-ogc-role:id serialized as GeoJSON feature.id.",
           "evidenceFile": "research/essen-live.json",
           "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+          "operation": "cologne bounded three-row-page geometry and exact native-ID round trip",
+          "outcome": "success",
+          "detail": "45 complete parcels; all resolved by exact ID, no absences. Reuses existing verified licence and identity contract.",
+          "evidenceFile": "research/cologne-live.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "pe-sedapal-publicaciones-lotes",
+      "name": "SEDAPAL Publicaciones / Proyectos SEDAPAL lots",
+      "operator": "SEDAPAL",
+      "countryCode": "PE",
+      "scope": "Verified bounded San Juan de Lurigancho sample; complete Lima cadastral coverage unverified.",
+      "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "GeoJSON",
+      "crs": "EPSG:4326 via outSR; native EPSG:32718",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Reuse terms unresolved; service copyright and licence fields empty.",
+      "verifiedCityIds": [
+        "geonames:3936456"
+      ],
+      "evidenceFile": "research/lima-live-assessment.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "lima"
+        ],
+        "reason": "Reuse terms unresolved; GLOBALID uniqueness/continuity not established; full count denied (403).",
+        "evidenceFile": "research/lima-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21?f=pjson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Layer metadata and schema; no copyright/license, edit date or designated GlobalID field.",
+          "evidenceFile": "research/lima-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?geometry={xmin:-76.969,ymin:-12.0155,xmax:-76.9675,ymax:-12.0145,spatialReference:{wkid:4326}}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=OBJECTID,GLOBALID,DISTRICTCODE,SQUARECODE,PARCELCODE,PROPERTYCODE,LOCALITYCODE,LASTUPDATE&returnGeometry=true&resultRecordCount=5&f=geojson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "5 San Juan de Lurigancho lots; unique GLOBALID and composite key values in sample; PROPERTYCODE and LASTUPDATE null; no owner fields requested.",
+          "evidenceFile": "research/lima-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=GLOBALID='{3B2589FA-5690-45BC-A9F2-26BEE2963350}'&outFields=OBJECTID,GLOBALID,DISTRICTCODE,SQUARECODE,PARCELCODE,PROPERTYCODE,LOCALITYCODE,LASTUPDATE&returnGeometry=true&outSR=4326&f=geojson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Exact brace-wrapped GLOBALID lookup returned Polygon.",
+          "evidenceFile": "research/lima-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=DISTRICTCODE='036' AND SQUARECODE='85809' AND PARCELCODE=602234&outFields=OBJECTID,GLOBALID,DISTRICTCODE,SQUARECODE,PARCELCODE,PROPERTYCODE,LOCALITYCODE,LASTUPDATE&returnGeometry=true&outSR=4326&f=geojson",
+          "operation": "Bounded source assessment request",
+          "outcome": "success-sample",
+          "detail": "Exact district/square/parcel composite lookup returned same Polygon.",
+          "evidenceFile": "research/lima-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=1=1&returnCountOnly=true&f=json",
+          "operation": "Bounded source assessment request",
+          "outcome": "request-failed",
+          "detail": "Unbounded count denied; this is endpoint access behavior, not evidence of source failure.",
+          "evidenceFile": "research/lima-live-assessment.json",
+          "httpStatus": 403
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=1=1&outStatistics=...&f=json",
+          "operation": "Bounded source assessment request",
+          "outcome": "request-failed",
+          "detail": "Stats request invalid; does not establish zero features.",
+          "evidenceFile": "research/lima-live-assessment.json",
+          "httpStatus": 400
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+          "operation": "Runtime readiness and reuse review",
+          "outcome": "held",
+          "detail": "Reuse terms unresolved; GLOBALID uniqueness/continuity not established; full count denied (403).",
+          "evidenceFile": "research/lima-live-assessment.json"
         }
       ]
     }

@@ -324,3 +324,40 @@ Cotonou's current minimal WFS query returns native keys, but public consultation
 access defaults do not establish unrestricted geometry reuse. These sources remain held with
 current direct-request evidence; web-reader access failures are distinguished from provider
 responses. No parcel database import or proposal write was used for this continuation.
+
+## Shared-source city batch after release 0a084d6b
+
+Lyon, Rotterdam and Cologne reuse the existing IGN/DGFiP, Kadaster/PDOK and Geobasis NRW
+providers. Fresh three-row-page checks completed 9, 7 and 45 parcels respectively, with every
+native ID resolving again. Each city has a bounded 8 km globe entry, the provider's attribution
+and the same native identity namespace as its other cities. No parcel table was imported.
+Evidence is in `research/lyon-live.json`, `research/rotterdam-live.json` and
+`research/cologne-live.json`, with complete bounded response/ID-round-trip files alongside.
+
+Executable catalogue schema version 2 uses `cityIds` rather than a single `cityId`. One provider
+can serve several configured cities; its endpoint, adapter, canonical prefix and metric projection
+remain provider facts. City-specific footprints select that provider for authoritative binding.
+Configured entry names are not cadastral municipality facts; an unknown cadastral municipality
+remains null in the canonical feature.
+
+A shared prefix cannot name a city. Deep links now inspect exact geometry through the cadastral
+repository's `locateIds` method, then choose the nearest configured city using that source.
+`locateIds` retains immutable facts and complete absence evidence in the requested city's cache,
+without publishing to the active live fabric or seeding a mutation. Normal `ensureIds` subsequently
+publishes those facts as usual. Failed, absent, mismatched or timed-out lookups cannot select the
+first city by accident. The existing Croatian countrywide routing retains its established behavior.
+
+Four new-country candidates remain held, with attempts and failures attached to their registry
+sources. Luanda returns polygons and exact brace-wrapped GlobalIDs, but reuse terms and the
+layer's cadastral authority are unresolved; the unbraced query returned an ArcGIS error inside
+HTTP 200. Lima has a new official SEDAPAL-hosted candidate, recorded separately from the
+third-party copy: geometry and exact lookup work, but reuse terms and GlobalID uniqueness are
+unconfirmed, and the unbounded count returned 403. Bamako's NINACAD string lookup works, but
+reuse terms remain unconfirmed and only 6 of 74 bounded rows were freshly paged. Santo Domingo
+serves historical polygons; unsorted paging repeated the first page at offset 9, while sorting
+returned 13 unique rows. Published RI terms restrict reuse/modification, and the transport FID's
+continuity is undocumented. These are holds, not claims that parcel data is absent.
+
+The batch manifest is `research/shared-city-batch-2026-10-03.json`. Registry histories now preserve
+92 dated attempts across 38 sources. The prior checkpoint is deployed; this continuation is local
+until the next requested release.

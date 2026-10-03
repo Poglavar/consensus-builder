@@ -29,7 +29,7 @@ function response(features, exceededTransferLimit = false) {
 afterEach(() => vi.unstubAllGlobals());
 
 for (const sample of samples) describe(`${sample.city} live source`, () => {
-    const descriptor = parcelSourceCatalog.sources.find(source => source.cityId === sample.city);
+    const descriptor = parcelSourceCatalog.sources.find(source => source.cityIds.includes(sample.city));
     const canonicalId = descriptor.idPrefix + sample.nativeId;
     const geometry = polygon(sample.center);
     const parcel = feature(descriptor, 10, sample.nativeId, sample.number, geometry);

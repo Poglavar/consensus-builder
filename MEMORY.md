@@ -462,3 +462,14 @@
 - 2026-10-03: SAM 3 cleanup retained 61/366 comparison matches with zero overlapping masks; six extra quality-refinement epochs improved precision but reduced recall and cleaned whole-parcel F1, so the previous adapter plus cleanup remains the better current SAM comparison.
 
 - 2026-10-03: Keep dated source-linked integration attempts, including failed paths, independently of research verification and current runtime eligibility so later batches can reuse evidence.
+
+### Shared live-provider city entries (2026-10-03)
+
+Parcel source catalogue v2 has `cityIds` arrays: Lyon shares IGN with Paris, Rotterdam shares
+PDOK with Amsterdam, and Cologne shares NRW with Essen. Keep one canonical prefix and native
+identity per provider. A shared prefix does not identify a city; parcel links resolve exact geometry
+among configured cities reading that provider. `CadastralParcelRepository.locateIds` performs a
+cached source read without publishing into the active fabric or a mutation; ordinary `ensureIds`
+still publishes ground. Transport is consumed privately by the repository during boot, so routing
+must use the repository instead of the temporary transport global. New-source failed queries and
+holds belong in registry `integrationAttempts`, linked to dated research evidence.

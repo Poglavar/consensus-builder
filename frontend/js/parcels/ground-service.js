@@ -365,7 +365,9 @@
                 total: ids.length
             });
             const features = foundIds.map(id => clone(store.get(id)));
-            await provideFeatures(features, { city, mutation: options.mutation || null });
+            if (options.retainOnly !== true) {
+                await provideFeatures(features, { city, mutation: options.mutation || null });
+            }
             return {
                 status: absentIds.length ? 'partial' : 'ready',
                 ids,
@@ -914,6 +916,8 @@
 
         return Object.freeze({
             ensureIds,
+            // Routing may inspect another city's immutable source facts without seeding live ground.
+            locateIds: (ids, options = {}) => ensureIds(ids, { ...options, mutation: null, retainOnly: true }),
             ensureProposalGround,
             ensureFootprint,
             ensureBounds,

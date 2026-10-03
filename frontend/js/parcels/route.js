@@ -26,15 +26,13 @@
     // Returns null when the city can't be derived; the caller then tries the
     // current city as-is.
     //
-    // `HR-` is deliberately NOT resolved here — see resolveCityIdForParcel. Every other prefix is
-    // one country with one city configured, so the prefix alone is the answer.
+    // Shared source prefixes identify a provider, not a city. Resolve those from geometry below.
     function parcelIdToCityId(rawId) {
         const id = (rawId || '').toString().trim().toUpperCase();
         if (!id) return null;
         if (id.startsWith('HR-')) return null;
-        const configured = global.CityConfigManager?.getAvailableCities?.()
-            .find(city => city.parcels?.idPrefix && id.startsWith(city.parcels.idPrefix.toUpperCase()));
-        if (configured) return configured.id;
+        const configured = citiesForParcelId(id);
+        if (configured.length) return configured.length === 1 ? configured[0].id : null;
         if (id.startsWith('US-NY-')) return 'new_york';
         if (id.startsWith('US-CO-')) return 'colorado';
         if (id.startsWith('SI-')) return 'ljubljana';
@@ -42,6 +40,12 @@
         // Buenos Aires uses a bare SMP (e.g. 001-005-027A) with no country prefix.
         if (/^[0-9]{3}-[0-9]{3}[A-Z]?-[0-9]{3}[A-Z]?$/.test(id)) return 'buenos_aires';
         return null;
+    }
+
+    function citiesForParcelId(rawId) {
+        const id = String(rawId || '').trim().toUpperCase();
+        return (global.CityConfigManager?.getAvailableCities?.() || [])
+            .filter(city => city.parcels?.idPrefix && id.startsWith(city.parcels.idPrefix.toUpperCase()));
     }
 
     function isCroatianParcelId(rawId) {
@@ -107,10 +111,42 @@
         }
     }
 
-    // The city a deep-linked parcel belongs to: prefix alone where that is unambiguous, a data
-    // lookup for Croatia. Returns null when nothing can be derived (caller keeps the current city).
+    // Query the shared provider through the repository, without publishing the result into
+    // whichever city's cadastral repository happens to be active during deep-link boot.
+    async function resolveSharedSourceCityId(parcelId, candidates) {
+        const sourceId = candidates[0]?.parcels?.sourceId;
+        const ground = global.CadastralParcelRepository;
+        if (!sourceId || candidates.some(city => city.parcels?.sourceId !== sourceId)
+            || typeof ground?.locateIds !== 'function') return null;
+        let timer;
+        try {
+            const timeout = new Promise((_, reject) => {
+                timer = setTimeout(() => reject(new Error('parcel city lookup timed out')), cityLookupTimeoutMs());
+            });
+            const result = await Promise.race([
+                ground.locateIds([parcelId], { city: candidates[0].id }), timeout
+            ]);
+            if (result?.status !== 'ready') return null;
+            const feature = result.features?.find(item => (item.id || item.properties?.parcelId) === parcelId);
+            const location = firstLatLngOfFeature(feature);
+            if (!location) return null;
+            const ids = new Set(candidates.map(city => city.id));
+            return global.CityConfigManager.findNearestCity(location[0], location[1], {
+                filter: city => ids.has(city.id)
+            })?.id || null;
+        } catch (error) {
+            console.warn('[handleParcelRouteFromUrl] could not place shared-source parcel', parcelId, error.message);
+            return null;
+        } finally {
+            clearTimeout(timer);
+        }
+    }
+
+    // Prefix alone where unambiguous; otherwise place exact source geometry among its cities.
     async function resolveCityIdForParcel(parcelId) {
         if (isCroatianParcelId(parcelId)) return resolveCroatianCityId(parcelId);
+        const candidates = citiesForParcelId(parcelId);
+        if (candidates.length > 1) return resolveSharedSourceCityId(parcelId, candidates);
         return parcelIdToCityId(parcelId);
     }
 
@@ -154,6 +190,10 @@
 
         const targetCityId = await resolveCityIdForParcel(parcelId);
         const currentCityId = cityManager.getCurrentCityId();
+        if (!targetCityId && citiesForParcelId(parcelId).length > 1) {
+            reportParcelRouteFailure(parcelId, 'could not determine the city from the parcel source.');
+            return;
+        }
 
         // Wrong city → switch. navigateToCity only sets ?city= and reloads, so the
         // /parcel/<id> path is preserved and this handler runs again on reload with
@@ -208,7 +248,7 @@
     // Node-testable exports for the pure pieces (the classic script still installs the globals above
     // when loaded in a browser, where `module` is undefined).
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = { parcelIdToCityId, isCroatianParcelId, firstLatLngOfFeature, resolveCroatianCityId };
+        module.exports = { parcelIdToCityId, isCroatianParcelId, firstLatLngOfFeature, resolveCroatianCityId, resolveCityIdForParcel, handleParcelRouteFromUrl };
     }
 
     // Guarded so a node `require` of this file (for the unit tests) doesn't blow up on a global with

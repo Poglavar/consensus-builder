@@ -3347,7 +3347,10 @@
             "essen": "Essen, Njemačka",
             "san_francisco": "San Francisco, Sjedinjene Države",
             "berlin": "Berlin, Njemačka",
-            "hong_kong": "Hong Kong, PUP Hong Kong"
+            "hong_kong": "Hong Kong, PUP Hong Kong",
+            "lyon": "Lyon, Francuska",
+            "rotterdam": "Rotterdam, Nizozemska",
+            "cologne": "Köln, Njemačka"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",

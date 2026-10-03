@@ -7,7 +7,7 @@ vi.mock('../parcels/https-json-fetch.js', () => ({
 import { createParcelSource, parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
 import { computeBinding } from '../proposals/binding.js';
 
-const descriptor = parcelSourceCatalog.sources.find(source => source.cityId === 'bogota');
+const descriptor = parcelSourceCatalog.sources.find(source => source.cityIds.includes('bogota'));
 const PREFIX = 'CO-BOGOTA-';
 const SITE = {
     type: 'Polygon',
@@ -47,7 +47,7 @@ describe('Bogotá live parcel source', () => {
         expect(descriptor).toMatchObject({
             id: 'co-bogota-uaecd-lote', endpoint: 'https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9',
             idField: 'LotCodigo', idType: 'string', idPattern: '^[0-9]{12}$', objectIdField: 'OBJECTID', idPrefix: PREFIX,
-            cityId: 'bogota', metricSrid: 32618, dataVersion: '2021-12',
+            cityIds: ['bogota'], metricSrid: 32618, dataVersion: '2021-12',
             caCertificate: './certificates/geotrust-ev-rsa-ca-g2.pem'
         });
         const { calls } = fetchPages([

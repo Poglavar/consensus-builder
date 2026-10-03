@@ -3362,7 +3362,10 @@
             "essen": "Essen, Alemania",
             "san_francisco": "San Francisco, Estados Unidos",
             "berlin": "Berlín, Alemania",
-            "hong_kong": "Hong Kong, RAE de Hong Kong"
+            "hong_kong": "Hong Kong, RAE de Hong Kong",
+            "lyon": "Lyon, Francia",
+            "rotterdam": "Róterdam, Países Bajos",
+            "cologne": "Colonia, Alemania"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",

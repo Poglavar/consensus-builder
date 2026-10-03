@@ -48,7 +48,8 @@ export function canonicalParcelFeature(descriptor, feature, nativeId) {
         properties: {
             parcelId, id: parcelId, sourceId: descriptor.id, sourceParcelId: String(nativeId),
             parcelNumber: displayNumber,
-            cadMunicipalityName: descriptor.cityId || null,
+            // A source can span cities; configured entry names are not cadastral municipality facts.
+            cadMunicipalityName: null,
             ownershipType: 'unknown',
             sourceProperties: Object.fromEntries(descriptor.outFields.filter(field => field in props).map(field => [field, props[field]]))
         }

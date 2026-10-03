@@ -36,12 +36,12 @@ describe('parcelIdToCityId — prefixes that are unambiguous', () => {
         expect(route.parcelIdToCityId('US-CA-LA-5149001915')).toBe('los_angeles');
         expect(route.parcelIdToCityId('US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}')).toBe('miami');
         expect(route.parcelIdToCityId('US-DC-{1B157667-518C-4B56-9DFC-1DAEC1559EAB}')).toBe('washington_dc');
-        expect(route.parcelIdToCityId('FR-PCI-75105000AD0011')).toBe('paris');
+        expect(route.parcelIdToCityId('FR-PCI-75105000AD0011')).toBeNull();
         expect(route.parcelIdToCityId('AU-VIC-PARCEL-152244627')).toBe('melbourne');
         expect(route.parcelIdToCityId('ZA-CCT-C0160007000951650000000000')).toBe('cape_town');
         expect(route.parcelIdToCityId('BE-GRB-ADP-4455664')).toBe('antwerp');
-        expect(route.parcelIdToCityId('NL-BRK-11460432670000')).toBe('amsterdam');
-        expect(route.parcelIdToCityId('DE-NRW-05344102100105______')).toBe('essen');
+        expect(route.parcelIdToCityId('NL-BRK-11460432670000')).toBeNull();
+        expect(route.parcelIdToCityId('DE-NRW-05344102100105______')).toBeNull();
         expect(route.parcelIdToCityId('US-CA-SF-0256005')).toBe('san_francisco');
         expect(route.parcelIdToCityId('DE-BE-11000181900016____')).toBe('berlin');
         expect(route.parcelIdToCityId('HK-LANDSD-LOT-1800293576')).toBe('hong_kong');
@@ -173,4 +173,78 @@ describe('resolveCroatianCityId — placing an HR parcel from its coordinates', 
             delete globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__;
         }
     });
+});
+
+// A national/regional provider is reused without changing its cadastral identity namespace.
+describe('shared parcel sources resolve city from geometry', () => {
+    let locateIds;
+    beforeEach(() => {
+        locateIds = vi.fn();
+        globalThis.CadastralParcelRepository = { locateIds };
+    });
+    afterEach(() => {
+        delete globalThis.CadastralParcelRepository;
+        delete globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__;
+    });
+    it.each([
+        ['FR-PCI-69385000AA0001', 4.8357, 45.764, 'lyon', 'paris'],
+        ['FR-PCI-75105000AD0011', 2.3556, 48.8491, 'paris', 'paris'],
+        ['NL-BRK-11460432670000', 4.4792, 51.9225, 'rotterdam', 'amsterdam'],
+        ['NL-BRK-11460432670000', 4.9, 52.3725, 'amsterdam', 'amsterdam'],
+        ['DE-NRW-05344102100105______', 6.9603, 50.9375, 'cologne', 'essen'],
+        ['DE-NRW-05344102100105______', 7.0123, 51.4556, 'essen', 'essen']
+    ])('places %s from exact geometry in %s', async (id, lng, lat, target, lookupCity) => {
+        locateIds.mockResolvedValue({ status: 'ready', features: [
+            { id, geometry: { type: 'Polygon', coordinates: [[[lng, lat]]] } }
+        ] });
+        expect(route.parcelIdToCityId(id)).toBeNull();
+        await expect(route.resolveCityIdForParcel(id)).resolves.toBe(target);
+        expect(locateIds).toHaveBeenCalledWith([id], { city: lookupCity });
+    });
+    it.each([
+        { status: 'partial', features: [] },
+        { status: 'ready', features: [] },
+        { status: 'ready', features: [{ id: 'FR-PCI-wrong', geometry: { coordinates: [[[4.8357, 45.764]]] } }] }
+    ])('does not guess from incomplete, absent or mismatched evidence', async payload => {
+        locateIds.mockResolvedValue(payload);
+        await expect(route.resolveCityIdForParcel('FR-PCI-69385000AA0001')).resolves.toBeNull();
+    });
+    it('keeps an unambiguous provider lookup synchronous and network-free', async () => {
+        await expect(route.resolveCityIdForParcel('DE-BE-11000181900016____')).resolves.toBe('berlin');
+        expect(locateIds).not.toHaveBeenCalled();
+    });
+    it('bounds a wedged transport and does not pick the first city on failure', async () => {
+        globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__ = 20;
+        locateIds.mockReturnValue(new Promise(() => {}));
+        await expect(route.resolveCityIdForParcel('FR-PCI-69385000AA0001')).resolves.toBeNull();
+        locateIds.mockRejectedValueOnce(new Error('offline'));
+        await expect(route.resolveCityIdForParcel('FR-PCI-69385000AA0001')).resolves.toBeNull();
+    });
+});
+
+it('does not publish or select shared-source ground when its city cannot be resolved', async () => {
+    const previousLocation = globalThis.location;
+    const previousGround = globalThis.CadastralParcelRepository;
+    const previousStatus = globalThis.updateStatus;
+    const previousSelect = globalThis.selectParcel;
+    const ensureIds = vi.fn();
+    const select = vi.fn();
+    const status = vi.fn();
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    globalThis.location = { pathname: '', search: '?parcel=FR-PCI-69385000AA0001' };
+    globalThis.CadastralParcelRepository = { locateIds: vi.fn(async () => ({ status: 'partial', features: [] })), ensureIds };
+    globalThis.selectParcel = select;
+    globalThis.updateStatus = status;
+    try {
+        await route.handleParcelRouteFromUrl();
+        expect(status).toHaveBeenCalledWith(expect.stringContaining('could not determine the city'));
+        expect(ensureIds).not.toHaveBeenCalled();
+        expect(select).not.toHaveBeenCalled();
+    } finally {
+        globalThis.location = previousLocation;
+        globalThis.CadastralParcelRepository = previousGround;
+        globalThis.updateStatus = previousStatus;
+        globalThis.selectParcel = previousSelect;
+        error.mockRestore();
+    }
 });

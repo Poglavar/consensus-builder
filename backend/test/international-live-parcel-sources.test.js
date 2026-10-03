@@ -32,7 +32,7 @@ function response(features, more = false, matched = features.length) {
 }
 afterEach(() => vi.unstubAllGlobals());
 for (const sample of samples) describe(`${sample.city} source contract`, () => {
-    const descriptor = parcelSourceCatalog.sources.find(s => s.cityId === sample.city);
+    const descriptor = parcelSourceCatalog.sources.find(s => s.cityIds.includes(sample.city));
     const parcel = fixture(descriptor, sample);
     const id = descriptor.idPrefix + sample.nativeId;
     it('round-trips native identity and a separate display label through the HTTP gateway', async () => {
@@ -61,8 +61,8 @@ for (const sample of samples) describe(`${sample.city} source contract`, () => {
     });
 });
 describe('official source peculiarities', () => {
-    const cape = parcelSourceCatalog.sources.find(s => s.cityId === 'cape_town');
-    const melbourne = parcelSourceCatalog.sources.find(s => s.cityId === 'melbourne');
+    const cape = parcelSourceCatalog.sources.find(s => s.cityIds.includes('cape_town'));
+    const melbourne = parcelSourceCatalog.sources.find(s => s.cityIds.includes('melbourne'));
     it('pages a short ArcGIS response with a nested transfer flag before collapsing repeated address geometry', async () => {
         const sample = samples.find(s => s.city === 'cape_town');
         const fetchImpl = vi.fn().mockResolvedValueOnce(response([fixture(cape, sample, 1)], true))

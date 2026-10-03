@@ -3311,7 +3311,10 @@
             "essen": "Essen, Germany",
             "san_francisco": "San Francisco, United States",
             "berlin": "Berlin, Germany",
-            "hong_kong": "Hong Kong, Hong Kong SAR"
+            "hong_kong": "Hong Kong, Hong Kong SAR",
+            "lyon": "Lyon, France",
+            "rotterdam": "Rotterdam, Netherlands",
+            "cologne": "Cologne, Germany"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",

@@ -1,0 +1,145 @@
+{
+  "city": "Santo Domingo, Dominican Republic",
+  "countryCode": "DO",
+  "model": "gpt-6-luna (low)",
+  "checkedAtUtc": "2026-10-03T06:12:25Z-06:17:07Z",
+  "source": {
+    "sourceId": "do-ri-atlas-geoserver",
+    "publisher": "Jurisdicción Inmobiliaria / Registro Inmobiliario",
+    "endpoint": "https://atlas.ri.gob.do/geoserver/wfs",
+    "primaryLayer": "ParcelasHistoricas:ParcelasHistoricas",
+    "protocol": "OGC WFS 1.0.0; fresh GeoJSON queries work. Output defaults to EPSG:32619; srsName=EPSG:4326 and CRS:84 both work. GML not re-tested.",
+    "sampleBboxWgs84": [
+      -69.9235,
+      18.485,
+      -69.9205,
+      18.4875
+    ]
+  },
+  "freshRequests": [
+    {
+      "purpose": "bounded GeoJSON page, WFS 1.0.0, maxFeatures=3, default order/startIndex=0",
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+      "httpStatus": 200,
+      "responseTimestamp": "2026-10-03T06:12:25.457Z",
+      "counts": {
+        "totalFeatures": 13,
+        "numberMatched": 13,
+        "numberReturned": 3
+      },
+      "result": "3 MultiPolygon features. Default response CRS EPSG:32619. Example record: ParcelasHistoricas.29244, PARCELA=1-A, PROVINCIA=Distrito Nacional, MUNICIPIO=Santo Domingo de Guzman, DC=4."
+    },
+    {
+      "purpose": "bounded output CRS probe EPSG:4326, maxFeatures=1",
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=1&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+      "httpStatus": 200,
+      "responseTimestamp": "2026-10-03T06:16:11.826Z",
+      "counts": {
+        "totalFeatures": 13,
+        "numberMatched": 13,
+        "numberReturned": 1
+      },
+      "result": "GeoJSON declares EPSG:4326; coordinate order is longitude, latitude."
+    },
+    {
+      "purpose": "bounded output CRS probe CRS:84, maxFeatures=1",
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=1&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+      "httpStatus": 200,
+      "responseTimestamp": "2026-10-03T06:16:12.758Z",
+      "counts": {
+        "totalFeatures": 13,
+        "numberMatched": 13,
+        "numberReturned": 1
+      },
+      "result": "GeoJSON declares CRS:84; coordinates are lon/lat."
+    },
+    {
+      "purpose": "exact GeoServer feature-ID lookup",
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=2&outputFormat=application%2Fjson&featureID=ParcelasHistoricas.29244",
+      "httpStatus": 200,
+      "responseTimestamp": "2026-10-03T06:13:12.979Z",
+      "counts": {
+        "totalFeatures": 1,
+        "numberMatched": 1,
+        "numberReturned": 1
+      },
+      "result": "Returns exactly feature ID ParcelasHistoricas.29244 and the same parcel attributes/geometry. This is a GeoServer feature ID, not a documented cadastral key."
+    },
+    {
+      "purpose": "exact property-filter probe (natural-key combination)",
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=2&outputFormat=application%2Fjson&CQL_FILTER=PARCELA%3D%271-A%27+AND+PROVINCIA%3D%27Distrito+Nacional%27+AND+MUNICIPIO%3D%27Santo+Domingo+de+Guzman%27+AND+DC%3D%274%27",
+      "httpStatus": 403,
+      "result": "Exact CQL property lookup was blocked; no parcel-field exact lookup confirmed."
+    }
+  ],
+  "pagingChecks": {
+    "count": 13,
+    "unsortedAttempt": {
+      "startIndices": [
+        0,
+        3,
+        6,
+        9,
+        12
+      ],
+      "urls": [
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=0&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=3&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=6&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=9&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=12&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326"
+      ],
+      "outcome": "All returned HTTP 200 with totalFeatures=numberMatched=13 and page lengths 3,3,3,3,1, but the offset-9 page repeated the initial page IDs. Unsorted paging therefore omitted records despite apparently complete counts."
+    },
+    "sortedAttempt": {
+      "sortBy": "PARCELA",
+      "startIndices": [
+        0,
+        3,
+        6,
+        9,
+        12
+      ],
+      "urls": [
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=0&sortBy=PARCELA&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=3&sortBy=PARCELA&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=6&sortBy=PARCELA&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=9&sortBy=PARCELA&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326",
+        "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas%3AParcelasHistoricas&maxFeatures=3&outputFormat=application%2Fjson&startIndex=12&sortBy=PARCELA&bbox=-69.9235%2C18.4850%2C-69.9205%2C18.4875%2CEPSG%3A4326"
+      ],
+      "outcome": "All returned HTTP 200; page lengths 3,3,3,3,1; matched=13 on each; 13 unique GeoServer feature IDs, no repeated IDs. Explicit ordering repairs pagination for this tested snapshot/box, but repeatability on future updates is unproven."
+    }
+  },
+  "identityAssessment": "`PARCELA` is the visible local parcel label, accompanied by PROVINCIA/MUNICIPIO/DC; a compound exact property filter returned 403. Exact lookup is only verified with opaque GeoServer featureID (`ParcelasHistoricas.29244`), whose long-term stability is undocumented. The layer is explicitly named ParcelasHistoricas and examples include very large legacy polygons; it is not proven to be complete/current parcel fabric. SortBy=PARCELA produced nonduplicating pages in this snapshot, but that does not establish unique stable property IDs.",
+  "priorEvidence": {
+    "checkedAt": "2026-09-29",
+    "note": "Earlier sample found 3 historical MultiPolygons and 1 Aprobados survey polygon in this box. Today's historical layer fetches independently reconfirm format, WGS84 output, count, exact GeoServer feature-ID read, and pagination behavior."
+  },
+  "officialReuseTerms": {
+    "status": "NO-GO for reuse without written permission",
+    "primarySources": [
+      {
+        "url": "https://ri.gob.do/?page_id=2887",
+        "observation": "Official RI terms say portal services/information/content are subject to the terms; portal access is generally free, but some services may have fees."
+      },
+      {
+        "url": "https://ri.gob.do/?page_id=3",
+        "observation": "Official privacy/use policy's 'No Licencia' section states content rights are not granted beyond proper use; permits consultation/copy/storage/reproduction for personal/private use (including within one's organization), forbids alteration/modification, and prohibits commercialization without prior written authorization. Content from other sources needs consent."
+      },
+      {
+        "url": "https://servicios.ri.gob.do/ConsultaParcelario",
+        "observation": "Official public cadastral viewer linked by the RI portal; its backend is the Atlas GeoServer service. Public display does not supersede the RI reuse terms."
+      }
+    ],
+    "conclusion": "A commercial/live product redistributing or transforming these parcel geometries is not authorized by the published terms; written permission is needed before enabling."
+  },
+  "alternative": {
+    "source": "DGCN national cadastre ArcGIS Hub / hosted services",
+    "url": "https://geoportal-catastronacional.hub.arcgis.com/",
+    "priorAttempt": "2026-09-29: official-looking hosted parcel layer PARCELA_GEOLOCALIZADOR returned ArcGIS error 499 Token Required (not a public anonymous data endpoint). Not retried today; no permissive parcel-specific license located."
+  },
+  "recommendation": "Do not enable. Despite fresh GeoJSON geometry, exact opaque featureID lookup, CRS84 output, and count-backed sorted paging in this box, reuse terms prohibit commercial reuse absent prior written authorization. Data is historical/incomplete, and a stable cadastral native property ID is unverified.",
+  "description": "Fresh bounded source, identity and reuse assessment; source remains disabled.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "do-ri-atlas-geoserver"
+}

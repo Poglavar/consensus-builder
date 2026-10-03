@@ -749,3 +749,32 @@ describe('CadastralParcelRepository.ensureBounds per-cell provisioning', () => {
         expect(result.features.map(x => x.properties.parcelId).sort()).toEqual(['A1', 'B1']);
     });
 });
+
+// Shared-source deep links inspect source facts before choosing a live city/fabric.
+describe('CadastralParcelRepository.locateIds', () => {
+    it('retains cross-city facts without publishing them, then publishes on ordinary ensure', async () => {
+        const { service, onFeatures, fetchParcelsByIds } = fixture();
+        const located = await service.locateIds(['FR-PCI-A'], { city: 'paris' });
+        expect(located.status).toBe('ready');
+        expect(located.features[0].properties.parcelId).toBe('FR-PCI-A');
+        expect(fetchParcelsByIds.mock.calls[0][1].city).toBe('paris');
+        expect(onFeatures).not.toHaveBeenCalled();
+        await service.locateIds(['FR-PCI-A'], { city: 'paris' });
+        expect(fetchParcelsByIds).toHaveBeenCalledOnce();
+        expect(onFeatures).not.toHaveBeenCalled();
+        await service.ensureIds(['FR-PCI-A'], { city: 'paris' });
+        expect(fetchParcelsByIds).toHaveBeenCalledOnce();
+        expect(onFeatures).toHaveBeenCalledOnce();
+    });
+    it('propagates unavailable reads without caching absence or seeding a mutation', async () => {
+        const mutation = { seedCadastre: vi.fn() };
+        const fetchParcelsByIds = vi.fn().mockRejectedValueOnce(new Error('offline'))
+            .mockImplementation(async ids => parcelResult(ids));
+        const { service, onFeatures } = fixture({ fetchParcelsByIds });
+        await expect(service.locateIds(['NL-BRK-A'], { city: 'amsterdam', mutation })).rejects.toThrow('offline');
+        await service.locateIds(['NL-BRK-A'], { city: 'amsterdam', mutation });
+        expect(fetchParcelsByIds).toHaveBeenCalledTimes(2);
+        expect(onFeatures).not.toHaveBeenCalled();
+        expect(mutation.seedCadastre).not.toHaveBeenCalled();
+    });
+});

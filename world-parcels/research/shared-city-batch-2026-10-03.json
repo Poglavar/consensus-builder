@@ -1,0 +1,76 @@
+{
+  "description": "Next parcel batch after release 0a084d6b: shared-source cities enabled locally, new-country checks retained with precise failures and holds.",
+  "checkedAt": "2026-10-03",
+  "releasedCheckpoint": "0a084d6b3bd14ecf6e40e2a5230ac4dabfaecf25",
+  "sources": [
+    {
+      "sourceId": "fr-ign-parcellaire-express",
+      "cityIds": [
+        "lyon"
+      ],
+      "status": "enabled",
+      "evidenceFile": "research/lyon-live.json"
+    },
+    {
+      "sourceId": "nl-pdok-brk-kadastrale-kaart",
+      "cityIds": [
+        "rotterdam"
+      ],
+      "status": "enabled",
+      "evidenceFile": "research/rotterdam-live.json"
+    },
+    {
+      "sourceId": "de-nrw-lika-flurstueck",
+      "cityIds": [
+        "cologne"
+      ],
+      "status": "enabled",
+      "evidenceFile": "research/cologne-live.json"
+    },
+    {
+      "sourceId": "ao-arcgis-luanda-agt-property-polygons",
+      "cityIds": [
+        "luanda"
+      ],
+      "status": "held",
+      "reason": "Reuse terms and layer authority unresolved; bracketed GlobalID query semantics need adapter verification.",
+      "evidenceFile": "research/luanda-live-assessment.json"
+    },
+    {
+      "sourceId": "pe-sedapal-publicaciones-lotes",
+      "cityIds": [
+        "lima"
+      ],
+      "status": "held",
+      "reason": "Reuse terms unresolved; GLOBALID uniqueness/continuity not established; full count denied (403).",
+      "evidenceFile": "research/lima-live-assessment.json"
+    },
+    {
+      "sourceId": "pe-arcgis-lima-sedapal-lotes",
+      "cityIds": [
+        "lima"
+      ],
+      "status": "held",
+      "reason": "Third-party copy has no reuse terms or documented permanent native key; a separate official SEDAPAL candidate is recorded.",
+      "evidenceFile": "research/lima-live-assessment.json"
+    },
+    {
+      "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+      "cityIds": [
+        "bamako"
+      ],
+      "status": "held",
+      "reason": "Reuse rights unresolved; only 6 of 74 bbox rows freshly paged, no complete adapter read.",
+      "evidenceFile": "research/bamako-live-assessment.json"
+    },
+    {
+      "sourceId": "do-ri-atlas-geoserver",
+      "cityIds": [
+        "santo_domingo"
+      ],
+      "status": "held",
+      "reason": "Published terms restrict reuse and modification; historical geometry and no documented permanent native key. Unsorted paging repeated rows.",
+      "evidenceFile": "research/santo-domingo-live-assessment.json"
+    }
+  ]
+}

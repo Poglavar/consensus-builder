@@ -3347,7 +3347,10 @@
             "essen": "Esen, Nemačka",
             "san_francisco": "San Francisko, Sjedinjene Države",
             "berlin": "Berlin, Nemačka",
-            "hong_kong": "Hongkong, SAR Hongkong"
+            "hong_kong": "Hongkong, SAR Hongkong",
+            "lyon": "Lion, Francuska",
+            "rotterdam": "Roterdam, Holandija",
+            "cologne": "Keln, Nemačka"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",

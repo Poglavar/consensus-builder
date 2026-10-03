@@ -1,0 +1,99 @@
+{
+  "city": "Lima, Peru",
+  "sourceId": "pe-arcgis-lima-sedapal-lotes",
+  "checkedAt": "2026-10-03",
+  "modelUsed": "gpt-6-luna (low)",
+  "assessmentScope": "Rechecked the registry's third-party ArcGIS Online SEDAPAL-derived layer and found/queried a separate Lotes layer on SEDAPAL's own GIS host.",
+  "officialCandidate": {
+    "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+    "name": "Lotes",
+    "hostIdentity": "Official SEDAPAL subdomain; ArcGIS REST service directly hosted under sedapal.com.pe",
+    "primaryCatalogEvidence": "National GeoIDEP institution listing labels a SEDAPAL Lotes WMS resource: https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web?id_institucion=221 (catalog page does not expose evidence that its WMS resource is the same MapServer/21 URL).",
+    "metadata": {
+      "httpStatus": 200,
+      "geometry": "Polygon",
+      "nativeCRS": "EPSG:32718",
+      "supportedQueryFormats": "JSON, geoJSON",
+      "maxRecordCount": 1000,
+      "supportsPagination": true,
+      "oid": "OBJECTID; unique index, system-maintained transport ID",
+      "globalIdField": "GLOBALID (GlobalID field type, but REST globalIdField/uniqueIdField unset)",
+      "globalIdIndexUnique": false,
+      "districtSquareIndexUnique": false,
+      "serviceCount": "unavailable: unbounded count endpoint returned 403",
+      "dataLastEditDate": "not published in layer/service metadata",
+      "sampleLASTUPDATE": "null for all 5 sampled features",
+      "samplePROPERTYCODE": "null for all 5 sampled features",
+      "copyrightText": "empty",
+      "licenseInfo": "null"
+    },
+    "requests": [
+      {
+        "timeUTC": "2026-10-03",
+        "url": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21?f=pjson",
+        "status": 200,
+        "result": "Layer metadata and schema; no copyright/license, edit date or designated GlobalID field."
+      },
+      {
+        "timeUTC": "2026-10-03",
+        "url": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?geometry={xmin:-76.969,ymin:-12.0155,xmax:-76.9675,ymax:-12.0145,spatialReference:{wkid:4326}}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=OBJECTID,GLOBALID,DISTRICTCODE,SQUARECODE,PARCELCODE,PROPERTYCODE,LOCALITYCODE,LASTUPDATE&returnGeometry=true&resultRecordCount=5&f=geojson",
+        "status": 200,
+        "resultCount": 5,
+        "geometryTypes": [
+          "Polygon"
+        ],
+        "result": "5 San Juan de Lurigancho lots; unique GLOBALID and composite key values in sample; PROPERTYCODE and LASTUPDATE null; no owner fields requested."
+      },
+      {
+        "timeUTC": "2026-10-03",
+        "url": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=GLOBALID='{3B2589FA-5690-45BC-A9F2-26BEE2963350}'&outFields=OBJECTID,GLOBALID,DISTRICTCODE,SQUARECODE,PARCELCODE,PROPERTYCODE,LOCALITYCODE,LASTUPDATE&returnGeometry=true&outSR=4326&f=geojson",
+        "status": 200,
+        "resultCount": 1,
+        "result": "Exact brace-wrapped GLOBALID lookup returned Polygon."
+      },
+      {
+        "timeUTC": "2026-10-03",
+        "url": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=DISTRICTCODE='036' AND SQUARECODE='85809' AND PARCELCODE=602234&outFields=OBJECTID,GLOBALID,DISTRICTCODE,SQUARECODE,PARCELCODE,PROPERTYCODE,LOCALITYCODE,LASTUPDATE&returnGeometry=true&outSR=4326&f=geojson",
+        "status": 200,
+        "resultCount": 1,
+        "result": "Exact district/square/parcel composite lookup returned same Polygon."
+      },
+      {
+        "timeUTC": "2026-10-03",
+        "url": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=1=1&returnCountOnly=true&f=json",
+        "status": 403,
+        "result": "Unbounded count denied; this is endpoint access behavior, not evidence of source failure."
+      },
+      {
+        "timeUTC": "2026-10-03",
+        "url": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21/query?where=1=1&outStatistics=...&f=json",
+        "status": 400,
+        "result": "Stats request invalid; does not establish zero features."
+      }
+    ],
+    "identityAssessment": "GLOBALID field is the best exact-read candidate and its SQL lookup succeeds, but layer REST metadata leaves globalIdField/uniqueIdField null and FDO_GLOBALID index is marked non-unique; sample uniqueness only, no durable uniqueness contract. OBJECTID is a system-maintained row ID. District+square+parcel composite exact lookup returns one feature for tested sample but no unique composite index; PARCELCODE alone is a double and unsafe as ID. Avoid claiming citywide uniqueness.",
+    "licenseEvidence": "The official endpoint is on SEDAPAL's domain, but its own layer metadata publishes no reuse terms or copyright. Public query access is not a reuse grant.",
+    "recommendation": "HOLD for integration pending written reuse permission/terms and confirmation of identifier continuity/uniqueness. This official hosted source is a better publisher provenance lead than the registry's third-party copy but has incomplete service metadata and limited verified coverage."
+  },
+  "registryThirdPartyCandidate": {
+    "endpoint": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0",
+    "arcgisItemId": "6c8af1d41ffe440f997cebe218d92d0f",
+    "owner": "dromeroOGIT",
+    "metadataStatus": 200,
+    "scopeCountFromExistingRegistryEvidence": 276848,
+    "description": "Vector file made by Consorcio Servicios Integrales under contract to SEDAPAL; based on SEDAPAL-provided mapping, field/office updated; 1:1,000.",
+    "copyrightText": "SEDAPAL - Consorcio Servicios Integrales",
+    "licenseInfo": "blank; no grant located",
+    "dataLastEditUTC": "2025-05-25T02:18:52Z",
+    "identity": "No GlobalID field; OBJECTID is unique OID but system-maintained; candidate cod_dist+mza+lote fields nullable and no declared unique composite index.",
+    "previousSample": "Registry research dated 2026-09-29 showed three polygons in SJL and an empty central-Lima box; exact native composite was not freshly re-queried in this pass.",
+    "recommendation": "Do not use this third-party host as a substitute for the official SEDAPAL service; reuse rights and institutional account identity remain unresolved."
+  },
+  "attemptedUrls": [
+    "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21?f=pjson",
+    "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web?id_institucion=221",
+    "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0?f=pjson",
+    "https://www.arcgis.com/sharing/rest/content/items/6c8af1d41ffe440f997cebe218d92d0f?f=json"
+  ],
+  "description": "Fresh bounded source, identity and reuse assessment; source remains disabled."
+}
