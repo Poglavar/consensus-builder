@@ -54,14 +54,21 @@ export function computeBestZoomForBbox(lngMin, lngMax, latMin, latMax, maxTilesP
     return minZoom;
 }
 
-function expandTileUrl(template, x, y, z) {
+export function expandTileUrl(template, x, y, z, cartoKey = process.env.CARTO_BASEMAP_API_KEY) {
     const subdomains = ['a', 'b', 'c'];
     const s = subdomains[(x + y) % subdomains.length];
-    return template
+    const url = template
         .replace('{s}', s)
         .replace('{x}', String(x))
         .replace('{y}', String(y))
         .replace('{z}', String(z));
+    const parsed = new URL(url);
+    if (parsed.hostname === 'basemaps.cartocdn.com' || parsed.hostname.endsWith('.basemaps.cartocdn.com')) {
+        if (!cartoKey) throw new Error('Set CARTO_BASEMAP_API_KEY for CARTO thumbnails');
+        parsed.searchParams.set('key', cartoKey);
+        return parsed.href;
+    }
+    return url;
 }
 
 /**

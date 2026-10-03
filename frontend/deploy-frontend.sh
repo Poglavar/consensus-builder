@@ -40,6 +40,8 @@ if [ -f "$SCRIPT_DIR/.deploy-build-counter" ] && grep -Eq '^[0-9]+$' "$SCRIPT_DI
     SEED=$(cat "$SCRIPT_DIR/.deploy-build-counter")
 fi
 
+python3 "$SCRIPT_DIR/../scripts/build-carto-config.py" --env "$SCRIPT_DIR/../.env" --out "$SCRIPT_DIR/carto-config.js"
+
 # ---- SSH connectivity ----
 echo -e "${YELLOW}🔍 Testing SSH connection...${NC}"
 if ! ssh_server 'echo ok' >/dev/null 2>&1; then
@@ -140,6 +142,8 @@ else
 fi
 echo "DEPLOYED commit=$COMMIT build=$BUILD_ID"
 REMOTE
+
+scp -i "$SSH_KEY" "$SCRIPT_DIR/carto-config.js" "$SERVER:$DOCROOT/carto-config.js"
 
 # ---- Cloudflare cache purge (local; urbangametheory.xyz zone hosts only this site) ----
 echo -e "${YELLOW}☁️  Purging Cloudflare cache...${NC}"

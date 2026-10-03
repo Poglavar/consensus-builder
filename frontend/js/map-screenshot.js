@@ -6,7 +6,7 @@
 
     let leafletImageLoaded = typeof globalScope.leafletImage === 'function';
     let leafletImageLoading = false;
-    const DEFAULT_TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+    const DEFAULT_TILE_URL = globalThis.__cartoBasemaps.tileUrl('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png');
     const TILE_SIZE = 256;
     const DEFAULT_STITCH_ZOOM = 19;
     const MAX_STITCH_TILES_PER_AXIS = 6; // Target max ~36 tiles (6x6)
