@@ -372,7 +372,7 @@ body.site-tool-drawing .leaflet-container {
 }
 
 /* ---- phones: the panel is a bottom sheet ---- */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .site-panel {
         position: fixed;
         top: auto;

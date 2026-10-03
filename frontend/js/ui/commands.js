@@ -18,6 +18,7 @@
     const REHOUSED_CONTROL_IDS = Object.freeze([
         // Settings sheet
         'dev-badge', 'debug-badge', 'version-badge',
+        'parcel-source-settings-button',
         'data-source-select', 'tile-source-select', 'wipeLocalDataButton',
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
@@ -409,6 +410,8 @@
         // ---- Settings sheet ----
         control('parcel-source-notice-button', { id: 'settings.parcelSourceNotice', group: 'settings', surfaces: ['settings'],
             labelKey: 'parcelSourceNotice.title', fallbackLabel: 'Parcel source information', icon: 'fas fa-info-circle' }),
+        control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['settings'],
+            labelKey: 'parcelSources.title', fallbackLabel: 'Choose a parcel source', icon: 'fas fa-database' }),
         // The city list and "Use my location" live in the search box (city chip, Cities group).
         { id: 'settings.city', group: 'settings', surfaces: [], run: callSearch('showCities'),
             labelKey: 'mapShell.commands.chooseCity', fallbackLabel: 'Choose a city', icon: 'fas fa-city' },

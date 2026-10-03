@@ -12,7 +12,7 @@
     --slate:#789087;
     --line-dark:rgba(117,230,184,.26);
     --line-light:rgba(7,26,21,.14);
-    --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --sans:var(--cb-font-sans);
     --display:"Iowan Old Style",Iowan,"Palatino Linotype",Palatino,Georgia,serif;
 }
 * { box-sizing:border-box; }

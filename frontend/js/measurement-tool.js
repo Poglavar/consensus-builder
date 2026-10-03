@@ -89,8 +89,11 @@ function handleMeasureClick(e) {
         const dy = htrsEndPoint[1] - htrsStartPoint[1];
         const distanceMeters = Math.sqrt(dx * dx + dy * dy);
 
-        // Format the distance
-        const formattedDistance = distanceMeters.toFixed(1);
+        // Format the distance: a measuring tool keeps its decimetre in every language
+        // (frontend-measurement-tool.test.js runs this file without js/format.js)
+        const formattedDistance = typeof CbFormat !== 'undefined'
+            ? CbFormat.formatLength(distanceMeters, { maxFractionDigits: 1, minFractionDigits: 1 })
+            : `${distanceMeters.toFixed(1)} m`;
 
         // Draw the final measurement line
         if (measureMouseLine) {
@@ -116,7 +119,7 @@ function handleMeasureClick(e) {
         measureLabel = L.marker(midpoint, {
             icon: L.divIcon({
                 className: 'measurement-label',
-                html: `${formattedDistance} m`,
+                html: formattedDistance,
                 iconSize: [80, 20],
                 iconAnchor: [40, 10]
             }),
@@ -242,11 +245,14 @@ function handleMeasureMouseMove(e) {
         const dy = htrsMousePoint[1] - htrsStartPoint[1];
         const distanceMeters = Math.sqrt(dx * dx + dy * dy);
 
-        // Format the distance
-        const formattedDistance = distanceMeters.toFixed(1);
+        // Format the distance: a measuring tool keeps its decimetre in every language
+        // (frontend-measurement-tool.test.js runs this file without js/format.js)
+        const formattedDistance = typeof CbFormat !== 'undefined'
+            ? CbFormat.formatLength(distanceMeters, { maxFractionDigits: 1, minFractionDigits: 1 })
+            : `${distanceMeters.toFixed(1)} m`;
 
         // Update status with current measurement
-        updateStatus(`Distance: ${formattedDistance} m (click to set end point, ESC to cancel)`);
+        updateStatus(`Distance: ${formattedDistance} (click to set end point, ESC to cancel)`);
     }
 }
 

@@ -1,4 +1,4 @@
-:root { --bg:#08120e; --surface:#102019; --surface-2:#142820; --ink:#f4f8f5; --muted:#9fb4a7; --line:#294238; --green:#7ee2a8; --amber:#f2c96d; --red:#ff8d83; --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; --mono:ui-monospace,SFMono-Regular,Menlo,monospace; }
+:root { --bg:#08120e; --surface:#102019; --surface-2:#142820; --ink:#f4f8f5; --muted:#9fb4a7; --line:#294238; --green:#7ee2a8; --amber:#f2c96d; --red:#ff8d83; --sans:var(--cb-font-sans); --mono:ui-monospace,SFMono-Regular,Menlo,monospace; }
 * { box-sizing:border-box; }
 body { margin:0; color:var(--ink); background:radial-gradient(circle at 15% -10%,#214533 0,transparent 38%),var(--bg); font:15px/1.5 var(--sans); }
 a { color:var(--green); text-underline-offset:3px; }

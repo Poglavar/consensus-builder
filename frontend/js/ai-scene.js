@@ -280,7 +280,8 @@
     let lastCapture = null; // { image, summary } from the most recent button press
     let overlayEl = null;
 
-    function fmtUsd(n) { return '$' + (Number(n) || 0).toFixed(4); }
+    // Amount then code ("0.0390 USD"), four decimals because a render costs cents.
+    function fmtUsd(n) { return CbFormat.formatMoney(Number(n) || 0, 'USD', { maxFractionDigits: 4, minFractionDigits: 4 }); }
 
     function ensureOverlay() {
         if (overlayEl) return overlayEl;

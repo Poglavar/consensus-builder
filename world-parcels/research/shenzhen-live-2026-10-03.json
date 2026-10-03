@@ -1,0 +1,62 @@
+{
+  "cityId": "shenzhen",
+  "sourceId": "cn-shenzhen-land-certain",
+  "assessedAt": "2026-10-03",
+  "status": "verified-bounded-live-source",
+  "source": {
+    "agency": "Shenzhen Municipal Planning and Natural Resources Bureau",
+    "publicViewer": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+    "publicNotice": "https://pnr.sz.gov.cn/xxgk/gggs/content/post_8124136.html",
+    "noticeTitle": "深圳市规划和自然资源局关于提供地籍图公众查询服务的通告",
+    "noticeDate": "2020-09-16",
+    "layerEndpoint": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0",
+    "nativeIdField": "PARCEL_NO",
+    "transportObjectIdField": "OBJECTID",
+    "evidence": "The official viewer and notice describe a public cadastral-map query service for Shenzhen (excluding Shenshan). The viewer exposes the LAND_CERTAIN ArcGIS service. The service metadata requires the public client key shipped by the viewer JavaScript; the adapter obtains it from the fixed public script in memory and sends it only to the fixed layer endpoint. The viewer's personal-information agreement was left unchecked and no user identity was submitted."
+  },
+  "queryContract": {
+    "spatialRead": "ArcGIS returnCountOnly, returnIdsOnly, then exact objectIds feature reads; no offset pagination",
+    "exactRead": "PARCEL_NO IN (...) translated to count, object-ID manifest, exact object-ID geometry batches",
+    "batchSize": 80,
+    "pageSize": 80,
+    "requestedFields": ["OBJECTID", "PARCEL_NO", "LOT_NO"],
+    "geometryFormat": "GeoJSON Polygon/MultiPolygon",
+    "geometryCrs": "EPSG:4326",
+    "maxBboxKm2": 25,
+    "maxFeatures": 10000,
+    "responseValidation": [
+      "count equals unique object-ID manifest size",
+      "all exact object-ID batches complete without transfer-limit truncation",
+      "all returned feature IDs belong to requested batches",
+      "duplicate native IDs and conflicting object-ID/geometry mappings are rejected",
+      "invalid polygon rings or non-finite coordinates are rejected by the parcel adapter"
+    ]
+  },
+  "boundedVerification": {
+    "centerLonLat": [114.1005, 22.5405],
+    "cellSizeDegrees": 0.001,
+    "panOffsetDegrees": [0.004, 0.004],
+    "cells": 18,
+    "grid": "3x3 at the center plus the same 3x3 grid shifted by +0.004 degrees in longitude and latitude",
+    "baseGridCounts": [4, 4, 5, 5, 5, 2, 4, 4, 6],
+    "pannedGridCounts": [3, 5, 5, 1, 2, 3, 3, 3, 1],
+    "allCellsComplete": true,
+    "uniqueFeatureCountAcrossCells": 31,
+    "exactNativeIdBatchCount": 1,
+    "exactNativeIdBatchSize": 31,
+    "exactIdsAllPresent": true,
+    "absentIds": 0,
+    "idGeometryConflicts": 0,
+    "spatialExactGeometryAgreement": true,
+    "geometryValidation": "All bounded polygons had finite coordinates, closed rings, and intersected their query cells.",
+    "http": "All bounded/count/manifest/exact-read responses returned successful HTTP responses through the source client."
+  },
+  "catalogueAttribution": "Shenzhen public cadastral-map query service; source notice and viewer linked above. Use is subject to the source's published notices. The public viewer displays an agreement concerning use of personal information; it was not accepted or bypassed for this anonymous bounded source assessment.",
+  "dataRetention": "Only counts, query parameters, schema fields, completion checks, and aggregate validation outcomes are retained here. No parcel geometries, parcel identifiers, public client key, or owner/address fields are persisted.",
+  "implementation": {
+    "descriptor": "backend/parcels/shenzhen-source.js",
+    "test": "backend/test/shenzhen-live-source.test.js",
+    "suggestedCityCenterLatLon": [22.5405, 114.1005],
+    "suggestedLiveRadiusKm": 1
+  }
+}

@@ -39,6 +39,7 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 ## Copy rules
 
 - Sentence case everywhere, including buttons, tabs, headings and badges. Title Case is a bug.
+- US spelling (analyze, center, neighbor, color), matching the majority of the existing strings.
 - No trailing colons on labels; the layout separates label and value.
 - One ellipsis character "…", never "...". Dashes: " – " (en dash) for ranges, no em-dash asides.
 - Numbers, areas, money and dates go through one formatter keyed to the UI language
@@ -66,6 +67,22 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - **Icons:** Font Awesome only; no emoji in labels or chrome, no raster icons.
 - **Motion:** every animation sits under `prefers-reduced-motion: no-preference`.
 - Nothing moves when a panel opens: panels overlay the map, they do not push the controls.
+
+## Phone layout
+
+- The bottom row is a labelled bar (Proposals · Tools · Activity) across the width; its height is
+  `--map-shell-bar-height`, and `--map-shell-bottom-clearance` grows with it, so the tray, the toast
+  and the scale bar sit above the bar and the dock sheets end above it (the bar stays reachable).
+- Sheets (parcel, proposal, road, block) run edge to edge above the bar; the proposals list is a
+  70dvh modal sheet with its own close.
+
+## Deferred (known, not yet done)
+
+- An editable proposal title on the card (the auto-name is "Type · parcel N" for now).
+- The lifecycle badge names inside the older panels (parcel panel, block panel, road panel).
+- The remaining untranslated status strings in road-detection.js (needs a file-level helper).
+- Trailing colons on labels (layout-dependent; remove per surface as each is migrated).
+- A shared header component on the static pages (they share tokens, titles and a back link today).
 
 ## Migration order
 

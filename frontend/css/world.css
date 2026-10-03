@@ -741,7 +741,7 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     cursor: pointer;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     /* Right of the mode strip (2D/3D/photo), which explore now shows: the banner must not cover it. */
     .explore-banner {
         left: var(--map-mode-strip, 16px);

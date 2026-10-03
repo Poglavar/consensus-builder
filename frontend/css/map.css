@@ -93,7 +93,7 @@ body {
    above the row the status toast takes (--map-shell-* are declared in css/map-shell.css). */
 .leaflet-bottom.leaflet-left .leaflet-control-scale {
     margin-left: var(--map-mode-stack-left);
-    margin-bottom: calc(var(--map-shell-bottom) + var(--map-shell-button-size) + 2 * var(--map-shell-gap) + 24px);
+    margin-bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-gap) + 24px);
 }
 
 /* The scale bar measures the flat 2D map. Over the perspective model/photo views it is simply
@@ -103,7 +103,7 @@ body.three-mode-active .leaflet-control-scale {
 }
 
 /* Phones: a bottom sheet runs under the scale bar's spot; the sheet wins the corner. */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
         display: none;
     }
@@ -137,22 +137,22 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     gap: 4px 6px;
     padding: 6px 8px;
     margin-bottom: 8px;
-    background: #fef3c7;
-    border: 1px solid #f4d38a;
-    border-radius: 4px;
-    font-size: 12px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-sm);
 }
-.claim-breadcrumb-label { color: #7c5a11; font-weight: 600; }
+.claim-breadcrumb-label { color: var(--cb-text-muted); font-weight: var(--cb-weight-semibold); }
 .claim-breadcrumb-link {
-    border: 1px solid #d6b656;
-    background: #fff;
-    border-radius: 3px;
+    border: 1px solid var(--cb-line-strong);
+    background: var(--cb-surface);
+    border-radius: var(--cb-radius-sm);
     padding: 1px 6px;
-    font-size: 12px;
-    color: #7c2d12;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text);
     cursor: pointer;
 }
-.claim-breadcrumb-link:hover { background: #fde68a; }
+.claim-breadcrumb-link:hover { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
 
 /* Loading spinner over a mode-strip icon while that view composes. three-mode.js sets
    .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
@@ -277,7 +277,7 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     line-height: 1;
     cursor: pointer;
 }
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     #three-container .three-mode-ui-collapse {
         display: flex;
         align-items: center;
@@ -575,7 +575,7 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
    bottom of the 3D view instead. It starts right of the mode-button strip on the LEFT
    edge (--map-mode-strip) — it used to leave its gap on the right, for buttons that had
    long since moved, and the buttons sat on top of its first column of text. */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     #three-container .three-mode-parcel-panel {
         top: auto;
         bottom: 12px;
@@ -911,7 +911,7 @@ body.three-mode-active #agent-bubbles-container {
 /* ...except on phones, where the Guest pill is the ONLY way to the wallet and language — hiding it
    trapped a mobile user in 3D. The pill moves left of the 3D view's settings gear (top-right, ~34px
    wide at right 16px). */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     body.three-mode-active #username-display {
         display: flex !important;
         pointer-events: auto;
@@ -1318,7 +1318,7 @@ body.three-mode-active #agent-bubbles-container {
 /* Phones: the stack takes a full-width row under the top bar (drill-ui.js sets top below the menu
    button and Guest pill). At 200px in the top-right corner it lay over the Guest pill and cut the
    parcel number to "7160…". A single row repeats the header of the sheet below, so it stays hidden. */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     #drill-stack-panel {
         left: 10px;
         right: 10px;

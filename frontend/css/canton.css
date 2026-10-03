@@ -1,4 +1,5 @@
-/* Minimal styles for the Canton read-only view (canton.html). Mobile-first. */
+/* Minimal styles for the Canton read-only view (canton.html). Mobile-first; colours and type from css/tokens.css. */
+body { margin: 0; font-family: var(--cb-font-sans); color: var(--cb-text); background: var(--cb-bg); }
 .canton-wrap { max-width: 720px; margin: 0 auto; padding: 16px; }
 /* Busy buttons: keep the label's width but hide it and show a centered spinner,
    so the button never resizes. Pure CSS animation, no JS timer. */
@@ -20,9 +21,9 @@
 }
 .canton-controls button {
     padding: 8px 14px; font: inherit; cursor: pointer;
-    border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;
+    border: 1px solid var(--cb-primary); background: var(--cb-primary); color: var(--cb-primary-ink); border-radius: var(--cb-radius-sm);
 }
-.canton-controls button:hover { background: #249; border-color: #249; }
+.canton-controls button:hover { background: var(--cb-primary-hover); border-color: var(--cb-primary-hover); }
 .canton-status { font-size: 0.85rem; color: #555; min-height: 1.2em; margin-bottom: 12px; }
 .canton-section h2 { font-size: 1rem; margin: 16px 0 8px; }
 .canton-empty { color: #999; font-size: 0.9rem; margin: 0; }

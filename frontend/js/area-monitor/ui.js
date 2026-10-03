@@ -417,11 +417,7 @@
 
     function formatMonitorDate(dateValue) {
         if (!dateValue) return '';
-        try {
-            return new Date(dateValue).toLocaleDateString();
-        } catch (_) {
-            return '';
-        }
+        return CbFormat.formatDate(dateValue);
     }
 
     // Escape closes the list. Stopped here so the same key does not also close the Tools sheet the
@@ -465,7 +461,7 @@
         const lblLoading = t('sidebar.areaMonitor.listLoading') || 'Loading monitored areas...';
         const lblEmpty = t('sidebar.areaMonitor.listEmpty') || 'No monitored areas yet.';
         const lblError = t('sidebar.areaMonitor.listError') || 'Failed to load monitored areas.';
-        const lblParcelCount = t('sidebar.areaMonitor.listParcelCount', { count: 0 }) || '{{count}} parcels';
+        const lblParcelCount = t('proposals.autoName.parcels', { count: 0 }) || '{{count}} parcels';
         const lblFilterPlaceholder = t('sidebar.areaMonitor.listFilterPlaceholder') || 'Filter by name';
         const lblFilterEmpty = t('sidebar.areaMonitor.listFilterEmpty') || 'No monitors match the filter.';
 
@@ -547,7 +543,8 @@
             monitors.forEach(monitor => {
                 const item = document.createElement('button');
                 const createdLabel = formatMonitorDate(monitor.createdAt);
-                const parcelText = (t('sidebar.areaMonitor.listParcelCount', { count: monitor.parcelCount }))
+                // The shared plural key, so one monitored parcel reads "1 parcel".
+                const parcelText = (t('proposals.autoName.parcels', { count: monitor.parcelCount }))
                     || lblParcelCount.replace('{{count}}', monitor.parcelCount);
                 const metaParts = [escapeHtml(parcelText)];
                 if (createdLabel) metaParts.push(escapeHtml(createdLabel));
@@ -620,17 +617,20 @@
         return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    // m² through the shared formatter; hectares and km² keep their fixed decimals, in the UI language.
     function formatArea(areaSqm) {
         if (!Number.isFinite(areaSqm) || areaSqm <= 0) {
-            return '0 m²';
+            return CbFormat.formatArea(0);
         }
         if (areaSqm >= 1_000_000) {
-            return `${(areaSqm / 1_000_000).toFixed(areaSqm >= 10_000_000 ? 1 : 2)} km²`;
+            const digits = areaSqm >= 10_000_000 ? 1 : 2;
+            return `${CbFormat.formatNumber(areaSqm / 1_000_000, { maxFractionDigits: digits, minFractionDigits: digits })}\u202fkm²`;
         }
         if (areaSqm >= 10_000) {
-            return `${(areaSqm / 10_000).toFixed(areaSqm >= 100_000 ? 0 : 1)} ha`;
+            const digits = areaSqm >= 100_000 ? 0 : 1;
+            return `${CbFormat.formatNumber(areaSqm / 10_000, { maxFractionDigits: digits, minFractionDigits: digits })}\u202fha`;
         }
-        return `${Math.round(areaSqm).toLocaleString()} m²`;
+        return CbFormat.formatArea(areaSqm);
     }
 
     function computePolygonAreaSqm(polygon) {

@@ -217,6 +217,11 @@
     },
     "common": {
         "copied": "Copiado",
+        "lifecycle": {
+            "draft": "Borrador",
+            "applied": "Aplicada",
+            "published": "Publicada"
+        },
         "copyToClipboard": "Copiar al portapapeles",
         "logout": "Cerrar sesión",
         "unknown": "Desconocido",
@@ -228,16 +233,23 @@
         "ok": "Aceptar",
         "download": "Descargar",
         "busy": {
-            "detecting": "Detectando...",
-            "loading": "Cargando...",
-            "forming": "Formando...",
-            "selecting": "Seleccionando...",
-            "refreshing": "Actualizando...",
-            "analyzing": "Analizando...",
-            "applying": "Aplicando..."
+            "detecting": "Detectando…",
+            "loading": "Cargando…",
+            "forming": "Formando…",
+            "selecting": "Seleccionando…",
+            "refreshing": "Actualizando…",
+            "analyzing": "Analizando…",
+            "applying": "Aplicando…"
         }
     },
     "proposals": {
+        "autoName": {
+            "parcel": "parcela {{id}}",
+            "parcels": {
+                "one": "{{count}} parcela",
+                "other": "{{count}} parcelas"
+            }
+        },
         "contiguityDisabledReason": "Deshabilitado porque las parcelas de la propuesta no son contiguas",
         "roadDesignation": {
             "statusUnavailable": "La designación de suelo viario aún no está disponible.",
@@ -268,7 +280,7 @@
         "disconnectHint": "Haz clic para desconectar.",
         "noNetwork": "Sin red",
         "noNetworkHint": "Desconecta las billeteras y abandona el modo de cadena activo.",
-        "disconnectingNetworks": "Desconectando de las redes...",
+        "disconnectingNetworks": "Desconectando de las redes…",
         "connectTitle": "Conecta una billetera de Ethereum",
         "modal": {
             "title": "Conectar una billetera",
@@ -276,7 +288,7 @@
             "description": "Selecciona una de las billeteras detectadas para continuar.",
             "empty": "No se encontraron billeteras. Si tienes una billetera instalada, ábrela primero, luego abre este sitio desde el navegador de la billetera y podrás conectarte.",
             "connected": "Billetera conectada",
-            "connecting": "Conectando a {{wallet}}...",
+            "connecting": "Conectando a {{wallet}}…",
             "unavailable": "La billetera seleccionada ya no está disponible.",
             "unusable": "La billetera seleccionada no se puede usar en esta sesión del navegador.",
             "noAccounts": "La billetera no devolvió cuentas.",
@@ -315,7 +327,7 @@
         "registeredLabel": "🏅 Registrado",
         "statusRegistered": "¡Éxito! Ya eres un ciudadano registrado.",
         "statusClaimed": "Reclamaste {{amount}} tokens.",
-        "statusClaiming": "Reclamando tokens del contrato...",
+        "statusClaiming": "Reclamando tokens del contrato…",
         "statusClaimedDone": "¡Tokens reclamados!",
         "statusNoWallet": "Conecta una billetera para ver tus city tokens.",
         "statusLoading": "Cargando datos del token de la ciudad…",
@@ -344,6 +356,11 @@
         },
         "data": {
             "sourceLabel": "Fuente de datos:",
+            "sourceOptions": {
+                "oss": "Catastro croata (en vivo)",
+                "localhost": "Servidor local",
+                "api": "API de Consensus Builder"
+            },
             "baseMapLabel": "Mapa base:"
         },
         "game": {
@@ -355,7 +372,7 @@
             "pause": "Pausar",
             "newGame": "Nuevo juego",
             "showAgents": "Actores",
-            "showAgentsCount": "Mostrar agentes ({{count}})"
+            "showAgentsCount": "Agentes ({{count}})"
         },
         "gameDialogs": {
             "log": {
@@ -393,7 +410,7 @@
             "locateDataNotLoaded": "Datos de parcelas no cargados",
             "refreshButton": "Actualizar datos de parcelas",
             "refreshTooltip": "Obtener las parcelas más recientes para la ciudad actual",
-            "clearButton": "Borrar datos de parcelas del almacenamiento local",
+            "clearButton": "Restablecer datos de parcelas (este navegador)",
             "clearTooltip": "Eliminar los datos de parcelas guardados en este navegador",
             "inViewDefault": "Parcelas en vista / total: 0 / 0",
             "inViewTemplate": "Parcelas en vista / total: {{visible}} / {{total}}",
@@ -421,7 +438,7 @@
                 "lotLabel": "Parcela {{index}}",
                 "lotShareAria": "Porcentaje para la parcela {{index}}"
             },
-            "adsLoading": "Cargando parcelas anunciadas...",
+            "adsLoading": "Cargando parcelas anunciadas…",
             "adsLoaded": "Se cargaron {{count}} parcelas anunciadas",
             "adsError": "No se pudieron cargar las parcelas anunciadas.",
             "highlightOwnershipTitle": "Resaltar por tipo de propiedad (T)",
@@ -456,7 +473,7 @@
             "showListButton": "Mostrar lista de bloques",
             "listHeader": "Lista de bloques",
             "closeList": "Cerrar lista de bloques",
-            "clearButton": "Borrar bloques del almacenamiento local",
+            "clearButton": "Restablecer bloques (este navegador)",
             "clearTooltip": "Eliminar los cálculos de bloques almacenados",
             "countedDefault": "Parcelas contadas: 0",
             "countProgress": "Parcelas procesadas: {{processed}} / {{total}} ({{percent}}%)"
@@ -464,9 +481,9 @@
         "buildings": {
             "title": "Edificios",
             "showLayer": "Mostrar edificios",
-            "showGdi": "Edificios GDI (modelo 3D)",
-            "showDgu": "Catastro DGU (referencia legal)",
-            "showOsm": "Edificios OSM (coincide con el mapa)",
+            "showGdi": "Edificios 3D (GDI)",
+            "showDgu": "Catastro oficial (DGU)",
+            "showOsm": "Edificios del mapa (OSM)",
             "showProposed": "Mostrar edificios propuestos"
         },
         "stations": {
@@ -482,29 +499,29 @@
         "roads": {
             "title": "Carreteras",
             "drawDguTooltip": "Dibujar polígonos de uso vial de uredjenazemlja.hr",
-            "detectDgu": "Detectar carreteras desde DGU",
+            "detectDgu": "Detectar carreteras desde el catastro (DGU)",
             "detectDguTooltip": "Marcar parcelas como carreteras usando datos de uredjenazemlja.hr",
-            "clearButton": "Borrar carreteras del almacenamiento local",
+            "clearButton": "Restablecer carreteras (este navegador)",
             "clearTooltip": "Eliminar las marcas de carreteras detectadas en este navegador",
             "plansTitle": "Planes y propuestas",
             "govPlanTooltip": "Mostrar la superposición del plan vial municipal",
-            "govPlanToggle": "Plan vial municipal",
-            "applyGovPlan": "Aplicar plan vial municipal",
+            "govPlanToggle": "Plan vial oficial",
+            "applyGovPlan": "Aplicar el plan vial oficial",
             "applyGovPlanTooltip": "Aplicar los segmentos del plan para las parcelas visibles",
             "drawManual": "Dibujar carretera",
             "drawManualTooltip": "Abrir la herramienta para dibujar carreteras manuales",
             "drawTrack": "Dibujar vía",
             "drawTrackTooltip": "Abrir la herramienta para dibujar vías con restricciones de curvatura",
             "osmLinesTooltip": "Mostrar u ocultar las líneas de OSM",
-            "osmLinesToggle": "Líneas viales de OSM",
+            "osmLinesToggle": "Líneas viales del mapa (OSM)",
             "gupLinesTooltip": "Mostrar u ocultar las líneas de GUP",
-            "gupLinesToggle": "Líneas viales de GUP",
+            "gupLinesToggle": "Líneas del plan vial oficial (GUP)",
             "dguPolygonsTooltip": "Mostrar u ocultar los polígonos de uso DGU",
-            "dguPolygonsToggle": "Polígonos de uso DGU",
+            "dguPolygonsToggle": "Áreas oficiales de uso del suelo (DGU)",
             "centerlinesTooltip": "Mostrar u ocultar los ejes de las vías existentes (solo el área visible; acerca)",
             "centerlinesToggle": "Ejes de vías existentes",
-            "progressText": "Procesando...",
-            "analyzeOsm": "Analizar carreteras OSM",
+            "progressText": "Procesando…",
+            "analyzeOsm": "Analizar carreteras del mapa (OSM)",
             "analyzeOsmTooltip": "Analizar los anchos de las carreteras visibles de OSM",
             "analysisToggleTooltip": "Mostrar u ocultar el último análisis de anchura",
             "analysisToggle": "Mostrar resultados del análisis vial",
@@ -513,20 +530,20 @@
             "detectAiTooltip": "Detectar vías con IA (función futura)",
             "detectExisting": "Detectar vías existentes",
             "detectExistingTooltip": "Detectar vías existentes usando todos los datos disponibles",
-            "detectGup": "Detectar vías desde GUP",
+            "detectGup": "Detectar vías desde el plan oficial (GUP)",
             "detectGupTooltip": "Marcar parcelas como vías según datos del GUP",
-            "detectOsm": "Detectar vías desde OSM",
+            "detectOsm": "Detectar vías desde el mapa (OSM)",
             "detectOsmTooltip": "Dibujar y marcar vías según datos de OpenStreetMap",
             "drawAlgorithmic": "Dibujar nuevas vías algorítmicamente",
             "drawAlgorithmicTooltip": "Dibujar nuevas vías con algoritmos procedurales (función futura)",
-            "drawDgu": "Dibujar vías desde DGU",
-            "drawGup": "Dibujar vías desde GUP",
+            "drawDgu": "Dibujar vías desde el catastro (DGU)",
+            "drawGup": "Dibujar vías desde el plan oficial (GUP)",
             "drawGupTooltip": "Dibujar datos de calles del GUP como líneas",
-            "drawOsm": "Dibujar vías desde OSM",
+            "drawOsm": "Dibujar vías desde el mapa (OSM)",
             "drawOsmTooltip": "Dibujar vías de OpenStreetMap como líneas",
             "existingTitle": "Vías existentes",
             "showLayer": "Mostrar vías",
-            "detectingExisting": "Detectando las vías existentes..."
+            "detectingExisting": "Detectando las vías existentes…"
         },
         "proposals": {
             "title": "Propuestas",
@@ -534,11 +551,11 @@
             "mintedButton": "Propuestas acuñadas",
             "shareButton": "Compartir plan completo (todas las propuestas)",
             "shareButtonEmpty": "No hay planes aplicados. Aplica alguno primero",
-            "shareButtonPreparing": "Preparando el plan...",
-            "clearButton": "Borrar propuestas del almacenamiento local",
+            "shareButtonPreparing": "Preparando el plan…",
+            "clearButton": "Restablecer propuestas (este navegador)",
             "planStats": {
                 "buttonLabel": "Estadísticas del plan",
-                "calculating": "Calculando...",
+                "calculating": "Calculando…",
                 "modalTitle": "Estadísticas del plan",
                 "resultingParcels": "Parcelas resultantes (media m²)",
                 "floorArea": "Superficie construida bruta (m²)",
@@ -634,8 +651,8 @@
                 }
             },
             "newGame": "Nueva partida",
-            "showAgents": "Actores",
-            "showAgentsCount": "Mostrar agentes ({{count}})",
+            "showAgents": "Agentes",
+            "showAgentsCount": "Agentes ({{count}})",
             "showGameLog": "Mostrar registro del juego",
             "showGameLogCount": "Mostrar registro del juego ({{count}})"
         },
@@ -643,14 +660,14 @@
             "title": "Monitor de zona",
             "drawButton": "Dibujar libremente",
             "fromPlanButton": "Dibujar desde el plan",
-            "fromPlanActive": "Dibujando desde el plan municipal...",
-            "fromPlanLoading": "Cargando plan municipal...",
+            "fromPlanActive": "Dibujando desde el plan municipal…",
+            "fromPlanLoading": "Cargando plan municipal…",
             "uploadButton": "Subir forma (GeoJSON)",
             "listButton": "Lista de zonas monitoreadas",
             "drawingHint": "Haga clic en el mapa para dibujar un polígono. Ciérrelo haciendo clic en el primer punto. Presione Esc para deshacer.",
-            "drawingActive": "Dibujando polígono...",
+            "drawingActive": "Dibujando polígono…",
             "listModalTitle": "Zonas monitoreadas",
-            "listLoading": "Cargando zonas monitoreadas...",
+            "listLoading": "Cargando zonas monitoreadas…",
             "listEmpty": "Todavía no hay zonas monitoreadas.",
             "listError": "No se pudieron cargar las zonas monitoreadas.",
             "listFilterPlaceholder": "Filtrar por nombre",
@@ -667,7 +684,7 @@
             "skyscraperCityLabel": "URL de SkyscraperCity",
             "createButton": "Crear",
             "cancelButton": "Cancelar",
-            "creating": "Creando...",
+            "creating": "Creando…",
             "created": "Monitor de zona \"{{name}}\" creado",
             "acquired": "adquiridas",
             "parcels": "parcelas",
@@ -702,7 +719,7 @@
             "instructionsParagraph": "<strong>Dibuja el cambio y después construye consenso.</strong> Al terminar un diseño se crea una propuesta local ya aplicada. Examínala, retírala del mapa, compártela o crea una variante editable cuando deban cambiar el diseño o las condiciones. Lee la <a href=\"how-to-use.html\" target=\"_blank\">guía paso a paso</a> o consulta qué funciona hoy y qué viene después en la <a href=\"roadmap.html\" target=\"_blank\">hoja de ruta</a>.",
             "advancedTitle": "Opciones avanzadas",
             "debugToggle": "Habilitar modo depuración",
-            "wipeDataButton": "Borrar TODOS los datos locales",
+            "wipeDataButton": "Restablecer todo (este navegador)",
             "wipeDataTooltip": "Limpiar todos los datos guardados localmente (parcelas, carreteras, propuestas, ajustes)"
         }
     },
@@ -738,7 +755,7 @@
         },
         "proposalDeleted": "(eliminada)",
         "pendingUnseen": "Sin ver",
-        "moreEntries": "... y {{count}} entradas anteriores",
+        "moreEntries": "… y {{count}} entradas anteriores",
         "logoutButton": "Cerrar sesión",
         "proposalStatus": {
             "local": "Local",
@@ -747,7 +764,7 @@
     },
     "hud": {
         "totalSpentLabel": "Total gastado:",
-        "statusReady": "Aplicación inicializada, cargando parcelas...",
+        "statusReady": "Aplicación inicializada, cargando parcelas…",
         "toggle3dTooltip": "Cambiar a vista 3D",
         "copyStatusLog": "Copiar todo",
         "statusLinesCopied": "{{count}} líneas copiadas",
@@ -762,8 +779,8 @@
         "parcel": {
             "mintedProposals": {
                 "title": "Propuestas acuñadas",
-                "loading": "Cargando tus propuestas acuñadas...",
-                "loadingShort": "Cargando...",
+                "loading": "Cargando tus propuestas acuñadas…",
+                "loadingShort": "Cargando…",
                 "empty": "Aún no hay propuestas acuñadas con esta wallet.",
                 "walletRequired": "Conecta una wallet para ver las propuestas acuñadas.",
                 "error": "No se pudieron cargar las propuestas acuñadas.",
@@ -878,7 +895,7 @@
             "owner": {
                 "none": "Sin propietario",
                 "single": "Propietario único",
-                "loading": "Cargando datos reales de propiedad...",
+                "loading": "Cargando datos reales de propiedad…",
                 "simulated": "Propietario simulado",
                 "error": "No se pudieron cargar los datos reales de propiedad.",
                 "placeholder": "Propietario {{id}}",
@@ -915,7 +932,7 @@
             "actions": {
                 "measureAsRoad": "Medir como carretera",
                 "measurementsAdded": "Mediciones añadidas",
-                "measureLoading": "⏳ Calculando...",
+                "measureLoading": "⏳ Calculando…",
                 "measureLengthLabel": "Longitud como carretera:",
                 "measureWidthLabel": "Ancho como carretera:",
                 "measureWidthAverage": "Promedio:",
@@ -934,7 +951,7 @@
                 "statusPrompt": "Selecciona una parcela para verificar el estado NFT.",
                 "notFoundRetry": "NFT no encontrado en {{chain}}. Haz clic para verificar de nuevo.",
                 "retryTooltip": "Haz clic para verificar el estado NFT nuevamente",
-                "checking": "Comprobando estado NFT...",
+                "checking": "Comprobando estado NFT…",
                 "missingIdentifier": "Identificador de parcela no disponible.",
                 "chainSuffix": " ({{chain}})",
                 "tokenSuffix": " • Token {{token}}",
@@ -964,6 +981,7 @@
             "closeAria": "Cerrar el panel de información de la parcela"
         },
         "proposal": {
+            "copyId": "Copiar ID",
             "title": "Detalles de la propuesta",
             "roadSuffix": " (Carretera)",
             "mapStatus": {
@@ -993,7 +1011,7 @@
             },
             "actions": {
                 "apply": "Aplicar al mapa",
-                "applying": "Aplicando...",
+                "applying": "Aplicando…",
                 "checkingGround": "Comprobando el terreno catastral…",
                 "unapplying": "Retirando del mapa…",
                 "restoringGround": "Restaurando el terreno local…",
@@ -1118,8 +1136,8 @@
                 "viewOnExplorer": "Ver en el explorador",
                 "mintedHint": "Acuñada en la cadena"
             },
-            "loading": "Cargando detalles de la propuesta...",
-            "rendering": "Renderizando detalles de la propuesta...",
+            "loading": "Cargando detalles de la propuesta…",
+            "rendering": "Renderizando detalles de la propuesta…",
             "sections": {
                 "cadastralParcels": "Parcelas catastrales:",
                 "generatedParcels": "Parcelas generadas:",
@@ -1465,9 +1483,9 @@
         },
         "mintedProposals": {
             "title": "Propuestas acuñadas",
-            "loading": "Cargando propuestas on-chain...",
-            "loadingWithCount": "{{count}} propuestas encontradas. Cargando...",
-            "loadingShort": "Cargando...",
+            "loading": "Cargando propuestas on-chain…",
+            "loadingWithCount": "{{count}} propuestas encontradas. Cargando…",
+            "loadingShort": "Cargando…",
             "empty": "Aún no hay propuestas acuñadas con esta wallet.",
             "walletRequired": "Conecta una wallet para ver las propuestas acuñadas.",
             "error": "No se pudieron cargar las propuestas acuñadas.",
@@ -1622,7 +1640,7 @@
             "addButtonTitle": "Agregar dirección de confianza",
             "addressLabel": "Dirección {{index}}",
             "placeholders": {
-                "address": "Dirección 0x...",
+                "address": "Dirección 0x…",
                 "name": "Nombre descriptivo"
             },
             "removeAddress": "Eliminar dirección",
@@ -1798,11 +1816,11 @@
         },
         "buildingLayers": {
             "title": "¿Qué edificios mostrar?",
-            "gdi": "Edificios GDI (modelo 3D)",
+            "gdi": "Edificios 3D (GDI)",
             "gdiHint": "Fotogrametría: lo que realmente existe. El modelo 3D usa esto, y también cada corte y demolición.",
-            "dgu": "Catastro DGU (referencia legal)",
+            "dgu": "Catastro oficial (DGU)",
             "dguHint": "DGU catastro: lo que está registrado oficialmente.",
-            "osm": "Edificios OSM (coincide con el mapa)",
+            "osm": "Edificios del mapa (OSM)",
             "osmHint": "Edificios OSM: el mapa comunitario — los contornos dibujados en el mapa base.",
             "cancel": "Cancelar",
             "show": "Mostrar"
@@ -1863,7 +1881,7 @@
                 "offerLabel": "Oferta (EUR):",
                 "offerPlaceholder": "0",
                 "descriptionLabel": "Descripción:",
-                "descriptionPlaceholder": "Describe tu propuesta de carretera...",
+                "descriptionPlaceholder": "Describe tu propuesta de carretera…",
                 "summary": {
                     "parcels": "Parcelas afectadas:",
                     "area": "Área total:",
@@ -1956,15 +1974,15 @@
                 },
                 "resultCountWord": "mostrados",
                 "sources": {
-                    "local": "Locales",
-                    "server": "Servidor",
-                    "blockchain": "Blockchain"
+                    "local": "Este navegador",
+                    "server": "Publicadas",
+                    "blockchain": "Acuñadas"
                 },
                 "actions": {
                     "download": "Descargar",
                     "downloaded": "Descargada"
                 },
-                "loadingServer": "Cargando propuestas del servidor...",
+                "loadingServer": "Cargando propuestas del servidor…",
                 "serverError": "Error al cargar las propuestas del servidor.",
                 "retry": "Reintentar",
                 "downloadError": "No se pudo descargar la propuesta",
@@ -2014,6 +2032,7 @@
                     "author": "Autor:",
                     "created": "Creada:",
                     "acceptance": "Aceptación:",
+                    "acceptedWord": "aceptadas",
                     "parcels": "Parcelas:",
                     "area": "Área:",
                     "offer": "Oferta:",
@@ -2098,7 +2117,7 @@
                 "shareViaLabel": "Compartir vía",
                 "tweetButton": "Publicar en X.com",
                 "tweetText": "¡He creado una nueva propuesta urbana!",
-                "nativeShareButton": "Compartir...",
+                "nativeShareButton": "Compartir…",
                 "tooLargeTitle": "Conjunto de propuestas demasiado grande",
                 "tooLargeBody": "Los enlaces están limitados a aproximadamente 7,5 KB en el servidor, por lo que este conjunto de propuestas no puede incrustarse en la URL. Reduce la cantidad de parcelas/propuestas o usa la exportación JSON mientras terminamos el intercambio del lado del servidor.",
                 "invalidTitle": "Enlace de compartición inválido",
@@ -2152,20 +2171,20 @@
                 "shareOptionDownload": "descargarla como JSON",
                 "uploadSuccess": "¡Propuesta subida! Ahora puedes compartirla con otros",
                 "uploadButton": "Subir",
-                "uploading": "Subiendo...",
+                "uploading": "Subiendo…",
                 "uploadError": "No se pudo subir la propuesta. Por favor, inténtalo de nuevo.",
                 "mintButton": "Acuñar",
                 "connectWalletButton": "Conectar Cartera",
                 "walletConnectedStatus": "Cartera conectada. Puedes proceder a acuñar la propuesta",
                 "mintSuccess": "¡Propuesta acuñada con éxito!",
                 "mintError": "Error al acuñar la propuesta",
-                "mintCapturingImage": "Capturando imagen de la propuesta...",
-                "mintUploadingIPFS": "Subiendo a IPFS...",
-                "mintWaitingSignature": "Esperando firma de la cartera...",
-                "mintingOnChain": "Acuñando en la cadena...",
-                "mintSavingServer": "Guardando la propuesta en el servidor...",
+                "mintCapturingImage": "Capturando imagen de la propuesta…",
+                "mintUploadingIPFS": "Subiendo a IPFS…",
+                "mintWaitingSignature": "Esperando firma de la cartera…",
+                "mintingOnChain": "Acuñando en la cadena…",
+                "mintSavingServer": "Guardando la propuesta en el servidor…",
                 "mintSavedChainOnly": "Acuñada on-chain, pero falló el guardado en el servidor: es posible que el enlace ENS no funcione hasta que lo reintentes.",
-                "processingImageForUpload": "Procesando imagen para subir...",
+                "processingImageForUpload": "Procesando imagen para subir…",
                 "downloadButton": "Descargar",
                 "downloadSuccess": "Propuesta descargada como JSON",
                 "downloadError": "Error al descargar la propuesta",
@@ -2326,10 +2345,10 @@
                     "filterPending": "Aún sin subir"
                 },
                 "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola).",
-                "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor...",
-                "listingProposals": "Listando {{done}}/{{total}} propuestas...",
-                "drawingProposals": "Dibujando {{done}}/{{total}} propuestas en el mapa...",
-                "preparingPlan": "Preparando el plan...",
+                "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor…",
+                "listingProposals": "Listando {{done}}/{{total}} propuestas…",
+                "drawingProposals": "Dibujando {{done}}/{{total}} propuestas en el mapa…",
+                "preparingPlan": "Preparando el plan…",
                 "uploadExplainer": "Para compartir una propuesta con otros, primero debes subirla al servidor"
             },
             "sharedInspector": {
@@ -2345,7 +2364,7 @@
                 "buildingParents": "Edificios anteriores:",
                 "details": "Detalles",
                 "title": "Revisar propuestas compartidas",
-                "loading": "Parcelas aún cargando...",
+                "loading": "Parcelas aún cargando…",
                 "applySelected": "Aplicar seleccionadas"
             },
             "trackProposal": {
@@ -2357,7 +2376,7 @@
                     "other": "Propuesta de vía manual que afecta a {{count}} parcelas."
                 },
                 "descriptionLabel": "Descripción:",
-                "descriptionPlaceholder": "Describe tu propuesta de vía...",
+                "descriptionPlaceholder": "Describe tu propuesta de vía…",
                 "nameLabel": "Nombre de la vía:",
                 "namePlaceholder": "p. ej. Línea ferroviaria principal",
                 "offerLabel": "Oferta (EUR):",
@@ -2498,8 +2517,8 @@
                 "hint": "Se muestran algoritmos adicionales con fines de planificación; actualmente solo está disponible Barrido."
             },
             "descriptionLabel": "Descripción:",
-            "descriptionPlaceholder": "Describe tu propuesta...",
-            "descriptionPlaceholderStructure": "Describe tu {{kind}}...",
+            "descriptionPlaceholder": "Describe tu propuesta…",
+            "descriptionPlaceholderStructure": "Describe tu {{kind}}…",
             "offerLabel": "Oferta:",
             "offerPlaceholder": "0",
             "optionsLabel": "Opciones:",
@@ -2545,8 +2564,8 @@
             "ownerUnknown": "Desconocido",
             "lensTooltip": "Abrir modal de lentes",
             "submit": "Crear propuesta",
-            "creating": "Creando...",
-            "waiting": "Esperando la transacción...",
+            "creating": "Creando…",
+            "waiting": "Esperando la transacción…",
             "rejected": "Transacción rechazada",
             "nameLabel": "Nombre:",
             "namePlaceholderProposal": "Nombre de la propuesta",
@@ -2578,7 +2597,7 @@
                 "defaultChain": "la blockchain",
                 "messageSingle": "La siguiente parcela no está representada como un NFT en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ella.",
                 "messagePlural": "Las siguientes parcelas no están representadas como NFTs en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ellas.",
-                "more": ", y {{count}} más...",
+                "more": ", y {{count}} más…",
                 "proceedQuestion": "¿Proceder a crear una propuesta en memoria?",
                 "explainer": "Puedes crear una propuesta en memoria o proceder a acuñar las parcelas prerequisito. Acuñar no otorga propiedad; solo crea una representación on-chain. Cualquiera puede acuñar cualquier parcela para incorporarla a la plataforma. También puedes acuñarlas desde la pestaña Herramientas del panel de información de la parcela.",
                 "createInMemory": "Crear en memoria",
@@ -2629,7 +2648,7 @@
             "site": {
                 "bound": "Sitio de {{area}} m², parcelas vinculadas: {{count}}. Al publicar se comprueba el vínculo con el catastro completo.",
                 "unbound": "Sitio de {{area}} m² en terreno sin parcelas: ningún propietario puede consentir, así que solo puede ejecutarse con el veredicto de una autoridad.",
-                "binding": "Comprobando en qué parcelas entra el sitio..."
+                "binding": "Comprobando en qué parcelas entra el sitio…"
             },
             "tolerance": {
                 "label": "Tolerancia de intrusión en parcelas (m)",
@@ -2687,7 +2706,7 @@
         "modal": {
             "title": "Regla urbana",
             "closeAria": "Cerrar modal de edificios",
-            "generating": "Generando edificio...",
+            "generating": "Generando edificio…",
             "done": "Listo",
             "algorithmLabel": "Algoritmo:",
             "algorithms": {
@@ -2768,7 +2787,7 @@
                 "floorHeight": "Altura de planta (m):",
                 "helper": "Elige una regla: la altura propuesta dibuja cada edificio exactamente a esa altura; las plantas adicionales añaden plantas sobre la altura actual de cada edificio (requiere alturas conocidas).",
                 "summaryExact": "Se proponen {{count}} edificios de {{height}} m.",
-                "loading": "Cargando edificios existentes...",
+                "loading": "Cargando edificios existentes…",
                 "notAvailable": "Los datos de edificios existentes aún no están disponibles para esta ciudad.",
                 "noneFound": "No se encontraron edificios existentes en las parcelas seleccionadas.",
                 "loadFailed": "No se pudieron cargar los edificios existentes. Inténtalo de nuevo.",
@@ -2801,7 +2820,7 @@
         "modal": {
             "title": "Viviendas en Hilera",
             "closeAria": "Cerrar modal de viviendas en hilera",
-            "generating": "Generando viviendas en hilera...",
+            "generating": "Generando viviendas en hilera…",
             "done": "Listo",
             "parametersTitle": "Parámetros",
             "labels": {
@@ -2858,7 +2877,7 @@
         "modal": {
             "title": "Viviendas aisladas",
             "closeAria": "Cerrar modal de reglas por parcela",
-            "generating": "Generando edificios...",
+            "generating": "Generando edificios…",
             "generatedSummary": "Se generaron {{count}} edificio(s)",
             "done": "Listo",
             "regenerate": "Regenerar",
@@ -2947,7 +2966,7 @@
             "coverageComplete": "Toda la tierra mancomunada asignada ({{pct}}%).",
             "coverageIncomplete": "{{count}} parcela(s) sin asignar · {{area}} aún sin asignar ({{pct}}% cubierto).",
             "status": {
-                "preparingPreview": "Preparando vista previa de reparcelación...",
+                "preparingPreview": "Preparando vista previa de reparcelación…",
                 "missingOwners": "No se pudieron determinar los propietarios para la reparcelación.",
                 "algorithmUnavailable": "El algoritmo seleccionado aún no está disponible.",
                 "splitFailed": "No se pudo dividir la geometría de la parcela.",
@@ -3066,10 +3085,10 @@
     },
     "status": {
         "messages": {
-            "all_local_data_cleared_reloading": "Todos los datos locales borrados. Recargando...",
+            "all_local_data_cleared_reloading": "Todos los datos locales borrados. Recargando…",
             "all_measurements_cleared": "Todas las mediciones borradas",
             "all_parcels_hidden": "Todas las parcelas ocultas",
-            "already_fetching_parcel_data": "Ya se están obteniendo datos de parcelas...",
+            "already_fetching_parcel_data": "Ya se están obteniendo datos de parcelas…",
             "block_has_no_parcels": "El bloque no tiene parcelas",
             "block_has_no_parcels_with_name": "El bloque {{name}} no tiene parcelas",
             "block_not_found_with_name": "Bloque {{name}} no encontrado",
@@ -3084,7 +3103,7 @@
             "cannot_apply_reparcellization_proposal_missing_generated_slices": "No se puede aplicar la propuesta de reparcelación: faltan los cortes generados.",
             "cannot_apply_structure_proposal_missing_geometry": "No se puede aplicar la propuesta de estructura: falta la geometría.",
             "city_change_cancelled": "Cambio de ciudad cancelado",
-            "clearing_local_parcel_data": "Borrando datos locales de parcelas...",
+            "clearing_local_parcel_data": "Borrando datos locales de parcelas…",
             "cleared_blocks_from_storage": "Se limpiaron {{count}} bloques del almacenamiento",
             "click_on_the_map_to_start_drawing_a_road": "Haz clic en el mapa para empezar a dibujar una carretera",
             "click_on_the_map_to_start_measuring": "Haz clic en el mapa para empezar a medir",
@@ -3106,7 +3125,7 @@
             "data_source_change_cancelled": "Cambio de fuente de datos cancelado",
             "debug_mode_disabled_dangerous_actions_are_hidden": "Modo depuración desactivado: las acciones peligrosas están ocultas",
             "debug_mode_enabled_dangerous_actions_are_now_visible": "Modo depuración activado: las acciones peligrosas ahora son visibles",
-            "detecting_existing_roads_using_all_available_sources": "Detectando carreteras existentes con todas las fuentes disponibles...",
+            "detecting_existing_roads_using_all_available_sources": "Detectando carreteras existentes con todas las fuentes disponibles…",
             "draw_the_single_building_inside_the_selected_block_first": "Dibuja primero el edificio único dentro del bloque seleccionado.",
             "enable_multi_parcel_selection_to_use_this_action": "Activa la selección multi-parcela para usar esta acción.",
             "error_calculating_road_measurements": "Error al calcular las mediciones de carretera.",
@@ -3129,17 +3148,17 @@
             "failed_to_draw_government_road_plan_check_console_for_details": "No se pudo dibujar el plan vial gubernamental. Revisa la consola para más detalles.",
             "failed_to_draw_reparcellization_layout_on_the_map": "No se pudo dibujar la distribución de reparcelación en el mapa.",
             "failed_to_fetch_osm_road_data": "No se pudieron obtener los datos viales de OSM.",
-            "fetching_dgu_road_usage_polygons": "Obteniendo polígonos de uso vial DGU...",
-            "fetching_gup_road_data": "Obteniendo datos viales GUP...",
-            "fetching_osm_road_data": "Obteniendo datos viales OSM...",
-            "fetching_buildings": "Obteniendo edificios...",
+            "fetching_dgu_road_usage_polygons": "Obteniendo polígonos de uso vial DGU…",
+            "fetching_gup_road_data": "Obteniendo datos viales GUP…",
+            "fetching_osm_road_data": "Obteniendo datos viales OSM…",
+            "fetching_buildings": "Obteniendo edificios…",
             "loaded_buildings_count": {
                 "one": "Se cargó {{count}} edificio",
                 "few": "Se cargaron {{count}} edificios",
                 "other": "Se cargaron {{count}} edificios"
             },
-            "fetching_data": "Obteniendo datos...",
-            "fetching_government_road_plan": "Obteniendo el plan vial gubernamental...",
+            "fetching_data": "Obteniendo datos…",
+            "fetching_government_road_plan": "Obteniendo el plan vial gubernamental…",
             "zoom_in_to_see_government_road_plan": "Acerca el mapa para ver el plan vial gubernamental.",
             "preparing_government_plan_summary": {
                 "one": "Preparando plan gubernamental{{descriptor}}: {{count}} punto del plan…",
@@ -3154,25 +3173,25 @@
             "processing_parcels_progress": "Procesando parcelas: {{processed}}/{{total}} ({{percent}}%)…",
             "processing_parcels_progress_complete": "Procesando parcelas: {{processed}}/{{total}} (100%)",
             "worker_processing_parcels_progress": "Trabajador procesando parcelas: {{processed}}/{{total}} ({{percent}}%)…",
-            "fetching_road_data_from_openstreetmap": "Obteniendo datos viales de OpenStreetMap...",
-            "filtering_visible_parcels": "Filtrando las parcelas visibles...",
+            "fetching_road_data_from_openstreetmap": "Obteniendo datos viales de OpenStreetMap…",
+            "filtering_visible_parcels": "Filtrando las parcelas visibles…",
             "showing_road_parcels_count_only": {
                 "one": "Mostrando solo {{count}} parcela de carretera",
                 "few": "Mostrando solo {{count}} parcelas de carretera",
                 "other": "Mostrando solo {{count}} parcelas de carretera"
             },
-            "found_parcels_intersecting_viewport_building_edge_index": "Se encontraron {{count}} parcelas que intersectan la vista. Construyendo índice de bordes...",
-            "counting_blocks_progress": "Contando bloques... {{percent}}%",
+            "found_parcels_intersecting_viewport_building_edge_index": "Se encontraron {{count}} parcelas que intersectan la vista. Construyendo índice de bordes…",
+            "counting_blocks_progress": "Contando bloques… {{percent}}%",
             "finished_block_count_summary": "Conteo finalizado. Se encontraron {{added}} bloques nuevos, se eliminaron {{removed}} bloques. Total de parcelas no viales procesadas: {{processed}}.",
             "game_already_initialized": "El juego ya está inicializado",
             "data_source_set_to_value_cleared_local_data": "Se configuró la fuente de datos en {{value}}. Todos los datos locales se borraron.",
             "fetching_data_for_new_grid_cells_progress": {
-                "one": "Obteniendo datos para {{count}} celda de cuadrícula nueva ({{completed}}/{{count}})...",
-                "few": "Obteniendo datos para {{count}} celdas de cuadrícula nuevas ({{completed}}/{{count}})...",
-                "other": "Obteniendo datos para {{count}} celdas de cuadrícula nuevas ({{completed}}/{{count}})..."
+                "one": "Obteniendo datos para {{count}} celda de cuadrícula nueva ({{completed}}/{{count}})…",
+                "few": "Obteniendo datos para {{count}} celdas de cuadrícula nuevas ({{completed}}/{{count}})…",
+                "other": "Obteniendo datos para {{count}} celdas de cuadrícula nuevas ({{completed}}/{{count}})…"
             },
-            "fetching_ancestor_parcels_for_label": "Obteniendo parcelas ascendentes para {{label}}...",
-            "fetching_parcel_owners_for_label": "Obteniendo propietarios de parcelas para {{label}}...",
+            "fetching_ancestor_parcels_for_label": "Obteniendo parcelas ascendentes para {{label}}…",
+            "fetching_parcel_owners_for_label": "Obteniendo propietarios de parcelas para {{label}}…",
             "ancestor_parcels_ready_for_label": "Parcelas ascendentes listas para {{label}}.",
             "added_new_parcels_summary": {
                 "one": "Se agregó {{count}} parcela nueva ({{total}} en la capa)",
@@ -3180,11 +3199,11 @@
                 "other": "Se agregaron {{count}} parcelas nuevas ({{total}} en la capa)"
             },
             "applying_shared_proposals_progress": {
-                "one": "Aplicando {{count}} propuesta compartida...",
-                "few": "Aplicando {{count}} propuestas compartidas...",
-                "other": "Aplicando {{count}} propuestas compartidas..."
+                "one": "Aplicando {{count}} propuesta compartida…",
+                "few": "Aplicando {{count}} propuestas compartidas…",
+                "other": "Aplicando {{count}} propuestas compartidas…"
             },
-            "applying_specific_shared_proposal": "Aplicando la propuesta compartida {{title}} #{{id}}...",
+            "applying_specific_shared_proposal": "Aplicando la propuesta compartida {{title}} #{{id}}…",
             "no_new_parcels_to_load_summary": {
                 "one": "No hay parcelas nuevas para cargar ({{count}} parcela visible)",
                 "few": "No hay parcelas nuevas para cargar ({{count}} parcelas visibles)",
@@ -3204,7 +3223,7 @@
             "game_state_reset_agent_preserved": "El estado del juego se restableció. Tu agente se conservó con datos nuevos.",
             "game_state_reset_all_deleted": "El estado del juego se restableció. Todos los agentes y el progreso se eliminaron.",
             "government_road_plan_fully_applied": "Plan vial gubernamental aplicado por completo.",
-            "applying_government_road_plan": "Aplicando el plan vial gubernamental{{descriptor}}...",
+            "applying_government_road_plan": "Aplicando el plan vial gubernamental{{descriptor}}…",
             "government_road_plan_already_matches_current_view": "El plan vial gubernamental ya coincide con la vista actual del mapa.",
             "government_road_plan_has_no_geometry_overlapping_the_parcels_in_view": "El plan vial gubernamental no tiene geometría que se superponga con las parcelas en vista.",
             "government_road_plan_has_no_overlap_with_current_view": "El plan vial gubernamental no se superpone con la vista actual del mapa.",
@@ -3222,17 +3241,17 @@
                 "other": "Plan vial gubernamental aplicado{{descriptor}}: se agregaron {{count}} segmentos nuevos."
             },
             "could_not_apply_government_road_plan_check_console": "No se pudo aplicar el plan vial gubernamental. Revisa la consola para más detalles.",
-            "initializing_game_state": "Inicializando el estado del juego...",
+            "initializing_game_state": "Inicializando el estado del juego…",
             "focused_on_block": "Se enfocó en el bloque {{name}}",
             "invalid_bounds_for_block": "Límites inválidos para el bloque {{name}}",
             "invalid_block_bounds_for_block": "Límites de bloque inválidos para {{name}}",
-            "loading_reparcellization_tools": "Cargando herramientas de reparcelación...",
+            "loading_reparcellization_tools": "Cargando herramientas de reparcelación…",
             "map_is_not_ready_yet_please_wait": "El mapa aún no está listo. Espera por favor.",
             "measurement_cancelled_click_to_start_measuring": "Medición cancelada. Haz clic para empezar a medir.",
-            "merging_parcel_data": "Combinando datos de parcelas...",
+            "merging_parcel_data": "Combinando datos de parcelas…",
             "missing_road_update_function": "Falta la función de actualización de carreteras",
             "multi_parcel_selection_cleared": "Selección multi-parcela borrada",
-            "neighbor_graph_built_finding_blocks": "Grafo de vecinos construido. Buscando bloques...",
+            "neighbor_graph_built_finding_blocks": "Grafo de vecinos construido. Buscando bloques…",
             "no_gup_road_data_available_for_detection": "No hay datos viales GUP disponibles para la detección.",
             "no_gup_road_data_available_for_this_view": "No hay datos viales GUP para esta vista.",
             "no_osm_road_data_available_for_analysis": "No hay datos viales OSM disponibles para el análisis.",
@@ -3253,10 +3272,10 @@
             "no_parcels_loaded_please_refresh_data_first": "No hay parcelas cargadas. Actualiza los datos primero.",
             "no_parcels_to_clear": "No hay parcelas que borrar.",
             "no_road_parcels_in_view": "No hay parcelas viales en vista.",
-            "opening_claim_portal": "Abriendo portal de reclamación...",
+            "opening_claim_portal": "Abriendo portal de reclamación…",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "La parcela aún no está acuñada y no se pudo preparar el flujo Mint & Attest.",
-            "parcel_not_minted_yet_opening_mint_attest_flow": "La parcela aún no está acuñada. Abriendo el flujo Mint & Attest...",
-            "checking_parcel_nft_status": "Comprobando el estado NFT...",
+            "parcel_not_minted_yet_opening_mint_attest_flow": "La parcela aún no está acuñada. Abriendo el flujo Mint & Attest…",
+            "checking_parcel_nft_status": "Comprobando el estado NFT…",
             "unable_to_check_parcel_nft_status": "No se pudo comprobar el estado NFT.",
             "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Las herramientas de selección de parcelas no están disponibles, no se puede preparar la propuesta.",
             "parcels_disabled_at_this_zoom": "Las parcelas están deshabilitadas en este zoom",
@@ -3274,7 +3293,7 @@
             "applied_reparcellization_proposal": "Se aplicó la propuesta de reparcelación \"{{title}}\"",
             "applied_building_proposal": "Se aplicó la propuesta de edificio \"{{title}}\"",
             "removed_reparcellization_proposal": "Se quitó la propuesta de reparcelación \"{{title}}\" del mapa.",
-            "resolving_parcel_claim_details": "Resolviendo los detalles del reclamo de la parcela...",
+            "resolving_parcel_claim_details": "Resolviendo los detalles del reclamo de la parcela…",
             "review_proposal_before_applying": "Revisa la propuesta antes de aplicarla.",
             "revoked_acceptance_for_owner_on_parcel": "Se revocó la aceptación de {{owner}} en la parcela {{parcelId}}.",
             "analyzed_roads_summary": "Se analizaron {{count}} carreteras. {{summary}}",
@@ -3324,8 +3343,8 @@
             "waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan": "Esperando a que termine la fusión de parcelas antes de aplicar el plan vial gubernamental…",
             "parcel_data_still_merging_before_government_plan": "Los datos de las parcelas aún se están combinando. Aplicaremos el plan vial gubernamental en cuanto el mapa termine de actualizarse.",
             "zoom_in_further_to_apply_the_government_road_plan": "Acerca más el zoom para aplicar el plan vial gubernamental.",
-            "analyzing_parcels_against_gup": "Analizando {{count}} parcelas contra las calles del GUP...",
-            "analyzing_parcels_generic": "Analizando {{count}} parcelas...",
+            "analyzing_parcels_against_gup": "Analizando {{count}} parcelas contra las calles del GUP…",
+            "analyzing_parcels_generic": "Analizando {{count}} parcelas…",
             "drew_dgu_road_usage_polygons": "Se dibujaron {{count}} polígonos de uso vial del DGU",
             "error_drawing_osm_roads_with_reason": "Error al dibujar vías de OSM: {{reason}}",
             "error_fetching_osm_data_with_reason": "Error al obtener datos de OSM: {{reason}}",
@@ -3389,6 +3408,7 @@
             "osaka": "Osaka, Japón",
             "birmingham": "Birmingham, Reino Unido",
             "lusaka": "Lusaka, Zambia",
+            "shenzhen": "Shenzhen, China",
             "montreal": "Montreal, Canadá",
             "dortmund": "Dortmund, Alemania"
         },
@@ -4040,7 +4060,8 @@
         },
         "maintenance": {
             "title": "Datos y mantenimiento",
-            "storedTitle": "Guardado en este navegador"
+            "storedTitle": "Guardado en este navegador",
+            "resetSummary": "Restablecer los datos guardados en este navegador…"
         }
     },
     "parcelMenu": {
@@ -4346,5 +4367,39 @@
             "compare": "Comparar",
             "tick": "Seleccionar para comparar"
         }
+    },
+    "parcelSources": {
+        "recent": "Comprobaciones recientes de fuentes",
+        "attribution": "Fuente de parcelas elegida por el usuario",
+        "title": "Elegir fuente de parcelas",
+        "intro": "Añade una URL HTTPS pública de parcelas para esta ciudad. Probamos cada formato compatible y comprobamos que devuelva límites completos.",
+        "current": "Fuente actual: {{source}}",
+        "url": "URL de la fuente de parcelas",
+        "check": "Comprobar URL",
+        "checking": "Comprobando adaptadores compatibles…",
+        "use": "Usar esta fuente",
+        "noAdapter": "No hay un adaptador disponible.",
+        "conform": "Adapta tu fuente para que pueda leerla uno de los adaptadores. ",
+        "formats": "Ver los formatos de fuente compatibles",
+        "request": "Pídenos que añadamos otro adaptador; a veces lo hacemos. ",
+        "telegram": "Grupo de Telegram",
+        "attempts": "Probados: {{adapters}}",
+        "matched": "Adaptador encontrado: {{adapter}}. {{count}} parcelas en el área de prueba. La cobertura fuera de esta área depende de la fuente.",
+        "invalidUrl": "Usa una URL HTTPS pública sin credenciales ni claves de acceso.",
+        "checkFailed": "No se pudo terminar de comprobar la URL. Revisa tu conexión y vuelve a intentarlo.",
+        "storageFailed": "No se pudo guardar la fuente elegida en este navegador.",
+        "default": "Usar la fuente predeterminada de la ciudad",
+        "close": "Cerrar",
+        "retry": "Reintentar la fuente de parcelas",
+        "dismiss": "Ocultar aviso de la fuente"
+    },
+    "parcelSourceHealth": {
+        "offline": "Parece que no tienes conexión. Conéctate a internet y vuelve a intentarlo.",
+        "rateLimited": "Esta fuente limita las solicitudes. Reintenta en {{seconds}} segundos.",
+        "blocked": "El proveedor ha denegado el acceso (HTTP {{status}}). Puede restringir direcciones IP o exigir autenticación. Elige otra fuente o inténtalo más tarde.",
+        "timeout": "Esta fuente no respondió a tiempo. Inténtalo de nuevo en unos momentos.",
+        "unavailable": "Esta fuente de parcelas no está disponible temporalmente.",
+        "loadedRemain": "Las parcelas ya cargadas siguen visibles. Reintenta o elige otra fuente."
     }
+
 }

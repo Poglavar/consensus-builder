@@ -180,7 +180,7 @@
             ? `<span>${scope('proposalId', proposalId, tr('scopeProposal', 'All activity on this proposal'))}${scope('parcelSetOf', proposalId, tr('scopeLand', 'All activity on this land'))}</span>`
             : '';
         const modelDetails = event.model
-            ? `<span>${escapeHtml(tr('model', 'Model:'))} ${escapeHtml(event.model)}${Number.isFinite(event.modelCostUsd) ? ` · $${escapeHtml(event.modelCostUsd.toFixed(4))}` : ''}</span>`
+            ? `<span>${escapeHtml(tr('model', 'Model:'))} ${escapeHtml(event.model)}${Number.isFinite(event.modelCostUsd) ? ` · ${escapeHtml(formatUsd(event.modelCostUsd, 4))}` : ''}</span>`
             : '';
         return `<article class="log-entry activity-entry${event.ok === false ? ' is-failed' : ''}" data-source="${escapeHtml(event.source)}">
         <div class="activity-entry-main">${body}</div>
@@ -209,18 +209,31 @@
         return node;
     }
 
+    // "1 proposal" / "3 proposals". The actors view is English-only (no i18n keys yet), so a plain
+    // count-aware pair instead of "1 proposals".
+    function countText(count, one, many) {
+        return `${count} ${count === 1 ? one : many}`;
+    }
+
     function short(value, length = 10) {
         const source = string(value);
         return source.length <= length ? source : `${source.slice(0, 5)}…${source.slice(-4)}`;
     }
 
-    function formatUsd(value) {
-        return Number.isFinite(value) ? `$${value.toFixed(value < 0.01 ? 4 : 2)}` : '—';
+    // Model costs and times go through the shared formatter (js/format.js) where the page loads it:
+    // "0.0039 USD", amount then code. actor-explorer.html and the unit tests run without it.
+    function formatUsd(value, digits) {
+        if (!Number.isFinite(value)) return '—';
+        const places = digits === undefined ? (value < 0.01 ? 4 : 2) : digits;
+        return typeof CbFormat !== 'undefined'
+            ? CbFormat.formatMoney(value, 'USD', { maxFractionDigits: places, minFractionDigits: places })
+            : `$${value.toFixed(places)}`;
     }
 
     function formatWhen(value) {
         const date = value ? new Date(value) : null;
-        return date && !Number.isNaN(date.getTime()) ? date.toLocaleString() : 'unknown time';
+        if (!date || Number.isNaN(date.getTime())) return 'unknown time';
+        return typeof CbFormat !== 'undefined' ? CbFormat.formatDateTime(date) : date.toLocaleString();
     }
 
     function backendBase() {
@@ -287,7 +300,7 @@
                 const card = doc.createElement('button'); card.type = 'button'; card.className = 'ae-profile-card';
                 card.classList.toggle('is-selected', state.actorKey === profile.key);
                 card.append(text(doc, 'strong', profile.actor.name), text(doc, 'span', `${profile.actor.kind} · ${profile.actor.controller}`, 'ae-tag'));
-                card.append(text(doc, 'span', `${profile.activityCount} activities · ${profile.proposalIds.length} proposals · ${profile.transactionCount} transactions`, 'ae-muted'));
+                card.append(text(doc, 'span', `${countText(profile.activityCount, 'activity', 'activities')} · ${countText(profile.proposalIds.length, 'proposal', 'proposals')} · ${countText(profile.transactionCount, 'transaction', 'transactions')}`, 'ae-muted'));
                 if (profile.actor.wallet) card.append(text(doc, 'code', short(profile.actor.wallet), 'ae-wallet'));
                 if (profile.modelCostUsd) card.append(text(doc, 'span', `${formatUsd(profile.modelCostUsd)} model cost`, 'ae-muted'));
                 card.addEventListener('click', () => { state.actorKey = state.actorKey === profile.key ? null : profile.key; render(); });

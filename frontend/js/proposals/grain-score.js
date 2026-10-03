@@ -829,8 +829,8 @@
         for (let index = 0; index < items.length; index += 1) {
             if (token !== state.runToken) break;
             const item = items[index];
-            const width = item.widthMeters.toFixed(1);
-            const depth = item.depthMeters.toFixed(1);
+            const width = CbFormat.formatNumber(item.widthMeters, { maxFractionDigits: 1, minFractionDigits: 1 });
+            const depth = CbFormat.formatNumber(item.depthMeters, { maxFractionDigits: 1, minFractionDigits: 1 });
             setNodeText(overlay, 'progressText', t(
                 'sidebar.proposals.grainScore.progress',
                 'Checking parcel {{current}} of {{total}} · {{width}} × {{depth}} m',

@@ -494,3 +494,8 @@ a sheet-local ID alone repeats across maps. Keep edition and limited coverage in
 ### Expanded parcel-learning experiment (2026-10-03)
 
 Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validation/test sets; all four additional epochs lost validation parcel F1 versus the starting adapter (0.158), so retain the original adapter. Fresh-test cleaned SAM F1 was 0.163 versus OSM 0.195; this configuration does not justify replacing the baseline. Data, checkpoints and comparison reports remain ignored under `world-parcels/guess-spike/output/`; the review page is `/expanded/` in the existing comparison viewer.
+
+- 2026-10-03: Existing imported cities keep DB defaults; upstream alternatives are boot-scoped `parcelSource=live`, with explicit city-scoped server binding selection and provider provenance retained for drift checks. Preserve cadastral identities only where upstream/import equivalence is verified; distinct NYC BBL and Buenos Aires WFS identities still need mapping before older DB parcel storage can be retired.
+
+## 2026-10-03 — Design language (one dialect)
+- UX review found 7 visual dialects and no shared tokens; decision: the map shell is the reference dialect. Tokens in `frontend/css/tokens.css`, primitives in `frontend/css/primitives.css`, rules + glossary in `docs/design-language.md` (sentence case, one lifecycle ladder Draft→Applied→Published→Minted→Executed, US spelling, one breakpoint 767.98/768). Ratchet tests (`design-tokens`, `css-conflicting-selectors`, `i18n-style`, `frontend-hardcoded-strings`, `page-chrome`) keep literal counts from growing; rerun `node backend/test/helpers/design-audit.mjs --write` after lowering them.

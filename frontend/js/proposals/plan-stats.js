@@ -47,13 +47,31 @@
         return formatTemplate(fallback, params);
     }
 
+    // Numbers go through the shared formatter (js/format.js) in the UI language. The toLocaleString
+    // path is for plan-stats-render.test.js, which runs this file without format.js.
     function formatNumber(value, fractionDigits = 0) {
         const num = Number(value);
         if (!Number.isFinite(num)) return '—';
+        if (typeof CbFormat !== 'undefined') {
+            return CbFormat.formatNumber(num, { maxFractionDigits: fractionDigits, minFractionDigits: fractionDigits });
+        }
         return num.toLocaleString(undefined, {
             minimumFractionDigits: fractionDigits,
             maximumFractionDigits: fractionDigits
         });
+    }
+
+    function formatSquareMetres(value) {
+        const num = Number(value);
+        if (typeof CbFormat !== 'undefined' && Number.isFinite(num)) return CbFormat.formatArea(num);
+        return `${formatNumber(num)} m²`;
+    }
+
+    // The sales price input is EUR per m² (salesSuffix), so the value is EUR: amount then code.
+    function formatSalesValue(value) {
+        const num = Number(value);
+        if (typeof CbFormat !== 'undefined' && Number.isFinite(num)) return CbFormat.formatMoney(num, 'EUR');
+        return `${formatNumber(num)} ${tPlanStats('sidebar.proposals.planStats.currency', 'EUR')}`;
     }
 
     // Current output comes from the live fabric; an untouched cadastral result comes from the
@@ -416,8 +434,8 @@
         if (noParcels) set('resulting-parcels', tPlanStats('groundStats.noParcels', 'No parcels here'));
         else set('resulting-parcels', avgParcel === null
             ? formatNumber(stats.parcelCount)
-            : `${formatNumber(stats.parcelCount)} (${formatNumber(avgParcel)} m²)`);
-        set('buildings', `${formatNumber(total.buildings)} (${formatNumber(total.footprintM2)} m²)`);
+            : `${formatNumber(stats.parcelCount)} (${formatSquareMetres(avgParcel)})`);
+        set('buildings', `${formatNumber(total.buildings)} (${formatSquareMetres(total.footprintM2)})`);
         set('floor-area', formatNumber(total.grossFloorAreaM2));
         set('open-space', formatNumber(total.openSpaceM2));
         set('apartments', formatNumber(total.apartments));
@@ -426,7 +444,7 @@
 
         const priceInput = modal.querySelector('#plan-stats-price');
         const price = Math.max(0, Number(priceInput && priceInput.value) || 0);
-        set('sales-value', `${formatNumber(total.grossFloorAreaM2 * price)} ${tPlanStats('sidebar.proposals.planStats.currency', 'EUR')}`);
+        set('sales-value', formatSalesValue(total.grossFloorAreaM2 * price));
 
         const notes = [];
         if (total.unmeasuredBuildings > 0) {

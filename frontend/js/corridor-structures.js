@@ -141,7 +141,8 @@
         const prompt = plots ? plots.plotCrossingPrompt(result, {
             t: structureText,
             corridorKind,
-            formatArea: m2 => `${Math.round(m2).toLocaleString()} m²`
+            // plot-crossings.test.js runs this glue without js/format.js.
+            formatArea: m2 => (typeof CbFormat !== 'undefined' ? CbFormat.formatArea(m2) : `${Math.round(m2).toLocaleString()} m²`)
         }) : null;
         if (!prompt) return true;
         if (promptActive) return false;

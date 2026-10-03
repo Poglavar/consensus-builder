@@ -13,7 +13,7 @@
     const PHOTON_URL = 'https://photon.komoot.io/api/';
     const PLACE_DEBOUNCE_MS = 350;
     const PROPOSAL_DEBOUNCE_MS = 250;
-    const MOBILE_QUERY = '(max-width: 767px)';
+    const MOBILE_QUERY = '(max-width: 767.98px)';
 
     const state = {
         initialized: false,

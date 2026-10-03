@@ -181,28 +181,32 @@ describe('the renderer shows it in both tabs', () => {
         listUiSource.indexOf('function clearProposalListFilterInputDebounce')
     );
 
-    it('decides "local" from storage, not from which tab is open', () => {
-        // downloadedLookup asks proposalStorage, so a proposal downloaded from the Server tab and one
-        // sitting in the Local tab answer the same way — which is what makes the badge mean one thing.
-        expect(listSection).toMatch(/const isLocal = typeof downloadedLookup === 'function'/);
+    it('decides whether a row is downloaded from storage, not from which tab is open', () => {
+        // downloadedLookup asks proposalStorage, so a proposal downloaded from the Published tab and
+        // one sitting in the This-browser tab answer the same way.
+        expect(listSection).toMatch(/const isDownloaded = downloadEligible && downloadedLookup\(proposal\)/);
     });
 
-    it('renders the badge only when the proposal is held locally', () => {
-        expect(listSection).toMatch(/\$\{isLocal \? `<span class="proposal-mint-state[^`]*proposal-local-state/);
-    });
-
-    it('keeps it distinct from the mint state rather than replacing it', () => {
-        // "On server" and "Local" are independent facts and a downloaded proposal is both.
+    // One lifecycle badge per row (docs/design-language.md): Draft → Published → Minted → Executed,
+    // plus "Applied" only when the proposal is on this map. Where the record is held is what the
+    // tabs say, so the old "Local" / "On server" / "Unsaved" badges are gone.
+    it('shows one ladder badge and Applied only when applied', () => {
+        expect(listSection).toMatch(/const ladder = isExecuted \? 'executed' : isMinted \? 'minted' : serialProposalId \? 'published' : 'draft';/);
         const badgeRow = listSection.slice(listSection.indexOf('proposal-card-badges'));
-        expect(badgeRow).toMatch(/escapeHtml\(mintLabel\)/);
-        expect(badgeRow).toMatch(/escapeHtml\(mintLabels\.local\)/);
+        expect(badgeRow).toMatch(/<span class="cb-badge cb-badge--\$\{ladder\}">/);
+        expect(badgeRow).toMatch(/\$\{appliedState \? `<span class="cb-badge cb-badge--applied"/);
     });
 
-    it.each(['en', 'hr', 'sr', 'es'])('%s has a translation for it', locale => {
+    it('no longer repeats where the record is held', () => {
+        const badgeRow = listSection.slice(listSection.indexOf('proposal-card-badges'));
+        expect(badgeRow).not.toMatch(/proposal-local-state|mintLabels|labels\.onServer|labels\.unsaved|not-applied/);
+    });
+
+    it.each(['en', 'hr', 'sr', 'es'])('%s translates the ladder rungs', locale => {
         const dict = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
-        const label = dict.modal.roadWidth.proposalList.labels.local;
-        expect(label, `${locale} is missing labels.local`).toBeTruthy();
-        expect(typeof label).toBe('string');
+        expect(typeof dict.common.lifecycle.draft).toBe('string');
+        expect(typeof dict.common.lifecycle.published).toBe('string');
+        expect(typeof dict.common.lifecycle.applied).toBe('string');
     });
 });
 

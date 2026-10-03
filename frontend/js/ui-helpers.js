@@ -19,7 +19,7 @@ function updateStatus(message, options = {}) {
     const statusSpan = document.getElementById('status');
     if (statusSpan) {
         // Add the message to the log
-        const timestamp = new Date().toLocaleTimeString();
+        const timestamp = CbFormat.formatTime(new Date());
         // A line about a proposal remembers WHICH one, so the log can offer to go there. Kept as a
         // field rather than recovered from the sentence: titles are not unique, are translated, and
         // are written by users.

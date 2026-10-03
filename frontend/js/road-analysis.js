@@ -1571,13 +1571,10 @@ function switchTab(button, tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
-// Helper function to format numbers
+// Helper function to format numbers: one decimal, in the UI language (js/format.js).
 function formatNumber(value) {
     if (typeof value !== 'number') return '0';
-    return value.toLocaleString('hr-HR', {
-        minimumFractionDigits: 1,
-        maximumFractionDigits: 1
-    });
+    return CbFormat.formatNumber(value, { maxFractionDigits: 1, minFractionDigits: 1 });
 }
 
 // Add a global variable to store the latest OSM GeoJSON
@@ -1867,7 +1864,7 @@ async function analyzeAllRoadsInView() {
         // Ensure status element exists and is updated correctly
         const status = document.getElementById('status');
         if (status) {
-            updateStatus('No parcels loaded.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_parcels_loaded', 'No parcels loaded.'));
         }
         return;
     }
@@ -1883,7 +1880,7 @@ async function analyzeAllRoadsInView() {
     if (visibleRoads.length === 0) {
         const status = document.getElementById('status');
         if (status) {
-            updateStatus('No road parcels in view.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_road_parcels_in_view', 'No road parcels in view.'));
         }
         return;
     }
@@ -1928,7 +1925,7 @@ async function analyzeAllRoadsInView() {
     });
     // Status summary
     const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
-    updateStatus(`Analyzed ${visibleRoads.length} roads. ${summary}`);
+    updateStatus(translateRoadAnalysisText('status.messages.analyzed_roads_summary', 'Analyzed {{count}} roads. {{summary}}', { count: visibleRoads.length, summary }));
     showRoadAnalysisPanel();
 }
 
@@ -1993,19 +1990,19 @@ function showOSMRoadSegmentListPopup(segments) {
 
     const formatLength = (value) => {
         if (!Number.isFinite(value) || value <= 0) {
-            return '0 m';
+            return CbFormat.formatLength(0);
         }
         if (value >= 1000) {
-            return `${(value / 1000).toFixed(2)} km`;
+            return `${CbFormat.formatNumber(value / 1000, { maxFractionDigits: 2, minFractionDigits: 2 })}\u202fkm`;
         }
-        return `${value.toFixed(0)} m`;
+        return CbFormat.formatLength(value);
     };
 
     const formatWidth = (value) => {
         if (!Number.isFinite(value)) {
             return '—';
         }
-        return `${value.toFixed(2)} m`;
+        return CbFormat.formatLength(value);
     };
 
     const computeHistogram = (items) => {
@@ -2135,7 +2132,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
     const runAnalysis = async () => {
         const fabric = window.LiveParcelFabric;
         if (!fabric?.queryBounds) {
-            updateStatus('No parcels loaded.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_parcels_loaded', 'No parcels loaded.'));
             return;
         }
 
@@ -2158,7 +2155,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
         }
 
         if (!window.osmRoadGeoJSON || !window.osmRoadGeoJSON.features || window.osmRoadGeoJSON.features.length === 0) {
-            updateStatus('No OSM road data available for analysis.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_osm_road_data_available_for_analysis', 'No OSM road data available for analysis.'));
             return;
         }
 
@@ -2173,7 +2170,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
 
         const bounds = map.getBounds();
         if (!bounds) {
-            updateStatus('Unable to determine map bounds for analysis.');
+            updateStatus(translateRoadAnalysisText('status.messages.unable_to_determine_map_bounds_for_analysis', 'Unable to determine map bounds for analysis.'));
             return;
         }
 
@@ -2238,7 +2235,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
 
         if (visibleOSMLines.length === 0) {
             if (progressContainer) progressContainer.style.display = 'none';
-            updateStatus('No OSM road segments in view.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_osm_road_segments_in_view', 'No OSM road segments in view.'));
             return;
         }
 
@@ -2273,7 +2270,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
 
         if (totalSegments === 0) {
             if (progressContainer) progressContainer.style.display = 'none';
-            updateStatus('No OSM road segments in view.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_osm_road_segments_in_view', 'No OSM road segments in view.'));
             return;
         }
 
@@ -2284,7 +2281,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
             function finishAnalysis() {
                 if (progressContainer) progressContainer.style.display = 'none';
                 const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
-                updateStatus(`Analyzed OSM road segments. ${summary}`);
+                updateStatus(translateRoadAnalysisText('status.messages.analyzed_osm_road_segments_summary', 'Analyzed OSM road segments. {{summary}}', { summary }));
                 if (roadLegendTitle) roadLegendTitle.style.display = 'block';
                 if (roadLegend) roadLegend.style.display = 'block';
                 segmentList.sort((a, b) => b.avgWidth - a.avgWidth);

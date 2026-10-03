@@ -134,7 +134,7 @@ export function stripLocalProposalState(proposal) {
         'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
-        'formation', 'demolishedBuildings', 'demolitionScanned'
+        'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId'
     ].forEach(key => delete sanitized[key]);
     delete sanitized.childFeatures;
 

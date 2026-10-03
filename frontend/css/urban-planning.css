@@ -21,7 +21,7 @@ body.urban-planning-page .intro-with-visual > img {
     aspect-ratio: 2 / 1;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
     body.urban-planning-page .sidebar {
         position: sticky;
         top: 0;
@@ -29,7 +29,7 @@ body.urban-planning-page .intro-with-visual > img {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     body.urban-planning-page .main-content {
         flex: 1 0 auto;
     }

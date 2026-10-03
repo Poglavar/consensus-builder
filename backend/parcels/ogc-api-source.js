@@ -1,7 +1,7 @@
 // Adapts fixed OGC API Features GeoJSON/CQL2 collections with validated provider pagination.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { upstreamError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 
 const CRS84 = 'http://www.opengis.net/def/crs/OGC/1.3/CRS84';
 export function createOgcApiParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
@@ -73,12 +73,12 @@ export function createOgcApiParcelSource(descriptor, { fetchImpl = globalThis.fe
             try {
                 // Even validated next links contribute only their paging state; no URL is followed.
                 const response = await fetchImpl(`${endpoint}?${search.toString().replaceAll('+', '%20')}`, { signal, redirect: 'error', headers: { Accept: 'application/geo+json' } });
-                if (!response.ok) throw upstreamError(`Parcel provider returned HTTP ${response.status}.`);
+                if (!response.ok) throw providerHttpError(response);
                 payload = await response.json();
             } catch (error) {
                 if (signal.aborted || ['TimeoutError', 'AbortError'].includes(error.name)) throw upstreamError('Parcel provider timed out.', 504);
                 if (error.status) throw error;
-                throw upstreamError(`Parcel provider is unavailable: ${error.message}`);
+                throw upstreamError('Parcel provider is unavailable.');
             }
             if (payload?.type !== 'FeatureCollection' || !Array.isArray(payload.features)
                 || payload.numberReturned !== payload.features.length || payload.features.length > pageSize) throw upstreamError('OGC API provider returned an invalid or inconsistent FeatureCollection.');

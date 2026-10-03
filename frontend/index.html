@@ -3,7 +3,7 @@
 
 <head>
     <base href="/">
-    <title>Consensus Builder | Free Urban Planning Software</title>
+    <title>Consensus Builder · Free urban planning software</title>
     <meta charset="utf-8" />
     <!-- Capture photoreal diagnostics before the share flow rewrites /proposals/... and drops the query. -->
     <script>try{(function(){var params=new URLSearchParams(location.search);if(params.has('seat'))sessionStorage.setItem('cbSeatDebug','1');if(params.has('seam'))sessionStorage.setItem('cbPhotorealSeam',params.get('seam'));})();}catch(e){}</script>
@@ -111,6 +111,7 @@
                 'css/map.css',
                 'css/panels.css',
                 'css/modals.css',
+                'css/parcel-sources.css',
                 'css/proposals.css',
                 'css/grain-score.css',
                 'css/proposal-editor.css',
@@ -690,12 +691,12 @@
                                     <i class="fas fa-road" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectExisting">Detect Existing Roads</span>
                                 </button>
-                                <button class="btn btn-action" onclick="detectRoadsUsingAI()" disabled
+                                <button class="btn btn-action" onclick="detectRoadsUsingAI()" disabled hidden
                                     data-i18n-key="sidebar.roads.detectAiTooltip" data-i18n-attr="title">
                                     <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectAi">Detect Roads using AI</span>
                                 </button>
-                                <button class="btn btn-action" onclick="algorithmicRoads()" disabled
+                                <button class="btn btn-action" onclick="algorithmicRoads()" disabled hidden
                                     data-i18n-key="sidebar.roads.drawAlgorithmicTooltip" data-i18n-attr="title">
                                     <i class="fas fa-diagram-project" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawAlgorithmic">Draw New Roads
@@ -941,6 +942,10 @@
                         <span class="accordion-title-text" data-section-title="game"
                             data-i18n-key="mapShell.simulation.title">Simulation</span>
                     </h3>
+                    <label class="checkbox-group activity-simulation-switch">
+                        <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
+                        <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
+                    </label>
                     <div class="activity-simulation-row">
                         <button type="button" id="game-play-pause-btn" class="activity-simulation-play"
                             aria-pressed="false" onclick="toggleGamePlayPause()">
@@ -959,11 +964,6 @@
                         <!-- Gated by #gameCheckbox (greyed while game mode is off). The play row above and
                              this summary stay live: Play turns game mode on by itself. -->
                         <div class="sheet-section-body">
-                            <label class="checkbox-group">
-                                <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
-                                <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
-                            </label>
-
                             <div class="slider-group">
                                 <label for="turn-interval-slider">
                                     <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
@@ -1053,9 +1053,9 @@
                         <label class="sheet-field">
                             <span class="sheet-field-label" data-i18n-key="sidebar.data.sourceLabel">Data Source:</span>
                             <select id="data-source-select">
-                                <option value="oss.uredjenazemlja.hr">oss.uredjenazemlja.hr</option>
-                                <option value="localhost">localhost</option>
-                                <option value="api.urbangametheory.xyz">api.urbangametheory.xyz</option>
+                                <option value="oss.uredjenazemlja.hr" data-i18n-key="sidebar.data.sourceOptions.oss">Croatian cadastre (live)</option>
+                                <option value="localhost" data-i18n-key="sidebar.data.sourceOptions.localhost">Local backend</option>
+                                <option value="api.urbangametheory.xyz" data-i18n-key="sidebar.data.sourceOptions.api">Consensus Builder API</option>
                             </select>
                         </label>
                         <label class="sheet-field">
@@ -1067,8 +1067,9 @@
                         </label>
 
                         <div class="control-group-title" data-i18n-key="mapShell.maintenance.storedTitle">Stored in this browser</div>
+                        <!-- Parcel upkeep keeps its data-section wrapper: a city without parcels hides it. -->
                         <div class="accordion-section sheet-subsection" data-section="parcels">
-                            <div class="btn-group">
+                        <div class="btn-group">
                                 <button type="button" id="showParcelCoverageButton" class="btn"
                                     title="Visualize which grid cells are cached locally and how they compare to the current view."
                                     data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
@@ -1079,8 +1080,17 @@
                                     onclick="(window.Parcels?.fetch?.refreshParcelDataWithBusyState || window.refreshParcelDataWithBusyState || function(){})()"
                                     data-i18n-key="sidebar.parcels.refreshTooltip" data-i18n-attr="title">
                                     <i class="fas fa-rotate" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.parcels.refreshButton">Refresh Parcel Data</span>
+                                    <span data-i18n-key="sidebar.parcels.refreshButton">Refresh parcel data</span>
                                 </button>
+                        </div>
+                        </div>
+                        <!-- Destructive upkeep folds away under one row (docs/design-language.md: Reset at the
+                             bottom). The per-dataset resets keep their data-section wrappers (city configs
+                             hide them) and stay debug-only; "Reset everything" is always offered. -->
+                        <details class="sheet-reset">
+                            <summary data-i18n-key="mapShell.maintenance.resetSummary">Reset data stored in this browser…</summary>
+                        <div class="accordion-section sheet-subsection" data-section="parcels">
+                            <div class="btn-group">
                                 <button type="button" class="btn btn-danger"
                                     onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
                                     data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
@@ -1120,9 +1130,10 @@
                                 title="Clear all locally stored data (parcels, roads, proposals, settings)"
                                 data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
                                 <i class="fas fa-skull-crossbones" aria-hidden="true"></i>
-                                <span data-i18n-key="sidebar.info.wipeDataButton">Wipe ALL Local Data</span>
+                                <span data-i18n-key="sidebar.info.wipeDataButton">Reset everything (this browser)</span>
                             </button>
                         </div>
+                        </details>
                     </div>
                 </div>
 
@@ -1157,6 +1168,9 @@
                             </button>
                             <button type="button" id="parcel-source-notice-button" class="btn btn-secondary" onclick="openParcelSourceNotice()">
                                 <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
+                            </button>
+                            <button type="button" id="parcel-source-settings-button" class="btn btn-secondary" onclick="openParcelSourceSettings()">
+                                <span data-i18n-key="parcelSources.title">Choose a parcel source</span>
                             </button>
                         </div>
                         <hr>
@@ -1453,7 +1467,7 @@
         <div id="road-analysis-panel" class="info-panel">
             <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
                 aria-label="Close road analysis" onclick="hideRoadAnalysisPanel()">×</button>
-            <h3>Road Width Analysis</h3>
+            <h3 data-i18n-key="panel.roadAnalysis.title">Road width analysis</h3>
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab(this, 'segments-tab')">Segments</button>
                 <button class="tab-btn" onclick="switchTab(this, 'visualization-tab')">Visualization</button>
@@ -1488,8 +1502,8 @@
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button class="btn" onclick="focusOnRoadAnalysis()">Focus View</button>
-                    <button class="btn" onclick="clearRoadAnalysisVisualization()">Clear All</button>
+                    <button class="btn" onclick="focusOnRoadAnalysis()" data-i18n-key="panel.roadAnalysis.focusButton">Focus view</button>
+                    <button class="btn" onclick="clearRoadAnalysisVisualization()" data-i18n-key="panel.roadAnalysis.clearButton">Clear all</button>
                 </div>
             </div>
         </div>
@@ -1497,7 +1511,7 @@
         <!-- OSM Road Segment List Popup -->
         <div id="osm-road-segment-list-popup" class="info-panel road-analysis-modal" style="display: none;">
             <div class="road-analysis-modal__header">
-                <h3>Road Width Analysis</h3>
+                <h3 data-i18n-key="panel.roadAnalysis.title">Road width analysis</h3>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button" aria-label="Close"
                     onclick="hideOSMRoadSegmentListPopup()">×</button>
             </div>
@@ -1527,6 +1541,7 @@
             'js/shared-utils.js',
             'js/persistent-storage.js',
             'js/i18n.js',
+            'js/format.js',
             'js/multi-tab-guard.js',
             'js/versions.js',
             'js/i18n-loader.js',
@@ -1534,7 +1549,8 @@
             'js/environment.js',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js',
-            'js/city-config.js?v=20261002-live-parcels',
+            'js/parcel-source-settings.js',
+            'js/city-config.js?v=20261003-custom-sources',
             'js/parcel-source-notice.js',
             'js/ui/world-entry.js',
             'js/city-switch-prompt.js',
@@ -1679,6 +1695,7 @@
             'js/parcels/ingest.js',
             'js/parcels/presenter.js',
             'js/parcels/storage.js',
+            'js/parcels/source-health.js',
             'js/parcels/fetch.js',
             'js/parcels/ground-service.js',
             'js/parcels/blocks.js',
@@ -2178,7 +2195,7 @@
     <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">
         <div class="version-modal-content" role="dialog" aria-modal="true" aria-labelledby="version-modal-title">
             <div class="version-modal-header">
-                <h2 id="version-modal-title">What's New</h2>
+                <h2 id="version-modal-title" data-i18n-key="modal.version.title">What's new</h2>
                 <button class="version-modal-close close-circle-btn close-circle-btn--lg" type="button"
                     data-version-close aria-label="Close">&times;</button>
             </div>
@@ -2305,7 +2322,7 @@
     <!-- Locate Parcel Confirmation Modal -->
     <div id="locate-parcel-modal" class="welcome-modal" style="display: none;">
         <div class="welcome-modal-content">
-            <h2>Locate Parcel Confirmation</h2>
+            <h2 data-i18n-key="modal.locate.title">Locate parcel confirmation</h2>
             <div id="locate-parcel-modal-body"
                 style="max-height: 50vh; overflow: auto; font-family: monospace; font-size: 12px; white-space: pre-wrap;">
             </div>
@@ -2340,7 +2357,7 @@
         <div class="parcel-coverage-modal-content" role="dialog" aria-modal="true"
             aria-labelledby="parcel-coverage-modal-title">
             <div class="parcel-coverage-header">
-                <h2 id="parcel-coverage-modal-title">Loaded Parcels Coverage</h2>
+                <h2 id="parcel-coverage-modal-title" data-i18n-key="modal.coverage.title">Loaded parcels coverage</h2>
             </div>
             <div class="parcel-coverage-body">
                 <div class="parcel-coverage-legend" id="parcel-coverage-legend"></div>

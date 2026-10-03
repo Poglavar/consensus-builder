@@ -163,7 +163,6 @@
         const api = (typeof window !== 'undefined') ? window.BuildingDensityStats : null;
         const container = document.getElementById('single-building-density-stats');
         if (!api || !container || typeof turf === 'undefined') return;
-        const locale = document.documentElement.lang || navigator.language || 'en';
         let stats = null;
         try {
             stats = api.summarizeDensity({
@@ -179,16 +178,16 @@
             const element = document.getElementById(`single-building-density-${suffix}`);
             if (element) element.textContent = value;
         };
-        const area = value => stats && Number.isFinite(value) ? `${api.formatNumber(value, locale, 0)} m\u00b2` : '\u2014';
+        const area = value => stats && Number.isFinite(value) ? CbFormat.formatArea(value) : '\u2014';
         setValue('parcel', stats?.parcelAreaM2 > 0 ? area(stats.parcelAreaM2) : '\u2014');
         setValue('footprint', stats ? area(stats.footprintAreaM2) : '\u2014');
-        setValue('coverage', stats?.parcelAreaM2 > 0 ? `${api.formatNumber(stats.siteCoveragePercent, locale, 1)}%` : '\u2014');
+        setValue('coverage', stats?.parcelAreaM2 > 0 ? CbFormat.formatPercent(stats.siteCoveragePercent, { ofHundred: true, maxFractionDigits: 1, missing: '\u2014' }) : '\u2014');
         setValue('gbp', stats ? area(stats.aboveGroundGbpM2) : '\u2014');
-        setValue('kin', stats?.parcelAreaM2 > 0 ? api.formatNumber(stats.kin, locale, 3) : '\u2014');
+        setValue('kin', stats?.parcelAreaM2 > 0 ? CbFormat.formatNumber(stats.kin, { maxFractionDigits: 3, missing: '\u2014' }) : '\u2014');
 
         const hint = document.getElementById('single-building-density-hint');
         if (hint) {
-            const height = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(3);
+            const height = CbFormat.formatNumber(3, { maxFractionDigits: 1, minFractionDigits: 1 });
             hint.textContent = translateSingleBuildingText(
                 'densityStats.floorHeightHint',
                 'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
@@ -250,7 +249,7 @@
 
     function syncSlidersFromActive() {
         const hEl = document.getElementById('single-height-slider');
-        if (hEl) { hEl.value = currentHeightM; const v = document.getElementById('single-height-value'); if (v) v.textContent = Number(currentHeightM).toFixed(0); }
+        if (hEl) { hEl.value = currentHeightM; const v = document.getElementById('single-height-value'); if (v) v.textContent = CbFormat.formatNumber(Number(currentHeightM), { maxFractionDigits: 0, minFractionDigits: 0 }); }
         const select = document.getElementById('single-building-selector');
         if (select) select.value = String(activeBuildingId);
     }
@@ -2040,16 +2039,7 @@
         if (!singleModal) {
             const modal = document.createElement('div');
             modal.id = 'single-building-modal';
-            modal.style.position = 'fixed';
-            modal.style.top = '0';
-            modal.style.left = '0';
-            modal.style.width = '100%';
-            modal.style.height = '100%';
-            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-            modal.style.zIndex = '12060';
-            modal.style.display = 'flex';
-            modal.style.alignItems = 'center';
-            modal.style.justifyContent = 'center';
+            // Overlay box and look: #single-building-modal and the editor dialog chrome in css/modals.css.
 
             const container = document.createElement('div');
             container.id = 'single-building-container';
@@ -2075,8 +2065,8 @@
                 <div id="single-building-sidebar">
                     <h3>${modalText.buildingsTitle}</h3>
                     <div class="building-picker-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-                        <select id="single-building-selector" aria-label="${modalText.buildingsTitle}" style="flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;"></select>
-                        <input type="text" id="single-building-name-input" maxlength="20" style="display:none; flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;" placeholder="Building Name">
+                        <select id="single-building-selector" aria-label="${modalText.buildingsTitle}" style="flex:1 1 auto;"></select>
+                        <input type="text" id="single-building-name-input" maxlength="20" style="display:none; flex:1 1 auto;" placeholder="Building Name">
                         <button id="single-building-rename" class="btn btn-light" type="button" title="${modalText.renameLabel}" aria-label="${modalText.renameLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1; font-weight:bold;">T</button>
                         <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">&#128465;</button>
                         <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">+</button>
@@ -2106,7 +2096,7 @@
                     </div>
                     <div class="parameter-group">
                         <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
-                        <select id="single-ground-treatment" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #ccc;">
+                        <select id="single-ground-treatment" style="width:100%;">
                             <option value="none">${modalText.surroundingsNone}</option>
                             <option value="paved">${modalText.surroundingsPaved}</option>
                             <option value="green">${modalText.surroundingsGreen}</option>
@@ -2115,7 +2105,7 @@
                     </div>
                     <div class="parameter-group">
                         <label for="single-parcel-mode">${modalText.parcelLabel}</label>
-                        <select id="single-parcel-mode" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #ccc;">
+                        <select id="single-parcel-mode" style="width:100%;">
                             <option value="footprint">${modalText.parcelFootprint}</option>
                             <option value="whole">${modalText.parcelWhole}</option>
                         </select>
@@ -2142,7 +2132,7 @@
             const hSlider = document.getElementById('single-height-slider');
             hSlider.addEventListener('input', (e) => {
                 currentHeightM = parseFloat(e.target.value);
-                document.getElementById('single-height-value').textContent = currentHeightM.toFixed(0);
+                document.getElementById('single-height-value').textContent = CbFormat.formatNumber(currentHeightM, { maxFractionDigits: 0, minFractionDigits: 0 });
                 if (singleRectFeature) {
                     if (singleRectFeature.properties) singleRectFeature.properties.height = currentHeightM;
                     const active = getActiveBuilding();

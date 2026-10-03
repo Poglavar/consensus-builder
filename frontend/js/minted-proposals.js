@@ -622,7 +622,7 @@
                 const createdDate = new Date(createdRaw);
                 if (!isNaN(createdDate.getTime())) {
                     createdLabel.textContent = t('modal.mintedProposals.createdLabel', 'Created: {{date}}', {
-                        date: createdDate.toLocaleString()
+                        date: CbFormat.formatDateTime(createdDate)
                     });
                 }
             }

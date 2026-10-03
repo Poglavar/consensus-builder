@@ -83,4 +83,78 @@ Ten countries whose level of development suggested a cadastre we had missed. Fou
 5. **Follow leads**: the Dominican Republic's cadastre hub on ArcGIS (would replace its historical-parcels layer); South Africa's official Chief Surveyor-General service (to replace the Esri copy); Mauritius's land-survey host; Chile's and Peru's urban cadastres (only rural verified).
 6. **Adapters**: the app integrates only Croatia's OSS WFS. Verified sources fall into four shapes (bounded query service, bulk file, point lookup, static per-zone files) and need one adapter per shape plus an IndexedDB cache, per `world-parcels.md`. For federations, a district or state router in front (Rwanda, Germany, the US).
 7. **Admin-1 outlines** for the map, so federal regions shade individually instead of a lighter country fill.
-8. Federations not attempted: China, India, Nigeria, Pakistan, Russia (all blocked from here).
+8. Federations not attempted in that pass: China, India, Nigeria, Pakistan, Russia (blocked from that research environment). The Chinese-language city audit below adds later evidence; earlier reachability failures do not establish absent cadastral data.
+
+## Chinese-language city audit — 2026-10-03
+
+The older Chinese negative/unavailable probes do **not** mean cadastral data does
+not exist. Searching official Chinese sources uncovered actual cadastral holdings,
+public map-query services, and one working anonymous polygon-service sample.
+This audit covers ten cities, not all mainland Chinese cities or nationwide coverage.
+Terms remain informational; integration depends on technical access, geometry,
+permanent identity and complete viewport delivery.
+
+| City | Evidence and technical result |
+| --- | --- |
+| Shenzhen | Official cadastral viewer led to a polygon layer through the access header published in its anonymous client. A small bbox returned five valid closed polygons; count and ID enumeration agreed. Exact OID, `PARCEL_NO` and `LOT_NO` reads matched all five geometries. `PARCEL_CODE` has a duplicate exact match. Offset pagination is unsupported. Registered as a verified partial research sample, not a live integration or citywide proof. |
+| Guangzhou | Official 2025 FAQ explicitly offers public cadastral-map queries and describes fortnightly updates. All four inspected land-right layers advertise point geometry; the sampled query failed with HTTP 500. The underlying cadastral map exists, but those points are not parcel polygons. |
+| Shanghai | Bureau links a cadastral-map service, and the government service page describes map/building lookup with parcel-map display. Account-oriented query entry; no anonymous polygon response obtained. The public detailed-planning map is a separate product. |
+| Beijing | Official Chinese announcement describes map/building cadastral queries after identity verification. No anonymous parcel-vector service verified. |
+| Wuhan | Current official publication documents cadastral/property holdings; the public visual-query instructions use the Hubei government portal login. Published viewer routes timed out or failed TLS validation from this client. |
+| Chongqing | Actual cadastral-map query is documented. The identified visual-query announcement is an authorized-user pilot in Liangjiang New Area, not proof of whole-city anonymous access. A published legacy entry failed DNS resolution. |
+| Suzhou | Official sources document the 苏易登 cadastral-query app and its Gusu section; Zhangjiagang has a real-name visual-query/print flow. Public catalogue searches worked and surfaced industrial-parcel/supply-plan records, whose geometry schemas remain uninspected. County-level city records do not establish coverage of central Suzhou. |
+| Hangzhou | Current annual report documents cadastral survey/registration operations. Its unified full-coverage database wording is under future plans, so completion is unproven. Current official parcel-map entry not verified. |
+| Tianjin | Official handbook names real-property registration in a results catalogue, but no specific boundary product or feature service was found. An official indexed budget excerpt supports internal holdings; its full PDF context was not inspected. Land-development plot maps are separate. |
+| Chengdu | Provincial guidance describes the maintained cadastral data model, but this pass did not establish a city-specific public polygon service. Bureau anti-bot responses and catalogue/network failures remain inconclusive. |
+
+Useful search terms: 地籍图 (cadastral map), 宗地图 (individual parcel map),
+地籍数据库 (cadastral database), 宗地号 (parcel number), 宗地代码 (parcel code),
+权籍一张图 (integrated cadastral/rights map). 地籍区 and 地籍子区 describe cadastral
+districts/subdistricts. Planning 地块, sale plots, base maps, buildings, and printable
+宗地图 documents must not be assumed to supply the current cadastral parcel fabric.
+
+Metadata-only evidence, source titles/dates/URLs, request outcomes and next steps:
+
+- `research/china-language-audit-2026-10-03-north.json`: Shanghai, Beijing, Tianjin.
+- `research/china-language-audit-2026-10-03-southwest.json`: Guangzhou, Shenzhen, Chengdu.
+- `research/china-language-audit-2026-10-03-central-east.json`: Wuhan, Chongqing, Suzhou, Hangzhou.
+
+Each city is linked through `registry.json` → `availabilityAudit`. Earlier evidence
+is retained. No Chinese source was enabled in the app during this investigation;
+Shenzhen is the strongest next adapter candidate. Its research marker is now
+source-available; the app's 38 configured live cities remain unchanged. No polygon collections, owner
+attributes or access-token values were saved with this audit.
+
+## Database-city live alternatives and Shenzhen (2026-10-03)
+
+The eight existing database-backed entries still default to their existing parcel routes. Seven now have opt-in upstream adapters: Zagreb, Split and Šibenik share DGU; Ljubljana uses GURS; Buenos Aires uses IDECABA; Denver uses the county-filtered Colorado composite; New York uses the city Digital Tax Map. Add `parcelSource=live` to a city URL to select its configured live alternative, or use its exact source ID. The choice is fixed at page boot. Remove the parameter and reload to return to the database. City/plan storage is unchanged; cadastral runtime facts are fetched anew on reload. There is no automatic switch to database geometry when an upstream fails.
+
+Viewport, exact-ID and footprint reads use the normal `/parcel-sources` contract. Binding preview and proposal publication pass `parcelSourceId` explicitly; the server permits only catalogued providers belonging to that city and recomputes evidence. The routing hint is removed from durable proposal data. The published `binding.source` records provider provenance, and drift checks re-query that provider even if the city continues to default to DB. Catalog alternatives have `defaultForCity:false`; registering one alone never switches DB binding or ID inference. The global map continues to describe each city's default source.
+
+DGU preserves `HR-<municipality>-<parcel number>` and GURS preserves `SI-<EID_PARCELA>` (an 18-digit string, not a JS number). Denver preserves `US-CO-<parcel_id>` under a fixed Denver county filter. DGU needs the proxy environment's `OSS_PUBLIC_ACCESS_TOKEN` or `OSS_TOKEN`; no credential is added to the source catalog. Its live grid uses 100-metre cells: forced small pages timed out, and wider Split/Šibenik queries returned inconsistent counts. Those failed attempts remain in evidence; incomplete replies fail closed.
+
+Buenos Aires uses `AR-CABA-WFS-NAM-<nam>` because equivalence to imported SMP IDs is not proved. The working NYC city service uses `US-NYC-BBL-<BBL>`. A second official NYS service does expose the imported `SWIS_SBL_ID` field and resolved an existing-style `US-NY-` identifier, but its batched exact reads and viewport gate timed out; it is recorded as a candidate, not enabled. These two live alternatives cannot transparently replace the existing imported IDs in older consent/proposal records. Do not retire their parcel tables until identity mapping or a compatible operational provider is established.
+
+Belgrade remains DB-backed without a live alternative: the official RGZ/GeoSrbija/eKatastar viewers timed out from both checked networks. Reachable mining-map parcels do not substantiate Belgrade cadastre. This is a technical availability/contract blocker, not a terms restriction or proof that the data is absent.
+
+Shenzhen is now a configured live city using its official public cadastral-map `LAND_CERTAIN` layer. Its public viewer key is discovered transiently from the fixed official client script, sent only to the fixed layer and never persisted. The service rejects offset paging, so spatial and exact-native reads use count/ID manifests and exact OID batches. Canonical identity is `PARCEL_NO`, not the non-unique parcel code. All 18 bounded cells and all 31 observed IDs matched, with no geometry/identity conflicts. The initial map entry is a conservative 1-km central area; the official notice excludes Shenshan, and this gate does not prove citywide or China-wide completeness.
+
+Evidence (metadata and aggregates only):
+
+- `research/db-city-dgu-live-2026-10-03.json`
+- `research/db-city-wfs-live-2026-10-03.json`
+- `research/db-city-us-live-2026-10-03.json`
+- `research/db-city-belgrade-live-2026-10-03.json`
+- `research/shenzhen-live-2026-10-03.json`
+
+The app now has 39 configured city entries. Source terms remain informational. No parcel geometry was imported into the database for these adapters.
+
+### Source failures and user-selected URLs (2026-10-03)
+
+Live providers now expose stable failure codes for blocked access (upstream 401/403, including ArcGIS token errors), rate limits (429 with bounded Retry-After), and unavailability/timeouts. The gateway shares cooldowns across viewport and binding calls; the browser also pauses repeated traffic to the affected provider. Failed cells and IDs remain retryable rather than becoming cached absence. Already loaded cadastral facts remain visible. A persistent banner explains the failure and offers Retry and Choose a parcel source. Publishing refusals preserve source failure metadata.
+
+Information → Choose a parcel source accepts a public HTTPS URL. Discovery checks ArcGIS REST, WFS, OGC API Features, Socrata and complete bounded GeoJSON snapshots in sequence, using protocol-specific metadata and verifying spatial results against exact native-ID reads. Technical failures are reported separately from “No available adapter.” Unsupported sources receive the format-list and Telegram-group options. The formats page documents identity, completeness and size requirements. This prototype supports anonymous public URLs; private endpoints and embedded credentials are rejected by the proxy's DNS-pinned public-URL guard. Terms remain informational.
+
+Successful source configuration is encoded into a portable gateway ID, saved per city/backend in the browser and carried in binding provenance. This resolves after backend restart without a source-registration database or parcel import. It is only an explicit user choice; city defaults stay unchanged. Recent custom-source checks retain the last ten URL/attempt/error records in that browser, without parcel features. Custom attribution identifies the selected host rather than inheriting the city's default publisher.
+
+Live verification used Toronto's official FeatureServer/36: discovery, canonical viewport IDs, exact-ID retrieval and authoritative proposal binding all succeeded; selecting the URL survived browser reload and rendered 81 parcels. A real HTML URL (`https://example.com/`) produced the no-adapter result and both remediation links. Denied-access/rate-limit/offline behavior was verified with controlled failures in headless tests and the browser; these simulations are not evidence of an actual Toronto outage. The completed focused 23-file suite passed 817 tests, including failure-history, attribution and bounded-URL checks.

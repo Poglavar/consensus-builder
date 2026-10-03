@@ -558,7 +558,7 @@ function buildNeighborMapFromEdges(parcels) {
 // Modify the countBlocks function to pre-calculate neighbors
 async function countBlocks() {
     if (!liveBlockServices()) {
-        updateStatus('No parcels loaded. Please refresh data first.');
+        updateStatus(tBlock('status.messages.no_parcels_loaded_please_refresh_data_first', {}, 'No parcels loaded. Please refresh data first.'));
         return;
     }
 
@@ -566,7 +566,7 @@ async function countBlocks() {
 
     const run = async () => {
         try {
-            updateStatus('Filtering visible parcels...');
+            updateStatus(tBlock('status.messages.filtering_visible_parcels', {}, 'Filtering visible parcels...'));
             await new Promise(resolve => setTimeout(resolve, 0));
 
             const currentParcels = getVisibleNonCorridorParcels();
@@ -581,7 +581,7 @@ async function countBlocks() {
 
             console.log(`Starting count with ${totalParcelsInView} parcels intersecting viewport.`);
             console.log('countBlocks: Parcels being processed:', currentParcels.map(p => parcelIdFromLayer(p)).filter(Boolean));
-            updateStatus(`Found ${totalParcelsInView} parcels intersecting viewport. Building edge index...`);
+            updateStatus(tBlock('status.messages.found_parcels_intersecting_viewport_building_edge_index', { count: totalParcelsInView }, 'Found {{count}} parcels intersecting viewport. Building edge index...'));
             if (parcelsCountedLabel) {
                 parcelsCountedLabel.textContent = `Parcels processed: 0 / ${totalParcelsInView} (0%)`;
             }
@@ -589,7 +589,7 @@ async function countBlocks() {
 
             const { neighborMap } = buildNeighborMapFromEdges(currentParcels);
             console.log('Neighbor map (edge-index) built for', neighborMap.size, 'parcels');
-            updateStatus('Neighbor graph built. Finding blocks...');
+            updateStatus(tBlock('status.messages.neighbor_graph_built_finding_blocks', {}, 'Neighbor graph built. Finding blocks...'));
             await new Promise(resolve => setTimeout(resolve, 0));
 
             const blocksToRemove = new Set();
@@ -641,7 +641,7 @@ async function countBlocks() {
                     parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonCorridor} (${progress}%)`;
                 }
                 if (parcelsProcessedCount % 50 === 0) {
-                    updateStatus(`Counting blocks... ${progress}%`);
+                    updateStatus(tBlock('status.messages.counting_blocks_progress', { percent: progress }, 'Counting blocks... {{percent}}%'));
                     await new Promise(resolve => setTimeout(resolve, 0));
                 }
             }
@@ -668,7 +668,7 @@ async function countBlocks() {
             updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-corridor parcels processed: ${totalNonCorridor}.`);
         } catch (error) {
             console.error('Error during countBlocks:', error);
-            updateStatus('Error occurred while counting blocks. Please try again.');
+            updateStatus(tBlock('status.messages.error_occurred_while_counting_blocks_please_try_again', {}, 'Error occurred while counting blocks. Please try again.'));
         }
     };
 
@@ -796,7 +796,7 @@ function hideBlocksList() {
 // Add function to highlight block and center map on it
 function highlightAndCenterBlock(blockName) {
     if (!blockStorage.blocks.has(blockName)) {
-        updateStatus(`Block ${blockName} not found`);
+        updateStatus(tBlock('status.messages.block_not_found_with_name', { name: blockName }, 'Block {{name}} not found'));
         return;
     }
 
@@ -858,13 +858,13 @@ function highlightAndCenterBlock(blockName) {
 
     if (!blockCenterRef) {
         console.error('[highlightAndCenterBlock] Block not found in storage:', blockName);
-        updateStatus(`Block ${blockName} not found`);
+        updateStatus(tBlock('status.messages.block_not_found_with_name', { name: blockName }, 'Block {{name}} not found'));
         return;
     }
 
     if (!blockCenterRef.parcels || blockCenterRef.parcels.length === 0) {
         console.error('[highlightAndCenterBlock] Block has no parcels:', blockName);
-        updateStatus(`Block ${blockName} has no parcels`);
+        updateStatus(tBlock('status.messages.block_has_no_parcels_with_name', { name: blockName }, 'Block {{name}} has no parcels'));
         return;
     }
 
@@ -874,13 +874,13 @@ function highlightAndCenterBlock(blockName) {
 
     if (!bounds) {
         console.error('[highlightAndCenterBlock] computeCombinedBounds returned null');
-        updateStatus(`Could not calculate bounds for block ${blockName}`);
+        updateStatus(tBlock('status.messages.could_not_calculate_bounds_for_block', { name: blockName }, 'Could not calculate bounds for block {{name}}'));
         return;
     }
 
     if (!bounds.isValid || !bounds.isValid()) {
         console.error('[highlightAndCenterBlock] Bounds validation failed:', bounds);
-        updateStatus(`Invalid bounds for block ${blockName}`);
+        updateStatus(tBlock('status.messages.invalid_bounds_for_block', { name: blockName }, 'Invalid bounds for block {{name}}'));
         return;
     }
 
@@ -890,7 +890,7 @@ function highlightAndCenterBlock(blockName) {
 
     if (!isFinite(sw.lat) || !isFinite(sw.lng) || !isFinite(ne.lat) || !isFinite(ne.lng)) {
         console.error('[highlightAndCenterBlock] Non-finite coordinates:', { sw, ne });
-        updateStatus(`Invalid block bounds for ${blockName}`);
+        updateStatus(tBlock('status.messages.invalid_block_bounds_for_block', { name: blockName }, 'Invalid block bounds for {{name}}'));
         return;
     }
 
@@ -906,7 +906,7 @@ function highlightAndCenterBlock(blockName) {
         return;
     }
 
-    updateStatus(`Focused on block ${blockName}`);
+    updateStatus(tBlock('status.messages.focused_on_block', { name: blockName }, 'Focused on block {{name}}'));
 }
 
 // Clear current block selection and related UI/highlights
@@ -998,7 +998,7 @@ function clearBlocks() {
     }
 
     // Update status
-    updateStatus(`Cleared ${numberOfBlocks} blocks from storage`);
+    updateStatus(tBlock('status.messages.cleared_blocks_from_storage', { count: numberOfBlocks }, 'Cleared {{count}} blocks from storage'));
 }
 
 // Track ongoing stats calculation to allow cancellation
@@ -1245,13 +1245,13 @@ async function renderBlockInfoStats(blockName) {
             </div>
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.block.metrics.totalArea">${tBlock('panel.block.metrics.totalArea', {}, 'Total Area:')}</div>
-                <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
+                <div class="metric-value">${CbFormat.formatArea(totalArea)}</div>
             </div>
         </div>
         <div>
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.block.metrics.circumference">${tBlock('panel.block.metrics.circumference', {}, 'Circumference:')}</div>
-                <div class="metric-value">${Math.round(perimeterMeters).toLocaleString('hr-HR')} m</div>
+                <div class="metric-value">${CbFormat.formatLength(perimeterMeters)}</div>
             </div>
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.block.metrics.walkTime">${tBlock('panel.block.metrics.walkTime', {}, 'Walk time (5 km/h):')}</div>
@@ -1259,11 +1259,11 @@ async function renderBlockInfoStats(blockName) {
             </div>
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.block.metrics.avgParcelArea">${tBlock('panel.block.metrics.avgParcelArea', {}, 'Avg parcel area:')}</div>
-                <div class="metric-value">${Math.round(avgParcelArea).toLocaleString('hr-HR')} m²</div>
+                <div class="metric-value">${CbFormat.formatArea(avgParcelArea)}</div>
             </div>
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.block.metrics.avgParcelPerimeter">${tBlock('panel.block.metrics.avgParcelPerimeter', {}, 'Avg parcel perimeter:')}</div>
-                <div class="metric-value">${Math.round(avgParcelPerimeter).toLocaleString('hr-HR')} m</div>
+                <div class="metric-value">${CbFormat.formatLength(avgParcelPerimeter)}</div>
             </div>
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.block.metrics.landlockedParcels">${tBlock('panel.block.metrics.landlockedParcels', {}, 'Landlocked parcels:')}</div>
@@ -1271,7 +1271,7 @@ async function renderBlockInfoStats(blockName) {
             </div>
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.block.metrics.landlockedArea">${tBlock('panel.block.metrics.landlockedArea', {}, 'Landlocked area:')}</div>
-                <div class="metric-value">${Math.round(landlockedArea).toLocaleString('hr-HR')} m²</div>
+                <div class="metric-value">${CbFormat.formatArea(landlockedArea)}</div>
             </div>
         </div>
     `;
@@ -1289,7 +1289,7 @@ async function renderBlockInfoStats(blockName) {
         return `
             <div class="parcel-item" style="cursor: pointer;" data-parcel-id="${parcelId}">
                 ${tBlock('panel.block.parcelLabel', { number: parcelNumber }, `Parcel ${parcelNumber}`)} 
-                (${Math.round(parcelArea).toLocaleString('hr-HR')} m²)
+                (${CbFormat.formatArea(parcelArea)})
             </div>
         `;
     }).join('');
@@ -1386,10 +1386,10 @@ async function renderBlockInfoStats(blockName) {
 
                 // Update status
                 updateStatus(
-                    `Selected parcel ${selectedFeature.properties?.BROJ_CESTICE || parcelId}`);
+                    tBlock('status.messages.selected_parcel_with_number', { number: selectedFeature.properties?.BROJ_CESTICE || parcelId }, 'Selected parcel {{number}}'));
             } else {
                 console.error('Could not find parcel with ID:', parcelId);
-                updateStatus(`Could not find parcel with ID: ${parcelId}`);
+                updateStatus(tBlock('status.messages.could_not_find_parcel_with_id', { id: parcelId }, 'Could not find parcel with ID: {{id}}'));
             }
         });
     });
@@ -1425,7 +1425,7 @@ function renderBlockInfoTools(blockName) {
             if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
                 try { map.fitBounds(bounds, { padding: [40, 40] }); } catch (_) { }
             } else if (typeof updateStatus === 'function') {
-                updateStatus('Unable to compute bounds for this block.');
+                updateStatus(tBlock('status.messages.unable_to_compute_bounds_for_this_block', {}, 'Unable to compute bounds for this block.'));
             }
         });
     }
@@ -1540,15 +1540,16 @@ function buildBlockProposalListItem(proposal) {
         : 0;
     const metaParts = [];
     if (parcelCount > 0) {
-        metaParts.push(`${parcelCount} parcel${parcelCount === 1 ? '' : 's'}`);
+        metaParts.push(tBlock('proposals.autoName.parcels', { count: parcelCount }, `${parcelCount} parcel${parcelCount === 1 ? '' : 's'}`));
     }
     if (isStructureProposal) {
         const kind = (proposal.structureProposal && proposal.structureProposal.kind) || 'structure';
         metaParts.push(kind.charAt(0).toUpperCase() + kind.slice(1));
     } else if (isBuildingProposal) {
         const height = proposal.buildingProposal?.parameters?.height || proposal.buildingProperties?.height;
-        if (height) {
-            metaParts.push(`${height} m`);
+        const heightText = height ? CbFormat.formatLength(Number(height)) : '';
+        if (heightText) {
+            metaParts.push(heightText);
         }
     }
     if (proposal.author) {
@@ -1557,7 +1558,7 @@ function buildBlockProposalListItem(proposal) {
     if (proposal.createdAt) {
         const createdDate = new Date(proposal.createdAt);
         if (!isNaN(createdDate.getTime())) {
-            metaParts.push(`Created: ${createdDate.toLocaleDateString()}`);
+            metaParts.push(`Created: ${CbFormat.formatDate(createdDate)}`);
         }
     }
 
@@ -2131,7 +2132,7 @@ function animateFloodfillFromSelected(options = {}) {
     }
 
     if (!currentParcel || !currentParcel.layer) {
-        updateStatus('No parcel selected. Please select a parcel first.');
+        updateStatus(tBlock('status.messages.no_parcel_selected_please_select_a_parcel_first', {}, 'No parcel selected. Please select a parcel first.'));
         return;
     }
 
@@ -2242,7 +2243,7 @@ function animateFloodfillFromSelected(options = {}) {
                     setTimeout(animateStep, 100);
                 } catch (err) {
                     console.error('Error during floodfill animation step:', err);
-                    updateStatus('Error while forming block from selected parcel.');
+                    updateStatus(tBlock('status.messages.error_while_forming_block_from_selected_parcel', {}, 'Error while forming block from selected parcel.'));
                     finish();
                 }
             }
@@ -2250,7 +2251,7 @@ function animateFloodfillFromSelected(options = {}) {
             animateStep();
         } catch (error) {
             console.error('Error starting floodfill animation:', error);
-            updateStatus('Error while forming block from selected parcel.');
+            updateStatus(tBlock('status.messages.error_while_forming_block_from_selected_parcel', {}, 'Error while forming block from selected parcel.'));
             finish();
         }
     });
@@ -2277,7 +2278,7 @@ function toggleNeighborsHighlight() {
 
         // Check if we have a selected parcel
         if (!currentParcel || !currentParcel.layer) {
-            updateStatus('No parcel selected. Please select a parcel first.');
+            updateStatus(tBlock('status.messages.no_parcel_selected_please_select_a_parcel_first', {}, 'No parcel selected. Please select a parcel first.'));
             return;
         }
 
@@ -2343,7 +2344,7 @@ function highlightNeighbors(parcel) {
         highlightedNeighbors.push(highlightLayer);
     });
 
-    updateStatus(`Highlighted ${neighbors.length} neighboring parcels`);
+    updateStatus(tBlock('status.messages.highlighted_neighboring_parcels_count', { count: neighbors.length }, 'Highlighted {{count}} neighboring parcels'));
 }
 
 // Function to clear highlighted neighbors
@@ -2375,7 +2376,7 @@ function toggleVerticesDisplay() {
 
         // Check if we have a selected parcel
         if (!currentParcel || !currentParcel.layer) {
-            updateStatus('No parcel selected. Please select a parcel first.');
+            updateStatus(tBlock('status.messages.no_parcel_selected_please_select_a_parcel_first', {}, 'No parcel selected. Please select a parcel first.'));
             return;
         }
 
@@ -2489,7 +2490,7 @@ function displayVertices(parcel) {
         vertexMarkers.push(marker);
     });
 
-    updateStatus(`Showing ${coordinates.length} vertices for parcel ${feature.properties?.BROJ_CESTICE || parcelIdFromLayer(feature)}`);
+    updateStatus(tBlock('status.messages.showing_vertices_for_parcel', { count: coordinates.length, parcel: feature.properties?.BROJ_CESTICE || parcelIdFromLayer(feature) }, 'Showing {{count}} vertices for parcel {{parcel}}'));
 }
 
 // Function to clear vertex markers

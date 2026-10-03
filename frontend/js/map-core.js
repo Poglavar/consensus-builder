@@ -824,17 +824,9 @@ window.refreshBuildingOutcomesFromRecords = refreshBuildingOutcomesFromRecords;
 function updateTotalSpentDisplay() {
     const totalSpentElement = document.getElementById('total-spent-value');
     if (totalSpentElement) {
-        let formatted = `${TOTAL_SPENT}`;
-        if (MapCityConfigManager && typeof MapCityConfigManager.formatCurrency === 'function') {
-            formatted = MapCityConfigManager.formatCurrency(TOTAL_SPENT);
-        } else {
-            formatted = new Intl.NumberFormat('de-DE', {
-                style: 'currency',
-                currency: 'EUR',
-                maximumFractionDigits: 0
-            }).format(TOTAL_SPENT);
-        }
-        totalSpentElement.textContent = formatted;
+        // Amount then code in the city's display currency, whole units.
+        const code = (MapCityConfigManager && MapCityConfigManager.getCurrentCityConfig?.()?.currency?.code) || 'EUR';
+        totalSpentElement.textContent = CbFormat.formatMoney(TOTAL_SPENT, code, { maxFractionDigits: 0 });
     }
 }
 

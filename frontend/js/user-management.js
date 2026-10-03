@@ -1242,7 +1242,8 @@ function formatCityTokenAmount(raw, decimals) {
         const formatted = window.ethers ? window.ethers.formatUnits(raw, decimals) : String(raw);
         const asNumber = Number(formatted);
         if (Number.isFinite(asNumber)) {
-            return asNumber >= 1 ? asNumber.toFixed(2) : asNumber.toFixed(4);
+            const digits = asNumber >= 1 ? 2 : 4;
+            return CbFormat.formatNumber(asNumber, { maxFractionDigits: digits, minFractionDigits: digits });
         }
         return formatted;
     } catch (_) {
@@ -2206,12 +2207,11 @@ function updateNetworkIndicator(walletState) {
     }
 }
 
+// Amount then code ("0.0420 ETH"); an empty wallet reads "0 ETH", not "0.0000 ETH".
 function formatEthBalanceForDisplay(value) {
     const num = Number(value);
     if (!Number.isFinite(num)) return '-';
-    if (num === 0) return '0';
-    if (num >= 1) return num.toFixed(2);
-    return num.toFixed(4);
+    return CbFormat.formatMoney(num, 'ETH', num === 0 ? { minFractionDigits: 0 } : {});
 }
 
 function setUserEthBalanceDisplay(displayText) {
@@ -2234,7 +2234,7 @@ function setUserTotalWealthDisplay(balanceEth) {
     const hasPortfolio = portfolioAttr !== null && portfolioAttr !== '';
     const portfolioValue = hasPortfolio ? Number(portfolioAttr) : NaN;
     const total = (Number.isFinite(portfolioValue) ? portfolioValue : 0) + balanceEth;
-    totalNode.textContent = `${total.toFixed(2)} ETH`;
+    totalNode.textContent = CbFormat.formatMoney(total, 'ETH');
 }
 
 async function readConnectedWalletEthBalance(walletState) {
@@ -2285,9 +2285,7 @@ async function refreshUserEthBalanceDisplay() {
             return;
         }
         userWalletBalanceCache = balanceEth;
-        const formatted = formatEthBalanceForDisplay(balanceEth);
-        const displayText = formatted === '-' ? '-' : `${formatted} ETH`;
-        setUserEthBalanceDisplay(displayText);
+        setUserEthBalanceDisplay(formatEthBalanceForDisplay(balanceEth));
         setUserTotalWealthDisplay(balanceEth);
     } catch (err) {
         if (requestId !== userWalletBalanceRequestId) {

@@ -355,8 +355,15 @@
         if (!finite(widthM) || widthM < 0) return '';
         if (widthM < 0.01) return `${Math.max(1, Math.round(widthM * 1000))} mm`;
         if (widthM < 1) return `${Math.round(widthM * 100)} cm`;
-        if (widthM < 10) return `${(Math.round(widthM * 10) / 10).toFixed(1)} m`;
-        return `${Math.round(widthM)} m`;
+        // Metres in the UI language through the shared formatter where the page loads it; the unit
+        // tests run this module without js/format.js.
+        const fmt = typeof CbFormat !== 'undefined' ? CbFormat : null;
+        if (widthM < 10) {
+            return fmt
+                ? fmt.formatLength(widthM, { maxFractionDigits: 1, minFractionDigits: 1 })
+                : `${(Math.round(widthM * 10) / 10).toFixed(1)} m`;
+        }
+        return fmt ? fmt.formatLength(widthM, { maxFractionDigits: 0 }) : `${Math.round(widthM)} m`;
     }
 
     /**

@@ -36,7 +36,7 @@
     box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     /* Width comes from the insets (see the .info-panel bottom-sheet rule in utilities.css): the
        sheet runs from the mode-button strip on the left to the right edge. */
     :root {
@@ -108,7 +108,7 @@ from .right-dock-panel — do not re-declare one here.
 */
 #parcel-info-panel {
     position: absolute;
-    bottom: 10px;
+    bottom: var(--map-shell-bottom-clearance);
     right: 10px;
     height: 50vh;
     max-height: 50vh;
@@ -173,7 +173,7 @@ above the scroll fold.
 */
 #road-info-panel {
     position: absolute;
-    bottom: 10px;
+    bottom: var(--map-shell-bottom-clearance);
     right: 10px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
@@ -767,7 +767,7 @@ above the scroll fold.
 /* Block info panel */
 #block-info-panel {
     position: absolute;
-    top: 10px;
+    top: var(--map-shell-top-clearance);
     right: 10px;
     width: 320px;
     max-width: calc(100vw - 20px);
@@ -1821,7 +1821,7 @@ above the scroll fold.
 }
 
 /* Mobile panel padding adjustments */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .panel-header {
         padding: 0 15px; /* No vertical padding on mobile */
     }

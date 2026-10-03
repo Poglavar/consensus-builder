@@ -69,7 +69,10 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
             return true;
         }
         if (typeof updateStatus === 'function') {
-            updateStatus('Loading reparcellization tools...');
+            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+            updateStatus(t
+                ? t('status.messages.loading_reparcellization_tools', 'Loading reparcellization tools...')
+                : 'Loading reparcellization tools...');
         }
         const loaded = await ensureReparcellizationModuleLoaded();
         if (loaded && typeof openReparcellizationModal === 'function') {

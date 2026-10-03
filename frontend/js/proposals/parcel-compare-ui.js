@@ -160,15 +160,11 @@
         });
     }
 
-    // ── formatting (null → "—", never 0) ──────────────────────────────────────────────────────
+    // ── formatting (null → "—", never 0), through the shared formatter (js/format.js) ──────────
 
-    function locale() {
-        const lang = global.i18n && typeof global.i18n.getLanguage === 'function' ? global.i18n.getLanguage() : null;
-        return { hr: 'hr-HR', sr: 'sr-Latn-RS', es: 'es-ES' }[lang] || 'en-GB';
-    }
-    const number = (value, digits) => value.toLocaleString(locale(), { maximumFractionDigits: digits || 0 });
-    const m2 = value => (finite(value) ? `${number(value, value < 10 ? 1 : 0)} m²` : DASH);
-    const pct = share => (finite(share) ? `${number(share * 100, share < 0.1 ? 1 : 0)} %` : DASH);
+    const number = (value, digits) => CbFormat.formatNumber(value, { maxFractionDigits: digits || 0 });
+    const m2 = value => (finite(value) ? CbFormat.formatArea(value) : DASH);
+    const pct = share => (finite(share) ? CbFormat.formatPercent(share, { maxFractionDigits: share < 0.1 ? 1 : 0 }) : DASH);
     const range = (r, unit) => (r ? (r.min === r.max ? `${number(r.min, 1)}${unit}` : `${number(r.min, 1)}–${number(r.max, 1)}${unit}`) : DASH);
 
     function takeText(e) {
@@ -483,8 +479,8 @@
                     if (token !== state.hydration) return;
                     const donated = summary && summary.donations ? summary.donations.totalDonated : null;
                     const pledged = summary && summary.pledges ? summary.pledges.activePledged : null;
-                    setCell(dialog, 'donations', side, donated === null || donated === undefined ? DASH : `${format(donated)} USDC`);
-                    setCell(dialog, 'pledges', side, pledged === null || pledged === undefined ? DASH : `${format(pledged)} USDC`);
+                    setCell(dialog, 'donations', side, donated === null || donated === undefined ? DASH : CbFormat.formatMoney(Number(format(donated)), 'USDC'));
+                    setCell(dialog, 'pledges', side, pledged === null || pledged === undefined ? DASH : CbFormat.formatMoney(Number(format(pledged)), 'USDC'));
                 }).catch(error => {
                     console.warn(`[${new Date().toISOString()}] [ParcelCompare] pledge summary unavailable`, error);
                     if (token !== state.hydration) return;
@@ -501,7 +497,7 @@
                     const m = view.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
                     const text = !m.exists
                         ? t('parcelCompare.market.none', 'No market')
-                        : (finite(m.yesOdds) ? `${number(m.yesOdds, 1)} % · ${view.formatAtomic(m.total)} USDC` : t('parcelCompare.market.noStakes', 'No stakes yet'));
+                        : (finite(m.yesOdds) ? `${CbFormat.formatPercent(m.yesOdds, { ofHundred: true, maxFractionDigits: 1 })} · ${CbFormat.formatMoney(Number(view.formatAtomic(m.total)), 'USDC')}` : t('parcelCompare.market.noStakes', 'No stakes yet'));
                     setCell(dialog, 'market', side, text);
                 }).catch(error => {
                     console.warn(`[${new Date().toISOString()}] [ParcelCompare] market summary unavailable`, error);

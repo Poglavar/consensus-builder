@@ -279,7 +279,7 @@ body.app-loading .map-search {
 }
 
 /* ---- Phones ---- */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .map-search {
         width: auto;
         min-width: 0;

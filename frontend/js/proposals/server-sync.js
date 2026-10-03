@@ -491,7 +491,10 @@ function uploadRateLimitMessage(retryAfterSeconds) {
     if (known) {
         try {
             const when = new Date(Date.now() + retryAfterSeconds * 1000);
-            at = when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            // The shared formatter where the page loads it; upload-rate-limit-ui.test.js runs without it.
+            at = typeof CbFormat !== 'undefined'
+                ? CbFormat.formatTime(when)
+                : when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
         } catch (_) { at = null; }
     }
     const key = at
@@ -591,7 +594,8 @@ async function uploadProposalToServer(proposal) {
         const response = await fetch(`${backendBase}/proposals/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(uploadProposal)
+            body: JSON.stringify({ ...uploadProposal,
+                parcelSourceId: window.CityConfigManager?.getCityConfig?.(proposal.city)?.parcels?.sourceId ?? null })
         });
 
         let errorBody = null;
@@ -637,6 +641,13 @@ async function uploadProposalToServer(proposal) {
                     if (translated && translated !== key) message = translated;
                 } catch (_) { /* English fallback */ }
                 return { ok: false, message };
+            }
+            if (errorBody?.code?.startsWith('parcel-source-') && window.ParcelSourceHealth) {
+                const failure = Object.assign(new Error(errorBody.error), errorBody, { status: response.status });
+                window.reportParcelFetchFailure?.(failure, 'proposal upload');
+                return { ok: false, code: errorBody.code, message: window.ParcelSourceHealth.describeFailure(failure, {
+                    offline: navigator.onLine === false, translate: window.i18n?.t?.bind(window.i18n)
+                }) };
             }
             const errorMessage = errorBody && errorBody.error
                 ? errorBody.error

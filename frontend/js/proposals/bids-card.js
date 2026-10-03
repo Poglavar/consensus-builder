@@ -188,19 +188,16 @@
 
     function formatUsdc(amount) {
         try {
-            return `${root.SolanaPledgeClient.formatUsdc(amount)} USDC`;
+            return CbFormat.formatMoney(Number(root.SolanaPledgeClient.formatUsdc(amount)), 'USDC');
         } catch (_) {
             return `${String(amount)} µUSDC`;
         }
     }
 
     function formatTime(seconds) {
-        if (typeof seconds !== 'number') return t('panel.proposal.ownerOffer.unknownTime', 'time unknown');
-        try {
-            return new Date(seconds * 1000).toLocaleString();
-        } catch (_) {
-            return new Date(seconds * 1000).toISOString();
-        }
+        const unknown = t('panel.proposal.ownerOffer.unknownTime', 'time unknown');
+        if (typeof seconds !== 'number') return unknown;
+        return CbFormat.formatDateTime(seconds * 1000, { missing: unknown });
     }
 
     function scrollToLensCard(proposalAccount) {

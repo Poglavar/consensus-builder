@@ -598,9 +598,14 @@ async function bindProposal(pool, req) {
         result = await checkProposalBinding(pool, record, cadastreParcelIds, {
             site,
             toleranceM,
-            city: normalizeCityCode(validated.city) || null
+            city: normalizeCityCode(validated.city) || null,
+            parcelSourceId: req.body?.parcelSourceId ?? null
         });
     } catch (error) {
+        if (error?.code?.startsWith('parcel-source-')) {
+            return { refusal: { status: error.status || 503, body: { error: error.message, code: error.code,
+                upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds } } };
+        }
         if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
             return { refusal: { status: error.status, body: { error: error.message, code: error.code } } };
         }

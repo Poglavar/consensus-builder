@@ -2269,7 +2269,7 @@ function countActiveProposalListFilters(listState) {
 function shouldAutofocusProposalListSearch(win) {
     try {
         if (!win || typeof win.matchMedia !== 'function') return false;
-        return !win.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+        return !win.matchMedia('(max-width: 767.98px), (pointer: coarse)').matches;
     } catch (_) {
         return false;
     }

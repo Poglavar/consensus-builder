@@ -303,7 +303,14 @@
         const pricing = status && status.pricing && status.pricing.ownership;
         if (!pricing || pricing.enabled !== true) return null;
         const usdc = Number(pricing.priceUsdc);
-        if (Number.isFinite(usdc) && usdc > 0) return `${usdc} USDC${pricing.network ? ` (${pricing.network})` : ''}`;
+        if (Number.isFinite(usdc) && usdc > 0) {
+            // A price is shown exactly (USDC has six decimals), through the shared formatter where the
+            // page loads it; lens.html and the unit tests run without js/format.js.
+            const amount = typeof CbFormat !== 'undefined'
+                ? CbFormat.formatMoney(usdc, 'USDC', { maxFractionDigits: 6, minFractionDigits: 2 })
+                : `${usdc} USDC`;
+            return `${amount}${pricing.network ? ` (${pricing.network})` : ''}`;
+        }
         return cleanText(pricing.price);
     }
 

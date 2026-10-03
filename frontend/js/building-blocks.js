@@ -152,7 +152,6 @@ function refreshBlockifyDensityStats(buildings = null) {
         ? buildings
         : (blockMassingPieces.length ? blockMassingPieces : (generatedBuildingFeature ? [generatedBuildingFeature] : []));
     const floorHeightM = blockifyMode === 'existing' ? currentFloorHeightM : DEFAULT_FLOOR_HEIGHT_M;
-    const locale = document.documentElement.lang || navigator.language || 'en';
     let stats = null;
     try {
         stats = api.summarizeDensity({
@@ -168,16 +167,16 @@ function refreshBlockifyDensityStats(buildings = null) {
         const element = document.getElementById(`blockify-density-${suffix}`);
         if (element) element.textContent = value;
     };
-    const area = value => stats && Number.isFinite(value) ? `${api.formatNumber(value, locale, 0)} m\u00b2` : '\u2014';
+    const area = value => stats && Number.isFinite(value) ? CbFormat.formatArea(value) : '\u2014';
     setValue('parcel', stats?.parcelAreaM2 > 0 ? area(stats.parcelAreaM2) : '\u2014');
     setValue('footprint', stats ? area(stats.footprintAreaM2) : '\u2014');
-    setValue('coverage', stats?.parcelAreaM2 > 0 ? `${api.formatNumber(stats.siteCoveragePercent, locale, 1)}%` : '\u2014');
+    setValue('coverage', stats?.parcelAreaM2 > 0 ? CbFormat.formatPercent(stats.siteCoveragePercent, { ofHundred: true, maxFractionDigits: 1, missing: '\u2014' }) : '\u2014');
     setValue('gbp', stats ? area(stats.aboveGroundGbpM2) : '\u2014');
-    setValue('kin', stats?.parcelAreaM2 > 0 ? api.formatNumber(stats.kin, locale, 3) : '\u2014');
+    setValue('kin', stats?.parcelAreaM2 > 0 ? CbFormat.formatNumber(stats.kin, { maxFractionDigits: 3, missing: '\u2014' }) : '\u2014');
 
     const hint = document.getElementById('blockify-density-hint');
     if (hint) {
-        const height = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(floorHeightM);
+        const height = CbFormat.formatNumber(floorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
         hint.textContent = translateBuildingText(
             'densityStats.floorHeightHint',
             'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
@@ -243,7 +242,8 @@ function getActiveBlockifyBlock() {
 function describeParcelSelection(ids) {
     if (!Array.isArray(ids) || ids.length === 0) return translateBuildingText('blockify.modal.messages.selectedParcels', 'Selected Parcels');
     if (ids.length === 1) return translateBuildingText('blockify.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
-    return translateBuildingText('blockify.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
+    // The shared plural key: Croatian and Serbian need a different form for 2–4 parcels.
+    return translateBuildingText('proposals.autoName.parcels', '{{count}} parcels', { count: ids.length });
 }
 
 // --- 3D preview state ---
@@ -913,7 +913,20 @@ function initBlockify3DSimple() {
     if (!container.style.height) container.style.height = '260px';
 
     if (typeof THREE === 'undefined') {
-        ensureThreeForBlockify().then(ok => { if (ok) initBlockify3DSimple(); });
+        // three.js loads on first use. The building was computed before it arrived, so the init
+        // that follows the load starts with an empty scene: push the current massing again, or the
+        // preview stays blank until a slider moves (it did, on every first open).
+        ensureThreeForBlockify().then(ok => {
+            if (!ok) return;
+            initBlockify3DSimple();
+            if (generatedBuildingFeature) {
+                try {
+                    updateBlockify3DScene(blockBuildOut.length
+                        ? blockBuildOut.concat(blockIneligibleGhosts())
+                        : generatedBuildingFeature);
+                } catch (e) { console.warn('3D update after three.js load failed', e); }
+            }
+        });
         return;
     }
 
@@ -1692,7 +1705,7 @@ function blockRingOutline(superparcel, clipTo, params = {}, hooks = {}) {
 function showBlockifyModal() {
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
-        updateStatus('No block selected');
+        updateStatus(translateBuildingText('status.messages.no_block_selected', 'No block selected'));
         return;
     }
 
@@ -1706,15 +1719,7 @@ function showBlockifyModal() {
     if (!document.getElementById('blockify-modal')) {
         const modalDiv = document.createElement('div');
         modalDiv.id = 'blockify-modal';
-        modalDiv.style.position = 'fixed';
-        modalDiv.style.top = '0';
-        modalDiv.style.left = '0';
-        modalDiv.style.width = '100%';
-        modalDiv.style.height = '100%';
-        modalDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        modalDiv.style.display = 'flex';
-        modalDiv.style.alignItems = 'center';
-        modalDiv.style.justifyContent = 'center';
+        // Overlay box and look: #blockify-modal and the editor dialog chrome in css/modals.css.
 
         const container = document.createElement('div');
         container.id = 'blockify-container';
@@ -1782,7 +1787,7 @@ function showBlockifyModal() {
                     <label class="blockify-rule-label" for="proposed-height-slider">
                         <input type="radio" id="blockify-rule-exact" name="blockify-existing-rule" value="exact" checked>
                         <span data-i18n-key="blockify.modal.existing.proposedHeight" data-i18n-attr="text">Proposed height (floors):</span>
-                        <span id="proposed-height-value">${DEFAULT_PROPOSED_HEIGHT_FLOORS} (${(DEFAULT_PROPOSED_HEIGHT_FLOORS * DEFAULT_FLOOR_HEIGHT_M).toFixed(1)} m)</span>
+                        <span id="proposed-height-value">${DEFAULT_PROPOSED_HEIGHT_FLOORS} (${CbFormat.formatLength(DEFAULT_PROPOSED_HEIGHT_FLOORS * DEFAULT_FLOOR_HEIGHT_M)})</span>
                     </label>
                     <input type="range" id="proposed-height-slider" min="1" max="20" value="${DEFAULT_PROPOSED_HEIGHT_FLOORS}" step="1">
                 </div>
@@ -1797,42 +1802,42 @@ function showBlockifyModal() {
                 <div class="parameter-group blockify-existing-only" style="display:none">
                     <label for="floor-height-slider">
                         <span data-i18n-key="blockify.modal.existing.floorHeight" data-i18n-attr="text">Floor height (m):</span>
-                        <span id="floor-height-value">${DEFAULT_FLOOR_HEIGHT_M.toFixed(1)}</span>
+                        <span id="floor-height-value">${CbFormat.formatNumber(DEFAULT_FLOOR_HEIGHT_M, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="floor-height-slider" min="2.5" max="5" value="${DEFAULT_FLOOR_HEIGHT_M}" step="0.1">
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="setback-slider">
                         <span data-i18n-key="blockify.modal.labels.setback" data-i18n-attr="text">Setback (m):</span>
-                        <span id="setback-value">${DEFAULT_SETBACK.toFixed(1)}</span>
+                        <span id="setback-value">${CbFormat.formatNumber(DEFAULT_SETBACK, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="setback-slider" min="0" max="50" value="${DEFAULT_SETBACK}" step="0.5">
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="chamfer-slider">
                         <span data-i18n-key="blockify.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
-                        <span id="chamfer-value">${currentChamferM.toFixed(1)}</span>
+                        <span id="chamfer-value">${CbFormat.formatNumber(currentChamferM, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER_M}" step="0.5">
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="simplify-slider">
                         <span data-i18n-key="blockify.modal.labels.simplify" data-i18n-attr="text">Simplify (m):</span>
-                        <span id="simplify-value">${currentSimplifyM.toFixed(1)}</span>
+                        <span id="simplify-value">${CbFormat.formatNumber(currentSimplifyM, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="simplify-slider" min="0" max="20" value="${DEFAULT_SIMPLIFY_M}" step="0.5">
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="width-slider">
                         <span data-i18n-key="blockify.modal.labels.width" data-i18n-attr="text">Building Width (m):</span>
-                        <span id="width-value">${DEFAULT_BUILDING_WIDTH.toFixed(1)}</span>
+                        <span id="width-value">${CbFormat.formatNumber(DEFAULT_BUILDING_WIDTH, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="width-slider" min="1" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="height-slider">
                         <span data-i18n-key="blockify.modal.labels.height" data-i18n-attr="text">Building Height (m):</span>
-                        <span id="height-value">${DEFAULT_BUILDING_HEIGHT.toFixed(1)}</span>
+                        <span id="height-value">${CbFormat.formatNumber(DEFAULT_BUILDING_HEIGHT, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="0.5">
                 </div>
@@ -1935,7 +1940,7 @@ function showBlockifyModal() {
         // Add slider event listeners
         document.getElementById('setback-slider').addEventListener('input', function (e) {
             currentSetback = parseFloat(e.target.value);
-            document.getElementById('setback-value').textContent = currentSetback.toFixed(1);
+            document.getElementById('setback-value').textContent = CbFormat.formatNumber(currentSetback, { maxFractionDigits: 1, minFractionDigits: 1 });
             generateBuildingInModal();
         });
 
@@ -1943,7 +1948,7 @@ function showBlockifyModal() {
         if (chamferSlider) {
             chamferSlider.addEventListener('input', function (e) {
                 currentChamferM = parseFloat(e.target.value);
-                document.getElementById('chamfer-value').textContent = currentChamferM.toFixed(1);
+                document.getElementById('chamfer-value').textContent = CbFormat.formatNumber(currentChamferM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateBuildingInModal();
             });
         }
@@ -1952,14 +1957,14 @@ function showBlockifyModal() {
         if (simplifySlider) {
             simplifySlider.addEventListener('input', function (e) {
                 currentSimplifyM = parseFloat(e.target.value);
-                document.getElementById('simplify-value').textContent = currentSimplifyM.toFixed(1);
+                document.getElementById('simplify-value').textContent = CbFormat.formatNumber(currentSimplifyM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateBuildingInModal();
             });
         }
 
         document.getElementById('width-slider').addEventListener('input', function (e) {
             currentBuildingWidth = parseFloat(e.target.value);
-            document.getElementById('width-value').textContent = currentBuildingWidth.toFixed(1);
+            document.getElementById('width-value').textContent = CbFormat.formatNumber(currentBuildingWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
             generateBuildingInModal();
         });
 
@@ -1967,7 +1972,7 @@ function showBlockifyModal() {
         if (heightSlider) {
             heightSlider.addEventListener('input', function (e) {
                 currentBuildingHeight = parseFloat(e.target.value);
-                document.getElementById('height-value').textContent = currentBuildingHeight.toFixed(1);
+                document.getElementById('height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 1, minFractionDigits: 1 });
                 // Only affects 3D extrusion; regenerate 3D using the current geometry
                 if (generatedBuildingFeature) {
                     // Keep the feature's own height in step with the slider. The footprint doesn't
@@ -2013,7 +2018,7 @@ function showBlockifyModal() {
         if (blockMinHeightSlider) {
             blockMinHeightSlider.addEventListener('input', function (e) {
                 blockMinHeightM = parseFloat(e.target.value);
-                document.getElementById('blockify-minheight-value').textContent = blockMinHeightM.toFixed(1);
+                document.getElementById('blockify-minheight-value').textContent = CbFormat.formatNumber(blockMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 refreshBlockPieceHeights();
                 if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
             });
@@ -2023,7 +2028,7 @@ function showBlockifyModal() {
         if (blockMinDepthSlider) {
             blockMinDepthSlider.addEventListener('input', function (e) {
                 blockMinDepthM = parseFloat(e.target.value);
-                document.getElementById('blockify-mindepth-value').textContent = blockMinDepthM.toFixed(1);
+                document.getElementById('blockify-mindepth-value').textContent = CbFormat.formatNumber(blockMinDepthM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
             });
         }
@@ -2290,7 +2295,7 @@ function syncBlockifyControlsFromState() {
         const slider = document.getElementById(sliderId);
         if (slider) slider.value = value;
         const label = document.getElementById(valueId);
-        if (label) label.textContent = digits === 0 ? String(value) : Number(value).toFixed(digits);
+        if (label) label.textContent = digits === 0 ? String(value) : CbFormat.formatNumber(Number(value), { maxFractionDigits: digits, minFractionDigits: digits });
     };
 
     setSlider('setback-slider', 'setback-value', currentSetback);
@@ -2865,7 +2870,7 @@ function generateBuildingInModal() {
             const setbackSlider = document.getElementById('setback-slider');
             if (setbackSlider) {
                 setbackSlider.value = SETBACK;
-                document.getElementById('setback-value').textContent = SETBACK.toFixed(1);
+                document.getElementById('setback-value').textContent = CbFormat.formatNumber(SETBACK, { maxFractionDigits: 1, minFractionDigits: 1 });
                 currentSetback = SETBACK;
             }
         }
@@ -2930,7 +2935,7 @@ function generateBuildingInModal() {
             setBlockifyInfo(
                 'blockify.modal.messages.generatedSolidNoCourtyard',
                 'Building generated (solid; setback: {{setback}}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width.',
-                { setback: SETBACK.toFixed(1) }
+                { setback: CbFormat.formatNumber(SETBACK, { maxFractionDigits: 1, minFractionDigits: 1 }) }
             );
             const doneButton = document.getElementById('btn-blockify-done');
             if (doneButton) doneButton.disabled = false;
@@ -3233,7 +3238,7 @@ function generateBuildingInModal() {
                 setbackSlider.onchange = null;
 
                 setbackSlider.value = SETBACK;
-                document.getElementById('setback-value').textContent = SETBACK.toFixed(1);
+                document.getElementById('setback-value').textContent = CbFormat.formatNumber(SETBACK, { maxFractionDigits: 1, minFractionDigits: 1 });
                 currentSetback = SETBACK;
 
                 // Restore the event listener
@@ -3251,7 +3256,7 @@ function generateBuildingInModal() {
                 widthSlider.onchange = null;
 
                 widthSlider.value = currentWidth;
-                document.getElementById('width-value').textContent = currentWidth.toFixed(1);
+                document.getElementById('width-value').textContent = CbFormat.formatNumber(currentWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
                 currentBuildingWidth = currentWidth;
 
                 // Restore the event listener
@@ -3272,9 +3277,9 @@ function generateBuildingInModal() {
                 'blockify.modal.messages.generatedSummary',
                 'Building generated (width: {{width}}m, height: {{height}}m, setback: {{setback}}m)',
                 {
-                    width: currentWidth.toFixed(1),
-                    height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT).toFixed(1),
-                    setback: SETBACK.toFixed(1)
+                    width: CbFormat.formatNumber(currentWidth, { maxFractionDigits: 1, minFractionDigits: 1 }),
+                    height: CbFormat.formatNumber(Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT, { maxFractionDigits: 1, minFractionDigits: 1 }),
+                    setback: CbFormat.formatNumber(SETBACK, { maxFractionDigits: 1, minFractionDigits: 1 })
                 }
             );
         }
@@ -3454,7 +3459,7 @@ function displayBuildingInModal(buildingFeature) {
                 style: { fillColor: color, fillOpacity: compelled ? 0.35 : 0.75, color: '#33465c', weight: 1 }
             }).addTo(blockifyMap);
             const height = piece.properties?.height || 0;
-            layer.bindTooltip(`${piece.properties?.parcelId}: ${height.toFixed(1)} m`, { direction: 'center' });
+            layer.bindTooltip(`${piece.properties?.parcelId}: ${CbFormat.formatLength(height)}`, { direction: 'center' });
             blockifyPieceLayers.push(layer);
 
             if (compelled) {
@@ -3512,8 +3517,8 @@ function reportBlockRuleRange() {
         return;
     }
     const range = window.UrbanRuleVariation.summariseBlockRule(blockMassingPieces, currentBlockRule(), { turf });
-    const permitted = Math.round(range.permittedFloorAreaM2).toLocaleString('en-US');
-    const guaranteed = Math.round(range.guaranteedFloorAreaM2).toLocaleString('en-US');
+    const permitted = CbFormat.formatNumber(range.permittedFloorAreaM2, { maxFractionDigits: 0 });
+    const guaranteed = CbFormat.formatNumber(range.guaranteedFloorAreaM2, { maxFractionDigits: 0 });
     // Every parcel the rule leaves out counts, 'no-massing-here' included. That one used to be
     // filtered out here AND skipped on the map, so a block authored on seven parcels could apply to
     // four with nothing anywhere saying which three got nothing, or why.
@@ -3559,7 +3564,7 @@ function syncBlockMinHeightSlider() {
         if (blockMinDepthM > deepest) blockMinDepthM = deepest;
         depthSlider.value = String(blockMinDepthM);
         const depthLabel = document.getElementById('blockify-mindepth-value');
-        if (depthLabel) depthLabel.textContent = blockMinDepthM.toFixed(1);
+        if (depthLabel) depthLabel.textContent = CbFormat.formatNumber(blockMinDepthM, { maxFractionDigits: 1, minFractionDigits: 1 });
     }
     const slider = document.getElementById('blockify-minheight-slider');
     if (!slider) return;
@@ -3568,7 +3573,7 @@ function syncBlockMinHeightSlider() {
     if (blockMinHeightM > ceiling) blockMinHeightM = ceiling;
     slider.value = String(blockMinHeightM);
     const label = document.getElementById('blockify-minheight-value');
-    if (label) label.textContent = blockMinHeightM.toFixed(1);
+    if (label) label.textContent = CbFormat.formatNumber(blockMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
 }
 
 // The block's massing over the plots the rule leaves out, as features the 3D preview draws grey and
@@ -3837,12 +3842,12 @@ function setExistingRule(rule) {
 function updateExistingValueLabels() {
     const proposedValue = document.getElementById('proposed-height-value');
     if (proposedValue) {
-        proposedValue.textContent = `${currentProposedHeightFloors} (${(currentProposedHeightFloors * currentFloorHeightM).toFixed(1)} m)`;
+        proposedValue.textContent = `${currentProposedHeightFloors} (${CbFormat.formatLength(currentProposedHeightFloors * currentFloorHeightM)})`;
     }
     const additionalValue = document.getElementById('additional-floors-value');
     if (additionalValue) additionalValue.textContent = String(currentAdditionalFloors);
     const floorHeightValue = document.getElementById('floor-height-value');
-    if (floorHeightValue) floorHeightValue.textContent = currentFloorHeightM.toFixed(1);
+    if (floorHeightValue) floorHeightValue.textContent = CbFormat.formatNumber(currentFloorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
 }
 
 async function enterExistingMode() {
@@ -3976,7 +3981,7 @@ function generateExistingBuildingsInModal() {
     } else {
         setBlockifyInfo('blockify.modal.existing.summaryExact', 'Proposing {{count}} buildings at {{height}} m.', {
             count: features.length,
-            height: (currentProposedHeightFloors * currentFloorHeightM).toFixed(1)
+            height: CbFormat.formatNumber(currentProposedHeightFloors * currentFloorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 })
         });
     }
     const doneButton = document.getElementById('btn-blockify-done');
@@ -4177,7 +4182,7 @@ function applyBuildingToMap() {
         // Show proposed buildings layer
         document.getElementById('showProposedBuildings').checked = true;
 
-        updateStatus(`Created proposed building block for ${getBlockifyDisplayName()} (width: ${generatedBuildingFeature.properties.width.toFixed(1)}m, setback: ${generatedBuildingFeature.properties.setback.toFixed(1)}m)`)
+        updateStatus(translateBuildingText('status.messages.blockify_created_proposed_building_block', 'Created proposed building block for {{block}} (width: {{width}}m, setback: {{setback}}m)', { block: getBlockifyDisplayName(), width: CbFormat.formatNumber(generatedBuildingFeature.properties.width, { maxFractionDigits: 1, minFractionDigits: 1 }), setback: CbFormat.formatNumber(generatedBuildingFeature.properties.setback, { maxFractionDigits: 1, minFractionDigits: 1 }) }))
         // Close the modal
         closeBlockifyModal();
     } else {
@@ -4215,7 +4220,7 @@ function blockifySelectedBlock() {
 function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null }) {
     const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
     if (!ids.length) {
-        updateStatus('Select parcels before launching the buildings tool.');
+        updateStatus(translateBuildingText('status.messages.select_parcels_before_launching_the_buildings_tool', 'Select parcels before launching the buildings tool.'));
         return;
     }
     blockifySeedState = initialState || null;
@@ -4224,7 +4229,7 @@ function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null }) 
         : id => window.LiveParcelFabric?.get?.(id);
     const features = ids.map(id => resolve(id)).filter(Boolean);
     if (features.length !== ids.length) {
-        updateStatus('Could not resolve parcel data for the selected parcels.');
+        updateStatus(translateBuildingText('status.messages.could_not_resolve_parcel_data_for_the_selected_parcels', 'Could not resolve parcel data for the selected parcels.'));
         return;
     }
 
@@ -4407,7 +4412,7 @@ async function saveBlockifyDesignForProposal() {
     closeBlockifyModal({ preservePending: true });
 
     if (typeof updateStatus === 'function') {
-        updateStatus('Building design saved. Add proposal details to submit.');
+        updateStatus(translateBuildingText('status.messages.building_design_saved_add_proposal_details_to_submit', 'Building design saved. Add proposal details to submit.'));
     }
 
     const description = document.getElementById('proposalDescription');

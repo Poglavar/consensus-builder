@@ -10,6 +10,12 @@
     --map-shell-button-size: 40px;
     /* Clear of the Leaflet attribution line along the bottom edge (the OSM credit must stay visible). */
     --map-shell-bottom: 24px;
+    /* Phones: the bottom row is a labelled bar (Proposals · Tools · Activity), this tall. */
+    --map-shell-bar-height: 52px;
+    /* The rows the floating chrome occupies. A docked panel (parcel, proposal, road, block) starts
+       below the top row and ends above the bottom row, so no control moves when a panel opens. */
+    --map-shell-top-clearance: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    --map-shell-bottom-clearance: calc(var(--map-shell-bottom) + var(--map-shell-button-size) + var(--map-shell-gap));
 }
 
 /* ---- Hooks for later phases: empty until something mounts in them ---- */
@@ -610,7 +616,7 @@ body.debug-mode .map-sheet .btn-danger,
     margin: 6px 0 0;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .map-sheet {
         --sheet-row-height: 44px;
     }
@@ -618,6 +624,51 @@ body.debug-mode .map-sheet .btn-danger,
     .map-sheet .checkbox-group label {
         min-height: 44px;
     }
+}
+
+/* Settings: the destructive upkeep folded under one row (index.html .sheet-reset). */
+.sheet-reset {
+    margin-top: var(--cb-space-2);
+}
+
+.sheet-reset > summary {
+    cursor: pointer;
+    padding: var(--cb-space-2) 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-medium);
+}
+
+.sheet-reset > summary:hover {
+    color: var(--cb-text);
+}
+
+.sheet-reset[open] > summary {
+    margin-bottom: var(--cb-space-2);
+}
+
+/* Keyboard shortcut hints mean nothing on a touch screen. */
+@media (pointer: coarse) {
+    .settings-palette-shortcut,
+    kbd.settings-palette-shortcut {
+        display: none;
+    }
+}
+
+/* Simulation: the master switch is the first row of its section (index.html), outside the gated
+   settings, so it is always live. */
+.map-sheet .activity-simulation-switch {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--cb-space-2);
+    margin: 0 0 var(--cb-space-2);
+    min-height: 0;
+}
+
+.map-sheet .activity-simulation-switch input {
+    margin: 0;
 }
 
 /* Activity sheet: the explorer buttons over the status line and its log */
@@ -730,7 +781,7 @@ body.debug-mode .map-sheet .btn-danger,
     margin: 0;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .activity-simulation-play {
         width: 36px;
         height: 36px;
@@ -812,18 +863,9 @@ body.debug-mode .map-sheet .btn-danger,
     justify-content: center;
 }
 
-/* A panel docked on the right (parcel, proposal details, road) covers the right edge on desktop:
-   the right-hand buttons and the user bubble step left of it, so they stay reachable. */
-@media (min-width: 768px) {
-    body:has(.right-dock-panel.visible) .map-shell-cluster--top-right,
-    body:has(.right-dock-panel.visible) .map-shell-cluster--bottom-right {
-        right: calc(var(--right-dock-width) + 2 * var(--right-dock-gap));
-    }
-
-    body:has(.right-dock-panel.visible) #map-container .username-display {
-        right: calc(var(--right-dock-width) + 2 * var(--right-dock-gap) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
-    }
-}
+/* A panel docked on the right (parcel, proposal details, road, block) sits in the column between
+   the top row and the bottom row of floating controls (--map-shell-top/bottom-clearance, used by
+   panels.css and utilities.css), so the buttons and the user bubble stay where they are. */
 
 /* ---- 3D and photo view ---- */
 /* The 3D view's own settings panel owns the top-right corner, so Layers and Settings join the
@@ -852,7 +894,7 @@ body.app-loading .map-shell-cluster {
 }
 
 /* ---- Phones: bottom sheets, compact buttons ---- */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .map-sheet {
         top: auto;
         bottom: 0;
@@ -865,29 +907,49 @@ body.app-loading .map-shell-cluster {
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    .map-shell-button-label {
-        display: none;
+    /* A labelled bar along the bottom (docs/design-language.md): three equal buttons, icon over
+       label, instead of an icon-only column with a floating count. The bottom clearance grows with
+       it so the toast, the tray and the scale bar sit above the bar. */
+    :root {
+        --map-shell-bottom-clearance: calc(var(--map-shell-bottom) + var(--map-shell-bar-height) + var(--map-shell-gap));
     }
 
-    .map-shell-button--labelled {
-        padding: 0;
-        width: var(--map-shell-button-size);
-    }
-
-    /* The count rides on the icon's corner instead of beside a label. */
-    .map-shell-button--labelled .map-shell-badge {
-        position: absolute;
-        top: -6px;
-        right: -6px;
-    }
-
-    /* A column up the right edge, leaving the bottom row to the selection tray even at 320px. */
     .map-shell-cluster--bottom-right {
+        left: var(--map-shell-edge);
+        right: var(--map-shell-edge);
+        flex-direction: row;
+    }
+
+    .map-shell-cluster--bottom-right .map-shell-button--labelled {
+        flex: 1 1 0;
+        min-width: 0;
+        width: auto;
+        height: var(--map-shell-bar-height);
         flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+        padding: 4px 6px;
+    }
+
+    .map-shell-cluster--bottom-right .map-shell-button-label {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 11px;
+        line-height: 1;
+    }
+
+    /* The count rides on the icon's corner. */
+    .map-shell-cluster--bottom-right .map-shell-button--labelled .map-shell-badge {
+        position: absolute;
+        top: 4px;
+        right: calc(50% - 22px);
     }
 
     body.three-mode-active .map-shell-cluster--top-right {
-        bottom: calc(var(--map-shell-bottom) + 3 * (var(--map-shell-button-size) + var(--map-shell-gap)));
+        bottom: var(--map-shell-bottom-clearance);
     }
 
     /* Clear of the compact search box top-left (css/map-search.css). */

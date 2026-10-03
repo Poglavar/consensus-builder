@@ -27,6 +27,14 @@
         return `https://explorer.solana.com/tx/${encodeURIComponent(tx)}${suffix}`;
     }
 
+    // "0.05 USDC": amount then code, exact to USDC's six decimals, through the shared formatter where
+    // the page loads it (js/format.js); the unit tests run without it.
+    function paymentText(amount) {
+        const value = Number(amount);
+        if (typeof CbFormat === 'undefined' || !Number.isFinite(value)) return `${amount} USDC`;
+        return CbFormat.formatMoney(value, 'USDC', { maxFractionDigits: 6, minFractionDigits: 2 });
+    }
+
     function read(proposal) {
         const agent = proposal && typeof proposal.agent === 'object' && !Array.isArray(proposal.agent)
             ? proposal.agent
@@ -51,7 +59,7 @@
             asset: cleanText(paid.asset),
             amount,
             amountAtomic,
-            paymentLabel: amount ? `${amount} USDC` : (amountAtomic ? `${amountAtomic} atomic USDC` : 'USDC'),
+            paymentLabel: amount ? paymentText(amount) : (amountAtomic ? `${amountAtomic} atomic USDC` : 'USDC'),
             transaction,
             transactionShort: shorten(transaction, 8, 6),
             explorerUrl: solanaExplorerUrl(transaction, paid.network)

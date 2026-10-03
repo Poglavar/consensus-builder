@@ -8,7 +8,7 @@
 // can be added to a transfer of named titles. Used by GET /proposals/:id/binding-drift.
 
 import { createRequire } from 'node:module';
-import { computeBinding, parcelActBinding, parseTolerance, validateSiteGeometry, COVERAGE } from './binding.js';
+import { computeBinding, parcelActBinding, parseTolerance, validateSiteGeometry, COVERAGE, SERVER_CADASTRE_SOURCE } from './binding.js';
 
 const requireCjs = createRequire(import.meta.url);
 const driftApi = requireCjs('../../frontend/js/proposals/binding-drift.js');
@@ -55,16 +55,19 @@ export async function computeBindingDrift(db, idParam, { now } = {}) {
     }
     const tolerance = parseTolerance(typeof stored.toleranceM === 'number' ? stored.toleranceM : undefined);
     const toleranceM = tolerance.ok ? tolerance.value : 0;
+    // Recheck the provider that supplied the published evidence, even when the city defaults to DB.
+    const parcelSourceId = typeof stored.source === 'string' && stored.source.startsWith('server:')
+        && stored.source !== SERVER_CADASTRE_SOURCE ? stored.source.slice('server:'.length) : null;
 
     let current;
     if (stored.subject === 'declared-parcels') {
-        current = (await parcelActBinding(db, boundParcelIds(stored), { toleranceM, now })).binding;
+        current = (await parcelActBinding(db, boundParcelIds(stored), { toleranceM, city: row.city || null, parcelSourceId, now })).binding;
     } else {
         const site = parseJson(row.site_geojson) || parseJson(row.data_site);
         if (!site || validateSiteGeometry(site)) {
             return { ...base, checkable: false, reason: DRIFT_UNCHECKABLE.noSite, stored };
         }
-        current = (await computeBinding(db, { site, toleranceM, city: row.city || null, now })).binding;
+        current = (await computeBinding(db, { site, toleranceM, city: row.city || null, parcelSourceId, now })).binding;
         if (current.coverage === COVERAGE.unknown) {
             return { ...base, checkable: false, reason: DRIFT_UNCHECKABLE.unknownCoverage, stored, current };
         }

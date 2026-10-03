@@ -1,0 +1,2146 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03T13:58:53.790Z",
+  "purpose": "Official live WFS alternatives for two currently imported DB-backed cities; opt-in descriptors only.",
+  "storage": "Metadata and bounded acceptance results only. No upstream polygons, owner data, addresses, credentials or database writes.",
+  "method": "Two 3x3 grids of .0025-degree cells, second grid shifted .004 degrees in both axes; forced 25-row pages; all retained native keys queried in batches of at most 80; production 500-row pages and genuine parcel footprint round trip.",
+  "scope": "Acceptance is limited to the tested viewports and published city scope. It is not a claim of complete national or citywide coverage.",
+  "descriptors": [
+    {
+      "id": "si-gurs-kn-parcele-wfs",
+      "name": "GURS cadastral parcels — Ljubljana",
+      "adapter": "wfs",
+      "endpoint": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "featureType": "SI.GURS.KN:PARCELE",
+      "idField": "EID_PARCELA",
+      "idType": "string",
+      "idPattern": "^[0-9]{18}$",
+      "idPrefix": "SI-",
+      "parcelNumberField": "ST_PARCELE",
+      "outFields": [
+        "EID_PARCELA",
+        "PARCELA_ID",
+        "KO_ID",
+        "ST_PARCELE"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 3794,
+      "countryCode": "SI",
+      "cityIds": [
+        "ljubljana"
+      ],
+      "scope": "Official GURS cadastral parcel service; acceptance evidence covers bounded Ljubljana cells only, not national completeness.",
+      "catalogueUrl": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "attribution": "Geodetska uprava Republike Slovenije (GURS), cadastral parcels. Adapted to WGS84.",
+      "licenceNote": "GURS source conditions remain informational. No ownership or personal fields are retained by this descriptor."
+    },
+    {
+      "id": "ar-caba-idecaba-wfs-parcelas",
+      "name": "IDECABA cadastral parcels — Buenos Aires",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+      "featureType": "catalogo_og_130:parcelas",
+      "idField": "nam",
+      "idType": "string",
+      "idPattern": "^[0-9]{2,3}-[0-9]{3}[A-Za-z]*-[0-9A-Za-z]{3,5}$",
+      "idPrefix": "AR-CABA-WFS-NAM-",
+      "parcelNumberField": "nam",
+      "outFields": [
+        "nam",
+        "gid"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32721,
+      "countryCode": "AR",
+      "cityIds": [
+        "buenos_aires"
+      ],
+      "scope": "Ciudad Autónoma de Buenos Aires cadastral parcel layer; bounded samples verified, not Greater Buenos Aires or Argentina.",
+      "catalogueUrl": "https://data.buenosaires.gob.ar/dataset/parcelas",
+      "attribution": "Gobierno de la Ciudad de Buenos Aires, IDECABA cadastral parcel layer. Adapted to WGS84.",
+      "licenceNote": "The previously checked catalogue stated CC-BY-2.5-AR; it is historical evidence, not a fresh terms verification. Source conditions remain informational."
+    }
+  ],
+  "upstreamMetadata": [
+    {
+      "city": "ljubljana",
+      "endpoint": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "featureType": "SI.GURS.KN:PARCELE",
+      "bbox": [
+        14.504,
+        46.049,
+        14.507,
+        46.052
+      ],
+      "status": 200,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      },
+      "matched": 236,
+      "samples": [
+        {
+          "geometryType": "Polygon",
+          "nativeValues": {
+            "EID_PARCELA": "100100000278024754",
+            "PARCELA_ID": 27802475,
+            "KO_ID": 1728,
+            "ST_PARCELE": "153/34"
+          }
+        },
+        {
+          "geometryType": "Polygon",
+          "nativeValues": {
+            "EID_PARCELA": "100100001355545216",
+            "PARCELA_ID": 135554521,
+            "KO_ID": 1737,
+            "ST_PARCELE": "3778/3"
+          }
+        },
+        {
+          "geometryType": "Polygon",
+          "nativeValues": {
+            "EID_PARCELA": "100100000688728150",
+            "PARCELA_ID": 68872815,
+            "KO_ID": 1728,
+            "ST_PARCELE": "153/73"
+          }
+        }
+      ]
+    },
+    {
+      "city": "buenos_aires",
+      "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+      "featureType": "catalogo_og_130:parcelas",
+      "bbox": [
+        -58.378,
+        -34.614,
+        -58.3765,
+        -34.6125
+      ],
+      "status": 200,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      },
+      "matched": 38,
+      "samples": [
+        {
+          "geometryType": "MultiPolygon",
+          "nativeValues": {
+            "gid": 2567,
+            "nam": "02-012-003"
+          }
+        },
+        {
+          "geometryType": "MultiPolygon",
+          "nativeValues": {
+            "gid": 2568,
+            "nam": "02-012-004"
+          }
+        },
+        {
+          "geometryType": "MultiPolygon",
+          "nativeValues": {
+            "gid": 2569,
+            "nam": "02-012-005A"
+          }
+        }
+      ]
+    }
+  ],
+  "identityMapping": {
+    "ljubljana": {
+      "canonicalPrefix": "SI-",
+      "nativeField": "EID_PARCELA",
+      "preservesImportedIds": true,
+      "evidence": [
+        {
+          "repository": "cadastre-data",
+          "file": "cities/ljubljana/fetch-parcels-tiles.js",
+          "line": 119,
+          "observation": "Published EID_PARCELA is imported directly into eid_parcela."
+        },
+        {
+          "repository": "consensus-builder",
+          "file": "backend/routes/parcel-lj.js",
+          "line": 45,
+          "observation": "Current parcel route prefixes the same eid_parcela with SI-."
+        }
+      ],
+      "precision": "18-digit published EID must remain a string; it exceeds JavaScript safe integer precision."
+    },
+    "buenos_aires": {
+      "canonicalPrefix": "AR-CABA-WFS-NAM-",
+      "nativeField": "nam",
+      "preservesImportedIds": false,
+      "reason": "The published WFS nam has a two-digit section while the existing import builds three-digit-section SMP. Three EPOK lookups corroborate matching codes, but a complete bijective native mapping and geometry equivalence have not been verified. The live namespace therefore retains nam exactly and does not alias or replace AR-<smp>.",
+      "evidence": [
+        {
+          "repository": "cadastre-data",
+          "file": "cities/buenos_aires/fetch-parcels.js",
+          "line": 359,
+          "observation": "SMP combines formattedSection, blockStr and formattedParcel."
+        },
+        {
+          "repository": "consensus-builder",
+          "file": "backend/routes/parcel-ba.js",
+          "line": 149,
+          "observation": "Current route prefixes imported SMP with AR-."
+        }
+      ],
+      "epokMetadataSamples": [
+        {
+          "input": "002-012-003",
+          "status": 200,
+          "returnedSmp": "002-012-003",
+          "section": "002",
+          "block": "012",
+          "parcel": "003",
+          "error": null
+        },
+        {
+          "input": "002-012-004",
+          "status": 200,
+          "returnedSmp": "002-012-004",
+          "section": "002",
+          "block": "012",
+          "parcel": "004",
+          "error": null
+        },
+        {
+          "input": "002-012-005A",
+          "status": 200,
+          "returnedSmp": "002-012-005A",
+          "section": "002",
+          "block": "012",
+          "parcel": "005A",
+          "error": null
+        }
+      ],
+      "transportFeatureId": "Ephemeral WFS fid and gid are not canonical identifiers."
+    }
+  },
+  "attempts": [
+    {
+      "outcome": "pass",
+      "city": "ljubljana",
+      "checkedAt": "2026-10-03",
+      "description": "Metadata-only complete viewport and exact-key source verification.",
+      "center": [
+        46.0506,
+        14.5054
+      ],
+      "cells": [
+        {
+          "bbox": [
+            14.5025,
+            46.0475,
+            14.505,
+            46.050000000000004
+          ],
+          "complete": true,
+          "count": 117
+        },
+        {
+          "bbox": [
+            14.5025,
+            46.050000000000004,
+            14.505,
+            46.0525
+          ],
+          "complete": true,
+          "count": 167
+        },
+        {
+          "bbox": [
+            14.5025,
+            46.0525,
+            14.505,
+            46.055
+          ],
+          "complete": true,
+          "count": 163
+        },
+        {
+          "bbox": [
+            14.505,
+            46.0475,
+            14.5075,
+            46.050000000000004
+          ],
+          "complete": true,
+          "count": 182
+        },
+        {
+          "bbox": [
+            14.505,
+            46.050000000000004,
+            14.5075,
+            46.0525
+          ],
+          "complete": true,
+          "count": 165
+        },
+        {
+          "bbox": [
+            14.505,
+            46.0525,
+            14.5075,
+            46.055
+          ],
+          "complete": true,
+          "count": 169
+        },
+        {
+          "bbox": [
+            14.5075,
+            46.0475,
+            14.51,
+            46.050000000000004
+          ],
+          "complete": true,
+          "count": 108
+        },
+        {
+          "bbox": [
+            14.5075,
+            46.050000000000004,
+            14.51,
+            46.0525
+          ],
+          "complete": true,
+          "count": 177
+        },
+        {
+          "bbox": [
+            14.5075,
+            46.0525,
+            14.51,
+            46.055
+          ],
+          "complete": true,
+          "count": 212
+        },
+        {
+          "bbox": [
+            14.505,
+            46.050000000000004,
+            14.5075,
+            46.0525
+          ],
+          "complete": true,
+          "count": 165
+        },
+        {
+          "bbox": [
+            14.505,
+            46.0525,
+            14.5075,
+            46.055
+          ],
+          "complete": true,
+          "count": 169
+        },
+        {
+          "bbox": [
+            14.505,
+            46.055,
+            14.5075,
+            46.0575
+          ],
+          "complete": true,
+          "count": 142
+        },
+        {
+          "bbox": [
+            14.5075,
+            46.050000000000004,
+            14.51,
+            46.0525
+          ],
+          "complete": true,
+          "count": 177
+        },
+        {
+          "bbox": [
+            14.5075,
+            46.0525,
+            14.51,
+            46.055
+          ],
+          "complete": true,
+          "count": 212
+        },
+        {
+          "bbox": [
+            14.5075,
+            46.055,
+            14.51,
+            46.0575
+          ],
+          "complete": true,
+          "count": 231
+        },
+        {
+          "bbox": [
+            14.51,
+            46.050000000000004,
+            14.512500000000001,
+            46.0525
+          ],
+          "complete": true,
+          "count": 187
+        },
+        {
+          "bbox": [
+            14.51,
+            46.0525,
+            14.512500000000001,
+            46.055
+          ],
+          "complete": true,
+          "count": 261
+        },
+        {
+          "bbox": [
+            14.51,
+            46.055,
+            14.512500000000001,
+            46.0575
+          ],
+          "complete": true,
+          "count": 211
+        }
+      ],
+      "retainedCount": 2132,
+      "acrossCellConflicts": 0,
+      "exact": [
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 52,
+          "count": 52,
+          "absent": 0,
+          "conflicts": 0
+        }
+      ],
+      "sampleCanonicalIds": [
+        "SI-100100000277259054",
+        "SI-100100000277259070",
+        "SI-100100000277259443"
+      ],
+      "production": {
+        "pageSize": 500,
+        "cells": [
+          {
+            "bbox": [
+              14.5025,
+              46.0475,
+              14.505,
+              46.050000000000004
+            ],
+            "count": 117,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5025,
+              46.050000000000004,
+              14.505,
+              46.0525
+            ],
+            "count": 167,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5025,
+              46.0525,
+              14.505,
+              46.055
+            ],
+            "count": 163,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.505,
+              46.0475,
+              14.5075,
+              46.050000000000004
+            ],
+            "count": 182,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.505,
+              46.050000000000004,
+              14.5075,
+              46.0525
+            ],
+            "count": 165,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.505,
+              46.0525,
+              14.5075,
+              46.055
+            ],
+            "count": 169,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5075,
+              46.0475,
+              14.51,
+              46.050000000000004
+            ],
+            "count": 108,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5075,
+              46.050000000000004,
+              14.51,
+              46.0525
+            ],
+            "count": 177,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5075,
+              46.0525,
+              14.51,
+              46.055
+            ],
+            "count": 212,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.505,
+              46.050000000000004,
+              14.5075,
+              46.0525
+            ],
+            "count": 165,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.505,
+              46.0525,
+              14.5075,
+              46.055
+            ],
+            "count": 169,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.505,
+              46.055,
+              14.5075,
+              46.0575
+            ],
+            "count": 142,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5075,
+              46.050000000000004,
+              14.51,
+              46.0525
+            ],
+            "count": 177,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5075,
+              46.0525,
+              14.51,
+              46.055
+            ],
+            "count": 212,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.5075,
+              46.055,
+              14.51,
+              46.0575
+            ],
+            "count": 231,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.51,
+              46.050000000000004,
+              14.512500000000001,
+              46.0525
+            ],
+            "count": 187,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.51,
+              46.0525,
+              14.512500000000001,
+              46.055
+            ],
+            "count": 261,
+            "complete": true
+          },
+          {
+            "bbox": [
+              14.51,
+              46.055,
+              14.512500000000001,
+              46.0575
+            ],
+            "count": 211,
+            "complete": true
+          }
+        ],
+        "under": {
+          "complete": true,
+          "count": 9,
+          "sourceParcelId": "100100000277259054"
+        },
+        "singleExact": {
+          "complete": true,
+          "geometryMatches": true
+        }
+      },
+      "testedPageSize": 25,
+      "nativeIdPattern": "^[0-9]{18}$",
+      "requestSummary": {
+        "total": 245,
+        "statusCounts": {
+          "200": 245
+        },
+        "exampleBoundsUrl": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SI.GURS.KN%3APARCELE&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=EID_PARCELA&count=25&startIndex=0&bbox=14.5025%2C46.0475%2C14.505%2C46.050000000000004%2CCRS%3A84",
+        "exampleExactUrl": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SI.GURS.KN%3APARCELE&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=EID_PARCELA&count=25&startIndex=0&cql_filter=EID_PARCELA+IN+%28%27100100000277259054%27%2C%27100100000277259070%27%2C%27100100000277259443%27%2C%27100100000277260847%27%2C%27100100000277260938%27%2C%27100100000277261027%27%2C%27100100000277261084%27%2C%27100100000277261100%27%2C%27100100000277261126%27%2C%27100100000277261142%27%2C%27100100000277261167%27%2C%27100100000277261209%27%2C%27100100000277261225%27%2C%27100100000277262660%27%2C%27100100000277969322%27%2C%27100100000277969348%27%2C%27100100000277969389%27%2C%27100100000277969405%27%2C%27100100000277969421%27%2C%27100100000277969447%27%2C%27100100000277969462%27%2C%27100100000277969504%27%2C%27100100000277970783%27%2C%27100100000277970809%27%2C%27100100000277970825%27%2C%27100100000278024093%27%2C%27100100000278025074%27%2C%27100100000278025132%27%2C%27100100000278025157%27%2C%27100100000278025173%27%2C%27100100000278025306%27%2C%27100100000278025553%27%2C%27100100000278025926%27%2C%27100100000278030538%27%2C%27100100000278030553%27%2C%27100100000278030785%27%2C%27100100000278030827%27%2C%27100100000278030892%27%2C%27100100000278030959%27%2C%27100100000278030975%27%2C%27100100000278031015%27%2C%27100100000278031031%27%2C%27100100000278031064%27%2C%27100100000278031080%27%2C%27100100000278031106%27%2C%27100100000278031122%27%2C%27100100000278031148%27%2C%27100100000278031163%27%2C%27100100000278031189%27%2C%27100100000278031205%27%2C%27100100000278031221%27%2C%27100100000278031247%27%2C%27100100000351315822%27%2C%27100100000505110293%27%2C%27100100000505110368%27%2C%27100100000529256734%27%2C%27100100000529256759%27%2C%27100100000529256775%27%2C%27100100000549001631%27%2C%27100100000555161311%27%2C%27100100000629044667%27%2C%27100100000746810081%27%2C%27100100000748099824%27%2C%27100100000748099881%27%2C%27100100000748099907%27%2C%27100100000748099980%27%2C%27100100000920758072%27%2C%27100100000926660868%27%2C%27100100001269483314%27%2C%27100100001304425452%27%2C%27100100001312074698%27%2C%27100100001312231611%27%2C%27100100001312231637%27%2C%27100100001314670303%27%2C%27100100001314670337%27%2C%27100100001314670352%27%2C%27100100001314670378%27%2C%27100100001314670394%27%2C%27100100001314670410%27%2C%27100100001316461768%27%29"
+      }
+    },
+    {
+      "outcome": "failed-validation-assumption",
+      "city": "buenos_aires",
+      "reason": "Initial numeric block assumption rejected published letter-suffixed blocks; incomplete cells were not accepted.",
+      "checkedAt": "2026-10-03",
+      "description": "Metadata-only complete viewport and exact-key source verification.",
+      "center": [
+        -34.6132,
+        -58.3773
+      ],
+      "cells": [
+        {
+          "bbox": [
+            -58.38,
+            -34.6175,
+            -58.3775,
+            -34.615
+          ],
+          "complete": true,
+          "count": 137
+        },
+        {
+          "bbox": [
+            -58.38,
+            -34.615,
+            -58.3775,
+            -34.612500000000004
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.38,
+            -34.612500000000004,
+            -58.3775,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.6175,
+            -58.375,
+            -34.615
+          ],
+          "complete": true,
+          "count": 151
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.615,
+            -58.375,
+            -34.612500000000004
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.612500000000004,
+            -58.375,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.6175,
+            -58.3725,
+            -34.615
+          ],
+          "complete": true,
+          "count": 139
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.615,
+            -58.3725,
+            -34.612500000000004
+          ],
+          "complete": true,
+          "count": 108
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.612500000000004,
+            -58.375,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.61,
+            -58.375,
+            -34.6075
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.6075,
+            -58.375,
+            -34.605000000000004
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.61,
+            -58.3725,
+            -34.6075
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.6075,
+            -58.3725,
+            -34.605000000000004
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.612500000000004,
+            -58.370000000000005,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.61,
+            -58.370000000000005,
+            -34.6075
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.6075,
+            -58.370000000000005,
+            -34.605000000000004
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        }
+      ],
+      "retainedCount": 499,
+      "acrossCellConflicts": 0,
+      "exact": [
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 19,
+          "count": 19,
+          "absent": 0,
+          "conflicts": 0
+        }
+      ],
+      "sampleCanonicalIds": [
+        "AR-CABA-WFS-NAM-02-001-001A",
+        "AR-CABA-WFS-NAM-02-001-003",
+        "AR-CABA-WFS-NAM-02-001-004"
+      ],
+      "testedPageSize": 25,
+      "nativeIdPattern": "^[0-9]{2,3}-[0-9]{3}-[0-9]{3}[A-Za-z]*$",
+      "requestSummary": {
+        "total": 71,
+        "statusCounts": {
+          "200": 71
+        },
+        "exampleBoundsUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130%3Aparcelas&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nam&count=25&startIndex=0&bbox=-58.38%2C-34.6175%2C-58.3775%2C-34.615%2CCRS%3A84",
+        "exampleExactUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130%3Aparcelas&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nam&count=25&startIndex=0&cql_filter=nam+IN+%28%2702-001-001A%27%2C%2702-001-003%27%2C%2702-001-004%27%2C%2702-001-005%27%2C%2702-001-006%27%2C%2702-001-007%27%2C%2702-001-008%27%2C%2702-001-009%27%2C%2702-001-010%27%2C%2702-001-011%27%2C%2702-001-012%27%2C%2702-001-013%27%2C%2702-001-014%27%2C%2702-001-015%27%2C%2702-001-016%27%2C%2702-001-017A%27%2C%2702-001-019%27%2C%2702-001-020%27%2C%2702-001-021%27%2C%2702-001-022C%27%2C%2702-001-024C%27%2C%2702-001-026A%27%2C%2702-001-026B%27%2C%2702-001-027A%27%2C%2702-001-029%27%2C%2702-001-030A%27%2C%2702-001-032%27%2C%2702-001-033%27%2C%2702-001-034A%27%2C%2702-002-001B%27%2C%2702-002-001C%27%2C%2702-002-003%27%2C%2702-002-004%27%2C%2702-002-005%27%2C%2702-002-006A%27%2C%2702-002-008%27%2C%2702-002-009%27%2C%2702-002-010%27%2C%2702-002-011A%27%2C%2702-002-013%27%2C%2702-002-014%27%2C%2702-002-015%27%2C%2702-002-016%27%2C%2702-002-017%27%2C%2702-002-018%27%2C%2702-002-019%27%2C%2702-002-020A%27%2C%2702-002-021%27%2C%2702-002-022%27%2C%2702-002-023A%27%2C%2702-002-026A%27%2C%2702-002-028A%27%2C%2702-002-031%27%2C%2702-002-032%27%2C%2702-002-033%27%2C%2702-002-034%27%2C%2702-002-035%27%2C%2702-002-036%27%2C%2702-002-037A%27%2C%2702-003-017%27%2C%2702-003-018%27%2C%2702-003-019%27%2C%2702-003-020%27%2C%2702-003-021%27%2C%2702-003-022%27%2C%2702-003-023%27%2C%2702-003-024%27%2C%2702-003-025%27%2C%2702-003-026%27%2C%2702-003-027A%27%2C%2712-070-001A%27%2C%2712-070-004%27%2C%2712-070-005%27%2C%2712-070-006A%27%2C%2712-070-006B%27%2C%2712-070-006D%27%2C%2712-070-007A%27%2C%2712-070-007B%27%2C%2712-070-009D%27%2C%2712-070-011A%27%29"
+      },
+      "diagnosis": {
+        "status": 200,
+        "matched": 128,
+        "returned": 128,
+        "invalid": [
+          {
+            "nam": "02-014A-011E",
+            "gid": 2624,
+            "geometryType": "MultiPolygon"
+          }
+        ],
+        "namSamples": [
+          "02-003-001",
+          "02-003-002",
+          "02-003-003"
+        ]
+      }
+    },
+    {
+      "outcome": "failed-validation-assumption",
+      "city": "buenos_aires",
+      "reason": "A digits-first three-digit parcel assumption rejected published PLT1, PLZ1, 0FRA/0FRB and 0000 codes; incomplete cells were not accepted.",
+      "checkedAt": "2026-10-03",
+      "description": "Metadata-only complete viewport and exact-key source verification.",
+      "center": [
+        -34.6132,
+        -58.3773
+      ],
+      "cells": [
+        {
+          "bbox": [
+            -58.38,
+            -34.6175,
+            -58.3775,
+            -34.615
+          ],
+          "complete": true,
+          "count": 137
+        },
+        {
+          "bbox": [
+            -58.38,
+            -34.615,
+            -58.3775,
+            -34.612500000000004
+          ],
+          "complete": true,
+          "count": 128
+        },
+        {
+          "bbox": [
+            -58.38,
+            -34.612500000000004,
+            -58.3775,
+            -34.61
+          ],
+          "complete": true,
+          "count": 91
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.6175,
+            -58.375,
+            -34.615
+          ],
+          "complete": true,
+          "count": 151
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.615,
+            -58.375,
+            -34.612500000000004
+          ],
+          "complete": true,
+          "count": 108
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.612500000000004,
+            -58.375,
+            -34.61
+          ],
+          "complete": true,
+          "count": 89
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.6175,
+            -58.3725,
+            -34.615
+          ],
+          "complete": true,
+          "count": 139
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.615,
+            -58.3725,
+            -34.612500000000004
+          ],
+          "complete": true,
+          "count": 108
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.612500000000004,
+            -58.375,
+            -34.61
+          ],
+          "complete": true,
+          "count": 89
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.61,
+            -58.375,
+            -34.6075
+          ],
+          "complete": true,
+          "count": 99
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.6075,
+            -58.375,
+            -34.605000000000004
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.61,
+            -58.3725,
+            -34.6075
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.6075,
+            -58.3725,
+            -34.605000000000004
+          ],
+          "complete": true,
+          "count": 54
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.612500000000004,
+            -58.370000000000005,
+            -34.61
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.61,
+            -58.370000000000005,
+            -34.6075
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.6075,
+            -58.370000000000005,
+            -34.605000000000004
+          ],
+          "status": 502,
+          "error": "Parcel provider returned a missing or invalid native parcel ID."
+        }
+      ],
+      "retainedCount": 986,
+      "acrossCellConflicts": 0,
+      "exact": [
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 26,
+          "count": 26,
+          "absent": 0,
+          "conflicts": 0
+        }
+      ],
+      "sampleCanonicalIds": [
+        "AR-CABA-WFS-NAM-02-001-001A",
+        "AR-CABA-WFS-NAM-02-001-003",
+        "AR-CABA-WFS-NAM-02-001-004"
+      ],
+      "testedPageSize": 25,
+      "nativeIdPattern": "^[0-9]{2,3}-[0-9]{3}[A-Za-z]*-[0-9]{3}[A-Za-z]*$",
+      "requestSummary": {
+        "total": 114,
+        "statusCounts": {
+          "200": 114
+        },
+        "exampleBoundsUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130%3Aparcelas&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nam&count=25&startIndex=0&bbox=-58.38%2C-34.6175%2C-58.3775%2C-34.615%2CCRS%3A84",
+        "exampleExactUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130%3Aparcelas&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nam&count=25&startIndex=0&cql_filter=nam+IN+%28%2702-001-001A%27%2C%2702-001-003%27%2C%2702-001-004%27%2C%2702-001-005%27%2C%2702-001-006%27%2C%2702-001-007%27%2C%2702-001-008%27%2C%2702-001-009%27%2C%2702-001-010%27%2C%2702-001-011%27%2C%2702-001-012%27%2C%2702-001-013%27%2C%2702-001-014%27%2C%2702-001-015%27%2C%2702-001-016%27%2C%2702-001-017A%27%2C%2702-001-019%27%2C%2702-001-020%27%2C%2702-001-021%27%2C%2702-001-022C%27%2C%2702-001-024C%27%2C%2702-001-026A%27%2C%2702-001-026B%27%2C%2702-001-027A%27%2C%2702-001-029%27%2C%2702-001-030A%27%2C%2702-001-032%27%2C%2702-001-033%27%2C%2702-001-034A%27%2C%2702-002-001B%27%2C%2702-002-001C%27%2C%2702-002-003%27%2C%2702-002-004%27%2C%2702-002-005%27%2C%2702-002-006A%27%2C%2702-002-008%27%2C%2702-002-009%27%2C%2702-002-010%27%2C%2702-002-011A%27%2C%2702-002-013%27%2C%2702-002-014%27%2C%2702-002-015%27%2C%2702-002-016%27%2C%2702-002-017%27%2C%2702-002-018%27%2C%2702-002-019%27%2C%2702-002-020A%27%2C%2702-002-021%27%2C%2702-002-022%27%2C%2702-002-023A%27%2C%2702-002-026A%27%2C%2702-002-028A%27%2C%2702-002-031%27%2C%2702-002-032%27%2C%2702-002-033%27%2C%2702-002-034%27%2C%2702-002-035%27%2C%2702-002-036%27%2C%2702-002-037A%27%2C%2702-003-017%27%2C%2702-003-018%27%2C%2702-003-019%27%2C%2702-003-020%27%2C%2702-003-021%27%2C%2702-003-022%27%2C%2702-003-023%27%2C%2702-003-024%27%2C%2702-003-025%27%2C%2702-003-026%27%2C%2702-003-027A%27%2C%2712-070-001A%27%2C%2712-070-004%27%2C%2712-070-005%27%2C%2712-070-006A%27%2C%2712-070-006B%27%2C%2712-070-006D%27%2C%2712-070-007A%27%2C%2712-070-007B%27%2C%2712-070-009D%27%2C%2712-070-011A%27%29"
+      },
+      "diagnosis": [
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "status": 200,
+          "matched": 84,
+          "returned": 84,
+          "invalid": [
+            {
+              "nam": "02-025Z-PLT1",
+              "gid": 2907,
+              "geometryType": "MultiPolygon"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.6075,
+            -58.375,
+            -34.605000000000004
+          ],
+          "status": 200,
+          "matched": 90,
+          "returned": 90,
+          "invalid": [
+            {
+              "nam": "01-010B-0000",
+              "gid": 1156,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "01-017B-0000",
+              "gid": 1322,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "01-018A-0000",
+              "gid": 1323,
+              "geometryType": "MultiPolygon"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "status": 200,
+          "matched": 84,
+          "returned": 84,
+          "invalid": [
+            {
+              "nam": "02-025Z-PLT1",
+              "gid": 2907,
+              "geometryType": "MultiPolygon"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.61,
+            -58.3725,
+            -34.6075
+          ],
+          "status": 200,
+          "matched": 64,
+          "returned": 64,
+          "invalid": [
+            {
+              "nam": "02-035Z-PLT1",
+              "gid": 3111,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-036Z-PLT1",
+              "gid": 3120,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-044-0000",
+              "gid": 3314,
+              "geometryType": "MultiPolygon"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.612500000000004,
+            -58.370000000000005,
+            -34.61
+          ],
+          "status": 200,
+          "matched": 86,
+          "returned": 86,
+          "invalid": [
+            {
+              "nam": "02-053-0FRA",
+              "gid": 3459,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-053-0FRB",
+              "gid": 3460,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-053-PLZ1",
+              "gid": 3461,
+              "geometryType": "MultiPolygon"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.61,
+            -58.370000000000005,
+            -34.6075
+          ],
+          "status": 200,
+          "matched": 19,
+          "returned": 19,
+          "invalid": [
+            {
+              "nam": "01-041-0000",
+              "gid": 2092,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-044-0000",
+              "gid": 3314,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-053-0FRA",
+              "gid": 3459,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-053-0FRB",
+              "gid": 3460,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-062-0000",
+              "gid": 3551,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-078-0000",
+              "gid": 3635,
+              "geometryType": "MultiPolygon"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.6075,
+            -58.370000000000005,
+            -34.605000000000004
+          ],
+          "status": 200,
+          "matched": 47,
+          "returned": 47,
+          "invalid": [
+            {
+              "nam": "01-041-0000",
+              "gid": 2092,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "01-051Z-PLT1",
+              "gid": 2293,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "01-057A-PLZ1",
+              "gid": 2340,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "01-059Z-PLT1",
+              "gid": 2343,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-062-0000",
+              "gid": 3551,
+              "geometryType": "MultiPolygon"
+            },
+            {
+              "nam": "02-078-0000",
+              "gid": 3635,
+              "geometryType": "MultiPolygon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "outcome": "pass",
+      "city": "buenos_aires",
+      "checkedAt": "2026-10-03",
+      "description": "Metadata-only complete viewport and exact-key source verification.",
+      "center": [
+        -34.6132,
+        -58.3773
+      ],
+      "cells": [
+        {
+          "bbox": [
+            -58.38,
+            -34.6175,
+            -58.3775,
+            -34.615
+          ],
+          "complete": true,
+          "count": 137
+        },
+        {
+          "bbox": [
+            -58.38,
+            -34.615,
+            -58.3775,
+            -34.612500000000004
+          ],
+          "complete": true,
+          "count": 128
+        },
+        {
+          "bbox": [
+            -58.38,
+            -34.612500000000004,
+            -58.3775,
+            -34.61
+          ],
+          "complete": true,
+          "count": 91
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.6175,
+            -58.375,
+            -34.615
+          ],
+          "complete": true,
+          "count": 151
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.615,
+            -58.375,
+            -34.612500000000004
+          ],
+          "complete": true,
+          "count": 108
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.612500000000004,
+            -58.375,
+            -34.61
+          ],
+          "complete": true,
+          "count": 89
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.6175,
+            -58.3725,
+            -34.615
+          ],
+          "complete": true,
+          "count": 139
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.615,
+            -58.3725,
+            -34.612500000000004
+          ],
+          "complete": true,
+          "count": 108
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "complete": true,
+          "count": 84
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.612500000000004,
+            -58.375,
+            -34.61
+          ],
+          "complete": true,
+          "count": 89
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.61,
+            -58.375,
+            -34.6075
+          ],
+          "complete": true,
+          "count": 99
+        },
+        {
+          "bbox": [
+            -58.3775,
+            -34.6075,
+            -58.375,
+            -34.605000000000004
+          ],
+          "complete": true,
+          "count": 90
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.612500000000004,
+            -58.3725,
+            -34.61
+          ],
+          "complete": true,
+          "count": 84
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.61,
+            -58.3725,
+            -34.6075
+          ],
+          "complete": true,
+          "count": 64
+        },
+        {
+          "bbox": [
+            -58.375,
+            -34.6075,
+            -58.3725,
+            -34.605000000000004
+          ],
+          "complete": true,
+          "count": 54
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.612500000000004,
+            -58.370000000000005,
+            -34.61
+          ],
+          "complete": true,
+          "count": 86
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.61,
+            -58.370000000000005,
+            -34.6075
+          ],
+          "complete": true,
+          "count": 19
+        },
+        {
+          "bbox": [
+            -58.3725,
+            -34.6075,
+            -58.370000000000005,
+            -34.605000000000004
+          ],
+          "complete": true,
+          "count": 47
+        }
+      ],
+      "retainedCount": 1275,
+      "acrossCellConflicts": 0,
+      "exact": [
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0
+        },
+        {
+          "complete": true,
+          "input": 75,
+          "count": 75,
+          "absent": 0,
+          "conflicts": 0
+        }
+      ],
+      "sampleCanonicalIds": [
+        "AR-CABA-WFS-NAM-02-001-001A",
+        "AR-CABA-WFS-NAM-02-001-003",
+        "AR-CABA-WFS-NAM-02-001-004"
+      ],
+      "production": {
+        "pageSize": 500,
+        "cells": [
+          {
+            "bbox": [
+              -58.38,
+              -34.6175,
+              -58.3775,
+              -34.615
+            ],
+            "count": 137,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.38,
+              -34.615,
+              -58.3775,
+              -34.612500000000004
+            ],
+            "count": 128,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.38,
+              -34.612500000000004,
+              -58.3775,
+              -34.61
+            ],
+            "count": 91,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3775,
+              -34.6175,
+              -58.375,
+              -34.615
+            ],
+            "count": 151,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3775,
+              -34.615,
+              -58.375,
+              -34.612500000000004
+            ],
+            "count": 108,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3775,
+              -34.612500000000004,
+              -58.375,
+              -34.61
+            ],
+            "count": 89,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.375,
+              -34.6175,
+              -58.3725,
+              -34.615
+            ],
+            "count": 139,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.375,
+              -34.615,
+              -58.3725,
+              -34.612500000000004
+            ],
+            "count": 108,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.375,
+              -34.612500000000004,
+              -58.3725,
+              -34.61
+            ],
+            "count": 84,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3775,
+              -34.612500000000004,
+              -58.375,
+              -34.61
+            ],
+            "count": 89,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3775,
+              -34.61,
+              -58.375,
+              -34.6075
+            ],
+            "count": 99,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3775,
+              -34.6075,
+              -58.375,
+              -34.605000000000004
+            ],
+            "count": 90,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.375,
+              -34.612500000000004,
+              -58.3725,
+              -34.61
+            ],
+            "count": 84,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.375,
+              -34.61,
+              -58.3725,
+              -34.6075
+            ],
+            "count": 64,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.375,
+              -34.6075,
+              -58.3725,
+              -34.605000000000004
+            ],
+            "count": 54,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3725,
+              -34.612500000000004,
+              -58.370000000000005,
+              -34.61
+            ],
+            "count": 86,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3725,
+              -34.61,
+              -58.370000000000005,
+              -34.6075
+            ],
+            "count": 19,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -58.3725,
+              -34.6075,
+              -58.370000000000005,
+              -34.605000000000004
+            ],
+            "count": 47,
+            "complete": true
+          }
+        ],
+        "under": {
+          "complete": true,
+          "count": 4,
+          "sourceParcelId": "02-001-001A"
+        },
+        "singleExact": {
+          "complete": true,
+          "geometryMatches": true
+        }
+      },
+      "testedPageSize": 25,
+      "nativeIdPattern": "^[0-9]{2,3}-[0-9]{3}[A-Za-z]*-[0-9A-Za-z]{3,5}$",
+      "requestSummary": {
+        "total": 139,
+        "statusCounts": {
+          "200": 139
+        },
+        "exampleBoundsUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130%3Aparcelas&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nam&count=25&startIndex=0&bbox=-58.38%2C-34.6175%2C-58.3775%2C-34.615%2CCRS%3A84",
+        "exampleExactUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130%3Aparcelas&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nam&count=25&startIndex=0&cql_filter=nam+IN+%28%2702-001-001A%27%2C%2702-001-003%27%2C%2702-001-004%27%2C%2702-001-005%27%2C%2702-001-006%27%2C%2702-001-007%27%2C%2702-001-008%27%2C%2702-001-009%27%2C%2702-001-010%27%2C%2702-001-011%27%2C%2702-001-012%27%2C%2702-001-013%27%2C%2702-001-014%27%2C%2702-001-015%27%2C%2702-001-016%27%2C%2702-001-017A%27%2C%2702-001-019%27%2C%2702-001-020%27%2C%2702-001-021%27%2C%2702-001-022C%27%2C%2702-001-024C%27%2C%2702-001-026A%27%2C%2702-001-026B%27%2C%2702-001-027A%27%2C%2702-001-029%27%2C%2702-001-030A%27%2C%2702-001-032%27%2C%2702-001-033%27%2C%2702-001-034A%27%2C%2702-002-001B%27%2C%2702-002-001C%27%2C%2702-002-003%27%2C%2702-002-004%27%2C%2702-002-005%27%2C%2702-002-006A%27%2C%2702-002-008%27%2C%2702-002-009%27%2C%2702-002-010%27%2C%2702-002-011A%27%2C%2702-002-013%27%2C%2702-002-014%27%2C%2702-002-015%27%2C%2702-002-016%27%2C%2702-002-017%27%2C%2702-002-018%27%2C%2702-002-019%27%2C%2702-002-020A%27%2C%2702-002-021%27%2C%2702-002-022%27%2C%2702-002-023A%27%2C%2702-002-026A%27%2C%2702-002-028A%27%2C%2702-002-031%27%2C%2702-002-032%27%2C%2702-002-033%27%2C%2702-002-034%27%2C%2702-002-035%27%2C%2702-002-036%27%2C%2702-002-037A%27%2C%2702-003-017%27%2C%2702-003-018%27%2C%2702-003-019%27%2C%2702-003-020%27%2C%2702-003-021%27%2C%2702-003-022%27%2C%2702-003-023%27%2C%2702-003-024%27%2C%2702-003-025%27%2C%2702-003-026%27%2C%2702-003-027A%27%2C%2712-070-001A%27%2C%2712-070-004%27%2C%2712-070-005%27%2C%2712-070-006A%27%2C%2712-070-006B%27%2C%2712-070-006D%27%2C%2712-070-007A%27%2C%2712-070-007B%27%2C%2712-070-009D%27%2C%2712-070-011A%27%29"
+      }
+    }
+  ],
+  "validation": {
+    "command": "npm --prefix backend test -- test/db-city-wfs-live.test.js test/wfs-parcel-adapter.test.js",
+    "files": 2,
+    "testsPassed": 39,
+    "safeguards": [
+      "Missing native IDs never fall back to WFS row IDs.",
+      "Incomplete pages, changing matched counts and conflicting native-key geometry fail closed.",
+      "Foreign canonical namespaces are rejected before fetching.",
+      "Only allowlisted parcel source fields survive canonicalization."
+    ]
+  },
+  "integration": "Merge reviewed descriptors into the executable source catalogue, resolve existing DB-vs-live city routing explicitly, and add catalog/source-binding city fixtures. Generic createWfsParcelSource already implements these sources; no provider transport wrapper or database ingestion is required."
+}

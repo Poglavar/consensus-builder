@@ -1,7 +1,7 @@
 // Adapts a fixed ArcGIS parcel layer to complete, canonical WGS84 parcel collections.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { upstreamError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 export { validateBounds } from './source-contract.js';
 
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
@@ -46,14 +46,14 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 headers: { Accept: 'application/geo+json, application/json',
                     ...(usePost ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) }
             });
-            if (!response.ok) throw upstreamError(`Parcel provider returned HTTP ${response.status}.`);
+            if (!response.ok) throw providerHttpError(response);
             payload = await response.json();
         } catch (error) {
             if (signal.aborted || error.name === 'TimeoutError' || error.name === 'AbortError') throw upstreamError('Parcel provider timed out.', 504);
             if (error.status) throw error;
-            throw upstreamError(`Parcel provider is unavailable: ${error.message}`);
+            throw upstreamError('Parcel provider is unavailable.');
         }
-        if (payload.error) throw upstreamError(`ArcGIS parcel query failed: ${payload.error.message || payload.error.code}`);
+        if (payload.error) throw providerHttpError(payload.error.code);
         return payload;
     }
 

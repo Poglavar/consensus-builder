@@ -1164,11 +1164,17 @@ async function ensureProposalMetadataLoaded(proposal) {
     return proposal;
 }
 
-function formatCurrencyMetric(value) {
+// Amount then code ("431,000 EUR"), in the proposal's own currency, else the city's display
+// currency (city-config.js `currency.code`): one rendering per language everywhere.
+function formatCurrencyMetric(value, currency) {
     if (!Number.isFinite(value) || value <= 0) {
         return '—';
     }
-    return `€${Math.round(value).toLocaleString('hr-HR')}`;
+    let code = currency;
+    if (!code) {
+        try { code = window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code; } catch (_) { code = null; }
+    }
+    return CbFormat.formatMoney(Math.round(value), code || 'EUR');
 }
 
 function getExplorerBaseUrlForChain(chainId) {

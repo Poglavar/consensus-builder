@@ -501,11 +501,11 @@
             return;
         }
         if (nearest && nearest.metres < 1) {
-            global.updateStatus(`No junction: the node sits ${nearest.metres.toFixed(2)} m from "${nearest.title}" instead of on it.`);
+            global.updateStatus(`No junction: the node sits ${CbFormat.formatLength(nearest.metres, { maxFractionDigits: 2, minFractionDigits: 2 })} from "${nearest.title}" instead of on it.`);
             return;
         }
         global.updateStatus(nearest
-            ? `Loose end — the nearest road centreline is ${nearest.metres.toFixed(1)} m away.`
+            ? `Loose end — the nearest road centreline is ${CbFormat.formatLength(nearest.metres, { maxFractionDigits: 1, minFractionDigits: 1 })} away.`
             : 'Loose end — no other road near it.');
     }
 
@@ -648,7 +648,7 @@
                     : (isLooseEnd
                         ? 'Loose end — drag onto a road or node to join it · ⌥-click to remove'
                         : 'Drag to move · ⌥-click to remove this node')
-            ) + (otherRoads ? ` (${otherRoads} other road${otherRoads > 1 ? 's' : ''} meet here)` : ''),
+            ) + (otherRoads ? ` (${otherRoads} other ${otherRoads > 1 ? 'roads meet' : 'road meets'} here)` : ''),
             { sticky: true, pane: 'road-node-handles' });
             const origin = { lat: node.lat, lng: node.lng };
             let lastLiveUpdate = 0;

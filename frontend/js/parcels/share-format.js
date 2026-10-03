@@ -59,6 +59,9 @@
     // A proposal's offer → { symbol, value, suffix, display } or null when there is no positive
     // offer. EUR is rounded and locale-grouped (€1.000); every other currency is treated as crypto
     // and keeps sub-unit precision (0.03 ETH stays "0.03 ETH", never "0 ETH").
+    // With the shared formatter loaded (js/format.js, every page that shows offers) the offer reads
+    // amount then code in the UI language ("1,000 EUR", "0.0300 ETH"): `value` then carries the
+    // whole text and `symbol`/`suffix` are empty. The path below it is for require() without it.
     function formatOffer(rawValue, currencyRaw) {
         const amount = Number(rawValue);
         if (!Number.isFinite(amount) || amount <= 0) {
@@ -66,6 +69,10 @@
         }
         const currency = (typeof currencyRaw === 'string' ? currencyRaw : (currencyRaw || 'ETH'))
             .toString().toUpperCase();
+        if (typeof CbFormat !== 'undefined') {
+            const display = CbFormat.formatMoney(amount, currency);
+            return { symbol: '', value: display, suffix: '', display };
+        }
         const isEur = currency === 'EUR';
         const symbol = isEur ? '€' : '';
         const suffix = (currency && !isEur) ? ` ${currency}` : '';

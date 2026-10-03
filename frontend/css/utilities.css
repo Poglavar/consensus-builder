@@ -633,7 +633,7 @@ button.status-log-message {
 .floating-status {
     position: absolute;
     left: 50%;
-    bottom: calc(var(--map-shell-bottom) + var(--map-shell-button-size) + var(--map-shell-gap));
+    bottom: var(--map-shell-bottom-clearance);
     transform: translateX(-50%);
     z-index: 990;
     max-width: min(480px, calc(100vw - 2 * (var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap))));
@@ -1017,41 +1017,6 @@ button.status-log-message {
 .proposal-type-button:hover:not(:disabled) {
     background-color: #e9ecef;
     border-color: #999;
-}
-
-.reparcel-alg-button {
-    width: 100%;
-    min-width: 0;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    color: #333;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-}
-
-.reparcel-alg-button:hover:not(:disabled) {
-    background-color: #e9ecef;
-    border-color: #999;
-}
-
-.reparcel-alg-button:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-.reparcel-alg-button.selected {
-    border-color: #0f5132;
-    background-color: #e6f4ea;
-    color: #0f5132;
-    font-weight: 600;
-}
-
-.reparcel-alg-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
 }
 
 .proposal-type-button:active:not(:disabled) {
@@ -1680,43 +1645,10 @@ button.status-log-message {
     width: 100%;
 }
 
-.blockify-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.blockify-button:hover {
-    background-color: #0069d9;
-}
-
-.blockify-button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-}
-
-/* Blockify Sidebar Styles */
-#blockify-sidebar {
-    width: 300px;
-    background-color: #f8f9fa;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-#blockify-sidebar h3 {
-    margin: 0 0 15px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
-    font-size: 16px;
-    color: #333;
-}
-
+/* Blockify Sidebar Styles
+   The parameter rows every editor sidebar shares (Urban Rule, Row houses, Detached houses,
+   Freeform). The sidebar box itself and its section labels are in modals.css; the selects take
+   their look from the base form controls in primitives.css. */
 .parameter-group {
     margin-bottom: 20px;
 }
@@ -1724,33 +1656,21 @@ button.status-log-message {
 .parameter-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
-    color: #495057;
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text);
 }
 
 .parameter-group select {
     width: 100%;
-    padding: 6px 8px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    background-color: #f8f9fa;
-    font-size: 14px;
-    color: #495057;
     margin-bottom: 8px;
-}
-
-.parameter-group select:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    background-color: #e9ecef;
 }
 
 .algorithm-description {
     padding: 10px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    font-size: 13px;
-    color: #495057;
+    background: var(--cb-surface-2);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
     margin-bottom: 15px;
     font-style: italic;
 }
@@ -1782,10 +1702,10 @@ button.status-log-message {
 .parameter-info {
     margin-top: 20px;
     padding: 15px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    font-size: 13px;
-    color: #495057;
+    background: var(--cb-surface-2);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
     line-height: 1.5;
 }
 
@@ -2374,7 +2294,7 @@ button.status-log-message {
 #proposal-details-panel {
     position: fixed;
     right: 10px;
-    bottom: 10px;
+    bottom: var(--map-shell-bottom-clearance);
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(3px);
     border: 1px solid #ccc;
@@ -2397,13 +2317,13 @@ button.status-log-message {
    bottom-sheet policy (half the screen, collapsible) instead of overriding it back to full height.
    769px rather than 768px: the mobile block below is `max-width: 768px`, and the two used to both
    match at exactly 768px. */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
     #proposal-details-panel {
-        top: 10px;
-        bottom: 10px;
-        height: calc(100dvh - 20px);
-        max-height: calc(100dvh - 20px);
-        min-height: calc(100dvh - 20px);
+        top: var(--map-shell-top-clearance);
+        bottom: var(--map-shell-bottom-clearance);
+        height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
+        min-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
         overflow-y: auto;
     }
 }
@@ -2526,12 +2446,14 @@ button.status-log-message {
 }
 
 /* Mobile panel as bottom sheet */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .info-panel {
         left: 0 !important;
         right: 0 !important;
         top: auto !important;
-        bottom: 0;
+        /* Above the bottom bar (Proposals · Tools · Activity), so the bar stays reachable while a
+           parcel or proposal sheet is open. */
+        bottom: var(--map-shell-bottom-clearance);
         /* Mobile policy: a panel takes at most half the screen; content beyond that scrolls
            inside, or the user collapses the panel to its header strip. */
         max-height: 50vh;
@@ -2540,12 +2462,12 @@ button.status-log-message {
         box-sizing: border-box;
     }
 
-    /* The docked sheets (parcel, proposal, road) start right of the left-edge mode strip.
-       Full width, they covered the 2D/3D/photo buttons — the way to switch view was buried under
-       the very panel that describes what you would switch to. */
+    /* The docked sheets (parcel, proposal, road) run edge to edge. The mode strip now sits at the
+       top-left under the search box (it used to be bottom-left), so a half-height sheet no longer
+       covers it; the inset it needed is gone. */
     .info-panel.right-dock-panel {
-        left: var(--map-mode-strip) !important;
-        border-radius: 12px 0 0 0;
+        left: 0 !important;
+        border-radius: 12px;
     }
 
     /* Legacy full-bleed width for the info panels that are NOT part of the right dock. The dock's
@@ -2579,14 +2501,14 @@ button.status-log-message {
    and shrinks to its header at the top. On phones it is a bottom sheet with no top — releasing the
    bottom as well left it with neither, and it jumped to the top edge over the menu button and the
    Guest pill. */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
     #proposal-details-panel.is-minimized,
     #proposal-details-panel.visible.is-minimized {
         bottom: auto !important;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     /* Panel header and body structure */
     .btn,
     .parcel-info-btn,

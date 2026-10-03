@@ -229,8 +229,10 @@ function initializeDecayCountdown() {
     const remainingBar = offerBar.querySelector('.offer-bar-remaining');
     const decayedBar = offerBar.querySelector('.offer-bar-decayed');
     const amountEl = offerBar.querySelector('.offer-amount');
-    const currencySymbol = proposal.offerCurrency === 'EUR' ? '€' : '';
-    const currencySuffix = proposal.offerCurrency && proposal.offerCurrency !== 'EUR' ? ' ' + proposal.offerCurrency : '';
+    // Amount then code ("431,000 USDT") in the offer's own currency, else the city's display currency.
+    const offerCurrency = proposal.offerCurrency
+        || window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code
+        || 'EUR';
 
     function updateDecay() {
         const now = Date.now();
@@ -249,7 +251,7 @@ function initializeDecayCountdown() {
 
         if (remainingBar) remainingBar.style.width = remainingPercent + '%';
         if (decayedBar) decayedBar.style.width = decayedPercent + '%';
-        if (amountEl) amountEl.textContent = currencySymbol + Math.round(currentOffer).toLocaleString('hr-HR') + currencySuffix;
+        if (amountEl) amountEl.textContent = CbFormat.formatMoney(currentOffer, offerCurrency);
 
         // Stop interval once fully decayed
         if (progress >= 1 && decayCountdownInterval) {
@@ -348,7 +350,8 @@ function formatProposalOfferValue(value) {
     const cleanValue = value.toString().replace(/\D/g, '');
     if (!cleanValue) return '';
     const number = parseInt(cleanValue, 10);
-    return number.toLocaleString('hr-HR');
+    // Grouped in the UI language; parseProposalOfferValue strips every non-digit back out.
+    return CbFormat.formatNumber(number, { maxFractionDigits: 0 });
 }
 
 function handleProposalOfferInput(input) {

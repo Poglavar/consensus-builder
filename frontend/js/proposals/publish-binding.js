@@ -95,11 +95,19 @@
             const response = await fetchImpl(`${backendBase}/proposals/binding`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify({ ...body,
+                    parcelSourceId: global.CityConfigManager?.getCityConfig?.(body.city)?.parcels?.sourceId ?? null })
             });
             let payload = null;
             try { payload = await response.json(); } catch (_) { payload = null; }
             if (!response.ok) {
+                if (payload?.code?.startsWith('parcel-source-') && global.ParcelSourceHealth) {
+                    const failure = Object.assign(new Error(payload.error), payload, { status: response.status });
+                    global.reportParcelFetchFailure?.(failure, 'proposal binding');
+                    throw publishError(payload.code, global.ParcelSourceHealth.describeFailure(failure, {
+                        offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n)
+                    }), { status: response.status, upstreamStatus: payload.upstreamStatus, retryAfterSeconds: payload.retryAfterSeconds });
+                }
                 throw publishError(payload && payload.code ? payload.code : 'binding-failed',
                     (payload && payload.error) || `The binding service answered ${response.status}.`,
                     { status: response.status });

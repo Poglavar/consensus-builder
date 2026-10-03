@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Supported parcel source formats · Consensus Builder</title>
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/parcel-sources.css">
+</head>
+<body class="parcel-source-formats">
+    <main>
+        <h1>Supported parcel source formats</h1>
+        <p>In the map’s Information panel, choose “Choose a parcel source” and paste a public HTTPS URL. We check the formats below in order, then verify viewport loading and exact parcel lookup before offering the source. Access failures are reported separately from an unsupported format.</p>
+        <table>
+            <thead><tr><th>Adapter</th><th>URL to provide</th><th>Requirements</th></tr></thead>
+            <tbody>
+                <tr><td>ArcGIS REST</td><td>A numbered FeatureServer or MapServer layer; a service URL can also expose its parcel layer.</td><td>Polygon geometry, a stable parcel property and an object ID field. Supports GeoJSON queries, WGS84 output and complete pagination or object ID manifests.</td></tr>
+                <tr><td>WFS 1.1 / 2.0</td><td>A WFS service URL. Include <code>typeName=namespace:parcels</code> to select a layer when needed.</td><td>GetCapabilities, DescribeFeatureType, GeoJSON GetFeature, WGS84 output, count/offset paging, stable parcel properties and property filters for exact IDs.</td></tr>
+                <tr><td>OGC API Features</td><td>A collection URL or its <code>/collections/name/items</code> URL.</td><td>Collection/queryable property metadata, a stable parcel property, GeoJSON WGS84 output, counts and pagination, and CQL2 property filtering for exact IDs.</td></tr>
+                <tr><td>Socrata</td><td><code>https://host/resource/xxxx-xxxx.json</code> or the matching <code>/api/views/xxxx-xxxx</code> metadata URL.</td><td>Metadata identifying polygon geometry and a stable parcel property; SoQL spatial/count queries and stable row/version fields.</td></tr>
+                <tr><td>Complete GeoJSON snapshot</td><td>A directly downloadable HTTPS FeatureCollection URL without query parameters.</td><td>WGS84 Polygon/MultiPolygon features, a stable parcel property, a declared full-source <code>bbox</code>, a strong HTTP ETag, and <code>complete: true</code> or an exact <code>numberMatched</code>/<code>totalFeatures</code> count. Maximum 8 MiB and 5,000 features.</td></tr>
+            </tbody>
+        </table>
+        <h2>Making your source readable</h2>
+        <p>Expose a persistent native parcel key as a property such as <code>PARCEL_ID</code>, <code>parcelNumber</code>, <code>APN</code>, <code>PIN</code>, <code>BBL</code>, <code>FOLIO</code> or <code>cadastral_id</code>. Keep it consistent across spatial and exact-ID requests. Temporary row indexes or ArcGIS object IDs alone do not establish parcel identity.</p>
+        <p>Every returned geometry must be a valid, closed polygon in longitude/latitude coordinates. Report completeness honestly: truncated responses must expose paging/count information. Raster tiles, WMS images and web viewers alone do not provide parcel geometry.</p>
+        <p>The URL must be reachable from our proxy over verified HTTPS, on the standard HTTPS port. The URL setup supports anonymous public services; remove embedded credentials and access keys. Private network URLs are not supported. Responses that exceed the size limit or ignore uncompressed transfer requests cannot be checked by this setup flow.</p>
+        <p>A successful check verifies the small area around your current map center. It does not establish nationwide coverage or source quality. You choose the source and its intended use; terms and attribution remain informational.</p>
+        <p>Source configuration is saved in this browser for the chosen city and backend. To restore the city’s usual source, choose “Use the city default.” Switching reloads the map; existing proposals retain their original source identity.</p>
+        <h2>No available adapter?</h2>
+        <ol>
+            <li>Conform your source to one of the formats above.</li>
+            <li><a href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">Ask us to add another adapter in the Telegram group</a>, which we sometimes do.</li>
+        </ol>
+        <p><a href="index.html">Return to the map</a></p>
+    </main>
+</body>
+</html>

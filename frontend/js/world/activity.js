@@ -75,7 +75,7 @@
                     action.textContent = t('world.activity.actions.' + event.type, event.type);
                     const subject = document.createElement('span'); subject.className = 'world-activity__subject'; subject.textContent = event.subject;
                     const time = document.createElement('time'); time.dateTime = new Date(event.date).toISOString();
-                    time.textContent = new Intl.DateTimeFormat(global.i18n?.getLanguage?.() || document.documentElement.lang || 'en', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(event.date);
+                    time.textContent = CbFormat.formatDateTime(event.date);
                     const place = global.WorldActivityModel.locationOf(event, { coverage, city: id => {
                         if (!id || id === 'explore') return null;
                         const config = global.CityConfigManager.getCityConfig(id);

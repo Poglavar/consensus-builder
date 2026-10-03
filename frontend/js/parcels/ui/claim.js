@@ -1015,11 +1015,11 @@
         });
         if (mintDeclareUrl) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Parcel not minted yet. Opening Mint & Attest flow...');
+                global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_opening_mint_attest_flow', {}, 'Parcel not minted yet. Opening Mint & Attest flow...'));
             }
             openExternalUrl(mintDeclareUrl);
         } else if (typeof global.updateStatus === 'function') {
-            global.updateStatus("Parcel not minted yet and the Mint & Attest flow couldn't be prepared.");
+            global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared', {}, "Parcel not minted yet and the Mint & Attest flow couldn't be prepared."));
         }
     }
 
@@ -1124,7 +1124,7 @@
         } catch (error) {
             console.error('Failed to open Parcel Builder', error);
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to open Parcel Builder. Please try again.');
+                global.updateStatus(tParcel('status.messages.unable_to_open_parcel_builder_please_try_again', {}, 'Unable to open Parcel Builder. Please try again.'));
             }
         }
     }
@@ -1133,7 +1133,7 @@
         const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select a parcel before attempting to claim it.');
+                global.updateStatus(tParcel('status.messages.select_a_parcel_before_attempting_to_claim_it', {}, 'Select a parcel before attempting to claim it.'));
             }
             return;
         }
@@ -1141,7 +1141,7 @@
         const parcelId = deriveParcelIdentifier(parcelFeature);
         if (!parcelId) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to determine parcel identifier for claims.');
+                global.updateStatus(tParcel('status.messages.unable_to_determine_parcel_identifier_for_claims', {}, 'Unable to determine parcel identifier for claims.'));
             }
             return;
         }
@@ -1152,7 +1152,7 @@
 
         try {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Resolving parcel claim details...');
+                global.updateStatus(tParcel('status.messages.resolving_parcel_claim_details', {}, 'Resolving parcel claim details...'));
             }
             currentParcelMintStatusParcelId = parcelId;
             currentParcelMintStatusPromise = null;
@@ -1209,7 +1209,7 @@
             });
 
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Opening claim portal...');
+                global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
             }
             openExternalUrl(claimUrl);
         } catch (error) {
@@ -1238,7 +1238,7 @@
             );
             currentParcelMintStatusCache = null;
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to open claim portal. Please try again.');
+                global.updateStatus(tParcel('status.messages.unable_to_open_claim_portal_please_try_again', {}, 'Unable to open claim portal. Please try again.'));
             }
         }
     }
@@ -1247,14 +1247,14 @@
         const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select a parcel before attempting to claim it.');
+                global.updateStatus(tParcel('status.messages.select_a_parcel_before_attempting_to_claim_it', {}, 'Select a parcel before attempting to claim it.'));
             }
             return;
         }
         const parcelId = deriveParcelIdentifier(parcelFeature);
         if (!parcelId) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to determine parcel identifier for claims.');
+                global.updateStatus(tParcel('status.messages.unable_to_determine_parcel_identifier_for_claims', {}, 'Unable to determine parcel identifier for claims.'));
             }
             return;
         }
@@ -1262,7 +1262,7 @@
 
         try {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Resolving parcel claim details...');
+                global.updateStatus(tParcel('status.messages.resolving_parcel_claim_details', {}, 'Resolving parcel claim details...'));
             }
             currentParcelMintStatusCache = null;
             currentParcelMintStatusParcelId = parcelId;
@@ -1344,7 +1344,7 @@
                 parcelName
             });
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Opening claim portal...');
+                global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
             }
             openExternalUrl(claimUrl);
         } catch (error) {
@@ -1357,7 +1357,7 @@
             );
             currentParcelMintStatusCache = null;
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to open claim portal. Please try again.');
+                global.updateStatus(tParcel('status.messages.unable_to_open_claim_portal_please_try_again', {}, 'Unable to open claim portal. Please try again.'));
             }
         }
     }

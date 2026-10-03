@@ -1,7 +1,7 @@
 // Adapts a fixed Socrata polygon dataset with counted, ordered pages and publication-revision checks.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { upstreamError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 
 export function createSocrataParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, idField, idPrefix, outFields, geometryField, versionField, objectIdField } = descriptor;
@@ -25,14 +25,14 @@ export function createSocrataParcelSource(descriptor, { fetchImpl = globalThis.f
         const signal = AbortSignal.timeout(15000);
         try {
             const response = await fetchImpl(`${endpoint}?${new URLSearchParams(params)}`, { signal, redirect: 'error', headers: { Accept: 'application/json' } });
-            if (!response.ok) throw upstreamError(`Parcel provider returned HTTP ${response.status}.`);
+            if (!response.ok) throw providerHttpError(response);
             const rows = await response.json();
             if (!Array.isArray(rows)) throw upstreamError('Socrata provider returned an invalid row response.');
             return rows;
         } catch (error) {
             if (signal.aborted || ['TimeoutError', 'AbortError'].includes(error.name)) throw upstreamError('Parcel provider timed out.', 504);
             if (error.status) throw error;
-            throw upstreamError(`Parcel provider is unavailable: ${error.message}`);
+            throw upstreamError('Parcel provider is unavailable.');
         }
     }
     async function signature(where) {

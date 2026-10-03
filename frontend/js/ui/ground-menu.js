@@ -9,7 +9,7 @@
 
     const doc = win.document;
     const model = win.GroundMenuModel;
-    const MOBILE_QUERY = '(max-width: 767px)';
+    const MOBILE_QUERY = '(max-width: 767.98px)';
     const PANEL_IDS = ['parcel-info-panel', 'proposal-details-panel', 'block-info-panel', 'road-info-panel', 'road-analysis-panel'];
 
     const state = { el: null, latlng: null, facts: null, wired: false };

@@ -1,6 +1,6 @@
 /* Readable, mobile-first standalone presentation for actor-explorer.html. It intentionally avoids
    the map app's viewport lock and uses the existing neutral surface/green accent palette. */
-:root { --ae-bg:#f7f8fa; --ae-surface:#fff; --ae-ink:#1d2126; --ae-muted:#69717c; --ae-line:#dce1e7; --ae-accent:#187a49; --ae-accent-soft:#e7f6ed; --ae-danger:#9d3024; --ae-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; --ae-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+:root { --ae-bg:#f7f8fa; --ae-surface:#fff; --ae-ink:#1d2126; --ae-muted:#69717c; --ae-line:#dce1e7; --ae-accent:var(--cb-primary); --ae-accent-soft:var(--cb-primary-soft); --ae-danger:#9d3024; --ae-mono:var(--cb-font-mono); --ae-sans:var(--cb-font-sans); }
 * { box-sizing:border-box; }
 .ae-body { margin:0; background:var(--ae-bg); color:var(--ae-ink); font:15px/1.45 var(--ae-sans); }
 .ae-wrap { max-width:1180px; margin:auto; padding:18px; }

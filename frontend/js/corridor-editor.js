@@ -60,7 +60,7 @@ function corridorEditorI18n(key, fallback, params = {}) {
 // The derived total, as text. Two decimals, trailing zeros dropped: lanes step in 25 cm, and rounding
 // 27.25 m to "27.3 m" would show a total that is not the sum of the numbers printed underneath it.
 function corridorEditorTotalText(width) {
-    return `${Number(Number(width).toFixed(2))} m`;
+    return CbFormat.formatLength(Number(width), { maxFractionDigits: 2 });
 }
 
 // CORRIDOR_LANE_TYPES carries an English label because the model is shared with the 3D renderers;
@@ -540,8 +540,9 @@ function corridorEditorEnsureClearance() {
     return state.clearanceCache;
 }
 
+// One decimal at most, trailing zeros dropped, in the UI language; callers add the unit.
 function corridorEditorFormatMeters(value) {
-    return `${Number(Number(value).toFixed(1))}`;
+    return CbFormat.formatNumber(Number(value), { maxFractionDigits: 1 });
 }
 
 // The widest cross-section that fits here without a NEW demolition — the buildable ceiling shown
@@ -1374,7 +1375,7 @@ function corridorEditorSectionHtml(profile) {
             ? !!corridorParkingOrientation(lane.type) : /^parking/.test(lane.type);
         const tag = isParking ? '<span class="corridor-section-lane-tag">P</span>' : '';
         return `<button type="button" draggable="true" class="corridor-section-lane${selected}" style="width:${percent}%;background:${laneType.surface}"
-                    data-lane-index="${index}" title="${laneLabel} · ${lane.width} m — drag to reorder"
+                    data-lane-index="${index}" title="${laneLabel} · ${CbFormat.formatLength(Number(lane.width), { maxFractionDigits: 2 })} — drag to reorder"
                     aria-label="${laneLabel}, ${lane.width} metres">${tag}</button>`;
     }).join('');
     // Drag handles on the seams between lanes: dragging moves width from one side to the
@@ -1432,13 +1433,14 @@ function corridorEditorLaneTypes() {
 // A track's standard is ITS GAUGE's standard, so the reset takes the lane's gauge, not just its type.
 function corridorEditorStandardHtml(lane, index) {
     const standard = corridorStandardWidth(lane.type, lane.gauge);
-    const label = `${Number(standard)} m`;
+    // Lanes step in 25 cm, so widths keep two decimals.
+    const label = CbFormat.formatLength(Number(standard), { maxFractionDigits: 2 });
     if (Math.abs(lane.width - standard) < 1e-6) {
-        return `<span class="corridor-lane-standard" title="${corridorEditorI18n('modal.corridor.standardWidth', 'Standard width: {{width}} m', { width: Number(standard) })}">${label}</span>`;
+        return `<span class="corridor-lane-standard" title="${corridorEditorI18n('modal.corridor.standardWidth', 'Standard width: {{width}} m', { width: CbFormat.formatNumber(Number(standard), { maxFractionDigits: 2 }) })}">${label}</span>`;
     }
     return `<button type="button" class="corridor-lane-standard corridor-lane-standard--reset" data-reset-standard="${index}"
-                title="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: Number(standard) })}"
-                aria-label="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: Number(standard) })}">↺ ${label}</button>`;
+                title="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: CbFormat.formatNumber(Number(standard), { maxFractionDigits: 2 }) })}"
+                aria-label="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: CbFormat.formatNumber(Number(standard), { maxFractionDigits: 2 }) })}">↺ ${label}</button>`;
 }
 
 function corridorEditorRowsHtml(profile) {
@@ -1559,7 +1561,7 @@ function corridorEditorPickersHtml() {
         const surface = (CORRIDOR_LANE_TYPES[type] || {}).surface || '#888888';
         const text = corridorEditorReadableText(surface);
         return `<button type="button" role="option" class="cb-lane-option" data-lane-type="${type}"
-                    style="background:${surface};color:${text}">${corridorLaneTypeLabel(type)} (${width} m)</button>`;
+                    style="background:${surface};color:${text}">${corridorLaneTypeLabel(type)} (${CbFormat.formatLength(width, { maxFractionDigits: 2 })})</button>`;
     }).join('');
     const presetOptions = CORRIDOR_EDITOR_PRESETS
         .filter(preset => CORRIDOR_PROFILE_PRESETS[preset.width])

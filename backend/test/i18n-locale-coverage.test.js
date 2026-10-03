@@ -18,6 +18,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'alerts.messages.',
     'commandPalette.groups.',   // frontend-map-search.test.js checks every command group
     'commandPalette.reason.',   // and every reason, in all four locales
+    'parcelSourceHealth.',      // source-health messages are assembled from a runtime failure kind
     'gameDialogs.log.',
     'gameDialogs.log.actions.', // activity-action-vocabulary.test.js checks every action type, all four locales
     'gameDialogs.log.row.',

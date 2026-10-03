@@ -71,28 +71,27 @@
 
         const modal = document.createElement('div');
         modal.id = 'building-upload-modal';
-        modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.5);'
-            + ' z-index:12070; display:flex; align-items:center; justify-content:center;';
+        // The standard dialog (.cb-dialog, primitives.css); its contents are styled in css/modals.css.
+        modal.className = 'cb-dialog-overlay';
 
         modal.innerHTML = `
-            <div id="building-upload-container" style="background:#fff; border-radius:12px; width:min(560px, 94vw);
-                max-height:92vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,0.3);">
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #eee;">
-                    <h2 style="margin:0; font-size:18px;">${text.title}</h2>
+            <div id="building-upload-container" class="cb-dialog building-upload-dialog">
+                <div class="cb-dialog__header">
+                    <h2 class="cb-dialog__title">${text.title}</h2>
                     <button id="building-upload-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${text.closeLabel}">×</button>
                 </div>
-                <div style="padding:16px 18px; overflow:auto;">
-                    <label style="display:inline-flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:10px;">
-                        <span class="btn btn-light" style="padding:8px 14px;">${text.chooseFile}</span>
+                <div class="cb-dialog__body">
+                    <label class="building-upload-file">
+                        <span class="btn">${text.chooseFile}</span>
                         <input id="building-upload-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" style="display:none;">
                     </label>
-                    <p style="font-size:12px; color:#6b7280; margin:0 0 12px;">${text.hint}</p>
-                    <div style="font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;">${text.previewLabel}</div>
-                    <div id="building-upload-3d" style="width:100%; height:300px; background:#eef2f7; border-radius:8px; overflow:hidden;"></div>
-                    <div id="building-upload-status" style="font-size:13px; color:#4b5563; margin-top:10px; min-height:18px;">${text.noFile}</div>
+                    <p class="building-upload-hint">${text.hint}</p>
+                    <div class="cb-kicker">${text.previewLabel}</div>
+                    <div id="building-upload-3d" class="building-upload-preview"></div>
+                    <div id="building-upload-status" class="building-upload-status">${text.noFile}</div>
                 </div>
-                <div style="display:flex; gap:10px; justify-content:flex-end; padding:12px 18px; border-top:1px solid #eee;">
-                    <button id="building-upload-cancel" type="button" class="btn btn-light">${text.cancel}</button>
+                <div class="cb-dialog__footer">
+                    <button id="building-upload-cancel" type="button" class="btn">${text.cancel}</button>
                     <button id="building-upload-confirm" type="button" class="btn btn-proposal" disabled>${text.confirm}</button>
                 </div>
             </div>

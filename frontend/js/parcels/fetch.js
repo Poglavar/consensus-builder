@@ -6,7 +6,9 @@
     const OSS_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
     const OSS_TOKEN = global.OSS_PUBLIC_ACCESS_TOKEN || '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
 
-    if (typeof global.fetchWithRetry !== 'function') {
+    if (global.ParcelSourceHealth) {
+        global.fetchWithRetry = global.ParcelSourceHealth.createRequester({ fetchImpl: (...args) => (global.fetch || fetch)(...args) });
+    } else if (typeof global.fetchWithRetry !== 'function') {
         global.fetchWithRetry = async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
             let failure = null;
             for (let attempt = 0; attempt < retries; attempt += 1) {
@@ -266,7 +268,7 @@
                 count: String(count),
                 startIndex: String(startIndex)
             })}`;
-            const payload = await responseJson(url, {}, { notFoundIsEmpty: true });
+            const payload = await responseJson(url, {}, { notFoundIsEmpty: request?.source !== 'parcel-source' });
             if (request?.completeResponse && (payload.complete !== true || !Array.isArray(payload.features))) {
                 throw new Error('Parcel source returned an incomplete viewport response.');
             }
@@ -324,19 +326,11 @@
         const path = provider?.source === 'parcel-source'
             ? `/parcel-sources/${encodeURIComponent(provider.sourceId)}/under`
             : '/parcels/under';
-        const response = await fetch(`${backendBase()}${path}`, {
+        const payload = await responseJson(`${backendBase()}${path}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({ geometry: geom, srid: options.srid || 4326, ...(parcelsOnly ? { parcelsOnly: true } : {}) })
         });
-        if (!response.ok) {
-            let detail = '';
-            try { detail = (await response.json()).error || ''; } catch (_) { }
-            const error = new Error(`/parcels/under ${response.status}${detail ? `: ${detail}` : ''}`);
-            error.status = response.status;
-            throw error;
-        }
-        const payload = await response.json();
         if (provider?.source === 'parcel-source' && payload.complete !== true) throw new Error('Parcel source returned an incomplete footprint response.');
         if (!Array.isArray(payload.features)) throw new Error('/parcels/under response has no features array.');
         return {
@@ -416,6 +410,7 @@
             global.updateStatus?.(result.cached
                 ? statusText('cadastral_ground_already_loaded', 'Cadastral ground already loaded.')
                 : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count }));
+            global.ParcelSourceSettings?.clearFailure?.(global);
             return result;
         } finally {
             global._fetchParcelDataInProgress = false;
@@ -430,7 +425,11 @@
     function reportParcelFetchFailure(error, source) {
         const message = error && error.message ? error.message : String(error || 'unknown error');
         console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
-        global.updateStatus?.(`Cadastral ground failed to load: ${message}`);
+        const userMessage = global.ParcelSourceHealth?.describeFailure?.(error, {
+            offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n)
+        }) || `Cadastral ground failed to load: ${message}`;
+        global.updateStatus?.(userMessage);
+        global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
     }
 
     function fetchParcelDataReported(customBounds, source) {

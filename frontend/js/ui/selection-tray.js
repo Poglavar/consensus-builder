@@ -107,9 +107,7 @@
             ? t('selectionTray.count', '{{count}} parcel(s)', { count: summary.count })
             : t('selectionTray.empty', 'Click parcels to select them');
         countEl.title = countEl.textContent; // the full line when a phone ellipsizes it
-        areaEl.textContent = summary.area !== null
-            ? `${Math.round(summary.area).toLocaleString('hr-HR')} ${t('panel.parcel.metrics.areaUnit', 'm²')}`
-            : '';
+        areaEl.textContent = summary.area !== null ? win.CbFormat.formatArea(summary.area) : '';
         areaEl.hidden = summary.area === null;
 
         const translate = key => (win.i18n && typeof win.i18n.t === 'function' ? win.i18n.t(key) : key);

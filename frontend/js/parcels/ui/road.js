@@ -34,11 +34,11 @@
             if (!feature?.geometry?.coordinates) throw new Error('Selected parcel is no longer live.');
             const metrics = global.calculateRoadMetrics(feature.geometry.coordinates);
 
-            const formattedLength = metrics ? Number(metrics.length).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'N/A';
-            const formattedAvgWidth = metrics ? Number(metrics.widths.average).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'N/A';
-            const formattedMaxWidth = metrics ? Number(metrics.widths.maximum).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'N/A';
-            const formattedMinWidth = metrics ? Number(metrics.widths.minimum).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'N/A';
-            const formattedTolerance = metrics ? Number(metrics.widths.tolerancePercentage).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : 'N/A';
+            const formattedLength = metrics ? CbFormat.formatLength(Number(metrics.length)) : 'N/A';
+            const formattedAvgWidth = metrics ? CbFormat.formatLength(Number(metrics.widths.average)) : 'N/A';
+            const formattedMaxWidth = metrics ? CbFormat.formatLength(Number(metrics.widths.maximum)) : 'N/A';
+            const formattedMinWidth = metrics ? CbFormat.formatLength(Number(metrics.widths.minimum)) : 'N/A';
+            const formattedTolerance = metrics ? CbFormat.formatNumber(Number(metrics.widths.tolerancePercentage), { maxFractionDigits: 1 }) : 'N/A';
 
             const lengthLabel = tParcel('panel.parcel.actions.measureLengthLabel', {}, 'As Road Length:');
             const widthLabel = tParcel('panel.parcel.actions.measureWidthLabel', {}, 'As Road Width:');
@@ -52,14 +52,14 @@
         <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
         <div class="metric-group">
             <div class="metric-label">${lengthLabel}</div>
-            <div class="metric-value">${formattedLength} m</div>
+            <div class="metric-value">${formattedLength}</div>
         </div>
         <div class="metric-group">
             <div class="metric-label">${widthLabel}</div>
             <div class="metric-value">
-                ${widthAverageLabel} ${formattedAvgWidth} m<br>
-                ${widthMaximumLabel} ${formattedMaxWidth} m<br>
-                ${widthMinimumLabel} ${formattedMinWidth} m
+                ${widthAverageLabel} ${formattedAvgWidth}<br>
+                ${widthMaximumLabel} ${formattedMaxWidth}<br>
+                ${widthMinimumLabel} ${formattedMinWidth}
             </div>
         </div>
         <div class="metric-group">

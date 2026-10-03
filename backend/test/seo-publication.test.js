@@ -7,7 +7,7 @@ describe('public SEO entry points', () => {
     it('gives the app a descriptive canonical title and search snippet', () => {
         const html = read('index.html');
         expect(html).toMatch(/<html lang="en">/);
-        expect(html).toContain('<title>Consensus Builder | Free Urban Planning Software</title>');
+        expect(html).toContain('<title>Consensus Builder · Free urban planning software</title>');
         expect(html).toContain('<meta property="og:site_name" content="Consensus Builder">');
         expect(html).toMatch(/<meta name="description" content="[^"]*(real parcels|community zoning)[^"]*"/);
         expect(html).toContain('<link rel="canonical" href="https://urbangametheory.xyz/">');
@@ -20,7 +20,7 @@ describe('public SEO entry points', () => {
 
     it('publishes a useful, scoped landing page with an app handoff', () => {
         const html = read('urban-planning.html');
-        expect(html).toContain('<title>Consensus Builder | Free Urban Planning Software</title>');
+        expect(html).toContain('<title>Consensus Builder · Free urban planning software</title>');
         expect(html).toContain('<h1>Consensus Builder: free urban planning software</h1>');
         expect(html).toContain('<meta property="og:site_name" content="Consensus Builder" />');
         expect(html).toMatch(/<meta name="description" content="[^"]*community zoning proposals[^"]*"/);

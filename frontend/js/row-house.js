@@ -250,7 +250,8 @@
     function describeRowHouseParcelSelection(ids) {
         if (!Array.isArray(ids) || ids.length === 0) return translateRowHouseText('rowHouses.modal.messages.selectedParcels', 'Selected Parcels');
         if (ids.length === 1) return translateRowHouseText('rowHouses.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
-        return translateRowHouseText('rowHouses.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
+        // The shared plural key: Croatian and Serbian need a different form for 2–4 parcels.
+        return translateRowHouseText('proposals.autoName.parcels', '{{count}} parcels', { count: ids.length });
     }
 
     function rowHouseParcelsForIds(parcelIds) {
@@ -1137,7 +1138,7 @@
         if (rowMinHeightM > ceiling) rowMinHeightM = ceiling;
         slider.value = String(rowMinHeightM);
         const label = document.getElementById('rowhouse-minheight-value');
-        if (label) label.textContent = rowMinHeightM.toFixed(1);
+        if (label) label.textContent = CbFormat.formatNumber(rowMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
     }
 
     function rowExclusionReason(status) {
@@ -1230,16 +1231,16 @@
         try {
             // Calculate circumference (perimeter) using turf
             const circumference = turf.length(feature, { units: 'meters' });
-            circumferenceEl.textContent = circumference.toFixed(1);
+            circumferenceEl.textContent = CbFormat.formatNumber(circumference, { maxFractionDigits: 1, minFractionDigits: 1 });
 
             // Calculate area using turf
             const area = turf.area(feature);
-            areaEl.textContent = area.toFixed(1);
+            areaEl.textContent = CbFormat.formatNumber(area, { maxFractionDigits: 1, minFractionDigits: 1 });
 
             // Calculate volume (area * height)
             const height = feature.properties.height || currentBuildingHeight || DEFAULT_BUILDING_HEIGHT;
             const volume = area * height;
-            volumeEl.textContent = volume.toFixed(1);
+            volumeEl.textContent = CbFormat.formatNumber(volume, { maxFractionDigits: 1, minFractionDigits: 1 });
         } catch (e) {
             console.warn('[RowHouse] Error calculating metrics:', e);
             circumferenceEl.textContent = '0';
@@ -1562,7 +1563,7 @@
         const block = getActiveRowHouseBlock();
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
             if (typeof updateStatus === 'function') {
-                updateStatus('No block selected');
+                updateStatus(translateRowHouseText('status.messages.no_block_selected', 'No block selected'));
             }
             return;
         }
@@ -1625,28 +1626,28 @@
                     <div class="parameter-group">
                         <label for="rowhouse-length-slider">
                             <span data-i18n-key="rowHouses.modal.labels.length" data-i18n-attr="text">Length (m):</span>
-                            <span id="rowhouse-length-value">${DEFAULT_BUILDING_LENGTH.toFixed(1)}</span>
+                            <span id="rowhouse-length-value">${CbFormat.formatNumber(DEFAULT_BUILDING_LENGTH, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                         </label>
                         <input type="range" id="rowhouse-length-slider" min="4" max="200" value="${DEFAULT_BUILDING_LENGTH}" step="0.5">
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-width-slider">
                             <span data-i18n-key="rowHouses.modal.labels.width" data-i18n-attr="text">Width (m):</span>
-                            <span id="rowhouse-width-value">${DEFAULT_BUILDING_WIDTH.toFixed(1)}</span>
+                            <span id="rowhouse-width-value">${CbFormat.formatNumber(DEFAULT_BUILDING_WIDTH, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                         </label>
                         <input type="range" id="rowhouse-width-slider" min="2" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-height-slider">
                             <span data-i18n-key="rowHouses.modal.labels.height" data-i18n-attr="text">Height (m):</span>
-                            <span id="rowhouse-height-value">${DEFAULT_BUILDING_HEIGHT.toFixed(0)}</span>
+                            <span id="rowhouse-height-value">${CbFormat.formatNumber(DEFAULT_BUILDING_HEIGHT, { maxFractionDigits: 0, minFractionDigits: 0 })}</span>
                         </label>
                         <input type="range" id="rowhouse-height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-chamfer-slider">
                             <span data-i18n-key="rowHouses.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
-                            <span id="rowhouse-chamfer-value">${DEFAULT_CHAMFER.toFixed(1)}</span>
+                            <span id="rowhouse-chamfer-value">${CbFormat.formatNumber(DEFAULT_CHAMFER, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                         </label>
                         <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
                     </div>
@@ -1728,13 +1729,13 @@
                     // Revert slider to current valid value
                     e.target.value = currentBuildingLength;
                 }
-                document.getElementById('rowhouse-length-value').textContent = currentBuildingLength.toFixed(1);
+                document.getElementById('rowhouse-length-value').textContent = CbFormat.formatNumber(currentBuildingLength, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateRowHouseInModal();
             });
 
             document.getElementById('rowhouse-chamfer-slider').addEventListener('input', function (e) {
                 currentChamfer = parseFloat(e.target.value);
-                document.getElementById('rowhouse-chamfer-value').textContent = currentChamfer.toFixed(1);
+                document.getElementById('rowhouse-chamfer-value').textContent = CbFormat.formatNumber(currentChamfer, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateRowHouseInModal();
             });
 
@@ -1758,13 +1759,13 @@
                     // Revert slider to current valid value
                     e.target.value = currentBuildingWidth;
                 }
-                document.getElementById('rowhouse-width-value').textContent = currentBuildingWidth.toFixed(1);
+                document.getElementById('rowhouse-width-value').textContent = CbFormat.formatNumber(currentBuildingWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateRowHouseInModal();
             });
 
             document.getElementById('rowhouse-height-slider').addEventListener('input', function (e) {
                 currentBuildingHeight = parseFloat(e.target.value);
-                document.getElementById('rowhouse-height-value').textContent = currentBuildingHeight.toFixed(0);
+                document.getElementById('rowhouse-height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 0, minFractionDigits: 0 });
                 // Height affects 3D extrusion and volume metric
                 if (generatedRowHouseFeature) {
                     generatedRowHouseFeature.properties.height = Math.round(currentBuildingHeight);
@@ -1788,7 +1789,7 @@
             if (rowMinHeightSlider) {
                 rowMinHeightSlider.addEventListener('input', function (e) {
                     rowMinHeightM = parseFloat(e.target.value);
-                    document.getElementById('rowhouse-minheight-value').textContent = rowMinHeightM.toFixed(1);
+                    document.getElementById('rowhouse-minheight-value').textContent = CbFormat.formatNumber(rowMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
                 });
             }
@@ -1923,21 +1924,21 @@
             lengthSlider.max = maxSliderValue;
             lengthSlider.value = Math.min(currentBuildingLength, maxSliderValue);
             currentBuildingLength = parseFloat(lengthSlider.value);
-            document.getElementById('rowhouse-length-value').textContent = currentBuildingLength.toFixed(1);
+            document.getElementById('rowhouse-length-value').textContent = CbFormat.formatNumber(currentBuildingLength, { maxFractionDigits: 1, minFractionDigits: 1 });
         }
         if (widthSlider) {
             widthSlider.max = maxSliderValue;
             widthSlider.value = Math.min(currentBuildingWidth, maxSliderValue);
             currentBuildingWidth = parseFloat(widthSlider.value);
-            document.getElementById('rowhouse-width-value').textContent = currentBuildingWidth.toFixed(1);
+            document.getElementById('rowhouse-width-value').textContent = CbFormat.formatNumber(currentBuildingWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
         }
         if (heightSlider) {
             heightSlider.value = currentBuildingHeight;
-            document.getElementById('rowhouse-height-value').textContent = currentBuildingHeight.toFixed(0);
+            document.getElementById('rowhouse-height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 0, minFractionDigits: 0 });
         }
         if (chamferSlider) {
             chamferSlider.value = currentChamfer;
-            document.getElementById('rowhouse-chamfer-value').textContent = currentChamfer.toFixed(1);
+            document.getElementById('rowhouse-chamfer-value').textContent = CbFormat.formatNumber(currentChamfer, { maxFractionDigits: 1, minFractionDigits: 1 });
         }
         const rowRuleSelectEl = document.getElementById('rowhouse-ruletype-select');
         if (rowRuleSelectEl) rowRuleSelectEl.value = rowRuleKind;
@@ -2262,7 +2263,7 @@
         const liveParcels = rowHouseParcelsForIds(ids);
         if (liveParcels.length !== ids.length) {
             if (typeof updateStatus === 'function') {
-                updateStatus('Could not resolve parcel data for the selected parcels.');
+                updateStatus(translateRowHouseText('status.messages.could_not_resolve_parcel_data_for_the_selected_parcels', 'Could not resolve parcel data for the selected parcels.'));
             }
             return;
         }

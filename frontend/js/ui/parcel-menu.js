@@ -9,7 +9,7 @@
 
     const doc = win.document;
     const model = win.ParcelMenuModel;
-    const MOBILE_QUERY = '(max-width: 767px)';
+    const MOBILE_QUERY = '(max-width: 767.98px)';
     // Panels whose opening takes over from the menu.
     const PANEL_IDS = ['parcel-info-panel', 'proposal-details-panel', 'block-info-panel', 'road-info-panel', 'road-analysis-panel'];
 
@@ -145,7 +145,7 @@
     function factsLine(facts) {
         const parts = [];
         if (facts.area !== null) {
-            parts.push(`${Math.round(facts.area).toLocaleString('hr-HR')} ${t('panel.parcel.metrics.areaUnit', 'm²')}`);
+            parts.push(CbFormat.formatArea(facts.area));
         }
         if (facts.isGround) parts.push(t('parcelMenu.groundNote', 'no cadastral parcel'));
         if (facts.isRoad) parts.push(t('panel.parcel.multi.roadTag', 'Road'));

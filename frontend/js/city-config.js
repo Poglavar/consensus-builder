@@ -14,6 +14,7 @@
     };
 
     const SHARED_DEFAULT_ZOOM = 19;
+    const requestedParcelSource = new URLSearchParams(window.location?.search || '').get('parcelSource');
 
     const formatCityText = (template, params = {}) => {
         if (!template) return '';
@@ -139,6 +140,7 @@
                 strategy: 'grid',
                 gridSize: 500,
                 source: 'oss-wfs',
+                liveSource: { sourceId: 'hr-dgu-oss-dkp-cestice', idPrefix: 'HR-', gridSize: 100 },
                 requiresBackend: true
             },
             sidebar: {
@@ -213,6 +215,7 @@
                 strategy: 'grid',
                 gridSize: 500,
                 source: 'oss-wfs',
+                liveSource: { sourceId: 'hr-dgu-oss-dkp-cestice', idPrefix: 'HR-', gridSize: 100 },
                 requiresBackend: true
             },
             buildings: {
@@ -271,6 +274,7 @@
                 strategy: 'grid',
                 gridSize: 500,
                 source: 'oss-wfs',
+                liveSource: { sourceId: 'hr-dgu-oss-dkp-cestice', idPrefix: 'HR-', gridSize: 100 },
                 requiresBackend: true
             },
             buildings: {
@@ -367,6 +371,7 @@
                 strategy: 'grid',
                 gridSize: 500,
                 source: 'parcel-lj',
+                liveSource: { sourceId: 'si-gurs-kn-parcele-wfs', idPrefix: 'SI-' },
                 requiresBackend: true
             },
             buildings: {
@@ -406,6 +411,7 @@
                 strategy: 'grid',
                 gridSize: 500,
                 source: 'parcel-ba',
+                liveSource: { sourceId: 'ar-caba-idecaba-wfs-parcelas', idPrefix: 'AR-CABA-WFS-NAM-' },
                 requiresBackend: true
             },
             buildings: {
@@ -447,6 +453,7 @@
                 strategy: 'grid',
                 gridSize: 0.005,
                 source: 'parcel-co',
+                liveSource: { sourceId: 'us-co-oit-public-parcels-denver', idPrefix: 'US-CO-' },
                 requiresBackend: true
             },
             buildings: {
@@ -487,6 +494,7 @@
                 strategy: 'grid',
                 gridSize: 0.005,
                 source: 'parcel-nyc',
+                liveSource: { sourceId: 'us-nyc-dof-digital-tax-map', idPrefix: 'US-NYC-BBL-' },
                 requiresBackend: true
             },
             buildings: {
@@ -538,6 +546,24 @@
             buildings: { source: 'none' },
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        shenzhen: {
+            id: 'shenzhen',
+            label: 'Shenzhen, China',
+            currency: { locale: 'zh-CN', code: 'CNY' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [22.5405, 114.1005], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.01 },
+            projection: { datasetCrs: 'EPSG:4326', metricCrs: 'EPSG:4547',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricDefinition: '+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs',
+                fallbackLatLng: [22.5405, 114.1005], fallbackDataset: [114.1005, 22.5405] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'cn-shenzhen-land-certain', idPrefix: 'CN-SZ-LANDCERTAIN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 1,
+                attribution: 'Shenzhen Municipal Planning and Natural Resources Bureau · public cadastral-map service' },
+            buildings: { source: 'none' }, sidebar: { disabledSections: ['areaMonitor'] },
+            parcelBuilder: null
         },
         toronto: {
             id: 'toronto',
@@ -1682,8 +1708,25 @@
         } catch (_) { /* ignore */ }
     }
 
+    // Live alternatives are opt-in for this boot. A reload switches providers without changing
+    // the city/plan storage scope; retained parcel facts live only in the current runtime.
+    function getCityConfig(id) {
+        const config = CITY_CONFIGS[id] || null;
+        if (!config) return null;
+        const custom = window.ParcelSourceSettings?.choiceForCity?.(id, window);
+        if (custom) return { ...config, parcels: { ...config.parcels, source: 'parcel-source',
+            sourceId: custom.id, idPrefix: custom.idPrefix,
+            gridSize: config.parcels?.gridSize > 1 ? Math.min(100, config.parcels.gridSize) : 0.001,
+            strategy: 'grid', requiresBackend: true, ownership: false,
+            attribution: translateCityText('parcelSources.attribution', 'User-selected parcel source') + ' · ' + new URL(custom.endpoint).hostname } };
+        const live = config.parcels?.liveSource;
+        if (!live || (requestedParcelSource !== 'live' && requestedParcelSource !== live.sourceId)) return config;
+        return { ...config, parcels: { ...config.parcels, source: 'parcel-source',
+            sourceId: live.sourceId, idPrefix: live.idPrefix, gridSize: live.gridSize || config.parcels.gridSize, requiresBackend: true, ownership: false } };
+    }
+
     function getCurrentCityConfig() {
-        return CITY_CONFIGS[currentCityId] || CITY_CONFIGS[DEFAULT_CITY_ID];
+        return getCityConfig(currentCityId) || getCityConfig(DEFAULT_CITY_ID);
     }
 
     function getProjectionConfig(cityId = null) {
@@ -2463,7 +2506,7 @@
         navigateToCity,
         getCityLabel,
         getCurrentCityConfig,
-        getAvailableCities: () => Object.values(CITY_CONFIGS).filter(config => !config.explore),
+        getAvailableCities: () => Object.keys(CITY_CONFIGS).map(getCityConfig).filter(config => !config.explore),
         EXPLORE_CITY_ID,
         isExplore: () => currentCityId === EXPLORE_CITY_ID,
         // Whether this boot had a city chosen (?city= or a stored pointer) rather than the default:
@@ -2476,7 +2519,7 @@
             try { localStorage.setItem(STORAGE_KEY, currentCityId); } catch (_) { /* storage blocked */ }
         },
         rememberExploreView,
-        getCityConfig: id => CITY_CONFIGS[id] || null,
+        getCityConfig,
         hasParcelData,
         getCityCodeForCityId,
         findNearestCity,

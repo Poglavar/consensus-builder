@@ -1,0 +1,268 @@
+{
+  "css": {
+    "css/actor-explorer.css": {
+      "colourLiterals": 11,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/ai-scene.css": {
+      "colourLiterals": 46,
+      "zIndexLiterals": 3,
+      "important": 0
+    },
+    "css/base.css": {
+      "colourLiterals": 3,
+      "zIndexLiterals": 1,
+      "important": 0
+    },
+    "css/canton-mode.css": {
+      "colourLiterals": 41,
+      "zIndexLiterals": 0,
+      "important": 3
+    },
+    "css/canton.css": {
+      "colourLiterals": 69,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/command-palette.css": {
+      "colourLiterals": 19,
+      "zIndexLiterals": 1,
+      "important": 0
+    },
+    "css/corridor-editor.css": {
+      "colourLiterals": 113,
+      "zIndexLiterals": 7,
+      "important": 0
+    },
+    "css/corridor-render.css": {
+      "colourLiterals": 4,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/game.css": {
+      "colourLiterals": 125,
+      "zIndexLiterals": 1,
+      "important": 17
+    },
+    "css/grain-score.css": {
+      "colourLiterals": 71,
+      "zIndexLiterals": 5,
+      "important": 1
+    },
+    "css/hackathon-deck.css": {
+      "colourLiterals": 65,
+      "zIndexLiterals": 10,
+      "important": 7
+    },
+    "css/hackathon-demo.css": {
+      "colourLiterals": 44,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/howto.css": {
+      "colourLiterals": 69,
+      "zIndexLiterals": 2,
+      "important": 0
+    },
+    "css/layout.css": {
+      "colourLiterals": 8,
+      "zIndexLiterals": 1,
+      "important": 6
+    },
+    "css/lens-console.css": {
+      "colourLiterals": 10,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/map-search.css": {
+      "colourLiterals": 34,
+      "zIndexLiterals": 2,
+      "important": 0
+    },
+    "css/map-shell.css": {
+      "colourLiterals": 73,
+      "zIndexLiterals": 4,
+      "important": 0
+    },
+    "css/map.css": {
+      "colourLiterals": 142,
+      "zIndexLiterals": 10,
+      "important": 22
+    },
+    "css/modals.css": {
+      "colourLiterals": 544,
+      "zIndexLiterals": 40,
+      "important": 16
+    },
+    "css/panels.css": {
+      "colourLiterals": 214,
+      "zIndexLiterals": 6,
+      "important": 6
+    },
+    "css/parcel-menu.css": {
+      "colourLiterals": 12,
+      "zIndexLiterals": 2,
+      "important": 0
+    },
+    "css/photoreal-mode.css": {
+      "colourLiterals": 23,
+      "zIndexLiterals": 6,
+      "important": 1
+    },
+    "css/primitives.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/proposal-editor.css": {
+      "colourLiterals": 79,
+      "zIndexLiterals": 1,
+      "important": 0
+    },
+    "css/proposals.css": {
+      "colourLiterals": 391,
+      "zIndexLiterals": 14,
+      "important": 17
+    },
+    "css/road-analysis.css": {
+      "colourLiterals": 11,
+      "zIndexLiterals": 1,
+      "important": 0
+    },
+    "css/roadmap.css": {
+      "colourLiterals": 7,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/selection-tray.css": {
+      "colourLiterals": 12,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/site-tool.css": {
+      "colourLiterals": 42,
+      "zIndexLiterals": 3,
+      "important": 0
+    },
+    "css/station-geometry-editor.css": {
+      "colourLiterals": 18,
+      "zIndexLiterals": 1,
+      "important": 0
+    },
+    "css/structure-geometry-editor.css": {
+      "colourLiterals": 21,
+      "zIndexLiterals": 1,
+      "important": 0
+    },
+    "css/tokens.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/tx-explorer.css": {
+      "colourLiterals": 20,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/urban-planning.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/utilities.css": {
+      "colourLiterals": 326,
+      "zIndexLiterals": 13,
+      "important": 15
+    },
+    "css/world.css": {
+      "colourLiterals": 74,
+      "zIndexLiterals": 8,
+      "important": 0
+    }
+  },
+  "conflicts": [
+    "#road-analysis-panel | css/panels.css > css/road-analysis.css | width",
+    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | background",
+    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | border",
+    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | color",
+    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | display",
+    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | font-size",
+    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | height",
+    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | width",
+    ".lens-close-btn | css/modals.css > css/utilities.css | background",
+    ".lens-close-btn | css/modals.css > css/utilities.css | border",
+    ".lens-close-btn | css/modals.css > css/utilities.css | color",
+    ".lens-close-btn | css/modals.css > css/utilities.css | display",
+    ".lens-close-btn | css/modals.css > css/utilities.css | font-size",
+    ".lens-close-btn | css/modals.css > css/utilities.css | height",
+    ".lens-close-btn | css/modals.css > css/utilities.css | width",
+    ".map-shell-slot--tray | css/map-shell.css > css/selection-tray.css | bottom",
+    ".parcel-item | css/panels.css > css/game.css | transition",
+    ".parcel-item | css/panels.css > css/modals.css | background",
+    ".parcel-item | css/panels.css > css/modals.css | border-radius",
+    ".parcel-tab-btn @(max-width: 767.98px) | css/layout.css > css/panels.css | padding",
+    ".parcel-tab-btn @(max-width: 767.98px) | css/layout.css > css/utilities.css | padding",
+    ".parcel-tab-btn @(max-width: 767.98px) | css/panels.css > css/utilities.css | padding",
+    ".proposal-item | css/modals.css > css/proposals.css | border",
+    ".proposal-item | css/modals.css > css/proposals.css | border-radius",
+    ".proposal-item | css/modals.css > css/proposals.css | padding",
+    ".proposal-item | css/panels.css > css/game.css | transition",
+    ".proposal-item | css/panels.css > css/modals.css | background",
+    ".proposal-item | css/panels.css > css/modals.css | border-radius",
+    ".proposal-item | css/panels.css > css/proposals.css | margin-bottom",
+    ".proposal-item | css/panels.css > css/proposals.css | padding",
+    ".proposal-item | css/panels.css > css/proposals.css | transition",
+    ".proposal-item | css/proposals.css > css/game.css | margin-bottom",
+    ".proposal-item | css/proposals.css > css/game.css | padding",
+    ".proposal-item | css/proposals.css > css/game.css | transition",
+    ".proposal-modal-footer .btn-proposal | css/proposals.css > css/utilities.css | flex",
+    ".proposal-parcel-item .parcel-number | css/proposals.css > css/utilities.css | font-weight",
+    ".proposal-parcel-item | css/proposals.css > css/utilities.css | border-bottom",
+    ".proposal-parcel-item | css/proposals.css > css/utilities.css | padding",
+    ".username-display | css/proposals.css > css/utilities.css | border",
+    ".username-display | css/proposals.css > css/utilities.css | border-radius",
+    ".username-display | css/proposals.css > css/utilities.css | box-shadow",
+    ".username-display | css/proposals.css > css/utilities.css | color",
+    ".username-display | css/proposals.css > css/utilities.css | gap",
+    ".username-display | css/proposals.css > css/utilities.css | max-width",
+    ".username-display | css/proposals.css > css/utilities.css | padding",
+    ".username-display | css/proposals.css > css/utilities.css | right",
+    ".username-display | css/proposals.css > css/utilities.css | top",
+    "body | css/base.css > css/layout.css | width"
+  ],
+  "i18n": {
+    "titleCaseLabels": 32,
+    "caseConflicts": 78,
+    "threeDots": 0,
+    "duplicateGroups": 349
+  },
+  "js": {
+    "js/blockchain-sync.js": 2,
+    "js/building-blocks.js": 1,
+    "js/corridor-editor.js": 2,
+    "js/data-source.js": 1,
+    "js/legacy-road-centerlines.js": 1,
+    "js/map-core.js": 4,
+    "js/measurement-tool.js": 5,
+    "js/parcel-based.js": 2,
+    "js/parcels/blocks.js": 5,
+    "js/parcels/ui/claim.js": 2,
+    "js/parcels/ui/locate.js": 1,
+    "js/parcels/ui/visibility.js": 1,
+    "js/proposals/apply/parcels.js": 2,
+    "js/proposals/apply/structures.js": 1,
+    "js/proposals/core.js": 4,
+    "js/proposals/create.js": 19,
+    "js/proposals/dialog-create.js": 1,
+    "js/proposals/dialog-upload.js": 1,
+    "js/proposals/geometry.js": 2,
+    "js/proposals/list-ui.js": 4,
+    "js/proposals/urban-rules.js": 2,
+    "js/road-detection.js": 22,
+    "js/road-drawing.js": 4,
+    "js/row-house.js": 2,
+    "js/structures.js": 1,
+    "js/user-management.js": 3
+  }
+}

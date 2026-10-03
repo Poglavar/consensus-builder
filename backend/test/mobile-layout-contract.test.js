@@ -59,16 +59,18 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(body).toMatch(/--map-mode-strip:\s*calc\(var\(--map-mode-stack-left\)\s*\+\s*50px\)/);
     });
 
-    it('starts the docked bottom sheets right of the strip', () => {
-        const [block] = mediaBlocksContaining(utilitiesCss, '(max-width: 768px)', '.info-panel.right-dock-panel');
+    // The strip moved to the top-left under the search box, so a half-height sheet no longer
+    // reaches it; the sheets run edge to edge (docs/design-language.md: full-width sheets on phones).
+    it('runs the docked bottom sheets edge to edge', () => {
+        const [block] = mediaBlocksContaining(utilitiesCss, '(max-width: 767.98px)', '.info-panel.right-dock-panel');
         expect(block).toBeTruthy();
-        expect(ruleBody(block, '\\.info-panel\\.right-dock-panel')).toMatch(/left:\s*var\(--map-mode-strip\)/);
+        expect(ruleBody(block, '\\.info-panel\\.right-dock-panel')).toMatch(/left:\s*0 !important/);
         // With left AND right set, a 100% width would push the sheet off the right edge.
-        expect(mediaBlock(panelsCss, '(max-width: 768px)')).toMatch(/--right-dock-width:\s*auto/);
+        expect(mediaBlock(panelsCss, '(max-width: 767.98px)')).toMatch(/--right-dock-width:\s*auto/);
     });
 
     it('starts the 3D parcel panel right of the strip, not with a gap on the right', () => {
-        const [block] = mediaBlocksContaining(mapCss, '(max-width: 768px)', '.three-mode-parcel-panel');
+        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '.three-mode-parcel-panel');
         const body = ruleBody(block, '#three-container \\.three-mode-parcel-panel');
         expect(body).toMatch(/left:\s*var\(--map-mode-strip\)/);
         expect(body).toMatch(/right:\s*12px/);
@@ -79,19 +81,22 @@ describe('the top row (menu button, Guest pill, gear) belongs to nothing else on
     it('keeps a collapsed proposal card at the bottom: releasing `bottom` is desktop-only', () => {
         const minimizedBase = ruleBody(utilitiesCss, '#proposal-details-panel\\.is-minimized,\\s*#proposal-details-panel\\.visible\\.is-minimized');
         expect(minimizedBase).not.toMatch(/bottom:\s*auto/);
-        const [desktop] = mediaBlocksContaining(utilitiesCss, '(min-width: 769px)', '#proposal-details-panel.is-minimized');
+        const [desktop] = mediaBlocksContaining(utilitiesCss, '(min-width: 768px)', '#proposal-details-panel.is-minimized');
         expect(desktop).toMatch(/bottom:\s*auto\s*!important/);
     });
 
     it('drops the 3D isolation pill to the row below the Guest pill', () => {
-        const [block] = mediaBlocksContaining(mapCss, '(max-width: 768px)', '.three-mode-isolation-banner');
+        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '.three-mode-isolation-banner');
         expect(ruleBody(block, '#three-container \\.three-mode-isolation-banner')).toMatch(/top:\s*62px/);
     });
 
     it('starts the drill stack below the top row, full width, and hides a single-row stack', () => {
         expect(drillUi).toMatch(/const PHONE_TOP_CLEARANCE = 62;/);
-        expect(drillUi).toMatch(/let top = isPhoneLayout\(\) \? PHONE_TOP_CLEARANCE : gap;/);
-        const [block] = mediaBlocksContaining(mapCss, '(max-width: 768px)', '#drill-stack-panel');
+        expect(drillUi).toMatch(/let top = phone \? PHONE_TOP_CLEARANCE : DESKTOP_TOP_CLEARANCE;/);
+        // A bare parcel with nothing on it never opens the drill (the parcel menu already names it).
+        expect(drillUi).toMatch(/function isBareParcelOnly\(stack\)/);
+        expect(drillUi).toMatch(/if \(isBareParcelOnly\(stack\)\) hidePanel\(\);\s*else renderPanel\(stack, selectedRef\);/);
+        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '#drill-stack-panel');
         expect(ruleBody(block, '#drill-stack-panel')).toMatch(/left:\s*10px/);
         expect(block).toMatch(/#drill-stack-panel\.is-single\s*\{\s*display:\s*none;/);
     });
@@ -182,7 +187,7 @@ describe('smaller fixes', () => {
     });
 
     it('lets a proposal title wrap on phones instead of cutting its distinguishing end', () => {
-        const [block] = mediaBlocksContaining(proposalsCss, '(max-width: 768px)', '.proposal-card-head');
+        const [block] = mediaBlocksContaining(proposalsCss, '(max-width: 767.98px)', '.proposal-card-head');
         expect(ruleBody(block, '\\.proposal-card-head')).toMatch(/flex-wrap:\s*wrap/);
         expect(ruleBody(block, '\\.proposal-list-item--compact \\.proposal-list-title')).toMatch(/white-space:\s*normal/);
     });

@@ -95,11 +95,11 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     const parcelAreaShare = totalArea > 0 ? parcelArea / totalArea : 0;
     const parcelPayout = offerAmount * parcelAreaShare;
 
+    // Amount then code in the offer's currency, else the city's display currency.
+    const payoutCurrency = offerCurrency || window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
     const formatPayout = (value) => {
         if (!Number.isFinite(value) || value <= 0) return '';
-        const rounded = Math.round(value);
-        const roundedText = rounded.toLocaleString(undefined, { maximumFractionDigits: 0 });
-        return `${roundedText}${offerCurrency ? ' ' + offerCurrency : ''}`;
+        return CbFormat.formatMoney(value, payoutCurrency);
     };
 
     const rowsHtml = entries.map(entry => {
@@ -770,8 +770,9 @@ function openAcceptOwnershipTransferDialog(idOrHash = null) {
     const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
     const fundedValue = Number.isFinite(Number(proposal.funded)) ? Number(proposal.funded) : 0;
     const amountNeeded = Math.max(0, offerValue - fundedValue);
-    const currency = proposal.offerCurrency || proposal.currency || 'EUR';
-    const formattedAmount = `${amountNeeded.toLocaleString('hr-HR')} ${currency}`;
+    const currency = proposal.offerCurrency || proposal.currency
+        || window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
+    const formattedAmount = CbFormat.formatMoney(amountNeeded, currency);
 
     overlay.innerHTML = `
         <div class="proposal-boost-modal" role="dialog" aria-modal="true">

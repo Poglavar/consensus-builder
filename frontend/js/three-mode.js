@@ -595,8 +595,12 @@
     }
 
     function formatInt(n) {
-        const v = Math.round(Number(n) || 0);
-        try { return v.toLocaleString('en-US'); } catch (_) { return String(v); }
+        return CbFormat.formatNumber(Math.round(Number(n) || 0), { maxFractionDigits: 0 });
+    }
+
+    // Values here are EUR (priceEurPerM2): amount then code, "+1,234 EUR".
+    function formatEur(n) {
+        return CbFormat.formatMoney(Math.round(Number(n) || 0), 'EUR');
     }
 
     // --- Proposal lookup helpers (for the "Proposal info" view) ---
@@ -673,12 +677,12 @@
             // built value. Show that as a positive figure instead of a negative delta.
             if (!hasProposed) {
                 gainEl.className = 'parcel-panel-gain' + (currentValue > 0 ? ' gain-positive' : '');
-                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Current value')}: €${formatInt(currentValue)}`;
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Current value')}: ${formatEur(currentValue)}`;
             } else {
                 const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
                 gainEl.className = 'parcel-panel-gain ' + cls;
                 const sign = gain > 0 ? '+' : '';
-                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}${formatEur(gain)}`;
             }
         }
 
@@ -689,7 +693,7 @@
                 const cls = avg > 0 ? 'gain-positive' : (avg < 0 ? 'gain-negative' : '');
                 const sign = avg > 0 ? '+' : '';
                 avgEl.className = 'parcel-panel-avg ' + cls;
-                avgEl.textContent = `${threeI18n('threeMode.proposalPanel.avgPerParcel', 'Avg / parcel')}: ${sign}€${formatInt(avg)}`;
+                avgEl.textContent = `${threeI18n('threeMode.proposalPanel.avgPerParcel', 'Avg / parcel')}: ${sign}${formatEur(avg)}`;
             } else {
                 avgEl.className = 'parcel-panel-avg';
                 avgEl.textContent = '';
@@ -739,7 +743,7 @@
             <table class="parcel-panel-table">
                 <tr><th></th><th>${L.built}</th><th>${L.proposed}</th></tr>
                 <tr><td>${L.volume}</td><td>${formatInt(builtVolume)} m³</td><td>${formatInt(proposedVolume)} m³</td></tr>
-                <tr><td>${L.floorArea}</td><td>${formatInt(builtFloorArea)} m²</td><td>${formatInt(proposedFloorArea)} m²</td></tr>
+                <tr><td>${L.floorArea}</td><td>${CbFormat.formatArea(Number(builtFloorArea) || 0)}</td><td>${CbFormat.formatArea(Number(proposedFloorArea) || 0)}</td></tr>
             </table>
             <div class="parcel-panel-note">${L.floorNote}</div>
             <div class="parcel-panel-value-title" data-role="value-title"></div>
@@ -1048,7 +1052,7 @@
         collapseToggle.addEventListener('click', () => buildingModeControlsEl.classList.toggle('collapsed'));
         buildingModeControlsEl.appendChild(collapseToggle);
         try {
-            if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+            if (window.matchMedia && window.matchMedia('(max-width: 767.98px)').matches) {
                 buildingModeControlsEl.classList.add('collapsed');
             }
         } catch (_) { }
@@ -1065,7 +1069,7 @@
         radiusLabel.title = threeI18n('threeMode.controls.radiusTooltip', 'Radius');
         const radiusValue = document.createElement('span');
         radiusValue.className = 'three-mode-radius-value';
-        radiusValue.textContent = `${buildingLoadRadiusM} m`;
+        radiusValue.textContent = CbFormat.formatLength(buildingLoadRadiusM, { maxFractionDigits: 0 });
         radiusHeader.appendChild(radiusLabel);
         radiusHeader.appendChild(radiusValue);
 
@@ -1077,7 +1081,7 @@
         radiusSlider.step = '50';
         radiusSlider.value = String(buildingLoadRadiusM);
         // Live label while dragging; only refetch on release ('change') to avoid spamming the backend.
-        radiusSlider.addEventListener('input', () => { radiusValue.textContent = `${radiusSlider.value} m`; });
+        radiusSlider.addEventListener('input', () => { radiusValue.textContent = CbFormat.formatLength(Number(radiusSlider.value), { maxFractionDigits: 0 }); });
         radiusSlider.addEventListener('change', () => { setBuildingLoadRadius(Number(radiusSlider.value)); });
 
         radiusRow.appendChild(radiusHeader);

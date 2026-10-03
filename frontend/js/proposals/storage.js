@@ -296,10 +296,11 @@ async function loadAddressesJson() {
 }
 
 function deleteProposal(proposalId) {
+    const t = getProposalI18nHelper();
     try {
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) {
-            updateStatus('Error: Proposal not found');
+            updateStatus(t('status.messages.error_proposal_not_found', 'Error: Proposal not found'));
             return;
         }
 
@@ -352,11 +353,11 @@ function deleteProposal(proposalId) {
             }
         }
 
-        updateStatus(`Proposal "${proposal.title}" deleted`);
+        updateStatus(t('status.messages.proposal_deleted', 'Proposal "{{title}}" deleted', { title: proposal.title }));
 
     } catch (error) {
         console.error('Error deleting proposal:', error);
-        updateStatus('Error deleting proposal. Please try again.');
+        updateStatus(t('status.messages.error_deleting_proposal_please_try_again', 'Error deleting proposal. Please try again.'));
     }
 }
 
@@ -420,7 +421,8 @@ async function clearLocalProposalData() {
 
     } catch (error) {
         console.error('Error clearing proposal data:', error);
-        updateStatus('Error clearing proposal data. Please try again.');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.error_clearing_proposal_data_please_try_again', 'Error clearing proposal data. Please try again.'));
     }
 }
 
@@ -445,7 +447,7 @@ async function offerBlockedWorkRecovery() {
         if (!parked) return;
 
         const count = parked.proposals.length;
-        const when = parked.savedAt ? new Date(parked.savedAt).toLocaleString() : 'earlier';
+        const when = parked.savedAt ? CbFormat.formatDateTime(parked.savedAt, { missing: 'earlier' }) : 'earlier';
         const message = (typeof window.i18n?.t === 'function'
             && window.i18n.t('proposals.recovery.offer') !== 'proposals.recovery.offer')
             ? window.i18n.t('proposals.recovery.offer', { count, when })

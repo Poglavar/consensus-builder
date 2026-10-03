@@ -327,14 +327,27 @@ function localizeProposalTypeLabel(proposalType) {
     return normalizedType;
 }
 
-function generateDefaultProposalName(proposalType) {
+// "Block · parcel 2143", "Park · 24 parcels", or, without a parcel set, "Block · 3 Oct 2026, 00:26".
+// It used to be a clock code ("Block 0310-0026"), which told the reader nothing about the proposal.
+function generateDefaultProposalName(proposalType, context = {}) {
     const localizedType = localizeProposalTypeLabel(proposalType);
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const hour = String(now.getHours()).padStart(2, '0');
-    const minute = String(now.getMinutes()).padStart(2, '0');
-    return `${localizedType} ${day}${month}-${hour}${minute}`;
+    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : ((_k, fallback) => fallback);
+    let ids = Array.isArray(context.parcelIds) ? context.parcelIds.filter(Boolean).map(String) : [];
+    if (!ids.length && typeof getCurrentParcelSelectionContext === 'function') {
+        // The create dialog names a proposal before the caller knows its parcels: use the selection.
+        try { ids = (getCurrentParcelSelectionContext()?.ids || []).filter(Boolean).map(String); } catch (_) { ids = []; }
+    }
+    let place;
+    if (ids.length === 1) {
+        // The cadastral number is the part people recognise; the municipality prefix is not.
+        const short = ids[0].split('-').pop();
+        place = t('proposals.autoName.parcel', 'parcel {{id}}', { id: short });
+    } else if (ids.length > 1) {
+        place = t('proposals.autoName.parcels', '{{count}} parcels', { count: ids.length });
+    } else {
+        place = typeof CbFormat !== 'undefined' ? CbFormat.formatDateTime(new Date()) : new Date().toLocaleString();
+    }
+    return `${localizedType} · ${place}`;
 }
 
 function generateDefaultProposalDescription(proposalType, proposalName) {

@@ -181,7 +181,7 @@ body.site-intro-open {
     overflow: hidden;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767.98px) {
     .site-intro-overlay {
         place-items: start center;
         padding: 8px;
@@ -262,7 +262,7 @@ body.site-intro-open {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: var(--cb-font-sans);
     text-align: center;
 }
 
@@ -945,7 +945,7 @@ body.site-intro-open {
     justify-content: flex-end;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .minted-proposal-card {
         grid-template-columns: 1fr;
     }
@@ -967,25 +967,22 @@ body.site-intro-open {
     }
 }
 
-/* Reparcellization modal */
+/* Reparcellization modal
+   Layout only: the backdrop, card, header, title, stacking and phone sheet are the shared
+   "Editor dialog chrome" block after the parcel-based editor. */
 .reparcel-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px 16px;
-    z-index: 12040;
+    padding: var(--cb-space-6) var(--cb-space-4);
     overflow-y: auto;
 }
 
 .reparcel-modal {
     width: min(1100px, 96vw);
     max-height: 94vh;
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -995,27 +992,19 @@ body.site-intro-open {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
-    padding: 20px 24px 12px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.reparcel-header__text h2 {
-    margin: 0;
-    font-size: 20px;
 }
 
 .reparcel-subtitle {
     margin: 6px 0 0;
-    color: #6b7280;
-    font-size: 14px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-base);
 }
 
 .reparcel-content {
     display: flex;
     flex-direction: column;
     gap: 18px;
-    padding: 0 24px 24px;
+    padding: var(--cb-space-4) var(--cb-space-5) var(--cb-space-5);
     flex: 1 1 auto;
     overflow-y: auto;
 }
@@ -1041,9 +1030,9 @@ body.site-intro-open {
 
 .reparcel-map-panel {
     grid-area: map;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
     padding: 12px;
     min-height: 420px;
     display: flex;
@@ -1058,17 +1047,19 @@ body.site-intro-open {
     right: 18px;
     z-index: 1000;
     padding: 6px 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #fff;
-    font-size: 12px;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--cb-shadow-sm);
 }
+/* Pressed like the drawing-tool toggles, not a filled button competing with Done. */
 .reparcel-compare-btn.active {
-    background: #137547;
-    border-color: #137547;
-    color: #fff;
+    background: var(--cb-success-soft);
+    border-color: var(--cb-success);
+    color: var(--cb-success-soft-ink);
 }
 .reparcel-before-map {
     position: absolute;
@@ -1095,13 +1086,13 @@ body.site-intro-open {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--cb-surface);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    color: #374151;
+    color: var(--cb-text);
     cursor: ew-resize;
 }
 .reparcel-compare-label {
@@ -1121,28 +1112,22 @@ body.site-intro-open {
 .reparcel-map {
     width: 100%;
     height: 460px;
-    border-radius: 10px;
+    border-radius: var(--cb-radius-md);
     overflow: hidden;
-    background: #e5e7eb;
+    background: var(--cb-surface-3);
     flex: 1;
 }
 
 .reparcel-legend-panel {
     grid-area: legend;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
     padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     min-height: 320px;
-}
-
-.reparcel-legend-header h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #111827;
 }
 
 .reparcel-legend-list {
@@ -1152,37 +1137,11 @@ body.site-intro-open {
     padding-right: 6px;
 }
 
-.reparcel-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #ffffff;
-}
-
 .legend-color {
     width: 14px;
     height: 14px;
     border-radius: 4px;
     flex-shrink: 0;
-}
-
-.legend-text {
-    display: flex;
-    flex-direction: column;
-    font-size: 13px;
-    color: #111827;
-}
-
-.legend-name {
-    font-weight: 600;
-}
-
-.legend-meta {
-    color: #6b7280;
-    font-size: 12px;
 }
 
 .reparcel-actions {
@@ -1247,12 +1206,12 @@ body.site-intro-open {
 /* "All public" is a one-click convenience, not a primary action — it used to be a 240px
    slab competing with Done. */
 .reparcel-actions .reparcel-allpublic-btn {
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
     padding: 5px 10px;
     min-width: 0;
     width: auto;
-    color: #475569;
-    border-color: #cbd5e1;
+    color: var(--cb-text-muted);
+    border-color: var(--cb-line-strong);
 }
 
 @media (max-width: 1024px) {
@@ -1273,25 +1232,8 @@ body.site-intro-open {
     }
 }
 
-@media (max-width: 768px) {
-    .reparcel-modal-overlay {
-        align-items: flex-start;
-        padding: 0;
-    }
-
-    .reparcel-modal {
-        width: 100vw;
-        height: 100vh;
-        max-height: none;
-        border-radius: 0;
-    }
-
-    .reparcel-header {
-        padding: 16px;
-    }
-
+@media (max-width: 767.98px) {
     .reparcel-content {
-        padding: 0 16px 20px;
         gap: 16px;
     }
 
@@ -1333,17 +1275,11 @@ body.site-intro-open {
 /* Narrow phones (≈300–480px): tighten paddings, shrink map/tables, let the
    5-column ledger scroll horizontally instead of overflowing the screen. */
 @media (max-width: 480px) {
-    .reparcel-header {
-        padding: 12px;
-    }
-    .reparcel-header__text h2 {
-        font-size: 17px;
-    }
     .reparcel-subtitle {
-        font-size: 12px;
+        font-size: var(--cb-text-sm);
     }
     .reparcel-content {
-        padding: 0 10px 14px;
+        padding: var(--cb-space-3) 10px 14px;
         gap: 12px;
     }
     .reparcel-map-panel {
@@ -1385,27 +1321,27 @@ body.site-intro-open {
 .reparcel-newplots-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
 }
 
 .reparcel-owners-table th,
 .reparcel-newplots-table th {
     text-align: left;
-    font-weight: 600;
-    font-size: 11px;
-    color: #6b7280;
+    font-weight: var(--cb-weight-semibold);
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.03em;
     padding: 4px 6px 6px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--cb-line);
 }
 
 .reparcel-owners-table td,
 .reparcel-newplots-table td {
     padding: 5px 6px;
     vertical-align: top;
-    border-bottom: 1px solid #f3f4f6;
-    color: #111827;
+    border-bottom: 1px solid var(--cb-line);
+    color: var(--cb-text-strong);
 }
 
 .reparcel-owners-table td:first-child,
@@ -1426,7 +1362,7 @@ body.site-intro-open {
 
 .area-cell {
     font-variant-numeric: tabular-nums;
-    color: #4b5563;
+    color: var(--cb-text-muted);
     white-space: nowrap;
 }
 
@@ -1449,7 +1385,7 @@ body.site-intro-open {
 .reparcel-newplots-header {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--cb-line);
 }
 
 /* New plots now leads the panel — drop the top divider on the first section. */
@@ -1465,7 +1401,7 @@ body.site-intro-open {
     display: flex;
     gap: 4px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--cb-line);
 }
 
 .reparcel-plots-tab {
@@ -1476,22 +1412,22 @@ body.site-intro-open {
     padding: 6px 10px;
     margin-bottom: -1px;
     font-size: 15px;
-    font-weight: 600;
-    color: #6b7280;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-muted);
     cursor: pointer;
 }
 
-.reparcel-plots-tab:hover { color: #374151; }
+.reparcel-plots-tab:hover { color: var(--cb-text); }
 
 .reparcel-plots-tab.is-active {
-    color: #111827;
-    border-bottom-color: #1d4ed8;
+    color: var(--cb-text-strong);
+    border-bottom-color: var(--cb-primary);
 }
 
 .reparcel-oldplots-empty {
     margin: 8px 0 0;
-    font-size: 12px;
-    color: #6b7280;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
 }
 
 /* Reading the cadastre, not editing it: the drawing tools have nothing to act on here, so they
@@ -1503,30 +1439,18 @@ body.site-intro-open {
 }
 
 .reparcel-oldplot-tip {
-    font-size: 11px;
-    font-weight: 600;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #92400e;
-    color: #7c2d12;
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    background: var(--cb-glass);
+    border: 1px solid var(--cb-warning-soft-ink);
+    color: var(--cb-warning-soft-ink);
 }
 
 /* Owners section sits below New plots — give it the divider instead. */
 .reparcel-legend-header {
     margin-top: 12px;
     padding-top: 10px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.reparcel-newplots-header h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #111827;
-}
-
-.reparcel-legend-header h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #111827;
+    border-top: 1px solid var(--cb-line);
 }
 
 /* Editing tools row (draw/line/shuffle/upload + draw toolbar) below the radios. */
@@ -1538,18 +1462,16 @@ body.site-intro-open {
 .cash-offer-cell input.cash-offer-input {
     width: 70px;
     padding: 2px 4px;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
     text-align: right;
     font-variant-numeric: tabular-nums;
 }
 
 .reparcel-cashtotal {
     margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #111827;
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
 }
 .reparcel-cashtotal:empty {
     display: none;
@@ -1566,7 +1488,7 @@ body.site-intro-open {
     cursor: pointer;
 }
 .reparcel-newplot-row:hover {
-    background: #ecfdf5;
+    background: var(--cb-success-soft);
 }
 
 /* Reparcellization: in-progress drawing toolbar (Finish / Undo / Cancel) */
@@ -1582,31 +1504,31 @@ body.site-intro-open {
 .btn-draw-tool {
     flex: 1 1 auto;
     padding: 6px 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #fff;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: var(--cb-text);
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--cb-text-md);
     white-space: nowrap;
     transition: background 0.15s, border-color 0.15s, opacity 0.15s;
 }
 .btn-draw-tool:hover:not(:disabled) {
-    background: #f3f4f6;
-    border-color: #9ca3af;
+    background: var(--cb-surface-2);
 }
 .btn-draw-tool:disabled {
     opacity: 0.5;
     cursor: default;
 }
 .btn-draw-finish {
-    background: #137547;
-    border-color: #137547;
-    color: #fff;
-    font-weight: 600;
+    background: var(--cb-success);
+    border-color: var(--cb-success);
+    color: var(--cb-success-ink);
+    font-weight: var(--cb-weight-semibold);
 }
 .btn-draw-finish:hover:not(:disabled) {
-    background: #0f5e39;
-    border-color: #0f5e39;
+    background: var(--cb-success-hover);
+    border-color: var(--cb-success-hover);
 }
 
 /* Reparcellization: sweep-line orientation point (drag to rotate the cut lines) */
@@ -1670,8 +1592,8 @@ body.site-intro-open {
     filter: grayscale(1);
 }
 .reparcel-legend-actions .btn-icon:disabled:hover {
-    background: #fff;
-    border-color: #d1d5db;
+    background: var(--cb-surface);
+    border-color: var(--cb-line-strong);
 }
 
 .reparcel-legend-actions .btn-icon,
@@ -1681,9 +1603,9 @@ body.site-intro-open {
     justify-content: center;
     width: 32px;
     height: 32px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #fff;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
     cursor: pointer;
     font-size: 15px;
     padding: 0;
@@ -1692,8 +1614,7 @@ body.site-intro-open {
 
 .reparcel-legend-actions .btn-icon:hover,
 .reparcel-legend-actions .btn-upload-label:hover {
-    background: #f3f4f6;
-    border-color: #9ca3af;
+    background: var(--cb-surface-2);
 }
 
 /* The assign toggle sits with the other tools — it is one of them — and "All public" unfolds to
@@ -1704,7 +1625,7 @@ body.site-intro-open {
 }
 
 .reparcel-legend-actions .reparcel-allpublic-btn {
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
     padding: 5px 10px;
     min-width: 0;
     width: auto;
@@ -1713,29 +1634,29 @@ body.site-intro-open {
 
 /* Subdivision: the ownerless open-ground ledger row. */
 .reparcel-ledger-table tr.reparcel-ledger-row--no-owner td {
-    color: #6b7280;
+    color: var(--cb-text-muted);
     font-style: italic;
 }
 
 /* Reparcellization: active "Draw plot" toggle */
 .reparcel-legend-actions .btn-icon[aria-pressed="true"],
 .reparcel-legend-actions .btn-icon.active {
-    background: #d1fae5;
-    border-color: #1B998B;
-    box-shadow: inset 0 0 0 1px #1B998B;
+    background: var(--cb-success-soft);
+    border-color: var(--cb-success);
+    box-shadow: inset 0 0 0 1px var(--cb-success);
 }
 
 /* Reparcellization: owner ledger balance cells */
-.reparcel-ledger-table td.bal-pays { color: #b91c1c; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.reparcel-ledger-table td.bal-due { color: #137547; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.reparcel-ledger-table td.bal-even { color: #6b7280; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reparcel-ledger-table td.bal-pays { color: var(--cb-danger); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reparcel-ledger-table td.bal-due { color: var(--cb-success-soft-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reparcel-ledger-table td.bal-even { color: var(--cb-text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* Reparcellization: pool coverage / completeness indicator */
 .reparcel-coverage {
     margin-top: 10px;
     padding: 8px 10px;
-    border-radius: 8px;
-    font-size: 13px;
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-md);
     line-height: 1.35;
 }
 .reparcel-coverage:empty {
@@ -1745,33 +1666,33 @@ body.site-intro-open {
 /* Reparcellization: transient status / hint line */
 .reparcel-status {
     margin-top: 8px;
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
     line-height: 1.35;
-    color: #6b7280;
+    color: var(--cb-text-muted);
 }
 .reparcel-status:empty {
     display: none;
 }
 .reparcel-status[data-status-type="error"] {
-    color: #b91c1c;
+    color: var(--cb-danger);
 }
 .reparcel-status[data-status-type="warning"] {
-    color: #92400e;
+    color: var(--cb-warning-soft-ink);
 }
 .reparcel-coverage[data-state="ok"] {
-    background: #d1fae5;
-    color: #065f46;
+    background: var(--cb-success-soft);
+    color: var(--cb-success-soft-ink);
 }
 .reparcel-coverage[data-state="warn"] {
-    background: #fef3c7;
-    color: #92400e;
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
 }
 
 /* Reparcellization: owner assignment popup */
 .reparcel-owner-leaflet-popup .leaflet-popup-content-wrapper {
-    border-radius: 10px;
+    border-radius: var(--cb-radius-lg);
     padding: 0;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
+    box-shadow: var(--cb-shadow-md);
 }
 
 .reparcel-owner-leaflet-popup .leaflet-popup-content {
@@ -1785,10 +1706,10 @@ body.site-intro-open {
 }
 
 .reparcel-owner-popup__title {
-    font-weight: 600;
-    font-size: 13px;
+    font-weight: var(--cb-weight-semibold);
+    font-size: var(--cb-text-md);
     margin-bottom: 8px;
-    color: #111827;
+    color: var(--cb-text-strong);
     padding-right: 20px;
 }
 
@@ -1800,13 +1721,13 @@ body.site-intro-open {
     border: none;
     font-size: 18px;
     cursor: pointer;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     line-height: 1;
     padding: 2px 4px;
 }
 
 .reparcel-owner-popup__close:hover {
-    color: #111827;
+    color: var(--cb-text-strong);
 }
 
 .reparcel-owner-popup__list {
@@ -1822,20 +1743,20 @@ body.site-intro-open {
     align-items: center;
     gap: 8px;
     padding: 6px 8px;
-    border-radius: 6px;
+    border-radius: var(--cb-radius-sm);
     cursor: pointer;
-    font-size: 13px;
-    color: #374151;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text);
     transition: background 0.12s;
 }
 
 .reparcel-owner-popup__row:hover {
-    background: #f3f4f6;
+    background: var(--cb-surface-2);
 }
 
 .reparcel-owner-popup__row.assigned {
-    background: #eff6ff;
-    font-weight: 500;
+    background: var(--cb-primary-soft);
+    font-weight: var(--cb-weight-medium);
 }
 
 .reparcel-owner-popup__row input[type="checkbox"] {
@@ -2420,7 +2341,7 @@ body.site-intro-open {
     min-width: 160px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .lens-modal-footer {
         padding: 14px 16px 18px;
     }
@@ -2430,7 +2351,7 @@ body.site-intro-open {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .lens-modal-overlay {
         display: block;
         padding: 0;
@@ -3106,7 +3027,7 @@ body.site-intro-open {
     min-width: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .agent-dialog-modal {
         --agent-avatar-size: 50px;
         --agent-avatar-outer: calc(var(--agent-avatar-size) + 6px);
@@ -3323,15 +3244,15 @@ body.site-intro-open {
     z-index: 1001;
 }
 
-/* Blockify Modal Styles */
+/* Blockify Modal Styles
+   Layout only: the backdrop, card, header, title, footer, section labels, stacking and phone sheet
+   are the shared "Editor dialog chrome" block after the parcel-based editor. */
 #blockify-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 12050;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -3371,7 +3292,7 @@ body.site-intro-open {
     border-radius: 14px;
     box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
     font-size: 14px;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: var(--cb-font-sans);
 }
 
 .proposal-waiting-spinner {
@@ -3392,8 +3313,6 @@ body.site-intro-open {
     position: relative;
     width: 90%;
     height: 90%;
-    background-color: white;
-    border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -3412,31 +3331,24 @@ body.site-intro-open {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid var(--cb-line);
 }
 
+/* The one #blockify-sidebar rule (utilities.css used to redefine width and padding). */
 #blockify-sidebar {
-    width: 280px;
+    width: 300px;
     flex: 0 0 auto;
-    padding: 15px;
-    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    padding: var(--cb-space-5);
     overflow-y: auto;
     box-sizing: border-box;
 }
 
 #blockify-header {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-#blockify-header h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
 }
 
 #blockify-map {
@@ -3449,7 +3361,7 @@ body.site-intro-open {
 #blockify-3d {
     width: 100%;
     height: 300px;
-    background: #f8f9fa;
+    background: var(--cb-surface-2);
     position: relative;
     z-index: 1;
 }
@@ -3466,24 +3378,16 @@ body.site-intro-open {
 .single-building-3d-wrapper {
     flex: 0 0 auto;
     padding: 12px;
-    border-top: 1px solid #eee;
-    background: #fafbfc;
-}
-
-.single-building-3d-label {
-    margin: 0 0 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
+    border-top: 1px solid var(--cb-line);
 }
 
 #single-building-3d {
     width: 100%;
     height: 240px;
-    background: #f8f9fa;
+    background: var(--cb-surface-2);
     position: relative;
-    border: 1px solid #e6e9ed;
-    border-radius: 6px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
     overflow: hidden;
 }
 
@@ -3501,18 +3405,14 @@ body.site-intro-open {
 }
 
 #blockify-controls {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 #blockify-info {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 14px;
-    color: #333;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text-muted);
     margin-bottom: 15px;
     text-align: center;
     min-height: 20px;
@@ -3534,7 +3434,21 @@ body.site-intro-open {
 
 /* ============================================
    Single Building Modal
+   Layout only: the chrome is the shared "Editor dialog chrome" block after the parcel-based
+   editor.
    ============================================ */
+
+/* The overlay box (it used to be inline styles in single-building.js). */
+#single-building-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 #single-building-container {
     position: relative;
@@ -3542,8 +3456,6 @@ body.site-intro-open {
     height: 720px;
     max-width: 90%;
     max-height: 90%;
-    background-color: white;
-    border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -3562,22 +3474,13 @@ body.site-intro-open {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid var(--cb-line);
 }
 
 #single-building-header {
-    padding: 10px 12px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-#single-building-header h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
 }
 
 #single-building-close {
@@ -3597,9 +3500,6 @@ body.site-intro-open {
 }
 
 #single-building-controls {
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
     display: flex;
     gap: 8px;
     justify-content: center;
@@ -3609,8 +3509,7 @@ body.site-intro-open {
 #single-building-sidebar {
     width: 320px;
     flex: 0 0 auto;
-    padding: 12px;
-    background-color: #f8f9fa;
+    padding: var(--cb-space-5);
     overflow-y: auto;
     box-sizing: border-box;
 }
@@ -3619,13 +3518,9 @@ body.site-intro-open {
 .building-density-card {
     margin: 0 0 18px;
     padding: 14px;
-    border: 1px solid rgba(13, 110, 253, 0.2);
-    border-radius: 10px;
-    background: rgba(13, 110, 253, 0.055);
-}
-
-.building-density-card h3 {
-    margin: 0 0 10px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-primary-soft);
 }
 
 .building-density-grid {
@@ -3642,36 +3537,29 @@ body.site-intro-open {
 }
 
 .building-density-grid dt {
-    color: #4b5563;
-    font-size: 0.82rem;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-md);
 }
 
 .building-density-grid dd {
     margin: 0;
-    color: #14213d;
-    font-size: 0.9rem;
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-base);
     font-variant-numeric: tabular-nums;
-    font-weight: 700;
+    font-weight: var(--cb-weight-bold);
     white-space: nowrap;
 }
 
 .building-density-hint {
     margin: 10px 0 0;
-    color: #667085;
-    font-size: 0.72rem;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
     line-height: 1.35;
 }
 
-#single-building-sidebar h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 16px;
-    color: #333;
-}
-
 .parameter-info-text {
-    color: #666;
-    font-size: 13px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-md);
     margin-top: 12px;
 }
 
@@ -3686,6 +3574,41 @@ body.site-intro-open {
     min-height: 40px;
     font-size: 15px;
     font-weight: 600;
+}
+
+/* Building upload (building-upload.js): a plain .cb-dialog; these rules are only its contents,
+   which used to be inline styles. */
+.building-upload-dialog {
+    --cb-dialog-width: 560px;
+}
+
+.building-upload-file {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-2);
+    cursor: pointer;
+}
+
+.building-upload-hint {
+    margin: 0 0 var(--cb-space-3);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.building-upload-preview {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+}
+
+.building-upload-status {
+    min-height: 18px;
+    margin-top: var(--cb-space-2);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 /* Share proposals modal */
@@ -3781,7 +3704,7 @@ body.site-intro-open {
     flex: 0 1 auto;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
     .share-modal-actions {
         flex-wrap: nowrap;
     }
@@ -5051,19 +4974,11 @@ body.site-intro-open {
     justify-content: flex-end;
 }
 
-/* Mobile layout for blockify modal */
-@media (max-width: 768px) {
-    #blockify-modal {
-        padding: 0;
-    }
-    
+/* Mobile layout for blockify modal (the bottom-sheet size and corners are the shared
+   "Editor dialog chrome" block) */
+@media (max-width: 767.98px) {
     #blockify-container {
         flex-direction: column;
-        height: var(--app-viewport-height);
-        max-height: var(--app-viewport-height);
-        width: 100vw;
-        max-width: 100vw;
-        border-radius: 0;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -5104,23 +5019,20 @@ body.site-intro-open {
     
     #blockify-sidebar {
         order: 4;
-        width: 100% !important;
+        width: 100%;
         max-width: 100%;
         flex: 0 0 auto;
         min-height: fit-content;
         max-height: none;
         overflow-y: visible;
-        border-bottom: 1px solid #dee2e6;
         box-sizing: border-box;
     }
     
     #blockify-controls {
         order: 5;
-        width: 100% !important;
+        width: 100%;
         max-width: 100%;
         flex: 0 0 auto;
-        border-top: 1px solid #dee2e6;
-        padding-bottom: 30px; /* Extra padding for bottom of screen */
         box-sizing: border-box;
     }
     
@@ -5144,17 +5056,8 @@ body.site-intro-open {
     }
     
     /* Single Building Modal - Mobile */
-    #single-building-modal {
-        padding: 0;
-    }
-    
     #single-building-container {
         flex-direction: column;
-        height: var(--app-viewport-height);
-        max-height: var(--app-viewport-height);
-        width: 100vw;
-        max-width: 100vw;
-        border-radius: 0;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -5192,23 +5095,20 @@ body.site-intro-open {
     
     #single-building-sidebar {
         order: 4;
-        width: 100% !important;
+        width: 100%;
         max-width: 100%;
         flex: 0 0 auto;
         min-height: fit-content;
         max-height: none;
         overflow-y: visible;
-        border-bottom: 1px solid #dee2e6;
         box-sizing: border-box;
     }
     
     #single-building-controls {
         order: 5;
-        width: 100% !important;
+        width: 100%;
         max-width: 100%;
         flex: 0 0 auto;
-        border-top: 1px solid #dee2e6;
-        padding-bottom: 30px;
         box-sizing: border-box;
         justify-content: center;
     }
@@ -5220,7 +5120,9 @@ body.site-intro-open {
     }
 }
 
-/* ========== Row Houses Modal Styles ========== */
+/* ========== Row Houses Modal Styles ==========
+   Layout only: the chrome is the shared "Editor dialog chrome" block after the parcel-based
+   editor. */
 .rowhouse-modal-overlay,
 #rowhouse-modal {
     position: fixed;
@@ -5228,8 +5130,6 @@ body.site-intro-open {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 12050;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -5239,8 +5139,6 @@ body.site-intro-open {
     position: relative;
     width: 90%;
     height: 90%;
-    background-color: white;
-    border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: row;
@@ -5251,22 +5149,15 @@ body.site-intro-open {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid var(--cb-line);
 }
 
 #rowhouse-sidebar {
     width: 280px;
     flex: 0 0 auto;
-    padding: 15px;
-    background-color: #f8f9fa;
+    padding: var(--cb-space-5);
     overflow-y: auto;
     box-sizing: border-box;
-}
-
-#rowhouse-sidebar h3 {
-    margin: 0 0 15px 0;
-    font-size: 16px;
-    color: #333;
 }
 
 #rowhouse-sidebar .parameter-group {
@@ -5277,8 +5168,8 @@ body.site-intro-open {
     display: flex;
     justify-content: space-between;
     margin-bottom: 5px;
-    font-size: 14px;
-    color: #555;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text);
 }
 
 #rowhouse-sidebar .parameter-group input[type="range"] {
@@ -5288,17 +5179,17 @@ body.site-intro-open {
 #rowhouse-sidebar .parameter-metrics {
     margin: 15px 0;
     padding: 12px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #dee2e6;
+    background: var(--cb-surface-2);
+    border-radius: var(--cb-radius-sm);
+    border: 1px solid var(--cb-line);
 }
 
 #rowhouse-sidebar .parameter-metrics .metric-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 6px;
-    font-size: 13px;
-    color: #555;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 #rowhouse-sidebar .parameter-metrics .metric-row:last-child {
@@ -5306,36 +5197,27 @@ body.site-intro-open {
 }
 
 #rowhouse-sidebar .parameter-metrics .metric-row span:last-child {
-    font-weight: 600;
-    color: #333;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
 }
 
 #rowhouse-sidebar .parameter-info {
     margin-top: 20px;
     padding-top: 15px;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--cb-line);
 }
 
 #rowhouse-sidebar .parameter-info p {
-    font-size: 12px;
-    color: #666;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
     margin: 0 0 8px 0;
     line-height: 1.4;
 }
 
 #rowhouse-header {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-#rowhouse-header h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
 }
 
 #rowhouse-map {
@@ -5347,7 +5229,7 @@ body.site-intro-open {
 #rowhouse-3d {
     width: 100%;
     height: 300px;
-    background: #f8f9fa;
+    background: var(--cb-surface-2);
     position: relative;
     z-index: 1;
 }
@@ -5361,16 +5243,10 @@ body.site-intro-open {
     display: block;
 }
 
-#rowhouse-controls {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-}
-
 #rowhouse-info {
     margin-bottom: 10px;
-    font-size: 14px;
-    color: #555;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text-muted);
 }
 
 #rowhouse-buttons {
@@ -5396,14 +5272,11 @@ body.site-intro-open {
     cursor: grabbing;
 }
 
-/* Row Houses Modal Mobile Styles */
-@media (max-width: 768px) {
+/* Row Houses Modal Mobile Styles (the bottom-sheet size and corners are the shared
+   "Editor dialog chrome" block) */
+@media (max-width: 767.98px) {
     #rowhouse-container {
         flex-direction: column;
-        width: 100vw;
-        height: 100dvh;
-        max-height: 100dvh;
-        border-radius: 0;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -5435,10 +5308,10 @@ body.site-intro-open {
 
     #rowhouse-sidebar {
         order: 4;
-        width: 100% !important;
+        width: 100%;
         max-height: none;
         overflow-y: visible;
-        border-top: 1px solid #dee2e6;
+        border-top: 1px solid var(--cb-line);
         flex: 0 0 auto;
     }
 
@@ -5446,11 +5319,11 @@ body.site-intro-open {
         order: 5;
         width: 100%;
         flex: 0 0 auto;
-        padding-bottom: 30px;
     }
 }
 
-/* ========== Parcel-based Urban Rules Modal Styles ========== */
+/* ========== Parcel-based Urban Rules Modal Styles ==========
+   Layout only: the chrome is the shared "Editor dialog chrome" block right after this editor. */
 .parcelbased-modal-overlay,
 #parcelbased-modal {
     position: fixed;
@@ -5458,8 +5331,6 @@ body.site-intro-open {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 12050;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -5469,8 +5340,6 @@ body.site-intro-open {
     position: relative;
     width: 90%;
     height: 90%;
-    background-color: white;
-    border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -5489,22 +5358,15 @@ body.site-intro-open {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid var(--cb-line);
 }
 
 #parcelbased-sidebar {
     width: 280px;
     flex: 0 0 auto;
-    padding: 15px;
-    background-color: #f8f9fa;
+    padding: var(--cb-space-5);
     overflow-y: auto;
     box-sizing: border-box;
-}
-
-#parcelbased-sidebar h3 {
-    margin: 0 0 15px 0;
-    font-size: 16px;
-    color: #333;
 }
 
 #parcelbased-sidebar .parameter-group {
@@ -5515,8 +5377,8 @@ body.site-intro-open {
     display: flex;
     justify-content: space-between;
     margin-bottom: 5px;
-    font-size: 14px;
-    color: #555;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text);
 }
 
 #parcelbased-sidebar .parameter-group input[type="range"] {
@@ -5526,17 +5388,17 @@ body.site-intro-open {
 #parcelbased-sidebar .parameter-metrics {
     margin: 15px 0;
     padding: 12px;
-    background: #fff;
-    border-radius: 6px;
-    border: 1px solid #dee2e6;
+    background: var(--cb-surface-2);
+    border-radius: var(--cb-radius-sm);
+    border: 1px solid var(--cb-line);
 }
 
 #parcelbased-sidebar .parameter-metrics .metric-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 6px;
-    font-size: 13px;
-    color: #555;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 #parcelbased-sidebar .parameter-metrics .metric-row:last-child {
@@ -5544,36 +5406,27 @@ body.site-intro-open {
 }
 
 #parcelbased-sidebar .parameter-metrics .metric-row span:last-child {
-    font-weight: 600;
-    color: #333;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
 }
 
 #parcelbased-sidebar .parameter-info {
     margin-top: 20px;
     padding-top: 15px;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--cb-line);
 }
 
 #parcelbased-sidebar .parameter-info p {
-    font-size: 12px;
-    color: #666;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
     margin: 0 0 8px 0;
     line-height: 1.4;
 }
 
 #parcelbased-header {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-#parcelbased-header h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
 }
 
 #parcelbased-map {
@@ -5585,7 +5438,7 @@ body.site-intro-open {
 #parcelbased-3d {
     width: 100%;
     height: 300px;
-    background: #f8f9fa;
+    background: var(--cb-surface-2);
     position: relative;
     z-index: 1;
 }
@@ -5599,16 +5452,10 @@ body.site-intro-open {
     display: block;
 }
 
-#parcelbased-controls {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-}
-
 #parcelbased-info {
     margin-bottom: 10px;
-    font-size: 14px;
-    color: #555;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text-muted);
     text-align: center;
 }
 
@@ -5622,14 +5469,11 @@ body.site-intro-open {
     min-width: 120px;
 }
 
-/* Parcel-based Modal Mobile Styles */
-@media (max-width: 768px) {
+/* Parcel-based Modal Mobile Styles (the bottom-sheet size and corners are the shared
+   "Editor dialog chrome" block) */
+@media (max-width: 767.98px) {
     #parcelbased-container {
         flex-direction: column;
-        width: 100vw;
-        height: 100dvh;
-        max-height: 100dvh;
-        border-radius: 0;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -5659,10 +5503,10 @@ body.site-intro-open {
 
     #parcelbased-sidebar {
         order: 4;
-        width: 100% !important;
+        width: 100%;
         max-height: none;
         overflow-y: visible;
-        border-top: 1px solid #dee2e6;
+        border-top: 1px solid var(--cb-line);
         flex: 0 0 auto;
     }
 
@@ -5670,6 +5514,114 @@ body.site-intro-open {
         order: 5;
         width: 100%;
         flex: 0 0 auto;
+    }
+}
+
+/* ========== Editor dialog chrome ==========
+   The proposal editors (Urban Rule, Row houses, Detached houses, Freeform, Land readjustment) keep
+   their own markup, ids and layout, and take the .cb-dialog look (primitives.css) from here: one
+   backdrop and stacking plane, the card, a header with a hairline under it, the title, a footer
+   with a hairline over it, .cb-kicker section labels and, on phones, the bottom sheet. It comes
+   after every editor's own rules so the phone sheet wins over their desktop sizes. The building
+   upload dialog is a plain .cb-dialog (building-upload.js). */
+#blockify-modal,
+#rowhouse-modal,
+#parcelbased-modal,
+#single-building-modal,
+.reparcel-modal-overlay {
+    z-index: var(--cb-z-dialog);
+    background: var(--cb-backdrop);
+}
+
+#blockify-container,
+#rowhouse-container,
+#parcelbased-container,
+#single-building-container,
+.reparcel-modal {
+    background: var(--cb-surface);
+    border-radius: var(--cb-radius-xl);
+    box-shadow: var(--cb-shadow-lg);
+    color: var(--cb-text);
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
+}
+
+/* Opaque: the Urban Rule and Freeform headers stick to the top of the scrolling sheet on phones. */
+#blockify-header,
+#rowhouse-header,
+#parcelbased-header,
+#single-building-header,
+.reparcel-header {
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-4) var(--cb-space-5);
+    border-bottom: 1px solid var(--cb-line);
+    background: var(--cb-surface);
+}
+
+#blockify-header h2,
+#rowhouse-header h2,
+#parcelbased-header h2,
+#single-building-header h2,
+.reparcel-header__text h2 {
+    margin: 0;
+    font-size: var(--cb-text-xl);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 1.25;
+    color: var(--cb-text-strong);
+}
+
+/* The decision row under the map and 3D preview is the footer. */
+#blockify-controls,
+#rowhouse-controls,
+#parcelbased-controls,
+#single-building-controls {
+    padding: var(--cb-space-3) var(--cb-space-5);
+    border-top: 1px solid var(--cb-line);
+}
+
+/* Section labels read as .cb-kicker. */
+#blockify-sidebar h3,
+#rowhouse-sidebar h3,
+#parcelbased-sidebar h3,
+#single-building-sidebar h3,
+.building-density-card h3,
+.single-building-3d-label,
+.reparcel-legend-header h3 {
+    margin: 0 0 var(--cb-space-2);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    letter-spacing: var(--cb-tracking-caps);
+    text-transform: uppercase;
+    color: var(--cb-text-muted);
+}
+
+@media (max-width: 767.98px) {
+    #blockify-modal,
+    #rowhouse-modal,
+    #parcelbased-modal,
+    #single-building-modal,
+    .reparcel-modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    #blockify-container,
+    #rowhouse-container,
+    #parcelbased-container,
+    #single-building-container,
+    .reparcel-modal {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        max-height: 92dvh;
+        border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
+    }
+
+    /* Extra room under the decisions at the bottom of the screen. */
+    #blockify-controls,
+    #rowhouse-controls,
+    #parcelbased-controls,
+    #single-building-controls {
         padding-bottom: 30px;
     }
 }
@@ -5766,10 +5718,12 @@ body.site-intro-open {
 #blockify-geojson-upload {
     width: 100%;
 }
+/* Manual mode on ("Back to sliders"): a pressed toggle, amber like the outline vertices it lets you
+   drag, not a second filled button beside Done. */
 #blockify-manual-toggle.active {
-    background: #fb8c00;
-    border-color: #fb8c00;
-    color: #fff;
+    background: var(--cb-warning-soft);
+    border-color: var(--cb-warning);
+    color: var(--cb-warning-soft-ink);
 }
 /* "Based on existing buildings" mode toggle (urban-rule modal) */
 .blockify-existing-toggle {
@@ -5876,22 +5830,22 @@ body.site-intro-open {
 }
 
 /* Corner popup in the node editor: what this corner is, and the one action it has. */
-.reparcel-node-popup__title { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
-.reparcel-node-popup__hint { font-size: 11px; color: #555; margin-bottom: 8px; }
+.reparcel-node-popup__title { font-weight: var(--cb-weight-semibold); font-size: var(--cb-text-sm); margin-bottom: 2px; }
+.reparcel-node-popup__hint { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin-bottom: 8px; }
 
 /* Why an action is unavailable, said where the click happened rather than in the status line at
    the foot of the panel — a refusal nobody can see reads as nothing happening. */
 .reparcel-node-popup__refusal {
-    font-size: 11px;
+    font-size: var(--cb-text-xs);
     line-height: 1.35;
-    color: #92400e;
-    background: #fef3c7;
+    color: var(--cb-warning-soft-ink);
+    background: var(--cb-warning-soft);
     border: 1px solid #fcd34d;
-    border-radius: 6px;
+    border-radius: var(--cb-radius-sm);
     padding: 6px 8px;
     max-width: 230px;
 }
-.reparcel-node-popup .btn-sm { font-size: 12px; padding: 4px 10px; }
+.reparcel-node-popup .btn-sm { font-size: var(--cb-text-sm); padding: 4px 10px; }
 .leaflet-popup.reparcel-node-popup-wrap .leaflet-popup-content { margin: 10px 12px; min-width: 150px; }
 
 /* ── Shared geometry-edit handles ────────────────────────────────────────────────────────────

@@ -169,6 +169,16 @@
     let repositionWired = false;
     // Bottom of the phone top row (search box, user bubble, Layers/Settings: 10px + 44px) plus a gap.
     const PHONE_TOP_CLEARANCE = 62;
+    // Desktop: the rows the floating chrome occupies (--map-shell-top/bottom-clearance in
+    // css/map-shell.css: edge 10 + button 40 + gap 8, and bottom 24 + 40 + 8).
+    const DESKTOP_TOP_CLEARANCE = 58;
+    const DESKTOP_BOTTOM_CLEARANCE = 72;
+
+    // A bare cadastral parcel with nothing on it: the parcel menu already names it, so the drill
+    // has nothing to add. The card appears only when the spot has a stack worth walking.
+    function isBareParcelOnly(stack) {
+        return stack.length === 1 && stack[0].kind !== 'proposal';
+    }
 
     function ensurePanel() {
         if (panelEl && document.body.contains(panelEl)) return panelEl;
@@ -215,7 +225,7 @@
     }
 
     function isPhoneLayout() {
-        try { return !!(global.matchMedia && global.matchMedia('(max-width: 768px)').matches); } catch (_) { return false; }
+        try { return !!(global.matchMedia && global.matchMedia('(max-width: 767.98px)').matches); } catch (_) { return false; }
     }
 
     // Middle slot of the right dock: below the proposal card, above the parcel panel, one
@@ -225,8 +235,9 @@
         if (!panelEl) return;
         const gap = 10;
         // On a phone the top edge is the menu button + Guest pill row; the stack starts below it.
-        let top = isPhoneLayout() ? PHONE_TOP_CLEARANCE : gap;
-        let bottomLimit = window.innerHeight - gap;
+        const phone = isPhoneLayout();
+        let top = phone ? PHONE_TOP_CLEARANCE : DESKTOP_TOP_CLEARANCE;
+        let bottomLimit = window.innerHeight - (phone ? gap : DESKTOP_BOTTOM_CLEARANCE);
         try {
             const details = document.getElementById('proposal-details-panel');
             if (details && details.classList.contains('visible')) {
@@ -573,7 +584,8 @@
         } else {
             selectedRef = `c:${parcelId}`;
         }
-        renderPanel(stack, selectedRef);
+        if (isBareParcelOnly(stack)) hidePanel();
+        else renderPanel(stack, selectedRef);
         return {
             handled: true,
             selectedKind: top.kind,
@@ -592,7 +604,8 @@
         const top = stack[0];
         if (top.kind === 'proposal') selectProposalEntry(top, null);
         else selectParcelEntry(top);
-        renderPanel(stack, entryRef(top));
+        if (isBareParcelOnly(stack)) hidePanel();
+        else renderPanel(stack, entryRef(top));
         return true;
     }
 
@@ -613,7 +626,8 @@
         const top = stack[0];
         if (top.kind === 'proposal') selectProposalEntry(top, null);
         else selectParcelEntry(top);
-        renderPanel(stack, entryRef(top));
+        if (isBareParcelOnly(stack)) hidePanel();
+        else renderPanel(stack, entryRef(top));
     }
 
     // ── wiring ───────────────────────────────────────────────────────────────────────────────

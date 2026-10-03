@@ -1,7 +1,7 @@
 // Reads bounded public GeoJSON snapshots into a short-lived memory index; never writes parcels to disk or a database.
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
 
 const caches = new WeakMap();
 const CACHE_MS = 5 * 60 * 1000;
@@ -129,7 +129,7 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
         let reader;
         try {
             const response = await fetchImpl(endpoint, { signal, headers: { Accept: 'application/geo+json, application/json' } });
-            if (!response.ok || response.status !== 200) throw upstreamError(`Snapshot provider returned HTTP ${response.status}.`);
+            if (!response.ok || response.status !== 200) throw providerHttpError(response);
             if (response.url && new URL(response.url).protocol !== 'https:') throw upstreamError('Snapshot redirected outside HTTPS.');
             if (descriptor.expectedEtag !== undefined && response.headers.get('etag') !== descriptor.expectedEtag) {
                 throw upstreamError('Parcel snapshot revision does not match its verified release.');
@@ -189,7 +189,7 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
             if (reader) { try { await reader.cancel(); } catch (_) { /* The failed stream may already be closed. */ } }
             if (error.status) throw error;
             if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error.name)) throw upstreamError('Parcel snapshot provider timed out.', 504);
-            throw upstreamError(`Parcel snapshot is unavailable: ${error.message}`);
+            throw upstreamError('Parcel snapshot provider is unavailable.');
         } finally { reader?.releaseLock(); }
     }
 
@@ -214,7 +214,7 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
             return result(data.indexed.filter(item => item.bbox[0] <= bbox[2] && item.bbox[2] >= bbox[0]
                 && item.bbox[1] <= bbox[3] && item.bbox[3] >= bbox[1]
                 && booleanIntersects(item.feature, target)).map(item => item.feature));
-        } catch (error) { if (error.status) throw error; throw upstreamError(`Parcel intersection failed: ${error.message}`); }
+        } catch (error) { if (error.status) throw error; throw upstreamError('Parcel snapshot intersection failed.'); }
     }
     function queryBounds(bbox) {
         validateBounds(bbox, descriptor.maxBboxKm2 || 25, descriptor);

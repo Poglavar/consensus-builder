@@ -52,7 +52,7 @@
     margin: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .road-proposal-modal .proposal-modal-content,
     .track-proposal-modal .proposal-modal-content {
         width: 100% !important;
@@ -457,13 +457,15 @@ body.land-fork-editing #parcel-info-panel {
 /* Desktop: a full-height panel docked to the right ~third of the screen, so the map keeps the rest. */
 .proposal-list-modal-content {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    /* The same column the docked panels use: below the top row of controls, above the bottom row,
+       opaque, so neither the chrome nor a card behind it shows through. */
+    top: var(--map-shell-top-clearance);
+    right: var(--right-dock-gap);
+    bottom: var(--map-shell-bottom-clearance);
     width: clamp(360px, 33vw, 560px);
     max-height: none;
-    background: rgba(255, 255, 255, 0.96);
-    border-radius: 0;
+    background: var(--cb-surface);
+    border-radius: var(--cb-radius-lg);
     box-shadow: -8px 0 28px rgba(15, 30, 45, 0.22);
     display: flex;
     flex-direction: column;
@@ -472,7 +474,7 @@ body.land-fork-editing #parcel-info-panel {
 
 /* Mobile: dock to the lower half of the screen, full width. Its own rule (rather than the shared
    full-screen modal group in game.css) so the map stays visible in the top half. */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .proposal-list-modal-content {
         top: auto;
         left: 0;
@@ -632,7 +634,7 @@ body.land-fork-editing #parcel-info-panel {
     color: #667085;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .proposal-filters-toggle-row {
         display: flex;
         align-items: center;
@@ -2167,7 +2169,7 @@ textarea.proposal-description-input {
 }
 
 /* Phones: the two columns stack — each row shows its label, then A, then B. */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .parcel-compare {
         width: calc(100vw - 16px);
         max-height: calc(100vh - 16px);
@@ -2771,10 +2773,18 @@ textarea.proposal-description-input {
     white-space: nowrap;
 }
 
+/* One filled action per card (docs/design-language.md): it comes first and takes the whole row;
+   the quiet and secondary actions share the rows under it. */
+.proposal-actions-group > .btn-primary,
+.proposal-actions-group > .btn-success {
+    order: -1;
+    grid-column: 1 / -1;
+}
+
 /* Phones: the card starts right of the mode buttons, so a half-row is ~125px. The generic mobile
    .btn padding (16px a side) left ~70px for icon + label and cut "Fork proposal" to "Fork prop…";
    tighter padding, and a label that wraps to a second line rather than losing its end. */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .proposal-actions-group button {
         padding: 8px 6px;
         white-space: normal;
@@ -2783,7 +2793,7 @@ textarea.proposal-description-input {
     }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
     /* Uniform compact grid: up to three equal buttons per row; a long label wraps to a second
        line rather than being clipped ("Fork with c…") or stretching its button. */
     .proposal-actions-group {
@@ -2903,7 +2913,7 @@ textarea.proposal-description-input {
     pointer-events: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .share-plan-panel-content {
         top: auto;
         left: 0;

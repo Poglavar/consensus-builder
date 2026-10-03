@@ -285,9 +285,9 @@ function unboundBinding({ coverage, toleranceM, siteM2, reason, parcels = [], co
  *   'unknown'/'none', a `reason`. `site` is the unioned site as stored (MultiPolygon, 9 decimals).
  * Throws a binding error (code, status) for a site over MAX_BINDING_PARCELS.
  */
-export async function computeBinding(db, { site = null, parts = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, now = () => new Date() } = {}) {
+export async function computeBinding(db, { site = null, parts = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
     const params = siteQueryParams({ site, parts });
-    const provider = parcelSourceForCity(city);
+    const provider = parcelSourceForCity(city, parcelSourceId);
     if (provider) {
         const metricSrid = provider.descriptor.metricSrid;
         if (!Number.isInteger(metricSrid)) throw new Error('Parcel source metric SRID is missing.');
@@ -355,8 +355,8 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
  * current HR parcel (unknown ids come back as `extra`). Executable sources resolve their own IDs.
  * Other declarations remain unverified: coverage 'unknown', declaration kept as sent.
  */
-export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, now = () => new Date() } = {}) {
-    const provider = parcelSourceForCity(city) || parcelSourceForIds(declaredIds);
+export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
+    const provider = parcelSourceForCity(city, parcelSourceId) || parcelSourceForIds(declaredIds);
     if (provider) return computeSourceParcelActBinding(provider.adapter, declaredIds, { toleranceM, sourceId: provider.descriptor.id, now });
     const computedAt = now().toISOString();
     const parsed = declaredIds.map(parseHrParcelId);
@@ -410,7 +410,7 @@ const describeMissing = hit => ({ id: hit.parcelId, overlapM2: round(hit.overlap
  *   - coverage 'unknown' (cadastre not held here): the declaration is accepted unverified.
  * @returns {Promise<{ ok: true, site, binding } | { ok: false, status, code, error, missing?, extra?, parcels? }>}
  */
-export async function checkProposalBinding(db, proposal, declaredIds, { site = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, now } = {}) {
+export async function checkProposalBinding(db, proposal, declaredIds, { site = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now } = {}) {
     const declared = (declaredIds || []).map(String);
     const parts = footprintParts(proposal);
     if (parts.invalid) {
@@ -432,7 +432,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
         if (hasFootprint(parts)) {
             const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
             const [polygons, lines] = footprintQueryParams(parts);
-            const provider = parcelSourceForCity(city);
+            const provider = parcelSourceForCity(city, parcelSourceId);
             const outsideSql = provider ? FOOTPRINT_OUTSIDE_SITE_SQL.replaceAll('3765', String(provider.descriptor.metricSrid)) : FOOTPRINT_OUTSIDE_SITE_SQL;
             const outside = Number((await db.query(outsideSql,
                 [polygons, lines, JSON.stringify(normalizeSiteGeometry(site)), floorM])).rows[0]?.outside_m2 || 0);
@@ -445,13 +445,13 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
                 };
             }
         }
-        result = await computeBinding(db, { site, toleranceM, city, now });
+        result = await computeBinding(db, { site, toleranceM, city, parcelSourceId, now });
         // The authored site is stored as sent (normalised), not the reprojected union.
         result.site = normalizeSiteGeometry(site);
     } else if (hasFootprint(parts)) {
-        result = await computeBinding(db, { parts, toleranceM, city, now });
+        result = await computeBinding(db, { parts, toleranceM, city, parcelSourceId, now });
     } else {
-        const act = await parcelActBinding(db, declared, { toleranceM, city, now });
+        const act = await parcelActBinding(db, declared, { toleranceM, city, parcelSourceId, now });
         if (act.extra.length) {
             return {
                 ok: false,

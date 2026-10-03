@@ -115,7 +115,7 @@
 }
 
 /* ---- Phones: a bottom-sheet peek, actions as a grid of tiles ---- */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .parcel-menu {
         position: fixed;
         left: 0;

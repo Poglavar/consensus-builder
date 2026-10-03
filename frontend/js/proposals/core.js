@@ -219,7 +219,8 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
     const normalized = options && typeof options === 'object' ? options : {};
     const proposal = normalized.proposal || getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) {
-        updateStatus('Proposal not found');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.proposal_not_found', 'Proposal not found'));
         return false;
     }
 
@@ -612,7 +613,7 @@ function formatAreaMetric(area) {
     if (!Number.isFinite(area) || area <= 0) {
         return '—';
     }
-    return `${Math.round(area).toLocaleString('hr-HR')} m²`;
+    return CbFormat.formatArea(Math.round(area));
 }
 
 function showProposalDownloadConfirm() {
@@ -1227,7 +1228,8 @@ function selectProposalFromList(proposalIdOrHash, parcelId) {
     const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) {
         console.error('Proposal not found:', proposalIdOrHash);
-        updateStatus('Error: Proposal not found');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.error_proposal_not_found', 'Error: Proposal not found'));
         return;
     }
 

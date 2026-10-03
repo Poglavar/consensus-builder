@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../parcels/https-json-fetch.js', () => ({
     createHttpsJsonFetch: () => (...args) => globalThis.fetch(...args)
 }));
-import { createParcelSource, parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
+import { clearParcelSourceRuntimeCache, createParcelSource, parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
 import { computeBinding } from '../proposals/binding.js';
 
 const descriptor = parcelSourceCatalog.sources.find(source => source.cityIds.includes('bogota'));
@@ -40,7 +40,7 @@ function fetchPages(pages) {
     return { fetchImpl, calls };
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); clearParcelSourceRuntimeCache(); });
 
 describe('Bogotá live parcel source', () => {
     it('uses the dated CAR mirror descriptor and pages GeoJSON in OBJECTID order without losing padded IDs', async () => {
@@ -107,6 +107,7 @@ describe('Bogotá live parcel source', () => {
             .rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
         expect(fetchImpl).toHaveBeenCalledTimes(1);
 
+        clearParcelSourceRuntimeCache();
         fetchPages([page([], true)]);
         await expect(parcelSourceForCity('bogota').adapter.queryBounds([-74.083, 4.609, -74.08, 4.613]))
             .rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });

@@ -1396,7 +1396,7 @@ function updateRoadCrossSectionButton() {
     const button = document.getElementById('editRoadCrossSectionButton');
     if (!button) return;
     const width = button.querySelector('.road-cross-section-width');
-    if (width) width.textContent = roadProfile ? ` · ${Number(corridorProfileWidth(roadProfile).toFixed(1))} m` : '';
+    if (width) width.textContent = roadProfile ? ` · ${CbFormat.formatLength(corridorProfileWidth(roadProfile))}` : '';
 }
 
 // Rebuild centerline + committed polygon from `roadSegments` (the source of truth) and refresh the
@@ -1724,7 +1724,7 @@ function renderRoadOpenGroundStat() {
 
 function formatParcelArea(area) {
     if (!Number.isFinite(area) || area <= 0) return '—';
-    return `${Math.round(area).toLocaleString('hr-HR')} m²`;
+    return CbFormat.formatArea(area);
 }
 
 function resetRoadMetricPlaceholders() {
@@ -1857,7 +1857,7 @@ function updateRoadMarketPrice(parcels) {
         return sum + (Number.isFinite(price) ? price : 0);
     }, 0);
 
-    marketEl.textContent = totalPrice > 0 ? Math.round(totalPrice).toLocaleString('hr-HR') : '—';
+    marketEl.textContent = formatCurrency(totalPrice);
 }
 
 async function updateRoadAcquiringDifficulty(parcels) {
@@ -1932,7 +1932,7 @@ async function updateRoadAcquiringDifficulty(parcels) {
 
     totalDifficulty = parcelDifficulties.reduce((sum, diff) => sum + diff, 0);
 
-    difficultyEl.textContent = totalDifficulty > 0 ? Math.round(totalDifficulty).toLocaleString('hr-HR') : '—';
+    difficultyEl.textContent = totalDifficulty > 0 ? CbFormat.formatNumber(totalDifficulty, { maxFractionDigits: 0 }) : '—';
 }
 
 // Collect ownership and acquisition stats from the road info panel
@@ -4018,14 +4018,16 @@ function lockParcelsFromSegment(segmentPolygon) {
     updateRoadAcquiringDifficulty(roadAffectedParcels);
 }
 
-// Helper to format currency (reuse existing logic or simple format)
+// The city's display currency (city-config.js `currency.code`), EUR when there is none.
+function roadDrawingCurrencyCode() {
+    return (typeof window !== 'undefined' && window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code) || 'EUR';
+}
+
+// Helper to format currency: amount then code ("431,000 EUR"), in whole units, because
+// collectOwnershipAndAcquisitionStats reads the total back by stripping every non-digit.
 function formatCurrency(value) {
     if (!Number.isFinite(value) || value <= 0) return '—';
-    const cityConfigManager = (typeof window !== 'undefined' && window.CityConfigManager) ? window.CityConfigManager : null;
-    if (cityConfigManager && typeof cityConfigManager.formatCurrency === 'function') {
-        return cityConfigManager.formatCurrency(value);
-    }
-    return new Intl.NumberFormat('hr-HR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
+    return CbFormat.formatMoney(value, roadDrawingCurrencyCode(), { maxFractionDigits: 0 });
 }
 
 // Find parcels affected by the road.
@@ -4121,10 +4123,10 @@ function updateRoadInfoPanel() {
         const roadLengthElement = document.getElementById('road-length');
         const roadAreaElement = document.getElementById('road-area');
         if (roadLengthElement) {
-            roadLengthElement.textContent = `${length.toFixed(1)} m`;
+            roadLengthElement.textContent = CbFormat.formatLength(length);
         }
         if (roadAreaElement) {
-            roadAreaElement.textContent = `${area.toFixed(1)} m²`;
+            roadAreaElement.textContent = CbFormat.formatArea(area);
         }
 
         // Use cached polygon instead of recalculating
@@ -4162,8 +4164,8 @@ function updateRoadLengthAndArea(points, polygon) {
     if (!points || points.length < 2) {
         const roadLengthElement = document.getElementById('road-length');
         const roadAreaElement = document.getElementById('road-area');
-        if (roadLengthElement) roadLengthElement.textContent = '0 m';
-        if (roadAreaElement) roadAreaElement.textContent = '0 m²';
+        if (roadLengthElement) roadLengthElement.textContent = CbFormat.formatLength(0);
+        if (roadAreaElement) roadAreaElement.textContent = CbFormat.formatArea(0);
         return { length: 0, area: 0 };
     }
 
@@ -4208,10 +4210,10 @@ function updateRoadLengthAndArea(points, polygon) {
         const roadAreaElement = document.getElementById('road-area');
 
         if (roadLengthElement) {
-            roadLengthElement.textContent = `${length.toFixed(1)} m`;
+            roadLengthElement.textContent = CbFormat.formatLength(length);
         }
         if (roadAreaElement) {
-            roadAreaElement.textContent = `${area.toFixed(1)} m²`;
+            roadAreaElement.textContent = CbFormat.formatArea(area);
         }
 
         return { length, area };
@@ -4229,8 +4231,8 @@ function updateRoadInfoWithPreview(points, polygon, affectedParcelsToUse = null)
         const roadLengthElement = document.getElementById('road-length');
         const roadAreaElement = document.getElementById('road-area');
 
-        if (roadLengthElement) roadLengthElement.textContent = '0 m';
-        if (roadAreaElement) roadAreaElement.textContent = '0 m²';
+        if (roadLengthElement) roadLengthElement.textContent = CbFormat.formatLength(0);
+        if (roadAreaElement) roadAreaElement.textContent = CbFormat.formatArea(0);
         return { length: 0, area: 0 };
     }
 
@@ -4287,11 +4289,11 @@ function updateRoadInfoWithPreview(points, polygon, affectedParcelsToUse = null)
 
         // Only update elements if they exist
         if (roadLengthElement) {
-            roadLengthElement.textContent = `${length.toFixed(1)} m`;
+            roadLengthElement.textContent = CbFormat.formatLength(length);
         }
 
         if (roadAreaElement) {
-            roadAreaElement.textContent = `${area.toFixed(1)} m²`;
+            roadAreaElement.textContent = CbFormat.formatArea(area);
         }
 
         // Update parcel stats if affected parcels are provided
@@ -4360,10 +4362,10 @@ function updatePreviewRoadInfo(previewSegmentPoints, previewSegmentPolygon) {
         const roadAreaElement = document.getElementById('road-area');
 
         if (roadLengthElement) {
-            roadLengthElement.textContent = `${totalLength.toFixed(1)} m`;
+            roadLengthElement.textContent = CbFormat.formatLength(totalLength);
         }
         if (roadAreaElement) {
-            roadAreaElement.textContent = `${totalArea.toFixed(1)} m²`;
+            roadAreaElement.textContent = CbFormat.formatArea(totalArea);
         }
     } catch (error) {
         // Silently ignore errors during preview - non-critical
@@ -5124,7 +5126,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         const parcelItems = affectedParcels.map(parcel => {
             const parcelNumber = parcel?.number || parcel?.id || 'Unknown';
             const area = parcel?.area || 0;
-            return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${parcelNumber}</span><span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span></div>`;
+            return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${parcelNumber}</span><span class="parcel-area">(${CbFormat.formatArea(area)})</span></div>`;
         }).join('');
 
         let screenshotPolygon = convertRoadPolygonToLatLngPairs(roadPolygon);
@@ -5181,10 +5183,10 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                 statsItems.push(`<p><strong>Ownership Mixed:</strong> ${stats.ownershipCounts.mixed}</p>`);
             }
             if (stats.totalMarketPrice !== null) {
-                statsItems.push(`<p><strong>Total Market Price:</strong> ${Math.round(stats.totalMarketPrice).toLocaleString('hr-HR')} EUR</p>`);
+                statsItems.push(`<p><strong>Total Market Price:</strong> ${CbFormat.formatMoney(stats.totalMarketPrice, roadDrawingCurrencyCode(), { maxFractionDigits: 0 })}</p>`);
             }
             if (stats.totalAcquiringDifficulty !== null) {
-                statsItems.push(`<p><strong>Total Acquiring Difficulty:</strong> ${Math.round(stats.totalAcquiringDifficulty).toLocaleString('hr-HR')}</p>`);
+                statsItems.push(`<p><strong>Total Acquiring Difficulty:</strong> ${CbFormat.formatNumber(stats.totalAcquiringDifficulty, { maxFractionDigits: 0 })}</p>`);
             }
 
             if (statsItems.length > 0) {
@@ -5227,7 +5229,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                     <div class="proposal-summary">
                         <div class="summary-stats">
                             <p><strong data-i18n-key="modal.roadWidth.roadProposal.summary.parcels">Parcels Affected:</strong> ${affectedParcels.length}</p>
-                            <p><strong data-i18n-key="modal.roadWidth.roadProposal.summary.area">Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                            <p><strong data-i18n-key="modal.roadWidth.roadProposal.summary.area">Total Area:</strong> ${CbFormat.formatArea(totalArea)}</p>
                         </div>
                         <div class="parcel-list">
                             <h4 data-i18n-key="modal.roadWidth.roadProposal.summary.heading">Affected Parcels:</h4>

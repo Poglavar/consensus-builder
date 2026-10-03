@@ -1380,7 +1380,7 @@ async function showAgentDialog(agentId, options = {}) {
     const currencySymbol = getChainCurrencySymbol();
     const initialEthBalanceDisplay = isUserAgent
         ? '-'
-        : `${agent.ethBalance.toFixed(2)} ${currencySymbol}`;
+        : CbFormat.formatMoney(agent.ethBalance, currencySymbol);
     const initialTotalWealthDisplay = '-';
 
     // Prefer cached on-chain data when available so lists don't rebuild on every open
@@ -1547,7 +1547,7 @@ async function showAgentDialog(agentId, options = {}) {
 
                 const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
                 if (portfolioNode) {
-                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ${getChainCurrencySymbol()}` : '-';
+                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, getChainCurrencySymbol()) : '-';
                 }
 
                 const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
@@ -1562,7 +1562,7 @@ async function showAgentDialog(agentId, options = {}) {
                         }
                     } else {
                         const totalWealth = (agent.ethBalance || 0) + (portfolioValue || 0);
-                        totalWealthNode.textContent = `${totalWealth.toFixed(2)} ${getChainCurrencySymbol()}`;
+                        totalWealthNode.textContent = CbFormat.formatMoney(totalWealth, getChainCurrencySymbol());
                     }
                 }
             } catch (error) {
@@ -1908,7 +1908,7 @@ function getAgentProposalOfferDisplay(proposal) {
         : null;
 
     const amountLabel = rawOfferValue !== null
-        ? Number(rawOfferValue).toLocaleString(undefined, { maximumFractionDigits: 2 })
+        ? CbFormat.formatNumber(Number(rawOfferValue), { maxFractionDigits: 2 })
         : '-';
 
     const currencyRaw = proposal
@@ -2287,13 +2287,13 @@ async function loadAgentChainData(agent, isUserAgent) {
                         const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
                         const portfolioValue = Number.isFinite(value) ? value : NaN;
                         if (portfolioNode) {
-                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ${getChainCurrencySymbol()}` : '-';
+                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, getChainCurrencySymbol()) : '-';
                         }
                         if (totalWealthNode) {
                             totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
                             if (Number.isFinite(portfolioValue)) {
                                 const totalWealth = (agent.ethBalance || 0) + portfolioValue;
-                                totalWealthNode.textContent = `${totalWealth.toFixed(2)} ${getChainCurrencySymbol()}`;
+                                totalWealthNode.textContent = CbFormat.formatMoney(totalWealth, getChainCurrencySymbol());
                             }
                         }
                         if (typeof refreshUserEthBalanceDisplay === 'function') {
@@ -2586,8 +2586,7 @@ function summarizePendingProposalAmounts(proposalIds = []) {
         return '-';
     }
 
-    const formatted = total >= 1 ? total.toFixed(2) : total.toFixed(4);
-    return `${formatted} ${currency}`;
+    return CbFormat.formatMoney(total, currency);
 }
 
 function updatePendingAmountDisplay(pendingProposalIds = null) {
@@ -2792,8 +2791,8 @@ function loadMoreItems(listType, listInfo) {
  */
 function renderParcelItem(parcel) {
     const parcelLabel = translateText('agentDialog.parcelLabel', 'Parcel {{number}}', { number: parcel.number });
-    const countKey = parcel.proposalCount === 1 ? 'agentDialog.proposalCount.one' : 'agentDialog.proposalCount.other';
-    const countLabel = translateText(countKey, parcel.proposalCount === 1 ? '{{count}} proposal' : '{{count}} proposals', { count: parcel.proposalCount });
+    // The i18n plural lookup picks the form per language (Croatian has three), not a one/other guess.
+    const countLabel = translateText('agentDialog.proposalCount', parcel.proposalCount === 1 ? '{{count}} proposal' : '{{count}} proposals', { count: parcel.proposalCount });
     const proposalBadge = parcel.proposalCount > 0
         ? `<span class="proposal-status is-minted">${countLabel}</span>`
         : '';

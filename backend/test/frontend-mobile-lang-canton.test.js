@@ -92,7 +92,7 @@ describe('phone proposal list', () => {
         expect(src).toContain("proposal-list-controls${filtersOpen ? '' : ' is-collapsed'}");
         expect(src).toContain('proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window)');
         const css = read('../../frontend/css/proposals.css');
-        expect(css).toMatch(/@media \(max-width: 768px\)\s*{\s*\.proposal-filters-toggle-row\s*{\s*display: flex/);
+        expect(css).toMatch(/@media \(max-width: 767\.98px\)\s*{\s*\.proposal-filters-toggle-row\s*{\s*display: flex/);
         expect(css).toMatch(/\.proposal-list-controls\.is-collapsed\s*{\s*display: none;/);
     });
 });

@@ -333,28 +333,12 @@
 
 /* Agent Dialog Modal */
 .agent-dialog-modal {
-    --agent-avatar-size: 64px;
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 6000;
 }
 
 .agent-dialog-modal-content {
-    background: white;
-    border-radius: 8px;
-    width: 90%;
     max-width: 600px;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .agent-dialog-modal-header {
@@ -362,8 +346,6 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 16px;
-    padding: 20px 24px;
-    border-bottom: 1px solid #dee2e6;
 }
 
 .agent-header-info {
@@ -372,9 +354,6 @@
 }
 
 .agent-name-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
     margin-bottom: 4px;
 }
 
@@ -393,51 +372,24 @@
 }
 
 .agent-dialog-modal-body {
-    padding: 20px 24px;
     flex: 1;
-    overflow-y: auto;
 }
 
 .agent-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
     margin-bottom: 24px;
 }
 
 .stat-item {
     text-align: left;
-    padding: 10px 12px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
 }
 
 .stat-label {
-    font-size: 12px;
-    color: #666;
     letter-spacing: 0.2px;
     margin-bottom: 0;
 }
 
-.stat-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    line-height: 1.25;
-}
-
 .info-section {
     margin-bottom: 20px;
-}
-
-.info-section h4 {
-    margin: 0 0 12px 0;
-    color: #333;
-    font-size: 16px;
 }
 
 .parcels-list {
@@ -465,13 +417,10 @@
 }
 
 .parcel-item, .proposal-item {
-    padding: 8px 12px;
+    padding: 8px 12px; /* = modals.css; without it proposals.css's .proposal-item padding: 10px would win */
     margin-bottom: 5px;
-    background: #f8f9fa;
-    border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
-    border: 1px solid #dee2e6;
 }
 
 .agent-dialog-modal .parcel-item,
@@ -504,11 +453,7 @@
     font-weight: 500;
 }
 
-/* Proposal items can have colored left borders when proposal color is available */
-.proposal-item.has-color {
-    border-left: 3px solid var(--proposal-color, #007bff);
-}
-
+/* Proposal items can have colored left borders when proposal color is available (base rule in modals.css) */
 .proposal-item.has-color:hover {
     border-left-color: var(--proposal-color, #007bff);
 }
@@ -540,21 +485,11 @@
 }
 
 .wallet-address {
-    padding: 6px 12px;
     font-family: monospace;
-    font-size: 12px;
-    border-bottom: 1px solid #dee2e6;
 }
 
 .wallet-address:last-child {
     border-bottom: none;
-}
-
-.empty-list {
-    padding: 12px;
-    text-align: center;
-    color: #666;
-    font-style: italic;
 }
 
 .more-items {
@@ -584,10 +519,6 @@
 
 
 .empty-log {
-    padding: 16px 12px;
-    text-align: center;
-    color: #666;
-    font-style: italic;
     font-size: 13px;
 }
 
@@ -727,9 +658,6 @@
 
 /* Agent dialog user-specific styles */
 .agent-header-user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     margin-top: 5px;
     flex-wrap: wrap;
 }
@@ -825,12 +753,6 @@
 }
 
 .user-label {
-    background: #007bff;
-    color: white;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
     line-height: 1;
     display: inline-flex;
     align-items: center;
@@ -839,20 +761,7 @@
     align-self: center;
 }
 
-.logout-button {
-    background: #dc3545 !important;
-    color: white !important;
-    border: none !important;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
 .logout-button:hover {
-    background: #c82333 !important;
     transform: translateY(-1px);
 }
 
@@ -885,7 +794,6 @@
     color: #6c757d;
 }
 
-.wallet-connect-button,
 .wallet-connect-toggle {
     background: #0d6efd;
     color: #fff;
@@ -898,12 +806,10 @@
     transition: background 0.3s, transform 0.2s;
 }
 
-.wallet-connect-button.connected,
 .wallet-connect-toggle.connected {
     background: #198754;
 }
 
-.wallet-connect-button:hover,
 .wallet-connect-toggle:hover {
     transform: none;
 }
@@ -914,43 +820,7 @@
     cursor: not-allowed;
 }
 
-/* Soften wallet button hover inside the agent dialog */
-.agent-dialog-modal .wallet-connect-button,
-.agent-dialog-modal .wallet-connect-button:hover {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    transform: none;
-    transition: background 0.2s ease;
-    border-radius: 4px;
-    padding: 0 12px;
-    font-size: 12px;
-    font-weight: 600;
-    height: 26px;
-    min-height: 26px;
-    margin-left: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-.agent-dialog-modal .wallet-connect-button:hover {
-    background: #0069d9;
-}
-
-.agent-dialog-modal .wallet-chain-info {
-    height: 26px;
-    min-height: 26px;
-    padding: 0 10px;
-    align-items: center;
-}
-
-.agent-dialog-modal .wallet-attest-link {
-    height: 26px;
-    width: 26px;
-    padding: 0;
-}
-
+/* Wallet button, chain chip and attest link inside the agent dialog are styled in modals.css */
 .agent-dialog-modal .wallet-city-token-button {
     height: 26px;
     min-height: 26px;
@@ -988,7 +858,7 @@
 }
 
 /* -------------------- Mobile modal improvements -------------------- */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     /* Full-screen modals on mobile */
     .create-proposal-modal, .proposal-list-modal, .game-log-modal, 
     .agent-dialog-modal, .proposal-info-modal {
@@ -1047,10 +917,6 @@
     
     /* Remove specific modal adjustments - now handled by safe area insets above */
     
-    .agent-dialog-modal {
-        --agent-avatar-size: 50px;
-    }
-
     .agent-dialog-modal-header {
         padding: 10px 15px 15px 15px; /* Consistent with other modal headers */
     }

@@ -11,7 +11,7 @@
 })(typeof window !== 'undefined' ? window : null, function (win) {
     'use strict';
 
-    const MOBILE_QUERY = '(max-width: 767px)';
+    const MOBILE_QUERY = '(max-width: 767.98px)';
     const POPOVER_GAP = 8;
     const VIEWPORT_MARGIN = 10;
 

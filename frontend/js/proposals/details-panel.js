@@ -376,7 +376,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const isDisabled = isApplyAction && applyDisabledForType;
         const buttonClass = appliedState
             ? actionView.className
-            : (isDisabled ? 'btn btn-secondary disabled' : 'btn btn-success');
+            : (isDisabled ? 'btn disabled' : 'btn btn-success');
         const defaultActionClass = (isApplyAction && !isDisabled) ? ' proposal-action-default' : '';
         const defaultActionAttrs = (isApplyAction && !isDisabled)
             ? 'data-default-action="true" aria-keyshortcuts="Enter"'
@@ -384,11 +384,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const handler = appliedState
             ? `removeProposalFromMap(${inlineJsArg(proposalKey)})`
             : (isDisabled ? null : `applyProposalToMap(${inlineJsArg(proposalKey)})`);
-        const disabledStyle = 'cursor: not-allowed; opacity: 0.55; pointer-events: none; background-color: #d1d5db; border-color: #cbd5e1; color: #555;';
-        const enabledStyle = '';
-        const disabledAttrs = isDisabled
-            ? `disabled aria-disabled="true" style="${disabledStyle}"`
-            : (enabledStyle ? `style="${enabledStyle}"` : '');
+        const disabledAttrs = isDisabled ? 'disabled aria-disabled="true"' : '';
         const buttonId = `proposal-action-btn-${proposalKey}`;
         mapActionButtonHtml = `
             <button id="${buttonId}" type="button" class="${buttonClass}${defaultActionClass}" ${handler ? `onclick="${handler}"` : ''} ${disabledAttrs} ${defaultActionAttrs}>
@@ -397,8 +393,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         `;
     }
 
+    // Share is the main action of an applied proposal; before it is applied, applying is.
     const shareButtonHtml = `
-        <button class="btn btn-outline-primary btn-share-proposal" onclick="shareProposalFromDetails()">
+        <button class="btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal" onclick="shareProposalFromDetails()">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
     `;
@@ -409,7 +406,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // like an editor for the proposal being viewed.
     const forkButtonHtml = proposalKey
         ? `
-        <button class="btn btn-primary btn-counterpropose-proposal"
+        <button class="btn btn-quiet btn-counterpropose-proposal"
             onclick="proposeExistingProposal(${inlineJsArg(proposalKey)})"
             title="${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}"
             aria-label="${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}">
@@ -421,7 +418,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const landForkHint = tProposal('panel.proposal.actions.forkChangedLandHint', 'Fork with changed land set: add or remove parcels on the map, then create the counterproposal. The proposal you are viewing stays unchanged.');
     const landForkButtonHtml = (proposalKey && typeof forkProposalWithChangedLand === 'function')
         ? `
-        <button class="btn btn-outline-primary btn-fork-changed-land"
+        <button class="btn btn-quiet btn-fork-changed-land"
             onclick="forkProposalWithChangedLand(${inlineJsArg(proposalKey)})"
             title="${safeAgentText(landForkHint)}"
             aria-label="${safeAgentText(landForkHint)}">
@@ -442,7 +439,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const crossSectionButtonHtml = (roadActionFacts && window.RoadActionsModel
         && window.RoadActionsModel.isActionAvailable('crossSection', roadActionFacts))
         ? `
-        <button type="button" class="btn btn-outline-secondary btn-cross-section"
+        <button type="button" class="btn btn-quiet btn-cross-section"
             onclick="RoadActions.runAction('crossSection', RoadActions.factsFor(${inlineJsArg(proposalKey)}))"
             title="${safeAgentText(crossSectionHint)}"
             aria-label="${safeAgentText(crossSectionHint)}">
@@ -773,36 +770,41 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const content = `
         <div class="proposal-info">
             ${expiryCountdownHtml}
-            <div class="proposal-badges-row" style="display: flex; justify-content: center; align-items: center; gap: 6px; margin: 10px 0;">
-                <div class="proposal-status ${statusBadgeClass}">${statusBadgeLabel}</div>
-                <div class="proposal-application-status ${mapStatusBadgeClass}">
-                    ${mapStatusBadgeLabel}
-                </div>
-                <div class="proposal-conditionality ${conditionalBadgeClass}" title="${conditionalBadgeTitle}">
-                    ${conditionalBadgeLabel}
-                </div>
-                ${agentBadgeHtml}
+            <div class="proposal-badges-row">
                 ${(() => {
-            const label = isMinted
-                ? tProposal('panel.proposal.lifecycle.minted', 'Minted')
-                : tProposal('panel.proposal.lifecycle.inMemory', 'In-memory');
-            const baseClasses = 'proposal-mint-state' + (isMinted ? ' is-minted minted-glow' : ' is-local');
-            const style = `display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 10px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: ${isMinted ? '#065f46' : '#7a6000'}; background: ${isMinted ? '#d1fae5' : '#fff7d6'}; border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'}; text-decoration: none; cursor: ${mintedExplorerUrl ? 'pointer' : 'default'};`;
-            if (isMinted && mintedExplorerUrl) {
-                return `<a class="${baseClasses}" style="${style}" href="${mintedExplorerUrl}" target="_blank" rel="noopener" title="${tProposal('panel.proposal.lifecycle.viewOnExplorer', 'View on explorer')}">${label}</a>`;
-            }
-            return `<div class="${baseClasses}" style="${style}" title="${isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : ''}">${label}</div>`;
+            // One lifecycle badge from the ladder (docs/design-language.md), the same as the list
+            // rows: Draft → Published → Minted → Executed; "Applied" when it is on this map; a
+            // modifier for expired / concluded / unfunded; the payout mode as a neutral badge.
+            const serial = typeof getSerialProposalId === 'function' ? getSerialProposalId(fullProposal) : null;
+            const ladder = lifecycleKey === 'executed' ? 'executed' : isMinted ? 'minted' : serial ? 'published' : 'draft';
+            const ladderLabel = ladder === 'executed' ? tProposal('panel.proposal.lifecycle.executed', 'Executed')
+                : ladder === 'minted' ? tProposal('panel.proposal.lifecycle.minted', 'Minted')
+                    : ladder === 'published' ? tProposal('common.lifecycle.published', 'Published')
+                        : tProposal('common.lifecycle.draft', 'Draft');
+            const ladderTitle = isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : '';
+            const ladderBadge = (isMinted && mintedExplorerUrl)
+                ? `<a class="cb-badge cb-badge--minted" href="${mintedExplorerUrl}" target="_blank" rel="noopener" title="${ladderTitle}">${ladderLabel} ↗</a>`
+                : `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
+            const MODIFIERS = ['expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded'];
+            const modifier = MODIFIERS.includes(lifecycleKey)
+                ? `<span class="cb-badge ${lifecycleKey === 'vote-open' ? 'cb-badge--published' : 'cb-badge--expired'}">${statusBadgeLabel}</span>`
+                : '';
+            const applied = appliedState
+                ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
+                : '';
+            const payout = `<span class="cb-badge" title="${conditionalBadgeTitle}">${conditionalBadgeLabel}</span>`;
+            return ladderBadge + applied + modifier + payout;
         })()}
+                ${agentBadgeHtml}
             </div>
             <div class="proposal-heading-row" style="text-align: center; margin: 10px 0 6px; padding: 0 10px;">
-                <div class="proposal-display-title" style="font-size: 20px; font-weight: 700; line-height: 1.25;">${escapedProposalDisplayTitle}</div>
                 ${escapedProposalDisplayType ? `<div class="proposal-display-type" style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #666; margin-top: 4px;">${escapedProposalDisplayType}</div>` : ''}
             </div>
             <div class="proposal-description-row" style="text-align: center; margin: 6px 0 10px; padding: 0 10px;">
                 ${escapedProposalDescription ? `<div class="proposal-description-text" style="margin-bottom: 6px;">${escapedProposalDescription}</div>` : ''}
                 ${copiedFromHtml}
                 ${escapedProposalDisplayId ? `<div class="proposal-id-row">
-                    <div class="proposal-id-label" style="font-size: 12px; color: #666;">ID: ${escapedProposalDisplayId}</div>
+                    <button type="button" class="btn btn-quiet proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy ID')}</button>
                     ${lensButtonHtml}
                 </div>` : ''}
                 ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
@@ -2338,6 +2340,24 @@ function returnToParcelInfo(parcelId, event) {
         selectParcel(parcelId);
     }
 }
+
+// The id is an implementation detail: it sits behind a copy button (docs/design-language.md).
+function copyProposalIdToClipboard(id) {
+    const text = String(id || '');
+    if (!text) return;
+    const done = () => {
+        const t = getProposalI18nHelper();
+        if (typeof showEphemeralMessage === 'function') showEphemeralMessage(t('common.copied', 'Copied'), 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => {
+            try { window.prompt('', text); } catch (_) { /* nothing to fall back to */ }
+        });
+    } else {
+        try { window.prompt('', text); } catch (_) { /* nothing to fall back to */ }
+    }
+}
+window.copyProposalIdToClipboard = copyProposalIdToClipboard;
 
 function hideProposalDetailsPanel(clearHighlights = false) {
     const proposalPanel = document.getElementById('proposal-details-panel');

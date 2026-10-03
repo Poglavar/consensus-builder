@@ -125,7 +125,9 @@ export function parseCityConfigs(source) {
         const center = new RegExp(`defaultCenter:\\s*\\[\\s*${num}\\s*,\\s*${num}\\s*\\]`).exec(text)
             || new RegExp(`fallbackLatLng:\\s*\\[\\s*${num}\\s*,\\s*${num}\\s*\\]`).exec(text);
         if (!id || !center) throw new Error(`city-config entry without id or centre: ${text.slice(0, 60)}`);
-        const sourceId = /\bsourceId:\s*'([^']+)'/.exec(text)?.[1];
+        // Alternatives are opt-in; the globe describes the default source.
+        const defaultText = text.replace(/\bliveSource:\s*\{[^}]*\}/g, '');
+        const sourceId = /\bsourceId:\s*'([^']+)'/.exec(defaultText)?.[1];
         const dataVersion = /\bdataVersion:\s*'([^']+)'/.exec(text)?.[1];
         const radius = /\bliveRadiusKm:\s*(\d+(?:\.\d+)?)/.exec(text)?.[1];
         return { id, name: label.split(',')[0].trim(), label, lat: Number(center[1]), lon: Number(center[2]),

@@ -51,11 +51,13 @@
         return null;
     }
 
-    // "2026-09-21 09:00 UTC", or null for an untimed event: the time is never guessed.
+    // "2026-09-21 09:00 UTC", or null for an untimed event: the time is never guessed. In the UI
+    // language through the shared formatter where the page loads it (the unit tests do not).
     function formatAt(at) {
         if (typeof at !== 'string') return null;
         const date = new Date(at);
         if (Number.isNaN(date.getTime())) return null;
+        if (typeof CbFormat !== 'undefined') return `${CbFormat.formatDateTime(date, { timeZone: 'UTC' })} UTC`;
         return `${date.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
     }
 

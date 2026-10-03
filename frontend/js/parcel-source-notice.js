@@ -18,7 +18,7 @@
         const t = (key, fallback) => translate('parcelSourceNotice.' + key, fallback);
         const parcels = city.parcels || {};
         const source = sources.find(item => item.id === parcels.sourceId)
-            || sources.find(item => Array.isArray(item.cityIds) && item.cityIds.includes(city.id));
+            || sources.find(item => item.defaultForCity !== false && Array.isArray(item.cityIds) && item.cityIds.includes(city.id));
         const lines = [t('title', 'Parcel source information'),
             t('responsibility', 'You choose which parcel source to use and are responsible for checking its terms and your intended use.')];
         if (source) {
@@ -45,11 +45,13 @@
         try {
             if (typeof global.getBackendBase !== 'function') throw new Error('Source metadata API unavailable');
             const base = String(global.getBackendBase()).replace(/\/+$/, '');
-            const response = await global.fetch(base + '/parcel-sources', { signal: AbortSignal.timeout(10000), cache: 'no-store' });
+            const custom = city.parcels?.sourceId?.startsWith('custom.');
+            const response = await global.fetch(base + (custom ? '/parcel-sources/' + encodeURIComponent(city.parcels.sourceId) + '/info' : '/parcel-sources'), { signal: AbortSignal.timeout(10000), cache: 'no-store' });
             if (!response.ok) throw new Error('Source metadata request failed');
             const catalog = await response.json();
-            if (!Array.isArray(catalog.sources)) throw new Error('Invalid source metadata');
-            sources = catalog.sources;
+            if (custom && catalog.source) sources = [catalog.source];
+            else if (Array.isArray(catalog.sources)) sources = catalog.sources;
+            else throw new Error('Invalid source metadata');
         } catch (_) { unavailable = true; }
         const notice = buildNotice(city, sources, unavailable, translate);
         return global.showStyledAlert(notice.message, notice.options);

@@ -155,7 +155,8 @@
     function describeParcelBasedParcelSelection(ids) {
         if (!Array.isArray(ids) || ids.length === 0) return translateParcelBasedText('parcelBased.modal.messages.selectedParcels', 'Selected Parcels');
         if (ids.length === 1) return translateParcelBasedText('parcelBased.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
-        return translateParcelBasedText('parcelBased.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
+        // The shared plural key: Croatian and Serbian need a different form for 2–4 parcels.
+        return translateParcelBasedText('proposals.autoName.parcels', '{{count}} parcels', { count: ids.length });
     }
 
     function parcelBasedParcelsForIds(parcelIds) {
@@ -429,9 +430,9 @@
             const avgFloors = houses.length > 0 ? totalFloors / houses.length : 0;
 
             buildingCountEl.textContent = envelopes.length.toString();
-            totalAreaEl.textContent = permittedArea.toFixed(1);
-            totalVolumeEl.textContent = permittedVolume.toFixed(1);
-            avgFloorsEl.textContent = avgFloors.toFixed(1);
+            totalAreaEl.textContent = CbFormat.formatNumber(permittedArea, { maxFractionDigits: 1, minFractionDigits: 1 });
+            totalVolumeEl.textContent = CbFormat.formatNumber(permittedVolume, { maxFractionDigits: 1, minFractionDigits: 1 });
+            avgFloorsEl.textContent = CbFormat.formatNumber(avgFloors, { maxFractionDigits: 1, minFractionDigits: 1 });
         } catch (e) {
             console.warn('[ParcelBased] Error calculating metrics:', e);
             blank();
@@ -784,7 +785,7 @@
         const block = getActiveParcelBasedBlock();
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
             if (typeof updateStatus === 'function') {
-                updateStatus('No parcels selected');
+                updateStatus(translateParcelBasedText('proposalDrafts.noParcels', 'No parcels selected'));
             }
             return;
         }
@@ -840,7 +841,7 @@
                     <div class="parameter-group">
                         <label for="parcelbased-mindistance-slider">
                             <span data-i18n-key="parcelBased.modal.labels.minDistance" data-i18n-attr="text">Min Distance from Borders (m):</span>
-                            <span id="parcelbased-mindistance-value">${DEFAULT_MIN_DISTANCE.toFixed(1)}</span>
+                            <span id="parcelbased-mindistance-value">${CbFormat.formatNumber(DEFAULT_MIN_DISTANCE, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                         </label>
                         <input type="range" id="parcelbased-mindistance-slider" min="0.5" max="20" value="${DEFAULT_MIN_DISTANCE}" step="0.5">
                     </div>
@@ -946,7 +947,7 @@
 
             document.getElementById('parcelbased-mindistance-slider').addEventListener('input', function (e) {
                 currentMinDistance = parseFloat(e.target.value);
-                document.getElementById('parcelbased-mindistance-value').textContent = currentMinDistance.toFixed(1);
+                document.getElementById('parcelbased-mindistance-value').textContent = CbFormat.formatNumber(currentMinDistance, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateBuildingsInModal();
             });
 
@@ -1032,7 +1033,7 @@
             if (label) label.textContent = text;
         };
         setSlider('parcelbased-maxfloors', currentMaxFloors, currentMaxFloors.toString());
-        setSlider('parcelbased-mindistance', currentMinDistance, currentMinDistance.toFixed(1));
+        setSlider('parcelbased-mindistance', currentMinDistance, CbFormat.formatNumber(currentMinDistance, { maxFractionDigits: 1, minFractionDigits: 1 }));
         setSlider('parcelbased-minfloors', currentMinFloors, currentMinFloors.toString());
         setSlider('parcelbased-minfootprint', currentMinFootprintM2, currentMinFootprintM2.toString());
         setSlider('parcelbased-minplot', currentMinPlotAreaM2, currentMinPlotAreaM2.toString());
@@ -1276,7 +1277,7 @@
         const liveParcels = parcelBasedParcelsForIds(ids);
         if (liveParcels.length !== ids.length) {
             if (typeof updateStatus === 'function') {
-                updateStatus('Could not resolve parcel data for the selected parcels.');
+                updateStatus(translateParcelBasedText('status.messages.could_not_resolve_parcel_data_for_the_selected_parcels', 'Could not resolve parcel data for the selected parcels.'));
             }
             return;
         }

@@ -290,7 +290,7 @@
             const type = global.TransitStationModels?.specFor?.(station.stationType)?.label || station.stationType || 'Station';
             const bearing = Math.round(Number(station.bearing) || 0);
             const height = station.stationType === 'elevated' && Number.isFinite(Number(station.platformHeightM))
-                ? ` · ${Number(station.platformHeightM)} m high`
+                ? ` · ${CbFormat.formatLength(Number(station.platformHeightM))} high`
                 : '';
             return `${type} · ${bearing}°${height}`;
         }
@@ -1717,7 +1717,7 @@
         const autoFields = {};
         if (!currentName || /^New (road|track)$/i.test(currentName)) {
             autoFields.name = typeof global.generateDefaultProposalName === 'function'
-                ? global.generateDefaultProposalName(typeLabel)
+                ? global.generateDefaultProposalName(typeLabel, { parcelIds: draft.fields?.selectedParcelIds || [] })
                 : `${typeLabel} ${new Date().toISOString().slice(5, 16).replace(/[-T:]/g, '')}`;
         }
         // Every object carries usable terms from birth: the standard description pattern and a

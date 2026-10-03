@@ -197,11 +197,11 @@ const gameState = {
 function initializeGame() {
     if (gameState.isInitialized) {
         console.log('Game already initialized');
-        updateStatus('Game already initialized');
+        updateStatus(translateGameText('status.messages.game_already_initialized', 'Game already initialized'));
         return;
     }
 
-    updateStatus('Initializing game state...');
+    updateStatus(translateGameText('status.messages.initializing_game_state', 'Initializing game state...'));
     gameState.addLogEntry('Initializing game...');
 
     // Get existing user agent or create 10 AI agents
@@ -247,7 +247,7 @@ function initializeGame() {
     gameState.updateGameUI();
     updateAgentsButton();
 
-    updateStatus(`Game initialized: ${agents.length} agents created, ${assignedParcels} parcels assigned`);
+    updateStatus(translateGameText('status.messages.game_initialized_summary', 'Game initialized: {{agents}} agents created, {{parcels}} parcels assigned', { agents: agents.length, parcels: assignedParcels }));
     console.log(`Game initialized: ${agents.length} agents created, ${assignedParcels} parcels assigned`);
 }
 
@@ -608,8 +608,8 @@ gameState.updateGameUI = function () {
     // Update game datetime display
     const gameTimeElement = document.getElementById('game-datetime');
     if (gameTimeElement) {
-        const dateStr = this.currentDateTime.toISOString().slice(0, 10);
-        gameTimeElement.textContent = dateStr;
+        // The game calendar is kept in UTC; show that day in the UI language.
+        gameTimeElement.textContent = CbFormat.formatDate(this.currentDateTime, { timeZone: 'UTC' });
     }
 
     // Update turns played display
@@ -1177,7 +1177,7 @@ function showParcelFromLog(parcelId) {
 
     // Fold away an open sheet so the parcel is in view
     if (window.MapShell) window.MapShell.closeSheets();
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth < 768;
 
     // Use the existing parcel selection functionality with mobile-aware behavior
     if (typeof selectParcel === 'function') {

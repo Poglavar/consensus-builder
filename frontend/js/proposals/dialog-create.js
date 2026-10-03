@@ -666,8 +666,8 @@ function showProposalDialog(overrides = null) {
     const ownershipStats = computeOwnershipStatsFromSelection(selection);
     const totalOwners = siteContext ? siteParcelIds.length : (ownershipStats.ownerCount || selectedParcels.length);
     const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary">${siteParcelIds.length
-        ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: Math.round(siteArea).toLocaleString('hr-HR'), count: siteParcelIds.length })
-        : t('modal.createProposal.site.unbound', 'Site of {{area}} m² on ground without parcels: no owner can consent, so it can only execute through an authority\'s verdict.', { area: Math.round(siteArea).toLocaleString('hr-HR') })}</p>` : '';
+        ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }), count: siteParcelIds.length })
+        : t('modal.createProposal.site.unbound', 'Site of {{area}} m² on ground without parcels: no owner can consent, so it can only execute through an authority\'s verdict.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }) })}</p>` : '';
     const toleranceLabel = t('modal.createProposal.tolerance.label', 'Parcel intrusion tolerance (m)');
     const toleranceHelp = t('modal.createProposal.tolerance.help', 'A parcel joins the proposal when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour\'s parcel. Use it only for measurement error; max 1 m.');
     const toleranceValue = siteContext && Number(siteContext.toleranceM) > 0 ? Number(siteContext.toleranceM) : 0;
@@ -952,7 +952,7 @@ function showProposalDialog(overrides = null) {
                     <div id="proposalSummaryContent" style="display:none;">
                         <div class="summary-stats">
                             <p><strong>${summaryParcelsLabel}</strong> ${selectedParcels.length}</p>
-                            <p><strong>${summaryAreaLabel}</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                            <p><strong>${summaryAreaLabel}</strong> ${CbFormat.formatArea(totalArea)}</p>
                             <p><strong>${summaryOwnersLabel}</strong> ${totalOwners}</p>
                         </div>
                         <div class="parcel-list">
@@ -1308,8 +1308,10 @@ function showProposalDialog(overrides = null) {
             };
             const formatNumber = (value) => {
                 const num = Number(value);
-                return Number.isFinite(num) ? Math.round(num).toLocaleString('hr-HR') : value;
+                return Number.isFinite(num) ? CbFormat.formatNumber(num, { maxFractionDigits: 0 }) : value;
             };
+            // The road tool's market price is in the city's display currency (road-drawing.js).
+            const marketCurrency = window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
 
             const lines = [];
             if (overrideSummaryStats.individualOwners !== null && overrideSummaryStats.individualOwners !== undefined) {
@@ -1324,7 +1326,7 @@ function showProposalDialog(overrides = null) {
                 lines.push(`<p><strong>Ownership mix:</strong> ${countText}</p>`);
             }
             if (overrideSummaryStats.totalMarketPrice !== null && overrideSummaryStats.totalMarketPrice !== undefined) {
-                lines.push(`<p><strong>Total market price:</strong> ${formatNumber(overrideSummaryStats.totalMarketPrice)} EUR</p>`);
+                lines.push(`<p><strong>Total market price:</strong> ${CbFormat.formatMoney(Number(overrideSummaryStats.totalMarketPrice), marketCurrency, { maxFractionDigits: 0 })}</p>`);
             }
             if (overrideSummaryStats.totalAcquiringDifficulty !== null && overrideSummaryStats.totalAcquiringDifficulty !== undefined) {
                 lines.push(`<p><strong>Acquiring difficulty:</strong> ${formatNumber(overrideSummaryStats.totalAcquiringDifficulty)}</p>`);
@@ -1488,7 +1490,7 @@ function showProposalDialog(overrides = null) {
                 const typeLabel = typeof formatProposalTypeLabel === 'function'
                     ? formatProposalTypeLabel(goalKey)
                     : (goalKey || '');
-                const createdDate = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '';
+                const createdDate = p.createdAt ? CbFormat.formatDate(p.createdAt) : '';
                 return `
                     <div class="proposal-similar-item" data-proposal-id="${proposalId}" style="display:flex; flex-direction:column; gap:2px; padding:8px; border:1px solid #ddd; border-radius:6px; cursor:pointer; background:#fafafa;">
                         <span style="font-weight:600;">${title}</span>
@@ -1618,8 +1620,8 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
     const parcelListHTML = selectedFeatures.map(feature => {
         const number = getParcelDisplayNumberFromProperties(feature.properties, unknownParcelLabel) || unknownParcelLabel;
-        const area = Math.round(feature.properties?.calculatedArea || 0).toLocaleString('hr-HR');
-        return `<div class="proposal-parcel-item"><span class="parcel-number">${parcelLabel} ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
+        const area = CbFormat.formatArea(feature.properties?.calculatedArea || 0);
+        return `<div class="proposal-parcel-item"><span class="parcel-number">${parcelLabel} ${number}</span> <span class="parcel-area">(${area})</span></div>`;
     }).join('');
 
     // Shared inline style for helper text in the options column
@@ -1752,7 +1754,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                 <div class="proposal-summary">
                     <div class="summary-stats">
                         <p><strong>${summaryParcelsLabel}</strong> ${selectedParcels.length}</p>
-                        <p><strong>${summaryAreaLabel}</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                        <p><strong>${summaryAreaLabel}</strong> ${CbFormat.formatArea(totalArea)}</p>
                     </div>
                     <div class="parcel-list">
                         <h4>${summarySelectedLabel}</h4>

@@ -759,7 +759,10 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     const proposal = getProposalByIdOrHash(resolvedId);
     if (!proposal) {
         console.error('[selectAndHighlightProposal] Proposal not found:', proposalIdOrHash);
-        updateStatus('Error: Proposal not found');
+        const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+        updateStatus(t
+            ? t('status.messages.error_proposal_not_found', 'Error: Proposal not found')
+            : 'Error: Proposal not found');
         return;
     }
 

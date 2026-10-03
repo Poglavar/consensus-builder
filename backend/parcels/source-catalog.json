@@ -919,6 +919,193 @@
       "catalogueUrl": "https://cadastre.andf.bj/",
       "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.",
       "evidenceFile": "research/cotonou-live.json"
+    },
+    {
+      "id": "hr-dgu-oss-dkp-cestice",
+      "name": "DGU live cadastral parcels",
+      "adapter": "dgu-wfs",
+      "endpoint": "https://oss.uredjenazemlja.hr/OssWebServices/wfs",
+      "featureType": "oss:DKP_CESTICE",
+      "idField": "PARCEL_KEY",
+      "idType": "string",
+      "idPattern": "^[0-9]{6}-[0-9]+(?:/[0-9]+)?$",
+      "idPrefix": "HR-",
+      "parcelNumberField": "BROJ_CESTICE",
+      "outFields": [
+        "CESTICA_ID",
+        "MATICNI_BROJ_KO",
+        "BROJ_CESTICE",
+        "PARCEL_KEY"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "minRequestIntervalMs": 100,
+      "countryCode": "HR",
+      "metricSrid": 3765,
+      "cityIds": [
+        "zagreb",
+        "split",
+        "sibenik"
+      ],
+      "defaultForCity": false,
+      "evidenceFile": "research/db-city-dgu-live-2026-10-03.json",
+      "scope": "Croatian national DKP cadastral geometry; public WFS token configured on the proxy. Ownership is not streamed.",
+      "catalogueUrl": "https://oss.uredjenazemlja.hr/map",
+      "licenceNote": "Source terms are informational; users choose their source and intended use."
+    },
+    {
+      "id": "cn-shenzhen-land-certain",
+      "name": "Shenzhen public cadastral-map land-right parcels",
+      "adapter": "shenzhen-land-certain",
+      "endpoint": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0",
+      "idField": "PARCEL_NO",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CN-SZ-LANDCERTAIN-",
+      "parcelNumberField": "PARCEL_NO",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_NO",
+        "LOT_NO"
+      ],
+      "boundsQueryMode": "object-ids",
+      "pageSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CN",
+      "metricSrid": 4547,
+      "cityIds": [
+        "shenzhen"
+      ],
+      "evidenceFile": "research/shenzhen-live-2026-10-03.json",
+      "scope": "Official Shenzhen public cadastral-map service, publisher excludes Shenshan Cooperation Zone. Only a bounded central entry and nearby pan have been verified; not a claim of complete city or China coverage.",
+      "catalogueUrl": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+      "licenceUrl": "https://pnr.sz.gov.cn/xxgk/gggs/content/post_8124136.html",
+      "licenceNote": "Public source notices and reuse conditions are informational; users choose the source and intended use.",
+      "attribution": "Shenzhen Municipal Planning and Natural Resources Bureau · public cadastral-map query service. Adapted to WGS84."
+    },
+    {
+      "id": "us-nyc-dof-digital-tax-map",
+      "name": "NYC Department of Finance Digital Tax Map",
+      "adapter": "arcgis",
+      "endpoint": "https://services6.arcgis.com/yG5s3afENB5iO9fj/ArcGIS/rest/services/DTM_ETL_DAILY_view/FeatureServer/0",
+      "idField": "BBL",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-NYC-BBL-",
+      "parcelNumberField": "BBL",
+      "outFields": [
+        "OBJECTID",
+        "BBL"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "metricSrid": 32618,
+      "cityIds": [
+        "new_york"
+      ],
+      "defaultForCity": false,
+      "evidenceFile": "research/db-city-us-live-2026-10-03.json",
+      "scope": "NYC five borough tax lots; distinct BBL identity, imported SWIS identity is not assumed equivalent.",
+      "licenceNote": "Source terms are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-co-oit-public-parcels-denver",
+      "name": "Colorado OIT parcels — Denver county",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+      "idField": "parcel_id",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-CO-",
+      "parcelNumberField": "parcel_id",
+      "outFields": [
+        "OBJECTID",
+        "parcel_id",
+        "countyName"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "metricSrid": 32613,
+      "cityIds": [
+        "colorado"
+      ],
+      "defaultForCity": false,
+      "evidenceFile": "research/db-city-us-live-2026-10-03.json",
+      "scope": "Denver county only; a fixed county filter prevents collisions across Colorado county parcel-number spaces.",
+      "licenceNote": "Source terms are informational; users choose their source and intended use.",
+      "attributeFilters": {
+        "countyName": "Denver"
+      }
+    },
+    {
+      "id": "si-gurs-kn-parcele-wfs",
+      "name": "GURS cadastral parcels — Ljubljana",
+      "adapter": "wfs",
+      "endpoint": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "featureType": "SI.GURS.KN:PARCELE",
+      "idField": "EID_PARCELA",
+      "idType": "string",
+      "idPattern": "^[0-9]{18}$",
+      "idPrefix": "SI-",
+      "parcelNumberField": "ST_PARCELE",
+      "outFields": [
+        "EID_PARCELA",
+        "PARCELA_ID",
+        "KO_ID",
+        "ST_PARCELE"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 3794,
+      "countryCode": "SI",
+      "cityIds": [
+        "ljubljana"
+      ],
+      "scope": "Official GURS cadastral parcel service; acceptance evidence covers bounded Ljubljana cells only, not national completeness.",
+      "catalogueUrl": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "attribution": "Geodetska uprava Republike Slovenije (GURS), cadastral parcels. Adapted to WGS84.",
+      "licenceNote": "GURS source conditions remain informational. No ownership or personal fields are retained by this descriptor.",
+      "defaultForCity": false,
+      "evidenceFile": "research/db-city-wfs-live-2026-10-03.json"
+    },
+    {
+      "id": "ar-caba-idecaba-wfs-parcelas",
+      "name": "IDECABA cadastral parcels — Buenos Aires",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+      "featureType": "catalogo_og_130:parcelas",
+      "idField": "nam",
+      "idType": "string",
+      "idPattern": "^[0-9]{2,3}-[0-9]{3}[A-Za-z]*-[0-9A-Za-z]{3,5}$",
+      "idPrefix": "AR-CABA-WFS-NAM-",
+      "parcelNumberField": "nam",
+      "outFields": [
+        "nam",
+        "gid"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32721,
+      "countryCode": "AR",
+      "cityIds": [
+        "buenos_aires"
+      ],
+      "scope": "Ciudad Autónoma de Buenos Aires cadastral parcel layer; bounded samples verified, not Greater Buenos Aires or Argentina.",
+      "catalogueUrl": "https://data.buenosaires.gob.ar/dataset/parcelas",
+      "attribution": "Gobierno de la Ciudad de Buenos Aires, IDECABA cadastral parcel layer. Adapted to WGS84.",
+      "licenceNote": "The previously checked catalogue stated CC-BY-2.5-AR; it is historical evidence, not a fresh terms verification. Source conditions remain informational.",
+      "defaultForCity": false,
+      "evidenceFile": "research/db-city-wfs-live-2026-10-03.json"
     }
   ]
 }

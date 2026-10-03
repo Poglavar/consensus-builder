@@ -599,7 +599,7 @@
     function areaText() {
         if (!state.site) return '';
         const area = draftApi().siteAreaM2(state.site);
-        return `${Math.round(area).toLocaleString('hr-HR')} ${t('panel.parcel.metrics.areaUnit', 'm²')}`;
+        return CbFormat.formatArea(area);
     }
 
     function hintText() {

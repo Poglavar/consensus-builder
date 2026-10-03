@@ -33,8 +33,8 @@ describe.each(samples)('$city shared-provider city', sample => {
     });
 });
 
-it('assigns each configured city to exactly one provider without duplicating providers or prefixes', () => {
-    const cities = parcelSourceCatalog.sources.flatMap(s => s.cityIds);
+it('assigns at most one default provider per city and keeps source identities unique', () => {
+    const cities = parcelSourceCatalog.sources.filter(s => s.defaultForCity !== false).flatMap(s => s.cityIds);
     expect(new Set(cities).size).toBe(cities.length);
     for (const field of ['id', 'idPrefix']) {
         const values = parcelSourceCatalog.sources.map(s => s[field]);

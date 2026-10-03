@@ -10,8 +10,8 @@
     --tx-muted: #767d87;
     --tx-border: #e2e5ea;
     --tx-border-strong: #c9cfd7;
-    --tx-accent: #2b6;
-    --tx-accent-ink: #1c7a46;
+    --tx-accent: var(--cb-primary);
+    --tx-accent-ink: var(--cb-primary-hover);
     --tx-warn-bg: #fdecea;
     --tx-warn-ink: #8c2f22;
     --tx-warn-border: #f0b4ab;
@@ -19,8 +19,8 @@
     --tx-ok-ink: #1c7a46;
     --tx-tag-bg: #eef1f6;
     --tx-tag-ink: #4a525d;
-    --tx-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    --tx-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --tx-mono: var(--cb-font-mono);
+    --tx-sans: var(--cb-font-sans);
 }
 
 * {
@@ -642,7 +642,7 @@
 
 /* ---------- mobile: the table becomes stacked cards (CSS only) ---------- */
 
-@media (max-width: 760px) {
+@media (max-width: 767.98px) {
 
     .tx-wrap {
         padding: 12px;

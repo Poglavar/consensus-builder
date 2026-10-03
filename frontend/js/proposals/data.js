@@ -2028,6 +2028,8 @@ const multiParcelSelection = {
 
         const totalArea = parcelSummaries.reduce((sum, p) => sum + (p.area || 0), 0);
         const totalEstimatedPrice = parcelSummaries.reduce((sum, p) => sum + (p.price || 0), 0);
+        // One city's parcels share one price currency; the computed fallback (SQM_AVG_PRICE) is EUR.
+        const totalCurrency = (parcelSummaries[0] && parcelSummaries[0].currency) || 'EUR';
 
         // Calculate total owners across all parcels
         let totalOwners = 0;
@@ -2099,13 +2101,13 @@ const multiParcelSelection = {
                 </div>
                 <div class="metric-group" style="flex: 1;">
                     <div class="metric-label" data-i18n-key="panel.parcel.multi.totalArea">${tParcelMulti('panel.parcel.multi.totalArea', {}, 'Total Area:')}</div>
-                    <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
+                    <div class="metric-value">${CbFormat.formatArea(totalArea)}</div>
                 </div>
             </div>
             <div style="display: flex; gap: 8px;">
                 <div class="metric-group" style="flex: 1;">
                     <div class="metric-label" data-i18n-key="panel.parcel.multi.estValue">${tParcelMulti('panel.parcel.multi.estValue', {}, 'Est. Val.:')}</div>
-                    <div class="metric-value">${Math.round(totalEstimatedPrice).toLocaleString('hr-HR')}</div>
+                    <div class="metric-value">${CbFormat.formatMoney(totalEstimatedPrice, totalCurrency, { maxFractionDigits: 0 })}</div>
                 </div>
                 <div class="metric-group" style="flex: 1;">
                     <div class="metric-label" data-i18n-key="panel.parcel.multi.totalOwners">${tParcelMulti('panel.parcel.multi.totalOwners', {}, 'Total owners:')}</div>
@@ -2121,13 +2123,12 @@ const multiParcelSelection = {
             const parcelNumberDisplay = getParcelDisplayNumberFromProperties(feature.properties, parcelId);
             const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: parcelNumberDisplay || parcelId }, `Parcel ${parcelNumberDisplay || parcelId}`);
             const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
-            const currencyLabel = currency === 'EUR' ? '€' : currency || '';
             return `
                             <div class="selected-parcel-item">
                                 <div class="parcel-number">${parcelLabel}</div>
                                 <div class="parcel-details">
-                                            ${Math.round(area).toLocaleString('hr-HR')} m² • 
-                                            ${Math.round(price).toLocaleString('hr-HR')} ${currencyLabel}
+                                            ${CbFormat.formatArea(area)} •
+                                            ${CbFormat.formatMoney(price, currency, { maxFractionDigits: 0 })}
                                     ${isRoad ? ` • <span style="color: #28a745;">${roadLabel}</span>` : ''}
                                 </div>
                             </div>

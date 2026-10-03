@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03T13:59:26.819Z",
+  "sourceId": "hr-dgu-oss-dkp-cestice",
+  "status": "verified-small-grid",
+  "cityResults": [
+    {
+      "city": "zagreb",
+      "completeCells": 18,
+      "failedCells": 0,
+      "uniqueIds": 166,
+      "exactIds": 166,
+      "geometryConflicts": 0,
+      "productionGrid": {
+        "complete": true,
+        "features": 243
+      },
+      "footprint": {
+        "complete": true,
+        "features": 5,
+        "includesSample": true
+      },
+      "liveGrid": {
+        "sizeMetres": 100,
+        "complete": true,
+        "features": 16
+      }
+    },
+    {
+      "city": "split",
+      "completeCells": 18,
+      "failedCells": 0,
+      "uniqueIds": 958,
+      "exactIds": 958,
+      "geometryConflicts": 0,
+      "productionGrid": null,
+      "footprint": {
+        "complete": true,
+        "features": 6,
+        "includesSample": true
+      },
+      "liveGrid": {
+        "sizeMetres": 100,
+        "complete": true,
+        "features": 149
+      }
+    },
+    {
+      "city": "sibenik",
+      "completeCells": 18,
+      "failedCells": 0,
+      "uniqueIds": 1177,
+      "exactIds": 1177,
+      "geometryConflicts": 0,
+      "productionGrid": null,
+      "footprint": {
+        "complete": true,
+        "features": 5,
+        "includesSample": true
+      },
+      "liveGrid": {
+        "sizeMetres": 100,
+        "complete": true,
+        "features": 75
+      }
+    }
+  ],
+  "failedAttempts": [
+    {
+      "city": "zagreb",
+      "operation": "forced-25-feature-pages",
+      "failedCells": 18,
+      "completedCells": 0,
+      "error": "All 18 small-page queries failed; isolated recheck reproduced a provider timeout. Production pageSize1000 returned 13 parcels for the same first cell and 243 for the wider grid. Use production1000 for the final gate."
+    },
+    {
+      "city": "split",
+      "operation": "production-grid",
+      "error": "WFS parcel provider returned missing, inconsistent or changing match counts."
+    },
+    {
+      "city": "sibenik",
+      "operation": "production-grid",
+      "error": "WFS parcel provider returned missing, inconsistent or changing match counts."
+    }
+  ],
+  "tokenHandling": "Public viewer WFS token stays in runtime/environment; no token values are persisted.",
+  "requests": {
+    "count": 116,
+    "failedHttp": 0
+  },
+  "runtime": "Opt-in live Croatian grid uses100-metre cells because wider500-metre Split and Sibenik queries gave inconsistent provider counts. Strict completeness checks reject those wider failures."
+}

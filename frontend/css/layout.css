@@ -129,7 +129,7 @@ body {
 }
 
 /* -------------------- Mobile layout tweaks -------------------- */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     /* Stack layout vertically so the map fills the screen */
     body {
         flex-direction: column;
@@ -161,7 +161,7 @@ body {
 }
 
 /* Larger tap targets for mobile */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     /* List items easier to tap */
     .parcel-item, .proposal-item, .block-item {
         min-height: 48px;

@@ -777,13 +777,13 @@
     }
 
     function formatArea(area) {
-        if (!area || !Number.isFinite(area)) return '0 m\u00b2';
-        return Math.round(area).toLocaleString('hr-HR') + ' m\u00b2';
+        return CbFormat.formatArea(Number.isFinite(area) ? area : 0);
     }
 
+    // Ledger values are EUR: estimatedMarketPrice, else area × SQM_AVG_PRICE (EUR), and this editor
+    // sets the proposal currency to EUR.
     function formatMoney(value) {
-        if (!value || !Number.isFinite(value)) return '0 €';
-        return Math.round(value).toLocaleString('hr-HR') + ' €';
+        return CbFormat.formatMoney(Number.isFinite(value) ? value : 0, 'EUR');
     }
 
     // True when we have meaningful land value to redistribute by; otherwise the
@@ -924,7 +924,7 @@
             state.coverageEl.textContent = t(
                 'reparcellization.modal.coverageComplete',
                 'All pooled land assigned ({{pct}}%).',
-                { pct: (c.coverage * 100).toFixed(1) }
+                { pct: CbFormat.formatNumber(c.coverage * 100, { maxFractionDigits: 1, minFractionDigits: 1 }) }
             );
         } else {
             state.coverageEl.setAttribute('data-state', 'warn');
@@ -934,7 +934,7 @@
                 {
                     count: c.unassignedCount,
                     area: formatArea(c.unassignedArea),
-                    pct: (c.coverage * 100).toFixed(1)
+                    pct: CbFormat.formatNumber(c.coverage * 100, { maxFractionDigits: 1, minFractionDigits: 1 })
                 }
             );
         }
@@ -2652,14 +2652,14 @@
     // (4,941 m²)" is also what the user is looking at in the panel.
     function plotLabel(index) {
         const slice = state.slices[index];
-        const area = Math.round(computeGeometryArea(slice && slice.geometry) || 0).toLocaleString();
+        const area = CbFormat.formatNumber(computeGeometryArea(slice && slice.geometry) || 0, { maxFractionDigits: 0 });
         return t('reparcellization.modal.plotLabel', 'plot {{n}} ({{area}} m²)', { n: index + 1, area });
     }
 
     // One sentence naming the land an edit moves, or nothing when it moves none worth saying.
     function removalConsequenceText(description) {
         if (!description) return '';
-        const m2 = value => Math.round(value).toLocaleString();
+        const m2 = value => CbFormat.formatNumber(value, { maxFractionDigits: 0 });
         // By NUMBER and area, the way the plot list reads. Naming them by owner produced
         // "merges Prometna površina IS-1, Prometna površina IS-1 into Prometna površina IS-1" —
         // every plot in this plan belongs to the same body, so the owner name identifies nothing.

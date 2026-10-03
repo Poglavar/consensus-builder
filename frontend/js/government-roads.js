@@ -774,7 +774,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Select parcels before applying the government road plan.');
+                window.updateStatus(planI18n('status.messages.select_parcels_before_applying_the_government_road_plan', 'Select parcels before applying the government road plan.'));
             }
             return false;
         }
@@ -791,7 +791,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Zoom in further to apply the government road plan.');
+                window.updateStatus(planI18n('status.messages.zoom_in_further_to_apply_the_government_road_plan', 'Zoom in further to apply the government road plan.'));
             }
             return false;
         }
@@ -803,7 +803,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Waiting for parcel merge to complete before applying the government road plan…');
+                window.updateStatus(planI18n('status.messages.waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan', 'Waiting for parcel merge to complete before applying the government road plan…'));
             }
             return false;
         }
@@ -813,7 +813,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Government road plan is still loading. Try again in a moment.');
+                window.updateStatus(planI18n('status.messages.government_road_plan_is_still_loading_try_again_in_a_moment', 'Government road plan is still loading. Try again in a moment.'));
             }
             return false;
         }
@@ -938,7 +938,7 @@
                         stats.selectionFallback = 'viewport';
                         hasSelection = false;
                         if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                            window.updateStatus('Selected parcels were not found in the current view. Applying the government plan to visible parcels instead.');
+                            window.updateStatus(planI18n('status.messages.selected_parcels_were_not_found_in_the_current_view_applying_the_government_plan_to_visible_parcels_instead', 'Selected parcels were not found in the current view. Applying the government plan to visible parcels instead.'));
                         }
                     }
                 }
@@ -952,11 +952,11 @@
                 }
                 if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
                     if (stats.result === 'selection-already-road') {
-                        window.updateStatus('Selected parcels already match the government road plan.');
+                        window.updateStatus(planI18n('status.messages.selected_parcels_already_match_the_government_road_plan', 'Selected parcels already match the government road plan.'));
                     } else if (hasSelection) {
-                        window.updateStatus('Selected parcels are outside the view or already aligned with the government road plan.');
+                        window.updateStatus(planI18n('status.messages.selected_parcels_are_outside_the_view_or_already_aligned_with_the_government_road_plan', 'Selected parcels are outside the view or already aligned with the government road plan.'));
                     } else {
-                        window.updateStatus('No parcels available in the current view.');
+                        window.updateStatus(planI18n('status.messages.no_parcels_available_in_the_current_view', 'No parcels available in the current view.'));
                     }
                 }
                 return false;
@@ -966,7 +966,7 @@
             if (!Array.isArray(targetPlanPieces) || !targetPlanPieces.length) {
                 stats.result = 'no-plan-pieces-for-selection';
                 if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                    window.updateStatus('Government road plan has no geometry overlapping the parcels in view.');
+                    window.updateStatus(planI18n('status.messages.government_road_plan_has_no_geometry_overlapping_the_parcels_in_view', 'Government road plan has no geometry overlapping the parcels in view.'));
                 }
                 return false;
             }
@@ -1391,7 +1391,7 @@
             // Show progress for long operations
             if ((parcelIndex + 1) % 5 === 0 && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
                 const progress = Math.round(((parcelIndex + 1) / impactedParcels.length) * 100);
-                window.updateStatus(`Processing parcels: ${parcelIndex + 1}/${impactedParcels.length} (${progress}%)…`);
+                window.updateStatus(planI18n('status.messages.processing_parcels_progress', `Processing parcels: ${parcelIndex + 1}/${impactedParcels.length} (${progress}%)…`, { processed: parcelIndex + 1, total: impactedParcels.length, percent: progress }));
             }
 
             if (!originalFeature || !isPolygonGeometry(originalFeature)) {
@@ -1612,7 +1612,7 @@
 
         if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
             const totalProcessed = impactedParcels.length;
-            window.updateStatus(`Processing parcels: ${totalProcessed}/${totalProcessed} (100%)`);
+            window.updateStatus(planI18n('status.messages.processing_parcels_progress_complete', `Processing parcels: ${totalProcessed}/${totalProcessed} (100%)`, { processed: totalProcessed, total: totalProcessed }));
         }
 
         if (!childFeatures.length) {
@@ -1808,7 +1808,7 @@
             }
             if ((parcelIndex + 1) % 5 === 0 && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
                 const progress = Math.round(((parcelIndex + 1) / processedParcels.length) * 100);
-                window.updateStatus(`Worker Processing parcels: ${parcelIndex + 1}/${processedParcels.length} (${progress}%)…`);
+                window.updateStatus(planI18n('status.messages.worker_processing_parcels_progress', `Worker Processing parcels: ${parcelIndex + 1}/${processedParcels.length} (${progress}%)…`, { processed: parcelIndex + 1, total: processedParcels.length, percent: progress }));
             }
 
             const originalProps = originalFeature.properties || {};
@@ -2852,7 +2852,7 @@
         if (!cachedPlanCollection || !Array.isArray(cachedPlanCollection.features)) {
             clearGovernmentRoadPlanLayer();
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('No government plan segments available for this view.');
+                window.updateStatus(planI18n('status.messages.no_government_plan_segments_available_for_this_view', 'No government plan segments available for this view.'));
             }
             return;
         }
@@ -2861,7 +2861,7 @@
         if (!features.length) {
             clearGovernmentRoadPlanLayer();
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Government road plan fully applied.');
+                window.updateStatus(planI18n('status.messages.government_road_plan_fully_applied', 'Government road plan fully applied.'));
             }
             return;
         }
@@ -2939,7 +2939,7 @@
             ensureMapReady();
         } catch (err) {
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Map is not ready yet. Please wait.');
+                window.updateStatus(planI18n('status.messages.map_is_not_ready_yet_please_wait', 'Map is not ready yet. Please wait.'));
             }
             console.warn(err.message);
             return;
@@ -2948,7 +2948,7 @@
         const bounds = getActiveMapBounds();
         if (!bounds) {
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Unable to determine map bounds for government plans.');
+                window.updateStatus(planI18n('status.messages.unable_to_determine_map_bounds_for_government_plans', 'Unable to determine map bounds for government plans.'));
             }
             return;
         }
@@ -2967,7 +2967,7 @@
         disarmPlanZoomRetry();
 
         if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-            window.updateStatus('Fetching government road plan...');
+            window.updateStatus(planI18n('status.messages.fetching_government_road_plan', 'Fetching government road plan...'));
         }
 
         isFetchingGovernmentPlan = true;
@@ -2983,7 +2983,7 @@
                 clearGovernmentRoadPlanLayer();
                 if (!opts.skipStatus && typeof window.updateStatus === 'function') {
                     const vertexSummary = cachedPlanVertexCount > 0 ? ` (${cachedPlanVertexCount} plan vertices)` : '';
-                    window.updateStatus(`No government plan segments overlap this view${vertexSummary}.`);
+                    window.updateStatus(planI18n('status.messages.no_government_plan_segments_overlap_this_view', `No government plan segments overlap this view${vertexSummary}.`, { vertexSummary }));
                 }
                 try { window.governmentRoadPlanLastDescriptor = () => lastPlanDescriptor; } catch (_) { }
                 return;
@@ -2993,13 +2993,13 @@
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
                 const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
                 const vertexSummary = cachedPlanVertexCount > 0 ? ` · ${cachedPlanVertexCount} plan vertices` : '';
-                window.updateStatus(`Government road plan loaded${suffix}${vertexSummary}.`);
+                window.updateStatus(planI18n('status.messages.government_road_plan_loaded_summary', `Government road plan loaded${suffix}${vertexSummary}.`, { descriptor: suffix, vertexSummary }));
             }
         } catch (error) {
             console.error('Failed to draw government road plan:', error);
             clearGovernmentRoadPlanLayer();
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Failed to draw government road plan. Check console for details.');
+                window.updateStatus(planI18n('status.messages.failed_to_draw_government_road_plan_check_console_for_details', 'Failed to draw government road plan. Check console for details.'));
             }
             activePlanHashToken = null;
         } finally {
@@ -3024,7 +3024,7 @@
             const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
 
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus(`Applying government road plan${suffix}...`);
+                window.updateStatus(planI18n('status.messages.applying_government_road_plan', `Applying government road plan${suffix}...`, { descriptor: suffix }));
             }
 
             result = await performAutoApply({
@@ -3095,7 +3095,7 @@
                     disarmPlanZoomRetry();
                     clearGovernmentRoadPlanLayer();
                     if (typeof window.updateStatus === 'function') {
-                        window.updateStatus('Government road plan hidden.');
+                        window.updateStatus(planI18n('status.messages.government_road_plan_hidden', 'Government road plan hidden.'));
                     }
                 }
             });

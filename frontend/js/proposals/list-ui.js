@@ -260,7 +260,8 @@ function formatParcelSelectionLabel(parcelIds = []) {
 async function launchStructureToolForSelection(kind) {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.ids.length) {
-        updateStatus('Select parcels before launching the structure tool.');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.select_parcels_before_launching_the_structure_tool', 'Select parcels before launching the structure tool.'));
         return false;
     }
     if (await shouldStopFreshProposalForWholeBlock(kind, selection)) return false;
@@ -269,13 +270,15 @@ async function launchStructureToolForSelection(kind) {
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
         } else if (typeof alert === 'function') {
-            alert('Parcels not contiguous');
+            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+            alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
         }
         return false;
     }
     const geometry = buildGeometryFromParcels(selection.ids);
     if (!geometry) {
-        updateStatus('Could not build geometry for the selected parcels.');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.could_not_build_geometry_for_the_selected_parcels', 'Could not build geometry for the selected parcels.'));
         return false;
     }
     const oneArea = (typeof window === 'undefined' || !window.__parcelContiguity?.isContiguous)
@@ -285,12 +288,14 @@ async function launchStructureToolForSelection(kind) {
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
         } else if (typeof alert === 'function') {
-            alert('Parcels not contiguous');
+            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+            alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
         }
         return false;
     }
     if (typeof showStructureProposalDialog !== 'function') {
-        updateStatus('Structure proposal dialog is unavailable.');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.structure_proposal_dialog_is_unavailable', 'Structure proposal dialog is unavailable.'));
         return false;
     }
     closeProposalDialog();
@@ -306,12 +311,14 @@ async function launchStructureToolForSelection(kind) {
 async function launchSingleBuildingToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.ids.length) {
-        updateStatus('Select parcels before launching the single building tool.');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.'));
         return false;
     }
     if (await shouldStopFreshProposalForWholeBlock('single', selection)) return false;
     if (typeof openSingleBuildingForParcels !== 'function') {
-        updateStatus('Single building tool is unavailable.');
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.single_building_tool_is_unavailable', 'Single building tool is unavailable.'));
         return false;
     }
     // Reopen on the existing design (a copied proposal, or your own in-progress edits) when the
@@ -707,11 +714,14 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const statusClass = getProposalLifecycleClass(lifecycleKey);
         const typeLabel = escapeHtml(formatProposalTypeLabel(metrics.goalKey));
         const acceptanceText = metrics.parcelCount > 0
-            ? `${metrics.acceptedCount}/${metrics.parcelCount} (${Math.round(metrics.acceptancePercent)}%)`
+            ? `${metrics.acceptedCount}/${metrics.parcelCount} ${t('modal.roadWidth.proposalList.meta.acceptedWord', 'accepted')}`
             : '—';
         const areaText = formatAreaMetric(metrics.area);
-        const offerText = formatCurrencyMetric(metrics.offerValue);
-        const createdDate = metrics.createdAt ? new Date(metrics.createdAt).toLocaleDateString() : '—';
+        // No offer → no "—" placeholder in the meta line; the line simply has one fewer item.
+        const offerText = (Number.isFinite(metrics.offerValue) && metrics.offerValue > 0)
+            ? formatCurrencyMetric(metrics.offerValue, proposal.offerCurrency)
+            : '';
+        const createdDate = (metrics.createdAt && CbFormat.formatDate(metrics.createdAt)) || '—';
         const isExecuted = getLifecycleStatus(proposal) === 'Executed';
         // Save state is a property of the PROPOSAL, not of which tab it is shown in: it is "Unsaved"
         // (local-only, at risk) unless it is minted on-chain or uploaded to the server (numeric serial).
@@ -737,10 +747,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             : null;
         const appliedSubject = localCopy || proposal;
         const appliedState = typeof isProposalApplied === 'function' ? isProposalApplied(appliedSubject) : metrics.isApplied;
-        const appliedLabel = appliedState
-            ? t('modal.roadWidth.proposalList.labels.applied', 'Applied')
-            : t('modal.roadWidth.proposalList.labels.notApplied', 'Not Applied');
-        const appliedClass = appliedState ? 'applied' : 'not-applied';
+        const appliedLabel = t('common.lifecycle.applied', 'Applied');
         if (appliedState) classes.push('is-applied');
         const classAttr = classes.join(' ');
 
@@ -751,36 +758,20 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             ? t('modal.roadWidth.proposalList.labels.conditional', 'Conditional')
             : t('modal.roadWidth.proposalList.labels.partial', 'Partial payouts');
 
-        // Save-state badge — driven by the proposal itself (see isUnsaved above), so uploaded and
-        // never-uploaded proposals are told apart even in the same local list. Minted → green,
-        // uploaded (has a server serial) → blue, otherwise → amber "Unsaved".
+        // One lifecycle badge from the ladder (docs/design-language.md): Draft → Published →
+        // Minted → Executed, plus "Applied" when the proposal is on this map and a modifier for an
+        // expired, concluded or unfunded record. Where the record is held (this browser, the
+        // server) is what the tabs say; it is not repeated on every row.
         const downloadEligible = isServerSource && !!proposalId;
         const isDownloaded = downloadEligible && downloadedLookup(proposal);
-        // Where a proposal LIVES is two independent facts, and the mint badge only ever told one of
-        // them: minted / on the server / neither. Held-locally was left implied — true in the Local
-        // tab, and in the Server tab only visible as a greyed-out Download button. So a downloaded
-        // proposal still read "On server" and nothing said the copy in front of you was yours.
-        //
-        // The second badge states it, in both tabs, from the same lookup the Download button uses.
-        const isLocal = typeof downloadedLookup === 'function' ? !!downloadedLookup(proposal) : !isServerSource;
-        const mintLabels = {
-            minted: t('panel.proposal.lifecycle.minted', 'Minted'),
-            onServer: t('modal.roadWidth.proposalList.labels.onServer', 'On server'),
-            unsaved: t('modal.roadWidth.proposalList.labels.unsaved', 'Unsaved'),
-            local: t('modal.roadWidth.proposalList.labels.local', 'Local')
-        };
-
-        let mintLabel, mintStyles;
-        if (isMinted) {
-            mintLabel = mintLabels.minted;
-            mintStyles = { color: '#065f46', background: '#d1fae5', border: '#34d399' };
-        } else if (serialProposalId) {
-            mintLabel = mintLabels.onServer;
-            mintStyles = { color: '#0b4f91', background: '#e5f0ff', border: '#a7c2ff' };
-        } else {
-            mintLabel = mintLabels.unsaved;
-            mintStyles = { color: '#7a6000', background: '#fff7d6', border: '#ffe08a' };
-        }
+        const ladder = isExecuted ? 'executed' : isMinted ? 'minted' : serialProposalId ? 'published' : 'draft';
+        const ladderLabel = ladder === 'executed' ? t('panel.proposal.lifecycle.executed', 'Executed')
+            : ladder === 'minted' ? t('panel.proposal.lifecycle.minted', 'Minted')
+                : ladder === 'published' ? t('common.lifecycle.published', 'Published')
+                    : t('common.lifecycle.draft', 'Draft');
+        const MODIFIER_KEYS = ['expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded'];
+        const modifierLabel = MODIFIER_KEYS.includes(lifecycleKey) ? statusLabel : '';
+        const modifierClass = (lifecycleKey === 'vote-open') ? 'cb-badge--published' : 'cb-badge--expired';
         const downloadButtonHtml = downloadEligible
             ? `<button class="proposal-download-btn" data-proposal-id="${escapeHtml(proposalId)}" data-server-id="${escapeHtml(proposal.serverProposalId || proposal.id || '')}" ${isDownloaded ? 'disabled' : ''}>${escapeHtml(isDownloaded ? downloadedLabel : downloadLabel)}</button>`
             : '';
@@ -808,7 +799,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             offerText ? `<span class="proposal-card-offer">${escapeHtml(offerText)}</span>` : '',
             `<span>${safeAuthor}</span>`,
             `<span>${escapeHtml(createdDate)}</span>`,
-            `<span title="${escapeHtml(metaLabels.parcels)} ${escapeHtml(String(metrics.parcelCount))}">${escapeHtml(String(metrics.parcelCount))}p</span>`,
+            `<span>${escapeHtml(t('proposals.autoName.parcels', '{{count}} parcels', { count: metrics.parcelCount }))}</span>`,
             `<span title="${escapeHtml(metaLabels.acceptance)}">${escapeHtml(acceptanceText)}</span>`
         ].filter(Boolean).join('<span class="proposal-card-dot">·</span>');
 
@@ -818,15 +809,14 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     <span class="proposal-card-icon" title="${escapeHtml(goalIconTitle)}" aria-hidden="true">${escapeHtml(goalIcon)}</span>
                     <span class="proposal-list-title" title="${safeTitle}">${safeTitle}</span>
                     ${serialProposalId ? `<span class="proposal-meta-number">#${escapeHtml(serialProposalId)}</span>` : ''}
-                    <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
                     ${downloadButtonHtml || deleteButtonHtml}
                 </div>
                 <div class="proposal-card-sub">${metaBits}</div>
                 <div class="proposal-card-badges">
                     ${window.__proposalEpoch ? window.__proposalEpoch.cardEpochSelectHtml(proposal, proposalId) : ''}
-                    <span class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</span>
-                    <span class="proposal-mint-state proposal-mint-state--compact" style="color:${mintStyles.color};background:${mintStyles.background};border:1px solid ${mintStyles.border};">${escapeHtml(mintLabel)}</span>
-                    ${isLocal ? `<span class="proposal-mint-state proposal-mint-state--compact proposal-local-state" style="color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;">${escapeHtml(mintLabels.local)}</span>` : ''}
+                    <span class="cb-badge cb-badge--${ladder}">${escapeHtml(ladderLabel)}</span>
+                    ${appliedState ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(appliedLabel)}</span>` : ''}
+                    ${modifierLabel ? `<span class="cb-badge ${modifierClass}">${modifierLabel}</span>` : ''}
                     ${agentProvenance ? `<span class="proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><span aria-hidden="true">✦</span> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
                     ${proposal && proposal.proposalRole === 'owner-offer' ? `<span class="proposal-owner-offer-badge" title="${escapeHtml(t('panel.proposal.ownerOffer.badgeTitle', 'The owner offers this land; bids are pledges and donations'))}">${escapeHtml(t('panel.proposal.ownerOffer.badge', 'Owner offer'))}</span>` : ''}
                     ${buyButtonHtml}
@@ -902,10 +892,9 @@ async function handleProposalListItemClick(event) {
     let proposal = getProposalByIdOrHash(proposalIdAttr);
 
     let justDownloaded = false;
+    // A published proposal opens like any other: it is fetched into this browser on the way, with
+    // no "Download?" question (that was an implementation detail asked of the user).
     if (!proposal && source === 'server') {
-        const confirmed = await showProposalDownloadConfirm();
-        if (!confirmed) return;
-
         const serverId = proposalIdAttr;
         try {
             updateStatus('Downloading proposal…');
@@ -919,7 +908,8 @@ async function handleProposalListItemClick(event) {
             }
         } catch (error) {
             console.error('Failed to download server proposal on click', serverId, error);
-            updateStatus('Failed to download proposal');
+            const t = getProposalI18nHelper();
+            updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
             return;
         }
     }
@@ -1160,6 +1150,8 @@ function getProposalCountAreaContext() {
     return { explore, city: explore ? null : city, bounds, bbox, key, arrivalKey };
 }
 
+const _lastKnownServerCount = new Map(); // area key → last finite server count
+
 function proposalUnionCountNow() {
     const counts = (typeof window !== 'undefined') ? window.__proposalCounts : null;
     const area = getProposalCountAreaContext();
@@ -1174,10 +1166,14 @@ function proposalUnionCountNow() {
         // carries the serial as proposalId/id, and counting it as local-only would double it.
         onServer: !!(typeof getSerialProposalId === 'function' && getSerialProposalId(proposal))
     }));
-    const serverCount = typeof serverProposalCache !== 'undefined'
-        && serverProposalCache.countAreaKey === area.key
+    // The server half of the number. A refresh in flight (the cache is reset on every download and
+    // re-asked) must not empty it: the badge then read the LOCAL count alone (418 → 1 → 2) and the
+    // number changed meaning mid-session. The last count known for this area stands in meanwhile.
+    const cacheCount = typeof serverProposalCache !== 'undefined' && serverProposalCache.countAreaKey === area.key
         ? serverProposalCache.count
         : null;
+    if (Number.isFinite(cacheCount)) _lastKnownServerCount.set(area.key, cacheCount);
+    const serverCount = Number.isFinite(cacheCount) ? cacheCount : (_lastKnownServerCount.get(area.key) ?? null);
     return {
         area,
         count: counts ? counts.unionProposalCount(local, serverCount) : local.length,
@@ -1351,5 +1347,6 @@ function cancelMultiParcelSelection() {
     // Update checkboxes to reflect that multi-select is off
     syncMultiSelectCheckboxes(false);
 
-    updateStatus('Multi-parcel selection cleared');
+    const t = getProposalI18nHelper();
+    updateStatus(t('status.messages.multi_parcel_selection_cleared', 'Multi-parcel selection cleared'));
 }

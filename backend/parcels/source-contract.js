@@ -1,10 +1,59 @@
 // Shared WGS84 validation, errors and canonical parcel features for every live source adapter.
 import { HttpError, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 
-export function upstreamError(message, status = 502) {
+export function upstreamError(message, status = 502, code = 'parcel-source-unavailable') {
     const error = new Error(message);
     error.status = status;
-    error.code = 'parcel-source-unavailable';
+    error.code = code;
+    return error;
+}
+
+const MAX_RETRY_AFTER_SECONDS = 60 * 60;
+
+function retryAfterSeconds(value) {
+    if (typeof value !== 'string' && typeof value !== 'number') return undefined;
+    const text = String(value).trim();
+    if (!text) return undefined;
+    let seconds;
+    if (/^\d+$/.test(text)) seconds = Number(text);
+    else if (/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} \d{2}:\d{2}:\d{2} GMT$/.test(text)) {
+        const at = Date.parse(text);
+        if (!Number.isFinite(at)) return undefined;
+        seconds = Math.max(0, Math.ceil((at - Date.now()) / 1000));
+    } else return undefined;
+    return Number.isFinite(seconds) ? Math.min(MAX_RETRY_AFTER_SECONDS, Math.max(0, Math.ceil(seconds))) : undefined;
+}
+
+// Translate upstream HTTP/service errors to stable gateway metadata without copying
+// provider response text, URLs, credentials, or query parameters into client errors.
+export function providerHttpError(responseOrStatus, retryAfterOverride) {
+    const status = typeof responseOrStatus === 'number'
+        ? responseOrStatus
+        : Number(responseOrStatus?.status ?? responseOrStatus?.code);
+    const validStatus = Number.isSafeInteger(status) && status >= 100 && status <= 599;
+    const upstreamStatus = validStatus ? status : undefined;
+    let code = 'parcel-source-unavailable';
+    let message = 'Parcel provider is unavailable.';
+    if ([401, 403, 498, 499].includes(status)) {
+        code = 'parcel-source-blocked';
+        message = 'Parcel provider access is blocked.';
+    } else if (status === 429) {
+        code = 'parcel-source-rate-limited';
+        message = 'Parcel provider is rate limited.';
+    }
+    const error = upstreamError(message, 502, code);
+    if (upstreamStatus !== undefined) {
+        error.upstreamStatus = upstreamStatus;
+        error.message = `${message.replace(/\.$/, '')} (HTTP ${upstreamStatus}).`;
+    }
+    if (status === 429) {
+        let retry = retryAfterOverride;
+        if (retry === undefined && responseOrStatus && typeof responseOrStatus === 'object') {
+            try { retry = responseOrStatus.headers?.get?.('retry-after'); } catch { /* Ignore malformed provider headers. */ }
+        }
+        const seconds = retryAfterSeconds(retry);
+        if (seconds !== undefined) error.retryAfterSeconds = seconds;
+    }
     return error;
 }
 

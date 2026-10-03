@@ -114,21 +114,9 @@
         };
     }
 
-    function formatNumber(value, locale, maximumFractionDigits = 0) {
-        if (!Number.isFinite(value)) return '\u2014';
-        try {
-            return new Intl.NumberFormat(locale || undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits
-            }).format(value);
-        } catch (_) {
-            return Number(value).toFixed(maximumFractionDigits);
-        }
-    }
-
+    // Display formatting is not here: the editors render these numbers with js/format.js (CbFormat).
     return {
         DEFAULT_FLOOR_HEIGHT_M,
-        formatNumber,
         summarizeDensity
     };
 });

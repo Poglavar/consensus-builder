@@ -257,6 +257,15 @@ describe('running commands', () => {
         expect(revealControl).toHaveBeenCalledWith('tile-source-select');
     });
 
+    it('opens parcel source settings from the shortcut palette command', () => {
+        const clickControl = vi.fn();
+        const entry = UiCommands.findCommand('settings.parcelSourceSettings');
+        expect(entry.surfaces).toContain('palette');
+        expect(entry.control).toBe('parcel-source-settings-button');
+        UiCommands.runCommand(entry.id, { global: {}, clickControl });
+        expect(clickControl).toHaveBeenCalledWith('parcel-source-settings-button');
+    });
+
     it('fails loudly when the global it needs is missing', () => {
         expect(() => UiCommands.runCommand('blocks.reform', { global: {} })).toThrow(/countBlocks/);
         expect(() => UiCommands.runCommand('no.such.command', { global: {} })).toThrow(/unknown command/);

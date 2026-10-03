@@ -83,6 +83,7 @@ describe('isInCity covers every configured city', () => {
             osaka: 'JP-MOJ-2026-27128~sheet1~H000000001',
             tokyo: 'JP-MOJ-2026-13101~sheet1~H000000001',
             nagoya: 'JP-MOJ-2026-23101~sheet1~H000000001',
+            shenzhen: 'CN-SZ-LANDCERTAIN-TEST-1',
             toronto: 'CA-ON-TORONTO-5455132',
             montreal: 'CA-QC-CADASTRE-11111111-2222-3333-4444-555555555555',
             bogota: 'CO-BOGOTA-006106001009',

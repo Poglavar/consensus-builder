@@ -503,7 +503,7 @@ button.corridor-lane-standard--reset:hover {
 
 /* Mobile: the editor takes the lower half of the screen and the map keeps the upper half —
    the same docked-beside-a-live-map arrangement as desktop, rotated 90°. */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .corridor-editor-overlay {
         align-items: flex-end;
     }

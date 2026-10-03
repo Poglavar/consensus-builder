@@ -152,7 +152,7 @@
     font-size: 11px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .command-palette-backdrop {
         align-items: flex-end;
         padding-top: 0;

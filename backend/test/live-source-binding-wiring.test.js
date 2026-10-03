@@ -4,6 +4,7 @@ import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { computeBinding, parcelActBinding } from '../proposals/binding.js';
 import { setupProposalBindingRoute } from '../routes/proposal-binding.js';
+import { clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 
 const SOURCE_ID = 'ca-on-toronto-property-boundary';
 const PREFIX = 'CA-ON-TORONTO-';
@@ -25,7 +26,7 @@ function fetchGeojson(features = [arcgisFeature(1, 41001)]) {
     }));
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); clearParcelSourceRuntimeCache(); });
 
 describe('live source proposal binding wiring', () => {
     it('binds an authored Toronto site from the configured ArcGIS source without querying HR SQL', async () => {

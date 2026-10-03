@@ -93,17 +93,30 @@
       "name": "New York City Digital Tax Map tax-lot polygons",
       "operator": "New York City Department of Finance",
       "countryCode": "US",
-      "scope": "New York City five boroughs; wider metro area and United States excluded",
+      "scope": "NYC five borough tax lots; distinct BBL identity, imported SWIS identity is not assumed equivalent.",
       "endpoint": "https://services6.arcgis.com/yG5s3afENB5iO9fj/ArcGIS/rest/services/DTM_ETL_DAILY_view/FeatureServer/0/query",
       "method": "GET",
       "responseFormat": "ArcGIS Feature JSON",
       "crs": "EPSG:4326 requested output; hosted layer uses EPSG:3857",
-      "verificationStatus": "verified_nonempty_sample",
+      "verificationStatus": "verified_bounded_live_adapter",
       "reuseStatus": "terms_to_review",
       "verifiedCityIds": [
         "geonames:5128581"
       ],
-      "evidenceFile": "research/new-york-city.json"
+      "evidenceFile": "research/db-city-us-live-2026-10-03.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "new_york"
+        ],
+        "defaultForCity": false,
+        "verifiedAt": "2026-10-03",
+        "adapter": "arcgis",
+        "evidenceFile": "research/db-city-us-live-2026-10-03.json",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; existing database remains default."
+      }
     },
     {
       "sourceId": "jp-moj-geospatial-2026",
@@ -2208,17 +2221,32 @@
       "name": "Croatian cadastre (DKP) OSS WFS",
       "operator": "Državna geodetska uprava (DGU)",
       "countryCode": "HR",
-      "scope": "Croatia; sampled in Zagreb, Split, Osijek and Rijeka; already used by the app for Zagreb, Split and Šibenik",
+      "scope": "Croatian national DKP cadastral geometry; public WFS token configured on the proxy. Ownership is not streamed.",
       "endpoint": "https://oss.uredjenazemlja.hr/OssWebServices/wfs",
       "method": "GET",
       "responseFormat": "GeoJSON (WFS 2.0, typeName oss:DKP_CESTICE)",
       "crs": "EPSG:3765",
-      "verificationStatus": "verified_nonempty_sample",
+      "verificationStatus": "verified_bounded_live_adapter",
       "reuseStatus": "public_access_token_in_app;_terms_unread",
       "verifiedCityIds": [
         "geonames:3186886"
       ],
-      "evidenceFile": "research/countries/HR.json"
+      "evidenceFile": "research/db-city-dgu-live-2026-10-03.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "zagreb",
+          "split",
+          "sibenik"
+        ],
+        "defaultForCity": false,
+        "verifiedAt": "2026-10-03",
+        "adapter": "dgu-wfs",
+        "evidenceFile": "research/db-city-dgu-live-2026-10-03.json",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; existing database remains default."
+      }
     },
     {
       "sourceId": "in-ldo-edharti-geojson",
@@ -2288,17 +2316,30 @@
       "name": "Parcelas catastrales (catalogo_og_130:parcelas)",
       "operator": "Gobierno de la Ciudad de Buenos Aires (IDECABA)",
       "countryCode": "AR",
-      "scope": "Ciudad Autonoma de Buenos Aires only; not Greater Buenos Aires, not Argentina",
+      "scope": "Ciudad Autónoma de Buenos Aires cadastral parcel layer; bounded samples verified, not Greater Buenos Aires or Argentina.",
       "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
       "method": "WFS 2.0.0 GetFeature, GeoJSON output, no key",
       "responseFormat": "GeoJSON",
       "crs": "EPSG:4326 (srsName requested)",
-      "verificationStatus": "verified_sample_city_scope",
+      "verificationStatus": "verified_bounded_live_adapter",
       "reuseStatus": "Terms not read on the WFS; the catalog dataset page previously stated CC-BY-2.5-AR (not re-verified this pass)",
       "verifiedCityIds": [
         "geonames:3435910"
       ],
-      "evidenceFile": "research/retry/cities/buenos-aires.json"
+      "evidenceFile": "research/db-city-wfs-live-2026-10-03.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "buenos_aires"
+        ],
+        "defaultForCity": false,
+        "verifiedAt": "2026-10-03",
+        "adapter": "wfs",
+        "evidenceFile": "research/db-city-wfs-live-2026-10-03.json",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; existing database remains default."
+      }
     },
     {
       "sourceId": "gb-hmlr-inspire-index-polygons",
@@ -2921,6 +2962,109 @@
         ],
         "termsAreInformational": true
       }
+    },
+    {
+      "sourceId": "cn-shenzhen-land-certain",
+      "name": "Shenzhen official cadastral land-right polygons (LAND_CERTAIN)",
+      "operator": "深圳市规划和自然资源局 / Shenzhen Municipal Planning and Natural Resources Bureau",
+      "countryCode": "CN",
+      "scope": "Official Shenzhen public cadastral-map service, publisher excludes Shenshan Cooperation Zone. Only a bounded central entry and nearby pan have been verified; not a claim of complete city or China coverage.",
+      "endpoint": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0/query",
+      "method": "GET",
+      "responseFormat": "ArcGIS Feature JSON",
+      "crs": "Layer WKID 4547 (CGCS2000); sample requested inSR/outSR 4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "informational_not_assessed",
+      "verifiedCityIds": [
+        "geonames:1795565"
+      ],
+      "evidenceFile": "research/shenzhen-live-2026-10-03.json",
+      "publicViewer": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+      "publicClientAccess": {
+        "header": "X-OPENAPI-SubscriptionToken",
+        "issuer": "Static opaque token published in anonymous official viewer main.js; transient decoding only",
+        "valueStored": false,
+        "identityOrLoginUsed": false
+      },
+      "candidateNativeIdFields": [
+        "PARCEL_NO",
+        "LOT_NO"
+      ],
+      "transportIdField": "OBJECTID",
+      "identityAssessment": "Five sample keys resolved one-to-one with matching geometry for PARCEL_NO and LOT_NO; wider uniqueness/permanence unproven. PARCEL_CODE has a duplicate exact match and cannot be assumed unique.",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0",
+          "operation": "Layer metadata, tiny bbox polygons, count/ID enumeration, exact OID and candidate-native-key reads, geometry validation",
+          "outcome": "verified-bounded-sample",
+          "detail": "Five finite closed polygon rings; count and IDs agree; OID, PARCEL_NO and LOT_NO exact reads match all five geometries. HTTP 200 pagination error when resultRecordCount supplied; layer supportsPagination=false.",
+          "evidenceFile": "research/china-language-audit-2026-10-03-southwest.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "shenzhen"
+        ],
+        "defaultForCity": true,
+        "verifiedAt": "2026-10-03",
+        "adapter": "shenzhen-land-certain",
+        "evidenceFile": "research/shenzhen-live-2026-10-03.json",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "appCityId": "shenzhen"
+      }
+    },
+    {
+      "sourceId": "us-co-oit-public-parcels-denver",
+      "name": "Colorado OIT parcels — Denver county",
+      "operator": "Colorado OIT parcels — Denver county",
+      "countryCode": "US",
+      "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+      "method": "GET, bounded spatial and exact identifier reads",
+      "responseFormat": "GeoJSON",
+      "scope": "Denver county only; a fixed county filter prevents collisions across Colorado county parcel-number spaces.",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "colorado"
+        ],
+        "defaultForCity": false,
+        "verifiedAt": "2026-10-03",
+        "adapter": "arcgis",
+        "evidenceFile": "research/db-city-us-live-2026-10-03.json",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; existing database remains default."
+      },
+      "evidenceFile": "research/db-city-us-live-2026-10-03.json",
+      "verificationStatus": "verified_bounded_live_adapter"
+    },
+    {
+      "sourceId": "si-gurs-kn-parcele-wfs",
+      "name": "GURS cadastral parcels — Ljubljana",
+      "operator": "GURS cadastral parcels — Ljubljana",
+      "countryCode": "SI",
+      "endpoint": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "method": "GET, bounded spatial and exact identifier reads",
+      "responseFormat": "GeoJSON",
+      "scope": "Official GURS cadastral parcel service; acceptance evidence covers bounded Ljubljana cells only, not national completeness.",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "ljubljana"
+        ],
+        "defaultForCity": false,
+        "verifiedAt": "2026-10-03",
+        "adapter": "wfs",
+        "evidenceFile": "research/db-city-wfs-live-2026-10-03.json",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; existing database remains default."
+      },
+      "evidenceFile": "research/db-city-wfs-live-2026-10-03.json",
+      "verificationStatus": "verified_bounded_live_adapter"
     }
   ],
   "countryCoverage": [
@@ -3458,7 +3602,16 @@
       "researchOrder": 5,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/shanghai.json"
+      "researchFile": "research/shanghai.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-north.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "account_oriented_service_entry",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "geonames:1809858",
@@ -3473,7 +3626,16 @@
       "researchOrder": 6,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/guangzhou.json"
+      "researchFile": "research/guangzhou.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-southwest.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "public_lookup_documented_inspected_layers_are_points",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "geonames:360630",
@@ -3629,7 +3791,16 @@
       "researchOrder": 16,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/beijing.json"
+      "researchFile": "research/beijing.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-north.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "identity_verified_building_and_map_lookup",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "geonames:1172451",
@@ -3744,11 +3915,29 @@
       ],
       "citySource": "https://www.geonames.org/1795565/shenzhen.html",
       "researchOrder": 23,
-      "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
-      "researchFile": "research/shenzhen.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "cn-shenzhen-land-certain"
+      ],
+      "researchFile": "research/china-language-audit-2026-10-03-southwest.json",
       "previousResearchFile": "research/shenzhen.json",
-      "retryFile": "research/retry/cities/shenzhen.json"
+      "retryFile": "research/retry/cities/shenzhen.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-southwest.json",
+        "cadastreExistence": "nonempty_polygon_query_observed",
+        "publicQuery": "anonymous_public_client_polygon_sample",
+        "anonymousVectorSample": "verified_bounded_polygons_and_exact_lookup",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "previousParcelStatus": "temporarily_unavailable",
+      "liveIntegration": {
+        "status": "enabled",
+        "appCityId": "shenzhen",
+        "verifiedAt": "2026-10-03",
+        "evidenceFile": "research/shenzhen-live-2026-10-03.json"
+      }
     },
     {
       "cityId": "geonames:1277333",
@@ -4086,7 +4275,16 @@
       "researchOrder": 43,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/suzhou.json"
+      "researchFile": "research/suzhou.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "app_query_Gusu_lead_and_Zhangjiagang_real_name_viewer",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "wup2025:6408",
@@ -4118,7 +4316,16 @@
       "researchOrder": 45,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/hangzhou.json"
+      "researchFile": "research/hangzhou.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_cadastral_registration_operations",
+        "publicQuery": "current_map_entry_not_verified",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "wup2025:10474",
@@ -4134,7 +4341,16 @@
       "researchOrder": 46,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/wuhan.json"
+      "researchFile": "research/wuhan.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_citywide_cadastral_holdings",
+        "publicQuery": "government_portal_login_visual_lookup",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "wup2025:9414",
@@ -4150,7 +4366,16 @@
       "researchOrder": 47,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/tianjin.json"
+      "researchFile": "research/tianjin.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-north.json",
+        "cadastreExistence": "official_indexed_internal_holdings_and_catalogue_lead",
+        "publicQuery": "registration_category_only_specific_parcel_product_unverified",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "wup2025:275",
@@ -4219,7 +4444,16 @@
       "researchOrder": 51,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/chongqing.json"
+      "researchFile": "research/chongqing.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "authorized_visual_pilot_Liangjiang_scope",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "wup2025:2961",
@@ -4447,7 +4681,16 @@
       "researchOrder": 64,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/chengdu.json"
+      "researchFile": "research/chengdu.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-southwest.json",
+        "cadastreExistence": "provincial_model_only_city_specific_geometry_unverified",
+        "publicQuery": "not_verified",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "wup2025:2033",

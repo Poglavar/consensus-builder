@@ -37,12 +37,16 @@ export function setupProposalBindingRoute(app, pool) {
                 const { binding } = await computeBinding(pool, {
                     site: normalizeSiteGeometry(body.site),
                     toleranceM: tolerance.value,
-                    city: body.city || null
+                    city: body.city || null,
+                    parcelSourceId: body.parcelSourceId ?? null
                 });
                 return res.json({ binding, queryMs: Date.now() - started });
             } catch (error) {
                 if (error && error.code && Number.isInteger(error.status)) {
-                    return res.status(error.status).json({ error: error.message, code: error.code, ...(error.count ? { count: error.count } : {}) });
+                    if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(error.retryAfterSeconds));
+                    return res.status(error.status).json({ error: error.message, code: error.code,
+                        upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds,
+                        ...(error.count ? { count: error.count } : {}) });
                 }
                 const badInput = /GeoJSON|geometry|parse|invalid/i.test(String(error && error.message));
                 console.error(`[${new Date().toISOString()}] Error in POST ${routePath}:`, error);
@@ -63,7 +67,9 @@ export function setupProposalBindingRoute(app, pool) {
             return res.json({ ...result, queryMs: Date.now() - started });
         } catch (error) {
             if (error && error.code && Number.isInteger(error.status)) {
-                return res.status(error.status).json({ error: error.message, code: error.code });
+                if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(error.retryAfterSeconds));
+                return res.status(error.status).json({ error: error.message, code: error.code,
+                    upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds });
             }
             console.error(`[${new Date().toISOString()}] Error in GET /proposals/${id}/binding-drift:`, error);
             return res.status(500).json({ error: 'Internal server error' });

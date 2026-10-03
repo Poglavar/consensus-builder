@@ -186,7 +186,7 @@
             || props.parcelArea
             || props.informationTechnical?.superficie_total;
         const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
-        const formattedArea = area ? Math.round(area).toLocaleString('hr-HR') : 'N/A';
+        const formattedArea = area ? CbFormat.formatArea(area) : 'N/A';
 
         // Use market price from backend if available, otherwise calculate
         const backendPrice = props.estimatedMarketPrice;
@@ -194,13 +194,11 @@
         const estimatedPrice = Number.isFinite(Number(backendPrice))
             ? Number(backendPrice)
             : (area ? area * SQM_AVG_PRICE : 0);
-        const formattedPrice = estimatedPrice ? estimatedPrice.toLocaleString('hr-HR', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }) : 'N/A';
+        // Amount then code ("431,000 EUR"); the computed fallback uses SQM_AVG_PRICE, which is EUR.
+        const formattedPrice = estimatedPrice
+            ? CbFormat.formatMoney(estimatedPrice, backendCurrency, { maxFractionDigits: 0 })
+            : 'N/A';
 
-        const areaUnit = tParcel('panel.parcel.metrics.areaUnit', {}, 'm²');
-        const priceCurrency = backendCurrency === 'EUR' ? '€' : backendCurrency;
         const ownerLabel = tParcel('panel.parcel.metrics.owner', {}, 'Owner:');
         const shareLabel = tParcel('panel.parcel.metrics.share', {}, 'Share:');
         const ownersLabel = tParcel('panel.parcel.metrics.owners', {}, 'Owners:');
@@ -494,7 +492,7 @@
                     };
                     const destination = destinations[dossierEntry.destination] || dossierEntry.destination || '';
                     return `<div class="proposal-item-details proposal-item-takes">${tParcel('panel.parcel.dossier.takes', {
-                        area: dossierEntry.cededM2.toLocaleString(),
+                        area: CbFormat.formatNumber(dossierEntry.cededM2),
                         destination
                     }, 'Takes {{area}} m² of this parcel → {{destination}}')}</div>`;
                 })() : '';
@@ -611,17 +609,17 @@
             // piece by piece — the fragmentation is the fact an owner most needs before consenting.
             const remainderNote = (parcelDossier && parcelDossier.remainder && parcelDossier.remainder.takenM2 > 0) ? (() => {
                 const r = parcelDossier.remainder;
-                const pieces = r.pieces.map(p => p.areaM2.toLocaleString()).join(' / ');
+                const pieces = r.pieces.map(p => CbFormat.formatNumber(p.areaM2)).join(' / ');
                 const text = r.pieces.length > 1
                     ? tParcel('panel.parcel.dossier.remainderSplit', {
-                        taken: r.takenM2.toLocaleString(),
-                        kept: r.remainderM2.toLocaleString(),
+                        taken: CbFormat.formatNumber(r.takenM2),
+                        kept: CbFormat.formatNumber(r.remainderM2),
                         count: r.pieces.length,
                         pieces
                     }, 'Proposed formations take {{taken}} m²; you keep {{kept}} m² in {{count}} separate pieces ({{pieces}} m²).')
                     : tParcel('panel.parcel.dossier.remainder', {
-                        taken: r.takenM2.toLocaleString(),
-                        kept: r.remainderM2.toLocaleString()
+                        taken: CbFormat.formatNumber(r.takenM2),
+                        kept: CbFormat.formatNumber(r.remainderM2)
                     }, 'Proposed formations take {{taken}} m²; you keep {{kept}} m².');
                 return `<div class="parcel-dossier-remainder${r.pieces.length > 1 ? ' fragmented' : ''}">${text}</div>`;
             })() : '';
@@ -703,11 +701,11 @@
         <div style="display: flex; gap: 8px;">
             <div class="metric-group" style="flex: 1;">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.area">${areaLabel}</div>
-                <div class="metric-value">${formattedArea} ${areaUnit}</div>
+                <div class="metric-value">${formattedArea}</div>
             </div>
             <div class="metric-group" style="flex: 1;">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.marketPrice">${marketPriceLabel}</div>
-                <div class="metric-value">${formattedPrice} ${priceCurrency}</div>
+                <div class="metric-value">${formattedPrice}</div>
             </div>
         </div>
         ${(typeof ensNameLineHtml === 'function' && parcelId) ? ensNameLineHtml(parcelEnsName(parcelId)) : ''}

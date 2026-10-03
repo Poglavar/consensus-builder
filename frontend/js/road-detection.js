@@ -1370,7 +1370,7 @@ async function detectExistingRoads() {
             return;
         }
 
-        updateStatus('Detecting existing roads using all available sources...');
+        updateStatus(tr('status.messages.detecting_existing_roads_using_all_available_sources', 'Detecting existing roads using all available sources...'));
 
         await detectRoadsFromOSM();
         await detectRoadsFromGUP();
@@ -1412,7 +1412,7 @@ async function detectExistingRoads() {
 
     } catch (error) {
         console.error('Error detecting existing roads:', error);
-        updateStatus('Error detecting existing roads using all sources.');
+        updateStatus(tr('status.messages.error_detecting_existing_roads_using_all_sources', 'Error detecting existing roads using all sources.'));
     } finally {
         if (window.MapShell) window.MapShell.setSectionBusy('roads', false);
         if (controlButton) {

@@ -22,7 +22,7 @@ describe('proposal details authoring contract', () => {
     // The one in-place geometry action is a road's cross-section — the same rule as its node
     // handles — and only where proposals/road-actions-model.js says it applies.
     it('gates the road cross-section button on RoadActionsModel and runs it through RoadActions', () => {
-        expect(detailsSource).toContain('class="btn btn-outline-secondary btn-cross-section"');
+        expect(detailsSource).toContain('class="btn btn-quiet btn-cross-section"');
         expect(detailsSource).toContain("RoadActionsModel.isActionAvailable('crossSection', roadActionFacts)");
         expect(detailsSource).toContain("onclick=\"RoadActions.runAction('crossSection', RoadActions.factsFor(${inlineJsArg(proposalKey)}))\"");
     });
