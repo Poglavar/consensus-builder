@@ -505,6 +505,296 @@
       "cityIds": [
         "hong_kong"
       ]
+    },
+    {
+      "id": "ml-sprdf-ninacad-parcelle-wfs",
+      "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+      "featureType": "sifMali:parcelle",
+      "version": "1.1.0",
+      "idField": "ninacad",
+      "idType": "string",
+      "idPattern": "^[0-9]{11}$",
+      "idPrefix": "ML-NINACAD-",
+      "outFields": [
+        "ninacad",
+        "uoid",
+        "numeroparc",
+        "section",
+        "surface",
+        "perimetre"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "cityIds": [
+        "bamako"
+      ],
+      "adapter": "wfs",
+      "name": "SPRDF / NINACAD cadastral parcels",
+      "countryCode": "ML",
+      "metricSrid": 32629,
+      "scope": "Bamako test neighbourhood and other NINACAD-mapped parcels only; sampled coverage is partial. The central city box was previously empty. No ownership or title certification supplied.",
+      "evidenceFile": "research/bamako-live.json",
+      "licenceNote": "No explicit geometry reuse licence established; source conditions remain informational under the user-selected passthrough policy.",
+      "licenceUrl": "https://ninacad.sprdf.ml/",
+      "catalogueUrl": "https://ninacad.sprdf.ml/",
+      "attribution": "SPRDF / NINACAD cadastral parcels; adapted to WGS84. See publisher conditions.",
+      "parcelNumberField": "numeroparc"
+    },
+    {
+      "id": "pe-sedapal-publicaciones-lotes",
+      "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+      "idField": "GLOBALID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "PE-SEDAPAL-LOT-",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "parcelNumberField": "PARCELCODE",
+      "outFields": [
+        "OBJECTID",
+        "GLOBALID",
+        "DISTRICTCODE",
+        "SQUARECODE",
+        "PARCELCODE",
+        "PROPERTYCODE",
+        "LASTUPDATE"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "adapter": "arcgis",
+      "name": "SEDAPAL Lima lots",
+      "countryCode": "PE",
+      "metricSrid": 32718,
+      "cityIds": [
+        "lima"
+      ],
+      "scope": "Utility mapping/lot layer; legal-cadastre status and citywide coverage are not established by this sample. Only the bounded Lima globe entry is enabled.",
+      "evidenceFile": "research/lima-live.json",
+      "licenceNote": "No explicit reuse licence is published in the checked service metadata; source conditions remain informational.",
+      "catalogueUrl": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+      "attribution": "SEDAPAL — Proyectos_Sedapal / Lotes. The third-party copy describes a SEDAPAL-commissioned Consorcio Servicios Integrales vector file; preserve that attribution when appropriate."
+    },
+    {
+      "id": "ao-arcgis-luanda-agt-property-polygons",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+      "idField": "GlobalID_1",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-LUANDA-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+      "idQueryBraces": true,
+      "parcelNumberField": "ID_GGPEN",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID_1",
+        "ID_GGPEN",
+        "ID_AGT",
+        "Municipio",
+        "Comuna"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "adapter": "arcgis",
+      "name": "GGPEN Luanda property polygons",
+      "countryCode": "AO",
+      "metricSrid": 32733,
+      "cityIds": [
+        "luanda"
+      ],
+      "scope": "Property polygons in a Maianga sample; not verified as the authoritative legal parcel register. Only the bounded Luanda globe entry is enabled.",
+      "evidenceFile": "research/luanda-live.json",
+      "licenceNote": "No explicit reuse licence is published in the checked service metadata; source conditions remain informational.",
+      "catalogueUrl": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+      "attribution": "GGPEN / Luanda_AGT_Oficial_2_gdb layer 0. Preserve the publisher and layer name in source metadata.",
+      "boundsQueryMode": "object-ids"
+    },
+    {
+      "id": "au-nsw-six-cadastre-lot",
+      "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+      "idField": "cadid",
+      "objectIdField": "objectid",
+      "idPrefix": "AU-NSW-",
+      "idType": "integer",
+      "outFields": [
+        "objectid",
+        "cadid",
+        "shapeuuid",
+        "lotidstring",
+        "enddate",
+        "processstate",
+        "changetype"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32756,
+      "parcelNumberField": "lotidstring",
+      "adapter": "arcgis",
+      "name": "NSW Spatial Services cadastral lots",
+      "countryCode": "AU",
+      "cityIds": [
+        "sydney"
+      ],
+      "scope": "New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title.",
+      "evidenceFile": "research/sydney-live.json",
+      "licenceUrl": "https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions",
+      "catalogueUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+      "licenceNote": "NSW Spatial Services publishes attribution conditions and restrictions on automated retrieval; users are responsible for checking the publisher conditions for their intended use.",
+      "attribution": "NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions."
+    },
+    {
+      "id": "br-sp-geosampa-lote-cidadao",
+      "adapter": "wfs",
+      "endpoint": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs",
+      "featureType": "geoportal:lote_cidadao",
+      "version": "2.0.0",
+      "idField": "cd_identificador",
+      "idType": "integer",
+      "idPrefix": "BR-SP-GEOSAMPA-",
+      "outFields": [
+        "cd_identificador",
+        "cd_identificador_original_lote",
+        "cd_setor_fiscal",
+        "cd_quadra_fiscal",
+        "cd_lote",
+        "cd_cib",
+        "cd_situacao"
+      ],
+      "parcelNumberField": "cd_lote",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "name": "GeoSampa São Paulo fiscal lots",
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "cityIds": [
+        "sao_paulo"
+      ],
+      "scope": "São Paulo municipal fiscal cadastral lots. Fiscal identifiers and lot geometry do not establish legal title; only the bounded São Paulo globe entry is enabled.",
+      "evidenceFile": "research/sao-paulo-live.json",
+      "licenceUrl": "https://geosampa.prefeitura.sp.gov.br/",
+      "catalogueUrl": "https://download.geosampa.prefeitura.sp.gov.br/PaginasPublicas/_SBC.aspx",
+      "licenceNote": "GeoSampa/PMSP publisher conditions apply; users are responsible for checking source terms for their intended use. Live viewer data is updated daily and downloadable files weekly, according to the publisher.",
+      "attribution": "GeoSampa / Prefeitura do Município de São Paulo, municipal fiscal lots; adapted to WGS84."
+    },
+    {
+      "id": "gb-arcgis-geodom-land-registry-inspire-2021",
+      "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+      "idField": "INSPIREID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "GB-HMLR-",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "INSPIREID"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32630,
+      "idPattern": "^[0-9]+$",
+      "adapter": "arcgis",
+      "name": "Birmingham HMLR title-index polygons — Geodom mirror, October 2021",
+      "countryCode": "GB",
+      "cityIds": [
+        "birmingham"
+      ],
+      "dataVersion": "2021-10-22",
+      "attributeExclusions": {
+        "INSPIREID": [
+          "No LR Title Detected"
+        ]
+      },
+      "scope": "Partial Midlands extract near Birmingham from a third-party October 22, 2021 mirror of HMLR INSPIRE title-index polygons. Non-title placeholder rows are excluded; missing native IDs cannot become canonical parcels. Empty cells mean no registered-title index polygons in this extract, not absence of physical parcels or ownership.",
+      "licenceNote": "Geodom is an unofficial mirror publisher; host-specific conditions are not documented in the checked metadata. Underlying HMLR title-index and mirror publisher conditions remain informational.",
+      "catalogueUrl": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+      "attribution": "HM Land Registry INSPIRE title-index polygons, dated 2021-10-22; public Geodom mirror. Adapted to WGS84.",
+      "evidenceFile": "research/birmingham-live.json"
+    },
+    {
+      "id": "zm-lusaka-mtendere-east-agol-unofficial",
+      "name": "Lusaka Mtendere East parcels (ArcGIS Online)",
+      "adapter": "arcgis",
+      "endpoint": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0",
+      "idField": "GlobalID",
+      "objectIdField": "FID",
+      "idPrefix": "ZM-LUSAKA-GID-",
+      "idType": "string",
+      "idPattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+      "idQueryBraces": true,
+      "parcelNumberField": "PCNumber",
+      "outFields": [
+        "FID",
+        "GlobalID",
+        "Id",
+        "PCNumber",
+        "Settlement",
+        "Verified"
+      ],
+      "pageSize": 25,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "object-ids",
+      "countryCode": "ZM",
+      "metricSrid": 32735,
+      "scope": "Unofficial ArcGIS Online layer named Parcels_Mtendere_East; only 28 polygons in one Lusaka settlement. Not a citywide or official legal-cadastre source.",
+      "evidenceFile": "research/lusaka-live.json",
+      "licenceNote": "Publisher authority and reuse terms are unconfirmed; retain the scope and attribution notice. Source terms are informational for this prototype.",
+      "catalogueUrl": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0",
+      "attribution": "Parcels_Mtendere_East — Lusaka_parcels_creation (ArcGIS Online account eodoi_medeem; publisher authority unconfirmed). Adapted; limited to 28 polygons in Mtendere East.",
+      "cityIds": [
+        "lusaka"
+      ]
+    },
+    {
+      "id": "jp-moj-geospatial-2026",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "idPrefix": "JP-MOJ-2026-",
+      "idFields": [
+        "市区町村C",
+        "地図名",
+        "ID"
+      ],
+      "outFields": [
+        "ID",
+        "市区町村C",
+        "大字コード",
+        "丁目コード",
+        "小字コード",
+        "予備コード",
+        "市区町村名",
+        "大字名",
+        "丁目名",
+        "地番",
+        "精度区分",
+        "座標値種別",
+        "地図名",
+        "座標系",
+        "測地系判別"
+      ],
+      "parcelNumberField": "地番",
+      "maxSnapshotBytes": 3145728,
+      "maxSnapshotFeatures": 3000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "expectedSnapshotFeatures": 2487,
+      "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+      "name": "Osaka Chuo ward MOJ public-coordinate map sheets — 2026",
+      "countryCode": "JP",
+      "cityIds": [
+        "osaka"
+      ],
+      "metricSrid": 32653,
+      "dataVersion": "2026",
+      "scope": "Partial Osaka Chuo ward coverage: 2,487 public-coordinate registry-map polygons in the 2026 converted release. Sheets without public coordinates are omitted; this is not citywide or Japan-wide coverage. A verified snapshot is refreshed into transient memory every five minutes, without parcel writes to disk or a database.",
+      "licenceNote": "Geospatial Information Center catalogue lists CC BY; underlying Ministry of Justice data and conversion-publisher conditions also apply. Publisher warns that public-coordinate sheets only are converted and some geometries may be misplaced. Conditions are informational.",
+      "licenceUrl": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128",
+      "attribution": "Japan Ministry of Justice registry-map data; Geospatial Information Center / AIGID conversion, 2026. Osaka Chuo ward public-coordinate sheets only; adapted to WGS84.",
+      "evidenceFile": "research/osaka-live.json"
     }
   ]
 }

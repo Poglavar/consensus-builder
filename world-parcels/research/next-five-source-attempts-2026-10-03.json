@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "description": "Metadata-only record of live source integration attempts and remaining technical blockers. No source geometries or personal fields are stored.",
+  "grid": {
+    "shape": "3x3",
+    "cellWidthDegrees": 0.0025,
+    "panDegrees": [
+      0.004,
+      0.004
+    ],
+    "requestTimeoutMs": 15000
+  },
+  "attempts": [
+    {
+      "sourceId": "id-big-satupeta-hak-milik-jawa-barat",
+      "city": "Bandung",
+      "operation": "3x3 viewport plus 0.004-degree pan; exact NIB round trips",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21",
+      "result": {
+        "httpErrors": 0,
+        "timeouts": 0,
+        "requestTimeoutMs": 15000,
+        "cellsComplete": 15,
+        "cellsAttempted": 18,
+        "rowInstances": 596,
+        "distinctTransportOids": 318,
+        "distinctNibValues": 315,
+        "exactNibbatches": 4,
+        "exactBatchesComplete": 0,
+        "failureClasses": [
+          "short NIB values are reused across administrative areas and exact NIB retrieval returns conflicting polygons",
+          "blank or whitespace NIB values map to multiple polygons in two pan cells"
+        ]
+      },
+      "technicalBlockers": [
+        "No durable native parcel key is established: NIB exact lookups are non-unique across the layer.",
+        "Whitespace NIB values cause conflicting-geometry failures in bounded cells."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    },
+    {
+      "sourceId": "id-bigsatupeta-hakmilik-jawa-tengah",
+      "city": "Semarang",
+      "operation": "3x3 city-center viewport plus 0.004-degree pan",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25",
+      "result": {
+        "httpErrors": 0,
+        "timeouts": 0,
+        "requestTimeoutMs": 15000,
+        "cellsWithFeatures": 0,
+        "cellsAttempted": 18,
+        "rowInstances": 0,
+        "exactNativeIdChecks": 0,
+        "note": "All tested city-center cells returned zero features; no exact-ID test was possible. The previous nonempty sample is outside Semarang city."
+      },
+      "technicalBlockers": [
+        "No parcel coverage was returned in the tested Semarang city-center viewport; current evidence does not establish usable city coverage."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    },
+    {
+      "sourceId": "id-big-satupeta-hakmilik-5000-jawa-timur",
+      "city": "Surabaya",
+      "operation": "3x3 viewport plus 0.004-degree pan; exact NIB round trips",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12",
+      "result": {
+        "httpErrors": 0,
+        "timeouts": 0,
+        "requestTimeoutMs": 15000,
+        "cellsComplete": 11,
+        "cellsAttempted": 18,
+        "rowInstances": 943,
+        "distinctTransportOids": 647,
+        "distinctNibValues": 538,
+        "exactNibbatches": 7,
+        "exactBatchesComplete": 0,
+        "failureClasses": [
+          "short NIB values are reused across administrative areas and exact NIB retrieval returns conflicting polygons",
+          "blank or whitespace NIB values map to multiple polygons in four cells"
+        ]
+      },
+      "technicalBlockers": [
+        "No durable native parcel key is established: NIB exact lookups are non-unique across administrative areas.",
+        "Whitespace NIB values cause conflicting-geometry failures in bounded cells."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    },
+    {
+      "sourceId": "id-big-satupeta-hak-milik-diy",
+      "city": "Yogyakarta",
+      "operation": "3x3 viewport plus 0.004-degree pan; exact NIB round trips",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13",
+      "result": {
+        "httpErrors": 0,
+        "timeouts": 0,
+        "requestTimeoutMs": 15000,
+        "cellsComplete": 4,
+        "cellsAttempted": 18,
+        "rowInstances": 249,
+        "distinctTransportOids": 235,
+        "distinctNibValues": 235,
+        "exactNibbatches": 3,
+        "exactBatchesComplete": 0,
+        "failureClasses": [
+          "short NIB values are reused across administrative areas and exact NIB retrieval returns conflicting polygons",
+          "blank NIB query expanded to 776 layer features"
+        ]
+      },
+      "technicalBlockers": [
+        "No durable native parcel key is established: NIB exact lookups are non-unique across administrative areas.",
+        "Blank NIB exact lookup is non-selective and returns hundreds of unrelated layer features."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    },
+    {
+      "sourceId": "jp-moj-esri-touki-2023",
+      "cities": [
+        "Tokyo",
+        "Nagoya"
+      ],
+      "operation": "Native-key uniqueness preflight and bounded first-page requests",
+      "endpoint": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5",
+      "result": {
+        "httpStatus": 200,
+        "viewportFirstPages": {
+          "Tokyo": 3,
+          "Nagoya": 3
+        },
+        "nativeKeyProbes": [
+          {
+            "city": "Tokyo",
+            "cityCode": "13104",
+            "boundaryIdMatches": 14,
+            "distinctGeometries": 14
+          },
+          {
+            "city": "Nagoya",
+            "cityCode": "23106",
+            "boundaryIdMatches": 20,
+            "distinctGeometries": 20
+          }
+        ],
+        "completePagingRun": false
+      },
+      "technicalBlockers": [
+        "CityCode plus BoundaryId returns multiple distinct polygons in both Tokyo and Nagoya; no permanent native key is exposed by this layer.",
+        "Complete paging and all-key exact retrieval were not run after the key prerequisite failed."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    },
+    {
+      "sourceId": "jp-moj-geospatial-2026",
+      "city": "Osaka (Chuo ward sample)",
+      "operation": "Static object availability and candidate-key cardinality assessment",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%96%936%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "result": {
+        "httpStatus": 200,
+        "bytes": 2051653,
+        "features": 2487,
+        "uniqueSingleIds": 716,
+        "uniqueCompositeKeys": 2487,
+        "conflictingGeometryCompositeKeys": 0,
+        "queryableViewportContract": false
+      },
+      "technicalBlockers": [
+        "Static bulk GeoJSON has no bbox-query contract; live integration requires a snapshot reader and spatial index.",
+        "The single ID field is not unique; candidate composites require implementation and exact-read validation.",
+        "Evidence covers only the Chuo ward public-coordinate package, not all Osaka."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+      "subsequentResolution": {
+        "status": "enabled",
+        "evidenceFile": "research/osaka-live.json",
+        "detail": "The failed attempt is retained as history; a verified scoped adapter now serves this source."
+      }
+    },
+    {
+      "sourceId": "jo-dls-cassini-mapserver",
+      "city": "Amman",
+      "operation": "Complete bounded viewport, pagination, native GLOBALID exact round trips",
+      "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+      "result": {
+        "httpErrors": 0,
+        "timeouts": 0,
+        "cellsComplete": 2,
+        "cellsAttempted": 18,
+        "cellsInvalidGeometry": 10,
+        "cellsRepeatedOrOmittedObjectIds": 6,
+        "retainedDistinctGlobalIds": 89,
+        "exactBatches": 2,
+        "exactFeatures": 89,
+        "exactAbsent": 0,
+        "exactConflicts": 0,
+        "acrossCellConflicts": 0,
+        "badGeometryRows": 1
+      },
+      "technicalBlockers": [
+        "Most tested nonempty cells are rejected for invalid polygon geometry.",
+        "Several cells fail closed because pagination repeats or omits object IDs."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    },
+    {
+      "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
+      "city": "Birmingham",
+      "operation": "3x3 viewport plus 0.004-degree pan; native INSPIREID validation",
+      "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+      "result": {
+        "httpErrors": 0,
+        "timeouts": 0,
+        "cellsWithInvalidNativeId": 10,
+        "cellsAttempted": 18,
+        "emptyCellsComplete": 8,
+        "invalidTitlePlaceholderRows": 6,
+        "rowsAudited": 98,
+        "exactIdChecks": 0
+      },
+      "technicalBlockers": [
+        "INSPIREID contains the non-title placeholder “No LR Title Detected” in six audited rows; these values fail the numeric native-ID contract in ten bounded cells.",
+        "No successful feature set remained for exact-ID round-trip testing."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+      "subsequentResolution": {
+        "status": "enabled",
+        "evidenceFile": "research/birmingham-live.json",
+        "detail": "The failed attempt is retained as history; a verified scoped adapter now serves this source."
+      }
+    },
+    {
+      "sourceId": "br-recife-prefeitura-lotes",
+      "city": "Recife",
+      "operation": "3x3 viewport plus 0.004-degree pan; exact DSQFL round trips on retained IDs",
+      "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "result": {
+        "httpErrors": 0,
+        "timeouts": 0,
+        "cellsComplete": 15,
+        "cellsAttempted": 18,
+        "retainedFeatures": 1058,
+        "distinctNativeIdsExactTested": 1058,
+        "exactAbsent": 0,
+        "exactConflicts": 0,
+        "spatialCellsWithConflictingGeometry": 3,
+        "acrossCellConflicts": 0
+      },
+      "technicalBlockers": [
+        "DSQFL yields conflicting polygon geometries within three bounded spatial cells; the full spatial read cannot be accepted until these same-key geometry conflicts are resolved or represented safely."
+      ],
+      "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+    }
+  ],
+  "adapterClarifications": [
+    {
+      "finding": "ArcGIS zero-result object-ID manifest probes returned null/omitted objectIds and the earlier adapter rejected them. The root implementation now handles count=0; this is an adapter contract edge, not provider unavailability."
+    }
+  ]
+}

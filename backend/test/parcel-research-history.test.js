@@ -40,7 +40,8 @@ describe('saved parcel integration history', () => {
         expect(held).toHaveLength(5); // two separate Lima publishers, not one interchangeable source
         for (const source of held) {
             const saved = registry.sources.find(s => s.sourceId === source.sourceId);
-            expect(saved.liveIntegration).toMatchObject({ status: 'held', reason: source.reason });
+            // Historical holds remain in the attempt ledger even after policy or technical clearance.
+            expect(saved.integrationAttempts.some(a => a.outcome === 'held' && a.detail === source.reason)).toBe(true);
             expect(saved.integrationAttempts.length).toBeGreaterThan(0);
         }
         const dominican = registry.sources.find(s => s.sourceId === 'do-ri-atlas-geoserver');
@@ -48,4 +49,13 @@ describe('saved parcel integration history', () => {
         const angola = registry.sources.find(s => s.sourceId === 'ao-arcgis-luanda-agt-property-polygons');
         expect(angola.integrationAttempts.some(a => a.outcome === 'query-rejected' && a.upstreamErrorCode === 400)).toBe(true);
     });
+});
+
+it('treats terms and licences as informational for every source, with technical-only current holds', () => {
+    expect(registry.integrationPolicy).toMatchObject({ termsAndLicencesBlockIntegration: false, termsHandling: 'source-notice' });
+    for (const source of registry.sources.filter(s => s.liveIntegration?.status === 'held')) {
+        expect(source.liveIntegration.termsAreInformational, source.sourceId).toBe(true);
+        expect(source.liveIntegration.technicalBlockers.length, source.sourceId).toBeGreaterThan(0);
+        expect(source.liveIntegration.reason, source.sourceId).not.toMatch(/\b(?:licen[cs]\w*|reuse|permission|terms|copyright|commercial)\b/i);
+    }
 });

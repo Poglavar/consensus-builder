@@ -407,6 +407,8 @@
             labelKey: 'selectionTray.actions.done', fallbackLabel: 'Done selecting', icon: 'fas fa-check' },
 
         // ---- Settings sheet ----
+        control('parcel-source-notice-button', { id: 'settings.parcelSourceNotice', group: 'settings', surfaces: ['settings'],
+            labelKey: 'parcelSourceNotice.title', fallbackLabel: 'Parcel source information', icon: 'fas fa-info-circle' }),
         // The city list and "Use my location" live in the search box (city chip, Cities group).
         { id: 'settings.city', group: 'settings', surfaces: [], run: callSearch('showCities'),
             labelKey: 'mapShell.commands.chooseCity', fallbackLabel: 'Choose a city', icon: 'fas fa-city' },

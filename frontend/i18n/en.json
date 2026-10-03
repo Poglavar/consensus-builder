@@ -1,4 +1,15 @@
 {
+    "parcelSourceNotice": {
+        "title": "Parcel source information",
+        "responsibility": "You choose which parcel source to use and are responsible for checking its terms and your intended use.",
+        "publisher": "External publishers serve these source boundaries live. Their data may have coverage, accuracy and reuse limitations.",
+        "source": "Source",
+        "scope": "Coverage",
+        "terms": "Source terms",
+        "unavailable": "Detailed source metadata is unavailable. Check the source attribution on the map.",
+        "unknown": "Unknown",
+        "link": "Read source information and terms"
+    },
     "densityStats": {
         "title": "Geometry statistics",
         "parcelArea": "Parcel area",
@@ -3314,7 +3325,16 @@
             "hong_kong": "Hong Kong, Hong Kong SAR",
             "lyon": "Lyon, France",
             "rotterdam": "Rotterdam, Netherlands",
-            "cologne": "Cologne, Germany"
+            "cologne": "Cologne, Germany",
+            "bamako": "Bamako, Mali",
+            "cali": "Cali, Colombia",
+            "lima": "Lima, Peru",
+            "luanda": "Luanda, Angola",
+            "sydney": "Sydney, Australia",
+            "sao_paulo": "São Paulo, Brazil",
+            "osaka": "Osaka, Japan",
+            "birmingham": "Birmingham, United Kingdom",
+            "lusaka": "Lusaka, Zambia"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",

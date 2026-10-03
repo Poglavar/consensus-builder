@@ -11,6 +11,23 @@ City's ArcGIS service directly and does not import parcel rows into our database
 streams through this gateway, using the explicitly selected December 2021 CAR mirror of
 IDECA/UAECD lots.
 
+## Integration policy
+
+Terms, licences and reuse restrictions never block integration. They are retained as source
+information for users, who choose the data they use. Source attribution and terms links remain
+visible, and the source-details notice explains the provider and conditions without requiring
+acceptance before loading parcels. This policy applies to every city and country.
+
+Runtime eligibility depends on geometry, native identity and complete bounded/ID reads.
+Authentication requirements, broken requests and ambiguous parcel identity remain technical
+blockers. Existing failed attempts and earlier licence-based assessments are historical evidence;
+the registry's current `liveIntegration` state follows this technical-only policy. Older batch
+notes below describe the decisions at the time; their licence-based holds are superseded.
+
+Live adapters proxy upstream requests without importing new parcel tables. The browser retains
+immutable ground in memory for the session. Existing imported providers and proposal provenance
+are separate from this live-source policy; the notice does not promise that all app data is transient.
+
 ## Runtime contract
 
 City configuration selects a source ID. `GET /parcel-sources` lists executable descriptors.
@@ -361,3 +378,77 @@ continuity is undocumented. These are holds, not claims that parcel data is abse
 The batch manifest is `research/shared-city-batch-2026-10-03.json`. Registry histories now preserve
 92 dated attempts across 38 sources. The prior checkpoint is deployed; this continuation is local
 until the next requested release.
+
+
+## Technical-only reassessment — 2026-10-03
+
+Bamako, Lima and Luanda now have executable live providers. Bamako uses SPRDF/NINACAD
+`ninacad` keys (74 complete bounded rows and all 74 exact reads). Cali initially passed the
+118-row sample, but the full viewport grid exposed two NPNs with distinct geometries. Exact
+queries reproduce both conflicts and `id_predio` repeats too. Cali remains held for ambiguous
+native identity, with all successful and failed checks saved; its terms never block integration.
+
+Lima uses the SEDAPAL-hosted mapped-lot layer and its brace-wrapped `GLOBALID` keys. All 80
+sample polygons resolved again by exact ID. This utility layer is not established as the legal
+property cadastre. Luanda uses the GGPEN-published `Luanda_AGT_Oficial_2_gdb` property polygons;
+its legal-register authority is likewise unverified and recorded as a scope notice.
+
+Luanda's ordinary spatial geometry query still timed out at the existing 15-second deadline.
+The ArcGIS adapter now supports a configured ID-first bounds path: count the bounded records,
+check the complete object-ID list against that count, and fetch exact object-ID batches without
+a spatial predicate or offset sorting. All 16 sample polygons and stable native GUID rereads
+matched. Object IDs are paging tokens; canonical IDs retain `GlobalID_1`. Its SQL queries wrap
+GUID literals in braces without changing the canonical bare GUID. Missing, extra, repeated,
+truncated or conflicting records fail the read rather than publish incomplete ground.
+
+Settings → Information → Parcel source information opens a manual source notice. It shows
+publisher, scope, actual conditions and a source link, including unavailable metadata honestly.
+It has no acceptance gate and is independent of streaming and proposal binding. Evidence files
+for this reassessment contain metadata and request results, not parcel polygon collections.
+
+Long ArcGIS queries use form-encoded POST rather than GET to avoid intermediary URL-length
+limits. Luanda's two failed long GET batches and an 80-GUID lookup all succeeded as POST.
+The final browser check rendered its parcels, retained 2,012 after panning, reused cached cells
+on return and obtained complete footprint, binding and 80-ID reads. Lima retained 2,037 after
+panning and passed the same footprint/binding flow. Choosing Lima on the global map selected
+the provider and streamed parcels without opening the notice. Bamako rendered 181 parcels;
+its panned area returned complete reads with no additional mapped parcels.
+
+## Five-city batch — 2026-10-03
+
+Sydney, São Paulo, Birmingham, Lusaka and Osaka bring the original positive-probe cohort
+from 17 to 22 integrated cities, with 39 of its 61 cities remaining. The app now has 33
+configured city entries across 21 countries and territories. The cohort accounting and
+source-linked success/failure files are saved in `research/next-five-live-batch-2026-10-03.json`.
+Integration counts do not imply complete municipal or national cadastral coverage.
+
+Sydney proxies NSW Spatial Services lot polygons using native `cadid`; display `lotidstring`
+and transport `objectid` remain separate. São Paulo uses the official GeoSampa WFS
+`geoportal:lote_cidadao` and native `cd_identificador`, preserving the former capped bulk
+candidate as research history. Both passed complete initial/panned viewport checks and all
+observed exact-ID round trips, including the configured 500-row page size.
+
+Birmingham uses the dated October 22, 2021 Geodom mirror of HMLR title-index polygons.
+The fixed source scope excludes the explicit “No LR Title Detected” placeholder and SQL
+NULLs; an upstream response that ignores the exclusion is rejected locally. All 898 observed
+registered-title IDs resolved. This partial title-index extract is not full physical-parcel
+coverage; the original unfiltered failures remain recorded.
+
+Lusaka uses an unofficial ArcGIS Online Mtendere East sample containing only 28 polygons.
+All 28 native GlobalIDs resolved, and its mapped cluster passed the viewport grid. The default
+view shows that cluster; the 12 km globe entry routes city selection and does not promise data
+throughout that area. Publisher, authority and source conditions remain explicitly unverified.
+
+Osaka uses the published 2026 public-coordinate sheets for Chuo ward, with a reversible native
+identity composed from municipality code, map name and sheet-local ID. The snapshot adapter
+reads the fixed HTTPS file into a five-minute memory index and returns bounded viewport,
+exact-ID and footprint responses through the existing gateway. Its ETag and 2,487-feature
+count are pinned; changed revisions, truncation, projected coordinates, repeated native keys
+and invalid geometry fail closed. Every one of the 2,487 IDs resolved, with no geometry
+conflicts. There is no new parcel-table import or on-disk polygon copy.
+
+All five passed headed app checks for viewport loading, pan/return caching, exact identity,
+footprint reads and authoritative proposal binding. Failed probes for Indonesian cities,
+Amman, Japan's older query service, Recife, South Africa, Guayaquil and Kuala Lumpur are
+retained as metadata-only source-linked attempts. Earlier reuse-related holds are historical;
+current integration policy uses technical blockers and informational source notices.

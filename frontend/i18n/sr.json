@@ -1,4 +1,15 @@
 {
+    "parcelSourceNotice": {
+        "title": "Informacije o izvoru parcela",
+        "responsibility": "Vi birate izvor parcela i odgovorni ste za proveru njegovih uslova i nameravane upotrebe.",
+        "publisher": "Spoljni izdavači direktno pružaju ove granice. Podaci mogu imati ograničenja pokrivenosti, tačnosti i ponovne upotrebe.",
+        "source": "Izvor",
+        "scope": "Pokrivenost",
+        "terms": "Uslovi izvora",
+        "unavailable": "Detaljni metapodaci izvora nisu dostupni. Proverite podatke o izvoru na karti.",
+        "unknown": "Nepoznat",
+        "link": "Pročitajte informacije i uslove izvora"
+    },
     "densityStats": {
         "title": "Pokazatelji geometrije",
         "parcelArea": "Površina parcele",
@@ -3350,7 +3361,16 @@
             "hong_kong": "Hongkong, SAR Hongkong",
             "lyon": "Lion, Francuska",
             "rotterdam": "Roterdam, Holandija",
-            "cologne": "Keln, Nemačka"
+            "cologne": "Keln, Nemačka",
+            "bamako": "Bamako, Mali",
+            "cali": "Kali, Kolumbija",
+            "lima": "Lima, Peru",
+            "luanda": "Luanda, Angola",
+            "sydney": "Sidnej, Australija",
+            "sao_paulo": "Sao Paulo, Brazil",
+            "osaka": "Osaka, Japan",
+            "birmingham": "Birmingem, Ujedinjeno Kraljevstvo",
+            "lusaka": "Lusaka, Zambija"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",

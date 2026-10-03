@@ -1,0 +1,538 @@
+{
+  "checkedAt": "2026-10-03",
+  "description": "Metadata-only complete viewport and exact-key source verification.",
+  "descriptor": {
+    "id": "br-sp-geosampa-lote-cidadao",
+    "adapter": "wfs",
+    "endpoint": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs",
+    "featureType": "geoportal:lote_cidadao",
+    "version": "2.0.0",
+    "idField": "cd_identificador",
+    "idType": "integer",
+    "idPrefix": "BR-SP-GEOSAMPA-",
+    "outFields": [
+      "cd_identificador",
+      "cd_identificador_original_lote",
+      "cd_setor_fiscal",
+      "cd_quadra_fiscal",
+      "cd_lote",
+      "cd_cib",
+      "cd_situacao"
+    ],
+    "parcelNumberField": "cd_lote",
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "name": "GeoSampa São Paulo fiscal lots",
+    "countryCode": "BR",
+    "metricSrid": 32723,
+    "cityIds": [
+      "sao_paulo"
+    ],
+    "scope": "São Paulo municipal fiscal cadastral lots. Fiscal identifiers and lot geometry do not establish legal title; only the bounded São Paulo globe entry is enabled.",
+    "evidenceFile": "research/sao-paulo-live.json",
+    "licenceUrl": "https://geosampa.prefeitura.sp.gov.br/",
+    "catalogueUrl": "https://download.geosampa.prefeitura.sp.gov.br/PaginasPublicas/_SBC.aspx",
+    "licenceNote": "GeoSampa/PMSP publisher conditions apply; users are responsible for checking source terms for their intended use. Live viewer data is updated daily and downloadable files weekly, according to the publisher.",
+    "attribution": "GeoSampa / Prefeitura do Município de São Paulo, municipal fiscal lots; adapted to WGS84."
+  },
+  "city": "sao_paulo",
+  "center": [
+    -23.55052,
+    -46.6333
+  ],
+  "cells": [
+    {
+      "bbox": [
+        -46.6375,
+        -23.555,
+        -46.635,
+        -23.552500000000002
+      ],
+      "complete": true,
+      "count": 96
+    },
+    {
+      "bbox": [
+        -46.6375,
+        -23.552500000000002,
+        -46.635,
+        -23.55
+      ],
+      "complete": true,
+      "count": 110
+    },
+    {
+      "bbox": [
+        -46.6375,
+        -23.55,
+        -46.635,
+        -23.5475
+      ],
+      "complete": true,
+      "count": 125
+    },
+    {
+      "bbox": [
+        -46.635,
+        -23.555,
+        -46.6325,
+        -23.552500000000002
+      ],
+      "complete": true,
+      "count": 112
+    },
+    {
+      "bbox": [
+        -46.635,
+        -23.552500000000002,
+        -46.6325,
+        -23.55
+      ],
+      "complete": true,
+      "count": 60
+    },
+    {
+      "bbox": [
+        -46.635,
+        -23.55,
+        -46.6325,
+        -23.5475
+      ],
+      "complete": true,
+      "count": 121
+    },
+    {
+      "bbox": [
+        -46.6325,
+        -23.555,
+        -46.63,
+        -23.552500000000002
+      ],
+      "complete": true,
+      "count": 143
+    },
+    {
+      "bbox": [
+        -46.6325,
+        -23.552500000000002,
+        -46.63,
+        -23.55
+      ],
+      "complete": true,
+      "count": 90
+    },
+    {
+      "bbox": [
+        -46.6325,
+        -23.55,
+        -46.63,
+        -23.5475
+      ],
+      "complete": true,
+      "count": 107
+    },
+    {
+      "bbox": [
+        -46.6325,
+        -23.55,
+        -46.63,
+        -23.5475
+      ],
+      "complete": true,
+      "count": 107
+    },
+    {
+      "bbox": [
+        -46.6325,
+        -23.5475,
+        -46.63,
+        -23.545
+      ],
+      "complete": true,
+      "count": 56
+    },
+    {
+      "bbox": [
+        -46.6325,
+        -23.545,
+        -46.63,
+        -23.5425
+      ],
+      "complete": true,
+      "count": 155
+    },
+    {
+      "bbox": [
+        -46.63,
+        -23.55,
+        -46.6275,
+        -23.5475
+      ],
+      "complete": true,
+      "count": 29
+    },
+    {
+      "bbox": [
+        -46.63,
+        -23.5475,
+        -46.6275,
+        -23.545
+      ],
+      "complete": true,
+      "count": 7
+    },
+    {
+      "bbox": [
+        -46.63,
+        -23.545,
+        -46.6275,
+        -23.5425
+      ],
+      "complete": true,
+      "count": 35
+    },
+    {
+      "bbox": [
+        -46.6275,
+        -23.55,
+        -46.625,
+        -23.5475
+      ],
+      "complete": true,
+      "count": 13
+    },
+    {
+      "bbox": [
+        -46.6275,
+        -23.5475,
+        -46.625,
+        -23.545
+      ],
+      "complete": true,
+      "count": 104
+    },
+    {
+      "bbox": [
+        -46.6275,
+        -23.545,
+        -46.625,
+        -23.5425
+      ],
+      "complete": true,
+      "count": 102
+    }
+  ],
+  "retainedCount": 1285,
+  "acrossCellConflicts": 0,
+  "exact": [
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 5,
+      "count": 5,
+      "absent": 0,
+      "conflicts": 0
+    }
+  ],
+  "nativeIdentity": {
+    "field": "cd_identificador",
+    "meaning": "Published native fiscal-lot identifier, separate from transport WFS feature.id and display cd_lote.",
+    "provenanceField": "cd_identificador_original_lote",
+    "checkedUniqueNativeIds": 1285,
+    "exactReadAbsence": 0,
+    "conflictingGeometry": 0
+  },
+  "sourceNotice": {
+    "termsAreInformational": true,
+    "ownerFieldsRequested": false,
+    "scope": "Fiscal cadastral lots; not a legal title certificate."
+  },
+  "verificationPageSize": 50,
+  "productionPageSize": 500,
+  "productionPageVerification": {
+    "pageSize": 500,
+    "completeCells": 18,
+    "retainedCount": 1285,
+    "acrossCellConflicts": 0,
+    "exact": [
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 5,
+        "count": 5,
+        "absent": 0,
+        "conflicts": 0
+      }
+    ],
+    "requestSummary": {
+      "count": 35,
+      "operations": {
+        "exact-id-or-page": 35
+      },
+      "httpStatuses": {
+        "200": 35
+      },
+      "detail": "Individual request URLs are omitted to avoid persisting queried native parcel lists."
+    }
+  },
+  "browserQA": {
+    "checkedAt": "2026-10-03",
+    "city": "sao_paulo",
+    "initialStatus": "ready",
+    "initialRetained": 851,
+    "panStatus": "ready",
+    "afterPan": 1285,
+    "backStatus": "ready",
+    "backCached": true,
+    "exact": {
+      "status": 200,
+      "count": 1,
+      "absent": 0
+    },
+    "footprint": {
+      "status": 200,
+      "complete": true,
+      "count": 4
+    },
+    "binding": {
+      "status": 200,
+      "coverage": "complete",
+      "count": 1
+    },
+    "rendered": 1285,
+    "globeOpenVerified": true
+  },
+  "requestSummary": {
+    "count": 76,
+    "operations": {
+      "exact-id-or-page": 76
+    },
+    "httpStatuses": {
+      "200": 76
+    },
+    "detail": "Individual request URLs are omitted to avoid persisting queried native parcel lists."
+  }
+}

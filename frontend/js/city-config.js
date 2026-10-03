@@ -1078,6 +1078,223 @@
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        bamako: {
+            id: 'bamako',
+            label: translateCityText('city.labels.bamako', 'Bamako, Mali'),
+            currency: { locale: 'fr-ML', code: 'XOF' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [12.6765, -8.04225],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32629',
+                metricDefinition: '+proj=utm +zone=29 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [12.6765, -8.04225],
+                fallbackDataset: [-8.04225, 12.6765]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'ml-sprdf-ninacad-parcelle-wfs',
+                idPrefix: 'ML-NINACAD-',
+                requiresBackend: true,
+                ownership: false,
+                // Conservative globe entry area; adjacent municipalities need their own adapters.
+                liveRadiusKm: 5,
+                attribution: '<a href="https://ninacad.sprdf.ml/">SPRDF / NINACAD · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        osaka: {
+            id: 'osaka',
+            label: translateCityText('city.labels.osaka', 'Osaka, Japan'),
+            currency: { locale: 'ja-JP', code: 'JPY' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [34.677750586, 135.532507321], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32653',
+                metricDefinition: '+proj=utm +zone=53 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [34.677750586, 135.532507321], fallbackDataset: [135.532507321, 34.677750586]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'jp-moj-geospatial-2026', idPrefix: 'JP-MOJ-2026-',
+                dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-27128">MOJ / Geospatial Information Center · 2026</a> · Osaka Chuo ward public-coordinate sheets only · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        birmingham: {
+            id: 'birmingham',
+            label: translateCityText('city.labels.birmingham', 'Birmingham, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [52.4975, -1.978], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32630',
+                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [52.4975, -1.978], fallbackDataset: [-1.978, 52.4975]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'gb-arcgis-geodom-land-registry-inspire-2021', idPrefix: 'GB-HMLR-',
+                dataVersion: '2021-10-22', requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0">HM Land Registry title-index polygons · Geodom mirror · Oct 22, 2021</a> · partial extract · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sao_paulo: {
+            id: 'sao_paulo',
+            label: translateCityText('city.labels.sao_paulo', 'São Paulo, Brazil'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-23.55052, -46.6333], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32723',
+                metricDefinition: '+proj=utm +zone=23 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-23.55052, -46.6333], fallbackDataset: [-46.6333, -23.55052]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'br-sp-geosampa-lote-cidadao', idPrefix: 'BR-SP-GEOSAMPA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://geosampa.prefeitura.sp.gov.br/">GeoSampa / Prefeitura do Município de São Paulo</a> · <a href="https://download.geosampa.prefeitura.sp.gov.br/PaginasPublicas/_SBC.aspx">data and source conditions</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sydney: {
+            id: 'sydney',
+            label: translateCityText('city.labels.sydney', 'Sydney, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-33.8585, 151.0795],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32756',
+                metricDefinition: '+proj=utm +zone=56 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-33.8585, 151.0795], fallbackDataset: [151.0795, -33.8585]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'au-nsw-six-cadastre-lot', idPrefix: 'AU-NSW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9">NSW Spatial Services / Department of Customer Service</a> · <a href="https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions">publisher conditions</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lima: {
+            id: 'lima',
+            label: translateCityText('city.labels.lima', 'Lima, Peru'),
+            currency: { locale: 'es-PE', code: 'PEN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-12.015, -76.968],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32718',
+                metricDefinition: '+proj=utm +zone=18 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-12.015, -76.968], fallbackDataset: [-76.968, -12.015]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'pe-sedapal-publicaciones-lotes', idPrefix: 'PE-SEDAPAL-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21">SEDAPAL Lima lots</a> · adapted · source conditions apply'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        luanda: {
+            id: 'luanda',
+            label: translateCityText('city.labels.luanda', 'Luanda, Angola'),
+            currency: { locale: 'pt-AO', code: 'AOA' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-8.83675, 13.234],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32733',
+                metricDefinition: '+proj=utm +zone=33 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-8.83675, 13.234], fallbackDataset: [13.234, -8.83675]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'ao-arcgis-luanda-agt-property-polygons', idPrefix: 'AO-LUANDA-AGT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0">GGPEN Luanda property polygons</a> · adapted · source conditions apply'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lusaka: {
+            id: 'lusaka',
+            label: translateCityText('city.labels.lusaka', 'Lusaka, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-15.40478133, 28.38004999],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-15.40478133, 28.38004999], fallbackDataset: [28.38004999, -15.40478133]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'zm-lusaka-mtendere-east-agol-unofficial', idPrefix: 'ZM-LUSAKA-GID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 12,
+                attribution: '<a href="https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0">Parcels_Mtendere_East — Lusaka_parcels_creation (ArcGIS Online)</a> · unofficial 28-polygon Mtendere East sample · publisher and source terms unverified'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).
@@ -1846,14 +2063,21 @@
 
     function showStyledAlert(message, options = {}) {
         return new Promise(resolve => {
+            const previousFocus = document.activeElement;
+            let closed = false;
             const overlay = document.createElement('div');
             overlay.className = 'cb-confirm-overlay';
 
             const dialog = document.createElement('div');
-            dialog.className = 'cb-confirm-dialog';
+            dialog.className = 'cb-confirm-dialog cb-alert-dialog';
+            dialog.setAttribute('role', 'alertdialog');
+            dialog.setAttribute('aria-modal', 'true');
 
             const text = document.createElement('div');
             text.className = 'cb-confirm-message';
+            showStyledAlert.messageSequence = (showStyledAlert.messageSequence || 0) + 1;
+            text.id = `cb-alert-message-${showStyledAlert.messageSequence}`;
+            dialog.setAttribute('aria-describedby', text.id);
 
             const linkUrl = options && options.linkUrl ? options.linkUrl : null;
             const linkText = (options && options.linkText) ? options.linkText : null;
@@ -1896,11 +2120,37 @@
             okBtn.textContent = 'OK';
 
             function cleanup() {
+                if (closed) return;
+                closed = true;
+                document.removeEventListener('keydown', onKeydown, true);
                 if (overlay && overlay.parentNode) {
                     overlay.parentNode.removeChild(overlay);
                 }
+                if (previousFocus?.isConnected && typeof previousFocus.focus === 'function') {
+                    previousFocus.focus({ preventScroll: true });
+                }
                 resolve();
             }
+
+            function onKeydown(event) {
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    cleanup();
+                } else if (event.key === 'Tab') {
+                    event.preventDefault();
+                    const targets = Array.from(dialog.querySelectorAll('a[href], button'));
+                    const current = targets.indexOf(document.activeElement);
+                    const next = current < 0 ? (event.shiftKey ? targets.length - 1 : 0)
+                        : (current + (event.shiftKey ? -1 : 1) + targets.length) % targets.length;
+                    targets[next]?.focus({ preventScroll: true });
+                } else if (event.key === 'Enter' && !dialog.contains(document.activeElement)) {
+                    event.preventDefault();
+                    cleanup();
+                }
+            }
+            document.addEventListener('keydown', onKeydown, true);
 
             okBtn.addEventListener('click', cleanup);
             overlay.addEventListener('click', (event) => {
@@ -1914,6 +2164,7 @@
             dialog.appendChild(buttons);
             overlay.appendChild(dialog);
             document.body.appendChild(overlay);
+            requestAnimationFrame(() => { if (!closed) okBtn.focus({ preventScroll: true }); });
         });
     }
 

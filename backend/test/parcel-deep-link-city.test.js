@@ -32,6 +32,15 @@ beforeAll(() => {
 describe('parcelIdToCityId — prefixes that are unambiguous', () => {
     it('maps each one-city country prefix', () => {
         expect(route.parcelIdToCityId('CA-ON-TORONTO-5455132')).toBe('toronto');
+        expect(route.parcelIdToCityId('AU-NSW-11111')).toBe('sydney');
+        expect(route.parcelIdToCityId('BR-SP-GEOSAMPA-1958754')).toBe('sao_paulo');
+        expect(route.parcelIdToCityId('GB-HMLR-23394370')).toBe('birmingham');
+        expect(route.parcelIdToCityId('ZM-LUSAKA-GID-11111111-2222-3333-4444-555555555555')).toBe('lusaka');
+        expect(route.parcelIdToCityId('JP-MOJ-2026-27128~sheet1~H000000001')).toBe('osaka');
+        expect(route.parcelIdToCityId('AO-LUANDA-AGT-11111111-2222-3333-4444-555555555555')).toBe('luanda');
+        expect(route.parcelIdToCityId('ML-NINACAD-00103010001')).toBe('bamako');
+        expect(route.parcelIdToCityId('CO-CALI-NPN-760010100010000100010000000000')).toBe(null);
+        expect(route.parcelIdToCityId('PE-SEDAPAL-LOT-{11111111-2222-3333-4444-555555555555}')).toBe('lima');
         expect(route.parcelIdToCityId('CO-BOGOTA-006106001009')).toBe('bogota');
         expect(route.parcelIdToCityId('US-CA-LA-5149001915')).toBe('los_angeles');
         expect(route.parcelIdToCityId('US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}')).toBe('miami');

@@ -1,4 +1,15 @@
 {
+    "parcelSourceNotice": {
+        "title": "Información sobre la fuente parcelaria",
+        "responsibility": "Tú eliges qué fuente parcelaria usar y eres responsable de comprobar sus condiciones y el uso previsto.",
+        "publisher": "Los proveedores externos sirven estos límites directamente. Sus datos pueden tener limitaciones de cobertura, precisión y reutilización.",
+        "source": "Fuente",
+        "scope": "Cobertura",
+        "terms": "Condiciones de la fuente",
+        "unavailable": "Los metadatos detallados de la fuente no están disponibles. Consulta la atribución de la fuente en el mapa.",
+        "unknown": "Desconocida",
+        "link": "Consultar información y condiciones de la fuente"
+    },
     "densityStats": {
         "title": "Estadísticas geométricas",
         "parcelArea": "Superficie de la parcela",
@@ -3365,7 +3376,16 @@
             "hong_kong": "Hong Kong, RAE de Hong Kong",
             "lyon": "Lyon, Francia",
             "rotterdam": "Róterdam, Países Bajos",
-            "cologne": "Colonia, Alemania"
+            "cologne": "Colonia, Alemania",
+            "bamako": "Bamako, Malí",
+            "cali": "Cali, Colombia",
+            "lima": "Lima, Perú",
+            "luanda": "Luanda, Angola",
+            "sydney": "Sídney, Australia",
+            "sao_paulo": "São Paulo, Brasil",
+            "osaka": "Osaka, Japón",
+            "birmingham": "Birmingham, Reino Unido",
+            "lusaka": "Lusaka, Zambia"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",

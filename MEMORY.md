@@ -473,3 +473,20 @@ cached source read without publishing into the active fabric or a mutation; ordi
 still publishes ground. Transport is consumed privately by the repository during boot, so routing
 must use the repository instead of the temporary transport global. New-source failed queries and
 holds belong in registry `integrationAttempts`, linked to dated research evidence.
+
+### Parcel integration policy override (2026-10-03)
+
+The user explicitly requires that terms, licences and reuse restrictions NEVER prevent city or
+country integration. Preserve accurate source conditions, attribution and historical failed attempts
+as notices; user choice governs data use. Only technical failures (geometry, stable native identity,
+complete bounded paging/exact reads, required authentication) may hold a source. New live sources
+remain passthrough without parcel-table imports, with browser-session ground caching. Do not
+infer that passthrough transfers legal obligations or claim that all application data is unstored.
+
+### Fixed GeoJSON parcel snapshots (2026-10-03)
+
+Bulk-only parcel sources can use the same live gateway through a bounded, five-minute memory
+snapshot reader; pin fixed editions by ETag and expected feature count so revised or incomplete
+files cannot silently become authoritative absence. Osaka 2026 Chuo sheets use the reversible
+published municipality-code/map-name/sheet-ID composite in the `JP-MOJ-2026-` namespace;
+a sheet-local ID alone repeats across maps. Keep edition and limited coverage in source notices.

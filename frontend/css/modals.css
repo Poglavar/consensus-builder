@@ -6306,6 +6306,14 @@ body.site-intro-open {
     line-height: 1.5;
 }
 
+/* Source information can be longer than the viewport; keep its manual alert scrollable. */
+.cb-alert-dialog {
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+}
+
 .cb-confirm-buttons {
     margin-top: 20px;
     display: grid;

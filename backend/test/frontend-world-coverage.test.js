@@ -14,9 +14,17 @@ const coverage = WorldCoverage.create(data);
 
 describe('tierAt', () => {
     it.each([
+        ['sydney', 'au-nsw-six-cadastre-lot', -33.8585, 151.0795, 'Sydney', -33.8585, 151.4],
+        ['sao_paulo', 'br-sp-geosampa-lote-cidadao', -23.55052, -46.6333, 'São Paulo', -23.55052, -46.3],
+        ['birmingham', 'gb-arcgis-geodom-land-registry-inspire-2021', 52.4975, -1.978, 'Birmingham', 52.4975, -1.6],
+        ['lusaka', 'zm-lusaka-mtendere-east-agol-unofficial', -15.40478133, 28.38004999, 'Lusaka', -15.40478133, 28.8],
+        ['osaka', 'jp-moj-geospatial-2026', 34.677750586, 135.532507321, 'Osaka', 34.67775, 135.9],
         ['los_angeles', 'us-ca-lacounty-assessor-parcels', 34.0522, -118.2437, 'Los Angeles', 33.74, -117.88],
         ['miami', 'us-fl-miamidade-pa-parcels', 25.7749, -80.1936, 'Miami', 26.12, -80.14],
         ['washington_dc', 'us-dc-dcgis-tax-lots', 38.91025, -77.0425, 'Washington', 38.89, -77.08],
+        ['bamako', 'ml-sprdf-ninacad-parcelle-wfs', 12.6765, -8.04225, 'Bamako', 12.8, -8.04],
+        ['luanda', 'ao-arcgis-luanda-agt-property-polygons', -8.83675, 13.234, 'Luanda', -9.05, 13.23],
+        ['lima', 'pe-sedapal-publicaciones-lotes', -12.015, -76.96825, 'Lima', -12.2, -76.97],
         ['lyon', 'fr-ign-parcellaire-express', 45.764, 4.8357, 'Lyon', 45.764, 5.15],
         ['rotterdam', 'nl-pdok-brk-kadastrale-kaart', 51.9225, 4.4792, 'Rotterdam', 51.9225, 4.8],
         ['cologne', 'de-nrw-lika-flurstueck', 50.9375, 6.9603, 'Cologne', 50.9375, 7.3],

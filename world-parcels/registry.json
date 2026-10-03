@@ -39,7 +39,27 @@
         "geonames:1850147",
         "wup2025:5245"
       ],
-      "evidenceFile": "research/tokyo.json"
+      "evidenceFile": "research/tokyo.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5",
+          "operation": "Native-key uniqueness preflight and bounded first-page requests",
+          "outcome": "technical-hold",
+          "detail": "The candidate CityCode+BoundaryId exact filter identifies multiple polygons in both target-city probes; native identity cannot be established.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "The candidate CityCode+BoundaryId exact filter identifies multiple polygons in both target-city probes; native identity cannot be established.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "CityCode plus BoundaryId returns multiple distinct polygons in both Tokyo and Nagoya; no permanent native key is exposed by this layer.",
+          "Complete paging and all-key exact retrieval were not run after the key prerequisite failed."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "br-sp-urbis-lotes-fiscais",
@@ -56,7 +76,17 @@
       "verifiedCityIds": [
         "geonames:3448439"
       ],
-      "evidenceFile": "research/sao-paulo.json"
+      "evidenceFile": "research/sao-paulo.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs",
+          "operation": "Alternative official queryable WFS verification; retained as separate source from capped static GeoJSON export",
+          "outcome": "alternative-endpoint-selected",
+          "detail": "The static export remains capped at 50,000 of 1,688,215 features. The official GeoSampa WFS is registered separately as br-sp-geosampa-lote-cidadao after 18 complete cells and 1,285 exact native-ID reads with no conflicts.",
+          "evidenceFile": "research/sao-paulo-live.json"
+        }
+      ]
     },
     {
       "sourceId": "us-nyc-dof-digital-tax-map",
@@ -90,7 +120,35 @@
       "verifiedCityIds": [
         "geonames:1853909"
       ],
-      "evidenceFile": "research/osaka.json"
+      "evidenceFile": "research/osaka.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%96%936%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "operation": "Static object availability and candidate-key cardinality assessment",
+          "outcome": "bulk-adapter-required",
+          "detail": "The available endpoint is a static bulk object rather than a bounded-query service; adapter support and exact validation are still required.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "operation": "Pinned 2026 GeoJSON snapshot read; 3x3 viewport and 0.004-degree pan; all composite native IDs in batches of 80",
+          "outcome": "success",
+          "detail": "2051653 bytes, 2487 unique CityCode/map-sheet/ID composites, 18 complete cells, all 2487 exact reads, complete absence and footprint verified; zero geometry conflicts. One bounded upstream read; five-minute transient-memory cache. Chuo public-coordinate sheets only.",
+          "evidenceFile": "research/osaka-live.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "osaka"
+        ],
+        "reason": "Bounded transient-memory snapshot adapter verified all 2487 published composite native keys across 32 exact batches and 18 complete viewport cells; pinned 2026 ETag and feature count. Limited to Chuo ward public-coordinate sheets.",
+        "evidenceFile": "research/osaka-live.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "us-ca-lacounty-assessor-parcels",
@@ -144,12 +202,18 @@
       ],
       "evidenceFile": "research/luanda.json",
       "liveIntegration": {
-        "status": "held",
+        "status": "enabled",
         "cityIds": [
           "luanda"
         ],
-        "reason": "Reuse terms and layer authority unresolved; bracketed GlobalID query semantics need adapter verification.",
-        "evidenceFile": "research/luanda-live-assessment.json"
+        "reason": "Complete bounded read and exact native-ID round trips verified.",
+        "evidenceFile": "research/luanda-live.json",
+        "previousAssessment": {
+          "reason": "Reuse terms and layer authority unresolved; bracketed GlobalID query semantics need adapter verification.",
+          "evidenceFile": "research/luanda-live-assessment.json"
+        },
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -214,6 +278,31 @@
           "outcome": "held",
           "detail": "Reuse terms and layer authority unresolved; bracketed GlobalID query semantics need adapter verification.",
           "evidenceFile": "research/luanda-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+          "operation": "Complete bounded source read and exact native-ID round trips",
+          "outcome": "success",
+          "detail": "16 distinct bare canonical GlobalIDs completed count/object-ID enumeration, two geometry pages and exact-ID reads without conflicts. Ordinary spatial query timeouts are bypassed by the verified object-ID request protocol.",
+          "evidenceFile": "research/luanda-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+          "operation": "long query transport and complete viewport verification",
+          "outcome": "query-rejected",
+          "detail": "Long GET object-ID and 80-GUID requests returned HTTP 404; same parameters returned all features as form POST.",
+          "upstreamHttpStatus": 404,
+          "evidenceFile": "research/luanda-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+          "operation": "long query transport and complete viewport verification",
+          "outcome": "complete",
+          "detail": "ID-first bounds with form POST for long requests passed browser viewport/cache, footprint, binding and all 80 exact native-ID reads.",
+          "evidenceFile": "research/luanda-live.json"
         }
       ]
     },
@@ -281,8 +370,16 @@
         "cityIds": [
           "lima"
         ],
-        "reason": "Third-party copy has no reuse terms or documented permanent native key; a separate official SEDAPAL candidate is recorded.",
-        "evidenceFile": "research/lima-live-assessment.json"
+        "reason": "Third-party layer exposes no documented permanent native parcel key.",
+        "evidenceFile": "research/lima-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Third-party copy has no reuse terms or documented permanent native key; a separate official SEDAPAL candidate is recorded.",
+          "evidenceFile": "research/lima-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Third-party layer exposes no documented permanent native parcel key."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -338,12 +435,17 @@
       ],
       "evidenceFile": "research/bamako.json",
       "liveIntegration": {
-        "status": "held",
+        "status": "enabled",
         "cityIds": [
           "bamako"
         ],
-        "reason": "Reuse rights unresolved; only 6 of 74 bbox rows freshly paged, no complete adapter read.",
-        "evidenceFile": "research/bamako-live-assessment.json"
+        "evidenceFile": "research/bamako-live.json",
+        "previousAssessment": {
+          "reason": "Reuse rights unresolved; only 6 of 74 bbox rows freshly paged, no complete adapter read.",
+          "evidenceFile": "research/bamako-live-assessment.json"
+        },
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -380,6 +482,22 @@
           "outcome": "held",
           "detail": "Reuse rights unresolved; only 6 of 74 bbox rows freshly paged, no complete adapter read.",
           "evidenceFile": "research/bamako-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+          "operation": "Policy change",
+          "outcome": "success",
+          "detail": "Terms and licences are informational and never block integration, per user instruction.",
+          "evidenceFile": "research/bamako-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+          "operation": "Complete bounded and exact-ID adapter check",
+          "outcome": "success",
+          "detail": "74 canonical polygons across three forced pages; all native IDs resolved again with matching geometry, no absences or conflicts.",
+          "evidenceFile": "research/bamako-live.json"
         }
       ]
     },
@@ -398,7 +516,27 @@
       "verifiedCityIds": [
         "wup2025:5991"
       ],
-      "evidenceFile": "research/bandung.json"
+      "evidenceFile": "research/bandung.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21",
+          "operation": "3x3 viewport plus 0.004-degree pan; exact NIB round trips",
+          "outcome": "technical-hold",
+          "detail": "Bounded reads returned parcels, but the exposed NIB is not a unique exact-read key and invalid blank values conflict geometrically.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Bounded reads returned parcels, but the exposed NIB is not a unique exact-read key and invalid blank values conflict geometrically.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "No durable native parcel key is established: NIB exact lookups are non-unique across the layer.",
+          "Whitespace NIB values cause conflicting-geometry failures in bounded cells."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
@@ -415,7 +553,35 @@
       "verifiedCityIds": [
         "wup2025:3979"
       ],
-      "evidenceFile": "research/birmingham.json"
+      "evidenceFile": "research/birmingham.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+          "operation": "3x3 viewport plus 0.004-degree pan; native INSPIREID validation",
+          "outcome": "technical-hold",
+          "detail": "The selected native field is not a valid parcel identifier on placeholder rows, leaving no exact-read candidate set.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+          "operation": "Explicit title-index exclusion, forced 25-row paging, production 500-row paging and all exact native-ID reads",
+          "outcome": "success",
+          "detail": "Both page sizes complete 18 cells and all 898 distinct INSPIREIDs without absence or geometry conflicts. No LR Title Detected placeholder rows excluded from the registered-title index scope; earlier unfiltered failures remain recorded.",
+          "evidenceFile": "research/birmingham-live.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "reason": "Explicit title-index exclusions complete 18 viewport cells and all 898 native INSPIREID round trips without conflicts.",
+        "evidenceFile": "research/birmingham-live.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true,
+        "cityIds": [
+          "birmingham"
+        ]
+      }
     },
     {
       "sourceId": "co-cali-idesc-cat-bas-terrenos",
@@ -450,12 +616,47 @@
           "outcome": "reuse-restricted",
           "detail": "IDESC terms restrict commercial exploitation; the separate CSV licence does not establish WFS geometry reuse rights.",
           "evidenceFile": "research/cali-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+          "operation": "Policy change",
+          "outcome": "success",
+          "detail": "Terms and licences are informational and never block integration, per user instruction.",
+          "evidenceFile": "research/cali-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+          "operation": "Complete bounded and exact-ID adapter check",
+          "outcome": "success",
+          "detail": "118 canonical polygons across three forced pages; all native IDs resolved again with matching geometry, no absences or conflicts.",
+          "evidenceFile": "research/cali-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+          "operation": "normal viewport cells and exact NPN/id_predio conflict investigation",
+          "outcome": "conflicting-native-ids",
+          "detail": "Held: two NPN keys identify different polygons, including exact lookup; id_predio repeats for both and does not disambiguate. No proven durable alternate key.",
+          "evidenceFile": "research/cali-live.json"
         }
       ],
       "liveIntegration": {
         "status": "held",
-        "evidenceFile": "research/cali-live-assessment.json",
-        "reason": "Exact geometry reuse terms unresolved."
+        "evidenceFile": "research/cali-live.json",
+        "previousAssessment": {
+          "reason": "Exact geometry reuse terms unresolved.",
+          "evidenceFile": "research/cali-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Held: two NPN keys identify different polygons, including exact lookup; id_predio repeats for both and does not disambiguate. No proven durable alternate key."
+        ],
+        "termsAreInformational": true,
+        "cityIds": [
+          "cali"
+        ],
+        "reason": "Held: two NPN keys identify different polygons, including exact lookup; id_predio repeats for both and does not disambiguate. No proven durable alternate key."
       }
     },
     {
@@ -522,7 +723,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/chicago-live-candidates.json",
-        "reason": "No current verified runtime endpoint."
+        "reason": "Current runtime endpoint and identity unverified; newer candidates timed out.",
+        "previousAssessment": {
+          "reason": "No current verified runtime endpoint.",
+          "evidenceFile": "research/chicago-live-candidates.json"
+        },
+        "technicalBlockers": [
+          "Current runtime endpoint and identity unverified; newer candidates timed out."
+        ],
+        "termsAreInformational": true
       }
     },
     {
@@ -546,8 +755,16 @@
         "cityIds": [
           "cotonou"
         ],
-        "reason": "Official technical source, but service reuse rights, personal-data implications, version/currentness, and broader coverage are unresolved.",
-        "evidenceFile": "research/cotonou-live-assessment.json"
+        "reason": "Fresh geometry, complete paging and exact native-ID lookup require validation; newest check returned only three NUP properties.",
+        "evidenceFile": "research/cotonou-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Official technical source, but service reuse rights, personal-data implications, version/currentness, and broader coverage are unresolved.",
+          "evidenceFile": "research/cotonou-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Fresh geometry, complete paging and exact native-ID lookup require validation; newest check returned only three NUP properties."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -590,8 +807,16 @@
         "cityIds": [
           "curitiba"
         ],
-        "reason": "Reuse rights unresolved; repeated rows in forced multipage query.",
-        "evidenceFile": "research/curitiba-live-assessment.json"
+        "reason": "Forced paging repeats records; fiscal identifiers include nulls. Complete deterministic reads unresolved.",
+        "evidenceFile": "research/curitiba-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Reuse rights unresolved; repeated rows in forced multipage query.",
+          "evidenceFile": "research/curitiba-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Forced paging repeats records; fiscal identifiers include nulls. Complete deterministic reads unresolved."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -644,7 +869,18 @@
         "wup2025:5227",
         "wup2025:3664"
       ],
-      "evidenceFile": "research/durban.json"
+      "evidenceFile": "research/durban.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [],
+        "reason": "The published GlobalID field returned no known IDs for both braced and bare exact lookup literals. SG21KEY exact batches and an 80-ParcelGuid batch timed out; Durban cells also return distinct geometries for one SG21KEY. A usable complete native-key retrieval strategy remains unverified.",
+        "evidenceFile": "research/candidate-holds-2026-10-03.json",
+        "technicalBlockers": [
+          "The published GlobalID field returned no known IDs for both braced and bare exact lookup literals.",
+          "SG21KEY exact batches and an 80-ParcelGuid batch timed out; Durban cells also return distinct geometries for one SG21KEY. A usable complete native-key retrieval strategy remains unverified."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "de-nrw-geobasis-alkis-vereinfacht-wfs",
@@ -723,7 +959,17 @@
       "verifiedCityIds": [
         "wup2025:772"
       ],
-      "evidenceFile": "research/guayaquil.json"
+      "evidenceFile": "research/guayaquil.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [],
+        "reason": "The rural sample has incomplete conflicting cells and exact candidate-key lookup returns conflicting geometries; rct repeats and IdPredial values are often blank/reused.",
+        "evidenceFile": "research/candidate-holds-2026-10-03.json",
+        "technicalBlockers": [
+          "The rural sample has incomplete conflicting cells and exact candidate-key lookup returns conflicting geometries; rct repeats and IdPredial values are often blank/reused."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "hk-landsd-lot-index-api",
@@ -808,7 +1054,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/houston-live-assessment.json",
-        "reason": "Durable unique parcel identity not established."
+        "reason": "Account identifiers duplicate across different geometries and include missing values; no GlobalID.",
+        "previousAssessment": {
+          "reason": "Durable unique parcel identity not established.",
+          "evidenceFile": "research/houston-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Account identifiers duplicate across different geometries and include missing values; no GlobalID."
+        ],
+        "termsAreInformational": true
       }
     },
     {
@@ -843,7 +1097,18 @@
       "verifiedCityIds": [
         "wup2025:1629"
       ],
-      "evidenceFile": "research/kuala-lumpur.json"
+      "evidenceFile": "research/kuala-lumpur.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [],
+        "reason": "All tested viewport cells failed at the ArcGIS query operation; no bounded features or exact native-ID reads were available. The layer is a Petaling/Selangor source and does not establish coverage of Kuala Lumpur Federal Territory.",
+        "evidenceFile": "research/candidate-holds-2026-10-03.json",
+        "technicalBlockers": [
+          "All tested viewport cells failed at the ArcGIS query operation; no bounded features or exact native-ID reads were available.",
+          "The layer is a Petaling/Selangor source and does not establish coverage of Kuala Lumpur Federal Territory."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "zm-lusaka-mtendere-east-agol-unofficial",
@@ -860,7 +1125,21 @@
       "verifiedCityIds": [
         "wup2025:1498"
       ],
-      "evidenceFile": "research/lusaka.json"
+      "evidenceFile": "research/lusaka.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "lusaka"
+        ],
+        "reason": "Complete reads and exact GlobalID round trips verified for this bounded neighborhood source; its coverage is only 28 polygons in Mtendere East.",
+        "evidenceFile": "research/lusaka-live.json",
+        "previousAssessment": {
+          "reason": "Historical city-center research did not establish useful coverage.",
+          "evidenceFile": "research/lusaka.json"
+        },
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "es-catastro-inspire-cadastral-parcels-atom",
@@ -892,7 +1171,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/madrid-live-assessment.json",
-        "reason": "WFS returned HTTP 400; only whole-municipality GML archive reachable, with transformed-product reuse restrictions."
+        "reason": "WFS returned HTTP 400; reachable municipality GML archive needs an ingestion/query implementation.",
+        "previousAssessment": {
+          "reason": "WFS returned HTTP 400; only whole-municipality GML archive reachable, with transformed-product reuse restrictions.",
+          "evidenceFile": "research/madrid-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "WFS returned HTTP 400; reachable municipality GML archive needs an ingestion/query implementation."
+        ],
+        "termsAreInformational": true
       }
     },
     {
@@ -933,7 +1220,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/medellin-live-assessment.json",
-        "reason": "Current official services unavailable."
+        "reason": "Current official metadata/geometry requests returned malformed responses or HTTP 500 HTML.",
+        "previousAssessment": {
+          "reason": "Current official services unavailable.",
+          "evidenceFile": "research/medellin-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Current official metadata/geometry requests returned malformed responses or HTTP 500 HTML."
+        ],
+        "termsAreInformational": true
       }
     },
     {
@@ -1009,8 +1304,16 @@
         "cityIds": [
           "milan"
         ],
-        "reason": "Rights look viable, but current source access is blocked (403) and GML handling/lat-lon axis order need runtime validation. Keep held; do not add as ready.",
-        "evidenceFile": "research/milan-live-assessment.json"
+        "reason": "Bounded request returned HTTP 403; GML parsing and axis order unverified.",
+        "evidenceFile": "research/milan-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Rights look viable, but current source access is blocked (403) and GML handling/lat-lon axis order need runtime validation. Keep held; do not add as ready.",
+          "evidenceFile": "research/milan-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Bounded request returned HTTP 403; GML parsing and axis order unverified."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -1053,8 +1356,16 @@
         "cityIds": [
           "rome"
         ],
-        "reason": "Shared official WFS endpoint currently returns403; GML runtime not verified.",
-        "evidenceFile": "research/milan-live-assessment.json"
+        "reason": "Shared official endpoint returned HTTP 403; no fresh geometry or validated GML adapter.",
+        "evidenceFile": "research/milan-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Shared official WFS endpoint currently returns403; GML runtime not verified.",
+          "evidenceFile": "research/milan-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Shared official endpoint returned HTTP 403; no fresh geometry or validated GML adapter."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -1098,7 +1409,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/paris-live-wfs.json",
-        "reason": "Use fr-ign-parcellaire-express instead."
+        "reason": "Exact idu filter was ignored; use the enabled IGN WFS provider.",
+        "previousAssessment": {
+          "reason": "Use fr-ign-parcellaire-express instead.",
+          "evidenceFile": "research/paris-live-wfs.json"
+        },
+        "technicalBlockers": [
+          "Exact idu filter was ignored; use the enabled IGN WFS provider."
+        ],
+        "termsAreInformational": true
       }
     },
     {
@@ -1116,7 +1435,26 @@
       "verifiedCityIds": [
         "wup2025:8535"
       ],
-      "evidenceFile": "research/recife.json"
+      "evidenceFile": "research/recife.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+          "operation": "3x3 viewport plus 0.004-degree pan; exact DSQFL round trips on retained IDs",
+          "outcome": "technical-hold",
+          "detail": "Exact lookups for the retained DSQFL keys pass, but three spatial cells contain conflicting geometry for a DSQFL value and fail closed.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Exact lookups for the retained DSQFL keys pass, but three spatial cells contain conflicting geometry for a DSQFL value and fail closed.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "DSQFL yields conflicting polygon geometries within three bounded spatial cells; the full spatial read cannot be accepted until these same-key geometry conflicts are resolved or represented safely."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "br-rio-prefeitura-lotes-2013",
@@ -1139,8 +1477,16 @@
         "cityIds": [
           "rio_de_janeiro"
         ],
-        "reason": "No documented durable parcel key; repeated display lot labels and system-maintained OID only.",
-        "evidenceFile": "research/rio-live-assessment.json"
+        "reason": "Display lot codes duplicate; only system-maintained row identity available. Complete adapter read unverified.",
+        "evidenceFile": "research/rio-live-assessment.json",
+        "previousAssessment": {
+          "reason": "No documented durable parcel key; repeated display lot labels and system-maintained OID only.",
+          "evidenceFile": "research/rio-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Display lot codes duplicate; only system-maintained row identity available. Complete adapter read unverified."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -1265,7 +1611,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/santiago-live-assessment.json",
-        "reason": "Third-party noncommercial publication; only managed FID exposed, no durable native cadastral key."
+        "reason": "Only system-maintained FID exposed; durable native parcel key absent. Existing sample incomplete.",
+        "previousAssessment": {
+          "reason": "Third-party noncommercial publication; only managed FID exposed, no durable native cadastral key.",
+          "evidenceFile": "research/santiago-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Only system-maintained FID exposed; durable native parcel key absent. Existing sample incomplete."
+        ],
+        "termsAreInformational": true
       }
     },
     {
@@ -1289,8 +1643,16 @@
         "cityIds": [
           "santo_domingo"
         ],
-        "reason": "Published terms restrict reuse and modification; historical geometry and no documented permanent native key. Unsorted paging repeated rows.",
-        "evidenceFile": "research/santo-domingo-live-assessment.json"
+        "reason": "Permanent native parcel key undocumented; natural-key filter failed. Unsorted paging repeated rows, though sorted sample completed.",
+        "evidenceFile": "research/santo-domingo-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Published terms restrict reuse and modification; historical geometry and no documented permanent native key. Unsorted paging repeated rows.",
+          "evidenceFile": "research/santo-domingo-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Permanent native parcel key undocumented; natural-key filter failed. Unsorted paging repeated rows, though sorted sample completed."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -1381,7 +1743,26 @@
       "verifiedCityIds": [
         "wup2025:7063"
       ],
-      "evidenceFile": "research/semarang.json"
+      "evidenceFile": "research/semarang.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25",
+          "operation": "3x3 city-center viewport plus 0.004-degree pan",
+          "outcome": "technical-hold",
+          "detail": "All 18 bounded city-center cells were empty, so the layer has no verified parcel coverage for the city sample.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "All 18 bounded city-center cells were empty, so the layer has no verified parcel coverage for the city sample.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "No parcel coverage was returned in the tested Semarang city-center viewport; current evidence does not establish usable city coverage."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "sg-sla-cadastral-land-parcel",
@@ -1412,7 +1793,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/singapore-live-assessment.json",
-        "reason": "No verified direct viewport service."
+        "reason": "No direct viewport service verified; full GeoJSON snapshot needs a refreshed spatial index.",
+        "previousAssessment": {
+          "reason": "No verified direct viewport service.",
+          "evidenceFile": "research/singapore-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "No direct viewport service verified; full GeoJSON snapshot needs a refreshed spatial index."
+        ],
+        "termsAreInformational": true
       }
     },
     {
@@ -1436,8 +1825,16 @@
         "cityIds": [
           "colombo"
         ],
-        "reason": "Current official service requires a token; old coverage is partial and source-specific reuse rights remain unresolved.",
-        "evidenceFile": "research/colombo-live-assessment.json"
+        "reason": "Current endpoint requires a token; previous coverage excludes tested central Colombo boxes.",
+        "evidenceFile": "research/colombo-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Current official service requires a token; old coverage is partial and source-specific reuse rights remain unresolved.",
+          "evidenceFile": "research/colombo-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Current endpoint requires a token; previous coverage excludes tested central Colombo boxes."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -1474,7 +1871,27 @@
       "verifiedCityIds": [
         "wup2025:7728"
       ],
-      "evidenceFile": "research/surabaya.json"
+      "evidenceFile": "research/surabaya.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12",
+          "operation": "3x3 viewport plus 0.004-degree pan; exact NIB round trips",
+          "outcome": "technical-hold",
+          "detail": "Bounded reads returned parcels, but the exposed NIB is not a unique exact-read key and invalid blank values conflict geometrically.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Bounded reads returned parcels, but the exposed NIB is not a unique exact-read key and invalid blank values conflict geometrically.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "No durable native parcel key is established: NIB exact lookups are non-unique across administrative areas.",
+          "Whitespace NIB values cause conflicting-geometry failures in bounded cells."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "au-nsw-six-cadastre-lot",
@@ -1500,12 +1917,29 @@
           "outcome": "reuse-restricted",
           "detail": "Terms restrict automated retrieval; an alternate current endpoint requires a token.",
           "evidenceFile": "research/sydney-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+          "operation": "Forced 25-row paging across 3x3 viewport, 0.004-degree pan and all native-ID round trips",
+          "outcome": "success",
+          "detail": "18 cells complete; 541 distinct cadid identifiers; all 541 exact lookups in 80-ID batches completed without absence or geometry conflicts. objectid retained only for paging; publisher conditions are informational.",
+          "evidenceFile": "research/sydney-live.json"
         }
       ],
       "liveIntegration": {
-        "status": "held",
-        "evidenceFile": "research/sydney-live-assessment.json",
-        "reason": "Automated retrieval permission and exact identity unresolved."
+        "status": "enabled",
+        "evidenceFile": "research/sydney-live.json",
+        "reason": "18 complete bounded viewport cells and all 541 native cadastral-ID round trips verified without conflicts.",
+        "previousAssessment": {
+          "reason": "Automated retrieval permission and exact identity unresolved.",
+          "evidenceFile": "research/sydney-live-assessment.json"
+        },
+        "technicalBlockers": [],
+        "termsAreInformational": true,
+        "cityIds": [
+          "sydney"
+        ]
       }
     },
     {
@@ -1529,8 +1963,16 @@
         "cityIds": [
           "tel_aviv"
         ],
-        "reason": "Current bounded query returned municipal maintenance HTML; source-specific reuse rights remain unresolved.",
-        "evidenceFile": "research/tel-aviv-live-assessment.json"
+        "reason": "Current bounded query returned HTTP 571 maintenance HTML.",
+        "evidenceFile": "research/tel-aviv-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Current bounded query returned municipal maintenance HTML; source-specific reuse rights remain unresolved.",
+          "evidenceFile": "research/tel-aviv-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Current bounded query returned HTTP 571 maintenance HTML."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -1637,7 +2079,27 @@
       "verifiedCityIds": [
         "wup2025:7035"
       ],
-      "evidenceFile": "research/yogyakarta.json"
+      "evidenceFile": "research/yogyakarta.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13",
+          "operation": "3x3 viewport plus 0.004-degree pan; exact NIB round trips",
+          "outcome": "technical-hold",
+          "detail": "Bounded reads returned parcels, but NIB exact lookup is non-unique and the blank NIB value is not a usable identifier.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Bounded reads returned parcels, but NIB exact lookup is non-unique and the blank NIB value is not a usable identifier.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "No durable native parcel key is established: NIB exact lookups are non-unique across administrative areas.",
+          "Blank NIB exact lookup is non-selective and returns hundreds of unrelated layer features."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "sourceId": "hr-dgu-oss-dkp-cestice",
@@ -1760,11 +2222,17 @@
       "evidenceFile": "research/retry/cities/amman.json",
       "liveIntegration": {
         "status": "held",
-        "cityIds": [
-          "amman"
+        "reason": "All 89 retained native GLOBALIDs round-trip exactly, but bounded coverage is incomplete because polygon validation fails in ten cells and repeated/omitted OIDs fail six.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "Most tested nonempty cells are rejected for invalid polygon geometry.",
+          "Several cells fail closed because pagination repeats or omits object IDs."
         ],
-        "reason": "Bounded samples show useful polygons and pagination support, but reuse terms are unresolved and the official service was not freshly verified through the available fetcher.",
-        "evidenceFile": "research/amman-live-assessment.json"
+        "termsAreInformational": true,
+        "previousAssessment": {
+          "reason": "Bounded samples showed useful polygons, but complete paging and native-key exact identity validation had not been completed.",
+          "evidenceFile": "research/amman-live-assessment.json"
+        }
       },
       "integrationAttempts": [
         {
@@ -1783,6 +2251,14 @@
           "outcome": "reuse-unresolved",
           "detail": "Official DLS viewer https://maps.dls.gov.jo/dlsweb uses a captcha iframe; no applicable license text located in reviewed material.",
           "evidenceFile": "research/amman-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+          "operation": "Complete bounded viewport, pagination, native GLOBALID exact round trips",
+          "outcome": "technical-hold",
+          "detail": "All 89 retained native GLOBALIDs round-trip exactly, but bounded coverage is incomplete because polygon validation fails in ten cells and repeated/omitted OIDs fail six.",
+          "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
         }
       ]
     },
@@ -1805,7 +2281,15 @@
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/montreal-live-assessment.json",
-        "reason": "Exact geometry reuse rights unresolved; identity and complete paging verification incomplete."
+        "reason": "Geometry/paging requests timed out; complete bounded read and identifier uniqueness unresolved.",
+        "previousAssessment": {
+          "reason": "Exact geometry reuse rights unresolved; identity and complete paging verification incomplete.",
+          "evidenceFile": "research/montreal-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Geometry/paging requests timed out; complete bounded read and identifier uniqueness unresolved."
+        ],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -2138,12 +2622,18 @@
       ],
       "evidenceFile": "research/lima-live-assessment.json",
       "liveIntegration": {
-        "status": "held",
+        "status": "enabled",
         "cityIds": [
           "lima"
         ],
-        "reason": "Reuse terms unresolved; GLOBALID uniqueness/continuity not established; full count denied (403).",
-        "evidenceFile": "research/lima-live-assessment.json"
+        "reason": "Complete bounded read and exact native-ID round trips verified.",
+        "evidenceFile": "research/lima-live.json",
+        "previousAssessment": {
+          "reason": "Reuse terms unresolved; GLOBALID uniqueness/continuity not established; full count denied (403).",
+          "evidenceFile": "research/lima-live-assessment.json"
+        },
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -2207,6 +2697,51 @@
           "outcome": "held",
           "detail": "Reuse terms unresolved; GLOBALID uniqueness/continuity not established; full count denied (403).",
           "evidenceFile": "research/lima-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+          "operation": "Complete bounded source read and exact native-ID round trips",
+          "outcome": "success",
+          "detail": "80 distinct brace-wrapped GlobalIDs completed bbox and exact-ID reads without conflicts; unbounded count denial does not affect bounded requests.",
+          "evidenceFile": "research/lima-live.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "br-sp-geosampa-lote-cidadao",
+      "name": "GeoSampa São Paulo fiscal lots",
+      "operator": "GeoSampa / Prefeitura do Município de São Paulo",
+      "countryCode": "BR",
+      "scope": "São Paulo municipal fiscal cadastral lots. Fiscal identifiers and lot geometry do not establish legal title; only the bounded São Paulo globe entry is enabled.",
+      "endpoint": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs",
+      "method": "GET OGC WFS 2.0.0 GetFeature",
+      "responseFormat": "GeoJSON",
+      "crs": "WGS84 CRS84 output",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Publisher conditions are informational; not an integration gate.",
+      "verifiedCityIds": [
+        "geonames:3448439"
+      ],
+      "evidenceFile": "research/sao-paulo-live.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "sao_paulo"
+        ],
+        "reason": "18 complete viewport cells and all 1285 native fiscal-lot-ID round trips verified without conflicts.",
+        "evidenceFile": "research/sao-paulo-live.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs",
+          "operation": "Forced 50-row paging across 3x3 viewport, 0.004-degree pan and native-ID batches of 80",
+          "outcome": "success",
+          "detail": "18 complete cells, 1285 distinct native fiscal-lot identifiers, all exact reads complete with no absent IDs or geometry conflicts. Original-lot provenance is retained separately.",
+          "evidenceFile": "research/sao-paulo-live.json"
         }
       ]
     }
@@ -12799,5 +13334,17 @@
       ],
       "note": "Federal INSPIRE service covers all three regions; Flanders also has its own GRB WFS."
     }
-  ]
+  ],
+  "integrationPolicy": {
+    "description": "User-selected passthrough sources: terms and licences are recorded as notices and never block technical integration.",
+    "termsAndLicencesBlockIntegration": false,
+    "termsHandling": "source-notice",
+    "runtimeStorage": "No new parcel database imports; live proxy reads and browser session memory.",
+    "technicalRequirements": [
+      "usable polygon geometry",
+      "stable native parcel identity",
+      "complete bounded paging and exact-ID reads"
+    ],
+    "decidedAt": "2026-10-03"
+  }
 }

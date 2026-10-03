@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "city": "bamako",
+  "countryCode": "ML",
+  "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+  "checkedAt": "2026-10-03",
+  "bbox": [
+    -8.043,
+    12.6755,
+    -8.0415,
+    12.6775
+  ],
+  "timeoutMs": 15000,
+  "configuration": {
+    "version": "1.1.0",
+    "pageSize": 25,
+    "maxFeatures": 100,
+    "idField": "ninacad",
+    "idType": "string",
+    "idPrefix": "ML-NINACAD-",
+    "outFields": [
+      "ninacad",
+      "uoid",
+      "numeroparc",
+      "section",
+      "surface",
+      "perimetre"
+    ],
+    "cityIds": [
+      "bamako"
+    ]
+  },
+  "bboxQuery": {
+    "complete": true,
+    "featureCount": 74,
+    "uniqueCanonicalIds": 74,
+    "uniqueNativeIds": 74
+  },
+  "exactLookup": {
+    "requestedIds": 74,
+    "returnedFeatures": 74,
+    "absentIds": [],
+    "missing": [],
+    "extra": [],
+    "geometryMismatches": [],
+    "allIdsResolved": true,
+    "allGeometryEqual": true
+  },
+  "requests": [
+    {
+      "operation": "bbox",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=ninacad&maxFeatures=25&startIndex=0&bbox=-8.043%2C12.6755%2C-8.0415%2C12.6775%2CCRS%3A84",
+      "status": 200,
+      "elapsedMs": 1832,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:44.018Z",
+      "totalFeatures": 74,
+      "numberMatched": 74,
+      "numberReturned": 25
+    },
+    {
+      "operation": "bbox",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=ninacad&maxFeatures=25&startIndex=25&bbox=-8.043%2C12.6755%2C-8.0415%2C12.6775%2CCRS%3A84",
+      "status": 200,
+      "elapsedMs": 1831,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:45.760Z",
+      "totalFeatures": 74,
+      "numberMatched": 74,
+      "numberReturned": 25
+    },
+    {
+      "operation": "bbox",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=ninacad&maxFeatures=25&startIndex=50&bbox=-8.043%2C12.6755%2C-8.0415%2C12.6775%2CCRS%3A84",
+      "status": 200,
+      "elapsedMs": 1573,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:47.499Z",
+      "totalFeatures": 74,
+      "numberMatched": 74,
+      "numberReturned": 24
+    },
+    {
+      "operation": "exactIds:0-73",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=ninacad&maxFeatures=25&startIndex=0&cql_filter=ninacad+IN+%28%2700103010001%27%2C%2700103010002%27%2C%2700103010004%27%2C%2700103010005%27%2C%2700103010006%27%2C%2700103010007%27%2C%2700103010008%27%2C%2700103010009%27%2C%2700103010010%27%2C%2700103010011%27%2C%2700103010012%27%2C%2700103010013%27%2C%2700103010014%27%2C%2700103010015%27%2C%2700103010016%27%2C%2700103010017%27%2C%2700103010018%27%2C%2700103010019%27%2C%2700103010020%27%2C%2700103010021%27%2C%2700103010022%27%2C%2700103010023%27%2C%2700103010024%27%2C%2700103010025%27%2C%2700103010026%27%2C%2700103010027%27%2C%2700103010028%27%2C%2700103010029%27%2C%2700103010030%27%2C%2700103010031%27%2C%2700103010032%27%2C%2700103010033%27%2C%2700103010034%27%2C%2700103010035%27%2C%2700103010036%27%2C%2700103010037%27%2C%2700103010038%27%2C%2700103010039%27%2C%2700103010040%27%2C%2700103010041%27%2C%2700103010042%27%2C%2700103010043%27%2C%2700103010044%27%2C%2700103010045%27%2C%2700103010046%27%2C%2700103010047%27%2C%2700103010048%27%2C%2700103010049%27%2C%2700103010050%27%2C%2700103010051%27%2C%2700103010052%27%2C%2700103010053%27%2C%2700103010054%27%2C%2700103010055%27%2C%2700103010056%27%2C%2700103010057%27%2C%2700103010058%27%2C%2700103010059%27%2C%2700103010060%27%2C%2700103010061%27%2C%2700103010062%27%2C%2700103010063%27%2C%2700103010064%27%2C%2700103010065%27%2C%2700103010066%27%2C%2700103010067%27%2C%2700103010068%27%2C%2700103010069%27%2C%2700103010070%27%2C%2700103010071%27%2C%2700103010072%27%2C%2700103010073%27%2C%2700103010074%27%2C%2700103010082%27%29",
+      "status": 200,
+      "elapsedMs": 416,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:48.268Z",
+      "totalFeatures": 74,
+      "numberMatched": 74,
+      "numberReturned": 25
+    },
+    {
+      "operation": "exactIds:0-73",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=ninacad&maxFeatures=25&startIndex=25&cql_filter=ninacad+IN+%28%2700103010001%27%2C%2700103010002%27%2C%2700103010004%27%2C%2700103010005%27%2C%2700103010006%27%2C%2700103010007%27%2C%2700103010008%27%2C%2700103010009%27%2C%2700103010010%27%2C%2700103010011%27%2C%2700103010012%27%2C%2700103010013%27%2C%2700103010014%27%2C%2700103010015%27%2C%2700103010016%27%2C%2700103010017%27%2C%2700103010018%27%2C%2700103010019%27%2C%2700103010020%27%2C%2700103010021%27%2C%2700103010022%27%2C%2700103010023%27%2C%2700103010024%27%2C%2700103010025%27%2C%2700103010026%27%2C%2700103010027%27%2C%2700103010028%27%2C%2700103010029%27%2C%2700103010030%27%2C%2700103010031%27%2C%2700103010032%27%2C%2700103010033%27%2C%2700103010034%27%2C%2700103010035%27%2C%2700103010036%27%2C%2700103010037%27%2C%2700103010038%27%2C%2700103010039%27%2C%2700103010040%27%2C%2700103010041%27%2C%2700103010042%27%2C%2700103010043%27%2C%2700103010044%27%2C%2700103010045%27%2C%2700103010046%27%2C%2700103010047%27%2C%2700103010048%27%2C%2700103010049%27%2C%2700103010050%27%2C%2700103010051%27%2C%2700103010052%27%2C%2700103010053%27%2C%2700103010054%27%2C%2700103010055%27%2C%2700103010056%27%2C%2700103010057%27%2C%2700103010058%27%2C%2700103010059%27%2C%2700103010060%27%2C%2700103010061%27%2C%2700103010062%27%2C%2700103010063%27%2C%2700103010064%27%2C%2700103010065%27%2C%2700103010066%27%2C%2700103010067%27%2C%2700103010068%27%2C%2700103010069%27%2C%2700103010070%27%2C%2700103010071%27%2C%2700103010072%27%2C%2700103010073%27%2C%2700103010074%27%2C%2700103010082%27%29",
+      "status": 200,
+      "elapsedMs": 286,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:48.591Z",
+      "totalFeatures": 74,
+      "numberMatched": 74,
+      "numberReturned": 25
+    },
+    {
+      "operation": "exactIds:0-73",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=ninacad&maxFeatures=25&startIndex=50&cql_filter=ninacad+IN+%28%2700103010001%27%2C%2700103010002%27%2C%2700103010004%27%2C%2700103010005%27%2C%2700103010006%27%2C%2700103010007%27%2C%2700103010008%27%2C%2700103010009%27%2C%2700103010010%27%2C%2700103010011%27%2C%2700103010012%27%2C%2700103010013%27%2C%2700103010014%27%2C%2700103010015%27%2C%2700103010016%27%2C%2700103010017%27%2C%2700103010018%27%2C%2700103010019%27%2C%2700103010020%27%2C%2700103010021%27%2C%2700103010022%27%2C%2700103010023%27%2C%2700103010024%27%2C%2700103010025%27%2C%2700103010026%27%2C%2700103010027%27%2C%2700103010028%27%2C%2700103010029%27%2C%2700103010030%27%2C%2700103010031%27%2C%2700103010032%27%2C%2700103010033%27%2C%2700103010034%27%2C%2700103010035%27%2C%2700103010036%27%2C%2700103010037%27%2C%2700103010038%27%2C%2700103010039%27%2C%2700103010040%27%2C%2700103010041%27%2C%2700103010042%27%2C%2700103010043%27%2C%2700103010044%27%2C%2700103010045%27%2C%2700103010046%27%2C%2700103010047%27%2C%2700103010048%27%2C%2700103010049%27%2C%2700103010050%27%2C%2700103010051%27%2C%2700103010052%27%2C%2700103010053%27%2C%2700103010054%27%2C%2700103010055%27%2C%2700103010056%27%2C%2700103010057%27%2C%2700103010058%27%2C%2700103010059%27%2C%2700103010060%27%2C%2700103010061%27%2C%2700103010062%27%2C%2700103010063%27%2C%2700103010064%27%2C%2700103010065%27%2C%2700103010066%27%2C%2700103010067%27%2C%2700103010068%27%2C%2700103010069%27%2C%2700103010070%27%2C%2700103010071%27%2C%2700103010072%27%2C%2700103010073%27%2C%2700103010074%27%2C%2700103010082%27%29",
+      "status": 200,
+      "elapsedMs": 310,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:48.909Z",
+      "totalFeatures": 74,
+      "numberMatched": 74,
+      "numberReturned": 24
+    }
+  ],
+  "maxRequestElapsedMs": 1832,
+  "allRequestsUnder15s": true,
+  "sourceTimestamps": [
+    "2026-10-03T07:47:44.018Z",
+    "2026-10-03T07:47:45.760Z",
+    "2026-10-03T07:47:47.499Z",
+    "2026-10-03T07:47:48.268Z",
+    "2026-10-03T07:47:48.591Z",
+    "2026-10-03T07:47:48.909Z"
+  ],
+  "status": "success",
+  "description": "Technical passthrough integration verification; terms are recorded as information and do not gate loading.",
+  "scope": "Bamako test neighbourhood and other NINACAD-mapped parcels only; sampled coverage is partial. The central city box was previously empty. No ownership or title certification supplied.",
+  "licenceNote": "No explicit geometry reuse licence established; source conditions remain informational under the user-selected passthrough policy.",
+  "licenceUrl": "https://ninacad.sprdf.ml/",
+  "metricSrid": 32629,
+  "parcelCollectionsPersisted": false,
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "mode": "manual headed browser",
+    "initialFeatures": 181,
+    "retainedAfterPan": 181,
+    "backCached": true,
+    "backRequestCount": 0,
+    "rendered": 181,
+    "under": {
+      "status": 200,
+      "complete": true,
+      "features": 2
+    },
+    "binding": {
+      "status": 200,
+      "coverage": "complete",
+      "parcels": 1
+    }
+  }
+}

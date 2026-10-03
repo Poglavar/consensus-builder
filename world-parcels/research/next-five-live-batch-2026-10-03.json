@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "description": "Five-city live integration batch and explicit original-positive-probe cohort accounting; metadata only.",
+  "addedCities": [
+    {
+      "cityId": "birmingham",
+      "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
+      "evidenceFile": "research/birmingham-live.json"
+    },
+    {
+      "cityId": "lusaka",
+      "sourceId": "zm-lusaka-mtendere-east-agol-unofficial",
+      "evidenceFile": "research/lusaka-live.json"
+    },
+    {
+      "cityId": "osaka",
+      "sourceId": "jp-moj-geospatial-2026",
+      "evidenceFile": "research/osaka-live.json"
+    },
+    {
+      "cityId": "sao_paulo",
+      "sourceId": "br-sp-geosampa-lote-cidadao",
+      "evidenceFile": "research/sao-paulo-live.json"
+    },
+    {
+      "cityId": "sydney",
+      "sourceId": "au-nsw-six-cadastre-lot",
+      "evidenceFile": "research/sydney-live.json"
+    }
+  ],
+  "counts": {
+    "originalPositiveCityProbes": 61,
+    "previousIntegratedInOriginalCohort": 17,
+    "addedThisBatch": 5,
+    "integratedInOriginalCohort": 22,
+    "remainingOriginalPositiveCityProbes": 39,
+    "configuredAppCities": 33,
+    "configuredCountriesAndTerritories": 21
+  },
+  "integratedOriginalCohort": [
+    {
+      "probeCityId": "geonames:3448439",
+      "name": "São Paulo",
+      "appCityId": "sao_paulo"
+    },
+    {
+      "probeCityId": "geonames:3435910",
+      "name": "Buenos Aires",
+      "appCityId": "buenos_aires"
+    },
+    {
+      "probeCityId": "geonames:5128581",
+      "name": "New York City",
+      "appCityId": "new_york"
+    },
+    {
+      "probeCityId": "geonames:1853909",
+      "name": "Osaka",
+      "appCityId": "osaka"
+    },
+    {
+      "probeCityId": "geonames:5368361",
+      "name": "Los Angeles",
+      "appCityId": "los_angeles"
+    },
+    {
+      "probeCityId": "geonames:2240449",
+      "name": "Luanda",
+      "appCityId": "luanda"
+    },
+    {
+      "probeCityId": "geonames:3688689",
+      "name": "Bogotá",
+      "appCityId": "bogota"
+    },
+    {
+      "probeCityId": "geonames:3936456",
+      "name": "Lima",
+      "appCityId": "lima"
+    },
+    {
+      "probeCityId": "wup2025:2994",
+      "name": "Paris",
+      "appCityId": "paris"
+    },
+    {
+      "probeCityId": "wup2025:2925",
+      "name": "Toronto",
+      "appCityId": "toronto"
+    },
+    {
+      "probeCityId": "wup2025:11566",
+      "name": "Tamar (Hong Kong)",
+      "appCityId": "hong_kong"
+    },
+    {
+      "probeCityId": "wup2025:413",
+      "name": "Cape Town",
+      "appCityId": "cape_town"
+    },
+    {
+      "probeCityId": "wup2025:374",
+      "name": "Bamako",
+      "appCityId": "bamako"
+    },
+    {
+      "probeCityId": "wup2025:2139",
+      "name": "Sydney",
+      "appCityId": "sydney"
+    },
+    {
+      "probeCityId": "wup2025:1634",
+      "name": "Melbourne",
+      "appCityId": "melbourne"
+    },
+    {
+      "probeCityId": "wup2025:1498",
+      "name": "Lusaka",
+      "appCityId": "lusaka"
+    },
+    {
+      "probeCityId": "wup2025:8123",
+      "name": "Washington, D.C.",
+      "appCityId": "washington_dc"
+    },
+    {
+      "probeCityId": "wup2025:1233",
+      "name": "San Francisco",
+      "appCityId": "san_francisco"
+    },
+    {
+      "probeCityId": "wup2025:7289",
+      "name": "Miami",
+      "appCityId": "miami"
+    },
+    {
+      "probeCityId": "wup2025:675",
+      "name": "Essen",
+      "appCityId": "essen"
+    },
+    {
+      "probeCityId": "wup2025:3979",
+      "name": "Birmingham",
+      "appCityId": "birmingham"
+    },
+    {
+      "probeCityId": "geonames:3186886",
+      "name": "Zagreb",
+      "appCityId": "zagreb"
+    }
+  ],
+  "failureEvidenceFiles": [
+    "research/next-five-source-attempts-2026-10-03.json",
+    "research/candidate-holds-2026-10-03.json"
+  ],
+  "scope": "Integration is a working city entry and provider, not a claim of complete municipal or national coverage. Source-specific limits appear in the catalogue and notice.",
+  "persistence": "No new parcel database imports; queryable services proxy bounded requests and Osaka uses a pinned five-minute in-memory snapshot.",
+  "validation": {
+    "headlessTestsPassed": 1127,
+    "testFiles": 37,
+    "note": "One history assertion initially mistook reused native-key values for a reuse-policy hold; its word-boundary correction passed a focused rerun. The remaining 36 files passed in the full targeted run.",
+    "manualBrowserFlows": [
+      "viewport streaming",
+      "pan and cached return",
+      "exact ID",
+      "footprint lookup",
+      "proposal binding",
+      "actual globe Open-city action for all five"
+    ],
+    "databaseImports": 0
+  }
+}
