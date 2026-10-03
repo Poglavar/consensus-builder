@@ -1,0 +1,12 @@
+{
+  "description": "Current official Medellín cadastral endpoint availability assessment; runtime remains disabled.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false,
+  "endpoint": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7",
+  "verification": {
+    "metadataJson": "Malformed JSON response",
+    "prettyMetadataAndBoundedGeoJson": "HTTP 500 HTML responses",
+    "alternateOfficialCandidates": "Read-only metadata checks also returned HTTP 500"
+  },
+  "nextRequirement": "Verify a reachable current official cadastral layer and durable identifiers before registering the source."
+}

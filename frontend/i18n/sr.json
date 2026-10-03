@@ -3339,9 +3339,15 @@
             "paris": "Pariz, Francuska",
             "melbourne": "Melburn, Australija",
             "cape_town": "Kejptaun, Južnoafrička Republika",
+            "antwerp": "Antverpen, Belgija",
+            "amsterdam": "Amsterdam, Holandija",
             "toronto": "Toronto, Kanada",
             "denver": "Denver, SAD",
-            "explore": "Istraži"
+            "explore": "Istraži",
+            "essen": "Esen, Nemačka",
+            "san_francisco": "San Francisko, Sjedinjene Države",
+            "berlin": "Berlin, Nemačka",
+            "hong_kong": "Hongkong, SAR Hongkong"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",

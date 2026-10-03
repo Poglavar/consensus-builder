@@ -1,0 +1,85 @@
+{
+  "description": "Current official Flemish OGC API source and complete bounded Antwerp verification.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "be-vlaanderen-grb-adp",
+  "endpoint": "https://geo.api.vlaanderen.be/GRB/ogc/features/v1/collections/ADP/items",
+  "officialUrls": [
+    "https://www.vlaanderen.be/datavindplaats/catalogus/wfs-grb",
+    "https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb",
+    "https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik",
+    "https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/basiskaart-vlaanderen-grb/objectenhandboek-basiskaart-vlaanderen-grb/administratief-perceel-adp",
+    "https://metadata.vlaanderen.be/srv/api/records/7C823055-7BBF-4D62-B55E-F85C30D53162",
+    "https://codex.vlaanderen.be/PrintDocument.ashx?datum=&geannoteerd=false&id=1013959&print=false"
+  ],
+  "sourceScope": "Flanders GRB administrative cadastral-map objects; permanent OIDN identity, UIDN version metadata and CAPAKEY cadastral association. Graphic depiction corrected to terrain, not a legal survey boundary. Only bounded Antwerp globe entry is enabled; Brussels and Wallonia need separate sources.",
+  "identity": {
+    "nativeField": "OIDN",
+    "canonicalPrefix": "BE-GRB-ADP-",
+    "displayField": "CAPAKEY",
+    "versionField": "UIDN",
+    "note": "Official GRB specification section 2.2 states OIDN remains the same for a terrain object. UIDN identifies its version/appearance and changes on update; CAPAKEY associates it with a cadastral parcel. Upstream ADP feature IDs are only pagination evidence."
+  },
+  "license": {
+    "status": "commercial and non-commercial reuse permitted free of charge with attribution",
+    "required_attribution": "Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen",
+    "basis": "Model License for Free Reuse; GRB WFS catalog indicates access without conditions"
+  },
+  "verification": {
+    "bbox": [
+      4.4,
+      51.21,
+      4.402,
+      51.212
+    ],
+    "pageSize": 1000,
+    "bboxPages": 1,
+    "featureCount": 192,
+    "exactIdPages": 1,
+    "exactLookupCount": 3,
+    "absentIds": [],
+    "secondBbox": {
+      "bbox": [
+        4.4,
+        51.21,
+        4.4005,
+        51.2105
+      ],
+      "featureCount": 52,
+      "exactLookupCount": 3
+    },
+    "forcedSmallPages": "Count=20 and count=30 requests timed out; normal pages completed. Sorted WFS requests also timed out and are not used by the runtime.",
+    "axisOrder": "CRS84 longitude/latitude explicitly used for bbox and output. EPSG:4326 WFS samples are not directly compared because axis order differs.",
+    "normalMultiPage": {
+      "bbox": [
+        4.395,
+        51.205,
+        4.405,
+        51.215
+      ],
+      "pageSize": 1000,
+      "pages": 3,
+      "featureCount": 2769,
+      "uniqueIds": 2769,
+      "complete": true
+    }
+  },
+  "adapterContract": {
+    "protocol": "OGC API Features, GeoJSON, numeric CQL2 object-ID filter",
+    "paging": "Validated same-origin and same-collection next links supply only startIndex; offset must equal the raw rows already read. GeoServer omits numberMatched and supplies totalFeatures=unknown; it is never treated as zero. Short terminal pages may omit links; full uncounted pages without continuation fail. Repeated feature IDs and conflicting entity geometry fail.",
+    "requests": "Rebuilt against the fixed collection, retaining all original query parameters."
+  },
+  "responseFile": "antwerp-live-response.json",
+  "browser": {
+    "initialParcels": 1592,
+    "retainedAfterPan": 2228,
+    "returnCached": true,
+    "footprintComplete": true,
+    "bindingCoverage": "complete",
+    "globeEntryVerified": true
+  },
+  "freshness": {
+    "officialMetadataEdition": "2026-09-29",
+    "officialUpdateCadence": "weekly parcel updates",
+    "note": "Individual VERSDATUM values describe the feature version, not the publication date of the current service."
+  }
+}

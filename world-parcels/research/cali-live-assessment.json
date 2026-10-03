@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "assessmentDate": "2026-10-03",
+  "source": {
+    "city": "Santiago de Cali, Colombia",
+    "sourceId": "co-cali-idesc-cat-bas-terrenos",
+    "recommendation": "Semantically viable for the parcel gateway, subject to written confirmation of WFS layer reuse terms.",
+    "publisher": "Infraestructura de Datos Espaciales de Santiago de Cali (IDESC), Alcaldía de Santiago de Cali",
+    "operatorAttribution": "WFS identifies feature type catastro:cat_bas_terrenos, title ‘Catastro: Terrenos’, abstract ‘Fuente de información: Subdirección de Catastro’. IDESC GetCapabilities provider name is the Cali spatial data infrastructure.",
+    "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+    "featureType": "catastro:cat_bas_terrenos",
+    "protocol": "WFS 2.0.0 GetFeature; outputFormat application/json (GeoJSON); bbox and srsName in CRS:84/EPSG:4326 work in the already observed sample.",
+    "scope": "Cali municipal/district cadastral layer. WFS feature-type bounds: lon -76.61663 to -76.46002, lat 3.29667 to 3.54755.",
+    "semantics": "Cadastral terrain polygons (‘Terrenos’) maintained by the Subdirección de Catastro, with parcel relation fields and cadastral identifiers. This is cadastral mapping, not a land-registry title certificate or a surveyed legal boundary. The linked open-data catalog describes the related historical property table as records identified by NPN and id_predio in the cadastral base, with terrain/construction areas, appraisal and economic use by year.",
+    "identifier": {
+      "recommendedField": "npn",
+      "observedType": "string, 30 digits in existing bounded sample",
+      "alternate": "id_predio; values observed as integers in the sample but DescribeFeatureType declares xsd:decimal",
+      "sampleStats": "Existing sample has 3 rows with both identifiers populated; no full-box/global duplicate or null audit was done in this assessment.",
+      "nativeLookup": "WFS GetFeature filter on npn or id_predio; validate exact filter syntax, uniqueness and null rates before relying on it for gateway lookup.",
+      "wfsFeatureId": "Existing sample feature IDs are GeoServer row IDs (cat_bas_terrenos.<internal id>), so retain npn as intended durable key rather than exposing service FIDs."
+    },
+    "boundedQueryEvidence": {
+      "existingResearchFile": "world-parcels/research/cali.json and world-parcels/research/cali-parcel-response.json",
+      "existingTestBboxLonLat": [
+        -76.5225,
+        3.4325,
+        -76.521,
+        3.4335
+      ],
+      "existingResponse": "3 MultiPolygon features returned; WFS reports numberMatched=118 in the box; page with WFS 2.0 startIndex/count. Root independently confirmed equivalent GeoJSON response and page availability.",
+      "currentNetworkProbe": "GetCapabilities returned HTTP 200, 503,793 XML bytes; DescribeFeatureType returned HTTP 200, 5,114 XML bytes. No second GetFeature query or broad export was made for this review.",
+      "rootVerification": {
+        "featureCount": 118,
+        "pageSize": 50,
+        "bboxPages": 3,
+        "exactLookupCount": 118,
+        "exactIdPages": 3,
+        "absentIds": [],
+        "idConflicts": 0
+      }
+    },
+    "termsAndAttribution": {
+      "exactWfsLayerLicense": "Unresolved. WFS GetCapabilities reports Fees NONE and AccessConstraints NONE, which are not a reuse license. The IDESC website terms PDF says its content/information cannot be commercialized or exploited; that is a restrictive web/service term and should be treated as applying unless the city clarifies otherwise.",
+      "relatedOpenDataLicense": "Datos Abiertos Cali lists ‘Información Histórica de Predios de Santiago de Cali’ (annual CSV table) under Creative Commons Attribution Share-Alike. Its page was last updated 2026-03-19 and describes NPN/id_predio fields. This is related tabular data; it does not establish that the separate IDESC WFS geometry layer is licensed CC BY-SA.",
+      "recommendedAttributionIfAuthorized": "Fuente: Subdirección de Catastro, Alcaldía de Santiago de Cali; servicio WFS IDESC (catastro:cat_bas_terrenos). Indicate adaptation to WGS84. Apply CC BY-SA only if the city confirms it covers these WFS geometries; otherwise honor the IDESC terms and do not use commercially pending clarification.",
+      "evidence": [
+        "https://ws-idesc.cali.gov.co/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+        "https://ws-idesc.cali.gov.co/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=catastro:cat_bas_terrenos",
+        "https://www.cali.gov.co/planeacion/publicaciones/46986/servicios-wfs-idesc/",
+        "https://idesc.cali.gov.co/download/normatividad/terminos_condiciones_uso_pagina_web_idesc.pdf",
+        "https://datos.cali.gov.co/dataset/informacion-historica-de-predios-de-santiago-de-cali",
+        "https://www.cali.gov.co/planeacion/publicaciones/145719/noticias-2019-idesc/"
+      ]
+    },
+    "remainingChecks": [
+      "Ask IDESC/Subdirección de Catastro to confirm terms for this specific geometry type, commercial reuse, redistribution, and attribution; reconcile IDESC website prohibition with the catalog’s CC BY-SA entry for the separate CSV dataset."
+    ]
+  },
+  "description": "Current official Cali cadastral terrain assessment; technical queries verified, runtime disabled pending geometry reuse terms.",
+  "runtimeEnabled": false
+}

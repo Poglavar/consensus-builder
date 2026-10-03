@@ -777,6 +777,207 @@
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        // National OGC API collection, exposed through the same canonical parcel gateway.
+        amsterdam: {
+            id: 'amsterdam',
+            label: translateCityText('city.labels.amsterdam', 'Amsterdam, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [52.3725, 4.9000],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [52.3725, 4.9000],
+                fallbackDataset: [4.9000, 52.3725]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'nl-pdok-brk-kadastrale-kaart',
+                idPrefix: 'NL-BRK-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 12,
+                attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK · Kadastrale Kaart</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        // Regional Flemish administrative parcel map, with permanent object IDs and version metadata.
+        antwerp: {
+            id: 'antwerp',
+            label: translateCityText('city.labels.antwerp', 'Antwerp, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.2110, 4.4010],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.2110, 4.4010],
+                fallbackDataset: [4.4010, 51.2110]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'be-vlaanderen-grb-adp',
+                idPrefix: 'BE-GRB-ADP-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '<a href="https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb">Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen</a> · <a href="https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik">reuse terms</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        essen: {
+            id: 'essen',
+            label: translateCityText('city.labels.essen', 'Essen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.4556, 7.0123],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32632',
+                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.4556, 7.0123],
+                fallbackDataset: [7.0123, 51.4556]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'de-nrw-lika-flurstueck',
+                idPrefix: 'DE-NRW-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        san_francisco: {
+            id: 'san_francisco',
+            label: translateCityText('city.labels.san_francisco', 'San Francisco, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [37.79125, -122.4065],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32610',
+                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [37.79125, -122.4065],
+                fallbackDataset: [-122.4065, 37.79125]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'us-ca-sf-datasf-active-parcels',
+                idPrefix: 'US-CA-SF-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '<a href="https://data.sf.gov/d/acdm-wktn">City and County of San Francisco · DataSF</a> · <a href="https://opendatacommons.org/licenses/pddl/1-0/">PDDL 1.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        berlin: {
+            id: 'berlin',
+            label: translateCityText('city.labels.berlin', 'Berlin, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [52.52, 13.405],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32633',
+                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [52.52, 13.405],
+                fallbackDataset: [13.405, 52.52]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'de-be-alkis-flurstuecke-wfs',
+                idPrefix: 'DE-BE-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '<a href="https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7">Land Berlin · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        // Private-lot WFS 1.1 uses paced, small bbox reads and the required provider logo.
+        hong_kong: {
+            id: 'hong_kong',
+            label: translateCityText('city.labels.hong_kong', 'Hong Kong, Hong Kong SAR'),
+            currency: { locale: 'en-HK', code: 'HKD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [22.315, 114.1838],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 19, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32650',
+                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [22.315, 114.1838],
+                fallbackDataset: [114.1838, 22.315]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'hk-landsd-lot-index-api',
+                idPrefix: 'HK-LANDSD-LOT-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 6,
+                attribution: '<a href="https://www.landsd.gov.hk/en/index.html"><img src="/assets/parcel-sources/landsd-logo.svg" alt="Lands Department" style="height:24px;width:auto;vertical-align:middle"></a> · Map from Lands Department · © Government of the Hong Kong SAR / <a href="https://portal.csdi.gov.hk/csdi-webpage/doc/TNC">CSDI</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

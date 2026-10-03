@@ -1,7 +1,7 @@
 // Adapts a fixed ArcGIS parcel layer to complete, canonical WGS84 parcel collections.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { upstreamError, validateBounds, validateGeometry, canonicalParcelFeature } from './source-contract.js';
+import { upstreamError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 export { validateBounds } from './source-contract.js';
 
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
@@ -25,17 +25,8 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     }
 
     // Fixed catalogue filters keep planned/versioned records out of authoritative ground.
-    const attributeFilters = Object.entries(descriptor.attributeFilters || {}).map(([field, value]) => [field, Array.isArray(value) ? value : [value]]);
-    if (attributeFilters.some(([field, values]) => !identifier.test(field) || !outFields.includes(field)
-        || !values.length || values.length > 80 || values.some(value => typeof value !== 'string' || !value || value.length > 256))) {
-        throw new Error('Invalid ArcGIS parcel attribute filter.');
-    }
-    const baseWhere = attributeFilters.length
-        ? attributeFilters.map(([field, values]) => {
-            const literals = values.map(value => `'${value.replaceAll("'", "''")}'`);
-            return literals.length === 1 ? `${field} = ${literals[0]}` : `${field} IN (${literals.join(',')})`;
-        }).join(' AND ')
-        : '1=1';
+    const attributeFilter = createParcelAttributeFilter(descriptor);
+    const baseWhere = attributeFilter.where || '1=1';
 
     async function query(params) {
         const byId = new Map();
@@ -47,7 +38,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 outSR: '4326', f: 'geojson', orderByFields: objectIdField,
                 resultRecordCount: String(pageSize), resultOffset: String(offset), ...params
             });
-            if (attributeFilters.length && params.where) search.set('where', `(${baseWhere}) AND (${params.where})`);
+            if (attributeFilter.where && params.where) search.set('where', `(${baseWhere}) AND (${params.where})`);
             const signal = AbortSignal.timeout(15000);
             let payload;
             try {
@@ -65,7 +56,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             if (offset + page.length > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
             for (const feature of page) {
                 const props = feature.properties || {};
-                if (attributeFilters.some(([field, values]) => !values.includes(props[field]))) throw upstreamError('Parcel provider returned a record outside the configured ground status.');
+                if (!attributeFilter.matches(props)) throw upstreamError('Parcel provider returned a record outside the configured ground status.');
                 const nativeId = props[idField];
                 if (!validNativeId(nativeId)) {
                     throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');

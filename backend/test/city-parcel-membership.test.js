@@ -83,7 +83,13 @@ describe('isInCity covers every configured city', () => {
             washington_dc: 'US-DC-{1B157667-518C-4B56-9DFC-1DAEC1559EAB}',
             paris: 'FR-PCI-75105000AD0011',
             melbourne: 'AU-VIC-PARCEL-152244627',
-            cape_town: 'ZA-CCT-C0160007000951650000000000'
+            cape_town: 'ZA-CCT-C0160007000951650000000000',
+            amsterdam: 'NL-BRK-11460432670000',
+            antwerp: 'BE-GRB-ADP-4455664',
+            essen: 'DE-NRW-05344102100105______',
+            san_francisco: 'US-CA-SF-0256005',
+            berlin: 'DE-BE-11000181900016____',
+            hong_kong: 'HK-LANDSD-LOT-1800293576'
         };
         configuredCityIds().forEach(city => {
             expect(sample[city], `no sample parcel id for configured city ${city}`).toBeTruthy();

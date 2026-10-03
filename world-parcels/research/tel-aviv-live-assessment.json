@@ -1,0 +1,32 @@
+{
+  "city": "Tel Aviv-Yafo, Israel",
+  "countryCode": "IL",
+  "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
+  "source": "Tel Aviv Municipality IView2 ArcGIS MapServer layer 524 (חלקות / parcels)",
+  "endpoint": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524",
+  "priorEvidence": {
+    "checkedAt": "2026-09-30",
+    "operation": "bounded ArcGIS REST query in Tel Aviv bbox, outSR=4326, resultRecordCount=3",
+    "outcome": "3 parcel polygons returned; source registry reports oid_chelka as unique key. This is prior sample evidence, not today's geometry check."
+  },
+  "freshCheck": {
+    "checkedAtUtc": "2026-10-02T21:45Z",
+    "operation": "GET layer metadata ?f=pjson",
+    "outcome": "HTTP 200 via web fetch. Current metadata says polygon geometry, EPSG:2039, maxRecordCount 2000, JSON/geoJSON/PBF, pagination supported, copyrightText empty. Fresh bounded query attempt through web fetch was rejected by the fetch tool; source query outcome remains unverified today."
+  },
+  "reuse": {
+    "status": "hold; layer-specific license unresolved",
+    "evidence": "Municipal open-data portal FAQ generally permits sharing/adaptation with credit: https://opendatasource.tel-aviv.gov.il/en/Pages/FAQ.aspx ; no evidence links layer 524 to that catalog. Empty layer copyrightText is not a reuse license."
+  },
+  "assessment": "Technically promising and municipal metadata is currently reachable, but do not apply general portal terms to this separate GIS layer without dataset linkage or permission.",
+  "description": "Current source continuation assessment; prior geometry samples and current direct checks are separate.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false,
+  "directCheck": {
+    "operation": "Bounded official endpoint query and metadata where needed",
+    "outcome": "maintenance-response",
+    "httpStatus": 571,
+    "detail": "Direct bounded parcel query returned HTTP571 with the municipality maintenance HTML instead of GeoJSON. Cached/read-tool metadata200 is not current geometry readiness.",
+    "requestUrl": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query?where=1%3D1&geometry=34.7800%2C32.0840%2C34.7815%2C32.0853&outFields=oid_chelka%2Cms_gush%2Cms_chelka%2Cms_gush_vechelka%2Ctr_idkun_acharon&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson"
+  }
+}

@@ -1,4 +1,4 @@
-// Checks city-specific identity, status and southern-hemisphere binding through one parcel gateway.
+// Checks native identity, status and metric binding across provider protocols through one parcel gateway.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
@@ -8,6 +8,10 @@ import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
 
 const samples = [
+    { city: 'hong_kong', nativeId: 1800293576, number: 'KIL 11119 S.C', center: [114.1838, 22.315] },
+    { city: 'berlin', nativeId: '11000181900016____', number: '11000181900016____', center: [13.405, 52.52] },
+    { city: 'antwerp', nativeId: 4455664, number: '11811L3512/00S000', center: [4.401, 51.211] },
+    { city: 'amsterdam', nativeId: '11460432670000', number: '4326', center: [4.9000, 52.3725] },
     { city: 'paris', nativeId: '75105000AD0011', number: '0011', center: [2.3556, 48.8491] },
     { city: 'melbourne', nativeId: '152244627', number: '1\\TP536413', center: [145.059, -37.8308] },
     { city: 'cape_town', nativeId: 'C0160007000951650000000000', number: '95165', center: [18.4194, -33.9258] }
@@ -16,6 +20,7 @@ function fixture(descriptor, sample, oid = 1) {
     const [x, y] = sample.center;
     return { type: 'Feature', id: `parcel.${oid}`, properties: {
         OBJECTID: oid, [descriptor.idField]: sample.nativeId,
+        ...(descriptor.idNamespace ? { [descriptor.idNamespace.field]: descriptor.idNamespace.value } : {}),
         [descriptor.parcelNumberField]: sample.number,
         ...Object.fromEntries(Object.entries(descriptor.attributeFilters || {}).map(([field, value]) =>
             [field, Array.isArray(value) ? value[0] : value]))
@@ -23,7 +28,7 @@ function fixture(descriptor, sample, oid = 1) {
 }
 function response(features, more = false, matched = features.length) {
     return { ok: true, status: 200, json: async () => ({ type: 'FeatureCollection', features,
-        properties: { exceededTransferLimit: more }, numberMatched: matched, numberReturned: features.length }) };
+        links: [], totalFeatures: matched, properties: { exceededTransferLimit: more }, numberMatched: matched, numberReturned: features.length }) };
 }
 afterEach(() => vi.unstubAllGlobals());
 for (const sample of samples) describe(`${sample.city} source contract`, () => {
@@ -36,10 +41,10 @@ for (const sample of samples) describe(`${sample.city} source contract`, () => {
         const res = await request(app).get(`/parcel-sources/${descriptor.id}`).query({ ids: id });
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({ complete: true, absentIds: [], returnsWGS84: true });
-        expect(res.body.features[0]).toMatchObject({ id, properties: { sourceParcelId: sample.nativeId, parcelNumber: sample.number } });
+        expect(res.body.features[0]).toMatchObject({ id, properties: { sourceParcelId: String(sample.nativeId), parcelNumber: sample.number } });
         const params = new URL(fetchImpl.mock.calls[0][0]).searchParams;
-        const filter = params.get(descriptor.adapter === 'wfs' ? 'cql_filter' : 'where');
-        expect(filter).toContain(`${descriptor.idField} IN ('${sample.nativeId}')`);
+        const filter = params.get(descriptor.adapter === 'wfs' ? 'cql_filter' : descriptor.adapter === 'ogc-api' ? 'filter' : 'where');
+        expect(filter).toContain(`${descriptor.idField} IN (${descriptor.idType === 'integer' ? sample.nativeId : `'${sample.nativeId}'`})`);
         for (const [field, value] of Object.entries(descriptor.attributeFilters || {})) {
             expect(filter).toContain(Array.isArray(value) ? `${field} IN (${value.map(v => `'${v}'`).join(',')})` : `${field} = '${value}'`);
         }

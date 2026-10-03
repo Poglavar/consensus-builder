@@ -1,0 +1,32 @@
+{
+  "city": "Milan, Italy",
+  "countryCode": "IT",
+  "sourceId": "it-agenzia-entrate-inspire-cadastral-wfs",
+  "source": "Agenzia delle Entrate national INSPIRE cadastral WFS",
+  "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+  "priorEvidence": {
+    "checkedAt": "2026-09-29",
+    "operation": "WFS 2.0 GetFeature, CP:CadastralParcel, bbox near Milan, count=3",
+    "outcome": "3 closed GML polygons, EPSG:6706; national cadastral reference/INSPIRE local id present. No GeoJSON support observed."
+  },
+  "freshCheck": {
+    "checkedAtUtc": "2026-10-02T21:40Z",
+    "operation": "GET GetCapabilities and bounded Rome/Milan WFS queries, retried with browser-like User-Agent",
+    "outcome": "HTTP 403 on all tested official WFS requests; do not interpret the earlier 200 sample as current reachability."
+  },
+  "reuse": {
+    "status": "hold pending implementation/reachability review",
+    "evidence": "Official national catalog and RNDT metadata state CC BY 4.0: https://www.dati.gov.it/node/view-dataset/dataset?id=9d74351a-eb63-4f64-848a-69770e9722b2 ; https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AS_0000_ITALIA"
+  },
+  "assessment": "Rights look viable, but current source access is blocked (403) and GML handling/lat-lon axis order need runtime validation. Keep held; do not add as ready.",
+  "description": "Current source continuation assessment; prior geometry samples and current direct checks are separate.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false,
+  "directCheck": {
+    "operation": "Bounded official endpoint query and metadata where needed",
+    "outcome": "http-error",
+    "httpStatus": 403,
+    "detail": "Direct bounded Milan CP:CadastralParcel WFS request with browser-like User-Agent returned403 Access Denied. Geometry adapter would also need GML and verified axis order.",
+    "requestUrl": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&count=3&bbox=45.4640%2C9.1915%2C45.4646%2C9.1925%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706"
+  }
+}

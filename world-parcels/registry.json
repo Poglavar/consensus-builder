@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-29",
+  "updatedAt": "2026-10-03",
   "queueSource": "https://population.un.org/wup/",
   "sources": [
     {
@@ -107,7 +107,25 @@
       "verifiedCityIds": [
         "geonames:5368361"
       ],
-      "evidenceFile": "research/los-angeles.json"
+      "evidenceFile": "research/los-angeles.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "los_angeles"
+        ],
+        "evidenceFile": "research/los-angeles-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://public.gis.lacounty.gov/public/rest/services/LACounty_Cache/LACounty_Parcel/MapServer/0",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/los-angeles-live.json",
+          "httpStatus": 200
+        }
+      ]
     },
     {
       "sourceId": "ao-arcgis-luanda-agt-property-polygons",
@@ -141,7 +159,33 @@
       "verifiedCityIds": [
         "geonames:3688689"
       ],
-      "evidenceFile": "research/bogota.json"
+      "evidenceFile": "research/bogota.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "bogota"
+        ],
+        "evidenceFile": "research/bogota-live-2021-mirror.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer/0",
+          "operation": "primary-live-query",
+          "outcome": "timeout",
+          "detail": "Primary endpoint timed out from laptop and dev server; user explicitly selected the official December 2021 mirror for the prototype.",
+          "evidenceFile": "research/bogota-live-2021-mirror.json"
+        },
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/bogota-live-2021-mirror.json",
+          "httpStatus": 200
+        }
+      ]
     },
     {
       "sourceId": "pe-arcgis-lima-sedapal-lotes",
@@ -243,7 +287,31 @@
       "verifiedCityIds": [
         "wup2025:899"
       ],
-      "evidenceFile": "research/cali.json"
+      "evidenceFile": "research/cali.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+          "operation": "paged-bbox-and-exact-ids",
+          "outcome": "success",
+          "detail": "118 NPN-keyed parcels completed three bbox and three exact-ID pages.",
+          "evidenceFile": "research/cali-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://idesc.cali.gov.co/download/normatividad/terminos_condiciones_uso_pagina_web_idesc.pdf",
+          "operation": "geometry-reuse-review",
+          "outcome": "reuse-restricted",
+          "detail": "IDESC terms restrict commercial exploitation; the separate CSV licence does not establish WFS geometry reuse rights.",
+          "evidenceFile": "research/cali-live-assessment.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/cali-live-assessment.json",
+        "reason": "Exact geometry reuse terms unresolved."
+      }
     },
     {
       "sourceId": "za-cct-land-parcels",
@@ -260,7 +328,25 @@
       "verifiedCityIds": [
         "wup2025:413"
       ],
-      "evidenceFile": "research/cape-town.json"
+      "evidenceFile": "research/cape-town.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "cape_town"
+        ],
+        "evidenceFile": "research/cape-town-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/cape-town-live.json",
+          "httpStatus": 200
+        }
+      ]
     },
     {
       "sourceId": "us-il-cook-county-clerk-parcels-2021",
@@ -277,7 +363,22 @@
       "verifiedCityIds": [
         "wup2025:7747"
       ],
-      "evidenceFile": "research/chicago.json"
+      "evidenceFile": "research/chicago.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+          "operation": "current-service-review",
+          "outcome": "timeout",
+          "detail": "Saved 2021 extract retained; newer service candidates timed out and their identities and terms are unverified.",
+          "evidenceFile": "research/chicago-live-candidates.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/chicago-live-candidates.json",
+        "reason": "No current verified runtime endpoint."
+      }
     },
     {
       "sourceId": "bj-andf-efoncier-geoserver",
@@ -294,7 +395,34 @@
       "verifiedCityIds": [
         "wup2025:1752"
       ],
-      "evidenceFile": "research/cotonou.json"
+      "evidenceFile": "research/cotonou.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "cotonou"
+        ],
+        "reason": "Official technical source, but service reuse rights, personal-data implications, version/currentness, and broader coverage are unresolved.",
+        "evidenceFile": "research/cotonou-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+          "operation": "Bounded official endpoint query and metadata where needed",
+          "outcome": "success",
+          "detail": "Direct minimal WFS2 query returned3nup keys from1390matches. propertyName=nup deliberately omitted geometry; prior geometry sample remains separately dated.",
+          "evidenceFile": "research/cotonou-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+          "operation": "Applicable dataset reuse terms review",
+          "outcome": "reuse-unresolved",
+          "detail": "ANDF cadastre page https://andf.bj/cadastre/ says cadastral data is available for public consultation and duplication except personal/confidential data; its text describes online/private access subject to conditions and fees. GeoServer AccessConstraints/Fees NONE is a service default, not a license.",
+          "evidenceFile": "research/cotonou-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "br-curitiba-ippuc-lote-cadastral",
@@ -311,7 +439,49 @@
       "verifiedCityIds": [
         "wup2025:6446"
       ],
-      "evidenceFile": "research/curitiba.json"
+      "evidenceFile": "research/curitiba.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "curitiba"
+        ],
+        "reason": "Reuse rights unresolved; repeated rows in forced multipage query.",
+        "evidenceFile": "research/curitiba-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+          "operation": "Native fiscal-ID aggregate and exact lookup",
+          "outcome": "success",
+          "detail": "308920 current rows,308null fiscal keys,308612distinct non-null keys. Exact fiscal11150008returned one polygon;11parcel smaller bbox completed three pages.",
+          "evidenceFile": "research/curitiba-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+          "operation": "40-parcel bbox, forced two-row paging",
+          "outcome": "repeated-page",
+          "detail": "Offset26returned only OID3436; offset27repeated3436. The adapter rejected the response rather than marking the cell complete.",
+          "evidenceFile": "research/curitiba-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+          "operation": "40-parcel bbox, forced20-row paging retry",
+          "outcome": "repeated-page",
+          "detail": "Offset20returned19rows ending3454; offset39repeated3454. Completeness is not established by supportsPagination metadata.",
+          "evidenceFile": "research/curitiba-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+          "operation": "Official service item and geodownload reuse terms",
+          "outcome": "reuse-unresolved",
+          "detail": "Layer copyright and item licenseInfo are empty; checked official geodownload page states informational purpose but no geometry reuse grant.",
+          "evidenceFile": "research/curitiba-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "za-giscoe-erven",
@@ -346,7 +516,35 @@
       "verifiedCityIds": [
         "wup2025:675"
       ],
-      "evidenceFile": "research/essen.json"
+      "evidenceFile": "research/essen.json",
+      "liveIntegration": {
+        "status": "superseded",
+        "cityIds": [
+          "essen"
+        ],
+        "successorSourceId": "de-nrw-lika-flurstueck",
+        "evidenceFile": "research/essen-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-09-29",
+          "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+          "operation": "WFS GeoJSON adapter probe",
+          "outcome": "http-error",
+          "httpStatus": 400,
+          "detail": "adv:AX_Flurstueck is not the simplified-schema type; request returned InvalidParameterValue.",
+          "evidenceFile": "research/essen-live.json"
+        },
+        {
+          "checkedAt": "2026-09-29",
+          "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+          "operation": "WFS GeoJSON adapter probe",
+          "outcome": "http-error",
+          "httpStatus": 400,
+          "detail": "ave:Flurstueck GeoJSON output request returned InvalidParameterValue; only GML/SHP/GPKG advertised.",
+          "evidenceFile": "research/essen-live.json"
+        }
+      ]
     },
     {
       "sourceId": "br-fortaleza-ipplan-zeis-pici-lotes",
@@ -397,7 +595,43 @@
       "verifiedCityIds": [
         "wup2025:11566"
       ],
-      "evidenceFile": "research/hong-kong.json"
+      "evidenceFile": "research/hong-kong.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "hong_kong"
+        ],
+        "evidenceFile": "research/hong-kong-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot",
+          "operation": "GML wrapper with percent-encoded bbox",
+          "outcome": "http-error",
+          "httpStatus": 400,
+          "detail": "Encoded commas returned400; same documented literal bbox returned200andtwo lot polygons.",
+          "evidenceFile": "research/hong-kong-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/wfs",
+          "operation": "Referenced WFS2.0 native query",
+          "outcome": "http-error",
+          "httpStatus": 404,
+          "detail": "2.0 exactlotid request returned404. Public capabilities and successful requests establish1.1.0.",
+          "evidenceFile": "research/hong-kong-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/wfs",
+          "operation": "Paced WFS1.1 complete bbox and exactlotid pages",
+          "outcome": "success",
+          "httpStatus": 200,
+          "detail": "Six native private lots completed two bbox and two exact-ID pages using numeric totalFeatures and stable lotid ordering; transportFID is not parcel identity.",
+          "evidenceFile": "research/hong-kong-live.json"
+        }
+      ]
     },
     {
       "sourceId": "us-tx-harris-hcad-parcels",
@@ -414,7 +648,23 @@
       "verifiedCityIds": [
         "wup2025:6237"
       ],
-      "evidenceFile": "research/houston.json"
+      "evidenceFile": "research/houston.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+          "operation": "native-identity-aggregates-and-duplicate-geometry",
+          "outcome": "identity-conflict",
+          "detail": "1,550,492 rows, two missing accounts, seven duplicate account groups; four different geometries. Active-account filter does not resolve them; no GlobalID.",
+          "evidenceFile": "research/houston-live-assessment.json",
+          "httpStatus": 200
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/houston-live-assessment.json",
+        "reason": "Durable unique parcel identity not established."
+      }
     },
     {
       "sourceId": "tr-tkgm-cbsapi-parsel",
@@ -482,7 +732,23 @@
       "verifiedCityIds": [
         "wup2025:3440"
       ],
-      "evidenceFile": "research/madrid.json"
+      "evidenceFile": "research/madrid.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+          "operation": "live-adapter-review",
+          "outcome": "http-error",
+          "detail": "WFS returned HTTP 400; only whole-municipality GML archive reachable, with transformed-product reuse restrictions.",
+          "evidenceFile": "research/madrid-live-assessment.json",
+          "httpStatus": 400
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/madrid-live-assessment.json",
+        "reason": "WFS returned HTTP 400; only whole-municipality GML archive reachable, with transformed-product reuse restrictions."
+      }
     },
     {
       "sourceId": "co-medellin-catastro-lote",
@@ -499,7 +765,31 @@
       "verifiedCityIds": [
         "wup2025:2525"
       ],
-      "evidenceFile": "research/medellin.json"
+      "evidenceFile": "research/medellin.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7",
+          "operation": "metadata-f-json",
+          "outcome": "malformed-response",
+          "detail": "Metadata JSON could not be parsed.",
+          "evidenceFile": "research/medellin-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7",
+          "operation": "metadata-and-bounded-geojson",
+          "outcome": "http-error",
+          "detail": "HTTP 500 HTML; not an empty cadastral result. Alternate official metadata candidates also failed.",
+          "evidenceFile": "research/medellin-live-assessment.json",
+          "httpStatus": 500
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/medellin-live-assessment.json",
+        "reason": "Current official services unavailable."
+      }
     },
     {
       "sourceId": "au-vic-vicmap-property",
@@ -533,7 +823,25 @@
       "verifiedCityIds": [
         "wup2025:7289"
       ],
-      "evidenceFile": "research/miami.json"
+      "evidenceFile": "research/miami.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "miami"
+        ],
+        "evidenceFile": "research/miami-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/miami-live.json",
+          "httpStatus": 200
+        }
+      ]
     },
     {
       "sourceId": "it-agenzia-entrate-inspire-cadastral-wfs",
@@ -550,7 +858,34 @@
       "verifiedCityIds": [
         "wup2025:1848"
       ],
-      "evidenceFile": "research/milan.json"
+      "evidenceFile": "research/milan.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "milan"
+        ],
+        "reason": "Rights look viable, but current source access is blocked (403) and GML handling/lat-lon axis order need runtime validation. Keep held; do not add as ready.",
+        "evidenceFile": "research/milan-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+          "operation": "Bounded official endpoint query and metadata where needed",
+          "outcome": "http-error",
+          "detail": "Direct bounded Milan CP:CadastralParcel WFS request with browser-like User-Agent returned403 Access Denied. Geometry adapter would also need GML and verified axis order.",
+          "evidenceFile": "research/milan-live-assessment.json",
+          "httpStatus": 403
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+          "operation": "Applicable dataset reuse terms review",
+          "outcome": "success",
+          "detail": "Official national catalog and RNDT metadata state CC BY 4.0: https://www.dati.gov.it/node/view-dataset/dataset?id=9d74351a-eb63-4f64-848a-69770e9722b2 ; https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AS_0000_ITALIA",
+          "evidenceFile": "research/milan-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "it-agenzia-entrate-cartografia-catastale-wfs",
@@ -567,7 +902,26 @@
       "verifiedCityIds": [
         "wup2025:4726"
       ],
-      "evidenceFile": "research/naples.json"
+      "evidenceFile": "research/naples.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "rome"
+        ],
+        "reason": "Shared official WFS endpoint currently returns403; GML runtime not verified.",
+        "evidenceFile": "research/milan-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+          "operation": "Shared official WFS endpoint continuation check",
+          "outcome": "http-error",
+          "httpStatus": 403,
+          "detail": "The same official endpoint is used by the Milan candidate; the current bounded CP query returned403. No fresh nonempty Rome response was established.",
+          "evidenceFile": "research/milan-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "fr-ign-apicarto-cadastre-parcelle",
@@ -584,7 +938,23 @@
       "verifiedCityIds": [
         "wup2025:2994"
       ],
-      "evidenceFile": "research/paris.json"
+      "evidenceFile": "research/paris.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://apicarto.ign.fr/api/cadastre/parcelle",
+          "operation": "exact-id-filter",
+          "outcome": "ignored-filter",
+          "detail": "idu parameter was ignored; the direct IGN WFS CQL path was selected.",
+          "evidenceFile": "research/paris-live-wfs.json",
+          "httpStatus": 200
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/paris-live-wfs.json",
+        "reason": "Use fr-ign-parcellaire-express instead."
+      }
     },
     {
       "sourceId": "br-recife-prefeitura-lotes",
@@ -618,7 +988,49 @@
       "verifiedCityIds": [
         "wup2025:7935"
       ],
-      "evidenceFile": "research/rio-de-janeiro.json"
+      "evidenceFile": "research/rio-de-janeiro.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "rio_de_janeiro"
+        ],
+        "reason": "No documented durable parcel key; repeated display lot labels and system-maintained OID only.",
+        "evidenceFile": "research/rio-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+          "operation": "Official item licence and feature currency",
+          "outcome": "success",
+          "detail": "CC BY4.0 confirmed. Physical lots from2013aerial survey, executed2013–15and2019–20; last data edit2022-10-28. Not legal registry parcels.",
+          "evidenceFile": "research/rio-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+          "operation": "Bounded native lot-code identity audit",
+          "outcome": "identity-unresolved",
+          "detail": "133rows have118distinct cod_lote values, six duplicated groups. No GlobalID. OBJECTID_12 is explicitly system-maintained row identity; no durable cadastral key established. Do not use row IDs as native ground identity.",
+          "evidenceFile": "research/rio-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+          "operation": "50-row bounded adapter page",
+          "outcome": "timeout",
+          "detail": "Adapter15-second upstream timeout returned504; no complete canonical bbox read.",
+          "evidenceFile": "research/rio-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+          "operation": "Smaller forced-page retry via restricted environment",
+          "outcome": "tool-access-failure",
+          "detail": "Local Node network and browser client restrictions prevented a completed retry; this is not evidence of source outage.",
+          "evidenceFile": "research/rio-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "us-ca-sf-datasf-active-parcels",
@@ -635,7 +1047,49 @@
       "verifiedCityIds": [
         "wup2025:1233"
       ],
-      "evidenceFile": "research/san-francisco.json"
+      "evidenceFile": "research/san-francisco.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "san_francisco"
+        ],
+        "evidenceFile": "research/san-francisco-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://data.sf.gov/resource/acdm-wktn.json",
+          "operation": "Global duplicate-row aggregate",
+          "outcome": "timeout",
+          "detail": "Aggregate duplicate blklot grouping exceeded the 15-second probe timeout. Distinct/non-null row counts were separately verified.",
+          "evidenceFile": "research/san-francisco-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://data.sf.gov/resource/acdm-wktn.json",
+          "operation": "Public Works flag as unique ground selector",
+          "outcome": "identity-conflict",
+          "detail": "active=true AND pw_recorded_map=true still includes coincident condominium assessment rows; blklot cannot identify unique 2D ground.",
+          "evidenceFile": "research/san-francisco-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://data.sf.gov/resource/acdm-wktn.json",
+          "operation": "Lowest APN representative equality filter",
+          "outcome": "incomplete-ground",
+          "detail": "blklot=mapblklot omits ground group2630064 whose active record is2630065. This filter was rejected.",
+          "evidenceFile": "research/san-francisco-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://data.sf.gov/resource/acdm-wktn.json",
+          "operation": "Counted SoQL intersection and exact native-ID pages",
+          "outcome": "success",
+          "detail": "48 bounded ground groups round-tripped with matching publication signatures, unique assessment-row IDs and equality checks for all coincident geometries. Missing-lowest-APN group2630064 resolved.",
+          "evidenceFile": "research/san-francisco-live.json",
+          "httpStatus": 200
+        }
+      ]
     },
     {
       "sourceId": "cl-minvu-predios-santiago-ocuc",
@@ -652,7 +1106,22 @@
       "verifiedCityIds": [
         "wup2025:2380"
       ],
-      "evidenceFile": "research/santiago.json"
+      "evidenceFile": "research/santiago.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0",
+          "operation": "identity-and-reuse-review",
+          "outcome": "identity-unverified",
+          "detail": "Third-party noncommercial publication; only managed FID exposed, no durable native cadastral key.",
+          "evidenceFile": "research/santiago-live-assessment.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/santiago-live-assessment.json",
+        "reason": "Third-party noncommercial publication; only managed FID exposed, no durable native cadastral key."
+      }
     },
     {
       "sourceId": "do-ri-atlas-geoserver",
@@ -703,7 +1172,22 @@
       "verifiedCityIds": [
         "wup2025:165"
       ],
-      "evidenceFile": "research/singapore.json"
+      "evidenceFile": "research/singapore.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+          "operation": "viewport-endpoint-review",
+          "outcome": "unsupported-query",
+          "detail": "No public live bbox endpoint verified; weekly GeoJSON download needs a refreshed spatial index.",
+          "evidenceFile": "research/singapore-live-assessment.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/singapore-live-assessment.json",
+        "reason": "No verified direct viewport service."
+      }
     },
     {
       "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
@@ -720,7 +1204,34 @@
       "verifiedCityIds": [
         "wup2025:615"
       ],
-      "evidenceFile": "research/sri-jayawardenepura-kotte-colombo.json"
+      "evidenceFile": "research/sri-jayawardenepura-kotte-colombo.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "colombo"
+        ],
+        "reason": "Current official service requires a token; old coverage is partial and source-specific reuse rights remain unresolved.",
+        "evidenceFile": "research/colombo-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2",
+          "operation": "Bounded official endpoint query and metadata where needed",
+          "outcome": "authentication-required",
+          "detail": "Bounded query redirected(302). Direct layer metadata returned ArcGIS error499 Token Required inside HTTP200; earlier anonymous sample does not establish current access.",
+          "evidenceFile": "research/colombo-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2",
+          "operation": "Applicable dataset reuse terms review",
+          "outcome": "reuse-unresolved",
+          "detail": "NSDI information page and data-sharing FAQ describe the infrastructure generally, but no license tied to this parcel layer was found; general government portal terms are not sufficient.",
+          "evidenceFile": "research/colombo-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "id-big-satupeta-hakmilik-5000-jawa-timur",
@@ -754,7 +1265,22 @@
       "verifiedCityIds": [
         "wup2025:2139"
       ],
-      "evidenceFile": "research/sydney.json"
+      "evidenceFile": "research/sydney.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+          "operation": "service-terms-review",
+          "outcome": "reuse-restricted",
+          "detail": "Terms restrict automated retrieval; an alternate current endpoint requires a token.",
+          "evidenceFile": "research/sydney-live-assessment.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/sydney-live-assessment.json",
+        "reason": "Automated retrieval permission and exact identity unresolved."
+      }
     },
     {
       "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
@@ -771,7 +1297,34 @@
       "verifiedCityIds": [
         "wup2025:439"
       ],
-      "evidenceFile": "research/tel-aviv.json"
+      "evidenceFile": "research/tel-aviv.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "tel_aviv"
+        ],
+        "reason": "Current bounded query returned municipal maintenance HTML; source-specific reuse rights remain unresolved.",
+        "evidenceFile": "research/tel-aviv-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524",
+          "operation": "Bounded official endpoint query and metadata where needed",
+          "outcome": "maintenance-response",
+          "detail": "Direct bounded parcel query returned HTTP571 with the municipality maintenance HTML instead of GeoJSON. Cached/read-tool metadata200 is not current geometry readiness.",
+          "evidenceFile": "research/tel-aviv-live-assessment.json",
+          "httpStatus": 571
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524",
+          "operation": "Applicable dataset reuse terms review",
+          "outcome": "reuse-unresolved",
+          "detail": "Municipal open-data portal FAQ generally permits sharing/adaptation with credit: https://opendatasource.tel-aviv.gov.il/en/Pages/FAQ.aspx ; no evidence links layer 524 to that catalog. Empty layer copyrightText is not a reuse license.",
+          "evidenceFile": "research/tel-aviv-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "ca-on-toronto-property-boundary",
@@ -788,7 +1341,25 @@
       "verifiedCityIds": [
         "wup2025:2925"
       ],
-      "evidenceFile": "research/toronto.json"
+      "evidenceFile": "research/toronto.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "toronto"
+        ],
+        "evidenceFile": "research/toronto.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-09-29",
+          "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/toronto.json",
+          "httpStatus": 200
+        }
+      ]
     },
     {
       "sourceId": "us-dc-dcgis-tax-lots",
@@ -805,7 +1376,25 @@
       "verifiedCityIds": [
         "wup2025:8123"
       ],
-      "evidenceFile": "research/washington-dc.json"
+      "evidenceFile": "research/washington-dc.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "washington_dc"
+        ],
+        "evidenceFile": "research/washington-dc-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/FeatureServer/39",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/washington-dc-live.json",
+          "httpStatus": 200
+        }
+      ]
     },
     {
       "sourceId": "id-big-satupeta-hak-milik-diy",
@@ -942,7 +1531,34 @@
       "verifiedCityIds": [
         "wup2025:850"
       ],
-      "evidenceFile": "research/retry/cities/amman.json"
+      "evidenceFile": "research/retry/cities/amman.json",
+      "liveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "amman"
+        ],
+        "reason": "Bounded samples show useful polygons and pagination support, but reuse terms are unresolved and the official service was not freshly verified through the available fetcher.",
+        "evidenceFile": "research/amman-live-assessment.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+          "operation": "Bounded official endpoint query and metadata where needed",
+          "outcome": "success",
+          "detail": "Direct bounded GeoJSON query returned3polygons with PARCEL_ID, DLS_KEY, VILL_CODE,HOD_CODE and transfer-limit flag. This is an incomplete sample, not complete paging/identity validation.",
+          "evidenceFile": "research/amman-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+          "operation": "Applicable dataset reuse terms review",
+          "outcome": "reuse-unresolved",
+          "detail": "Official DLS viewer https://maps.dls.gov.jo/dlsweb uses a captcha iframe; no applicable license text located in reviewed material.",
+          "evidenceFile": "research/amman-live-assessment.json"
+        }
+      ]
     },
     {
       "sourceId": "ca-qc-cadastre-bd-allegee",
@@ -959,7 +1575,289 @@
       "verifiedCityIds": [
         "wup2025:3645"
       ],
-      "evidenceFile": "research/subnational/CA/QC.json"
+      "evidenceFile": "research/subnational/CA/QC.json",
+      "liveIntegration": {
+        "status": "held",
+        "evidenceFile": "research/montreal-live-assessment.json",
+        "reason": "Exact geometry reuse rights unresolved; identity and complete paging verification incomplete."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+          "operation": "bounded-count-and-exact-lot",
+          "outcome": "success",
+          "detail": "Central Montreal count/IDs=26; exact NO_LOT lookup returned one polygon.",
+          "evidenceFile": "research/montreal-live-assessment.json",
+          "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+          "operation": "geojson-offset-and-distinct-values",
+          "outcome": "timeout",
+          "detail": "Larger/reduced bbox geometries, distinct-values and resultOffset=5 requests timed out; no complete viewport claimed.",
+          "evidenceFile": "research/montreal-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+          "operation": "geometry-reuse-review",
+          "outcome": "reuse-unresolved",
+          "detail": "No named open licence supplied for hosted cadastral geometry; official Données Québec FAQ says Infolot is not available as open data.",
+          "evidenceFile": "research/montreal-live-assessment.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "fr-ign-parcellaire-express",
+      "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+      "operator": "France IGN/DGFiP Parcellaire Express (PCI)",
+      "countryCode": "FR",
+      "scope": "IGN assembly of vectorised DGFiP cadastral parcels across France; Paris and Lyon bounded samples verified. Non-vectorised areas and cadastral alignment gaps remain possible; globe enables Paris only.",
+      "endpoint": "https://data.geopf.fr/wfs/ows",
+      "method": "GET",
+      "responseFormat": "canonical GeoJSON through wfs",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_live_city_adapter",
+      "reuseStatus": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+      "verifiedCityIds": [],
+      "evidenceFile": "research/paris-live-wfs.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "paris"
+        ],
+        "evidenceFile": "research/paris-live-wfs.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://data.geopf.fr/wfs/ows",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/paris-live-wfs.json",
+          "httpStatus": 200
+        }
+      ]
+    },
+    {
+      "sourceId": "au-vic-vicmap-parcel",
+      "name": "Victoria Vicmap Parcel (PARCEL_MP)",
+      "operator": "Victoria Vicmap Parcel (PARCEL_MP)",
+      "countryCode": "AU",
+      "scope": "Victoria cadastral parcel map polygons; distinct from local-government property assessment units. Other Australian states use separate datasets. Only Approved (A) parcel and version records are ground; Proposed (P) records are excluded. Crown and government-road parcels remain included. Only G (unrestricted ground) and S (ground surface affected by strata) levels are ground; above/below strata are excluded.",
+      "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/0",
+      "method": "GET",
+      "responseFormat": "canonical GeoJSON through arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_live_city_adapter",
+      "reuseStatus": "https://creativecommons.org/licenses/by/4.0/",
+      "verifiedCityIds": [],
+      "evidenceFile": "research/melbourne-live.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "melbourne"
+        ],
+        "evidenceFile": "research/melbourne-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/0",
+          "operation": "bbox-page-size-3",
+          "outcome": "timeout",
+          "detail": "Two 15-second tiny-page attempts failed; normal 2,000-row pages, IDs and binding succeeded.",
+          "evidenceFile": "research/melbourne-live.json"
+        },
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/0",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/melbourne-live.json",
+          "httpStatus": 200
+        }
+      ]
+    },
+    {
+      "sourceId": "nl-pdok-brk-kadastrale-kaart",
+      "name": "Netherlands Kadaster / PDOK cadastral map",
+      "operator": "Netherlands Kadaster / PDOK cadastral map",
+      "countryCode": "NL",
+      "scope": "National Dutch cadastral map; only the bounded Amsterdam globe entry is enabled. Valid (G) records only. Boundaries are indicative and unsuitable for survey measurements or establishing legal title.",
+      "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+      "method": "GET",
+      "responseFormat": "canonical GeoJSON through ogc-api",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_live_city_adapter",
+      "reuseStatus": "https://creativecommons.org/licenses/by/4.0/",
+      "verifiedCityIds": [],
+      "evidenceFile": "research/amsterdam-live.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "amsterdam"
+        ],
+        "evidenceFile": "research/amsterdam-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+          "operation": "namespace-in-cql-filter",
+          "outcome": "http-error",
+          "detail": "Native namespace is not queryable; validate it in returned properties instead.",
+          "evidenceFile": "research/amsterdam-live.json",
+          "httpStatus": 400
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/amsterdam-live.json",
+          "httpStatus": 200
+        }
+      ]
+    },
+    {
+      "sourceId": "be-vlaanderen-grb-adp",
+      "name": "Flanders Digitaal Vlaanderen GRB administrative parcels",
+      "operator": "Flanders Digitaal Vlaanderen GRB administrative parcels",
+      "countryCode": "BE",
+      "scope": "Flanders GRB administrative cadastral-map objects; permanent OIDN identity, UIDN version metadata and CAPAKEY cadastral association. Graphic depiction corrected to terrain, not a legal survey boundary. Only bounded Antwerp globe entry is enabled; Brussels and Wallonia need separate sources.",
+      "endpoint": "https://geo.api.vlaanderen.be/GRB/ogc/features/v1/collections/ADP/items",
+      "method": "GET",
+      "responseFormat": "canonical GeoJSON through ogc-api",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_live_city_adapter",
+      "reuseStatus": "https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik",
+      "verifiedCityIds": [],
+      "evidenceFile": "research/antwerp-live.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "antwerp"
+        ],
+        "evidenceFile": "research/antwerp-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geo.api.vlaanderen.be/GRB/wfs",
+          "operation": "sorted-wfs-bbox-oidn",
+          "outcome": "timeout",
+          "detail": "sortBy=OIDN timed out at 15 seconds; WFS was not selected.",
+          "evidenceFile": "research/antwerp-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geo.api.vlaanderen.be/GRB/ogc/features/v1/collections/ADP/items",
+          "operation": "forced-small-ogc-pages",
+          "outcome": "timeout",
+          "detail": "20- and 30-row pages timed out; normal 1,000-row pages succeeded.",
+          "evidenceFile": "research/antwerp-live.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://geo.api.vlaanderen.be/GRB/ogc/features/v1/collections/ADP/items",
+          "operation": "selected-runtime-viewport-ids-and-binding",
+          "outcome": "success",
+          "detail": "Selected adapter passed bounded query, exact lookup and authoritative binding verification.",
+          "evidenceFile": "research/antwerp-live.json",
+          "httpStatus": 200
+        }
+      ]
+    },
+    {
+      "sourceId": "de-be-alkis-flurstuecke-wfs",
+      "name": "Berlin ALKIS parcels",
+      "operator": "Land Berlin, Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen / Geoportal Berlin",
+      "countryCode": "DE",
+      "scope": "Complete Berlin state/city scope; Germany-wide scope is not covered because ALKIS is administered by each Land. Do not conflate Berlin with broader metro municipalities.",
+      "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+      "method": "GET WFS 2.0",
+      "responseFormat": "GeoJSON candidate",
+      "crs": "Native EPSG:25833 (ETRS89 / UTM 33N); WFS sample requests EPSG:4326 GeoJSON output.",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "Datenlizenz Deutschland – Zero – Version 2.0; official license permits commercial/non-commercial reuse, modification, onward transmission without conditions.",
+      "verifiedCityIds": [],
+      "evidenceFile": "research/berlin-live-assessment.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-02",
+          "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+          "operation": "live-adapter-review",
+          "outcome": "verification-incomplete",
+          "detail": "Direct TLS access and permanent-identifier verification incomplete.",
+          "evidenceFile": "research/berlin-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+          "operation": "Current WFS schema, counted bbox paging and exact fsko query",
+          "outcome": "success",
+          "httpStatus": 200,
+          "detail": "Default TLS verified. Native fsko field available;17parcels completed six forced bbox pages and six exact-ID pages. Earlier connection/identity blockers are resolved.",
+          "evidenceFile": "research/berlin-live.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "berlin"
+        ],
+        "evidenceFile": "research/berlin-live.json"
+      }
+    },
+    {
+      "sourceId": "de-nrw-lika-flurstueck",
+      "name": "Geobasis NRW ALKIS parcels",
+      "operator": "Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
+      "countryCode": "DE",
+      "scope": "North Rhine-Westphalia ALKIS cadastral map; only bounded Essen entry enabled. Other German states need separate sources. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
+      "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+      "method": "GET",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "OGC:CRS84",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "DL_DE_ZERO_2_0",
+      "verifiedCityIds": [
+        "geonames:2928810"
+      ],
+      "evidenceFile": "research/essen-live.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "essen"
+        ],
+        "evidenceFile": "research/essen-live.json"
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+          "operation": "Bounded OGC API sorted query",
+          "outcome": "http-error",
+          "detail": "sortby=flstkennz and descending alternative returned 400; unsupported sort parameter is omitted.",
+          "evidenceFile": "research/essen-live.json",
+          "httpStatus": 400
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+          "operation": "Counted offset bbox and batched native-ID pages",
+          "outcome": "success",
+          "detail": "Five complete parcels over two forced bbox pages and two exact-ID pages. flstkennz is a named x-ogc-role:id serialized as GeoJSON feature.id.",
+          "evidenceFile": "research/essen-live.json",
+          "httpStatus": 200
+        }
+      ]
     }
   ],
   "countryCoverage": [

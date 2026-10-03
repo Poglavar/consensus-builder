@@ -1,0 +1,79 @@
+{
+  "description": "Current official Hong Kong private-lot WFS 1.1 contract, paced complete reads and rejected wrapper paths.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "hk-landsd-lot-index-api",
+  "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/wfs",
+  "primarySources": [
+    "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+    "https://portal.csdi.gov.hk/csdi-webpage/doc/TNC",
+    "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/wfs?service=WFS&version=1.1.0&request=GetCapabilities",
+    "https://www.landsd.gov.hk/images/landsd_logo.svg"
+  ],
+  "scope": "Lands Department iC1000 private-lot index only. Government Land Allocations and Short-Term Tenancies are separate collections and are not enabled here. Native lotid is distinct from transport WFS FID and the displayed lot name. Only bounded Hong Kong entry enabled; boundaries are indicative, not legal survey proof.",
+  "identity": {
+    "nativeField": "lotid",
+    "nativeType": "integer",
+    "canonicalPrefix": "HK-LANDSD-LOT-",
+    "transportFeatureId": "lot_lotindexapi.<row> is used only for repeated-page detection",
+    "displayField": "cislotdisplayname",
+    "featureVersion": "lastupdatedate, sampled2023-12-12, not a dataset publication date"
+  },
+  "licence": {
+    "reuse": "Commercial and non-commercial copying permitted with Government/CSDI attribution; API requires Lands Department logo and copyright on map face",
+    "mapLogoFile": "frontend/assets/parcel-sources/landsd-logo.svg",
+    "sourceLogoUrl": "https://www.landsd.gov.hk/images/landsd_logo.svg"
+  },
+  "adapterContract": {
+    "protocol": "Explicit WFS1.1.0 GeoJSON; maxFeatures,startIndex,sortBy=lotid; numeric totalFeatures required and stable across pages",
+    "paging": "Repeated transport IDs, conflicting ground geometry, missing/changing counts or truncated pages fail closed",
+    "outputCrs": "CRS:84 requested; returned coordinates verified longitude/latitude",
+    "requestPacing": "One request at a time per fixed endpoint across adapter instances, starts at least1000ms apart; queued wait is outside the upstream15s timeout",
+    "bboxLimits": {
+      "widthM": 750,
+      "heightM": 600,
+      "areaKm2": 0.45
+    },
+    "minZoom": 19
+  },
+  "verification": {
+    "bbox": [
+      114.181,
+      22.314,
+      114.185,
+      22.317
+    ],
+    "forcedPageSize": 3,
+    "bboxPages": 2,
+    "parcelCount": 6,
+    "exactPages": 2,
+    "roundTripCount": 6,
+    "absentIds": []
+  },
+  "failedAttempts": [
+    {
+      "operation": "Percent-encoded bbox commas on GML wrapper",
+      "httpStatus": 400,
+      "detail": "Literal documented bbox succeeded with two lots; URLSearchParams-style encoded commas were rejected."
+    },
+    {
+      "operation": "WFS2.0 exact native lookup",
+      "httpStatus": 404,
+      "detail": "This endpoint exposes WFS1.1, so2.0 count/typeNames path is not used."
+    }
+  ],
+  "responseFile": "hong-kong-live-response.json",
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "initialRenderedParcels": 299,
+    "initialLeafletLayers": 300,
+    "layerCountNote": "A MultiPolygon may render multiple layers for one retained native parcel.",
+    "retainedAfterPan": 696,
+    "returnUsedCachedCells": true,
+    "footprintComplete": true,
+    "footprintParcelCount": 1,
+    "bindingCoverage": "complete",
+    "actualGlobeButtonOpenedCity": true,
+    "requiredLogoLoadedAndVisible": true,
+    "uncaughtErrors": []
+  }
+}

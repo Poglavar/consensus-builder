@@ -262,7 +262,7 @@ export function buildCoverage({ registry, countries, cityConfigSource, tolerance
 
     const liveCities = parseCityConfigs(cityConfigSource).map(city => {
         const country = [...byCode.values()].find(e => e.rings.length && pointInRings(city.lat, city.lon, e.rings));
-        return { id: city.id, name: city.name, label: city.label, cc: country ? country.cc : null, lat: city.lat, lon: city.lon,
+        return { id: city.id, name: city.name, label: city.label, cc: sourcesById.get(city.sourceId)?.countryCode || (country ? country.cc : null), lat: city.lat, lon: city.lon,
             ...(city.sourceId ? { sourceId: city.sourceId } : {}), ...(city.dataVersion ? { dataVersion: city.dataVersion } : {}),
             ...(city.radiusKm ? { radiusKm: city.radiusKm } : {}) };
     }).sort((a, b) => a.id.localeCompare(b.id));

@@ -1,0 +1,151 @@
+{
+  "checkedAtUtc": "2026-10-02T21:16:15.951157+00:00",
+  "sourceId": "de-nrw-lika-flurstueck",
+  "preferredOfficialService": {
+    "name": "OGC API Features NW ALKIS Grundrissdaten vereinfachtes Schema",
+    "baseUrl": "https://ogc-api.nrw.de/lika/v1",
+    "collection": "flurstueck",
+    "publisher": "Bezirksregierung Köln, Geobasis NRW",
+    "sourceIsSameProduct": "official API documents the simplified schema; GovData lists it as OGC API Features NW ALKIS Grundrissdaten vereinfachtes Schema"
+  },
+  "extentAndFreshness": {
+    "collectionItemCount": 9388957,
+    "collectionSpatialExtentCrs84": [
+      5.765111804547595,
+      50.31026146398869,
+      9.46876999828159,
+      52.53107596580295
+    ],
+    "collectionTemporalIntervalUtc": [
+      "2011-04-06T07:25:14Z",
+      "2026-08-31T20:36:53Z"
+    ],
+    "sampleAktualit": "2024-10-21T14:35:29Z",
+    "interpretation": "service metadata reports data through 2026-08-31; per-feature aktualit is feature interval start and may be older"
+  },
+  "crsAndPaging": {
+    "storageCrs": "EPSG:25832",
+    "defaultGeojsonProfile": "RFC 7946 GeoJSON in CRS84 lon/lat",
+    "explicitBboxCrsAccepted": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+    "bboxCrs84": [
+      6.9713,
+      51.4881,
+      6.9727,
+      51.489
+    ],
+    "bboxNumberMatched": 5,
+    "bboxLimit": 3,
+    "bboxNumberReturned": 3,
+    "nextLinkUses": "offset=3",
+    "terminalOffsetNumberReturned": 2,
+    "terminalOffsetNextLink": false,
+    "bboxHits": {
+      "requestParameter": "result-type=hits",
+      "numberMatched": 5,
+      "numberReturned": 0,
+      "timeStamp": "2026-10-02T21:17:31Z"
+    }
+  },
+  "identity": {
+    "nativeParcelKey": "flstkennz",
+    "type": "string",
+    "role": "id in queryables schema",
+    "featureId": "currently equals flstkennz in response; use the named schema field rather than relying on server WFS/GML FID",
+    "otherIdentifiers": {
+      "objid": "ALKIS object identifier of parcel with suffix FL",
+      "flurstid": "object identifier of parcel (without display suffix in examples)",
+      "gmlOrWfsFeatureId": "transport feature id; not the preferred semantic key"
+    }
+  },
+  "exactLookup": {
+    "sampleFlstkennz": "05344102100105______",
+    "directItemsPathStatus": 200,
+    "cql2Filter": "flstkennz = '05344102100105______'",
+    "filterLang": "cql2-text",
+    "filterStatus": 200,
+    "numberMatched": 1,
+    "numberReturned": 1,
+    "hitsOnlyRequest": {
+      "filter": "flstkennz='05344102100105______'",
+      "numberMatched": 1,
+      "numberReturned": 0,
+      "timeStamp": "2026-10-02T21:17:31Z"
+    }
+  },
+  "sorting": {
+    "officialOpenApi": "No sortby parameter is advertised for collection items; experimental sortby=flstkennz and sortby=-flstkennz each returned HTTP 400. Do not depend on sort."
+  },
+  "reuse": {
+    "license": "Datenlizenz Deutschland – Zero 2.0",
+    "terms": "Official capabilities/OpenAPI state any use permitted without restrictions or conditions; liability for currency/correctness/availability/quality/completeness is disclaimed",
+    "attribution": "Bezirksregierung Köln, Geobasis NRW"
+  },
+  "wfsAssessment": {
+    "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+    "typeName": "ave:Flurstueck",
+    "nativeCrs": "EPSG:25832",
+    "GetCapabilitiesStatus": 200,
+    "outputFormats": [
+      "GML 3.1.1",
+      "GML 3.2.1",
+      "Shapefile ZIP",
+      "GeoPackage"
+    ],
+    "GeoJSON": "not advertised; historical EPSG:4326 plus application/geo+json request returned 400 InvalidParameterValue",
+    "smallUtmBboxRequestStatus": 200,
+    "numberMatched": "unknown",
+    "pagination": "COUNT + STARTINDEX available"
+  },
+  "failedAttempts": [
+    {
+      "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+      "checkedAt": "2026-09-29 per prior repo evidence",
+      "request": "WFS 2.0 GetFeature typename adv:AX_Flurstueck with BBOX=51.4880,6.9710,51.4890,6.9730,urn:ogc:def:crs:EPSG::4326; count=3",
+      "status": 400,
+      "reason": "InvalidParameterValue: wrong type name; simplified schema layer is ave:Flurstueck"
+    },
+    {
+      "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+      "checkedAt": "2026-09-29 per prior repo evidence",
+      "request": "WFS 2.0 typename ave:Flurstueck; BBOX=51.4884,6.9718,51.4890,6.9728,urn:ogc:def:crs:EPSG::4326; count=3; outputFormat=application/geo+json",
+      "status": 400,
+      "reason": "OGC Proxy InvalidParameterValue; prior check could not separate invalid output format from bbox issue"
+    },
+    {
+      "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+      "checkedAt": "2026-10-03 (local verification date)",
+      "request": "limit=5, sortby=flstkennz or -flstkennz on bounded Essen bbox",
+      "status": 400,
+      "reason": "sortby unsupported for these properties or syntax; do not depend on sort"
+    }
+  ],
+  "description": "Verified NRW successor service, semantic identity, source dates and failed adapter paths.",
+  "checkedAt": "2026-10-03",
+  "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+  "primarySources": [
+    "https://ogc-api.nrw.de/lika/v1/api?f=json",
+    "https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json",
+    "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/queryables?f=json",
+    "https://www.govdata.de/dl-de/zero-2-0"
+  ],
+  "adapterVerification": {
+    "forcedPageSize": 3,
+    "bboxPages": 2,
+    "exactPages": 2,
+    "parcelCount": 5,
+    "roundTripCount": 5,
+    "absentIds": []
+  },
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "cityId": "essen",
+    "initialRenderedParcels": 714,
+    "retainedAfterPan": 950,
+    "returnUsedCachedCells": true,
+    "footprintComplete": true,
+    "footprintParcelCount": 7,
+    "bindingCoverage": "complete",
+    "actualGlobeButtonOpenedCity": true,
+    "uncaughtErrors": []
+  }
+}

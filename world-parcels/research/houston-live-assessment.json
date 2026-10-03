@@ -1,0 +1,26 @@
+{
+  "description": "Current Harris County parcel identity audit; runtime held because account numbers do not uniquely identify geometry.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false,
+  "sourceId": "us-tx-harris-hcad-parcels",
+  "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+  "identity": {
+    "candidateFields": [
+      "HCAD_NUM",
+      "LOWPARCELID"
+    ],
+    "objectId": "OBJECTID is the service row identifier, not used as durable cadastral identity. No GlobalID is supplied.",
+    "rowCount": 1550492,
+    "nullAccountCount": 2,
+    "duplicateNonNullAccountGroups": 7,
+    "conflictingGeometryAccountGroups": 4,
+    "activeAccountFilterResolvesConflicts": false,
+    "conflictingAccountExamples": [
+      "0431830000221",
+      "0471990000023",
+      "0750930010001",
+      "1501810010002"
+    ]
+  },
+  "nextRequirement": "Establish official semantics for split/multi-part account records and a durable parcel entity before registering a provider; do not silently select the first polygon or expose OBJECTID as its cadastral key."
+}

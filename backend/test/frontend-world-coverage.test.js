@@ -19,6 +19,12 @@ describe('tierAt', () => {
         ['washington_dc', 'us-dc-dcgis-tax-lots', 38.91025, -77.0425, 'Washington', 38.89, -77.08],
         ['paris', 'fr-ign-parcellaire-express', 48.8491, 2.3556, 'Paris', 48.85, 2.7],
         ['melbourne', 'au-vic-vicmap-parcel', -37.8136, 144.9631, 'Melbourne', -38.15, 144.96],
+        ['hong_kong', 'hk-landsd-lot-index-api', 22.315, 114.1838, 'Hong Kong', 22.54, 114.06],
+        ['berlin', 'de-be-alkis-flurstuecke-wfs', 52.52, 13.405, 'Berlin', 52.39, 13.07],
+        ['essen', 'de-nrw-lika-flurstueck', 51.4556, 7.0123, 'Essen', 52.52, 13.405],
+        ['san_francisco', 'us-ca-sf-datasf-active-parcels', 37.79125, -122.4065, 'San Francisco', 37.8, -122.27],
+        ['antwerp', 'be-vlaanderen-grb-adp', 51.2110, 4.4010, 'Antwerp', 50.85, 4.35],
+        ['amsterdam', 'nl-pdok-brk-kadastrale-kaart', 52.3725, 4.9000, 'Amsterdam', 52.37, 5.25],
         ['cape_town', 'za-cct-land-parcels', -33.9258, 18.4194, 'Cape Town', -33.9258, 18.75]
     ])('routes %s through its source and respects its bounded entry area', (cityId, sourceId, lat, lon, name, outsideLat, outsideLon) => {
         expect(coverage.tierAt(lat, lon)).toMatchObject({ kind: 'live-city', cityId, sourceId });

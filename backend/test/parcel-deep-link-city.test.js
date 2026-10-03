@@ -39,6 +39,12 @@ describe('parcelIdToCityId — prefixes that are unambiguous', () => {
         expect(route.parcelIdToCityId('FR-PCI-75105000AD0011')).toBe('paris');
         expect(route.parcelIdToCityId('AU-VIC-PARCEL-152244627')).toBe('melbourne');
         expect(route.parcelIdToCityId('ZA-CCT-C0160007000951650000000000')).toBe('cape_town');
+        expect(route.parcelIdToCityId('BE-GRB-ADP-4455664')).toBe('antwerp');
+        expect(route.parcelIdToCityId('NL-BRK-11460432670000')).toBe('amsterdam');
+        expect(route.parcelIdToCityId('DE-NRW-05344102100105______')).toBe('essen');
+        expect(route.parcelIdToCityId('US-CA-SF-0256005')).toBe('san_francisco');
+        expect(route.parcelIdToCityId('DE-BE-11000181900016____')).toBe('berlin');
+        expect(route.parcelIdToCityId('HK-LANDSD-LOT-1800293576')).toBe('hong_kong');
         expect(route.parcelIdToCityId('US-NY-1000010001')).toBe('new_york');
         expect(route.parcelIdToCityId('US-CO-12345')).toBe('colorado');
         expect(route.parcelIdToCityId('SI-1234-56')).toBe('ljubljana');

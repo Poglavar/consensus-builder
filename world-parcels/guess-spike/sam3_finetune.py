@@ -76,9 +76,18 @@ def write_report(result, output):
             labels.get(method,method), summary['boundary_f1_mean'], summary['boundary_recall_mean'],
             summary['matched_instances'], summary['reference_instances'], f"{summary['coverage_mean']:.1%}",
             f"{summary['overlap_mean']:.1%}"])+'</tr>')
-    panels = ''.join(f'<section><h2>{html.escape(r["tile"])} · {html.escape(labels.get(r["method"],r["method"]))}</h2>'
-        f'<a href="{r["preview"]}"><img src="{r["preview"]}" alt="Imagery, distance baseline, prediction and cadastre"></a></section>'
-        for r in result['test_details'])
+    tiles = list(dict.fromkeys(r['tile'] for r in result['test_details']))
+    panels = ''
+    for tile in tiles:
+        panels += f'<section><h2>{html.escape(tile)}</h2>'
+        for r in (r for r in result['test_details'] if r['tile'] == tile):
+            status = ('No parcel predictions: no cyan boundaries to draw.' if not r['instances'] else
+                      f'{r["instances"]} predictions · coverage {r["coverage_fraction"]:.1%} · '
+                      f'boundary F1 {r["boundary_scores"]["2"]["f1"]}')
+            panels += (f'<h3>{html.escape(labels.get(r["method"],r["method"]))}</h3>'
+                f'<p>{html.escape(status)}</p><a href="{r["preview"]}">'
+                f'<img src="{r["preview"]}" alt="Imagery, distance baseline, prediction and cadastre"></a>')
+        panels += '</section>'
     text = f'''<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>SAM 3 parcel fine-tuning pilot</title>
 <style>body{{background:#12171e;color:#e7edf5;font:16px system-ui;margin:24px auto;padding:0 16px;max-width:1200px}}p{{line-height:1.6}}a{{color:#65deec}}img{{width:100%;max-width:1024px;height:auto}}table{{border-collapse:collapse}}td,th{{padding:10px;border-bottom:1px solid #394454;text-align:left}}.table{{overflow-x:auto}}section{{margin-top:40px}}</style>
@@ -96,7 +105,9 @@ Score threshold 0.3 and mask threshold 0.5 remain fixed. Shape matching uses one
 Boundary evaluation uses a 256×256 grid and excludes its outer three-pixel strip. Higher F1 is better.</p>
 <p>Local computation; metered API charges: $0. Results from a small geographically held-out sample do not establish cross-city accuracy.</p>
 <div class="table"><table><thead><tr><th>Method</th><th>Mean boundary F1</th><th>Mean boundary recall</th><th>Shape matches</th><th>Reference shapes</th><th>Mean coverage</th><th>Mean overlap</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
-<p><a href="results.json">Metrics and experiment recipe</a></p>{panels}</html>'''
+<p><a href="results.json">Metrics and experiment recipe</a></p>
+<p>Comparisons below are grouped by location. Cyan is the model prediction; pink is the cadastral reference.
+An empty prediction is stated explicitly above its image.</p>{panels}</html>'''
     (output/'index.html').write_text(text)
 
 

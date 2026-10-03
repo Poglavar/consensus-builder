@@ -73,6 +73,8 @@ describe('buildCoverage', () => {
         expect(built.countries.find(c => c.cc === 'HR').tier).toBe('live');
         expect(built.liveCities.find(c => c.id === 'belgrade').cc).toBe('RS');
         expect(built.liveCities.find(c => c.id === 'new_york').cc).toBe('US');
+        // Source jurisdiction remains authoritative when the coarse country outline omits an SAR.
+        expect(built.liveCities.find(c => c.id === 'hong_kong').cc).toBe('HK');
     });
 
     it('carries tiers from the registry', () => {

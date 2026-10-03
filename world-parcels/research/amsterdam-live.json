@@ -1,0 +1,53 @@
+{
+  "description": "Current official Dutch OGC API source contract and bounded live verification for Amsterdam.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "nl-pdok-brk-kadastrale-kaart",
+  "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+  "officialUrls": [
+    "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+    "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=html&lang=nl"
+  ],
+  "sourceScope": "National Dutch cadastral map; only the bounded Amsterdam globe entry is enabled. Valid (G) records only. Boundaries are indicative and unsuitable for survey measurements or establishing legal title.",
+  "identity": {
+    "nativeField": "identificatie_lokaal_id",
+    "namespace": "NL.IMKAD.KadastraalObject",
+    "canonicalPrefix": "NL-BRK-",
+    "displayField": "perceelnummer",
+    "note": "Namespace and 14-digit local ID form the native cadastral identity. The upstream UUID is used only to detect repeated pages; numeric parcel numbers are display labels."
+  },
+  "license": {
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": "Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84."
+  },
+  "verification": {
+    "bbox": [
+      4.9,
+      52.3728,
+      4.9005,
+      52.373
+    ],
+    "pageSize": 2,
+    "bboxPages": 2,
+    "featureCount": 3,
+    "exactIdPages": 2,
+    "exactLookupCount": 3,
+    "absentIds": []
+  },
+  "adapterContract": {
+    "protocol": "OGC API Features, GeoJSON, CQL2 text",
+    "crs": "Explicit OGC CRS84 longitude/latitude for bbox and output",
+    "filter": "status_historie_code = 'G'; namespace checked in returned properties because it is not a queryable field",
+    "paging": "PDOK omits numberMatched. Completion requires validated links, no remaining next link, unique upstream feature IDs and bounded work. Any supplied match count must remain numeric and consistent.",
+    "nextLinks": "Only the cursor from a same-origin, same-collection next link with unchanged query parameters is used; requests are rebuilt against the fixed endpoint."
+  },
+  "responseFile": "amsterdam-live-response.json",
+  "browser": {
+    "initialParcels": 1760,
+    "retainedAfterPan": 2449,
+    "returnCached": true,
+    "footprintComplete": true,
+    "bindingCoverage": "complete",
+    "globeEntryVerified": true
+  }
+}

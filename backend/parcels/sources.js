@@ -2,13 +2,15 @@
 import { readFileSync } from 'node:fs';
 import { createArcgisParcelSource } from './arcgis-source.js';
 import { createWfsParcelSource } from './wfs-source.js';
+import { createSocrataParcelSource } from './socrata-source.js';
+import { createOgcApiParcelSource } from './ogc-api-source.js';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
 
 export const parcelSourceCatalog = JSON.parse(readFileSync(new URL('./source-catalog.json', import.meta.url), 'utf8'));
 const certificateFetches = new Map();
 
 export function createParcelSource(descriptor, options = {}) {
-    const factory = { arcgis: createArcgisParcelSource, wfs: createWfsParcelSource }[descriptor.adapter];
+    const factory = { arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource, socrata: createSocrataParcelSource }[descriptor.adapter];
     if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {
         if (!certificateFetches.has(descriptor.caCertificate)) {

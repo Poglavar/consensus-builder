@@ -193,3 +193,134 @@ indexed snapshot adapter; no documented bbox geometry endpoint was verified. Syd
 service has an automated-retrieval restriction, while another current official service required
 a token and listed no licence. Both remain research-only, with current findings saved in
 `research/singapore-live-assessment.json` and `research/sydney-live-assessment.json`.
+
+## Amsterdam and the next-source assessments
+
+Amsterdam uses the current Kadaster / PDOK **Kadastrale Kaart OGC API Features** collection.
+The new adapter translates GeoJSON, CQL2 text and opaque cursor pages into the same canonical
+WGS84 contract used downstream. It fixes both bbox and output to CRS84 and rebuilds every request
+at the configured collection. A next link must retain the collection, origin and every query
+parameter; only its cursor is accepted. PDOK omits `numberMatched`, so completion follows the
+validated terminal page, with unique upstream feature IDs and a bounded feature limit. A supplied
+match count must still be numeric and consistent. Truncated, repeated or conflicting responses
+remain failures rather than empty/complete cells.
+
+Canonical identity is `NL-BRK-<identificatie_lokaal_id>`, qualified by the returned
+`NL.IMKAD.KadastraalObject` namespace. Numeric `perceelnummer` is only the display label. Only
+current valid (`G`) records are ground. Three parcels completed two forced cursor pages and all
+three resolved through two exact-ID pages. The national dataset is updated daily and is licensed
+CC BY 4.0; its map boundaries are indicative and not suitable for cadastral survey measurements.
+Only a bounded Amsterdam entry is enabled on the globe. No Dutch parcel table was imported.
+The browser rendered 1,760 parcels, retained 2,449 after a pan, reused cached cells on return,
+and obtained complete footprint and authoritative binding results. The actual globe button
+opened Amsterdam with the correct source. Evidence is in `research/amsterdam-live.json` and
+`research/amsterdam-live-response.json`.
+
+Cali's official `catastro:cat_bas_terrenos` WFS is technically usable: 118 parcels completed
+three forced pages, with all 118 resolving by their 30-digit NPN. Its exact geometry reuse terms
+remain unresolved, however: IDESC's published terms prohibit commercial exploitation, while a
+related historical CSV's CC BY-SA licence does not establish a licence for the WFS geometries.
+It stays research-only. Current evidence and the bounded canonical response are saved in
+`research/cali-live-assessment.json` and `research/cali-live-response.json`.
+
+Houston stays research-only because Harris County account keys do not identify unique geometry:
+1,550,492 rows include two missing accounts and seven duplicated non-null account groups; four
+have different polygons. The active-account flag does not resolve those conflicts and no GlobalID
+is supplied. `research/houston-live-assessment.json` records the identity issue without exposing
+owner data. Medellín's current and alternate official metadata services returned malformed JSON
+or HTTP 500; its availability finding is saved in `research/medellin-live-assessment.json`.
+
+Antwerp uses the official **Flemish GRB ADP OGC API** alternative. Its normal 1,000-row pages
+completed 2,769 distinct parcels over three requests. The adapter validates that each `startIndex`
+link advances by exactly the rows returned and preserves the collection and original query.
+GeoServer reports `totalFeatures: unknown` and may omit links on a short terminal page; the adapter
+accepts that documented terminal shape but rejects full uncounted pages without continuation.
+Repeated feature IDs, changed query parameters and conflicting entity geometry fail closed.
+Forced 20/30-row pages and sorted WFS requests timed out; those paths are not used at runtime.
+
+Canonical IDs use `BE-GRB-ADP-<OIDN>`: the official GRB specification defines OIDN as the permanent
+object identity. `UIDN` changes with the object's recorded version; `CAPAKEY` is retained separately
+as its cadastral association and display label. ADP is a graphic cadastral depiction adjusted to
+terrain, rather than a legal survey boundary. The Flemish Model Licence for Free Reuse allows
+commercial/noncommercial reuse with the required Digitaal Vlaanderen attribution, linked on the map.
+The bounded Antwerp globe entry does not enable Brussels, Wallonia or the whole country.
+The browser rendered 1,592 parcels, retained 2,228 after a pan, reused cached cells on return,
+and obtained complete footprint and authoritative binding results. Current source/version,
+protocol and licence evidence are in `research/antwerp-live.json` and its response file.
+
+## Source attempt history, Essen and San Francisco
+
+`registry.json` retains research verification separately from runtime eligibility. Each source assessed for live
+integration has `integrationAttempts`: verification date, exact endpoint, operation, outcome,
+HTTP status where available, reason and a checked-in evidence file. `liveIntegration` records
+its current enabled, held or superseded state. Failed paths remain alongside successful ones;
+a timeout is neither an empty parcel response nor proof that no data exists.
+
+Essen uses Geobasis NRW's current simplified ALKIS OGC API, replacing the old WFS adapter
+candidate that offered no GeoJSON. The collection reports data through 2026-08-31; individual
+`aktualit` values describe feature versions. `flstkennz` is the documented named ID serialized
+as GeoJSON feature.id; all 20 characters, including underscore placeholders, remain intact.
+Counted offset pages and exact native-ID lookups are verified. Unsupported sort parameters
+returned HTTP 400 and are omitted. DL-DE Zero 2.0 permits reuse. Only bounded Essen is enabled,
+not all Germany. Its browser rendered 714 parcels and retained 950 after a pan.
+
+San Francisco uses a new fixed Socrata adapter for DataSF's Parcels – Active and Retired.
+Only active Public Works recorded-map rows are ground. `blklot` uniquely identifies assessment
+rows; the documented `mapblklot` groups condominium records sharing a 2D footprint. Every row's
+geometry is checked before coincident rows collapse; conflicting geometry fails the whole read.
+Selecting only `blklot=mapblklot` would omit one valid ground group and was rejected.
+Intersection predicates include boundary-crossing parcels. Ordered row paging is bracketed by
+matching counts and publication revisions; a changed source remains retryable, never complete.
+The bounded sample produced 48 canonical groups and all resolved by native ID. The PDDL 1.0
+source needs no parcel import. The browser rendered 685 parcels and retained 802 after a pan.
+Both cities reused cached cells on return, produced complete footprint and binding results,
+and opened through their actual globe buttons without uncaught browser errors.
+
+Montréal remains held: a bounded lot and exact lookup succeeded, but forced page continuation
+timed out and geometry reuse rights remain unresolved. The source-linked history and evidence
+record each of these outcomes rather than disabling it without an explanation.
+
+## Three continuation batches
+
+The per-source outcomes for the original pair and three further batches are linked in
+`research/source-batches-2026-10-03.json`. Research availability is kept separate from eligibility
+to stream complete, reusable ground. All failed paths remain dated in `registry.json`.
+
+Berlin's earlier connection/identity hold is resolved: default TLS now succeeds and the current
+WFS returns the documented native `fsko` cadastral key, with `uuid` as the separate object ID.
+Seventeen parcels completed six forced bbox pages and six exact-ID pages. DL-DE Zero 2.0
+permits reuse. The browser rendered 154 parcels, retained 343 after a pan, reused cached cells,
+and verified complete footprint/binding and the actual globe button. The enabled entry covers
+Berlin, not surrounding Brandenburg. Evidence is in `research/berlin-live.json`.
+
+Curitiba remains held. Current fiscal keys are unique where non-null, but two forced paging
+strategies repeated provider rows; the adapter refused to mark either read complete. The exact
+GIS layer's reuse rights remain unresolved. Rio's CC BY 4.0 licence is clear, but its physical
+lot map is derived from the 2013 flight and last edited in 2022. The display lot code repeats;
+the only unique field is an explicitly system-maintained OID with no durable parcel identity
+contract. A forced 50-row polygon page also timed out. Neither source was enabled.
+
+Hong Kong's documented bbox wrapper returns GML and rejects percent-encoded commas. Its response
+references a public WFS 1.1 endpoint that supports GeoJSON in CRS84 and exact numeric `lotid`
+queries. Six private lots completed two bbox and two exact-ID pages. The adapter handles this
+explicit protocol using stable numeric `totalFeatures`, `maxFeatures` and sorted `startIndex`
+pages. Unknown or changed counts, repeated transport IDs and conflicting entity geometry fail.
+Every request to this fixed endpoint is serialized and starts at least one second after the
+previous request; its upstream timeout starts after that wait. Bbox width and height are bounded
+to 750×600 metres as well as a bounded area. The map uses the official Lands Department logo,
+Government/CSDI copyright attribution and zoom 19 or closer. This entry includes private lots;
+GLA and STT ground use separate collections. Source jurisdiction is preserved in globe metadata
+even when a coarse country outline omits Hong Kong. Its browser retained 299 native parcels,
+then 696 after a pan, reused cached cells and produced complete footprint/binding results. The
+required official logo was visible, and the actual globe button opened the right source with
+no uncaught browser errors. Evidence is in `research/hong-kong-live.json`.
+
+Italy's current bounded WFS query returns HTTP 403; CC BY 4.0 is established, but GML retrieval
+and completeness remain unverified. Tel Aviv's direct query returned HTTP 571 municipal
+maintenance HTML, while source-specific reuse rights remain unresolved. Amman's bounded query
+still returns parcel polygons, but reuse rights and durable-key completeness are unresolved.
+Sri Lanka's current parcel layer requires a token, and earlier coverage excluded core Colombo.
+Cotonou's current minimal WFS query returns native keys, but public consultation and service
+access defaults do not establish unrestricted geometry reuse. These sources remain held with
+current direct-request evidence; web-reader access failures are distinguished from provider
+responses. No parcel database import or proposal write was used for this continuation.

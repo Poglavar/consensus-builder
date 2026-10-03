@@ -15,6 +15,12 @@ function feature(oid, native = '75105000AD0011', geometry = GEOMETRY) {
 function page(features, matched = features.length, extra = {}) {
     return { ok: true, status: 200, json: async () => ({ type: 'FeatureCollection', features, numberMatched: matched, numberReturned: features.length, ...extra }) };
 }
+function integerFeature(oid, geometry = GEOMETRY) {
+    return { type: 'Feature', id: `lot.${oid}`, properties: { lotid: oid, ignored: 'drop' }, geometry };
+}
+function wfs11Page(features, totalFeatures = features.length) {
+    return { ok: true, status: 200, json: async () => ({ type: 'FeatureCollection', features, totalFeatures }) };
+}
 function source(pages, override = {}) {
     const fetchImpl = vi.fn(); pages.forEach(payload => fetchImpl.mockResolvedValueOnce(payload));
     return { adapter: createWfsParcelSource({ ...descriptor, ...override }, { fetchImpl }), fetchImpl };
@@ -46,6 +52,147 @@ describe('WFS parcel adapter', () => {
         expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('cql_filter')).toBe("idu IN ('75105000AD0011','75105000AD9999')");
         expect(result.absentIds).toEqual(['FR-PCI-75105000AD9999']);
         expect(result.complete).toBe(true);
+    });
+    it('supports GeoServer WFS 1.1 paging and strict numeric native IDs', async () => {
+        const hk = {
+            id: 'hk-landsd-lot-index-api', endpoint: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot',
+            version: '1.1.0', featureType: 'iC1000:lot', idField: 'lotid', idType: 'integer',
+            idPrefix: 'HK-LOT-', outFields: ['lotid'], pageSize: 3, maxFeatures: 10
+        };
+        const { adapter, fetchImpl } = source([
+            wfs11Page([integerFeature(1800293576), integerFeature(1800293577), integerFeature(1800293578)], 4),
+            wfs11Page([integerFeature(1800293579)], 4)
+        ], hk);
+        const result = await adapter.queryBounds([114.181, 22.314, 114.185, 22.317]);
+        expect(result.features.map(parcel => parcel.id)).toEqual([
+            'HK-LOT-1800293576', 'HK-LOT-1800293577', 'HK-LOT-1800293578', 'HK-LOT-1800293579'
+        ]);
+        expect(result.features[0].properties.sourceParcelId).toBe('1800293576');
+        const urls = fetchImpl.mock.calls.map(([url]) => new URL(url));
+        expect(urls.map(url => url.searchParams.get('startIndex'))).toEqual(['0', '3']);
+        urls.forEach(url => {
+            expect(url.searchParams.get('version')).toBe('1.1.0');
+            expect(url.searchParams.get('typeName')).toBe('iC1000:lot');
+            expect(url.searchParams.has('typeNames')).toBe(false);
+            expect(url.searchParams.get('maxFeatures')).toBe('3');
+            expect(url.searchParams.has('count')).toBe(false);
+            expect(url.searchParams.get('sortBy')).toBe('lotid');
+            expect(url.searchParams.get('srsName')).toBe('CRS:84');
+            expect(url.searchParams.get('bbox')).toBe('114.181,22.314,114.185,22.317,CRS:84');
+        });
+    });
+    it('uses an unquoted exact numeric WFS 1.1 lookup and rejects noncanonical or injected integer IDs', async () => {
+        const hk = {
+            id: 'hk-exact-lot-id-test', endpoint: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot',
+            version: '1.1.0', featureType: 'iC1000:lot', idField: 'lotid', idType: 'integer',
+            idPrefix: 'HK-LOT-', outFields: ['lotid'], pageSize: 3, maxFeatures: 10
+        };
+        const { adapter, fetchImpl } = source([wfs11Page([integerFeature(1800293576)], 1)], hk);
+        const result = await adapter.queryIds(['HK-LOT-1800293576']);
+        expect(result.features.map(parcel => parcel.id)).toEqual(['HK-LOT-1800293576']);
+        const exactUrl = new URL(fetchImpl.mock.calls[0][0]);
+        expect(exactUrl.searchParams.get('cql_filter')).toBe('lotid IN (1800293576)');
+        expect(exactUrl.searchParams.get('version')).toBe('1.1.0');
+        for (const invalid of ["HK-LOT-1800293576' OR 1=1", 'HK-LOT-01800293576', 'HK-LOT-9007199254740992']) {
+            await expect(adapter.queryIds([invalid])).rejects.toMatchObject({ status: 400 });
+        }
+        expect(fetchImpl).toHaveBeenCalledTimes(1);
+    });
+    it('fails closed when WFS 1.1 match counts reveal an incomplete page', async () => {
+        const hk = {
+            id: 'hk-incomplete-page-test', endpoint: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot',
+            version: '1.1.0', featureType: 'iC1000:lot', idField: 'lotid', idType: 'integer',
+            idPrefix: 'HK-LOT-', outFields: ['lotid'], pageSize: 2, maxFeatures: 10
+        };
+        const { adapter } = source([wfs11Page([integerFeature(1800293576)], 2), wfs11Page([], 2)], hk);
+        await expect(adapter.queryBounds([114.181, 22.314, 114.185, 22.317])).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+    });
+    it.each([undefined, 'unknown', -1])('refuses missing or invalid WFS 1.1 match counts (%s)', async matched => {
+        const hk = { id: 'wfs11-counter-test', endpoint: 'https://provider.example/wfs', version: '1.1.0',
+            featureType: 'landsd:lot', idField: 'lotid', idType: 'integer', idPrefix: 'HK-LOT-',
+            outFields: ['lotid'], pageSize: 3, maxFeatures: 10 };
+        const fetchImpl = async () => ({ ok: true, json: async () => ({ type: 'FeatureCollection',
+            features: [integerFeature(1800293576)], totalFeatures: matched }) });
+        await expect(createWfsParcelSource(hk, { fetchImpl }).queryBounds([114.181, 22.314, 114.185, 22.317])).rejects.toMatchObject({ status: 502 });
+    });
+    it('rejects contradictory optional counters in a WFS 1.1 response', async () => {
+        const hk = { id: 'wfs11-conflicting-counter-test', endpoint: 'https://provider.example/wfs', version: '1.1.0',
+            featureType: 'landsd:lot', idField: 'lotid', idType: 'integer', idPrefix: 'HK-LOT-',
+            outFields: ['lotid'], pageSize: 3, maxFeatures: 10 };
+        const payload = wfs11Page([integerFeature(1800293576)], 1);
+        const fetchImpl = async () => ({ ok: true, json: async () => ({ ...(await payload.json()), numberReturned: 2 }) });
+        await expect(createWfsParcelSource(hk, { fetchImpl }).queryBounds([114.181, 22.314, 114.185, 22.317])).rejects.toMatchObject({ status: 502 });
+    });
+    it('rejects WFS pages larger than the configured page limit', async () => {
+        const { adapter } = source([page([feature(1), feature(2), feature(3)], 3)]);
+        await expect(adapter.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+        const hk = {
+            id: 'hk-oversized-page-test', endpoint: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot',
+            version: '1.1.0', featureType: 'iC1000:lot', idField: 'lotid', idType: 'integer',
+            idPrefix: 'HK-LOT-', outFields: ['lotid'], pageSize: 2, maxFeatures: 10
+        };
+        const wfs11 = source([wfs11Page([integerFeature(1), integerFeature(2), integerFeature(3)], 3)], hk);
+        await expect(wfs11.adapter.queryBounds([114.181, 22.314, 114.185, 22.317])).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+    });
+    it('rejects unsafe or nonnumeric WFS 1.1 native integer IDs', async () => {
+        const hk = {
+            id: 'hk-invalid-native-id-test', endpoint: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot',
+            version: '1.1.0', featureType: 'iC1000:lot', idField: 'lotid', idType: 'integer',
+            idPrefix: 'HK-LOT-', outFields: ['lotid'], pageSize: 3, maxFeatures: 10
+        };
+        for (const nativeId of [9007199254740992, '1800293576']) {
+            const { adapter } = source([wfs11Page([integerFeature(nativeId)], 1)], hk);
+            await expect(adapter.queryBounds([114.181, 22.314, 114.185, 22.317])).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+        }
+    });
+    it('rejects a skinny WFS bbox when one side exceeds the provider limit', async () => {
+        const { adapter, fetchImpl } = source([], { maxBboxWidthM: 750, maxBboxHeightM: 600 });
+        expect(() => adapter.queryBounds([2.35, 48.8, 2.37, 48.8001])).toThrow(/area is too large|dimensions exceed/i);
+        expect(fetchImpl).not.toHaveBeenCalled();
+    });
+    it('shares source-specific request spacing across adapters and recovers after a failed request', async () => {
+        vi.useFakeTimers();
+        try {
+            const hk = {
+                id: 'hk-shared-rate-limit-test', endpoint: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot',
+                version: '1.1.0', featureType: 'iC1000:lot', idField: 'lotid', idType: 'integer',
+                idPrefix: 'HK-LOT-', outFields: ['lotid'], pageSize: 3, maxFeatures: 10, minRequestIntervalMs: 100
+            };
+            const starts = [];
+            const firstFetch = vi.fn(async () => {
+                starts.push(Date.now());
+                return { ok: false, status: 503 };
+            });
+            const secondFetch = vi.fn(async () => {
+                starts.push(Date.now());
+                return wfs11Page([integerFeature(1800293576)], 1);
+            });
+            const first = createWfsParcelSource(hk, { fetchImpl: firstFetch });
+            const second = createWfsParcelSource({ ...hk, id: 'hk-same-endpoint-other-collection' }, { fetchImpl: secondFetch });
+            const failed = first.queryBounds([114.181, 22.314, 114.185, 22.317]);
+            const failedAssertion = expect(failed).rejects.toMatchObject({ status: 502 });
+            const succeeded = second.queryBounds([114.181, 22.314, 114.185, 22.317]);
+            await vi.advanceTimersByTimeAsync(0);
+            expect(firstFetch).toHaveBeenCalledTimes(1);
+            expect(secondFetch).not.toHaveBeenCalled();
+            await vi.advanceTimersByTimeAsync(99);
+            expect(secondFetch).not.toHaveBeenCalled();
+            await vi.advanceTimersByTimeAsync(1);
+            await Promise.all([failedAssertion, succeeded]);
+            expect(secondFetch).toHaveBeenCalledTimes(1);
+            expect(starts[1] - starts[0]).toBeGreaterThanOrEqual(100);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+    it('maps WFS 1.1 HTTP failures to unavailable without losing the status', async () => {
+        const hk = {
+            id: 'hk-http-failure-test', endpoint: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot',
+            version: '1.1.0', featureType: 'iC1000:lot', idField: 'lotid', idType: 'integer',
+            idPrefix: 'HK-LOT-', outFields: ['lotid'], pageSize: 3, maxFeatures: 10
+        };
+        const { adapter } = source([{ ok: false, status: 503 }], hk);
+        await expect(adapter.queryBounds([114.181, 22.314, 114.185, 22.317])).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
     });
     it('does not turn a provider that ignored its ID filter into apparent absence', async () => {
         const { adapter } = source([page([feature(1, '75105000AD0012')])]);

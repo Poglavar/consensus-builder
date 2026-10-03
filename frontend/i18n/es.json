@@ -3354,9 +3354,15 @@
             "paris": "París, Francia",
             "melbourne": "Melbourne, Australia",
             "cape_town": "Ciudad del Cabo, Sudáfrica",
+            "antwerp": "Amberes, Bélgica",
+            "amsterdam": "Ámsterdam, Países Bajos",
             "toronto": "Toronto, Canadá",
             "denver": "Denver, EE. UU.",
-            "explore": "Explorar"
+            "explore": "Explorar",
+            "essen": "Essen, Alemania",
+            "san_francisco": "San Francisco, Estados Unidos",
+            "berlin": "Berlín, Alemania",
+            "hong_kong": "Hong Kong, RAE de Hong Kong"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",

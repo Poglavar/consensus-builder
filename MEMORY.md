@@ -454,3 +454,11 @@
 - 2026-10-02: U.S. live parcel sources use stable native row identity separately from display numbers. Miami-Dade FOLIO and D.C. SSL repeat across distinct polygons, so those providers use GlobalID; labels stay source attributes and conflicting geometry still fails closed.
 
 - Live parcel sources now share a protocol-independent canonical contract across ArcGIS and WFS; fixed catalogue attribute filters exclude proposed cadastral records from ground, and new city entries retain bounded geographic scope rather than enabling entire countries.
+- 2026-10-02: The user approved a tiny SAM 3 overfit diagnostic followed by a SegFormer-B0 parcel-boundary/interior comparison; expand the dataset after establishing that the training pipeline learns useful shapes, keeping weights and generated data gitignored.
+- 2026-10-03: SAM 3's stronger 32-tile decoder/head run reached comparison boundary F1 0.430 and 62/366 shape matches, versus OSM 0.378 and 51/366; heavy fragmentation/overlap remains, while SegFormer learned training lines but reconstructed only 8/366 comparison shapes, so raw boundary scores alone must not guide parcel-model selection.
+
+- **2026-10-03 — Dutch live cadastre:** Added a fixed OGC API Features/CQL2 cursor adapter behind the canonical parcel gateway; native namespace plus local ID preserves identity while provider UUIDs and numeric parcel numbers remain transport/display metadata.
+- 2026-10-03: The user approved continuing SAM 3 parcel work with sharper mask supervision, mask-quality confidence targets and overlap cleanup; select by whole-parcel precision/recall on validation rather than boundary proximity alone, before expanding the data.
+- 2026-10-03: SAM 3 cleanup retained 61/366 comparison matches with zero overlapping masks; six extra quality-refinement epochs improved precision but reduced recall and cleaned whole-parcel F1, so the previous adapter plus cleanup remains the better current SAM comparison.
+
+- 2026-10-03: Keep dated source-linked integration attempts, including failed paths, independently of research verification and current runtime eligibility so later batches can reuse evidence.

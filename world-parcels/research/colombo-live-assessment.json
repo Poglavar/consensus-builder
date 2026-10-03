@@ -1,0 +1,34 @@
+{
+  "city": "Colombo southern suburbs, Sri Lanka",
+  "countryCode": "LK",
+  "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
+  "source": "Survey Department / NSDI Planning_Cadastre MapServer layer 2",
+  "endpoint": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2",
+  "priorEvidence": {
+    "checkedAt": "2026-09-29",
+    "operation": "ArcGIS REST bounded query at 79.8735,6.8065,79.8755,6.8080; outSR=4326; resultRecordCount=3",
+    "outcome": "3 closed parcel polygons ~13 km south-southwest of Colombo center. Earlier count-only queries found zero in central Colombo/Kotte boxes and 27,060 south of Colombo; layer coverage is partial."
+  },
+  "freshCheck": {
+    "checkedAtUtc": "2026-10-02T21:45Z",
+    "operation": "GET layer metadata ?f=pjson",
+    "outcome": "Web fetch returned cache-miss/fetch failure; not treated as source outage. No fresh parcel query made."
+  },
+  "reuse": {
+    "status": "hold; layer-specific license unresolved",
+    "evidence": "NSDI information page and data-sharing FAQ describe the infrastructure generally, but no license tied to this parcel layer was found; general government portal terms are not sufficient."
+  },
+  "assessment": "Partial southern coverage excludes core Colombo/Kotte test boxes; both coverage and reuse terms prevent treating this as a ready Colombo source.",
+  "description": "Current source continuation assessment; prior geometry samples and current direct checks are separate.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false,
+  "directCheck": {
+    "operation": "Bounded official endpoint query and metadata where needed",
+    "outcome": "authentication-required",
+    "httpStatus": 200,
+    "detail": "Bounded query redirected(302). Direct layer metadata returned ArcGIS error499 Token Required inside HTTP200; earlier anonymous sample does not establish current access.",
+    "requestUrl": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1%3D1&geometry=79.8735%2C6.8065%2C79.8755%2C6.8080&outFields=objectid%2Cparcel_id%2Csheet_id&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+    "metadataRequestUrl": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2?f=json",
+    "applicationErrorCode": 499
+  }
+}

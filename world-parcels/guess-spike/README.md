@@ -64,6 +64,51 @@ Dataset, COCO RLE annotations, feature cache, predictions, training history, opt
 
 Run `prepare_sam3_dataset.py --help` and `sam3_finetune.py --help` for explicit path arguments. The fine-tuning runner is offline, checkpoints every four updates, and resumes with `--resume`; preserve its dataset and model revision. The original recipe used `--epochs 4 --learning-rate 0.00001 --device mps`.
 
+## Learning and boundary-model checks
+
+`sam3_tiny_fit.py` tests whether the same frozen-encoder SAM 3 adaptation can learn four contiguous **training** tiles, starting from the original checkpoint. A 240-update run at learning rate 1e-4 increased mean training boundary F1 from 0.120 to 0.686 and one-to-one shape matches from 6/54 to 44/54 at score threshold 0.3. At threshold 0.05 it matched 51/54 shapes, but boundary F1 fell to 0.398 because additional masks introduced many extra and overlapping edges. This demonstrates learning on known examples; it is not a generalization result or a clean planar parcel network.
+
+The diagnostic records raw query scores, image-presence probabilities and their product, which is the score used by Transformers SAM 3 postprocessing. Initially, the presence gate kept three of these four tiles entirely below the 0.3 threshold. After training, presence probabilities were close to one. Both score gating and mask geometry therefore matter. The runner saves checkpoint/provenance hashes, per-update losses and local API cost, periodic threshold sweeps and overlays under the ignored output directory; `--resume` validates the saved recipe.
+
+`parcel_boundary_train.py` trains a SegFormer-B0 encoder and a new three-class output head for background, parcel interior and boundary. It loads the public `nvidia/mit-b0` encoder locally at revision `80983a413c30d36a39c20203974ae7807835e2b4`; the model has 3,714,915 parameters. RGB imagery is its only inference input. Full 1024-pixel COCO parcel annotations are converted to semantic boundaries before pooling to the 256-pixel target grid, avoiding artificial ambiguous seams caused by pooling each instance independently. Actual overlapping annotations and the outer three-pixel margin are ignored. Class weights come from training pixels only; these particular tiles have complete cadastral coverage and no supervised background pixels.
+
+Interior components seed a flood whose cost is the predicted boundary probability. The ignored outer margin cannot connect the seeds. This reconstruction produces separate, non-overlapping raster instances; thin parcels and incomplete boundary strokes can still be lost or joined. Direct boundary-probability F1 and reconstructed parcel boundary/shape metrics are reported separately. A high boundary score alone does not establish accurate parcel polygons.
+
+Use `--train-tiles 4 --evaluate-split none --no-augmentation` for a training-only learning check. The geographic pilot uses all 32 training tiles and selects its epoch and threshold on the eight validation tiles. Its final comparison reuses the eight previously inspected test tiles; it is exploratory, not a pristine holdout. Both runners require `--run` and explicit local paths. Checkpoints, probability grids, GeoJSON, imagery and reports remain ignored under `output/parcel-learning-check/`. `parcel_model_report.py` assembles location-grouped review artifacts without copying model weights or feature caches into its served folder.
+
+The completed comparison used 12 epochs (384 updates) at learning rate 1e-4 for each model. SAM 3 used frozen encoders and no augmentation; SegFormer trained its encoder/head with horizontal and vertical flips. SAM 3 selected epoch eight by validation parcel-boundary F1 at fixed score threshold 0.3. SegFormer selected epoch ten and boundary threshold 0.3 by validation **reconstructed parcel** boundary F1. Neither model used the comparison tiles to select its checkpoint or thresholds.
+
+| Method on the eight previously explored comparison tiles | Parcel boundary F1 at 2 m | Shape matches at IoU ≥ 0.5 | Coverage | Overlapping area | Raw predictions |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| OSM building-distance baseline | 0.378 | 51/366 | 84.3% | 0.0% | 157 |
+| SAM 3 decoder/head, 12 epochs at 1e-4 | 0.430 | 62/366 | 65.0% | 35.9% | 410 |
+| SegFormer-B0 boundary/interior model | 0.189 | 8/366 | 100.0% | 0.0% | 127 |
+
+SAM 3 improves boundary proximity and recovers more true shapes, but only 15.1% of its raw candidates match a reference parcel, compared with 32.5% for the OSM baseline. Its overlays contain many extra fragments and overlapping masks. It is not a coherent parcel fabric. The boundary model's direct line F1 is 0.457, much higher than its reconstructed parcel F1: line agreement does not establish correct polygon separation. These results support further supervised work but not use as an automatic parcel layer.
+
+The SegFormer tiny fit reached direct training line F1 0.962 after 240 updates. Selecting for raw lines chose threshold 0.5 and produced poor parcel separation. The report reselects its reconstruction threshold to 0.3 using only those training tiles, improving reconstructed training boundary F1 to 0.795. The geographic run therefore uses reconstructed parcel F1 for validation selection. The superseded partial run is retained locally; no previous artifacts were deleted. Final checkpoint reload reproduced all eight SegFormer prediction grids and the metrics without repeating any training updates. Generated artifacts and executed source snapshots remain ignored, and all training/inference API charges were $0.
+
+## SAM 3 mask-quality refinement
+
+`sam3_quality_refine.py` starts from the stronger pilot's best adapter and keeps the image, text and context encoders frozen. The new experimental loss uses a 256×256 mask grid, extra BCE weight along target boundaries, detached matched-mask IoU as the query confidence target, and a penalty for predicted pairwise overlap beyond the reference overlap. Targets use the same GeoJSON rasterizer as evaluation; one empty subpixel training sliver is omitted from losses and recorded in the recipe. Test reference counts remain unchanged. This is a local refinement objective, not Meta's complete training recipe.
+
+`sam3_parcel_postprocess.py` drops empty/small masks, retains each candidate's largest connected component, suppresses duplicate masks by IoU, then assigns overlapping pixels by mask probability times query score. It reassigns pixels after removing candidates that become too small. It does not fill gaps. Zero overlap is guaranteed by this assignment and must not be confused with correct parcel geometry.
+
+Score thresholds 0.15/0.3/0.5/0.7 and minimum areas 16/64 pixels are selected on validation **whole-parcel micro F1**; boundary F1 breaks ties. The minimum-area rule can omit real small parcels. The initial checkpoint also participates in selection so extra training is not automatically accepted. Saved raw predictions use fixed score 0.3 and mask probability 0.5, letting the comparison separate learning from cleanup.
+
+Use `--epochs 0` for the cleanup-only comparison, `--train-tiles 4 --epochs 8` for the 32-update training-only check, or `--epochs 6 --learning-rate 0.00003` for the 192-update geographic refinement. All require `--run`, explicit `--dataset`, `--cache`, `--features`, `--initial` adapter and `--output` paths. Runs checkpoint every four updates and resume with `--resume`; inputs, base weights and executed sources are hashed, and the source snapshots are preserved alongside ignored artifacts. Use a new output directory if the recipe changes. `sam3_quality_report.py --run` builds the raw/cleaned comparisons from saved arrays without loading SAM 3; its output stays under the ignored `output/` directory.
+
+The 32-update learning check improved training-only whole-parcel F1 from 0.337 to 0.492 and matches from 15/54 to 30/54. The geographic run selected additional epoch three on validation F1 (0.117 versus the initial 0.107), but that improvement did not transfer to the previously examined comparison set:
+
+| Method on eight comparison tiles | Boundary F1 at 2 m | Matches / references | Predictions | Shape precision | Whole-parcel F1 | Coverage | Overlap |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Previous SAM 3, raw | 0.430 | 62/366 | 410 | 15.1% | 0.160 | 65.0% | 35.9% |
+| Previous SAM 3, cleanup | 0.421 | 61/366 | 313 | 19.5% | 0.180 | 61.3% | 0.0% |
+| Quality refinement, raw | 0.377 | 54/366 | 231 | 23.4% | 0.181 | 42.5% | 14.0% |
+| Quality refinement, cleanup | 0.367 | 48/366 | 188 | 25.5% | 0.173 | 41.4% | 0.0% |
+
+Cleanup preserves almost all previous matches while removing overlaps and many candidates. Additional quality training improves precision but loses recall and coverage; after cleanup it does not beat the previous adapter's whole-parcel F1. Retain the previous adapter plus cleanup as the better current SAM comparison, with score 0.3, mask threshold 0.5, IoU NMS 0.7 and minimum area 64 pixels. OSM still has higher shape precision (32.5%) and whole-parcel F1 (0.195). A larger, more varied training sample and fresh geographic holdout are needed before claiming a transferable improvement. Runs and artifacts remain under ignored `output/parcel-learning-check/`; metered training/inference API charges were $0.
+
 ## Reproduce
 
 Requires local PostgreSQL `geodata` credentials in `cadastre-data/.env`, the CDOF cache at `zagreb-parkiralista/data/tiles/cdof2022`, Python packages `numpy`, `Pillow`, `scipy`, `opencv-python`, and the existing backend Node dependencies. Run from this repository root:

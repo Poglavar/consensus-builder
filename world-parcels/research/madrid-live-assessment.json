@@ -1,0 +1,29 @@
+{
+  "description": "Dated candidate assessment; current runtime remains disabled.",
+  "checkedAt": "2026-10-02",
+  "runtimeEnabled": false,
+  "sourceId": "es-catastro-inspire-cadastral-parcels-atom",
+  "cityCoverage": [
+    "Madrid municipality",
+    "Barcelona via same national service; city-specific live query not verified"
+  ],
+  "operator": "Dirección General del Catastro, Ministerio de Hacienda, Spain",
+  "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+  "protocol": "INSPIRE WFS 2.0 supports bbox GetFeature and stored GetParcel query by national cadastral reference; ATOM feed provides municipality-wide GML ZIPs (Madrid 28900 file identified).",
+  "verification": {
+    "liveStatus": "Official WFS endpoint documented; requests for GetCapabilities and bbox from this environment returned generic HTTP 400 HTML. This is not evidence of an empty parcel result. Official ATOM feed and Madrid province feed were reachable; municipality ZIP HEAD reported 40,435,873 bytes. A bounded HTTP Range sample extracted 3 full GML parcel members and observed the file header numberMatched=141430.",
+    "identifier": "INSPIRE gml:id `ES.SDGC.CP.<nationalCadastralReference>` and cp:nationalCadastralReference; reference is a stable cadastral parcel reference while a parcel remains the same. Official service documentation provides direct GetParcel-by-refcat lookup. A sample feature uses EPSG:25830 geometry and a 14-character reference.",
+    "spatialQuery": "Official WFS supports BBOX with ETRS89 UTM zone CRS. Documentation lists EPSG:4326, 4258, 25829/25830/25831 and 3857; actual runtime WGS84 bbox not verified because WFS returns generic 400 here.",
+    "paginationAndCounts": "WFS response may include numberMatched/numberReturned if supported, but this exact endpoint's pagination protocol and feature cap were not verified in the bounded probe. ATOM is whole-municipality file delivery without pagination; Madrid GML is about 325 MB uncompressed / 40 MB zipped. Do not fetch a whole-city archive for routine view queries.",
+    "currentness": "Official WFS offers updated information; source lacks a read data-vintage guarantee in this review. The feed is the official current distribution, but sample feature dates were not extracted."
+  },
+  "scopeAndCaveats": "Catastro INSPIRE jurisdiction excludes Basque Country and Navarre, which publish their own cadastres. Madrid agglomeration extends beyond Madrid municipality; each municipality is a separate archive. Barcelona municipal open-data parcel dataset is CC BY 4.0 but only offered as bulk SHP/DGN resources, not a bounded query. WMS is raster-only and cannot supply native feature IDs.",
+  "terms": "Catastro's INSPIRE license allows commercial/public reuse after transformation; redistribution or commercialization of the untransformed original cadastral data is prohibited. License allows transformed value-added products, with restrictions against changing meaning or supplanting the official Cadastre service.",
+  "primarySources": [
+    "https://www.catastro.hacienda.gob.es/webinspire/index_eng.html",
+    "https://www.catastro.hacienda.gob.es/webinspire/documentos/Licencia_en.pdf",
+    "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf",
+    "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+    "https://opendata-ajuntament.barcelona.cat/data/api/3/action/package_search?q=mapa-parcelari"
+  ]
+}
