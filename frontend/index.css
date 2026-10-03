@@ -1,9 +1,10 @@
 /* ========== Main CSS Entry Point ========== */
 /* This file imports all CSS modules in the correct order */
 
+@import url('css/tokens.css');
+@import url('css/primitives.css');
 @import url('css/base.css');
 @import url('css/layout.css');
-@import url('css/sidebar.css');
 @import url('css/map.css');
 @import url('css/panels.css');
 @import url('css/modals.css');

@@ -96,72 +96,136 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+/* ---- Buttons (docs/design-language.md): one component, four roles.
+   .btn          secondary: outlined, white (the default)
+   .btn-primary  the one main action of a surface (filled)
+   .btn-quiet    text only, for inline and tertiary actions
+   .btn-danger   destructive: outlined red (the debug-only clears stay hidden outside debug mode)
+   .btn-success  the filled affirmative (Accept, Apply to map)
+   Legacy aliases keep existing markup working: .btn-action and .btn-proposal are primary;
+   .btn-info, .btn-secondary, .btn-outline, .btn-outline-primary and .btn-outline-secondary are
+   secondary; .btn-light is quiet; .btn-outline-danger is danger; .btn-warning is secondary with
+   warning ink. Sheets restyle .btn into rows (map-shell.css). ---- */
 .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     padding: 6px 12px;
     margin: 3px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
     box-sizing: border-box;
-    /* Include padding and border in width calculations */
     max-width: 100%;
-    /* Prevent buttons from exceeding container width */
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background-color: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-medium);
+    line-height: 1.3;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn:hover {
-    background-color: #0069d9;
+    background-color: var(--cb-surface-2);
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn > i {
+    flex: 0 0 auto;
+}
+
+.btn-primary,
+.btn-action,
+.btn-proposal {
+    border-color: var(--cb-primary);
+    background-color: var(--cb-primary);
+    color: var(--cb-primary-ink);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.btn-primary:hover,
+.btn-action:hover,
+.btn-proposal:hover {
+    border-color: var(--cb-primary-hover);
+    background-color: var(--cb-primary-hover);
 }
 
 .btn-action {
-    background-color: #007bff;
     width: 100%;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
+.btn-success,
+.btn-accept-proposal {
+    border-color: var(--cb-success);
+    background-color: var(--cb-success);
+    color: var(--cb-success-ink);
+    font-weight: var(--cb-weight-semibold);
 }
 
-.btn-secondary:hover {
-    background-color: #5a6268;
+.btn-success:hover,
+.btn-accept-proposal:hover:not(:disabled) {
+    border-color: var(--cb-success-hover);
+    background-color: var(--cb-success-hover);
 }
 
-.btn-success {
-    background-color: #28a745;
+.btn-quiet,
+.btn-light {
+    border-color: transparent;
+    background-color: transparent;
 }
 
-.btn-success:hover {
-    background-color: #218838;
+.btn-quiet:hover,
+.btn-light:hover {
+    background-color: var(--cb-surface-2);
 }
 
 .btn-warning {
-    background-color: #ffc107;
-    color: #212529;
+    border-color: var(--cb-warning);
+    color: var(--cb-warning);
 }
 
 .btn-warning:hover {
-    background-color: #e0a800;
+    background-color: var(--cb-warning-soft);
 }
 
+.btn-danger,
+.btn-outline-danger,
+.btn-reject-proposal {
+    border-color: var(--cb-danger);
+    color: var(--cb-danger);
+}
+
+.btn-danger:hover,
+.btn-outline-danger:hover,
+.btn-reject-proposal:hover:not(:disabled) {
+    background-color: var(--cb-danger-soft);
+}
+
+/* The per-dataset clears: full width, hidden outside debug mode. */
 .btn-danger {
-    background-color: #dc3545;
     width: 100%;
     display: none;
-    /* Hidden by default */
 }
 
 #wipeLocalDataButton {
-    display: inline-block;
+    display: inline-flex;
 }
 
-.btn-danger:hover {
-    background-color: #bd2130;
-}
-
-/* Show danger buttons when debug mode is enabled */
 body.debug-mode .btn-danger {
-    display: inline-block;
+    display: inline-flex;
 }
 
 .debug-only-control {
@@ -178,13 +242,9 @@ body.debug-mode .debug-only-control {
     width: 100%;
 }
 
+/* Legacy full-width generic actions (secondary look). */
 .btn-info {
-    background-color: #17a2b8;
     width: 100%;
-}
-
-.btn-info:hover {
-    background-color: #138496;
 }
 
 .btn-share-proposals {
@@ -1753,68 +1813,18 @@ button.status-log-message {
 }
 
 .btn-proposal {
-    background-color: #ffd700 !important;
-    /* Gold background */
-    color: #000 !important;
-    /* Black text */
-    border: 2px solid #000 !important;
-    /* Black border */
-    font-weight: bold;
     width: 100%;
-    height: 44px;
+    min-height: var(--cb-control-height-lg);
 }
 
-.btn-proposal:hover {
-    background-color: #ffed4e !important;
-    /* Lighter gold on hover */
-    border-color: #333 !important;
-}
-
-.btn-proposal:disabled {
-    background-color: #f0f0f0 !important;
-    color: #999 !important;
-    border-color: #ccc !important;
-}
-
-.btn-accept-proposal {
-    background-color: #28a745 !important;
-    /* Green background */
-    color: white !important;
-    border: 1px solid #28a745 !important;
-    font-weight: 600;
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 14px;
-}
-
-.btn-accept-proposal:hover:not(:disabled) {
-    background-color: #218838 !important;
-    border-color: #1e7e34 !important;
-}
-
-.btn-accept-proposal:disabled {
-    background-color: #f8f9fa !important;
-    color: #6c757d !important;
-    border-color: #dee2e6 !important;
-    cursor: not-allowed;
-    opacity: 0.65;
-}
-
+/* Accept / reject: the role rules near the top of this file colour them (success / danger). */
+.btn-accept-proposal,
 .btn-reject-proposal {
-    background-color: #dc3545 !important;
-    /* Red background */
-    color: white !important;
-    border: 1px solid #dc3545 !important;
-    font-weight: 600;
     width: 100%;
     padding: 10px 15px;
-    font-size: 14px;
+    font-size: var(--cb-text-base);
 }
 
-.btn-reject-proposal:hover:not(:disabled) {
-    background-color: #c82333 !important;
-    border-color: #bd2130 !important;
-}
 
 .proposal-actions {
     margin-top: 15px;
@@ -2435,9 +2445,7 @@ button.status-log-message {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close) {
+    .descendants-close) {
     appearance: none;
     border: 1px solid #d4d7dd;
     background: rgba(255, 255, 255, 0.92);
@@ -2471,9 +2479,7 @@ button.status-log-message {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close):hover {
+    .descendants-close):hover {
     background-color: #f3f4f6;
     color: #0f172a;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
@@ -2491,9 +2497,7 @@ button.status-log-message {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close):active {
+    .descendants-close):active {
     transform: scale(0.97);
 }
 
@@ -2509,9 +2513,7 @@ button.status-log-message {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close):focus-visible {
+    .descendants-close):focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
