@@ -815,3 +815,36 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     .world-activity__copy { display: none; }
     .world-activity--cycling .world-activity__viewport { overflow: auto; mask-image: none; }
 }
+
+/* Globe arrival caption (js/world/arrival.js): names the proposal the 3D view orbits and offers the
+   way into the 2D map. Lives in #three-container, so it goes when 3D does. */
+.world-arrival-card {
+    /* Top left: the bottom centre carries the status toast and the 3D drag hint. */
+    position: absolute;
+    top: var(--map-shell-top-clearance);
+    left: var(--cb-space-4);
+    width: min(360px, calc(100% - 2 * var(--cb-space-4)));
+    box-sizing: border-box;
+    padding: var(--cb-space-4);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-md);
+    pointer-events: auto;
+    z-index: var(--cb-z-panel);
+}
+
+.world-arrival-card__title {
+    margin: 0 0 var(--cb-space-3);
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+    text-wrap: balance;
+}
+
+.world-arrival-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}

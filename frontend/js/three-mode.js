@@ -5687,6 +5687,13 @@
             pendingRestoreView = null;
             renderer.render(scene, camera);
             startLoop();
+        } else if (window.__reducedMotion) {
+            // Reduced motion: land at the final tilt, no animation.
+            pendingRestoreView = null;
+            currentPitchRad = finalPitchRad;
+            placeCameraForPitch(finalPitchRad);
+            renderer.render(scene, camera);
+            startLoop();
         } else {
             pendingRestoreView = null;
             frameId = requestAnimationFrame(tiltStep);
@@ -5890,8 +5897,11 @@
         console.log('[3D] startLoop() called, pendingIntroAutoRotate:', pendingIntroAutoRotate);
         if (pendingIntroAutoRotate) {
             pendingIntroAutoRotate = false;
-            console.log('[3D] Starting intro auto-rotate');
-            startIntroAutoRotate();
+            // Reduced motion keeps the framed view still: no orbit.
+            if (!window.__reducedMotion) {
+                console.log('[3D] Starting intro auto-rotate');
+                startIntroAutoRotate();
+            }
         }
         // Hysteresis for the depth-plane retune. The planes only need to follow real dolly/zoom
         // distance, not orbit or pan. Retuning on every damped frame remaps nearly coplanar depth
@@ -6162,7 +6172,11 @@
             console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
         }
         try { document.body.classList.add('three-mode-active'); } catch (_) { }
-        if (threeContainer) threeContainer.classList.add('active');
+        if (threeContainer) {
+            threeContainer.classList.add('active');
+            // Hidden from assistive tech only while 3D is off; its panels and buttons are real UI when on.
+            threeContainer.removeAttribute('aria-hidden');
+        }
         updateModeButtonStates();
         // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
         if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
@@ -6199,7 +6213,10 @@
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
         // (AI button state: updateModeButtonStates.)
-        if (threeContainer) threeContainer.classList.remove('active');
+        if (threeContainer) {
+            threeContainer.classList.remove('active');
+            threeContainer.setAttribute('aria-hidden', 'true');
+        }
         // Defensive: if we exit before startLoop ran (aborted entry), the "Rendering…" overlay
         // and the transition guard would otherwise leak and jam future entries.
         isTransitioning3D = false;

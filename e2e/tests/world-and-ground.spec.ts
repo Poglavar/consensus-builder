@@ -49,6 +49,42 @@ test.describe('World navigation and open ground @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('belgrade');
   });
 
+  // A city pick arrives on the city's newest proposal in 3D (js/world/arrival.js); a city with none
+  // lands on its map as before. Zagreb is already loaded here, so the pick lands in place.
+  for (const hasProposal of [true, false]) {
+    test(`a city pick ${hasProposal ? 'arrives in 3D on its latest proposal' : 'with no proposals lands on the 2D map'}`, async ({ mockApi: page }) => {
+      await openCity(page); const id = await createSpace(page, 'park');
+      const summaries: string[] = [];
+      await page.route('**/proposals/summary?*', route => {
+        summaries.push(route.request().url());
+        return route.fulfill({ json: { proposals: hasProposal ? [{ id: 77, proposalId: id }] : [], count: hasProposal ? 1 : 0 } });
+      });
+      await page.evaluate(() => (window as any).map.setView([45.85, 16.05], 12, { animate: false }));
+      await page.locator('#settings-button').click(); await page.locator('#world-view-button').click();
+      const world = page.locator('#world-view');
+      await world.locator('.world-search__input').fill('Zagreb');
+      await world.getByRole('option').filter({ hasText: 'Zagreb' }).first().click();
+      await world.getByRole('button', { name: /Open Zagreb/ }).click();
+      await expect(world).toHaveCount(0, { timeout: 15000 });
+      await expect.poll(() => summaries.length).toBeGreaterThan(0);
+      expect(new URL(summaries[0]).searchParams.get('limit')).toBe('1');
+      const arrival = page.locator('.world-arrival-card');
+      if (hasProposal) {
+        await expect(arrival).toBeVisible({ timeout: 20000 });
+        await expect(arrival).toContainText('Latest proposal');
+        await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(true);
+        await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, id)).toBe(true);
+        expect(new URL(page.url()).searchParams.has('arrive')).toBe(false);
+        await arrival.getByRole('button', { name: 'Look around' }).click();
+        await expect(arrival).toHaveCount(0);
+        expect(await page.evaluate(() => (window as any).isThreeModeActive())).toBe(true);
+      } else {
+        await expect(arrival).toHaveCount(0);
+        expect(await page.evaluate(() => (window as any).isThreeModeActive?.() ?? false)).toBe(false);
+      }
+    });
+  }
+
   test('globe activity scrolls without buttons, pauses on hover and uses event colors and location labels', async ({ mockApi: page }) => {
     const events = ['create', 'execute', 'resolve', 'donate', 'accept'].map((type, index) => ({
       id: `event-${index}`, source: 'live', ok: true, action: { type, proposalId: 'proposal-42' },
@@ -82,7 +118,7 @@ test.describe('World navigation and open ground @features', () => {
   });
 
   for (const applied of [true, false]) {
-    test(`globe event opens a ${applied ? 'locally applied' : 'unapplied'} proposal on the map and leaves Activity reachable`, async ({ mockApi: page }) => {
+    test(`globe event arrives on a ${applied ? 'locally applied' : 'unapplied'} proposal in 3D, then the map, and leaves Activity reachable`, async ({ mockApi: page }) => {
       await openCity(page); const id = await createSpace(page, 'park');
       if (!applied) await page.evaluate(async id => { await (window as any).ProposalManager.unapplyProposal(id, { silent: true, suppressCameraMove: true }); }, id);
       await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [{
@@ -94,6 +130,16 @@ test.describe('World navigation and open ground @features', () => {
       await expect(page.locator('.world-activity a')).toBeVisible({ timeout: 15000 });
       await page.locator('.world-activity a').click();
       await expect(page.locator('#world-view')).toHaveCount(0);
+      // A globe pick arrives in 3D on the proposal (js/world/arrival.js); still under reduced motion.
+      const arrival = page.locator('.world-arrival-card');
+      await expect(arrival).toBeVisible({ timeout: 20000 });
+      await expect(arrival).toContainText('Park · parcel 1234');
+      await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(true);
+      await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, id)).toBe(true);
+      expect(await page.evaluate(() => (window as any).getThreeModeInternals().controls.autoRotate)).toBe(false);
+      await arrival.getByRole('button', { name: 'Explore the map' }).click();
+      await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
+      await expect(arrival).toHaveCount(0);
       await expect(page.locator('#proposal-details-panel')).toBeVisible();
       await expect(page.locator('.game-log-modal')).toHaveCount(0);
       await expect.poll(() => page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(applied);

@@ -4012,6 +4012,12 @@
                 "country": "Približno: {{place}}",
                 "unknown": "Lokacija nepoznata"
             }
+        },
+        "arrival": {
+            "label": "Stigli ste do predloga",
+            "latest": "Najnoviji predlog",
+            "picked": "Predlog",
+            "lookAround": "Razgledaj"
         }
     },
     "mapShell": {
@@ -4394,5 +4400,4 @@
         "unavailable": "Ovaj izvor parcela trenutno nije dostupan.",
         "loadedRemain": "Već učitane parcele ostaju vidljive. Pokušaj ponovo ili izaberi drugi izvor."
     }
-
 }

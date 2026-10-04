@@ -4012,6 +4012,12 @@
                 "country": "Približno: {{place}}",
                 "unknown": "Lokacija nepoznata"
             }
+        },
+        "arrival": {
+            "label": "Stigli ste do prijedloga",
+            "latest": "Najnoviji prijedlog",
+            "picked": "Prijedlog",
+            "lookAround": "Razgledaj"
         }
     },
     "mapShell": {
@@ -4394,5 +4400,4 @@
         "unavailable": "Ovaj izvor čestica trenutačno nije dostupan.",
         "loadedRemain": "Već učitane čestice ostaju vidljive. Pokušaj ponovno ili odaberi drugi izvor."
     }
-
 }

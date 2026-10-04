@@ -63,7 +63,7 @@
                         if (click.button !== 0 || click.metaKey || click.ctrlKey || click.shiftKey || click.altKey) return;
                         click.preventDefault();
                         panel.setAttribute('aria-busy', 'true');
-                        try { await global.WorldProposalEntry.open(event); }
+                        try { await global.WorldProposalEntry.open(event, { arrive: 'pick' }); }
                         catch (error) {
                             status.textContent = t('world.activity.openError', 'Could not open this proposal. Please try again.');
                             status.hidden = false;

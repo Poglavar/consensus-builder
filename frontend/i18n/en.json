@@ -3975,6 +3975,12 @@
                 "country": "in {{place}}",
                 "unknown": "Location unknown"
             }
+        },
+        "arrival": {
+            "label": "Arrived at a proposal",
+            "latest": "Latest proposal",
+            "picked": "Proposal",
+            "lookAround": "Look around"
         }
     },
     "mapShell": {
@@ -4355,5 +4361,4 @@
         "unavailable": "This parcel source is temporarily unavailable.",
         "loadedRemain": "Already loaded parcels remain visible. Retry or choose another source."
     }
-
 }

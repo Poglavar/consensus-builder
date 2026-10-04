@@ -15,18 +15,23 @@
         url.searchParams.set('city', city);
         return url.pathname + url.search;
     }
-    async function open(event, { fromUrl = false } = {}) {
+    // `arrive` ('latest' for a city pick, 'pick' for a feed pick) lands in 3D on the proposal
+    // (js/world/arrival.js); it rides the city-switch reload as ?arrive= and is consumed on arrival.
+    async function open(event, { fromUrl = false, arrive = null } = {}) {
         if (opening) return;
         opening = true;
         try {
             const manager = global.CityConfigManager;
             const target = href(event);
+            // ?arrive= only rides the reload; the address bar never keeps it, so a reload does not dive again.
+            const reloadUrl = new URL(target, global.location.origin);
+            if (arrive) reloadUrl.searchParams.set('arrive', arrive);
             const city = new URL(target, global.location.origin).searchParams.get('city');
             if (city !== manager.getCurrentCityId()) {
                 if (global.WorldView.isOpen()) {
                     global.WorldHandoff.store({ dataUrl: global.WorldView.captureHandoffFrame(), cityId: city, proposalId: event.proposalId });
                 }
-                global.history.replaceState(null, '', target);
+                global.history.replaceState(null, '', reloadUrl.pathname + reloadUrl.search);
                 const navigating = await manager.switchCity(city, { requireConfirmation: false });
                 if (!navigating) throw new Error('City navigation could not open');
                 return;
@@ -41,6 +46,8 @@
             global.setProposalDetailsPanelMinimized(global.document.getElementById('proposal-details-panel'), false);
             global.WorldView.close();
             global.WorldEntry.finishNavigation();
+            // The globe's cover (released in finally) stays over the 3D load.
+            if (arrive) await global.WorldArrival.enter3D(proposal, { kickerKey: arrive });
         } finally {
             if (fromUrl) global.WorldHandoff.proposalReady(event.proposalId);
             opening = false;
@@ -51,12 +58,18 @@
         const params = new URLSearchParams(global.location.search);
         const id = params.get('focusProposal');
         if (!id) return;
+        const arrive = params.get('arrive');
+        if (arrive) {
+            // Consumed once: a reload of this URL reopens the proposal without diving again.
+            params.delete('arrive');
+            global.history.replaceState(global.history.state, '', global.location.pathname + '?' + params);
+        }
         try {
             await global.whenAppBooted();
             if (global.i18n.t('world.activity.title') === 'world.activity.title') {
                 await new Promise(resolve => global.addEventListener('i18n:translationsLoaded', resolve, { once: true }));
             }
-            await open({ proposalId: id, cityId: global.CityConfigManager.getCurrentCityId(), href: '/?' + params }, { fromUrl: true });
+            await open({ proposalId: id, cityId: global.CityConfigManager.getCurrentCityId(), href: '/?' + params }, { fromUrl: true, arrive });
         } catch (error) {
             console.warn('[world] Proposal route could not open', error);
             global.updateStatus(global.i18n.t('world.activity.openError'));

@@ -4026,6 +4026,12 @@
                 "country": "en {{place}}",
                 "unknown": "Ubicación desconocida"
             }
+        },
+        "arrival": {
+            "label": "Has llegado a una propuesta",
+            "latest": "Propuesta más reciente",
+            "picked": "Propuesta",
+            "lookAround": "Mirar alrededor"
         }
     },
     "mapShell": {
@@ -4406,5 +4412,4 @@
         "unavailable": "Esta fuente de parcelas no está disponible temporalmente.",
         "loadedRemain": "Las parcelas ya cargadas siguen visibles. Reintenta o elige otra fuente."
     }
-
 }
