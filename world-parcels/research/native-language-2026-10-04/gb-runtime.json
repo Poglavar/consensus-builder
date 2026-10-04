@@ -1,0 +1,797 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03T21:46:58.864173+00:00",
+  "sourceRegistryId": "gb-hmlr-inspire-index-polygons",
+  "publisher": "HM Land Registry",
+  "officialReferences": [
+    "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+    "https://use-land-property-data.service.gov.uk/datasets/inspire",
+    "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+    "https://use-land-property-data.service.gov.uk/datasets/inspire/tech-guidance"
+  ],
+  "sourceNotice": "Monthly published INSPIRE registered-title index polygons are indicative extents, not ownership records or survey-precision legal boundaries. Published source conditions are informational and never an integration gate. OSGB36 Helmert transformation is used without OSTN15 grid; meter-scale positional differences are possible. Only native identity, geometry and bbox are retained in transient five-minute memory; no source polygons, ZIP or XML are persisted.",
+  "attempts": [
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "outcome": "unavailable",
+      "failureType": "HTTPError",
+      "status": 403,
+      "tlsVerificationDisabled": false
+    },
+    {
+      "method": "Generic web reader without anonymous catalogue cookie session",
+      "outcome": "redirect-loop; download not verified by this method",
+      "interpretation": "Client method failure, not provider outage; anonymous browser-header cookie transport below succeeded."
+    },
+    {
+      "method": "Official catalogue with browser headers and anonymous host-scoped cookie jar, then allowlisted publisher/S3 redirects",
+      "outcome": "success",
+      "status": 200,
+      "cookiesPersisted": false,
+      "presignedUrlsPersisted": false
+    },
+    {
+      "method": "Initial whole-inflated-buffer GML adapter",
+      "city": "manchester",
+      "outcome": "all geometry checks passed but memory approach replaced",
+      "peakRssBytes": 740114432,
+      "reason": "Peak memory left insufficient margin for other application allocations under a1GiB PM2 budget; final adapter streams decompression and caches projection transform."
+    }
+  ],
+  "sources": [
+    {
+      "city": "london",
+      "authority": "City_of_London_Corporation",
+      "checkedAt": "2026-10-03T21:24:53.675Z",
+      "centerLonLat": [
+        -0.0939,
+        51.5155
+      ],
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
+      "http": {
+        "status": 200,
+        "bytes": 893689,
+        "etag": "\"71e59d793b663ef4d123f37911b0cd82\"",
+        "lastModified": "Sun, 06 Sep 2026 04:28:47 GMT",
+        "finalHost": "datapub-prd-s3-bucket.s3.amazonaws.com",
+        "contentType": "application/force-download"
+      },
+      "zipSha256": "48f428689bf87388ed73b96719e3c06ed9214d53542e40e643304179a33ad67a",
+      "gmlBytes": 4933977,
+      "gmlSha256": "cb963f822962b881ebb971feb0ae04e5bb18e9c0e7a61cb753a3749ec74d2d05",
+      "gmlMember": "Land_Registry_Cadastral_Parcels.gml",
+      "fullFeatureCount": 3903,
+      "uniqueNativeCount": 3903,
+      "duplicateNativeCount": 0,
+      "nativeGeometryConflicts": 0,
+      "invalidFeatures": 0,
+      "nativeExtent": [
+        530770.333,
+        180143.1,
+        533852.309,
+        182228.95
+      ],
+      "vertexCount": 120833,
+      "declaredSrsNames": [
+        "urn:ogc:def:crs:EPSG::27700"
+      ],
+      "projection": "EPSG27700 to EPSG4326 via published OSGB36 Helmert parameters; no OSTN15 grid used, unsuitable for survey precision.",
+      "nativeField": "INSPIREID",
+      "nativePattern": "^[0-9]+$",
+      "nativeSamples": [
+        "63267097",
+        "48815103",
+        "48814502"
+      ],
+      "scope": "City of London authority registered-title index polygons only; not all London boroughs.",
+      "descriptor": {
+        "id": "gb-hmlr-london-index-snapshot",
+        "adapter": "gml-snapshot",
+        "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
+        "idPrefix": "GB-HMLR-LONDON-",
+        "idField": "INSPIREID",
+        "outFields": [
+          "INSPIREID"
+        ],
+        "maxSnapshotBytes": 25165824,
+        "maxDecompressedBytes": 167772160,
+        "maxSnapshotFeatures": 150000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 27700,
+        "cityIds": [
+          "london"
+        ]
+      },
+      "acceptance": {
+        "cells": [
+          {
+            "bbox": [
+              -0.09765,
+              51.511750000000006,
+              -0.09515,
+              51.514250000000004
+            ],
+            "count": 66,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09515,
+              51.511750000000006,
+              -0.09265,
+              51.514250000000004
+            ],
+            "count": 119,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09265,
+              51.511750000000006,
+              -0.09015,
+              51.514250000000004
+            ],
+            "count": 122,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09765,
+              51.514250000000004,
+              -0.09515,
+              51.51675
+            ],
+            "count": 101,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09515,
+              51.514250000000004,
+              -0.09265,
+              51.51675
+            ],
+            "count": 90,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09265,
+              51.514250000000004,
+              -0.09015,
+              51.51675
+            ],
+            "count": 111,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09765,
+              51.51675,
+              -0.09515,
+              51.51925
+            ],
+            "count": 42,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09515,
+              51.51675,
+              -0.09265,
+              51.51925
+            ],
+            "count": 67,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09265,
+              51.51675,
+              -0.09015,
+              51.51925
+            ],
+            "count": 73,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09365,
+              51.515750000000004,
+              -0.09115,
+              51.51825
+            ],
+            "count": 64,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09115,
+              51.515750000000004,
+              -0.08864999999999999,
+              51.51825
+            ],
+            "count": 110,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.08864999999999999,
+              51.515750000000004,
+              -0.08614999999999999,
+              51.51825
+            ],
+            "count": 58,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09365,
+              51.51825,
+              -0.09115,
+              51.52075
+            ],
+            "count": 33,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09115,
+              51.51825,
+              -0.08864999999999999,
+              51.52075
+            ],
+            "count": 44,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.08864999999999999,
+              51.51825,
+              -0.08614999999999999,
+              51.52075
+            ],
+            "count": 34,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09365,
+              51.52075,
+              -0.09115,
+              51.52325
+            ],
+            "count": 15,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09115,
+              51.52075,
+              -0.08864999999999999,
+              51.52325
+            ],
+            "count": 6,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.08864999999999999,
+              51.52075,
+              -0.08614999999999999,
+              51.52325
+            ],
+            "count": 0,
+            "complete": true
+          }
+        ],
+        "retainedCount": 824,
+        "exact": [
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 24,
+            "count": 24,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          }
+        ],
+        "under": {
+          "count": 25,
+          "complete": true,
+          "includesSample": true
+        },
+        "sampleIds": [
+          "GB-HMLR-LONDON-53329776",
+          "GB-HMLR-LONDON-53303783",
+          "GB-HMLR-LONDON-53230831"
+        ],
+        "outcome": "pass",
+        "method": "Actual gml-snapshot adapter: complete official ZIP/GML read to EOF in transient memory, native INSPIREID lookup from full verified authority index, 18 viewport cells (two 3x3 grids; 0.0025-degree cell and 0.004-degree pan), all retained IDs in batches of at most80 and Turf footprint intersection. No upstream exact-ID API claimed."
+      },
+      "memoryExperiments": [
+        {
+          "context": "optimized streaming ZIP→Saxes; default Node heap; sequential London then Manchester with both indexes retained; host contention not controlled, no timing claim",
+          "peakRssBytes": 161054720
+        },
+        {
+          "context": "optimized streaming ZIP→Saxes; Node --max-old-space-size=384; sequential London then Manchester with both indexes retained; host contention not controlled, no timing claim",
+          "peakRssBytes": 178290688,
+          "finalMemoryUsage": {
+            "rss": 184418304,
+            "heapTotal": 102858752,
+            "heapUsed": 45573456,
+            "external": 6438236,
+            "arrayBuffers": 2804165
+          },
+          "heapLimitBytes": 603979776
+        },
+        {
+          "context": "Final optimized default heap, consuming parsed wrappers, Node --expose-gc; sequential London then Manchester with both caches retained. Explicit GC is measurement only, not runtime behavior.",
+          "peakRssBytes": 165363712,
+          "beforeGcMemory": {
+            "rss": 164904960,
+            "heapTotal": 102596608,
+            "heapUsed": 59186952,
+            "external": 10859620,
+            "arrayBuffers": 7245220
+          },
+          "afterGcMemory": {
+            "rss": 165363712,
+            "heapTotal": 103120896,
+            "heapUsed": 32890408,
+            "external": 10859620,
+            "arrayBuffers": 495129
+          }
+        }
+      ]
+    },
+    {
+      "city": "manchester",
+      "authority": "Manchester_City_Council",
+      "checkedAt": "2026-10-03T21:25:06.941Z",
+      "centerLonLat": [
+        -2.244,
+        53.4808
+      ],
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+      "http": {
+        "status": 200,
+        "bytes": 16698544,
+        "etag": "\"d8269981b6fa17a4cde1f4fe40e78d21\"",
+        "lastModified": "Sun, 06 Sep 2026 04:30:11 GMT",
+        "finalHost": "datapub-prd-s3-bucket.s3.amazonaws.com",
+        "contentType": "application/force-download"
+      },
+      "zipSha256": "2ac10bdc8f213b74bfa809ba4011fd26dcb76cf6f2c713d8cd54a399248d5cd3",
+      "gmlBytes": 124043859,
+      "gmlSha256": "03ebc2fbfa6bfabd3d79a70ee1887ee417362578672c0aeade9a189f736ae20f",
+      "gmlMember": "Land_Registry_Cadastral_Parcels.gml",
+      "fullFeatureCount": 120989,
+      "uniqueNativeCount": 120989,
+      "duplicateNativeCount": 0,
+      "nativeGeometryConflicts": 0,
+      "invalidFeatures": 0,
+      "nativeExtent": [
+        378638.25,
+        381998.739,
+        390812.47,
+        405638.237
+      ],
+      "vertexCount": 2456579,
+      "declaredSrsNames": [
+        "urn:ogc:def:crs:EPSG::27700"
+      ],
+      "projection": "EPSG27700 to EPSG4326 via published OSGB36 Helmert parameters; no OSTN15 grid used, unsuitable for survey precision.",
+      "nativeField": "INSPIREID",
+      "nativePattern": "^[0-9]+$",
+      "nativeSamples": [
+        "21998814",
+        "22000850",
+        "64668660"
+      ],
+      "scope": "Manchester City Council authority registered-title index polygons only; not Greater Manchester.",
+      "descriptor": {
+        "id": "gb-hmlr-manchester-index-snapshot",
+        "adapter": "gml-snapshot",
+        "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+        "idPrefix": "GB-HMLR-MANCHESTER-",
+        "idField": "INSPIREID",
+        "outFields": [
+          "INSPIREID"
+        ],
+        "maxSnapshotBytes": 25165824,
+        "maxDecompressedBytes": 167772160,
+        "maxSnapshotFeatures": 150000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 27700,
+        "cityIds": [
+          "manchester"
+        ]
+      },
+      "acceptance": {
+        "cells": [
+          {
+            "bbox": [
+              -2.2477500000000004,
+              53.477050000000006,
+              -2.2452500000000004,
+              53.47955
+            ],
+            "count": 42,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2452500000000004,
+              53.477050000000006,
+              -2.2427500000000005,
+              53.47955
+            ],
+            "count": 23,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2427500000000005,
+              53.477050000000006,
+              -2.2402500000000005,
+              53.47955
+            ],
+            "count": 72,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2477500000000004,
+              53.47955,
+              -2.2452500000000004,
+              53.48205
+            ],
+            "count": 77,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2452500000000004,
+              53.47955,
+              -2.2427500000000005,
+              53.48205
+            ],
+            "count": 71,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2427500000000005,
+              53.47955,
+              -2.2402500000000005,
+              53.48205
+            ],
+            "count": 56,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2477500000000004,
+              53.48205,
+              -2.2452500000000004,
+              53.48455
+            ],
+            "count": 28,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2452500000000004,
+              53.48205,
+              -2.2427500000000005,
+              53.48455
+            ],
+            "count": 23,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2427500000000005,
+              53.48205,
+              -2.2402500000000005,
+              53.48455
+            ],
+            "count": 30,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2437500000000004,
+              53.48105,
+              -2.2412500000000004,
+              53.48355
+            ],
+            "count": 40,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2412500000000004,
+              53.48105,
+              -2.2387500000000005,
+              53.48355
+            ],
+            "count": 34,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2387500000000005,
+              53.48105,
+              -2.2362500000000005,
+              53.48355
+            ],
+            "count": 51,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2437500000000004,
+              53.48355,
+              -2.2412500000000004,
+              53.48605
+            ],
+            "count": 22,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2412500000000004,
+              53.48355,
+              -2.2387500000000005,
+              53.48605
+            ],
+            "count": 35,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2387500000000005,
+              53.48355,
+              -2.2362500000000005,
+              53.48605
+            ],
+            "count": 86,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2437500000000004,
+              53.48605,
+              -2.2412500000000004,
+              53.48855
+            ],
+            "count": 18,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2412500000000004,
+              53.48605,
+              -2.2387500000000005,
+              53.48855
+            ],
+            "count": 38,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2387500000000005,
+              53.48605,
+              -2.2362500000000005,
+              53.48855
+            ],
+            "count": 32,
+            "complete": true
+          }
+        ],
+        "retainedCount": 578,
+        "exact": [
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 18,
+            "count": 18,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          }
+        ],
+        "under": {
+          "count": 6,
+          "complete": true,
+          "includesSample": true
+        },
+        "sampleIds": [
+          "GB-HMLR-MANCHESTER-64097265",
+          "GB-HMLR-MANCHESTER-50093390",
+          "GB-HMLR-MANCHESTER-49761671"
+        ],
+        "outcome": "pass",
+        "method": "Actual gml-snapshot adapter: complete official ZIP/GML read to EOF in transient memory, native INSPIREID lookup from full verified authority index, 18 viewport cells (two 3x3 grids; 0.0025-degree cell and 0.004-degree pan), all retained IDs in batches of at most80 and Turf footprint intersection. No upstream exact-ID API claimed."
+      },
+      "memoryExperiments": [
+        {
+          "context": "optimized streaming ZIP→Saxes; default Node heap; sequential London then Manchester with both indexes retained; host contention not controlled, no timing claim",
+          "peakRssBytes": 742506496
+        },
+        {
+          "context": "optimized streaming ZIP→Saxes; Node --max-old-space-size=384; sequential London then Manchester with both indexes retained; host contention not controlled, no timing claim",
+          "peakRssBytes": 632389632,
+          "finalMemoryUsage": {
+            "rss": 550354944,
+            "heapTotal": 397721600,
+            "heapUsed": 368690776,
+            "external": 4132488,
+            "arrayBuffers": 503497
+          },
+          "heapLimitBytes": 603979776
+        },
+        {
+          "context": "Final optimized default heap, consuming parsed wrappers, Node --expose-gc; sequential London then Manchester with both caches retained. Explicit GC is measurement only, not runtime behavior.",
+          "peakRssBytes": 746569728,
+          "beforeGcMemory": {
+            "rss": 753188864,
+            "heapTotal": 586907648,
+            "heapUsed": 420490712,
+            "external": 32125178,
+            "arrayBuffers": 28515858
+          },
+          "afterGcMemory": {
+            "rss": 746586112,
+            "heapTotal": 589479936,
+            "heapUsed": 364039960,
+            "external": 32125178,
+            "arrayBuffers": 503321
+          }
+        }
+      ]
+    }
+  ],
+  "runtimeLimits": {
+    "compressedBytes": 25165824,
+    "decompressedBytes": 167772160,
+    "maxFeatures": 150000,
+    "queryIds": 80,
+    "cacheTtlMs": 300000,
+    "completedSnapshotCacheLimit": 2,
+    "globalColdLoadsSerialized": true,
+    "historicalCountPin": false,
+    "completeArchiveRequired": true,
+    "refreshFailure": "Fail closed; expired index is not served."
+  },
+  "memoryAssessment": "Measured optimized combined-process peaks were734MiB with default Node heap and603MiB with --max-old-space-size=384. These are isolated probe measurements, not proof of total production headroom. Prefer a constrained heap and review other retained application caches before enabling Manchester under a1GiB PM2 restart threshold. London is much smaller. Final default-heap peak after consuming parsed wrappers was 712MiB; after explicit measurement-only GC cached RSS was 712MiB and heap used 347MiB. No production V8 setting changed.",
+  "tests": {
+    "command": "npm --prefix backend test -- test/gml-parcel-reader.test.js test/gml-snapshot-source.test.js test/wfs-parcel-adapter.test.js test/geojson-snapshot-parcel-adapter.test.js",
+    "filesPassed": 4,
+    "testsPassed": 109
+  },
+  "geometryPersisted": false,
+  "databaseWrites": false,
+  "tlsVerificationDisabled": false
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 144,
+  "city": "Quanzhou",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/quanzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "泉州 不动产 地籍图 宗地 GIS 开放数据 查询"
+  },
+  "results": [
+    {
+      "title": "Quanzhou one-certificate/one-code property service",
+      "url": "https://quanzhou.gov.cn/xsdmyjjfwzq/zqztfwrk/yhsjfwl/jyzf/djcc/202211/t20221125_2805739.htm",
+      "kind": "official-service",
+      "note": "Citizens can scan QR codes on certificates to retrieve parcel/building diagrams; not open bulk geometry."
+    }
+  ],
+  "assessment": "Chinese-language search found QR-linked parcel map access for registered properties, but no citywide public feature dataset or open exact-ID query.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

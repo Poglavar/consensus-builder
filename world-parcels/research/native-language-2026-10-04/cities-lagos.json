@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 26,
+  "city": "Lagos",
+  "countryCode": "NG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/lagos.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Lagos Nigeria cadastral parcel data geospatial GIS open data land registry mapping"
+  },
+  "results": [],
+  "assessment": "English-language search returned no verifiable Lagos parcel vector source. The surfaced Karachi result is a different city and is excluded; this screening does not establish absence.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

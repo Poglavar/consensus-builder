@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 171,
+  "city": "Fuzhou",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/fuzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "福州 不动产 地籍图 宗地 GIS 数据开放 矢量 服务"
+  },
+  "results": [
+    {
+      "title": "Fuzhou cadastral map/property lookup and one-map system",
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202309/t20230904_6249291.htm",
+      "kind": "official",
+      "note": "Describes full-coverage city cadastral database and parcel/unit-code lookup, but platform appears to be government internal management and does not establish public feature API."
+    },
+    {
+      "title": "Fuzhou cadastral map query for property owners",
+      "url": "https://zygh.fuzhou.gov.cn/zfxxgkzl/gkml/gzdt_31860/202005/t20200506_3270474.htm",
+      "kind": "official-service",
+      "note": "Parcel map lookup at self-service kiosks requires identity/face recognition; not an open vector feed."
+    }
+  ],
+  "assessment": "Official search found a full-coverage cadastral database and parcel-indexed internal system, with authenticated owner lookup. No public anonymous feature endpoint was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

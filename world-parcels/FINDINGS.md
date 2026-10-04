@@ -158,3 +158,28 @@ Information → Choose a parcel source accepts a public HTTPS URL. Discovery che
 Successful source configuration is encoded into a portable gateway ID, saved per city/backend in the browser and carried in binding provenance. This resolves after backend restart without a source-registration database or parcel import. It is only an explicit user choice; city defaults stay unchanged. Recent custom-source checks retain the last ten URL/attempt/error records in that browser, without parcel features. Custom attribution identifies the selected host rather than inheriting the city's default publisher.
 
 Live verification used Toronto's official FeatureServer/36: discovery, canonical viewport IDs, exact-ID retrieval and authoritative proposal binding all succeeded; selecting the URL survived browser reload and rendered 81 parcels. A real HTML URL (`https://example.com/`) produced the no-adapter result and both remediation links. Denied-access/rate-limit/offline behavior was verified with controlled failures in headless tests and the browser; these simulations are not evidence of an actual Toronto outage. The completed focused 23-file suite passed 817 tests, including failure-history, attribution and bounded-URL checks.
+
+## Native-language discovery and current cohort counts (2026-10-04)
+
+Every one of the 139 original-cohort cities unresolved at the start of this batch has
+an executed native-language query saved in `research/native-language-2026-10-04/`.
+Its index preserves the starting cohort, prior status, language/script and evidence
+file. The earlier records do not preserve queries or query languages, so we cannot
+assert that native-language searches had been applied consistently. A failed search
+means a source was not verified by that search, not that parcel data does not exist.
+
+The earlier “61 candidates” mixed 60 original-cohort cities with extra Zagreb. Shenzhen
+and now Barcelona add two verified cities; Berlin’s already-enabled source
+was also missing from its stale city record and is reconciled using saved proof.
+The original cohort now has 63 verified cities. After adding London, Manchester,
+Madrid, Barcelona and Savar, 32 are integrated and 31 remain. The app has 44 configured cities overall. London and Savar have explicitly
+partial scopes, and Spain's source currently returns 403 to this laptop after sustained
+acceptance probing. Geometry and native-ID successes, resets, blocks, paging quirks
+and Bangladesh identity failures are all retained in
+`research/batch-seven-live-cities-2026-10-04.json` and linked publisher evidence.
+
+The new searches found official parcel-related leads for Mexico City, Quito, Maputo,
+Belo Horizonte, Kyiv, additional Chinese cadastral lookups and several South Asian
+state/province services. These are not additional verified parcel feeds yet: some are
+catalogs, map renderers, scanned products or authenticated systems, and their vector
+geometry, stable IDs, complete bounded reads and coverage still need testing.

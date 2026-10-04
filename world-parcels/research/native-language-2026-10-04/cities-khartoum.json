@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 56,
+  "city": "Khartoum",
+  "countryCode": "SD",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/khartoum.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "الخرطوم خريطة مساحية قطع الأراضي كادستر GIS بيانات مفتوحة السودان"
+  },
+  "results": [
+    {
+      "title": "Sudan National Spatial Portal — National Information Center",
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "kind": "official"
+    }
+  ],
+  "assessment": "The search found Sudan's national spatial portal, which describes OGC WMS/WFS services. No Khartoum parcel layer, feature type, or anonymous exact-ID endpoint was identified in the returned evidence.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

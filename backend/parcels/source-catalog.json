@@ -1106,6 +1106,158 @@
       "licenceNote": "The previously checked catalogue stated CC-BY-2.5-AR; it is historical evidence, not a fresh terms verification. Source conditions remain informational.",
       "defaultForCity": false,
       "evidenceFile": "research/db-city-wfs-live-2026-10-03.json"
+    },
+    {
+      "idType": "string",
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "id": "gb-hmlr-city-of-london",
+      "name": "HM Land Registry — City of London",
+      "adapter": "gml-snapshot",
+      "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
+      "idField": "INSPIREID",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "GB-HMLR-LONDON-",
+      "outFields": [
+        "INSPIREID"
+      ],
+      "parcelNumberField": "INSPIREID",
+      "cityIds": [
+        "london"
+      ],
+      "countryCode": "GB",
+      "metricSrid": 32630,
+      "maxSnapshotBytes": 25165824,
+      "maxDecompressedBytes": 167772160,
+      "maxSnapshotFeatures": 150000,
+      "catalogueUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Adapted to WGS84.",
+      "scope": "City of London Corporation only; excludes the other London boroughs.",
+      "caveats": [
+        "Registered-title index polygons, not definitive legal parcel boundaries.",
+        "Whole official authority ZIP is indexed in transient memory; no upstream bbox API is claimed.",
+        "OSGB36 conversion uses a Helmert approximation with approximately 5 m accuracy; no OSTN15 grid.",
+        "Cold requests wait for a bounded download; monthly source changes are accepted only after complete parsing."
+      ]
+    },
+    {
+      "idType": "string",
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "id": "gb-hmlr-manchester",
+      "name": "HM Land Registry — Manchester",
+      "adapter": "gml-snapshot",
+      "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+      "idField": "INSPIREID",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "GB-HMLR-MANCHESTER-",
+      "outFields": [
+        "INSPIREID"
+      ],
+      "parcelNumberField": "INSPIREID",
+      "cityIds": [
+        "manchester"
+      ],
+      "countryCode": "GB",
+      "metricSrid": 32630,
+      "maxSnapshotBytes": 25165824,
+      "maxDecompressedBytes": 167772160,
+      "maxSnapshotFeatures": 150000,
+      "catalogueUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Adapted to WGS84.",
+      "scope": "Manchester City Council authority only; excludes the rest of Greater Manchester.",
+      "caveats": [
+        "Registered-title index polygons, not definitive legal parcel boundaries.",
+        "Whole official authority ZIP is indexed in transient memory; no upstream bbox API is claimed.",
+        "OSGB36 conversion uses a Helmert approximation with approximately 5 m accuracy; no OSTN15 grid.",
+        "Cold requests wait for a bounded download; monthly source changes are accepted only after complete parsing."
+      ]
+    },
+    {
+      "idType": "string",
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "id": "es-dgc-inspire-cp-wfs",
+      "name": "Dirección General del Catastro — Madrid and Barcelona",
+      "adapter": "catastro-wfs",
+      "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "idField": "nationalCadastralReference",
+      "idPattern": "^[A-Z0-9]{14}$",
+      "idPrefix": "ES-DGC-",
+      "outFields": [
+        "nationalCadastralReference"
+      ],
+      "parcelNumberField": "nationalCadastralReference",
+      "cityIds": [
+        "madrid",
+        "barcelona"
+      ],
+      "countryCode": "ES",
+      "metricSrid": 25830,
+      "metricSridByCity": {
+        "madrid": 25830,
+        "barcelona": 25831
+      },
+      "maxResponseBytes": 8388608,
+      "bbox": [
+        -10,
+        35,
+        5,
+        44
+      ],
+      "catalogueUrl": "https://www.catastro.hacienda.gob.es/webinspire/",
+      "attribution": "Dirección General del Catastro, INSPIRE Cadastral Parcels. Adapted to WGS84.",
+      "scope": "Bounded samples in Madrid and Barcelona; national or municipality-wide completeness is not claimed.",
+      "caveats": [
+        "Official WFS does not implement offset paging. Requests omit count/startIndex and require actual members to equal numberMatched.",
+        "A truncated, malformed or exception response is unavailable, never an empty success."
+      ]
+    },
+    {
+      "idType": "string",
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "id": "bd-dlrs-dhamsona-bds-sheet-001",
+      "name": "DLRS — Savar, Dhamsona BDS sheet 001 (draft)",
+      "adapter": "dlrs-sheet",
+      "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "sheetForm": {
+        "rsnum": "201901",
+        "comcod": "4105",
+        "unitcod": "010510026",
+        "sheetno": "001"
+      },
+      "idField": "Dag_No",
+      "idPattern": "^[1-9][0-9]*(?:/[1-9][0-9]*)?$",
+      "idPrefix": "BD-DLRS-201901-4105-010510026-001-",
+      "outFields": [
+        "Dag_No"
+      ],
+      "parcelNumberField": "Dag_No",
+      "cityIds": [
+        "savar"
+      ],
+      "countryCode": "BD",
+      "metricSrid": 32646,
+      "maxSnapshotFeatures": 5000,
+      "maxSnapshotBytes": 2097152,
+      "expectedSnapshotFeatures": 108,
+      "catalogueUrl": "https://settlement.gov.bd/",
+      "attribution": "Department of Land Records and Surveys, Bangladesh. Dhamsona BDS sheet 001, ongoing draft survey.",
+      "scope": "Only the verified 108-plot Dhamsona BDS sheet 001; does not cover all Savar or Bangladesh.",
+      "caveats": [
+        "Ongoing draft survey; not a certified final land record.",
+        "Native plot number is scoped by survey, district office, mouza and sheet. No owner fields are retained.",
+        "Whole small sheet is cached in memory for five minutes. A changed feature count requires a coverage recheck and is reported unavailable."
+      ]
     }
   ]
 }

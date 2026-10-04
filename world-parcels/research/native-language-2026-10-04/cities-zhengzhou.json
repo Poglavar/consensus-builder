@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 86,
+  "city": "Zhengzhou",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/zhengzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "郑州 不动产 地籍图 宗地 GIS 开放数据 查询 服务"
+  },
+  "results": [
+    {
+      "title": "Zhengzhou land-use-right secondary-market implementation plan",
+      "url": "https://public.zhengzhou.gov.cn/D0102X/7832265.jhtml",
+      "kind": "official-policy",
+      "note": "Confirms internal one-map/registration platform and unified parcel codes, not public geometry access."
+    }
+  ],
+  "assessment": "Search surfaced official policy referencing a city one-map and parcel code integration, but no public parcel geometry service or stable-ID feature endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

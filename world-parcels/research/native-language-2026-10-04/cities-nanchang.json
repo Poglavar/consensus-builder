@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 142,
+  "city": "Nanchang",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/nanchang.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "南昌 不动产 地籍图 宗地 GIS 开放数据"
+  },
+  "results": [
+    {
+      "title": "Nanchang real-property visual query",
+      "url": "https://bnr.nc.gov.cn/ncszrzyj/xwdt/202210/72b7e6bd5aa9415383deb1baf8445971.shtml",
+      "kind": "official-viewer",
+      "note": "Free interactive property/parcel map query via city WeChat mini-program; bulk geometry access not specified."
+    },
+    {
+      "title": "Nanchang public geospatial platform",
+      "url": "https://www.nc3s.cn/",
+      "kind": "official-geoportal",
+      "note": "Provides vector basemaps and developer data APIs for transport, hydrography and settlements; cadastral parcel layer not identified."
+    }
+  ],
+  "assessment": "Official search found free parcel-map queries and public geospatial APIs, but the latter did not show a cadastral parcel layer. No open feature-level parcel endpoint verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

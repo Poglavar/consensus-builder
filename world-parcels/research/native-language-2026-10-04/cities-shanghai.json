@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 5,
+  "city": "Shanghai",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/shanghai.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "上海 不动产宗地 地籍 数据 GIS 开放数据 地块 服务"
+  },
+  "results": [
+    {
+      "title": "DataShanghai public data portal",
+      "url": "https://data.sh.gov.cn/view/",
+      "kind": "official-open-data",
+      "note": "General city data portal; no parcel vector dataset identified."
+    },
+    {
+      "title": "Shanghai land registration and cadastral database system (official article)",
+      "url": "https://ghzyj.sh.gov.cn/cmsres/31/3179a466970e4a6ca5a1de2bea500ce1/50efb1d54c709176dc2877d7dbd6293f.pdf",
+      "kind": "official-document",
+      "note": "Confirms integrated cadastral spatial database, but does not establish public parcel-vector access."
+    }
+  ],
+  "assessment": "Search found official evidence that Shanghai maintains an integrated cadastral GIS, but not public parcel geometries, an open feature endpoint, or reusable stable identifiers.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

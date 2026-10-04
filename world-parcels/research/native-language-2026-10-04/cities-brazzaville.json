@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 126,
+  "city": "Brazzaville",
+  "countryCode": "CG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/brazzaville.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Brazzaville cadastre parcelles SIG données géospatiales République du Congo"
+  },
+  "results": [
+    {
+      "title": "Government public-works bulletin (2013)",
+      "url": "https://grands-travaux.gouv.cg.kube-tech.com/sites/default/files/2020-04/REFLET%20N%C2%B015%20du%2006-2013-red.pdf",
+      "kind": "official-historical-document",
+      "note": "Historical project mention only; no current service verified."
+    }
+  ],
+  "assessment": "Search surfaced a 2013 government document describing a cadastral/georeferenced parcel project. It does not establish a current public dataset or query service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

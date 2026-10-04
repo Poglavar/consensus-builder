@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 108,
+  "city": "Guadalajara",
+  "countryCode": "MX",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/guadalajara.json",
+  "query": {
+    "language": "Spanish",
+    "script": "Latin",
+    "text": "Guadalajara Jalisco catastro parcelas predial datos abiertos GIS WFS"
+  },
+  "results": [
+    {
+      "title": "Guadalajara Catastro Directorate",
+      "url": "https://catastro.guadalajara.gob.mx/",
+      "kind": "official",
+      "note": "Official department site links to open data and property-tax services, but search result did not identify a parcel dataset or feature endpoint."
+    }
+  ],
+  "assessment": "Official municipal cadastral portal surfaced, but no parcel vector dataset, query endpoint or stable IDs were verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

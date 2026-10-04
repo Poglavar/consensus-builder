@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 16,
+  "city": "Beijing",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/beijing.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "北京 地籍 宗地 矢量 数据 开放 GIS 地块 查询 服务"
+  },
+  "results": [
+    {
+      "title": "Beijing public geographic information service platform",
+      "url": "https://beijing.tianditu.gov.cn/",
+      "kind": "official-geoportal",
+      "note": "Provides general map and data APIs; no parcel dataset identified."
+    },
+    {
+      "title": "Beijing public data open platform",
+      "url": "https://data.beijing.gov.cn/",
+      "kind": "official-open-data",
+      "note": "Large municipal catalog; search did not identify parcel polygon dataset."
+    }
+  ],
+  "assessment": "Chinese-language search surfaced official mapping and open-data portals, but no city parcel polygon download/service or stable public parcel identifier was identified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

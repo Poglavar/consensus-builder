@@ -3359,7 +3359,12 @@
             "lusaka": "Lusaka, Zambia",
             "shenzhen": "Shenzhen, China",
             "montreal": "Montreal, Canada",
-            "dortmund": "Dortmund, Germany"
+            "dortmund": "Dortmund, Germany",
+            "london": "London, United Kingdom",
+            "manchester": "Manchester, United Kingdom",
+            "madrid": "Madrid, Spain",
+            "barcelona": "Barcelona, Spain",
+            "savar": "Savar, Bangladesh"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",

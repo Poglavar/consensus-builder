@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 128,
+  "city": "Qingdao",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/qingdao.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "青岛 地籍图 宗地 GIS 数据开放 不动产"
+  },
+  "results": [
+    {
+      "title": "Qingdao open cadastral map service",
+      "url": "https://www.qingdaonews.com/content/2022-01/27/content_23065461.htm",
+      "kind": "news-report-of-official-service",
+      "note": "Reports the city offers free public queries of citywide cadastral maps and construction parcel information; geometry download/API not established."
+    },
+    {
+      "title": "Qingdao natural resources system maintenance procurement notice",
+      "url": "https://www.qingdao.gov.cn/zwgk/xxgk/zygh/gkml/czcw/202602/t20260228_10520683.shtml",
+      "kind": "official-procurement-notice",
+      "note": "Confirms ongoing cadastral visualization query system maintenance, not an open vector endpoint."
+    }
+  ],
+  "assessment": "Search found citywide free public cadastral-map query service, but not open vector downloads or feature-level query by native ID. Potential follow-up should inspect exact query access and any backing services.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

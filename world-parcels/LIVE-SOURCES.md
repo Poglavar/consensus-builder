@@ -530,3 +530,71 @@ New Delhi's full snapshot repeats native IDs across distinct polygons. Fortaleza
 hosts failed DNS resolution from the authorized network route; Singapore still lacks
 a verified bounded vector/exact-key service. These are technical holds with source
 conditions kept informational, and prior attempts remain in the registry history.
+
+## Native-language retry and five-city batch (2026-10-04)
+
+The original 200-city cohort had 60 verified candidates. The previously quoted 61
+also included the extra Zagreb record. Shenzhen subsequently brought the original
+cohort to 61; this batch verifies Barcelona. The count audit also repairs Berlin’s stale city record
+using its already-saved live verification. There are now 63 verified original-cohort
+cities: 32 are configured in the app and 31 remain to integrate. The app now has 44 city
+entries and 34 executable provider descriptors overall. These totals distinguish
+original-cohort cities from additional cities and multiple cities sharing a provider.
+
+All 139 original-cohort cities unresolved at the start of this batch received an
+executed native-language search. Exact query, language/script, source links and
+assessment are saved per city under `research/native-language-2026-10-04/`, indexed
+by `index.json`. Historical evidence did not preserve query languages, so a consistent
+native-language pass cannot be claimed for those earlier searches. New leads such as
+Mexico City, Quito, Maputo, Belo Horizonte, Kyiv and several Asian cadastral viewers
+remain discovery evidence until actual vectors, native identity and completeness pass.
+
+| City | Executable source | Verified scope |
+| --- | --- | --- |
+| London | `gb-hmlr-city-of-london` / `gml-snapshot` | City of London Corporation authority; excludes other London boroughs |
+| Manchester | `gb-hmlr-manchester` / `gml-snapshot` | Manchester City Council authority; excludes other Greater Manchester authorities |
+| Madrid | `es-dgc-inspire-cp-wfs` / `catastro-wfs` | Bounded official DGC parcel windows |
+| Barcelona | Same DGC WFS | Bounded official DGC parcel windows; promoted from an earlier unsuccessful search |
+| Savar | `bd-dlrs-dhamsona-bds-sheet-001` / `dlrs-sheet` | Only 108 draft-survey plots in Dhamsona BDS sheet 001 |
+
+HMLR's anonymous official downloads require a publisher-scoped session and allowlisted
+S3 redirect. A complete authority ZIP is checked for bounded size and CRC, then parsed
+incrementally with namespace-aware Saxes and proj4. The complete native index lives
+only in memory for five minutes; a failed refresh drops availability rather than
+serving stale geometry as current. Distinct authority prefixes avoid routing a London
+or Manchester parcel into Birmingham's broader legacy prefix. OSGB36 transformation
+uses an approximately five-metre Helmert approximation, without OSTN15. These are
+registered-title index polygons, not definitive legal boundaries. Manchester's archive
+contains 120,989 polygons; the combined UK standalone proof peaked at about 712 MiB
+with the default heap. Production process headroom must be checked before deployment;
+this batch has not been deployed. See the recorded memory experiments in `gb-runtime.json`.
+
+Spain's WFS returns GML, with projected UTM30/31 windows. It ignores startIndex and can
+report misleading numberReturned when count truncates a reply, so the adapter omits
+count, startIndex and hits, and requires actual members to equal numberMatched. Exact
+reads use native 14-character cadastral references. Positive viewport identities are
+reused for at most 60 seconds in a bounded memory cache; unknown or expired identities
+require GetParcel. Absence is never inferred from an HTTP200 exception report. Parallel
+exact probes produced ECONNRESET; sequential probes passed 160 Madrid exact IDs before
+the sustained test returned HTTP403. Subsequent laptop requests remained blocked. Both
+failures are retained, and existing source-status UI and cooldown handling expose them.
+Earlier small direct exact tests passed all five Madrid and eleven Barcelona references.
+The reduced-traffic adapter passes gateway and binding fixtures; fresh live acceptance
+from this network remains affected by the recorded block.
+
+DLRS serves a small complete sheet through a fixed anonymous POST. Native Dag_No is
+scoped by survey, office, mouza and sheet; FID and the repeated Id field are not identity.
+The verified 108-member sheet is transiently cached, with count, geometry and uniqueness
+checks. A changed member count requires a coverage recheck and fails unavailable.
+Other Bangladesh candidates remain held for technical reasons: the Dhaka sheet has a
+zero placeholder, and the Chattogram candidate has duplicate plot IDs and lies near
+Anwara outside the city proper. This does not claim those cities lack parcel data.
+
+The new GML and DLRS adapters are fixed-publisher adapters. Custom-URL discovery still
+supports the generic formats listed in `frontend/parcel-source-formats.html`; arbitrary
+GML archives or DLRS POST endpoints are not automatically accepted as custom sources.
+All five cities use the same canonical WGS84 viewport, exact-ID and footprint contract,
+including proposal binding without querying a parcel table. No ZIP, GML or parcel geometry
+is imported into the database or committed as batch evidence. Source conditions remain
+informational. Evidence: `research/batch-seven-live-cities-2026-10-04.json` and its linked
+publisher records. The full serial headless suite passed 7,290 tests, with six skipped.

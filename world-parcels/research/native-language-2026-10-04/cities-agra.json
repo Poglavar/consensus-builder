@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 180,
+  "city": "Agra",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/agra.json",
+  "query": {
+    "language": "Hindi",
+    "script": "Devanagari",
+    "text": "आगरा भू नक्शा खसरा नक्शा उत्तर प्रदेश राजस्व विभाग सरकारी"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Hindi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "आगरा भू नक्शा खसरा नक्शा उत्तर प्रदेश राजस्व विभाग सरकारी",
+    "englishQuery": "Agra land map and khasra map from Uttar Pradesh Revenue Department",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "राजस्व परिषद् उत्तर प्रदेश",
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "kind": "official-state-land-records",
+      "note": "Official map portal exposes village map and plot-boundary viewing links; Agra-specific vector-query support was not tested."
+    },
+    {
+      "title": "भूलेख उत्तर प्रदेश",
+      "url": "https://upbhulekh.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "State land-record system provides map-linked plot/record services, with no direct vector endpoint in the reviewed search results."
+    }
+  ],
+  "assessment": "State map viewers are relevant leads for Agra, but this search did not confirm an open spatial feature service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:8971",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "purpose": "Native-language runtime-source reassessment for Madrid and Barcelona against the Spanish General Directorate for Cadastre INSPIRE cadastral-parcel WFS (CP).",
+  "sources": {
+    "operator": "Dirección General del Catastro (DGC), Ministerio de Hacienda, Spain",
+    "wfsEndpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+    "officialServicePage": "https://www.catastro.hacienda.gob.es/webinspire/",
+    "officialSpanishSpecification": "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS.pdf",
+    "officialEnglishSpecification": "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf",
+    "schema": "https://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd",
+    "license": "https://www.catastro.hacienda.gob.es/webinspire/documentos/Licencia_en.pdf",
+    "protocol": "INSPIRE WFS 2.0.0; DGC documents GetCapabilities, DescribeFeatureType, ListStoredQueries, DescribeStoredQueries and GetFeature; response format GML 3.2.1.",
+    "featureType": "CP:CadastralParcel (official examples also use cp.cadastralparcel)",
+    "nativeKey": "cp:nationalCadastralReference / stored-query parameter REFCAT; 14-character cadastral reference. GML feature identifier follows ES.SDGC.CP.<nationalCadastralReference> in the previously read Madrid GML sample. This is the stable parcel identity; do not use a GML member index as an ID.",
+    "geometry": "INSPIRE CP parcel geometry is a GML MultiSurface; existing Madrid sample was a MultiSurface/Surface/PolygonPatch with closed rings, projected EPSG:25830 coordinates.",
+    "crs": {
+      "madrid": "EPSG:25830 (ETRS89 / UTM 30N)",
+      "barcelona": "EPSG:25831 (ETRS89 / UTM 31N)",
+      "documentedAlternatives": [
+        "EPSG:4326",
+        "EPSG:4258",
+        "EPSG:25829",
+        "EPSG:25830",
+        "EPSG:25831",
+        "EPSG:3785",
+        "EPSG:3857"
+      ]
+    },
+    "limits": "DGC WFS specification documents CP:CadastralParcel requests limited to a 1 km² search box and 5,000 features. Do not use a large city-wide bbox. The official document says service data is read directly from the DGC cadastral database and updated at request time.",
+    "scope": "The official CP WFS covers DGC responsibility (Spain except the Basque Country and Navarre); Barcelona and Madrid fall in the stated scope. DGC reports 95% completeness for its territory in this service metadata/specification.",
+    "terms": "DGC license page states web-service access is under a transfer-of-rights license, automatically obtained with use. Public/commercial use is allowed after transformation; redistribution of unchanged original data is not authorized. Also warns results may be outdated/incorrect and DGC may suspend intensive use. Terms are recorded as source facts, not treated as a technical integration gate.",
+    "attribution": "Dirección General del Catastro, Ministerio de Hacienda, España; INSPIRE CP (Cadastral Parcel), adapted/processed data.",
+    "actualContentType": "text/xml; charset=utf-8; WFS body namespace is WFS 2.0 plus INSPIRE CP 4.0 and GML 3.2; actual body includes FeatureCollection wfs:member/cp:CadastralParcel.",
+    "schemaVersionNote": "DGC specification PDF describes CP 3.0.1 guidance, but live 2026 WFS response advertises/uses INSPIRE CP 4.0 (`http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd`) and GML 3.2.",
+    "metadataUriFromCapabilities": "https://www.idee.es/csw-inspire-idee/srv/spa/csw?SERVICE=CSW&VERSION=2.0.2&REQUEST=GetRecordById&outputSchema=http://www.isotc211.org/2005/gmd&ElementSetName=full&ID=ES_SDGC_CP",
+    "metadataUriObserved": true,
+    "describeFeatureTypeUri": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=DescribeFeatureType&typenames=CP%3ACadastralParcel",
+    "describeFeatureType": "HTTP 200, 303 bytes: CP 4.0 schema include URL; dereferenced XSD fetched separately and saved only in /tmp.",
+    "gmlPropertiesObserved": [
+      "gml:id",
+      "cp:areaValue",
+      "cp:beginLifespanVersion",
+      "cp:endLifespanVersion",
+      "cp:geometry",
+      "cp:inspireId/base:Identifier/localId",
+      "cp:inspireId/base:Identifier/namespace",
+      "cp:label",
+      "cp:nationalCadastralReference",
+      "cp:referencePoint"
+    ],
+    "pagingCapability": "GetCapabilities advertises ImplementsResultPaging=FALSE, matching observed startIndex behavior.",
+    "outputFormatsObserved": [
+      "text/xml; subtype=gml/3.2.1",
+      "application/gml+xml; version=3.2"
+    ],
+    "boundedServiceEnvelope": "Official CP layer WGS84BoundingBox -18.5 26.2 / 5.3 44.8.",
+    "epsg4326ExactOutput": "Verified with exact GetParcel for both city sample parcels, HTTP 200. GML srsName is http://www.opengis.net/def/crs/EPSG/0/4326; coordinate tuple is axis ordered latitude, longitude (e.g., Madrid starts [40.417225,-3.704223], Barcelona [41.386924,2.16773]). Swap axis order when mapping to GeoJSON/WGS84 longitude-latitude.",
+    "crs84ExactOutput": "Attempted exact GetParcel with SRSNAME=CRS::84 and urn:ogc:def:crs:CRS::84 for both references; HTTP 404 HTML. Although Capabilities lists CRS::84, do not assume this output SRS works via stored-query GET.",
+    "exactQueryOutputs": {
+      "defaultSrs": "Both Madrid and Barcelona GetParcel calls with no SRSNAME returned GML geometry tagged EPSG:4326; first coordinate tuple uses latitude,longitude order.",
+      "epsg4326": "Both exact queries with SRSNAME=EPSG::4326 return HTTP200, geometry tagged http://www.opengis.net/def/crs/EPSG/0/4326; first tuple is latitude,longitude.",
+      "epsg4258": "Both exact queries with SRSNAME=EPSG::4258 return HTTP200 and geometry tagged EPSG:4258; Barcelona first tuple [41.386923,2.167725].",
+      "epsg25830": "Both exact queries with SRSNAME=EPSG::25830 return HTTP200; the Barcelona reference is reprojected into UTM30 even though it is in zone31. Inverse projection of its first coordinate from UTM31 bbox-query result vs UTM30 exact-query result differs only 1.7e-8 degrees latitude / 2.7e-8 degrees longitude.",
+      "crs84": "CRS::84 and urn:ogc:def:crs:CRS::84 exact GetParcel were tested on both cities and returned HTTP404 HTML despite CRS::84 appearing in capabilities. Do not use CRS:84 stored-query output."
+    },
+    "unknownReferenceBehavior": "GetParcel for impossible-format-but-well-formed 0000000AA0000A with EPSG::25830 returns HTTP200 OWS ExceptionReport (not a WFS FeatureCollection and not HTTP404), exceptionCode OperationProcessingFailed, Spanish text “No se ha encontrado la parcela 0000000AA0000A para el huso 25830”, no wfs:member. Classify an OWS ExceptionReport/no feature as exact-ID absent/error before treating HTTP200 as success."
+  },
+  "nativeQueryTemplates": {
+    "capabilities": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetCapabilities",
+    "bboxGetFeature": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typenames=CP%3ACadastralParcel&srsname=EPSG%3A%3A{EPSG}&bbox={xmin}%2C{ymin}%2C{xmax}%2C{ymax}&count=3",
+    "bboxHits": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typenames=CP%3ACadastralParcel&srsname=EPSG%3A%3A{EPSG}&bbox={xmin}%2C{ymin}%2C{xmax}%2C{ymax}&resultType=hits",
+    "exactParcelByReference": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2&request=GetFeature&STOREDQUERIE_ID=GetParcel&refcat={14-character-national-cadastral-reference}&srsname=EPSG%3A%3A{EPSG}",
+    "paging": "GetCapabilities explicitly reports ImplementsResultPaging=FALSE. Observed count truncates actual wfs:member results but startIndex=0 and 3 return identical first pages. In response XML, numberReturned reports the matched total even when count truncates actual members. resultType=hits and count=0 are both ignored and return full geometries. For a no-count request, compare parsed members with numberMatched; if fewer, subdivide spatially (≤1 km² and ≤5,000 matches), not offset paginate."
+  },
+  "cities": {
+    "madrid": {
+      "centerLonLat": [
+        -3.7038,
+        40.4168
+      ],
+      "tinyBboxEtrs89Utm30": [
+        440247.596,
+        4474201.544,
+        440333.32,
+        4474313.22
+      ],
+      "bboxAreaKm2Approx": 0.0095,
+      "boundedGeometryStatus": "verified: anonymous official WFS tiny bbox returned complete GML CP MultiSurface features; all sampled exterior rings were closed. No geometry coordinates persisted.",
+      "priorOfficialAtomEvidence": {
+        "feed": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/ES.SDGC.CP.atom_28.xml",
+        "municipalZip": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/28900-MADRID/A.ES.SDGC.CP.28900.zip",
+        "rangeRequest": "bytes=0-400000",
+        "status": 206,
+        "headerNumberMatched": 141430,
+        "sampleGeometryRead": "3 features were sampled transiently by the earlier task; no geometry was copied into this evidence file.",
+        "evidenceFile": "../madrid-parcel-response.json",
+        "note": "This confirms an official current-vintage Madrid municipality cadastral GML archive exists, but ATOM is whole-municipality delivery with no spatial paging and is not an acceptable routine viewport adapter by itself."
+      },
+      "nativeExactQuery": {
+        "referenceSource": "First native reference from the verified city bbox result.",
+        "reference": "0245708VK4704C",
+        "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&refcat=0245708VK4704C&srsname=EPSG%3A%3A25830",
+        "httpStatus": 200,
+        "actualFeatureCount": 1,
+        "nativeReferenceMatched": true,
+        "geometryEqualToBboxFeature": true,
+        "note": "Exact-queried every native reference in this bbox: all returned exactly one feature with the same native reference and geometry as its bbox copy; hashes were compared in memory only and not persisted.",
+        "outputSrsTests": [
+          "default omitted -> EPSG:4326 (lat,lon axis order)",
+          "EPSG::4326 -> success (lat,lon axis order)",
+          "EPSG::4258 -> success",
+          "EPSG::25830 -> success"
+        ]
+      },
+      "previousWfsFailure": {
+        "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=GetFeature&STOREDQUERE_ID=GetParcel&srsname=EPSG::4326&bbox=40.4160,-3.7040,40.4170,-3.7028",
+        "reportedHttpStatus": 400,
+        "interpretation": "The older request combined a reference-based GetParcel stored query with a bbox and misspelled STOREDQUERIE_ID as STOREDQUERE_ID. DGC documents bbox requests and stored queries as separate forms, so this HTTP 400 is not a clean bbox test and does not establish that the WFS has no Madrid parcels."
+      },
+      "attemptedCurrentRequests": [
+        {
+          "purpose": "bounded bbox without count (complete small sample)",
+          "httpStatus": 200,
+          "actualMemberCount": 5,
+          "numberMatched": 5,
+          "geometry": "polygonal GML confirmed; coordinates not saved"
+        },
+        {
+          "purpose": "bbox count/page-size clamp count=3",
+          "httpStatus": 200,
+          "actualMemberCount": 3,
+          "numberMatched": 5,
+          "numberReturnedAttribute": 5,
+          "observed": "count limits members, but numberReturned still equals total match count"
+        },
+        {
+          "purpose": "bbox resultType=hits",
+          "httpStatus": 200,
+          "actualMemberCount": 5,
+          "numberMatched": 5,
+          "observed": "resultType=hits plus count=0 did not suppress geometries; response still contained the full matched feature set."
+        },
+        {
+          "purpose": "bbox count=1 startIndex=0 and startIndex=1; plus count=3 startIndex=0 and startIndex=3",
+          "httpStatus": 200,
+          "observed": "count=1 or 3 limits actual members, but startIndex=0/1/3 repeats the same first member/page. numberReturned stays equal to total numberMatched, not actual members."
+        },
+        {
+          "purpose": "GetParcel exact query for each bounded native reference",
+          "httpStatus": 200,
+          "actualFeatureCountPerReference": 1,
+          "nativeIdAndGeometryConflicts": 0
+        }
+      ],
+      "countAndPaging": "Observed complete no-count bbox: numberMatched/memberCount 5. resultType=hits and count=0 both return full geometries. count=3 truncates to 3 features, but numberReturned erroneously remains 5. WFS startIndex=0/1/3 is ignored and the first page repeats; offset pagination is not usable. For this tiny footprint, omitting count produced the full match set; larger dense windows should be split spatially when matched exceeds parsed member count.",
+      "boundedWfsResult": {
+        "httpStatus": 200,
+        "contentType": "text/xml; charset=utf-8",
+        "crs": "EPSG::25830",
+        "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typenames=CP%3ACadastralParcel&srsname=EPSG%3A%3A25830&bbox=440247.596%2C4474201.544%2C440333.320%2C4474313.220",
+        "wfsTimestampUtc": "2026-10-03T23:27:10",
+        "numberMatched": 5,
+        "numberReturnedAttribute": 5,
+        "actualMemberCount": 5,
+        "uniqueNativeReferenceCount": 5,
+        "geometryType": "MultiSurface",
+        "closedRings": true,
+        "bodyBytes": 12791,
+        "nativeReferences": [
+          "0245708VK4704C",
+          "0343303VK4704C",
+          "0345701VK4704E",
+          "0444101VK4704C",
+          "0445413VK4704E"
+        ],
+        "note": "This no-count request returned member count equal to numberMatched for this bounded sample."
+      },
+      "exactReferencesProof": {
+        "attempted": 5,
+        "http200SingleMatch": 5,
+        "nativeIdMatches": 5,
+        "sameGeometryAsBbox": 5,
+        "absentOrConflicting": 0,
+        "nativeReferences": [
+          "0245708VK4704C",
+          "0343303VK4704C",
+          "0345701VK4704E",
+          "0444101VK4704C",
+          "0445413VK4704E"
+        ]
+      }
+    },
+    "barcelona": {
+      "centerLonLat": [
+        2.1686,
+        41.3874
+      ],
+      "tinyBboxEtrs89Utm31": [
+        430446.343,
+        4582041.125,
+        430531.017,
+        4582152.945
+      ],
+      "bboxAreaKm2Approx": 0.0095,
+      "boundedGeometryStatus": "verified: anonymous official WFS tiny bbox returned complete GML CP MultiSurface features; all sampled exterior rings were closed. No geometry coordinates persisted.",
+      "nativeExactQuery": {
+        "referenceSource": "First native reference from the verified city bbox result.",
+        "reference": "0521307DF3802B",
+        "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&refcat=0521307DF3802B&srsname=EPSG%3A%3A25831",
+        "httpStatus": 200,
+        "actualFeatureCount": 1,
+        "nativeReferenceMatched": true,
+        "geometryEqualToBboxFeature": true,
+        "note": "Exact-queried every native reference in this bbox: all returned exactly one feature with the same native reference and geometry as its bbox copy; hashes were compared in memory only and not persisted.",
+        "outputSrsTests": [
+          "default omitted -> EPSG:4326 (lat,lon axis order)",
+          "EPSG::4326 -> success (lat,lon axis order)",
+          "EPSG::4258 -> success",
+          "EPSG::25830 -> success"
+        ]
+      },
+      "previousWfsFailures": [
+        {
+          "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&srsname=EPSG::4326&bbox=41.4249,2.1549,41.4253,2.1553",
+          "reportedHttpStatus": 400,
+          "interpretation": "Combines a stored GetParcel query (which requires REFCAT) with a bbox; not a valid clean spatial-query test."
+        },
+        {
+          "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=GetFeature&STOREDQUERIE_ID=GetParcel&refcat=9872023VH5797S&srsname=EPSG::25830",
+          "reportedHttpStatus": 400,
+          "interpretation": "The reference is not sourced from a bounded Barcelona parcel response and therefore does not constitute a valid Barcelona exact-key proof."
+        },
+        {
+          "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=GetCapabilities",
+          "reportedHttpStatus": 400,
+          "interpretation": "Earlier attempts reported generic Catastro HTML 400 even for GetCapabilities; that indicates access/client/query handling trouble rather than an empty spatial result."
+        }
+      ],
+      "attemptedCurrentRequests": [
+        {
+          "purpose": "bounded bbox without count (complete small sample)",
+          "httpStatus": 200,
+          "actualMemberCount": 11,
+          "numberMatched": 11,
+          "geometry": "polygonal GML confirmed; coordinates not saved"
+        },
+        {
+          "purpose": "bbox count/page-size clamp count=3",
+          "httpStatus": 200,
+          "actualMemberCount": 3,
+          "numberMatched": 11,
+          "numberReturnedAttribute": 11,
+          "observed": "count limits members, but numberReturned still equals total match count"
+        },
+        {
+          "purpose": "bbox resultType=hits",
+          "httpStatus": 200,
+          "actualMemberCount": 11,
+          "numberMatched": 11,
+          "observed": "resultType=hits plus count=0 did not suppress geometries; response still contained the full matched feature set."
+        },
+        {
+          "purpose": "bbox count=1 startIndex=0 and startIndex=1; plus count=3 startIndex=0 and startIndex=3",
+          "httpStatus": 200,
+          "observed": "count=1 or 3 limits actual members, but startIndex=0/1/3 repeats the same first member/page. numberReturned stays equal to total numberMatched, not actual members."
+        },
+        {
+          "purpose": "GetParcel exact query for each bounded native reference",
+          "httpStatus": 200,
+          "actualFeatureCountPerReference": 1,
+          "nativeIdAndGeometryConflicts": 0
+        }
+      ],
+      "countAndPaging": "Observed complete no-count bbox: numberMatched/memberCount 11. resultType=hits and count=0 both return full geometries. count=3 truncates to 3 features, but numberReturned erroneously remains 11. WFS startIndex=0/1/3 is ignored and the first page repeats; offset pagination is not usable. For this tiny footprint, omitting count produced the full match set; larger dense windows should be split spatially when matched exceeds parsed member count.",
+      "boundedWfsResult": {
+        "httpStatus": 200,
+        "contentType": "text/xml; charset=utf-8",
+        "crs": "EPSG::25831",
+        "requestUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typenames=CP%3ACadastralParcel&srsname=EPSG%3A%3A25831&bbox=430446.343%2C4582041.125%2C430531.017%2C4582152.945",
+        "wfsTimestampUtc": "2026-10-03T23:27:13",
+        "numberMatched": 11,
+        "numberReturnedAttribute": 11,
+        "actualMemberCount": 11,
+        "uniqueNativeReferenceCount": 11,
+        "geometryType": "MultiSurface",
+        "closedRings": true,
+        "bodyBytes": 27267,
+        "nativeReferences": [
+          "0521307DF3802B",
+          "0521308DF3802B",
+          "0521309DF3802B",
+          "0521310DF3802B",
+          "0524808DF3802D",
+          "0524809DF3802D",
+          "0524810DF3802D",
+          "0524811DF3802D",
+          "0524812DF3802D",
+          "0524813DF3802D",
+          "0722201DF3802D"
+        ],
+        "note": "This no-count request returned member count equal to numberMatched for this bounded sample."
+      },
+      "exactReferencesProof": {
+        "attempted": 11,
+        "http200SingleMatch": 11,
+        "nativeIdMatches": 11,
+        "sameGeometryAsBbox": 11,
+        "absentOrConflicting": 0,
+        "nativeReferences": [
+          "0521307DF3802B",
+          "0521308DF3802B",
+          "0521309DF3802B",
+          "0521310DF3802B",
+          "0524808DF3802D",
+          "0524809DF3802D",
+          "0524810DF3802D",
+          "0524811DF3802D",
+          "0524812DF3802D",
+          "0524813DF3802D",
+          "0722201DF3802D"
+        ]
+      }
+    }
+  },
+  "otherBarcelonaDataset": {
+    "catalogSearch": "https://opendata-ajuntament.barcelona.cat/data/api/3/action/package_search?q=mapa-parcelari",
+    "priorFinding": "Barcelona open-data catalog lists mapa-parcelari (municipal parcel map), CC BY 4.0, with WMS plus bulk SHP/DGN resources around 20-34 MB; the previous audit did not download the bulk archive. This is a distinct municipal dataset and does not itself prove the national DGC WFS runtime contract.",
+    "readiness": "No bounded geometry sample from this dataset was made for this assignment."
+  },
+  "runtimeAssessment": {
+    "madrid": "live-ready candidate technically: official tiny bbox returned 5/5 unique CP polygons and all 5 GetParcel exact reads returned one native match with identical geometry. Query in EPSG:25830. WFS offset paging is broken/ignored; use adaptive small spatial bbox subdivision and count-vs-member completeness checks.",
+    "barcelona": "live-ready candidate technically: official tiny bbox returned 11/11 unique CP polygons and all 11 GetParcel exact reads returned one native match with identical geometry. Query in EPSG:25831. This resolves the earlier Barcelona weak negative. WFS offset paging is broken/ignored; use adaptive small spatial bbox subdivision and count-vs-member completeness checks.",
+    "networkAndSecurity": "Verified HTTPS/TLS using Python urllib default certificate validation. Anonymous/read-only queries; no credentials, tokens, user or owner fields requested. The transfer-of-rights terms are documented for attribution/reuse handling, not used as a technical gate."
+  },
+  "nextProbe": "Before integration, repeat the completeness gate at each city configured center with the runtime adapter’s small spatial tiles and compare parsed wfs:member count to numberMatched. Exact GetParcel was verified for all native IDs from the two sample boxes. Do not rely on resultType=hits, numberReturned, or startIndex: resultType=hits returned geometry, numberReturned stayed equal to numberMatched despite count truncation, and offsets repeated the first page. Parse GML CP 4.0 / GML 3.2 namespaces, stable cp:nationalCadastralReference, gml:id only as a secondary transport identity, MultiSurface polygon rings; transform ETRS89/UTM30 and UTM31 to WGS84.",
+  "networkAndTLS": "Sandboxed shell DNS failed; subsequent authorized outbound HTTPS succeeded with Python urllib default TLS certificate validation. Evidence includes both the initial sandbox limitation and successful retry. No credentials, token, user or owner fields were requested.",
+  "responsePaths": {
+    "temporaryDirectory": "/tmp/spanish-catastro-live/",
+    "capabilities": "/tmp/spanish-catastro-live/capabilities.xml",
+    "describeFeatureType": "/tmp/spanish-catastro-live/describe-feature-type.xml",
+    "insPireCp4Schema": "/tmp/spanish-catastro-live/cp-4.0.xsd",
+    "madridBbox": "/tmp/spanish-catastro-live/madrid-tiny-bbox.gml",
+    "madridExact": "/tmp/spanish-catastro-live/madrid-exact-reference.gml",
+    "barcelonaBbox": "/tmp/spanish-catastro-live/barcelona-tiny-bbox.gml",
+    "barcelonaExact": "/tmp/spanish-catastro-live/barcelona-exact-reference.gml",
+    "note": "Temporary raw GML fixture files contain only the tiny public parcel samples required to inspect/hand off parser behavior; repository evidence stores only metadata, IDs and completeness/equality results, no coordinates or geometries.",
+    "madridExact4326": "/tmp/spanish-catastro-live/madrid-exact-4326.gml",
+    "barcelonaExact4326": "/tmp/spanish-catastro-live/barcelona-exact-4326.gml",
+    "barcelonaExact25830": "/tmp/spanish-catastro-live/barcelona-exact-25830.gml",
+    "barcelonaExact4258": "/tmp/spanish-catastro-live/barcelona-exact-4258.gml",
+    "madridExact4258": "/tmp/spanish-catastro-live/madrid-exact-4258.gml",
+    "unknownReference": "not persisted; OWS body shape and error were parsed in memory only."
+  }
+}

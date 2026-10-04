@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 161,
+  "city": "Ningbo",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/ningbo.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "宁波 地籍图 宗地 不动产 GIS 开放数据 服务"
+  },
+  "results": [
+    {
+      "title": "Ningbo municipal data service portal",
+      "url": "https://qf.ningbo.gov.cn/qfpt/fwbk/sjfw/index.html",
+      "kind": "official-open-data-portal",
+      "note": "General public-data service marketplace; cadastral dataset not identified."
+    },
+    {
+      "title": "Ningbo integrated survey data standard",
+      "url": "https://zgj.ningbo.gov.cn/module/download/downfile.jsp?classid=0&filename=db7786fd89ba4a1bb5ea95079a2bf2f8.pdf",
+      "kind": "official-technical-standard",
+      "note": "Describes parcel IDs and attributes in internal survey data; not public access evidence."
+    }
+  ],
+  "assessment": "Search confirmed parcel data structures and a municipal data service portal, but did not identify a public cadastral layer or endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

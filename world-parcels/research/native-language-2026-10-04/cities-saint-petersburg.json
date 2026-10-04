@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 91,
+  "city": "Saint Petersburg",
+  "countryCode": "RU",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/saint-petersburg.json",
+  "query": {
+    "language": "Russian",
+    "script": "Cyrillic",
+    "text": "Санкт-Петербург кадастровая карта участки GIS открытые данные WFS Росреестр"
+  },
+  "results": [
+    {
+      "title": "Rosreestr St Petersburg notice: public cadastral map moved to NSPD",
+      "url": "https://xn--80axgjn3ab0a.xn--p1ai/upravlenie-rosreestra/napominaem-publichnaya-kadastrovaya-karta-dostupna-teper-na-portale-nspd/",
+      "kind": "official-regional-notice",
+      "note": "Says the public cadastral map is available without authorization on the national spatial-data platform; vector download/API not established."
+    }
+  ],
+  "assessment": "Russian-language search found an unauthenticated public cadastral map on the national NSPD portal. The result supports map access, not an open exact-ID vector endpoint; foreign-network availability is untested.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

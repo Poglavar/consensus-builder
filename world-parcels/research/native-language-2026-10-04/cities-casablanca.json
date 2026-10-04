@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 94,
+  "city": "Casablanca",
+  "countryCode": "MA",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/casablanca.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "الدار البيضاء كادستر قطع الأراضي بيانات جغرافية خريطة GIS المغرب"
+  },
+  "results": [
+    {
+      "title": "Casablanca Urban Agency",
+      "url": "https://www.auc.ma/ar/",
+      "kind": "official"
+    },
+    {
+      "title": "ANCFCC cartographic products",
+      "url": "https://www.ancfcc.gov.ma/ProduitsCartographieAr/",
+      "kind": "official"
+    },
+    {
+      "title": "ANCFCC cadastral plan service",
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "kind": "official",
+      "note": "Search result appears to require form/captcha; no bulk open layer confirmed."
+    }
+  ],
+  "assessment": "Arabic results found the official Casablanca Urban Agency portal and ANCFCC cadastral-cartography products. The retrieved pages establish institutional and map-product leads, not an open city parcel vector/service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

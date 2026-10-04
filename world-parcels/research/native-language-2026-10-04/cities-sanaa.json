@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 111,
+  "city": "Şan'ā' (Sana'a)",
+  "countryCode": "YE",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/sanaa.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "صنعاء اليمن خريطة مساحية أراضي قطع الأراضي GIS بيانات مكانية كادستر"
+  },
+  "results": [
+    {
+      "title": "Yemen Remote Sensing and GIS Center",
+      "url": "https://yrsgisc.gov.ye/",
+      "kind": "official"
+    }
+  ],
+  "assessment": "The search surfaced Yemen's official remote-sensing/GIS center and its national 1:50,000 base-mapping work. No parcel-level service or native parcel identifiers were exposed by the result.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

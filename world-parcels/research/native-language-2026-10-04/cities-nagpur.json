@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 147,
+  "city": "Nagpur",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/nagpur.json",
+  "query": {
+    "language": "Marathi",
+    "script": "Devanagari",
+    "text": "नागपूर महाभूलेख भू नकाशा महाराष्ट्र जमीन अभिलेख सरकारी"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Marathi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "नागपूर महाभूलेख भू नकाशा महाराष्ट्र जमीन अभिलेख सरकारी",
+    "englishQuery": "Nagpur Mahabhulekh map, land records and Maharashtra survey records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Maharashtra Bhumi Abhilekh",
+      "url": "https://www.bhumiabhilekh.maharashtra.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "Department site advertises Mahabhunakasha maps linked to land records and survey numbers; not proof of anonymous bulk vector access."
+    },
+    {
+      "title": "District Superintendent Land Records, Nagpur",
+      "url": "https://nagpur.gov.in/district-superintendent-land-records/",
+      "kind": "official-district-government",
+      "note": "Nagpur administration links citizen land-record services including view-only property card and signed copies; no public parcel API specified."
+    }
+  ],
+  "assessment": "Official Maharashtra and Nagpur portals offer land-record/map services; open feature access, stable IDs, and Nagpur layer coverage remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:9793",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

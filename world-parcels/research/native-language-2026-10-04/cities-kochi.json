@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 80,
+  "city": "Kochi",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kochi.json",
+  "query": {
+    "language": "Malayalam",
+    "script": "Malayalam",
+    "text": "കൊച്ചി സർവേ ഭൂമി രേഖ നക്ഷ സർക്കാർ എറണാകുളം ഭൂമാപനം"
+  },
+  "results": [
+    {
+      "title": "Bhu-Naksha Kerala",
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "kind": "official-state-cadastral-viewer",
+      "note": "State viewer supports survey and subdivision lookup; anonymous bulk geometry service and Ernakulam coverage were not verified."
+    },
+    {
+      "title": "Ente Bhoomi Kerala",
+      "url": "https://revenue.entebhoomi.kerala.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "Government portal describes digital land-record/survey services; does not establish a public vector endpoint."
+    }
+  ],
+  "assessment": "Kerala’s official map and land-record systems are candidates, but city-level coverage and machine-readable access are unknown.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:9765",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Malayalam",
+    "queryScript": "Malayalam",
+    "nativeQuery": "കൊച്ചി സർവേ ഭൂമി രേഖ നക്ഷ സർക്കാർ എറണാകുളം ഭൂമാപനം",
+    "englishQuery": "Kochi land survey and cadastral map from Kerala government",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 195,
+  "city": "Caracas",
+  "countryCode": "VE",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/caracas.json",
+  "query": {
+    "language": "Spanish",
+    "script": "Latin",
+    "text": "Caracas catastro parcelas datos geográficos GIS geoportal abierto Venezuela municipio Libertador"
+  },
+  "results": [
+    {
+      "title": "Caracas SIGAT municipal cadastre portal",
+      "url": "https://caracas.sigat.net/",
+      "kind": "official-municipal-cadastre-portal",
+      "note": "Portal of Libertador Municipality’s tax/revenue superintendency and municipal cadastre directorate. The directorate is responsible for physical/economic/legal property inventory, cadastral certificates, boundary certifications and land-title information; public vector endpoint not identified."
+    },
+    {
+      "title": "Caracas multipurpose cadastre project",
+      "url": "https://storymaps.arcgis.com/stories/56786d51fccc4fb1a0c5ea1865ff26be",
+      "kind": "municipal-cadastral-GIS-description",
+      "note": "Describes municipal parcel characteristics viewer and cadastral GIS for Libertador; no anonymous feature service URL surfaced."
+    }
+  ],
+  "assessment": "Spanish-language search found an official municipal cadastral portal and a map-based cadastre project for Libertador, which covers the core Caracas municipality. This is a strong lead but does not verify an open vector layer, exact-ID service or coverage of the wider metropolitan area.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

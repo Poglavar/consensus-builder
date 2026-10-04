@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 110,
+  "city": "Jaipur",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/jaipur.json",
+  "query": {
+    "language": "Hindi",
+    "script": "Devanagari",
+    "text": "जयपुर भू नक्शा खसरा जमीन रिकॉर्ड राजस्व विभाग राजस्थान सरकारी"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Hindi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "जयपुर भू नक्शा खसरा जमीन रिकॉर्ड राजस्व विभाग राजस्थान सरकारी",
+    "englishQuery": "Jaipur cadastral map, khasra and land records from Rajasthan Revenue Department",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Urban GIS Portal",
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "kind": "official-state-urban-GIS",
+      "note": "Rajasthan citizen GIS portal surfaced, but search result does not establish cadastral parcel coverage or Jaipur parcel-vector access."
+    },
+    {
+      "title": "Rajasthan Board of Revenue: Settlement Annual Report",
+      "url": "https://landrevenue.rajasthan.gov.in/content/dam/landrevenue/boardofrevenue/pdffiles/newpdf/Ravira131.pdf",
+      "kind": "official-state-publication",
+      "note": "Reports digitization of revenue map sheets and urban habitation land-record work; not evidence of open Jaipur feature service."
+    }
+  ],
+  "assessment": "Official-state references point to revenue-map digitization and an urban GIS portal; current Jaipur cadastral API remains unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:8064",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

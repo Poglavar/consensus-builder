@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 19,
+  "city": "Moscow",
+  "countryCode": "RU",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/moscow.json",
+  "query": {
+    "language": "Russian",
+    "script": "Cyrillic",
+    "text": "Москва кадастровая карта земельные участки геоданные открытый доступ WFS"
+  },
+  "results": [],
+  "assessment": "Russian-language screening did not return an authoritative public Moscow parcel-vector dataset or query endpoint. This bounded search cannot establish source absence; prior access limitations remain relevant.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

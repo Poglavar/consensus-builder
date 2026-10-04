@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 60,
+  "city": "Abidjan",
+  "countryCode": "CI",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/abidjan.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Abidjan cadastre parcellaire SIG couche vectorielle données géographiques ouvertes Côte d'Ivoire"
+  },
+  "results": [
+    {
+      "title": "Côte d'Ivoire Geoportal",
+      "url": "https://geoportail2.anstat.ci/",
+      "kind": "official-portal"
+    },
+    {
+      "title": "Overture vector data for Abidjan",
+      "url": "https://data.nextgis.com/fr/region/CI-AB/overture/",
+      "kind": "secondary-basemap",
+      "note": "Buildings/roads/etc.; not a cadastral parcel source."
+    }
+  ],
+  "assessment": "The search surfaced Côte d'Ivoire's official geoportal and agency geospatial pages, but did not establish parcel layer names, anonymous feature access, or stable identifiers. Overture and commercial tile/map results are not cadastral evidence.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

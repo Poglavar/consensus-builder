@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 8,
+  "city": "Manila",
+  "countryCode": "PH",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/manila.json",
+  "query": {
+    "language": "Tagalog",
+    "script": "Latin",
+    "text": "Manila Lupa Land Management Bureau mapa ng lupa loteng kadastral datos geospatial site:gov.ph"
+  },
+  "results": [
+    {
+      "title": "Geoportal Philippines data inventory",
+      "url": "https://www.geoportal.gov.ph/gpresources/GP_DataInventory.pdf",
+      "kind": "official-national-data-inventory",
+      "note": "Inventory search result lists LMB parcel data as uploaded with conditional download; did not establish Manila-specific coverage or current downloadable parcel geometry."
+    },
+    {
+      "title": "DENR News Alerts, 18 August 2021",
+      "url": "https://denr.gov.ph/wp-content/uploads/2023/07/DENR_News_Alerts_18_August_2021_Wednesday_opt.pdf",
+      "kind": "official-agency-bulletin",
+      "note": "Describes LMB scanning tax declarations and GIS data for Bay, Laguna; adjacent provincial project, not Manila coverage."
+    }
+  ],
+  "assessment": "Search found national parcel-data inventory and a local GIS digitization project outside Manila. Manila coverage, current public geometry access, and service contract remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "geonames:1701668",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Tagalog",
+    "queryScript": "Latin",
+    "nativeQuery": "Manila Lupa Land Management Bureau mapa ng lupa loteng kadastral datos geospatial site:gov.ph",
+    "englishQuery": "Manila land maps, cadastral lots, and geospatial parcel data from the Land Management Bureau",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

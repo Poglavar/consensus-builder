@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 61,
+  "city": "Chaozhou",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/chaozhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "潮州 不动产登记 地籍图 宗地 GIS 数据 服务 开放"
+  },
+  "results": [],
+  "assessment": "The bounded Chinese-language search did not return a verifiable Chaozhou parcel feature dataset or endpoint. This is a screening result only and does not assert that no source exists.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

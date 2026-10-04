@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 68,
+  "city": "Kabul",
+  "countryCode": "AF",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kabul.json",
+  "query": {
+    "language": "Dari",
+    "script": "Perso-Arabic",
+    "text": "کابل نقشه کادستر زمین اداره اراضی افغانستان نقشه قطعه رسمی"
+  },
+  "results": [
+    {
+      "title": "ARAZI magazine: cadastral surveying in Afghanistan",
+      "url": "https://mudh.gov.af/sites/default/files/2019-11/ARAZI%20Magazine%20Volume%20%2310.pdf",
+      "kind": "official-ministry-publication",
+      "note": "Ministry publication explains national cadastral surveying and parcel registers; not evidence of public Kabul vector access."
+    },
+    {
+      "title": "Short description of land survey and registration stages",
+      "url": "https://www.mudh.gov.af/sites/default/files/2020-02/ARAZI%20Magazine%20Volume%20%2322_0.pdf",
+      "kind": "official-ministry-publication",
+      "note": "Discusses field cadastral survey work and land records, including Kabul-area references; does not describe an open service."
+    }
+  ],
+  "assessment": "Official publications establish government cadastral work, but this search found no public Kabul parcel geometry service or access contract.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:4703",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Dari",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "کابل نقشه کادستر زمین اداره اراضی افغانستان نقشه قطعه رسمی",
+    "englishQuery": "Kabul cadastral land map and official land parcel map",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

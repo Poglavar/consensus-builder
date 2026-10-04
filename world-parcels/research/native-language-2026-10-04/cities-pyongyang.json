@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 172,
+  "city": "P'yŏngyang (Pyongyang)",
+  "countryCode": "KP",
+  "historicalStatus": "no_verified_sample_candidate_countrywide",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/pyongyang.json",
+  "query": {
+    "language": "Korean",
+    "script": "Hangul",
+    "text": "평양 지적도 필지 GIS 지번 토지 데이터 북한"
+  },
+  "results": [],
+  "assessment": "Korean-language screening did not verify public cadastral parcel data for Pyongyang. The bounded search does not change the existing countrywide no-candidate status or assert nonexistence.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

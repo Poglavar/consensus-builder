@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 52,
+  "city": "Ar-Riyāḑ (Riyadh)",
+  "countryCode": "SA",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/riyadh.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "الرياض أمانة منطقة الرياض خريطة الأراضي قطع الأراضي GIS بيانات مفتوحة"
+  },
+  "results": [
+    {
+      "title": "Riyadh Municipality Geoportal",
+      "url": "https://rmp.alriyadh.gov.sa/ar/gis-portal",
+      "kind": "official"
+    },
+    {
+      "title": "Riyadh open-data request page",
+      "url": "https://alriyadh.gov.sa/ar/open-data-request",
+      "kind": "official"
+    },
+    {
+      "title": "Riyadh geoportal open data",
+      "url": "https://rmp.alriyadh.gov.sa/ar/open-data",
+      "kind": "official"
+    }
+  ],
+  "assessment": "Official Riyadh geospatial and open-data portals surfaced. The spatial portal describes GIS layers and export/import of shapefiles and mentions land plots, but no anonymous downloadable cadastral parcel layer or API was verified in this search.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

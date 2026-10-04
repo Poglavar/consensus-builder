@@ -3396,7 +3396,12 @@
             "lusaka": "Lusaka, Zambija",
             "shenzhen": "Shenzhen, Kina",
             "montreal": "Montreal, Kanada",
-            "dortmund": "Dortmund, Njemačka"
+            "dortmund": "Dortmund, Njemačka",
+            "london": "London, Ujedinjeno Kraljevstvo",
+            "manchester": "Manchester, Ujedinjeno Kraljevstvo",
+            "madrid": "Madrid, Španjolska",
+            "barcelona": "Barcelona, Španjolska",
+            "savar": "Savar, Bangladeš"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",

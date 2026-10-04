@@ -4,6 +4,9 @@ Shared instructions for city and country probes. See `../world-parcels.md` (Flow
 
 ## Rules
 
+- **Search in the place's own language before closing an unsuccessful search.** Use local cadastral terminology and local script (including regional languages in multilingual countries), and search official national, regional and municipal portals. Keep the exact executed query, language, script, date and result URLs in the evidence file. An English gloss is useful but does not replace a native-language query.
+- An unsuccessful search means **no source verified by this search**, never that the place has no parcel data. A viewer, catalog, authenticated system or scanned map is a lead until actual parcel polygons, stable native IDs, completeness and exact reads are proven.
+- Preserve earlier failed attempts. Native-language retries go in a new dated evidence directory, with prior city/status/file references and a manifest of the cohort actually searched. Do not infer the language of a historical search from the language of its result page.
 - **Verified** means a real request returned HTTP 200 **and** a nonempty list of parcel-like polygon records for a small area. A landing page, map tile, service description, empty result, auth wall, or error is not verification.
 - Query only a tiny area (`resultRecordCount`/`limit`/`count` of 3, a bbox a few hundred metres across). Never download a whole country.
 - **Always send browser-like headers** on every request (a current desktop Chrome `User-Agent`, `Accept`, and an `Accept-Language` for the target country); many services return 403/406 or a challenge page to bare curl. Record in the evidence file whether headers changed the result. Also keep a cookie jar (`curl -c/-b`) because some portals redirect on a session cookie, and send the viewer's own origin as `Referer` when a service returns 403 to direct calls.

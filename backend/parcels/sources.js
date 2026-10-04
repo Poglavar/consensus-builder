@@ -7,6 +7,9 @@ import { createShenzhenLandCertainSource } from './shenzhen-source.js';
 import { createSocrataParcelSource } from './socrata-source.js';
 import { createOgcApiParcelSource } from './ogc-api-source.js';
 import { createGeojsonSnapshotParcelSource } from './geojson-snapshot-source.js';
+import { createGmlSnapshotParcelSource } from './gml-snapshot-source.js';
+import { createCatastroWfsParcelSource } from './catastro-wfs-source.js';
+import { createDlrsSheetParcelSource } from './dlrs-sheet-source.js';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
@@ -61,7 +64,9 @@ export function createParcelSource(descriptor, options = {}) {
     }
     validateCityMetrics(descriptor);
     const factory = { 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
-        'geojson-snapshot': createGeojsonSnapshotParcelSource, socrata: createSocrataParcelSource }[descriptor.adapter];
+        'geojson-snapshot': createGeojsonSnapshotParcelSource, 'gml-snapshot': createGmlSnapshotParcelSource,
+        'catastro-wfs': createCatastroWfsParcelSource, 'dlrs-sheet': createDlrsSheetParcelSource,
+        socrata: createSocrataParcelSource }[descriptor.adapter];
     if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {
         if (!certificateFetches.has(descriptor.caCertificate)) {
@@ -81,7 +86,7 @@ export function resolveParcelSourceDescriptor(sourceId) {
 export function runtimeParcelSource(descriptor) {
     if (!runtimeSources.has(descriptor.id)) {
         if (runtimeSources.size >= 160) runtimeSources.delete(runtimeSources.keys().next().value);
-        runtimeSources.set(descriptor.id, withSourceCooldown(createParcelSource(descriptor, descriptor.id.startsWith('custom.') || descriptor.caCertificate
+        runtimeSources.set(descriptor.id, withSourceCooldown(createParcelSource(descriptor, descriptor.id.startsWith('custom.') || descriptor.caCertificate || descriptor.adapter === 'gml-snapshot'
             ? {} : { fetchImpl: (...args) => globalThis.fetch(...args) })));
     }
     return runtimeSources.get(descriptor.id);
@@ -101,7 +106,8 @@ export function parcelSourceForCity(city, sourceId = null) {
 }
 
 export function parcelSourceForIds(ids) {
-    const descriptor = parcelSourceCatalog.sources.find(source => source.defaultForCity !== false
-        && ids.some(id => String(id).startsWith(source.idPrefix)));
+    const descriptor = parcelSourceCatalog.sources.filter(source => source.defaultForCity !== false
+        && ids.some(id => String(id).startsWith(source.idPrefix)))
+        .sort((a, b) => b.idPrefix.length - a.idPrefix.length)[0];
     return descriptor ? { descriptor, adapter: runtimeParcelSource(descriptor) } : null;
 }

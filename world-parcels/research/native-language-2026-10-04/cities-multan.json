@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 165,
+  "city": "Multan",
+  "countryCode": "PK",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/multan.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Perso-Arabic",
+    "text": "ملتان زمین ریکارڈ کڈسٹرل نقشہ پنجاب لینڈ ریکارڈ اتھارٹی سرکاری"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Urdu",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "ملتان زمین ریکارڈ کڈسٹرل نقشہ پنجاب لینڈ ریکارڈ اتھارٹی سرکاری",
+    "englishQuery": "Multan land records and cadastral map from Punjab Land Records Authority",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Punjab Land Records Cadastral Map",
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "kind": "official-provincial-cadastral-viewer",
+      "note": "Official village-wise cadastral map form offers district/tehsil/village selection; Multan coverage and a feature endpoint are unverified."
+    },
+    {
+      "title": "PULSE - Punjab Urban Land Systems Enhancement",
+      "url": "https://lis.pulse.gop.pk/",
+      "kind": "official-provincial-map-viewer",
+      "note": "Portal lists Multan in map-region choices and offers public-user map viewing; complete parcel details require login; no public vector contract verified."
+    }
+  ],
+  "assessment": "Punjab sources include Multan map coverage indicators and cadastral viewing, but anonymous machine-readable boundaries were not established.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:7167",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

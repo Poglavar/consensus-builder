@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 164,
+  "city": "Shijiazhuang",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/shijiazhuang.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "石家庄 不动产 地籍图 宗地 GIS 开放数据"
+  },
+  "results": [
+    {
+      "title": "Shijiazhuang land/resource geographic information platform",
+      "url": "https://www.sjz.gov.cn/zfxxgk/columns/1e3b8e2e-400e-4807-8a77-7ce54f679840/202301/31/1ffca604-1647-4740-afeb-f0268ac89d97.html",
+      "kind": "official-platform-reference",
+      "note": "City government report says TianDiTu Shijiazhuang provides high-resolution base maps; cadastral parcel features not documented."
+    }
+  ],
+  "assessment": "Search found a public city geographic information platform reference, but no cadastral parcel layer or exact-ID endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

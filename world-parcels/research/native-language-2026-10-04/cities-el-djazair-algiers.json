@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 148,
+  "city": "El Djazaïr (Algiers)",
+  "countryCode": "DZ",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/el-djazair-algiers.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "الجزائر العاصمة cadastre parcelles géoportail données SIG ouvertes الأراضي"
+  },
+  "results": [
+    {
+      "title": "Algeria geoportal ArcGIS portal information",
+      "url": "https://geoportail.asal.dz/portal/sharing/rest/portals/info",
+      "kind": "official"
+    },
+    {
+      "title": "Algerian Court of Accounts report on GEOPORTAIL planning layers",
+      "url": "https://www.ccomptes.dz/wp-content/uploads/2023/11/RA.2023-AR.pdf",
+      "kind": "official",
+      "note": "Describes planning instruments, not cadastral parcel features."
+    }
+  ],
+  "assessment": "Search found Algeria's ArcGIS geoportal sharing endpoint and official documentation on planning geoportal availability, but did not confirm a parcel feature layer or public download.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 169,
+  "city": "Brahmanbaria",
+  "countryCode": "BD",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/brahmanbaria.json",
+  "query": {
+    "language": "Bengali",
+    "script": "Bengali",
+    "text": "ব্রাহ্মণবাড়িয়া মৌজা ম্যাপ ভূমি জরিপ রেকর্ড ভূমি মন্ত্রণালয় সরকারি"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Bengali",
+    "queryScript": "Bengali",
+    "nativeQuery": "ব্রাহ্মণবাড়িয়া মৌজা ম্যাপ ভূমি জরিপ রেকর্ড ভূমি মন্ত্রণালয় সরকারি",
+    "englishQuery": "Brahmanbaria mouza map, land survey and Ministry of Land records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "DLRS Integrated Online Map Purchase System",
+      "url": "https://map.settlement.gov.bd/",
+      "kind": "official-national-cadastral-map-portal",
+      "note": "Government Department of Land Records and Surveys portal sells official mouza maps by location/sheet; displayed district/upazila selectors and notes include Brahmanbaria Sadar in a list of map-project localities. This is paid map delivery, not open vector access."
+    },
+    {
+      "title": "Brahmanbaria District service list",
+      "url": "https://brahmanbaria.gov.bd/pages/static-pages/6991216d516a96d4de4026df",
+      "kind": "official-district-government",
+      "note": "District service list includes mouza map supply; exact online coverage and machine-readable geometry not stated."
+    }
+  ],
+  "assessment": "Official Bangladesh records portal and district service list identify mouza-map availability, but access is a map-purchase/document workflow rather than verified open parcel vectors.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:6721",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

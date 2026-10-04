@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 30,
+  "city": "Kinshasa",
+  "countryCode": "CD",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kinshasa.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Kinshasa cadastre parcelles données géographiques SIG géoportail République démocratique du Congo"
+  },
+  "results": [
+    {
+      "title": "ANAT — RDC geospatial services and geoportal",
+      "url": "https://www.anat.gouv.cd/services",
+      "kind": "official"
+    },
+    {
+      "title": "BIC cadastral information portal",
+      "url": "https://bic.cd/",
+      "kind": "non-government-lead",
+      "note": "Search result claims parcel cadastral information; authority, vector export, access and reuse unverified."
+    }
+  ],
+  "assessment": "The search found the official National Agency for Territorial Planning portal, which advertises geospatial data access in CSV, GeoJSON and Shapefile, plus a cadastre information website. No layer catalog/query access or city parcel identity was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

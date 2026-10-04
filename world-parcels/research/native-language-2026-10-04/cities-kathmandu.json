@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 150,
+  "city": "Kathmandu",
+  "countryCode": "NP",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kathmandu.json",
+  "query": {
+    "language": "Nepali",
+    "script": "Devanagari",
+    "text": "काठमाडौं जग्गा कित्ता नक्सा मालपोत नापी विभाग भू सूचना प्रणाली"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Nepali",
+    "queryScript": "Devanagari",
+    "nativeQuery": "काठमाडौं जग्गा कित्ता नक्सा मालपोत नापी विभाग भू सूचना प्रणाली",
+    "englishQuery": "Kathmandu land parcel map and Survey Department cadastral information system",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "MeroKitta (NeLIS Public Access Portal)",
+      "url": "https://merokitta.dos.gov.np/",
+      "kind": "official-national-survey-service",
+      "note": "Survey Department public access portal surfaced; available search evidence describes application-based cadastral-map requests and OTP/status steps, not anonymous vector export."
+    }
+  ],
+  "assessment": "Official survey map service is a candidate but likely request-based; no citywide public parcel-vector endpoint was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:1712",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

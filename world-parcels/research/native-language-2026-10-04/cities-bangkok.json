@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 14,
+  "city": "Bangkok",
+  "countryCode": "TH",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/bangkok.json",
+  "query": {
+    "language": "Thai",
+    "script": "Thai",
+    "text": "กรุงเทพ กรมที่ดิน แผนที่รูปแปลงที่ดิน ข้อมูล GIS ที่ดิน site:go.th"
+  },
+  "results": [
+    {
+      "title": "ศูนย์ข้อมูลแผนที่รูปแปลงที่ดิน",
+      "url": "https://www.dol.go.th/landmap/home/",
+      "kind": "official-national-agency",
+      "note": "Department of Lands map center presents LandsMaps and related services."
+    },
+    {
+      "title": "ข้อมูลรูปแปลงที่ดิน ตามเลขที่โฉนด",
+      "url": "https://gdcatalog.go.th/dataset/gdpublish-mapland-parcel",
+      "kind": "official-government-data-catalog",
+      "note": "Parcel-by-title-deed resource describes geometry/location/area API; catalog says API authentication uses Consumer-Key and Consumer Secret issued by Department of Lands."
+    }
+  ],
+  "assessment": "Official DOL search identifies a nationwide parcel lookup, while the government catalog documents key-based API authentication. No anonymous vector endpoint or Bangkok-specific extract verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "geonames:1609350",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Thai",
+    "queryScript": "Thai",
+    "nativeQuery": "กรุงเทพ กรมที่ดิน แผนที่รูปแปลงที่ดิน ข้อมูล GIS ที่ดิน site:go.th",
+    "englishQuery": "Bangkok Department of Lands cadastral parcel map and GIS data",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

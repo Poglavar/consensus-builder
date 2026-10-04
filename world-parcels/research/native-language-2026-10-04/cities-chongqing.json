@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 51,
+  "city": "Chongqing",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/chongqing.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "重庆 地籍图 宗地 不动产 GIS 开放数据 地块服务"
+  },
+  "results": [
+    {
+      "title": "Chongqing real-property registration enquiry FAQ",
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html",
+      "kind": "official-service",
+      "note": "Citizens can apply for cadastral maps through service halls or the YuKuaiBan registration service; not open parcel vector feed."
+    },
+    {
+      "title": "Chongqing one-stop public query service",
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+      "kind": "official-service",
+      "note": "Individual registration and map enquiries; bulk anonymous geometry access not shown."
+    }
+  ],
+  "assessment": "Chinese-language search found official parcel/cadastral map enquiry services, including online access with eligibility/authentication constraints, but no open bulk geometry endpoint or exact-ID query.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

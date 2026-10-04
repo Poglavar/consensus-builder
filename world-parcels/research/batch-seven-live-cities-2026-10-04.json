@@ -1,0 +1,1087 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "cities": [
+    "london",
+    "manchester",
+    "madrid",
+    "barcelona",
+    "savar"
+  ],
+  "sourceIds": [
+    "gb-hmlr-city-of-london",
+    "gb-hmlr-manchester",
+    "es-dgc-inspire-cp-wfs",
+    "bd-dlrs-dhamsona-bds-sheet-001"
+  ],
+  "acceptanceScope": "Downstream adapters normalize bounded viewport, native exact-ID and footprint reads to canonical WGS84. No parcel geometry is imported into the DB or saved in this ledger.",
+  "sourceEvidenceFiles": [
+    "research/native-language-2026-10-04/gb-runtime.json",
+    "research/native-language-2026-10-04/es-runtime.json"
+  ],
+  "nativeLanguageRetry": {
+    "evidenceFile": "research/native-language-2026-10-04/index.json",
+    "targetCount": 139,
+    "completedCount": 139,
+    "stage": "Executed native-language discovery; leads are not promoted without geometry/identity/completeness proof."
+  },
+  "cohortCounts": {
+    "originalCities": 200,
+    "historicalVerifiedOriginalCities": 60,
+    "historicalQuotedCandidatesIncludingExtraZagreb": 61,
+    "integratedOriginalAfterBatch": 32,
+    "remainingVerifiedOriginalAfterBatch": 31,
+    "unresolvedOriginalAfterBatch": 137,
+    "configuredAppCitiesAfterBatch": 44,
+    "executableProvidersAfterBatch": 34,
+    "verifiedOriginalAfterBatch": 63,
+    "staleCityRecordCorrections": 1,
+    "configuredCountriesAndTerritoriesAfterBatch": 25,
+    "registryRecordedVerifiedOriginalAtBatchStart": 61,
+    "verifiedOriginalBeforeNewBatchAfterBerlinReconciliation": 62
+  },
+  "adapterProofs": [
+    {
+      "city": "savar",
+      "sourceId": "bd-dlrs-dhamsona-bds-sheet-001",
+      "cells": [
+        {
+          "bbox": [
+            90.22370000000001,
+            23.9658,
+            90.22470000000001,
+            23.966800000000003
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2247,
+            23.9658,
+            90.2257,
+            23.966800000000003
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2257,
+            23.9658,
+            90.22670000000001,
+            23.966800000000003
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22370000000001,
+            23.966800000000003,
+            90.22470000000001,
+            23.967800000000004
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2247,
+            23.966800000000003,
+            90.2257,
+            23.967800000000004
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2257,
+            23.966800000000003,
+            90.22670000000001,
+            23.967800000000004
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22370000000001,
+            23.9678,
+            90.22470000000001,
+            23.9688
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2247,
+            23.9678,
+            90.2257,
+            23.9688
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2257,
+            23.9678,
+            90.22670000000001,
+            23.9688
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22470000000001,
+            23.966800000000003,
+            90.22570000000002,
+            23.967800000000004
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2257,
+            23.966800000000003,
+            90.22670000000001,
+            23.967800000000004
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22670000000001,
+            23.966800000000003,
+            90.22770000000001,
+            23.967800000000004
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22470000000001,
+            23.967800000000004,
+            90.22570000000002,
+            23.968800000000005
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2257,
+            23.967800000000004,
+            90.22670000000001,
+            23.968800000000005
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22670000000001,
+            23.967800000000004,
+            90.22770000000001,
+            23.968800000000005
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22470000000001,
+            23.9688,
+            90.22570000000002,
+            23.969800000000003
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.2257,
+            23.9688,
+            90.22670000000001,
+            23.969800000000003
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "bbox": [
+            90.22670000000001,
+            23.9688,
+            90.22770000000001,
+            23.969800000000003
+          ],
+          "count": 5,
+          "complete": true
+        }
+      ],
+      "exact": [
+        {
+          "input": 80,
+          "count": 80,
+          "absent": 0,
+          "conflicts": 0,
+          "complete": true
+        },
+        {
+          "input": 27,
+          "count": 27,
+          "absent": 0,
+          "conflicts": 0,
+          "complete": true
+        }
+      ],
+      "outcome": "pass",
+      "retainedCount": 107,
+      "under": {
+        "count": 4,
+        "complete": true,
+        "includesSample": true
+      },
+      "binding": {
+        "coverage": "complete",
+        "source": "server:bd-dlrs-dhamsona-bds-sheet-001",
+        "count": 1,
+        "includesSample": true
+      },
+      "sampleIds": [
+        "BD-DLRS-201901-4105-010510026-001-30",
+        "BD-DLRS-201901-4105-010510026-001-28",
+        "BD-DLRS-201901-4105-010510026-001-29"
+      ],
+      "fullSheetHttpGateway": {
+        "bbox": [
+          90.223,
+          23.965,
+          90.228,
+          23.97
+        ],
+        "count": 108,
+        "uniqueNativeIds": 108,
+        "complete": true,
+        "sourceId": "bd-dlrs-dhamsona-bds-sheet-001"
+      }
+    },
+    {
+      "city": "madrid",
+      "sourceId": "es-dgc-inspire-cp-wfs",
+      "cells": [],
+      "exact": [],
+      "outcome": "failure",
+      "error": {
+        "message": "Parcel provider access is blocked (HTTP 403).",
+        "code": "parcel-source-blocked",
+        "upstreamStatus": 403
+      }
+    },
+    {
+      "city": "barcelona",
+      "sourceId": "es-dgc-inspire-cp-wfs",
+      "cells": [],
+      "exact": [],
+      "outcome": "failure",
+      "error": {
+        "message": "Parcel provider access is blocked (HTTP 403).",
+        "code": "parcel-source-blocked",
+        "upstreamStatus": 403
+      }
+    },
+    {
+      "city": "london",
+      "sourceId": "gb-hmlr-city-of-london",
+      "outcome": "pass",
+      "evidenceFile": "research/native-language-2026-10-04/gb-runtime.json",
+      "fullFeatureCount": 3903,
+      "acceptance": {
+        "cells": [
+          {
+            "bbox": [
+              -0.09765,
+              51.511750000000006,
+              -0.09515,
+              51.514250000000004
+            ],
+            "count": 66,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09515,
+              51.511750000000006,
+              -0.09265,
+              51.514250000000004
+            ],
+            "count": 119,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09265,
+              51.511750000000006,
+              -0.09015,
+              51.514250000000004
+            ],
+            "count": 122,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09765,
+              51.514250000000004,
+              -0.09515,
+              51.51675
+            ],
+            "count": 101,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09515,
+              51.514250000000004,
+              -0.09265,
+              51.51675
+            ],
+            "count": 90,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09265,
+              51.514250000000004,
+              -0.09015,
+              51.51675
+            ],
+            "count": 111,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09765,
+              51.51675,
+              -0.09515,
+              51.51925
+            ],
+            "count": 42,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09515,
+              51.51675,
+              -0.09265,
+              51.51925
+            ],
+            "count": 67,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09265,
+              51.51675,
+              -0.09015,
+              51.51925
+            ],
+            "count": 73,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09365,
+              51.515750000000004,
+              -0.09115,
+              51.51825
+            ],
+            "count": 64,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09115,
+              51.515750000000004,
+              -0.08864999999999999,
+              51.51825
+            ],
+            "count": 110,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.08864999999999999,
+              51.515750000000004,
+              -0.08614999999999999,
+              51.51825
+            ],
+            "count": 58,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09365,
+              51.51825,
+              -0.09115,
+              51.52075
+            ],
+            "count": 33,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09115,
+              51.51825,
+              -0.08864999999999999,
+              51.52075
+            ],
+            "count": 44,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.08864999999999999,
+              51.51825,
+              -0.08614999999999999,
+              51.52075
+            ],
+            "count": 34,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09365,
+              51.52075,
+              -0.09115,
+              51.52325
+            ],
+            "count": 15,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.09115,
+              51.52075,
+              -0.08864999999999999,
+              51.52325
+            ],
+            "count": 6,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -0.08864999999999999,
+              51.52075,
+              -0.08614999999999999,
+              51.52325
+            ],
+            "count": 0,
+            "complete": true
+          }
+        ],
+        "retainedCount": 824,
+        "exact": [
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 24,
+            "count": 24,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          }
+        ],
+        "under": {
+          "count": 25,
+          "complete": true,
+          "includesSample": true
+        },
+        "sampleIds": [
+          "GB-HMLR-LONDON-53329776",
+          "GB-HMLR-LONDON-53303783",
+          "GB-HMLR-LONDON-53230831"
+        ],
+        "outcome": "pass",
+        "method": "Actual gml-snapshot adapter: complete official ZIP/GML read to EOF in transient memory, native INSPIREID lookup from full verified authority index, 18 viewport cells (two 3x3 grids; 0.0025-degree cell and 0.004-degree pan), all retained IDs in batches of at most80 and Turf footprint intersection. No upstream exact-ID API claimed."
+      },
+      "finalCatalogHttpGateway": {
+        "sourceId": "gb-hmlr-city-of-london",
+        "count": 74,
+        "complete": true
+      }
+    },
+    {
+      "city": "manchester",
+      "sourceId": "gb-hmlr-manchester",
+      "outcome": "pass",
+      "evidenceFile": "research/native-language-2026-10-04/gb-runtime.json",
+      "fullFeatureCount": 120989,
+      "acceptance": {
+        "cells": [
+          {
+            "bbox": [
+              -2.2477500000000004,
+              53.477050000000006,
+              -2.2452500000000004,
+              53.47955
+            ],
+            "count": 42,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2452500000000004,
+              53.477050000000006,
+              -2.2427500000000005,
+              53.47955
+            ],
+            "count": 23,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2427500000000005,
+              53.477050000000006,
+              -2.2402500000000005,
+              53.47955
+            ],
+            "count": 72,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2477500000000004,
+              53.47955,
+              -2.2452500000000004,
+              53.48205
+            ],
+            "count": 77,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2452500000000004,
+              53.47955,
+              -2.2427500000000005,
+              53.48205
+            ],
+            "count": 71,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2427500000000005,
+              53.47955,
+              -2.2402500000000005,
+              53.48205
+            ],
+            "count": 56,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2477500000000004,
+              53.48205,
+              -2.2452500000000004,
+              53.48455
+            ],
+            "count": 28,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2452500000000004,
+              53.48205,
+              -2.2427500000000005,
+              53.48455
+            ],
+            "count": 23,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2427500000000005,
+              53.48205,
+              -2.2402500000000005,
+              53.48455
+            ],
+            "count": 30,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2437500000000004,
+              53.48105,
+              -2.2412500000000004,
+              53.48355
+            ],
+            "count": 40,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2412500000000004,
+              53.48105,
+              -2.2387500000000005,
+              53.48355
+            ],
+            "count": 34,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2387500000000005,
+              53.48105,
+              -2.2362500000000005,
+              53.48355
+            ],
+            "count": 51,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2437500000000004,
+              53.48355,
+              -2.2412500000000004,
+              53.48605
+            ],
+            "count": 22,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2412500000000004,
+              53.48355,
+              -2.2387500000000005,
+              53.48605
+            ],
+            "count": 35,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2387500000000005,
+              53.48355,
+              -2.2362500000000005,
+              53.48605
+            ],
+            "count": 86,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2437500000000004,
+              53.48605,
+              -2.2412500000000004,
+              53.48855
+            ],
+            "count": 18,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2412500000000004,
+              53.48605,
+              -2.2387500000000005,
+              53.48855
+            ],
+            "count": 38,
+            "complete": true
+          },
+          {
+            "bbox": [
+              -2.2387500000000005,
+              53.48605,
+              -2.2362500000000005,
+              53.48855
+            ],
+            "count": 32,
+            "complete": true
+          }
+        ],
+        "retainedCount": 578,
+        "exact": [
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 80,
+            "count": 80,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          },
+          {
+            "input": 18,
+            "count": 18,
+            "absent": 0,
+            "conflicts": 0,
+            "complete": true
+          }
+        ],
+        "under": {
+          "count": 6,
+          "complete": true,
+          "includesSample": true
+        },
+        "sampleIds": [
+          "GB-HMLR-MANCHESTER-64097265",
+          "GB-HMLR-MANCHESTER-50093390",
+          "GB-HMLR-MANCHESTER-49761671"
+        ],
+        "outcome": "pass",
+        "method": "Actual gml-snapshot adapter: complete official ZIP/GML read to EOF in transient memory, native INSPIREID lookup from full verified authority index, 18 viewport cells (two 3x3 grids; 0.0025-degree cell and 0.004-degree pan), all retained IDs in batches of at most80 and Turf footprint intersection. No upstream exact-ID API claimed."
+      }
+    }
+  ],
+  "integrationAttempts": [
+    {
+      "sourceId": "es-dgc-inspire-cp-wfs",
+      "operation": "Corrected unpaged tiny bbox plus native stored queries",
+      "outcome": "success",
+      "detail": "Madrid5/5 and Barcelona11/11 native references returned exact matching geometry. Barcelona UTM30 exact and UTM31 viewport agree within3e-8degrees."
+    },
+    {
+      "sourceId": "es-dgc-inspire-cp-wfs",
+      "operation": "count/startIndex/resultType paging characterization",
+      "outcome": "unsupported-pagination",
+      "detail": "startIndex ignored; count truncates actual members while returned metadata may still report full count; hits returns geometry. Adapter omits all these parameters and rejects count mismatches."
+    },
+    {
+      "sourceId": "es-dgc-inspire-cp-wfs",
+      "operation": "Parallel exact lookup acceptance",
+      "outcome": "transport-error",
+      "detail": "Four concurrent exact requests produced ECONNRESET; reads are now sequential and verified positive viewport identities reused for60seconds."
+    },
+    {
+      "sourceId": "es-dgc-inspire-cp-wfs",
+      "operation": "Sustained sequential208-plus request proof",
+      "outcome": "http-error",
+      "httpStatus": 403,
+      "detail": "18Madrid cells207distinct parcels passed; first160exact reads passed, then provider returned403. Barcelona later returned403 from same laptop network. Active blocking is an availability failure, never missing parcels. Preserve rather than bypass it."
+    },
+    {
+      "sourceId": "bd-dlrs-dhamsona-bds-sheet-001",
+      "operation": "Dhaka/Chattogram candidate sheet identity review",
+      "outcome": "technical-hold-outside-enabled-scope",
+      "detail": "Dhaka186records include zeroplaceholder/sequentialDag_No; Chattogram292records only270unique nativeDag_No and Anwara scopeoutsidecityproper. These sources remain unintegrated; only Dhamsona is enabled."
+    }
+  ],
+  "limitations": [
+    "London City of London Corporation only, not Greater London.",
+    "Manchester City Council only, not Greater Manchester; large complete archive requires substantial transient memory. Default-heap combined UK proof peaked at712MiB; deployed-process headroom is not yet verified because this batch is not deployed.",
+    "UK Helmert conversion approximately5m, not OSTN15 survey precision or definitive legal-boundary geometry.",
+    "Savar only108draft Dhamsona BDSsheet001plots, not fullcity. Changed member count fails unavailable pending recheck.",
+    "Spain current laptop requests returned403 after sustained probing; source is integrated with existing blocked/rate-limit/unavailable reporting. All314distinct earlier viewport parcels are native polygons, but fresh complete acceptance remains affected by this temporary network block.",
+    "Native-language results may identify only catalogs, viewers, paid scans or authenticated systems; none are parcel-vector verification by themselves."
+  ],
+  "validation": {
+    "headlessCommand": "npm test -- --no-file-parallelism (backend)",
+    "testFilesPassed": 513,
+    "testFilesSkipped": 2,
+    "testsPassed": 7290,
+    "testsSkipped": 6,
+    "failed": 0,
+    "manualBrowser": {
+      "savar": "Headed Chrome: rendered parcel outlines and notification Loaded108cadastralparcels. Complete small-sheet HTTP gateway returned108distinct native IDs.",
+      "manchester": "Headed Chrome: rendered parcel outlines and notification Loaded362cadastralparcels. Full running API bbox read returned45parcels with complete:true.",
+      "madrid": "Headed Chrome: source notice explicitly explained HTTP403/IP-or-auth restriction and offered Retry parcel source, Choose a parcel source and Dismiss source warning.",
+      "uncaughtPageErrors": 0
+    },
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "finalFocusedTests": {
+      "testsPassed": 35,
+      "filesPassed": 4,
+      "reason": "Explicit Spanish GRS80 measurement definitions and coverage/factory/binding checks after full suite."
+    }
+  },
+  "registryReconciliation": [
+    {
+      "city": "Berlin",
+      "cityId": "wup2025:5576",
+      "previousCityStatus": "temporarily_unavailable",
+      "correctedStatus": "verified_sample_city_scope",
+      "alreadyIntegratedBeforeThisBatch": true,
+      "evidenceFile": "research/berlin-live.json",
+      "detail": "Existing provider was enabled with counted bbox paging and exact native fsko proof on October3, but the original-cohort city record was not updated. This changes the current cohort accounting, not the number of cities added in this batch."
+    }
+  ],
+  "integratedOriginalCohort": [
+    {
+      "probeCityId": "geonames:3448439",
+      "name": "São Paulo",
+      "appCityId": "sao_paulo"
+    },
+    {
+      "probeCityId": "geonames:3435910",
+      "name": "Buenos Aires",
+      "appCityId": "buenos_aires"
+    },
+    {
+      "probeCityId": "geonames:5128581",
+      "name": "New York City",
+      "appCityId": "new_york"
+    },
+    {
+      "probeCityId": "geonames:1853909",
+      "name": "Osaka",
+      "appCityId": "osaka"
+    },
+    {
+      "probeCityId": "geonames:5368361",
+      "name": "Los Angeles",
+      "appCityId": "los_angeles"
+    },
+    {
+      "probeCityId": "geonames:2240449",
+      "name": "Luanda",
+      "appCityId": "luanda"
+    },
+    {
+      "probeCityId": "geonames:3688689",
+      "name": "Bogotá",
+      "appCityId": "bogota"
+    },
+    {
+      "probeCityId": "geonames:3936456",
+      "name": "Lima",
+      "appCityId": "lima"
+    },
+    {
+      "probeCityId": "wup2025:2994",
+      "name": "Paris",
+      "appCityId": "paris"
+    },
+    {
+      "probeCityId": "wup2025:2925",
+      "name": "Toronto",
+      "appCityId": "toronto"
+    },
+    {
+      "probeCityId": "wup2025:11566",
+      "name": "Tamar (Hong Kong)",
+      "appCityId": "hong_kong"
+    },
+    {
+      "probeCityId": "wup2025:413",
+      "name": "Cape Town",
+      "appCityId": "cape_town"
+    },
+    {
+      "probeCityId": "wup2025:374",
+      "name": "Bamako",
+      "appCityId": "bamako"
+    },
+    {
+      "probeCityId": "wup2025:2139",
+      "name": "Sydney",
+      "appCityId": "sydney"
+    },
+    {
+      "probeCityId": "wup2025:1634",
+      "name": "Melbourne",
+      "appCityId": "melbourne"
+    },
+    {
+      "probeCityId": "wup2025:1498",
+      "name": "Lusaka",
+      "appCityId": "lusaka"
+    },
+    {
+      "probeCityId": "wup2025:8123",
+      "name": "Washington, D.C.",
+      "appCityId": "washington_dc"
+    },
+    {
+      "probeCityId": "wup2025:1233",
+      "name": "San Francisco",
+      "appCityId": "san_francisco"
+    },
+    {
+      "probeCityId": "wup2025:7289",
+      "name": "Miami",
+      "appCityId": "miami"
+    },
+    {
+      "probeCityId": "wup2025:675",
+      "name": "Essen",
+      "appCityId": "essen"
+    },
+    {
+      "probeCityId": "wup2025:3979",
+      "name": "Birmingham",
+      "appCityId": "birmingham"
+    },
+    {
+      "probeCityId": "geonames:1850147",
+      "name": "Tokyo",
+      "appCityId": "tokyo"
+    },
+    {
+      "probeCityId": "wup2025:5245",
+      "name": "Nagoya",
+      "appCityId": "nagoya"
+    },
+    {
+      "probeCityId": "wup2025:3645",
+      "name": "Montreal",
+      "appCityId": "montreal"
+    },
+    {
+      "probeCityId": "wup2025:1752",
+      "name": "Cotonou",
+      "appCityId": "cotonou"
+    },
+    {
+      "probeCityId": "geonames:1795565",
+      "name": "Shenzhen",
+      "appCityId": "shenzhen"
+    },
+    {
+      "probeCityId": "wup2025:5576",
+      "name": "Berlin",
+      "appCityId": "berlin"
+    },
+    {
+      "probeCityId": "geonames:2643743",
+      "name": "London",
+      "appCityId": "london"
+    },
+    {
+      "probeCityId": "wup2025:3388",
+      "name": "Manchester",
+      "appCityId": "manchester"
+    },
+    {
+      "probeCityId": "wup2025:3440",
+      "name": "Madrid",
+      "appCityId": "madrid"
+    },
+    {
+      "probeCityId": "wup2025:5068",
+      "name": "Barcelona",
+      "appCityId": "barcelona"
+    },
+    {
+      "probeCityId": "wup2025:6158",
+      "name": "Savar",
+      "appCityId": "savar"
+    }
+  ]
+}

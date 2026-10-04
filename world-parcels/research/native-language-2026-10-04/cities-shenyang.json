@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 67,
+  "city": "Shenyang",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/shenyang.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "沈阳 地籍图 宗地 GIS 开放数据 不动产 矢量"
+  },
+  "results": [
+    {
+      "title": "Shenyang natural resources bureau cadastral database policy FAQ",
+      "url": "https://zrzyj.shenyang.gov.cn/yhdjccyshjzl/zcfg/202404/t20240411_4629179.html",
+      "kind": "official-policy",
+      "note": "Confirms citywide parcel/cadastral GIS database but says it is administered internally; no public vector access verified."
+    }
+  ],
+  "assessment": "Official source confirms a citywide cadastral GIS with parcel identifiers and boundaries held in the unified internal registration platform. The search did not establish an open public geometry endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

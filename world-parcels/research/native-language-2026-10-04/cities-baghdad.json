@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 63,
+  "city": "Baghdad",
+  "countryCode": "IQ",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/baghdad.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "بغداد أمانة بغداد كادستر قطع الأراضي GIS بيانات مكانية مفتوحة"
+  },
+  "results": [],
+  "assessment": "No city-specific official parcel-vector catalogue or anonymous query endpoint surfaced in the returned search results. This is not evidence of absence; inspect Baghdad Municipality and national survey/cadastre sources with direct endpoint testing in a later technical pass.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

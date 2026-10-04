@@ -36,6 +36,10 @@ describe('parcelIdToCityId — prefixes that are unambiguous', () => {
         expect(route.parcelIdToCityId('AU-NSW-11111')).toBe('sydney');
         expect(route.parcelIdToCityId('BR-SP-GEOSAMPA-1958754')).toBe('sao_paulo');
         expect(route.parcelIdToCityId('GB-HMLR-23394370')).toBe('birmingham');
+        expect(route.parcelIdToCityId('GB-HMLR-LONDON-23394370')).toBe('london');
+        expect(route.parcelIdToCityId('GB-HMLR-MANCHESTER-23394370')).toBe('manchester');
+        expect(route.parcelIdToCityId('BD-DLRS-201901-4105-010510026-001-0001')).toBe('savar');
+        expect(route.parcelIdToCityId('ES-DGC-28079000000001')).toBeNull();
         expect(route.parcelIdToCityId('ZM-LUSAKA-GID-11111111-2222-3333-4444-555555555555')).toBe('lusaka');
         expect(route.parcelIdToCityId('JP-MOJ-2026-27128~sheet1~H000000001')).toBeNull();
         expect(route.parcelIdToCityId('AO-LUANDA-AGT-11111111-2222-3333-4444-555555555555')).toBe('luanda');

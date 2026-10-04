@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 48,
+  "city": "Alexandria",
+  "countryCode": "EG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/alexandria.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "الإسكندرية محافظة الإسكندرية خريطة مساحية قطع الأراضي GIS بيانات مكانية"
+  },
+  "results": [
+    {
+      "title": "Alexandria digital maps project — Egyptian Survey Authority",
+      "url": "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+      "kind": "official"
+    },
+    {
+      "title": "West District map — Alexandria Governorate",
+      "url": "https://www.alexandria.gov.eg/Government/districts/garb/Map.aspx",
+      "kind": "official"
+    }
+  ],
+  "assessment": "The search found the Egyptian Survey Authority's official Alexandria digital-maps project and a governorate district map. The cited project describes GIS maps at 1:1,000 and 1:5,000 scales, but this search did not establish an open parcel dataset or service endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

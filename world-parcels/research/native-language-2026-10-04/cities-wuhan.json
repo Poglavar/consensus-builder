@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 46,
+  "city": "Wuhan",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/wuhan.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "武汉 地籍图 宗地 不动产 数据 GIS 公开查询 空间数据"
+  },
+  "results": [
+    {
+      "title": "Wuhan cadastral map visual enquiry service (official FAQ)",
+      "url": "https://zrzyhgh.wuhan.gov.cn/ztzl/yhyshj/yhyshj_bszn/202404/t20240408_2385603.shtml",
+      "kind": "official-viewer",
+      "note": "Citizen can log in to Hubei service portal to look up parcels and registration information; no open anonymous geometry endpoint verified."
+    },
+    {
+      "title": "Wuhan rights-and-cadastre integrated map policy",
+      "url": "https://zrzyhgh.wuhan.gov.cn/ztzl/yhyshj/yhyshj_zcsd/202310/t20231018_2282152.shtml",
+      "kind": "official-policy",
+      "note": "Confirms extensive internal parcel database and says browsing/query rights are open within agency systems."
+    }
+  ],
+  "assessment": "Search found a public-facing cadastral viewer behind the Hubei government portal and a large internal cadastral database. Anonymous vector export and exact-ID feature query remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -44,8 +44,13 @@
 
     function citiesForParcelId(rawId) {
         const id = String(rawId || '').trim().toUpperCase();
-        return (global.CityConfigManager?.getAvailableCities?.() || [])
+        const matches = (global.CityConfigManager?.getAvailableCities?.() || [])
             .filter(city => city.parcels?.idPrefix && id.startsWith(city.parcels.idPrefix.toUpperCase()));
+        // A legacy broad prefix may coexist with later city-specific namespaces from the same
+        // provider (for example GB-HMLR- and GB-HMLR-LONDON-). Prefer the most specific match;
+        // equally specific shared prefixes still resolve from feature geometry below.
+        const longestPrefix = Math.max(0, ...matches.map(city => city.parcels.idPrefix.length));
+        return matches.filter(city => city.parcels.idPrefix.length === longestPrefix);
     }
 
     function isCroatianParcelId(rawId) {

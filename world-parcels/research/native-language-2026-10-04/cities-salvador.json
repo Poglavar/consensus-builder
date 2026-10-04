@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 158,
+  "city": "Salvador",
+  "countryCode": "BR",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/salvador.json",
+  "query": {
+    "language": "Portuguese",
+    "script": "Latin",
+    "text": "Salvador cadastro imobiliário parcelas dados geoespaciais SIG dados abertos"
+  },
+  "results": [
+    {
+      "title": "GeoSalvador ArcGIS portal notice",
+      "url": "https://www.sefaz.salvador.ba.gov.br/geosalvador/sharing/portals/self",
+      "kind": "official",
+      "note": "Portal notice dated 2023-11-13 says vector and image service links would be moved/re-announced; current working parcel endpoint not verified."
+    },
+    {
+      "title": "Salvador SEFAZ IPTU FAQ",
+      "url": "https://www2.sefaz.salvador.ba.gov.br/servico/perguntas-frequentes-iptu",
+      "kind": "official",
+      "note": "Describes cadastral/tax records, not public vector feature access."
+    }
+  ],
+  "assessment": "Search found an official GeoSalvador portal notice about migration of vector service links in 2023 and tax cadastral references, but did not verify the replacement parcel endpoint or stable IDs.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 123,
+  "city": "Ibadan",
+  "countryCode": "NG",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/ibadan.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Ibadan cadastral parcel GIS geospatial land registry Oyo State Nigeria open data"
+  },
+  "results": [
+    {
+      "title": "Oyo State Geographic Information System Service (OyoGISS)",
+      "url": "https://lands.oyostate.gov.ng/oyo-giss.html",
+      "kind": "official-state-GIS",
+      "note": "Official land department describes OyoGISS land management and spatial-data services; public parcel data/API not documented."
+    },
+    {
+      "title": "Oyo State Geographic & Spatial Information Service platform",
+      "url": "https://oyogsis.oysglands.com/",
+      "kind": "official-state-portal",
+      "note": "Lists a property geospatial platform and digital survey-plan registry; public vector access and Ibadan coverage need checking."
+    }
+  ],
+  "assessment": "Official Oyo State sources describe GIS services and a property geospatial platform/survey-plan registry. No anonymous, stable-ID parcel feature endpoint was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

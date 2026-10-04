@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 79,
+  "city": "Yaoundé",
+  "countryCode": "CM",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/yaounde.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Yaoundé cadastre parcelles données géographiques SIG Cameroun géoportail"
+  },
+  "results": [
+    {
+      "title": "MINHDU public Web-SIG",
+      "url": "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+      "kind": "official"
+    }
+  ],
+  "assessment": "Search surfaced Cameroon's official Ministry of Housing and Urban Development public Web-GIS, but its visible topics are planning and infrastructure rather than cadastral parcels. No vector feature access or stable parcel key was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 162,
+  "city": "Kollam",
+  "countryCode": "IN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kollam.json",
+  "query": {
+    "language": "Malayalam",
+    "script": "Malayalam",
+    "text": "കൊല്ലം ഭൂമി സർവേ ഭൂപടം കഡസ്ട്രൽ ഭൂരേഖ സർക്കാർ കേരളം"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Malayalam",
+    "queryScript": "Malayalam",
+    "nativeQuery": "കൊല്ലം ഭൂമി സർവേ ഭൂപടം കഡസ്ട്രൽ ഭൂരേഖ സർക്കാർ കേരളം",
+    "englishQuery": "Kollam land survey, cadastral map and Kerala land records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Bhu-Naksha Kerala",
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "kind": "official-state-cadastral-viewer",
+      "note": "Government viewer offers survey and subdivision lookup; Kollam coverage and reusable feature access were not verified."
+    },
+    {
+      "title": "Ente Bhoomi Kerala",
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "kind": "official-state-land-records",
+      "note": "State survey/land-record portal surfaced; the query did not establish a city-specific vector endpoint."
+    }
+  ],
+  "assessment": "Kerala cadastral services are identifiable, but Kollam-specific open vector access was not confirmed. Historical temporary-unavailable status remains.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:9847",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

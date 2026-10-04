@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 166,
+  "city": "Thiruvananthapuram",
+  "countryCode": "IN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/thiruvananthapuram.json",
+  "query": {
+    "language": "Malayalam",
+    "script": "Malayalam",
+    "text": "തിരുവനന്തപുരം സർവേ ഭൂനക്ഷത്രം ഭൂമി രേഖ കേരള സർക്കാർ"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Malayalam",
+    "queryScript": "Malayalam",
+    "nativeQuery": "തിരുവനന്തപുരം സർവേ ഭൂനക്ഷത്രം ഭൂമി രേഖ കേരള സർക്കാർ",
+    "englishQuery": "Thiruvananthapuram land survey, cadastral map and Kerala land records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Bhu-Naksha Kerala",
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "kind": "official-state-cadastral-viewer",
+      "note": "State interface supports resurveyed sketches and survey/subdivision searches; city coverage and public feature access were not verified."
+    },
+    {
+      "title": "Ente Bhoomi Kerala",
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "kind": "official-state-land-records",
+      "note": "Official statewide land-record and survey portal surfaced, without evidence here of anonymous vector export."
+    }
+  ],
+  "assessment": "Kerala cadastral portals are identifiable, but no current Thiruvananthapuram vector endpoint was verified. Historical temporary-unavailable status remains.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:10013",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

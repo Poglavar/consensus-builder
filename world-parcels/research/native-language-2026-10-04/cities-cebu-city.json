@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 163,
+  "city": "Cebu City",
+  "countryCode": "PH",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/cebu-city.json",
+  "query": {
+    "language": "Cebuano",
+    "script": "Latin",
+    "text": "Cebu City mapa sa lote cadastral parcel data Land Management Bureau Philippines government"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Cebuano",
+    "queryScript": "Latin",
+    "nativeQuery": "Cebu City mapa sa lote cadastral parcel data Land Management Bureau Philippines government",
+    "englishQuery": "Cebu City cadastral lot map and Land Management Bureau parcel data",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "LMB Online Land Records Services",
+      "url": "https://elandservices.lmb.gov.ph/",
+      "kind": "official-national-land-records",
+      "note": "Search surfaced a Land Management Bureau records portal; geographic coverage and parcel-vector access for Cebu City were not established."
+    },
+    {
+      "title": "Geoportal Philippines data inventory",
+      "url": "https://www.geoportal.gov.ph/gpresources/GP_DataInventory.pdf",
+      "kind": "official-national-data-inventory",
+      "note": "National inventory lists LMB parcel data with conditional downloading; Cebu-specific coverage and current access terms remain unknown."
+    }
+  ],
+  "assessment": "National land-record/map portals surfaced but did not verify Cebu City parcel coverage or public vector querying.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:5062",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

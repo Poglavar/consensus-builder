@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 81,
+  "city": "Hanoi",
+  "countryCode": "VN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/hanoi.json",
+  "query": {
+    "language": "Vietnamese",
+    "script": "Latin",
+    "text": "Hà Nội bản đồ địa chính dữ liệu thửa đất Cổng dữ liệu địa lý sở tài nguyên môi trường"
+  },
+  "results": [
+    {
+      "title": "Hanoi Land Data",
+      "url": "https://data.govone.vn/DatDai/",
+      "kind": "government-linked land-data portal",
+      "note": "Search result describes parcel and land-use planning lookup for Hanoi; public cadastral source geometry and official hosting/attribution were not established."
+    }
+  ],
+  "assessment": "Search surfaced a Hanoi land-information portal, but its official status and cadastral parcel-vector access remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Vietnamese",
+    "queryScript": "Latin",
+    "nativeQuery": "Hà Nội bản đồ địa chính dữ liệu thửa đất Cổng dữ liệu địa lý sở tài nguyên môi trường",
+    "englishQuery": "Hanoi cadastral map, parcel data, and environmental/natural-resources geospatial portal",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "cityId": "wup2025:1975",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

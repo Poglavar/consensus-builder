@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 143,
+  "city": "Nanning",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/nanning.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "南宁 不动产地籍图 宗地 GIS 数据开放 查询"
+  },
+  "results": [
+    {
+      "title": "Guangxi real-property “query by map” service",
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+      "kind": "official-regional-service",
+      "note": "Offers cadastral map/property information lookup after identity verification, including search by parcel location; no bulk open vector endpoint."
+    }
+  ],
+  "assessment": "Guangxi’s official identity-authenticated property map service is a city-relevant lookup lead, but public parcel geometry download/API and exact-ID bulk query remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

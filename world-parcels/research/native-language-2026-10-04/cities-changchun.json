@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 140,
+  "city": "Changchun",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/changchun.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "长春 不动产 地籍图 宗地 GIS 数据服务 开放"
+  },
+  "results": [
+    {
+      "title": "Changchun property one-code integration",
+      "url": "https://www.ndrc.gov.cn/xwdt/ztzl/xhyshj/dfdt/202207/t20220715_1330701.html",
+      "kind": "official-policy",
+      "note": "Describes unique parcel codes and internal records across municipal workflows; no open geometry endpoint."
+    }
+  ],
+  "assessment": "Search found official description of parcel code integration across planning/registration systems, but no public parcel vector service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

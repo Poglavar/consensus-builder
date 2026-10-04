@@ -1465,6 +1465,131 @@
             sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        london: {
+            id: 'london',
+            label: translateCityText('city.labels.london', 'London, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.515, -0.09], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32630',
+                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.515, -0.09], fallbackDataset: [-0.09, 51.515]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'gb-hmlr-city-of-london', idPrefix: 'GB-HMLR-LONDON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
+                attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire/download">HM Land Registry INSPIRE Index Polygons</a> · City of London authority only · transformed from British National Grid; approximately 5 m Helmert transformation accuracy · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        manchester: {
+            id: 'manchester',
+            label: translateCityText('city.labels.manchester', 'Manchester, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [53.4808, -2.2426], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32630',
+                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [53.4808, -2.2426], fallbackDataset: [-2.2426, 53.4808]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'gb-hmlr-manchester', idPrefix: 'GB-HMLR-MANCHESTER-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire/download">HM Land Registry INSPIRE Index Polygons</a> · Manchester metropolitan borough only · transformed from British National Grid; approximately 5 m Helmert transformation accuracy · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        madrid: {
+            id: 'madrid',
+            label: translateCityText('city.labels.madrid', 'Madrid, Spain'),
+            currency: { locale: 'es-ES', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.4168, -3.7038], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:25830',
+                metricDefinition: '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs +type=crs',
+                fallbackLatLng: [40.4168, -3.7038], fallbackDataset: [-3.7038, 40.4168]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'es-dgc-inspire-cp-wfs', idPrefix: 'ES-DGC-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 25,
+                attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro · INSPIRE Cadastral Parcels</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        barcelona: {
+            id: 'barcelona',
+            label: translateCityText('city.labels.barcelona', 'Barcelona, Spain'),
+            currency: { locale: 'es-ES', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [41.387, 2.168], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:25831',
+                metricDefinition: '+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs +type=crs',
+                fallbackLatLng: [41.387, 2.168], fallbackDataset: [2.168, 41.387]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'es-dgc-inspire-cp-wfs', idPrefix: 'ES-DGC-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 25,
+                attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro · INSPIRE Cadastral Parcels</a> · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        savar: {
+            id: 'savar',
+            label: translateCityText('city.labels.savar', 'Savar, Bangladesh'),
+            currency: { locale: 'en-BD', code: 'BDT' },
+            map: {
+                initialView: { type: 'center', zoom: 19 },
+                defaultCenter: [23.9673, 90.2252], defaultZoom: 19,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32646',
+                metricDefinition: '+proj=utm +zone=46 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [23.9673, 90.2252], fallbackDataset: [90.2252, 23.9673]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'bd-dlrs-dhamsona-bds-sheet-001', idPrefix: 'BD-DLRS-201901-4105-010510026-001-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 0.35,
+                attribution: '<a href="https://settlement.gov.bd/">Bangladesh Directorate of Land Records and Surveys</a> · Dhamsona BDS Sheet 001 draft survey only · adapted'
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

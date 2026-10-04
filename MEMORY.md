@@ -499,3 +499,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 
 ## 2026-10-03 — Design language (one dialect)
 - UX review found 7 visual dialects and no shared tokens; decision: the map shell is the reference dialect. Tokens in `frontend/css/tokens.css`, primitives in `frontend/css/primitives.css`, rules + glossary in `docs/design-language.md` (sentence case, one lifecycle ladder Draft→Applied→Published→Minted→Executed, US spelling, one breakpoint 767.98/768). Ratchet tests (`design-tokens`, `css-conflicting-selectors`, `i18n-style`, `frontend-hardcoded-strings`, `page-chrome`) keep literal counts from growing; rerun `node backend/test/helpers/design-audit.mjs --write` after lowering them.
+
+- 2026-10-04: Repeat every unsuccessful parcel-source search in the place’s native language/script and save the exact executed query and source links, because English-only discovery can miss local cadastral services.

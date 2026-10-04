@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 105,
+  "city": "Belo Horizonte",
+  "countryCode": "BR",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/belo-horizonte.json",
+  "query": {
+    "language": "Portuguese",
+    "script": "Latin",
+    "text": "Belo Horizonte cadastro parcelas dados geográficos SIG dados abertos WFS"
+  },
+  "results": [
+    {
+      "title": "Prefeitura de Belo Horizonte — geographic data access",
+      "url": "https://prefeitura.pbh.gov.br/bhgeo/acesso-aos-dados",
+      "kind": "official",
+      "note": "Documents WFS at https://bhmap.pbh.gov.br/v2/api/idebhgeo/wfs; parcel layer and usable IDs not yet identified."
+    },
+    {
+      "title": "PBH FAQ — cartographic base and parceling plans",
+      "url": "https://prefeitura.pbh.gov.br/prodabel/perguntas-frequentes",
+      "kind": "official",
+      "note": "Says city base maps can be downloaded and parceling-plan records are accessible in SIURBE; exact parcel layer endpoint not verified."
+    }
+  ],
+  "assessment": "Official PBH sources document WFS access and public cartographic downloads, and mention a parceling-plan registry. Search did not identify a citywide cadastral parcel feature layer and stable parcel IDs; this is a material lead for follow-up, not a verified source.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

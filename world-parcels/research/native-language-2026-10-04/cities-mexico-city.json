@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 15,
+  "city": "Mexico City",
+  "countryCode": "MX",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/mexico-city.json",
+  "query": {
+    "language": "Spanish",
+    "script": "Latin",
+    "text": "Ciudad de México catastro parcelas datos vectoriales servicio WFS geoportal abierto"
+  },
+  "results": [
+    {
+      "title": "SIGCDMX — cadastral data download",
+      "url": "https://sig.cdmx.gob.mx/datos/descarga",
+      "kind": "official-open-data",
+      "note": "Official page says catastro files include geographic polygons by parcel and associated account data; downloadable datasets, not an anonymous live feature endpoint."
+    },
+    {
+      "title": "SIGCDMX cadastral map",
+      "url": "https://sig.cdmx.gob.mx/sig_cdmx/",
+      "kind": "official-viewer"
+    }
+  ],
+  "assessment": "Strong official discovery: city cadastral polygons and account data can be downloaded by borough. Need verify current download URLs, stable IDs, completeness and licensing before integration.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

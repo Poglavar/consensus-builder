@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 175,
+  "city": "Ciudad de Guatemala (Guatemala City)",
+  "countryCode": "GT",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/guatemala-city.json",
+  "query": {
+    "language": "Spanish",
+    "script": "Latin",
+    "text": "Guatemala ciudad catastro parcelas datos GIS geoportal abierto municipal WFS"
+  },
+  "results": [
+    {
+      "title": "Guatemala municipal open data portal",
+      "url": "https://gis2.muniguate.com/datos/",
+      "kind": "official-city-open-data",
+      "note": "Municipal geospatial, socioeconomic, services and infrastructure data catalog; cadastral parcels not identified in the search result."
+    },
+    {
+      "title": "Guatemala Cadastral Information Registry Geoportal",
+      "url": "https://portal.ric.gob.gt/geoportal",
+      "kind": "official-national-cadastre-geoportal",
+      "note": "Official RIC portal found; city parcel feature availability and public downloads not determined."
+    },
+    {
+      "title": "Guatemala National Statistics Institute geoportal",
+      "url": "https://geoportal.ine.gob.gt/",
+      "kind": "official-national-geoportal",
+      "note": "Generic geodata import/catalog portal; not a cadastral feed identified."
+    }
+  ],
+  "assessment": "Spanish-language search surfaced the official municipal open geodata portal and national cadastral registry geoportal. Neither result establishes a downloadable/queryable Guatemala City parcel layer or stable IDs.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

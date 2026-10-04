@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 167,
+  "city": "Asansol",
+  "countryCode": "IN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/asansol.json",
+  "query": {
+    "language": "Bengali",
+    "script": "Bengali",
+    "text": "আসানসোল জমির মানচিত্র খতিয়ান ভূমি দপ্তর পশ্চিমবঙ্গ সরকার"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Bengali",
+    "queryScript": "Bengali",
+    "nativeQuery": "আসানসোল জমির মানচিত্র খতিয়ান ভূমি দপ্তর পশ্চিমবঙ্গ সরকার",
+    "englishQuery": "Asansol land map, khatian and West Bengal Land and Land Reforms",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Banglarbhumi",
+      "url": "https://www.banglabhumigov.net/",
+      "kind": "West Bengal land-records portal",
+      "note": "Portal identifies state Land & Land Reforms department and land-record functions; domain/service authenticity and any cadastral feature API require further verification."
+    },
+    {
+      "title": "West Bengal Registration property search",
+      "url": "https://wbregistration.gov.in/index/Search_By_Property_new.aspx",
+      "kind": "official-state-registration-service",
+      "note": "Property transaction search includes district/thana/local-body and mouza-wise search, but deed index is not a cadastral geometry service."
+    }
+  ],
+  "assessment": "Search surfaced record/transaction lookup services, not an Asansol cadastral vector layer. Historical temporary-unavailable status remains.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:11531",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

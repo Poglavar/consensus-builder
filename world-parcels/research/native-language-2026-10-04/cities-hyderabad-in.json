@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 37,
+  "city": "Hyderabad, India",
+  "countryCode": "IN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/hyderabad.json",
+  "query": {
+    "language": "Telugu",
+    "script": "Telugu",
+    "text": "హైదరాబాద్ భూ భారతి భూ పటం భూమి రికార్డులు తెలంగాణ ప్రభుత్వం"
+  },
+  "results": [
+    {
+      "title": "Bhu Bharati GIS",
+      "url": "https://bhubharati.telangana.gov.in/gis/",
+      "kind": "official-state-land-records-viewer",
+      "note": "Government GIS lets users select district/division/mandal/village and inspect parcel information by map or survey number; vector-download API not established."
+    },
+    {
+      "title": "DLSFolder/Digital_Land_Survey MapServer",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DLSFolder/Digital_Land_Survey/MapServer",
+      "kind": "official-state-ArcGIS-service",
+      "note": "TGRAC MapServer lists cadastral survey layers and has an extent within Telangana; available layer metadata suggests project/local coverage, not proven Hyderabad city coverage."
+    }
+  ],
+  "assessment": "Government GIS sources expose cadastral survey mapping, but the reviewed ArcGIS layer extent and coverage do not demonstrate Hyderabad parcel availability. Existing temporary-unavailable status remains unresolved.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Telugu",
+    "queryScript": "Telugu",
+    "nativeQuery": "హైదరాబాద్ భూ భారతి భూ పటం భూమి రికార్డులు తెలంగాణ ప్రభుత్వం",
+    "englishQuery": "Hyderabad Telangana Bhu Bharati land map and land records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "cityId": "wup2025:9913",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

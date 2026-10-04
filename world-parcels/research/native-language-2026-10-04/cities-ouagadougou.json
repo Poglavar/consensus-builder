@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 152,
+  "city": "Ouagadougou",
+  "countryCode": "BF",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/ouagadougou.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Ouagadougou cadastre parcellaire données géographiques SIG Burkina Faso géoportail"
+  },
+  "results": [
+    {
+      "title": "Institut Géographique du Burkina — spatial databases",
+      "url": "https://www.igb.bf/bases-de-donnees-spatiales/",
+      "kind": "official-topographic-data",
+      "note": "National topographic datasets; parcel access not shown."
+    },
+    {
+      "title": "DGI — SyC@D land-management digitization",
+      "url": "https://dgi.bf/digitalisation-de-la-gestion-fonciere-la-plateforme-sycd-en-marche/",
+      "kind": "official-cadastre-platform",
+      "note": "National digitalization lead; public feature access unverified."
+    },
+    {
+      "title": "Ouagadougou WebSIG",
+      "url": "https://ouaga-gis.vercel.app/",
+      "kind": "third-party-viewer",
+      "note": "Viewer result; data authority and parcel endpoint unverified."
+    }
+  ],
+  "assessment": "Official sources include national topographic GIS datasets and the SyC@D land-management digitization platform, but no public city parcel feature endpoint or anonymous stable-ID query was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

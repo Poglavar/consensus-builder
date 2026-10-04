@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 44,
+  "city": "Ahmedabad",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/ahmedabad.json",
+  "query": {
+    "language": "Gujarati",
+    "script": "Gujarati",
+    "text": "અમદાવાદ જમીન નકશો સિટી સર્વે જમીન રેકોર્ડ GIS ગુજરાત સરકાર"
+  },
+  "results": [
+    {
+      "title": "Revenue Department, Government of Gujarat: H Branch",
+      "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+      "kind": "official-state-department",
+      "note": "Gujarati search surfaced the department branch responsible for state survey and city-survey matters and official online land-record/property-card services. It does not establish a cadastral vector endpoint or Ahmedabad-specific coverage."
+    },
+    {
+      "title": "e-Dhara – Land records online",
+      "url": "https://gil.gujarat.gov.in/edhara",
+      "kind": "official-state-eGovernment-project",
+      "note": "Government informatics page describes online land-record services across Gujarat and user-fee workflows; this is land records, not proof of public parcel-vector export."
+    }
+  ],
+  "assessment": "The Gujarati follow-up surfaced official state city-survey and land-record services. Ahmedabad-specific map layers, stable parcel IDs, and vector access remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:6408",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Gujarati",
+    "queryScript": "Gujarati",
+    "nativeQuery": "અમદાવાદ જમીન નકશો સિટી સર્વે જમીન રેકોર્ડ GIS ગુજરાત સરકાર",
+    "englishQuery": "Ahmedabad land map, city survey, land records and GIS from Gujarat government",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence",
+    "additionalQueries": [
+      {
+        "nativeQuery": "અમદાવાદ જમીન નકશો સિટી સર્વે જમીન રેકોર્ડ GIS ગુજરાત સરકાર",
+        "englishQuery": "Ahmedabad land map, city survey, land records and GIS from Gujarat government",
+        "queryLanguage": "Gujarati",
+        "queryScript": "Gujarati"
+      },
+      {
+        "nativeQuery": "અમદાવાદ મહેસૂલ વિભાગ ગુજરાત સિટી સર્વે નકશો e-milkat જમીનનો રેકોર્ડ",
+        "englishQuery": "Ahmedabad Gujarat Revenue Department city-survey map and urban land-records portal",
+        "queryLanguage": "Gujarati",
+        "queryScript": "Gujarati"
+      }
+    ]
+  },
+  "searchedAt": "2026-10-04T01:44:00+04:00"
+}

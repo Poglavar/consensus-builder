@@ -368,7 +368,9 @@
         const cityGeo = buildCityPoints(THREE, coverage);
         const cityMat = new THREE.ShaderMaterial({
             uniforms: { pixelRatio, time }, vertexShader: POINTS_VERT, fragmentShader: POINTS_FRAG,
-            transparent: true, depthWrite: false
+            // Screen-facing circles must not intersect the globe's depth surface. POINTS_VERT
+            // fades the entire marker at the horizon and hides cities on the far side.
+            transparent: true, depthWrite: false, depthTest: false
         });
         const cityPoints = new THREE.Points(cityGeo, cityMat);
         cityPoints.renderOrder = 2;

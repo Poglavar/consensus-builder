@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 176,
+  "city": "Lubumbashi",
+  "countryCode": "CD",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/lubumbashi.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Lubumbashi cadastre parcelles carte cadastrale SIG RDC données géospatiales"
+  },
+  "results": [
+    {
+      "title": "ANAT — RDC geospatial services",
+      "url": "https://www.anat.gouv.cd/services",
+      "kind": "official",
+      "note": "General geospatial access advertised; Lubumbashi parcel coverage unverified."
+    }
+  ],
+  "assessment": "The official ANAT RDC site advertises access to geospatial data in CSV, GeoJSON and Shapefile, but search did not identify a Lubumbashi parcel layer, downloadable dataset, or query endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

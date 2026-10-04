@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 138,
+  "city": "Changsha",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/changsha.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "长沙 不动产地籍图 宗地 GIS 数据开放查询"
+  },
+  "results": [
+    {
+      "title": "Changsha “query houses on the map” parcel service report",
+      "url": "https://www.thepaper.cn/newsDetail_forward_25082889",
+      "kind": "official-service-report",
+      "note": "Reports authenticated real-name access to property details and schematic cadastral maps via municipal service; not open geometry feed."
+    },
+    {
+      "title": "Hunan integrated cadastral survey system",
+      "url": "https://zrzyt.hunan.gov.cn/zrzyt/ztzl/kjcgtjzl/bdcdjkj/202504/t20250424_33652644.html",
+      "kind": "official-platform-description",
+      "note": "Describes internal cadastral GIS data export and parcel layer management; no public layer indicated."
+    }
+  ],
+  "assessment": "Search found authenticated citizen-facing parcel map lookup and internal cadastral GIS tools, but not anonymous open parcel vector access.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

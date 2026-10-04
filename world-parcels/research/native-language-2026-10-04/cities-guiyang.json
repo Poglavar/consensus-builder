@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 185,
+  "city": "Guiyang",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/guiyang.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "贵阳 不动产 地籍图 宗地 GIS 数据开放查询"
+  },
+  "results": [],
+  "assessment": "Bounded Chinese-language screening did not surface a verifiable public Guiyang parcel layer or service. This does not establish source absence.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

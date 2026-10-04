@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 189,
+  "city": "Changzhou",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/changzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "常州 地籍图 不动产宗地 GIS 数据开放 WFS"
+  },
+  "results": [
+    {
+      "title": "Changzhou cadastral map development and public query project",
+      "url": "https://zfcg.changzhou.gov.cn/html/ns/class_cgyx/136293663960199.html",
+      "kind": "official-procurement-notice",
+      "note": "Describes ongoing full-coverage cadastral database and public visual query planned; no live service endpoint yet verified."
+    },
+    {
+      "title": "Changzhou open-data portal",
+      "url": "https://www.changzhou.gov.cn/opendata/",
+      "kind": "official-open-data-catalog"
+    }
+  ],
+  "assessment": "Search found a current municipal project to build full-coverage cadastral mapping and public query capability, but no deployed parcel layer/endpoint was identified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

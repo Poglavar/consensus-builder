@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 100,
+  "city": "Jeddah",
+  "countryCode": "SA",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/jeddah.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "جدة أمانة جدة خريطة الأراضي قطع الأراضي الجيومكانية بيانات مفتوحة"
+  },
+  "results": [
+    {
+      "title": "Saudi Ministry of Municipalities and Housing urban maps (U Maps)",
+      "url": "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+      "kind": "official"
+    },
+    {
+      "title": "Saudi Press Agency: U Maps geospatial and parcel layers",
+      "url": "https://www.spa.gov.sa/2390894",
+      "kind": "official"
+    }
+  ],
+  "assessment": "Search results describe the national U Maps service as including parcel/land-lot layers and present Jeddah property-map use. This is a strong portal lead, but the search did not verify public vector download, stable native IDs, or service access.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

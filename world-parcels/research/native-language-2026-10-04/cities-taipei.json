@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 39,
+  "city": "Taipei",
+  "countryCode": "TW",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/taipei.json",
+  "query": {
+    "language": "Chinese (Traditional)",
+    "script": "Han",
+    "text": "臺北市 地籍圖 宗地 GIS 開放資料 API 地號"
+  },
+  "results": [
+    {
+      "title": "Taipei City numeric cadastral section map open dataset",
+      "url": "https://data.taipei/dataset/detail?id=4f3d2280-1ebc-4bba-8ebf-66953403732b",
+      "kind": "official-open-data",
+      "note": "Section-level cadastral map files, not confirmed parcel polygons."
+    },
+    {
+      "title": "Taipei Urban/Land cadastral MapServer",
+      "url": "https://uptilev.gov.taipei/arcgis/rest/services/Urban/Land/MapServer",
+      "kind": "official-map-service",
+      "note": "Layer catalog identifies cadastral section mapping, but returned layer is section outlines, not individual parcel polygons."
+    },
+    {
+      "title": "National Land Survey and Mapping Center services",
+      "url": "https://maps.nlsc.gov.tw/S09SOA/pro/intro.jsp",
+      "kind": "official-national-geospatial-service",
+      "note": "Explains WMS/WMTS/WFS and cadastral APIs; service entitlements and paid/credentialed access need checking."
+    }
+  ],
+  "assessment": "Traditional Chinese search found authoritative cadastral service/API leads and section-level open data. The municipal ArcGIS layer found is not individual parcels; national cadastral service access and exact-ID operations remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

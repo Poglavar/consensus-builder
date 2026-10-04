@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-04",
   "queueSource": "https://population.un.org/wup/",
   "sources": [
     {
@@ -20,7 +20,25 @@
         "wup2025:7537",
         "wup2025:6158"
       ],
-      "evidenceFile": "research/dhaka.json"
+      "evidenceFile": "research/dhaka.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+          "operation": "Complete sheet native Dag_No identity checks for Dhaka and Chattogram",
+          "outcome": "technical-hold",
+          "detail": "Dhaka selected sheet contains a zero placeholder and sequential plot numbers; Chattogram has 292 features but only 270 distinct plot numbers and lies near Anwara outside city proper. Neither broader city is enabled.",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        },
+        {
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+          "operation": "Dhamsona BDS sheet001 stable positive native plot checks",
+          "outcome": "success-via-scoped-adapter",
+          "detail": "108 distinct positive plot numbers; Savar enabled only through the separately scoped bd-dlrs-dhamsona-bds-sheet-001 descriptor.",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        }
+      ]
     },
     {
       "sourceId": "jp-moj-esri-touki-2023",
@@ -1258,12 +1276,20 @@
           "detail": "WFS returned HTTP 400; only whole-municipality GML archive reachable, with transformed-product reuse restrictions.",
           "evidenceFile": "research/madrid-live-assessment.json",
           "httpStatus": 400
+        },
+        {
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+          "operation": "Corrected projected unpaged CP4 GML and native GetParcel requests",
+          "outcome": "resolved-by-new-adapter",
+          "detail": "Historical HTTP400 remains recorded. A separate DGC WFS descriptor now supports Madrid and Barcelona; count/startIndex are intentionally omitted.",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
         }
       ],
       "liveIntegration": {
         "status": "held",
         "evidenceFile": "research/madrid-live-assessment.json",
-        "reason": "WFS returned HTTP 400; reachable municipality GML archive needs an ingestion/query implementation.",
+        "reason": "Historical ATOM source is not executable; current live integration uses es-dgc-inspire-cp-wfs.",
         "previousAssessment": {
           "reason": "WFS returned HTTP 400; only whole-municipality GML archive reachable, with transformed-product reuse restrictions.",
           "evidenceFile": "research/madrid-live-assessment.json"
@@ -2357,7 +2383,17 @@
         "geonames:2643743",
         "wup2025:3388"
       ],
-      "evidenceFile": "research/retry/cities/london.json"
+      "evidenceFile": "research/retry/cities/london.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "operation": "Official authority ZIP downloads, streamed GML parsing and bounded index lookup",
+          "outcome": "success-via-scoped-adapters",
+          "detail": "Distinct City of London and Manchester authority descriptors avoid implying national or Greater London/Manchester coverage. No upstream bbox API exists for this download path.",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        }
+      ]
     },
     {
       "sourceId": "in-mh-bhunaksha",
@@ -2696,7 +2732,9 @@
       "crs": "Native EPSG:25833 (ETRS89 / UTM 33N); WFS sample requests EPSG:4326 GeoJSON output.",
       "verificationStatus": "verified_nonempty_sample",
       "reuseStatus": "Datenlizenz Deutschland – Zero – Version 2.0; official license permits commercial/non-commercial reuse, modification, onward transmission without conditions.",
-      "verifiedCityIds": [],
+      "verifiedCityIds": [
+        "wup2025:5576"
+      ],
       "evidenceFile": "research/berlin-live-assessment.json",
       "integrationAttempts": [
         {
@@ -3065,6 +3103,201 @@
       },
       "evidenceFile": "research/db-city-wfs-live-2026-10-03.json",
       "verificationStatus": "verified_bounded_live_adapter"
+    },
+    {
+      "sourceId": "gb-hmlr-city-of-london",
+      "name": "HM Land Registry — City of London",
+      "operator": "HM Land Registry",
+      "countryCode": "GB",
+      "scope": "City of London Corporation only; excludes the other London boroughs.",
+      "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
+      "method": "Anonymous official authority ZIP/GML -> bounded transient-memory index",
+      "responseFormat": "GML in ZIP",
+      "crs": "EPSG:27700, transformed using a Helmert approximation",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Source conditions informational; no terms gate. See executable descriptor attribution and caveats.",
+      "verifiedCityIds": [
+        "geonames:2643743"
+      ],
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
+          "operation": "Official scoped authority archive with anonymous cookie transport, complete native index,18viewport cells and all exact IDs",
+          "outcome": "success",
+          "detail": "Complete archive and bounded lookup passed; previous guessed WFS403 and cookie-less redirect loop remain linked in publisher evidence.",
+          "evidenceFile": "research/native-language-2026-10-04/gb-runtime.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "london"
+        ],
+        "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+        "reason": "Bounded real parcel geometry, stable native identity and downstream adapter contract verified. See dated evidence for scope and operational failures.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "sourceId": "gb-hmlr-manchester",
+      "name": "HM Land Registry — Manchester",
+      "operator": "HM Land Registry",
+      "countryCode": "GB",
+      "scope": "Manchester City Council authority only; excludes the rest of Greater Manchester.",
+      "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+      "method": "Anonymous official authority ZIP/GML -> bounded transient-memory index",
+      "responseFormat": "GML in ZIP",
+      "crs": "EPSG:27700, transformed using a Helmert approximation",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Source conditions informational; no terms gate. See executable descriptor attribution and caveats.",
+      "verifiedCityIds": [
+        "wup2025:3388"
+      ],
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+          "operation": "Official scoped authority archive with anonymous cookie transport, complete native index,18viewport cells and all exact IDs",
+          "outcome": "success",
+          "detail": "Complete archive and bounded lookup passed; previous guessed WFS403 and cookie-less redirect loop remain linked in publisher evidence.",
+          "evidenceFile": "research/native-language-2026-10-04/gb-runtime.json"
+        },
+        {
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+          "operation": "Archive memory characterization and streamed parser replacement",
+          "outcome": "implemented-with-runtime-limit",
+          "detail": "Default-heap standalone combined UK proof peaked around712MiB. Initial whole-inflated-buffer parser replaced with incremental ZIP/GML parsing. Deployed-process memory headroom remains to be measured before release.",
+          "evidenceFile": "research/native-language-2026-10-04/gb-runtime.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "manchester"
+        ],
+        "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+        "reason": "Bounded real parcel geometry, stable native identity and downstream adapter contract verified. See dated evidence for scope and operational failures.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "sourceId": "es-dgc-inspire-cp-wfs",
+      "name": "Dirección General del Catastro — Madrid and Barcelona",
+      "operator": "Dirección General del Catastro",
+      "countryCode": "ES",
+      "scope": "Bounded samples in Madrid and Barcelona; national or municipality-wide completeness is not claimed.",
+      "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "method": "GET WFS 2.0 GML; unpaged projected bbox or GetParcel stored query",
+      "responseFormat": "GML",
+      "crs": "EPSG:25830 / EPSG:25831",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Source conditions informational; no terms gate. See executable descriptor attribution and caveats.",
+      "verifiedCityIds": [
+        "wup2025:3440",
+        "wup2025:5068"
+      ],
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "integrationAttempts": [
+        {
+          "sourceId": "es-dgc-inspire-cp-wfs",
+          "operation": "Corrected unpaged tiny bbox plus native stored queries",
+          "outcome": "success",
+          "detail": "Madrid5/5 and Barcelona11/11 native references returned exact matching geometry. Barcelona UTM30 exact and UTM31 viewport agree within3e-8degrees.",
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        },
+        {
+          "sourceId": "es-dgc-inspire-cp-wfs",
+          "operation": "count/startIndex/resultType paging characterization",
+          "outcome": "unsupported-pagination",
+          "detail": "startIndex ignored; count truncates actual members while returned metadata may still report full count; hits returns geometry. Adapter omits all these parameters and rejects count mismatches.",
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        },
+        {
+          "sourceId": "es-dgc-inspire-cp-wfs",
+          "operation": "Parallel exact lookup acceptance",
+          "outcome": "transport-error",
+          "detail": "Four concurrent exact requests produced ECONNRESET; reads are now sequential and verified positive viewport identities reused for60seconds.",
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        },
+        {
+          "sourceId": "es-dgc-inspire-cp-wfs",
+          "operation": "Sustained sequential208-plus request proof",
+          "outcome": "http-error",
+          "httpStatus": 403,
+          "detail": "18Madrid cells207distinct parcels passed; first160exact reads passed, then provider returned403. Barcelona later returned403 from same laptop network. Active blocking is an availability failure, never missing parcels. Preserve rather than bypass it.",
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "madrid",
+          "barcelona"
+        ],
+        "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+        "reason": "Bounded real parcel geometry, stable native identity and downstream adapter contract verified. See dated evidence for scope and operational failures.",
+        "technicalBlockers": [],
+        "termsAreInformational": true,
+        "lastObservedAvailability": {
+          "checkedAt": "2026-10-04",
+          "status": "blocked",
+          "upstreamStatus": 403,
+          "network": "laptop probe after sustained exact reads",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        }
+      }
+    },
+    {
+      "sourceId": "bd-dlrs-dhamsona-bds-sheet-001",
+      "name": "DLRS — Savar, Dhamsona BDS sheet 001 (draft)",
+      "operator": "Department of Land Records and Surveys",
+      "countryCode": "BD",
+      "scope": "Only the verified 108-plot Dhamsona BDS sheet 001; does not cover all Savar or Bangladesh.",
+      "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "method": "POST fixed official BDS sheet form -> transient-memory GeoJSON index",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Source conditions informational; no terms gate. See executable descriptor attribution and caveats.",
+      "verifiedCityIds": [
+        "wup2025:6158"
+      ],
+      "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "integrationAttempts": [
+        {
+          "sourceId": "bd-dlrs-dhamsona-bds-sheet-001",
+          "operation": "Dhaka/Chattogram candidate sheet identity review",
+          "outcome": "technical-hold-outside-enabled-scope",
+          "detail": "Dhaka186records include zeroplaceholder/sequentialDag_No; Chattogram292records only270unique nativeDag_No and Anwara scopeoutsidecityproper. These sources remain unintegrated; only Dhamsona is enabled.",
+          "checkedAt": "2026-10-04",
+          "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+          "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
+        }
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "savar"
+        ],
+        "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+        "reason": "Bounded real parcel geometry, stable native identity and downstream adapter contract verified. See dated evidence for scope and operational failures.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      }
     }
   ],
   "countryCoverage": [
@@ -4099,9 +4332,10 @@
       "researchOrder": 33,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
+        "gb-hmlr-city-of-london",
         "gb-hmlr-inspire-index-polygons"
       ],
-      "researchFile": "research/retry/cities/london.json",
+      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
       "previousResearchFile": "research/london.json",
       "retryFile": "research/retry/cities/london.json"
     },
@@ -4818,9 +5052,11 @@
       "researchOrder": 72,
       "parcelStatus": "verified_sample_city_scope",
       "sourceIds": [
+        "es-dgc-inspire-cp-wfs",
         "es-catastro-inspire-cadastral-parcels-atom"
       ],
-      "researchFile": "research/madrid.json"
+      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "previousResearchFile": "research/madrid.json"
     },
     {
       "cityId": "wup2025:7724",
@@ -5524,9 +5760,13 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 114,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/barcelona.json"
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "es-dgc-inspire-cp-wfs"
+      ],
+      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "previousResearchFile": "research/barcelona.json",
+      "previousParcelStatus": "no_verified_open_endpoint_after_attempts"
     },
     {
       "cityId": "wup2025:6237",
@@ -5832,12 +6072,15 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 132,
-      "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
-      "researchFile": "research/berlin.json",
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "de-be-alkis-flurstuecke-wfs"
+      ],
+      "researchFile": "research/berlin-live.json",
       "mergeNote": "Evidence was relayed through a summarising tool, not a raw HTTP reply, and only 2 of 3 features were kept; re-fetch directly before counting it.",
       "previousResearchFile": "research/berlin.json",
-      "retryFile": "research/retry/cities/berlin.json"
+      "retryFile": "research/retry/cities/berlin.json",
+      "previousParcelStatus": "temporarily_unavailable"
     },
     {
       "cityId": "wup2025:6158",
@@ -5853,9 +6096,11 @@
       "researchOrder": 133,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
+        "bd-dlrs-dhamsona-bds-sheet-001",
         "bd-dlrs-bds-sheets"
       ],
-      "researchFile": "research/savar.json"
+      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "previousResearchFile": "research/savar.json"
     },
     {
       "cityId": "wup2025:4408",
@@ -6951,9 +7196,10 @@
       "researchOrder": 196,
       "parcelStatus": "verified_sample_city_scope",
       "sourceIds": [
+        "gb-hmlr-manchester",
         "gb-hmlr-inspire-index-polygons"
       ],
-      "researchFile": "research/retry/cities/manchester.json",
+      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
       "previousResearchFile": "research/manchester.json",
       "retryFile": "research/retry/cities/manchester.json"
     },

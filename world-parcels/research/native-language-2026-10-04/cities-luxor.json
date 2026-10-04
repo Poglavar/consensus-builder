@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 104,
+  "city": "Luxor",
+  "countryCode": "EG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/luxor.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "الأقصر مصر خريطة عقارية قطع أراضي كادستر GIS بيانات مكانية"
+  },
+  "assessment": "Arabic-language search surfaced the national survey authority and survey activity in Luxor, but no anonymous parcel geometry feed or stable-ID query.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

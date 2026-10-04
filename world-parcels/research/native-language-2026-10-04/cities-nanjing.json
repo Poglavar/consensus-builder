@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 57,
+  "city": "Nanjing",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/nanjing.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "南京 不动产登记 地籍图 宗地 GIS 数据开放 矢量图层"
+  },
+  "results": [
+    {
+      "title": "Nanjing cadastral map visual query service",
+      "url": "https://njsj.nanjing.gov.cn/xwdt/202305/t20230524_3919254.html",
+      "kind": "official-service",
+      "note": "Free map enquiry exists, but it requires face-based identity verification."
+    },
+    {
+      "title": "Nanjing real-estate query FAQ",
+      "url": "https://ghj.nanjing.gov.cn/ztzl/ztzl/ywyd/202406/t20240625_4698392.html",
+      "kind": "official-faq",
+      "note": "Describes cadastral dataset and map records; not open vector service."
+    }
+  ],
+  "assessment": "Search found a city cadastral map enquiry service and strong internal database evidence, but access requires user authentication and does not provide open parcel vector access.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

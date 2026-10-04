@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 6,
+  "city": "Guangzhou",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/guangzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "广州 不动产登记 地籍图 宗地 数据 GIS 矢量 数据开放"
+  },
+  "results": [
+    {
+      "title": "Guangzhou natural resources department cadastral map enquiry",
+      "url": "https://ghzyj.gz.gov.cn/newyhyshj/ggcx/sjal/content/mpost_9022462.html",
+      "kind": "official-cadastral-viewer",
+      "note": "Says anyone may consult cadastral maps spatially or by certificate and see parcel/ownership classes and areas; does not establish downloadable open geometry or anonymous feature API."
+    },
+    {
+      "title": "Guangzhou public data open platform",
+      "url": "https://data.gz.gov.cn/",
+      "kind": "official-open-data-catalog"
+    }
+  ],
+  "assessment": "Chinese-language search found an official cadastral-map enquiry portal and a general open-data catalog. It did not verify public parcel-vector download or a stable-ID feature query.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 64,
+  "city": "Chengdu",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/chengdu.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "成都 地籍宗地 GIS 数据开放 不动产 矢量 服务"
+  },
+  "results": [
+    {
+      "title": "Chengdu municipal open data portal",
+      "url": "https://www.chengdu.gov.cn/data/oportal/index",
+      "kind": "official-open-data",
+      "note": "General open-data catalog; search did not identify cadastral parcels."
+    }
+  ],
+  "assessment": "Search surfaced Chengdu’s official open-data catalog but did not verify parcel geometries, a feature service, or stable parcel IDs.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

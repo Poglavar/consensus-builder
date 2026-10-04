@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 146,
+  "city": "Busan",
+  "countryCode": "KR",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/busan.json",
+  "query": {
+    "language": "Korean",
+    "script": "Hangul",
+    "text": "부산 지적도 필지 경계 GIS 오픈데이터 WFS 지번"
+  },
+  "results": [],
+  "assessment": "Korean-language screening did not identify a Busan-specific parcel geometry endpoint. National cadastral API/catalog leads noted elsewhere are not city-specific verification.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 114,
+  "city": "Barcelona",
+  "countryCode": "ES",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/barcelona.json",
+  "query": {
+    "language": "Catalan",
+    "script": "Latin",
+    "text": "Barcelona cadastre parcel·les dades vectorials GIS dades obertes parcel·les WFS"
+  },
+  "results": [
+    {
+      "title": "Barcelona parcelario open dataset",
+      "url": "https://datos.gob.es/gl/catalogo/l01080193-parcelario-de-la-ciudad-de-barcelona",
+      "kind": "official-open-dataset-catalog",
+      "note": "National open-data catalog indexes the municipal city parcel dataset."
+    },
+    {
+      "title": "Barcelona GeoComponents REST API documentation",
+      "url": "https://geoportal.barcelona.cat/geoBCN/doc/rest/API.aspx",
+      "kind": "official-API-docs",
+      "note": "Documents service to retrieve city parcel information; response schema/anonymous exact IDs not tested."
+    },
+    {
+      "title": "Barcelona CartoBCN spatial data infrastructure",
+      "url": "https://w20.bcn.cat/cartobcn/default.aspx?lang=es",
+      "kind": "official-geoportal",
+      "note": "Municipal geospatial catalog and data services."
+    }
+  ],
+  "assessment": "Strong municipal source lead: official open-data catalog lists the city parcel dataset and city docs describe parcel lookup API. Need inspect current data resource format, IDs and completeness before classifying it integration-ready.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists.",
+  "subsequentResolution": {
+    "sourceId": "es-dgc-inspire-cp-wfs",
+    "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+    "note": "Discovery result and historical starting status are preserved; actual verified source and registry reconciliation are recorded separately."
+  }
+}
