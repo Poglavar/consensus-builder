@@ -53,6 +53,18 @@ describe('recent custom source checks', () => {
 });
 
 describe('browser-owned portable source choices', () => {
+    // In the app getBackendBase() reads the city config, and the city config asks for this choice, so
+    // the key lookup re-enters choiceForCity. That once spun every page load without ?backend= (the
+    // try/catch swallowed each stack overflow and the callers retried).
+    it('answers the nested lookup from the backend resolution instead of recursing', () => {
+        const source = choice('test_city');
+        const global = globalFor();
+        let resolutions = 0;
+        global.getBackendBase = () => { resolutions++; settings.choiceForCity('test_city', global); return 'https://api.example'; };
+        global.localStorage.setItem('cb_parcel_source:https://api.example:test_city', source.id);
+        expect(settings.choiceForCity('test_city', global)).toMatchObject({ id: source.id });
+        expect(resolutions).toBe(1);
+    });
     it('decodes portable gateway metadata only for its declared city', () => {
         const source = choice('test_city');
         expect(settings.decodeChoice(source.id, 'test_city')).toMatchObject({ id: source.id, endpoint: source.endpoint,

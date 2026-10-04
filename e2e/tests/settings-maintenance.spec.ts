@@ -7,6 +7,13 @@ async function openSettings(page: import('@playwright/test').Page) {
   await expect(page.locator('#settings-sheet')).toBeVisible();
 }
 
+// The resets sit folded under one "Reset data stored in this browser…" row (docs/design-language.md).
+async function openResets(page: import('@playwright/test').Page) {
+  const fold = page.locator('#settings-sheet details.sheet-reset');
+  if (!(await fold.evaluate((el: HTMLDetailsElement) => el.open))) await fold.locator('summary').click();
+  await expect(page.locator('#wipeLocalDataButton')).toBeVisible();
+}
+
 test.describe('Settings maintenance @features', () => {
   test('coverage opens and refreshes, and a tile preference survives reload', async ({ mockApi: page }) => {
     await openCity(page);
@@ -42,6 +49,7 @@ test.describe('Settings maintenance @features', () => {
     const debug = page.locator('#debugModeCheckbox');
     if (!(await debug.isChecked())) await debug.check();
     await expect(page.locator('body')).toHaveClass(/debug-mode/);
+    await openResets(page);
     await expect(page.locator('#settings-sheet [data-section="parcels"] .btn-danger')).toBeVisible();
 
     const clearProposals = page.locator('#settings-sheet [data-section="proposals"] button.btn-danger');
@@ -78,6 +86,7 @@ test.describe('Settings maintenance @features', () => {
     expect(seeded.roadCount).toBeGreaterThan(0);
     expect(seeded.blockCount).toBeGreaterThan(0);
 
+    await openResets(page);
     await page.locator('#settings-sheet [data-section="blocks"] button.btn-danger').click();
     await expect.poll(() => page.evaluate(() => (window as any).blockStorage.blocks.size)).toBe(0);
     await expect(page.locator('#floating-status-text')).toContainText(/Cleared .* blocks/i);
@@ -100,6 +109,7 @@ test.describe('Settings maintenance @features', () => {
       (window as any).PersistentStorage.setItem('e2e-wipe-persistent', 'remove-me');
     });
     await openSettings(page);
+    await openResets(page);
     await page.locator('#wipeLocalDataButton').click();
     const confirm = page.getByRole('alertdialog');
     await expect(confirm).toContainText(/ALL locally stored data|ALL local data/i);

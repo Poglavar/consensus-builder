@@ -24,11 +24,18 @@
             return { ...value, id: sourceId, name: url.hostname + ' (' + value.adapter + ')' };
         } catch (_) { return null; }
     }
+    // The key's backend comes from getBackendBase(), which reads the city config, which asks for this
+    // choice again. That nested ask gets "no custom choice", so the backend resolves from the city's
+    // base config; recursing instead spun every page load that had no ?backend= override.
+    let resolvingChoice = false;
     function choiceForCity(city, global) {
         const requested = new URLSearchParams(global.location?.search || '').get('parcelSource');
         if (requested) return decodeChoice(requested, city);
+        if (resolvingChoice) return null;
+        resolvingChoice = true;
         try { return decodeChoice(global.localStorage.getItem(storageKey(city, global)) || '', city); }
         catch (_) { return null; }
+        finally { resolvingChoice = false; }
     }
     function saveChoice(city, source, global) {
         if (!decodeChoice(source.id, city)) throw new Error('Invalid source choice.');

@@ -2300,8 +2300,9 @@ button.status-log-message {
     border: 1px solid #ccc;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 12000 !important;
-    /* Ensure panel sits above the floating shell and its sheets */
+    /* One step above the parcel panel it shares the dock with, under the sheets: panels no longer
+       step aside when a sheet opens, so a card at dialog level covered the sheet's own buttons. */
+    z-index: calc(var(--cb-z-panel) + 20);
     display: none;
     overflow-x: hidden;
     overflow-y: auto;

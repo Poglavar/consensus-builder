@@ -10,12 +10,14 @@ test.describe('Parcel diagnostics @features', () => {
     const length = await page.evaluate(() => {
       const w = window as any;
       const metrics = w.calculateRoadMetrics(w.LiveParcelFabric.get(w.currentParcel.id).geometry.coordinates);
-      return Number(metrics.length).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      // Lengths follow the UI language through one formatter (docs/design-language.md); English here.
+      const metres = Number(metrics.length);
+      return metres.toLocaleString('en-GB', { maximumFractionDigits: metres < 100 ? 1 : 0 });
     });
     await page.locator('#measureAsRoadButton').click();
     await page.locator('.parcel-tab-btn').filter({ hasText: 'Info' }).click();
     await expect(page.locator('#roadMeasurements')).toBeVisible();
-    await expect(page.locator('#roadMeasurements .metric-value').first()).toHaveText(`${length} m`);
+    await expect(page.locator('#roadMeasurements .metric-value').first()).toHaveText(new RegExp(`^${length.replace(/[.,]/g, '\\$&')}\\s?m$`)); // narrow no-break space before the unit
     await expect(page.locator('#roadMeasurements')).not.toContainText(/NaN|N\/A|undefined/);
     await expect(page.locator('#measureAsRoadButton')).toBeDisabled();
     expect(await page.evaluate(() => JSON.stringify((window as any).LiveParcelFabric.get((window as any).currentParcel.id)))).toBe(before);

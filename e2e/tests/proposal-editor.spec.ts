@@ -174,7 +174,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     }, source.proposalId);
 
     expect(created.id).toBeTruthy();
-    expect(created.title).toMatch(/\d{4}-\d{4}$/); // auto-named "Park 1207-0148"
+    expect(created.title).toBe('Park · parcel 1234'); // auto-named by place: "Type · parcel N"
     expect(created.kind).toBe('park');
     expect(created.applied).toBe(true);
   });
@@ -301,8 +301,10 @@ test.describe('SimCity proposal lifecycle @core', () => {
     });
 
     expect(result.createdId).toBeTruthy();
-    // Auto-named like "Road 1207-0148" — never an empty or placeholder name.
-    expect(result.title).toMatch(/\d{4}-\d{4}$/);
+    // Auto-named "Type · place"; a freehand road has no parcels until it is applied, so the place is
+    // the creation time. Never an empty or placeholder name.
+    expect(result.title).toMatch(/^Road · \S.*\d/);
+    expect(result.title).not.toMatch(/^New (road|track)$/i);
     expect(result.draftGone).toBe(true);
     expect(result.dialogOpen).toBe(false);
     expect(result.applied).toBe(true);

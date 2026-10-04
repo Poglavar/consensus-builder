@@ -71,7 +71,8 @@ test.describe('Activity and simulation controls @features', () => {
     await page.locator('#activity-button').click();
     const settings = page.locator('#activity-sheet .activity-simulation-settings');
     await settings.locator('summary').click();
-    const gameEnabled = settings.locator('#gameCheckbox');
+    // The on/off switch is the section's first row, outside the settings fold.
+    const gameEnabled = page.locator('#activity-sheet .activity-simulation-switch #gameCheckbox');
     await gameEnabled.check();
     await expect(gameEnabled).toBeChecked();
     const interval = settings.locator('#turn-interval-slider');

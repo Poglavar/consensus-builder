@@ -97,8 +97,8 @@
     /* ---- Stacking ladder (the only z-index values new CSS may use) ---- */
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */
     --cb-z-popover: 1050;           /* parcel menu, dropdowns over the map */
-    --cb-z-sheet: 1600;             /* sheets */
-    --cb-z-panel: 2000;             /* right-dock panels, editors */
+    --cb-z-panel: 1500;             /* right-dock panels (parcel, proposal, road) */
+    --cb-z-sheet: 1600;             /* sheets go over the docked panels: the person just asked for one */
     --cb-z-dialog: 12000;           /* dialogs */
     --cb-z-dialog-top: 13000;       /* a dialog opened from a dialog */
     --cb-z-confirm: 30000;          /* confirm / alert over everything */

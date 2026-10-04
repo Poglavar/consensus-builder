@@ -105,6 +105,11 @@
       "zIndexLiterals": 2,
       "important": 0
     },
+    "css/parcel-sources.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/photoreal-mode.css": {
       "colourLiterals": 23,
       "zIndexLiterals": 6,
@@ -127,7 +132,7 @@
     },
     "css/road-analysis.css": {
       "colourLiterals": 11,
-      "zIndexLiterals": 1,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/roadmap.css": {
@@ -172,8 +177,8 @@
     },
     "css/utilities.css": {
       "colourLiterals": 326,
-      "zIndexLiterals": 13,
-      "important": 15
+      "zIndexLiterals": 12,
+      "important": 14
     },
     "css/world.css": {
       "colourLiterals": 74,

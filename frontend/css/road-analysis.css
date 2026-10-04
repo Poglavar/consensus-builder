@@ -38,12 +38,13 @@
 /* Road Analysis Panel */
 #road-analysis-panel {
     position: absolute;
-    top: 10px;
+    /* In the dock column between the chrome rows, one step above the parcel panel it is opened from. */
+    top: var(--map-shell-top-clearance);
     right: 10px;
     width: 350px;
-    max-height: 80vh;
+    max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
     overflow-y: auto;
-    z-index: 1001; /* Ensure it's above other panels */
+    z-index: calc(var(--cb-z-panel) + 10);
 }
 
 .visualization-controls {

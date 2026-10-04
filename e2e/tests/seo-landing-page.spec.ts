@@ -4,7 +4,7 @@ test.describe('Public urban-planning landing page @core', () => {
   test('explains the product and opens the live map', async ({ mockApi: page }) => {
     await page.goto('/urban-planning.html');
 
-    await expect(page).toHaveTitle('Consensus Builder | Free Urban Planning Software');
+    await expect(page).toHaveTitle('Consensus Builder · Free urban planning software');
     await expect(page.getByRole('heading', { level: 1, name: 'Consensus Builder: free urban planning software' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'A focused map tool for participatory planning' })).toBeVisible();
     await expect(page.locator('body')).not.toContainText(/ArcGIS|Esri/i);
