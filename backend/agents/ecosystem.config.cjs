@@ -117,10 +117,18 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json'
+      LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json',
+      // The consent sync (oracle/proposal-consent.js) lists AcceptanceRecords with
+      // getProgramAccounts, which the backend's Alchemy devnet free tier refuses ("not available
+      // on the Free tier"); every run since 2026-10-02 ended runStatus=failed. Public devnet
+      // answers that call for the proposal program (checked 2026-10-04), and PM2 env wins over the
+      // .env value because dotenv never overrides an existing variable. Scoped to this one job.
+      SOLANA_RPC_URL: 'https://api.devnet.solana.com'
     },
-    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    // Own log files, not the shared agents.log: the oracle prints its full JSON result (20+ KB),
+    // which buried the persona runner's success sentinel past the monitor's tail window.
+    error_file: '/root/code/consensus-builder/backend/logs/land-oracle-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/land-oracle.log',
     merge_logs: true,
     time: true
   }, {
