@@ -175,7 +175,7 @@
             const r = await fetch(`${getBackendBase()}/buildings/near`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ geometry: opts.geometry, buffer_meters: bufferMeters, city })
+                body: JSON.stringify({ geometry: opts.geometry, buffer_meters: bufferMeters, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
             });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             payload = await r.json();
@@ -183,7 +183,14 @@
             console.warn('[ContextBuildings3D] /buildings/near fetch failed:', e);
             // Reset key so a later attempt can retry.
             contextGroup.userData.__contextKey = null;
+            window.reportBuildingsUnavailable?.(null);
             return 0;
+        }
+        // The upstream failed outright: keep what is on screen and say so; a later call retries.
+        if (payload && payload.unavailable) {
+            contextGroup.userData.__contextKey = null;
+            window.reportBuildingsUnavailable?.(payload.retryAfter);
+            return contextGroup.userData.__contextCount || 0;
         }
 
         // Replace previous context only after a successful fetch — a transient error

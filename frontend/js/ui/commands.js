@@ -19,6 +19,7 @@
         // Settings sheet
         'dev-badge', 'debug-badge', 'version-badge',
         'parcel-source-settings-button',
+        'building-source-settings-button',
         'data-source-select', 'tile-source-select', 'wipeLocalDataButton',
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
@@ -412,6 +413,8 @@
             labelKey: 'parcelSourceNotice.title', fallbackLabel: 'Parcel source information', icon: 'fas fa-info-circle' }),
         control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['settings'],
             labelKey: 'parcelSources.title', fallbackLabel: 'Choose a parcel source', icon: 'fas fa-database' }),
+        control('building-source-settings-button', { id: 'settings.buildingSourceSettings', group: 'settings', surfaces: ['settings'],
+            labelKey: 'buildingSources.title', fallbackLabel: 'Choose a building source', icon: 'fas fa-building' }),
         // The city list and "Use my location" live in the search box (city chip, Cities group).
         { id: 'settings.city', group: 'settings', surfaces: [], run: callSearch('showCities'),
             labelKey: 'mapShell.commands.chooseCity', fallbackLabel: 'Choose a city', icon: 'fas fa-city' },

@@ -224,9 +224,9 @@
                 source: 'overture'
             },
             sidebar: {
-                // Zagreb-only datasets (city blocks, GUP roads, area monitor,
-                // 2D buildings WFS layer) stay off until ingested for Split.
-                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+                // Zagreb-only datasets (city blocks, GUP roads, area monitor) stay off until
+                // ingested for Split; its Buildings section lists the Overture footprints.
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -284,9 +284,9 @@
                 source: 'overture'
             },
             sidebar: {
-                // Zagreb-only datasets (city blocks, GUP roads, area monitor, 2D buildings
-                // WFS layer) stay off until ingested for Šibenik.
-                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+                // Zagreb-only datasets (city blocks, GUP roads, area monitor) stay off until
+                // ingested for Šibenik; its Buildings section lists the Overture footprints.
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -335,10 +335,9 @@
                 source: 'overture'
             },
             sidebar: {
-                // 'buildings' stays disabled: that sidebar toggle is the Zagreb 2D WFS layer.
-                // Belgrade's 3D buildings load automatically in 3D mode (Built/Both/Planned), the
-                // same as NYC, independent of this section.
-                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+                // Belgrade's 3D buildings load automatically in 3D mode (Built/Both/Planned); the
+                // Buildings section lists its Overture footprints (applyBuildingLayerChoices).
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -375,10 +374,10 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'none'
+                source: 'osm'
             },
             sidebar: {
-                disabledSections: ['buildings', 'roads', 'areaMonitor']
+                disabledSections: ['roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -415,12 +414,12 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'none'
+                source: 'osm'
             },
             sidebar: {
                 // Disable Parcel blocks, Buildings, and Roads for Buenos Aires
                 // When 'roads' is disabled, the 'roadTools' feature is automatically disabled
-                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://ciudad3d.buenosaires.gob.ar/'
@@ -457,10 +456,10 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'none'
+                source: 'osm'
             },
             sidebar: {
-                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -503,10 +502,9 @@
                 source: 'nyc'
             },
             sidebar: {
-                // 'buildings' stays disabled: its 2D "Show Existing Buildings" toggle is the
-                // Zagreb WFS layer. NYC's 3D buildings load automatically in 3D mode (driven by
-                // the Built/Both/Planned controls), independent of this sidebar section.
-                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+                // NYC's 3D buildings load automatically in 3D mode; its provider has no 2D footprints,
+                // so the Buildings section offers only the OSM reference (applyBuildingLayerChoices).
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -543,8 +541,8 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9">IDECA/UAECD lots · Dec 2021 · CAR mirror</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         shenzhen: {
@@ -562,7 +560,7 @@
                 sourceId: 'cn-shenzhen-land-certain', idPrefix: 'CN-SZ-LANDCERTAIN-',
                 requiresBackend: true, ownership: false, liveRadiusKm: 1,
                 attribution: 'Shenzhen Municipal Planning and Natural Resources Bureau · public cadastral-map service' },
-            buildings: { source: 'none' }, sidebar: { disabledSections: ['areaMonitor'] },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['areaMonitor'] },
             parcelBuilder: null
         },
         toronto: {
@@ -595,8 +593,8 @@
                 liveRadiusKm: 15,
                 attribution: '<a href="https://open.toronto.ca/dataset/property-boundaries/">City of Toronto Property Boundary</a> · <a href="https://open.toronto.ca/open-data-license/">Open Government Licence – Toronto</a>'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         montreal: {
@@ -622,8 +620,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre rénové</a> · indicative geometry only; no legal value'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         los_angeles: {
@@ -656,8 +654,8 @@
                 liveRadiusKm: 15,
                 attribution: '<a href="https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about">County of Los Angeles · Assessor parcels · accessed Oct 2, 2026</a> · <a href="https://egis-lacounty.hub.arcgis.com/pages/terms-of-use">Terms of use</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         miami: {
@@ -690,8 +688,8 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about">Miami-Dade County GIS · Property Appraiser parcels · data terms</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         washington_dc: {
@@ -724,8 +722,8 @@
                 liveRadiusKm: 2,
                 attribution: '<a href="https://opendata.dc.gov/datasets/DCGIS::tax-lots">District of Columbia · DCGIS tax lots</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         paris: {
@@ -758,8 +756,8 @@
                 liveRadiusKm: 15,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP · Parcellaire Express · data &amp; updates</a> · <a href="https://www.data.gouv.fr/pages/legal/licences/etalab-2.0">Licence Ouverte 2.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         melbourne: {
@@ -792,8 +790,8 @@
                 liveRadiusKm: 20,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria · DTP · Vicmap Parcel</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         cape_town: {
@@ -826,8 +824,8 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about">City of Cape Town · Land Parcels · data terms</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         // National OGC API collection, exposed through the same canonical parcel gateway.
@@ -860,8 +858,8 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK · Kadastrale Kaart</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         // Regional Flemish administrative parcel map, with permanent object IDs and version metadata.
@@ -894,8 +892,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb">Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen</a> · <a href="https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik">reuse terms</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         essen: {
@@ -927,8 +925,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         san_francisco: {
@@ -960,8 +958,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://data.sf.gov/d/acdm-wktn">City and County of San Francisco · DataSF</a> · <a href="https://opendatacommons.org/licenses/pddl/1-0/">PDDL 1.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         berlin: {
@@ -993,8 +991,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7">Land Berlin · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         // Private-lot WFS 1.1 uses paced, small bbox reads and the required provider logo.
@@ -1027,8 +1025,8 @@
                 liveRadiusKm: 6,
                 attribution: '<a href="https://www.landsd.gov.hk/en/index.html"><img src="/assets/parcel-sources/landsd-logo.svg" alt="Lands Department" style="height:24px;width:auto;vertical-align:middle"></a> · Map from Lands Department · © Government of the Hong Kong SAR / <a href="https://portal.csdi.gov.hk/csdi-webpage/doc/TNC">CSDI</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lyon: {
@@ -1061,8 +1059,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP · Parcellaire Express · data &amp; updates</a> · <a href="https://www.data.gouv.fr/pages/legal/licences/etalab-2.0">Licence Ouverte 2.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rotterdam: {
@@ -1094,8 +1092,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK · Kadastrale Kaart</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         cologne: {
@@ -1127,8 +1125,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         dortmund: {
@@ -1160,8 +1158,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         cotonou: {
@@ -1194,8 +1192,8 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://cadastre.andf.bj/">ANDF e-Foncier cadastral parcels</a> · <a href="https://andf.bj/cadastre/">publisher conditions</a> · verified Cotonou samples · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bamako: {
@@ -1228,8 +1226,8 @@
                 liveRadiusKm: 5,
                 attribution: '<a href="https://ninacad.sprdf.ml/">SPRDF / NINACAD · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tokyo: {
@@ -1253,8 +1251,8 @@
                 dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-13101">MOJ / Geospatial Information Center · 2026</a> · Tokyo Chiyoda ward public-coordinate sheets only · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nagoya: {
@@ -1278,8 +1276,8 @@
                 dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-23101">MOJ / Geospatial Information Center · 2026</a> · Nagoya Chikusa ward public-coordinate sheets only · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         osaka: {
@@ -1303,8 +1301,8 @@
                 dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-27128">MOJ / Geospatial Information Center · 2026</a> · Osaka Chuo ward public-coordinate sheets only · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         birmingham: {
@@ -1328,8 +1326,8 @@
                 dataVersion: '2021-10-22', requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0">HM Land Registry title-index polygons · Geodom mirror · Oct 22, 2021</a> · partial extract · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sao_paulo: {
@@ -1353,8 +1351,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://geosampa.prefeitura.sp.gov.br/">GeoSampa / Prefeitura do Município de São Paulo</a> · <a href="https://download.geosampa.prefeitura.sp.gov.br/PaginasPublicas/_SBC.aspx">data and source conditions</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sydney: {
@@ -1380,8 +1378,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9">NSW Spatial Services / Department of Customer Service</a> · <a href="https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions">publisher conditions</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lima: {
@@ -1407,8 +1405,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21">SEDAPAL Lima lots</a> · adapted · source conditions apply'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         luanda: {
@@ -1434,8 +1432,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0">GGPEN Luanda property polygons</a> · adapted · source conditions apply'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lusaka: {
@@ -1461,8 +1459,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 12,
                 attribution: '<a href="https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0">Parcels_Mtendere_East — Lusaka_parcels_creation (ArcGIS Online)</a> · unofficial 28-polygon Mtendere East sample · publisher and source terms unverified'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         london: {
@@ -1486,8 +1484,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
                 attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire/download">HM Land Registry INSPIRE Index Polygons</a> · City of London authority only · transformed from British National Grid; approximately 5 m Helmert transformation accuracy · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         manchester: {
@@ -1511,8 +1509,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire/download">HM Land Registry INSPIRE Index Polygons</a> · Manchester metropolitan borough only · transformed from British National Grid; approximately 5 m Helmert transformation accuracy · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         madrid: {
@@ -1536,8 +1534,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 25,
                 attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro · INSPIRE Cadastral Parcels</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         barcelona: {
@@ -1561,8 +1559,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 25,
                 attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro · INSPIRE Cadastral Parcels</a> · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         savar: {
@@ -1586,8 +1584,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 0.35,
                 attribution: '<a href="https://settlement.gov.bd/">Bangladesh Directorate of Land Records and Surveys</a> · Dhamsona BDS Sheet 001 draft survey only · adapted'
             },
-            buildings: { source: 'none' },
-            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
@@ -1625,14 +1623,15 @@
                 requiresBackend: false
             },
             buildings: {
-                // The backend resolves buildings by city id and has no provider for 'explore'.
-                source: 'none'
+                // OpenStreetMap, the default for every city without its own source (backend
+                // buildings/osm-3d.js): live Overpass anywhere on Earth.
+                source: 'osm'
             },
             sidebar: {
                 // Everything that needs parcels; Measure, Activity and Settings stay. Proposals and
                 // stations need none (PARCEL-OPTIONAL.md): a site drawn here has an empty binding
                 // and can only execute through an authority's verdict.
-                disabledSections: ['parcels', 'parcelBlocks', 'buildings', 'roads', 'areaMonitor', 'game']
+                disabledSections: ['parcels', 'parcelBlocks', 'roads', 'areaMonitor', 'game']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -1833,9 +1832,25 @@
         } catch (_) { /* ignore */ }
     }
 
+    // A person's own building source (ParcelSourceSettings, kind 'building') replaces the city's
+    // buildings for every /buildings/* request, which then carries it as `source`. The city's own
+    // source stays on record as `defaultSource`, so "Use the city default" can name it.
+    function getCityConfig(id) {
+        const config = parcelConfigFor(id);
+        if (!config) return null;
+        const building = window.ParcelSourceSettings?.choiceForCity?.(id, window, 'building');
+        if (!building) return config;
+        return { ...config, buildings: { ...(config.buildings || {}), source: 'custom', sourceId: building.id,
+            name: building.name, defaultSource: config.buildings?.source || 'gdi' } };
+    }
+
+    function getBuildingSourceId() {
+        return getCurrentCityConfig()?.buildings?.sourceId || undefined;
+    }
+
     // Live alternatives are opt-in for this boot. A reload switches providers without changing
     // the city/plan storage scope; retained parcel facts live only in the current runtime.
-    function getCityConfig(id) {
+    function parcelConfigFor(id) {
         const config = CITY_CONFIGS[id] || null;
         if (!config) return null;
         const custom = window.ParcelSourceSettings?.choiceForCity?.(id, window);
@@ -2129,8 +2144,30 @@
             });
         });
 
+        applyBuildingLayerChoices();
         // Apply feature visibility after sidebar configuration
         applyFeatureVisibility();
+    }
+
+    // Every city has buildings now (OpenStreetMap at the least), so the Layers Buildings section is
+    // always on; which surveys it lists depends on the city's source. GDI and DGU are Zagreb's; the
+    // separate OSM reference only adds something where OSM is not already the working set; NYC's
+    // provider has no 2D footprints at all.
+    function applyBuildingLayerChoices() {
+        const source = getCurrentCityConfig()?.buildings?.source || 'gdi';
+        const row = id => document.getElementById(id)?.closest('label');
+        const show = (id, visible) => { const label = row(id); if (label) label.hidden = !visible; };
+        show('showBuildings', source !== 'nyc');
+        show('showBuildingsDgu', source === 'gdi');
+        show('showBuildingsOsm', source !== 'osm');
+        const text = row('showBuildings')?.querySelector('[data-i18n-key]');
+        if (!text) return;
+        const key = source === 'osm' ? 'sidebar.buildings.showOsm'
+            : source === 'overture' ? 'sidebar.buildings.showOverture'
+            : source === 'custom' ? 'sidebar.buildings.showCustom'
+            : 'sidebar.buildings.showGdi';
+        text.setAttribute('data-i18n-key', key);
+        text.textContent = translateCityText(key, text.textContent);
     }
 
     // Reload into another city. The path is kept by default, so a shared link (/proposals/<id>,
@@ -2677,6 +2714,7 @@
         applySidebarConfiguration,
         getFeatureConfig,
         isFeatureEnabled,
+        getBuildingSourceId,
         applyFeatureVisibility
     };
 })();

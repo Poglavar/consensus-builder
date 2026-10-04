@@ -484,7 +484,9 @@
             "showGdi": "Edificios 3D (GDI)",
             "showDgu": "Catastro oficial (DGU)",
             "showOsm": "Edificios del mapa (OSM)",
-            "showProposed": "Mostrar edificios propuestos"
+            "showProposed": "Mostrar edificios propuestos",
+            "showOverture": "Edificios de Overture (modelo 3D)",
+            "showCustom": "Tu fuente de edificios"
         },
         "stations": {
             "title": "Estaciones",
@@ -3825,6 +3827,11 @@
         "hints": {
             "viewAngle": "Mantén Ctrl (o Cmd) y arrastra para cambiar el ángulo de vista",
             "viewAngleTouch": "Arrastra con dos dedos para cambiar el ángulo de vista"
+        },
+        "buildingsSource": {
+            "osm": "Edificios de OpenStreetMap",
+            "estimated": "{{count}} de {{total}} alturas estimadas",
+            "partial": "pueden faltar algunos"
         }
     },
     "structureEditor": {
@@ -4411,5 +4418,28 @@
         "timeout": "Esta fuente no respondió a tiempo. Inténtalo de nuevo en unos momentos.",
         "unavailable": "Esta fuente de parcelas no está disponible temporalmente.",
         "loadedRemain": "Las parcelas ya cargadas siguen visibles. Reintenta o elige otra fuente."
+    },
+    "dataSources": {
+        "title": "Fuentes de datos"
+    },
+    "buildingSources": {
+        "title": "Elegir una fuente de edificios",
+        "intro": "Añade una URL pública HTTPS de huellas de edificios para esta ciudad, o de un espejo de OpenStreetMap (una dirección de la API de Overpass que termina en /interpreter). Probamos cada formato compatible y leemos un campo de altura o de plantas si lo tiene; las demás alturas se estiman.",
+        "url": "URL de la fuente de edificios",
+        "matched": "Adaptador encontrado: {{adapter}}. {{count}} edificios en el área de prueba. La cobertura fuera de esta área depende de la fuente.",
+        "defaultGdi": "Modelo 3D de Zagreb (GDI)",
+        "levelsOnly": "Alturas a partir del campo de plantas {{field}}, 3 m por planta.",
+        "noHeights": "Esta fuente no tiene campo de altura; las alturas se estiman.",
+        "heightField": "Alturas del campo {{field}}, en",
+        "heightUnit": "Unidad de altura",
+        "metres": "metros",
+        "feet": "pies",
+        "overpass": "Un espejo de OpenStreetMap: las alturas vienen de OpenStreetMap donde están cartografiadas y se estiman en el resto.",
+        "retry": "Reintentar edificios",
+        "osmUnavailable": "No se pudieron cargar los datos de edificios: el servidor de OpenStreetMap está ocupado.",
+        "customUnavailable": "Tu fuente de edificios no respondió, así que no se pudieron cargar los edificios aquí.",
+        "unavailable": "No se pudieron cargar los datos de edificios en este momento.",
+        "tryAgainIn": "Inténtalo de nuevo en unos {{minutes}} min, o conecta tu propio espejo o fuente.",
+        "tryAgainLater": "Inténtalo más tarde, o conecta tu propio espejo o fuente."
     }
 }

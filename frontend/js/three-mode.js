@@ -1255,6 +1255,13 @@
         isolationResetEl.appendChild(showAllBtn);
         buildingModeControlsEl.appendChild(isolationResetEl);
 
+        // Where the context buildings came from, and how many heights are estimates (OSM).
+        buildingsSourceNoteEl = document.createElement('p');
+        buildingsSourceNoteEl.className = 'three-mode-source-note';
+        buildingsSourceNoteEl.hidden = true;
+        buildingModeControlsEl.appendChild(buildingsSourceNoteEl);
+        updateBuildingsSourceNote();
+
         threeContainer.appendChild(buildingModeControlsEl);
         updateDisplayStateControls();
         updateIsolationButton();
@@ -4439,6 +4446,28 @@
         }
     }
 
+    // The last /buildings/near answer's provenance: { source, heights: {measured, levels, estimated}, partial }.
+    let nearbyBuildingsProvenance = null;
+    let buildingsSourceNoteEl = null;
+
+    function updateBuildingsSourceNote() {
+        if (!buildingsSourceNoteEl) return;
+        const info = nearbyBuildingsProvenance;
+        if (!info || (info.source !== 'osm-3d' && info.source !== 'custom-3d')) { buildingsSourceNoteEl.hidden = true; return; }
+        const heights = info.heights || { measured: 0, levels: 0, estimated: 0 };
+        const total = heights.measured + heights.levels + heights.estimated;
+        const parts = [info.source === 'custom-3d'
+            ? threeI18n('sidebar.buildings.showCustom', 'Your building source')
+            : threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings')];
+        if (heights.estimated > 0) {
+            parts.push(threeI18n('threeMode.buildingsSource.estimated', '{{count}} of {{total}} heights estimated',
+                { count: heights.estimated, total }).replace('{{count}}', heights.estimated).replace('{{total}}', total));
+        }
+        if (info.partial) parts.push(threeI18n('threeMode.buildingsSource.partial', 'some may be missing'));
+        buildingsSourceNoteEl.textContent = parts.join(' · ');
+        buildingsSourceNoteEl.hidden = false;
+    }
+
     function ensureNearbyProposalBuildings() {
         if (nearbyProposalBuildingsFetching) return;
 
@@ -4485,7 +4514,7 @@
         fetch(`${base}/buildings/near`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry, buffer_meters: buffer, city })
+            body: JSON.stringify({ geometry, buffer_meters: buffer, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
         })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
@@ -4493,6 +4522,11 @@
                 nearbyProposalBuildings = dedupeCoincidentBuildings(rawBuildings);
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
+                nearbyBuildingsProvenance = payload ? { source: payload.source, heights: payload.heights || null, partial: payload.partial === true } : null;
+                updateBuildingsSourceNote();
+                // The upstream failed outright: an empty scene must not pass for a city without buildings.
+                if (payload && payload.unavailable) reportNearbyBuildingsUnavailable(payload.retryAfter);
+                else if (rawBuildings.length) window.clearBuildingsUnavailable?.();
                 const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
                 console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly();
@@ -4502,7 +4536,16 @@
                 console.warn('Failed to fetch nearby buildings:', err);
                 nearbyProposalBuildingsFetching = false;
                 updateBuildingsLoader();
+                reportNearbyBuildingsUnavailable(null);
             });
+    }
+
+    // Said in the building banner (map-core.js), whose Retry asks for this scene's band again.
+    function reportNearbyBuildingsUnavailable(retryAfter) {
+        window.reportBuildingsUnavailable?.(retryAfter, () => {
+            nearbyProposalBuildingsKey = null;
+            ensureNearbyProposalBuildings();
+        });
     }
 
     // --- Real-world OSM trees (Overture base/land) ---

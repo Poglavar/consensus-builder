@@ -21,6 +21,7 @@ import { setupParcelLjRoute } from './routes/parcel-lj.js';
 import { setupParcelCoRoute } from './routes/parcel-co.js';
 import { setupParcelNycRoute } from './routes/parcel-nyc.js';
 import { setupParcelSourcesRoute } from './routes/parcel-sources.js';
+import { setupBuildingSourcesRoute } from './routes/building-sources.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
@@ -230,6 +231,7 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/buildings/under',
     '/parcels/under',
     '/parcel-sources/discover',
+    '/building-sources/discover',
     '/proposals/batch',
     '/proposals/binding'
 ]);
@@ -450,6 +452,7 @@ export function createApp({
     setupParcelCoRoute(app, activePool);
     setupParcelNycRoute(app, activePool);
     setupParcelSourcesRoute(app);
+    setupBuildingSourcesRoute(app);
     setupBuildingsRoute(app, activePool);
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);

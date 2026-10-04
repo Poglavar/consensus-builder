@@ -228,9 +228,12 @@ describe('the explore city (city-config.js)', () => {
 
     it('disables every parcel-dependent section, and keeps proposing possible', () => {
         const disabled = tokyo.manager.getCityConfig('explore').sidebar.disabledSections;
-        for (const section of ['parcels', 'parcelBlocks', 'buildings', 'roads', 'areaMonitor']) {
+        for (const section of ['parcels', 'parcelBlocks', 'roads', 'areaMonitor']) {
             expect(disabled).toContain(section);
         }
+        // Buildings need no parcels: explore shows OpenStreetMap buildings anywhere on Earth.
+        expect(disabled).not.toContain('buildings');
+        expect(tokyo.manager.getCityConfig('explore').buildings.source).toBe('osm');
         // A site drawn here has an empty binding (PARCEL-OPTIONAL.md): proposals and stations
         // need no parcels.
         expect(disabled).not.toContain('proposals');

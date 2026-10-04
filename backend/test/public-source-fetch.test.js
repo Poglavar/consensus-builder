@@ -66,7 +66,7 @@ describe('pinned public source transport', () => {
         const all = vi.fn();options.lookup('example.com',{all:true},all);
         expect(all).toHaveBeenCalledWith(null,[{address:'8.8.8.8',family:4}]);
         expect(lookupImpl).toHaveBeenCalledTimes(1);
-        expect(options.headers).toEqual({Accept:'application/geo+json, application/json','Accept-Encoding':'identity'});
+        expect(options.headers).toEqual({Accept:'application/geo+json, application/json','Accept-Encoding':'identity','User-Agent':'consensus-builder/1.0 (+https://urbangametheory.xyz)'});
         expect(response.status).toBe(200);expect(response.ok).toBe(true);expect(response.url).toBe('https://example.com/data');
         expect(await response.json()).toEqual({ok:true});
     });

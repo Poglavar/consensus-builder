@@ -15,15 +15,21 @@
 .parcel-source-settings p, .parcel-source-settings li { line-height: 1.5; overflow-wrap: anywhere; }
 .parcel-source-settings label, .parcel-source-settings input { display: block; width: 100%; }
 .parcel-source-settings input { box-sizing: border-box; padding: .65rem; margin: .5rem 0 1rem; font: inherit; }
-.parcel-source-settings .btn, .parcel-source-status .btn { margin: .5rem .4rem 0 0; }
+.parcel-source-settings .btn, .source-status .btn { margin: .5rem .4rem 0 0; }
 .parcel-source-settings a { color: var(--cb-primary); }
 .parcel-source-settings [hidden] { display: none; }
-.parcel-source-status {
+/* Source failure banners (parcels, buildings), stacked in one corner. */
+.source-status-stack {
     position: fixed;
     z-index: var(--cb-z-banner);
     right: 1rem;
     bottom: 4.5rem;
     width: min(30rem, calc(100vw - 2rem));
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+}
+.source-status {
     box-sizing: border-box;
     padding: 1rem;
     border: 1px solid var(--cb-line-strong);
@@ -32,7 +38,7 @@
     background: var(--cb-surface);
     box-shadow: var(--cb-shadow-lg);
 }
-.parcel-source-status__message { margin: 0; line-height: 1.5; }
+.source-status__message { margin: 0; line-height: 1.5; }
 .parcel-source-formats { margin: 0; font-family: var(--cb-font-sans); color: var(--cb-text); background: var(--cb-bg); line-height: var(--cb-leading); }
 .parcel-source-formats main { max-width: 60rem; margin: auto; padding: var(--cb-space-6); }
 .parcel-source-formats table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-base); }

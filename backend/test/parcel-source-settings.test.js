@@ -151,3 +151,94 @@ describe('city configuration with a browser-owned custom source', () => {
         expect(bootCity('belgrade',global).manager.getCurrentCityConfig().parcels).toMatchObject({sourceId:selected.id,gridSize:0.001,ownership:false});
     });
 });
+
+describe('building source choices', () => {
+    const buildingConfig = city => ({ ...config(city), kind: 'building', outFields: ['parcelid', 'OBJECTID', 'height'], heightField: 'height', heightUnit: 'm' });
+    const buildingId = city => encodeCustomSource(buildingConfig(city));
+
+    it('keeps building and parcel choices apart: ids, storage keys and decoding', () => {
+        const global = globalFor();
+        const id = buildingId('test_city');
+        expect(id.startsWith('building.')).toBe(true);
+        expect(settings.decodeChoice(id, 'test_city', 'building')).toMatchObject({ id, heightField: 'height', name: 'public.example (arcgis)' });
+        expect(settings.decodeChoice(id, 'test_city')).toBeNull();
+        expect(settings.decodeChoice(choice('test_city').id, 'test_city', 'building')).toBeNull();
+        expect(settings.storageKey('test_city', global, 'building')).not.toBe(settings.storageKey('test_city', global));
+        settings.saveChoice('test_city', { id }, global, 'building');
+        expect(settings.choiceForCity('test_city', global, 'building')).toMatchObject({ id });
+        expect(settings.choiceForCity('test_city', global)).toBeNull();
+    });
+
+    it('lets ?buildingSource= win over the stored building choice', () => {
+        const stored = buildingId('test_city');
+        const other = encodeCustomSource({ ...buildingConfig('test_city'), endpoint: 'https://other.example/FeatureServer/0' });
+        const global = globalFor({ search: '?buildingSource=' + other });
+        settings.saveChoice('test_city', { id: stored }, global, 'building');
+        expect(settings.choiceForCity('test_city', global, 'building').id).toBe(other);
+    });
+
+    it('replaces the city buildings with the chosen source and keeps the default on record', () => {
+        const id = buildingId('zagreb');
+        const global = globalFor({ search: '?buildingSource=' + id });
+        const { manager } = bootCity('zagreb', global);
+        expect(manager.getCityConfig('zagreb').buildings).toMatchObject({ source: 'custom', sourceId: id, defaultSource: 'gdi' });
+        expect(manager.getBuildingSourceId()).toBe(id);
+        const plain = bootCity('zagreb', globalFor()).manager;
+        expect(plain.getBuildingSourceId()).toBeUndefined();
+    });
+});
+
+describe('building failure banner', () => {
+    // A minimal document: elements with ids, children and click listeners.
+    function fakeDocument() {
+        const byId = new Map();
+        const make = tag => {
+            const node = { tag, children: [], listeners: {}, attributes: {}, textContent: '', parent: null,
+                set id(value) { this._id = value; byId.set(value, this); }, get id() { return this._id; },
+                setAttribute(name, value) { this.attributes[name] = value; },
+                append(...nodes) { for (const child of nodes) { child.parent = this; this.children.push(child); } },
+                addEventListener(type, fn) { this.listeners[type] = fn; },
+                querySelector(selector) { return selector === 'p' ? this.children.find(child => child.tag === 'p') : null; },
+                remove() { if (this.parent) this.parent.children.splice(this.parent.children.indexOf(this), 1); if (this._id) byId.delete(this._id); } };
+            return node;
+        };
+        const body = make('body');
+        return { body, createElement: make, getElementById: id => byId.get(id) || null };
+    }
+
+    it('says whose data failed and when to try again, and always offers a source of your own', () => {
+        const global = {};
+        expect(settings.buildingFailureMessage(global, { origin: 'osm', retryAfter: 90 }))
+            .toBe('Building data could not be loaded right now: the OpenStreetMap server is busy. Try again in about 2 min, or plug in your own mirror or source.');
+        expect(settings.buildingFailureMessage(global, { origin: 'custom' }))
+            .toBe('Your building source did not answer, so buildings could not be loaded here. Try again later, or plug in your own mirror or source.');
+        expect(settings.buildingFailureMessage(global, { origin: 'other' })).toMatch(/^Building data could not be loaded right now\. Try again later/);
+    });
+
+    it('keeps one building banner beside the parcel one, updates it in place, and retries with the latest callback', () => {
+        const document = fakeDocument();
+        const global = { document };
+        settings.reportFailure(global, 'parcels failed');
+        const firstRetry = vi.fn(), latestRetry = vi.fn();
+        settings.reportFailure(global, 'buildings failed', 'building', firstRetry);
+        settings.reportFailure(global, 'buildings still failing', 'building', latestRetry);
+        const stack = document.getElementById('source-status-stack');
+        expect(stack.children.map(node => node.id)).toEqual(['parcel-source-status', 'building-source-status']);
+        const banner = document.getElementById('building-source-status');
+        expect(banner.querySelector('p').textContent).toBe('buildings still failing');
+        const [retry, choose] = banner.children.filter(node => node.tag === 'button');
+        expect([retry.textContent, choose.textContent]).toEqual(['Retry buildings', 'Choose a building source']);
+        retry.listeners.click();
+        expect(latestRetry).toHaveBeenCalledTimes(1);
+        expect(firstRetry).not.toHaveBeenCalled();
+        expect(document.getElementById('building-source-status')).toBeNull();
+        settings.clearFailure(global);
+        expect(stack.children).toEqual([]);
+    });
+
+    it('accepts an OpenStreetMap mirror as a building choice only', () => {
+        const id = encodeCustomSource({ adapter: 'overpass', endpoint: 'https://mirror.example/api/interpreter', cityIds: ['lima'], kind: 'building' });
+        expect(settings.decodeChoice(id, 'lima', 'building')).toMatchObject({ adapter: 'overpass', name: 'mirror.example (overpass)' });
+        expect(settings.decodeChoice(id, 'lima', 'parcel')).toBeNull();
+    });
+});

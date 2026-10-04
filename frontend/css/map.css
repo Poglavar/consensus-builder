@@ -1375,3 +1375,10 @@ body.three-mode-active #agent-bubbles-container {
     display: block;
     pointer-events: auto; /* enable interaction in 3D mode */
 }
+
+/* Provenance of the 3D context buildings (OSM: how many heights are estimated). */
+#three-container .three-mode-source-note {
+    margin: var(--cb-space-2) 0 0;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
+}

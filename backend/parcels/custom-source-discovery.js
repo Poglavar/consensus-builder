@@ -114,6 +114,83 @@ function parcelLike(value) {
     return /(parcel|cadastr|cadastre|tax.?lot|tax.?parcel|land.?lot)/i.test(String(value || ''));
 }
 
+function buildingLike(value) {
+    return /(building|bldg|zgrad|geb(ae|ä)ude|edific|b(a|â)timent|footprint)/i.test(String(value || ''));
+}
+
+const compactName = field => String(field?.name || field?.fieldName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+// A building needs SOME stable key for the scene and the carve, not a legal identifier: a named
+// building key is best, a generic id next, and the layer's own object id is acceptable.
+function chooseBuildingId(fields, objectIdField) {
+    if (!Array.isArray(fields)) return null;
+    const score = field => {
+        const name = String(field?.name || field?.fieldName || '');
+        if (!IDENTIFIER.test(name)) return -1;
+        const compact = compactName(field);
+        const type = nativeIdType(field) || (isNativeObjectId(field) ? 'integer' : null);
+        if (!type) return -1;
+        if (field?.role === 'id' || field?.['x-ogc-role'] === 'id') return 120;
+        if (/^(building|bldg|zgrada|gebaeude|edificio|batiment)(id|no|num|number|key)?$/.test(compact)
+            || /^(bin|uprn|egid|osmid|gmlid)$/.test(compact)) return 100;
+        if (/(building|bldg|zgrad|gebaeud|edific|batiment)/.test(compact) && /(id|no|num|key)$/.test(compact)) return 80;
+        if (/^(id|gid|fid|uid|ogcfid)$/.test(compact)) return 50;
+        if (name === objectIdField || isNativeObjectId(field)) return 30;
+        return -1;
+    };
+    const ranked = fields.map((field, index) => ({ field, index, score: score(field) }))
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.index - b.index);
+    if (!ranked.length) return null;
+    const { field } = ranked[0];
+    return { name: field.name || field.fieldName, idType: nativeIdType(field) || 'integer', field };
+}
+
+// The fields that carry a building's height (metres, or feet when the name says so) and its storey
+// count. Either may be missing; the provider then estimates (buildings/building-heights.js).
+function buildingHeightFields(fields) {
+    const list = Array.isArray(fields) ? fields : [];
+    const named = re => list.find(field => IDENTIFIER.test(String(field?.name || field?.fieldName || '')) && re.test(compactName(field)));
+    const height = named(/^(height|heightm|heightft|measuredheight|bldgheight|buildingheight|roofheight|heightroof|hoehe|visina|altura|hauteur|hgt)$/);
+    const levels = named(/^(levels|buildinglevels|floors|numfloors|nofloors|numberoffloors|storeys|stories|etaze|brojetaza|geschosse|anzahlgeschosse|pisos|niveaux)$/);
+    const heightField = height ? (height.name || height.fieldName) : undefined;
+    const levelsField = levels ? (levels.name || levels.fieldName) : undefined;
+    return {
+        heightField,
+        levelsField,
+        heightUnit: heightField && /(ft|feet)/i.test(heightField) ? 'ft' : (heightField ? 'm' : undefined)
+    };
+}
+
+// What differs between a parcel source and a building source: which layer counts, which field is
+// the key, which extra fields ride along, and whether every id must round-trip exactly (a parcel is
+// a legal identity; a building only needs to draw and carve consistently).
+const PROFILES = {
+    parcel: {
+        noun: 'parcel',
+        layerLike: parcelLike,
+        chooseId: fields => chooseNativeField(fields),
+        idMayBeObjectId: false,
+        extras: () => ({}),
+        verifyIds: true
+    },
+    building: {
+        noun: 'building',
+        layerLike: buildingLike,
+        chooseId: (fields, objectIdField) => chooseBuildingId(fields, objectIdField),
+        idMayBeObjectId: true,
+        extras: fields => ({ kind: 'building', ...buildingHeightFields(fields) }),
+        verifyIds: false
+    }
+};
+
+// outFields plus the height/storey fields, deduplicated; the extras without undefined keys.
+function withExtras(profile, fields, outFields) {
+    const extras = Object.fromEntries(Object.entries(profile.extras(fields)).filter(([, value]) => value !== undefined));
+    const out = [...new Set([...outFields, ...[extras.heightField, extras.levelsField].filter(Boolean)])];
+    return { extras, outFields: out };
+}
+
 function stripQuery(url) {
     const clean = new URL(url);
     clean.search = '';
@@ -264,10 +341,20 @@ function descriptorBase(adapter, details, city, metricSrid) {
     return descriptorFor(adapter, { city, metricSrid, ...details });
 }
 
-export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid, bbox }, {
+export function discoverCustomParcelSource(input, options) {
+    return discoverCustomSource({ ...input, kind: 'parcel' }, options);
+}
+
+export function discoverCustomBuildingSource(input, options) {
+    return discoverCustomSource({ ...input, kind: 'building' }, options);
+}
+
+async function discoverCustomSource({ url: rawUrl, city, metricSrid, bbox, kind = 'parcel' }, {
     fetchImpl = globalThis.fetch,
     createSource = createParcelSource
 } = {}) {
+    const profile = PROFILES[kind];
+    if (!profile) throw inputError('Unknown source kind.');
     if (!validCityMetric(city, metricSrid)) throw inputError('Provide a city ID and a positive metric SRID.');
     if (typeof fetchImpl !== 'function' || typeof createSource !== 'function') throw inputError('A public source fetcher is required.');
     const inputUrl = normalizedInputUrl(rawUrl);
@@ -324,6 +411,14 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
                 throw sourceFailure('Adapter did not prove a complete spatial FeatureCollection.', { code: 'incomplete-bounds' });
             }
             if (!spatial.features.length) throw sourceFailure('The probe bbox returned no polygons; identity cannot be verified.', { code: 'empty-bounds' });
+            if (!profile.verifyIds) {
+                if (spatial.features.some(feature => !validateGeometry(feature?.geometry))) {
+                    throw sourceFailure(`The probe returned an invalid ${profile.noun} polygon.`, { code: 'invalid-geometry' });
+                }
+                attempt.status = 'verified';
+                attempt.verifiedFeatureCount = spatial.features.length;
+                return { descriptor, attempts };
+            }
             if (spatial.features.length > MAX_EXACT_IDS) {
                 throw sourceFailure(`The probe returned more than ${MAX_EXACT_IDS} polygons; use a smaller bbox for exact identity checks.`, { code: 'probe-too-large' });
             }
@@ -379,23 +474,23 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
             if (!layerId) {
                 stage('service-metadata');
                 const service = await requestJson('arcgis', 'service metadata', addQuery(endpoint, { f: 'json' }));
-                const layers = (service.layers || []).filter(layer => parcelLike(layer.name));
-                if (layers.length !== 1) throw sourceFailure('ArcGIS service does not identify exactly one parcel layer.', { code: 'ambiguous-layer' });
+                const layers = (service.layers || []).filter(layer => profile.layerLike(layer.name));
+                if (layers.length !== 1) throw sourceFailure(`ArcGIS service does not identify exactly one ${profile.noun} layer.`, { code: 'ambiguous-layer' });
                 layerId = String(layers[0].id);
                 endpoint = `${endpoint.replace(/\/$/, '')}/${layerId}`;
             }
             stage('layer-metadata');
             const metadata = await requestJson('arcgis', 'layer metadata', addQuery(endpoint, { f: 'json' }));
             if (metadata.error) throw sourceFailure('ArcGIS metadata reported an error.', { code: 'metadata-error' });
-            const native = chooseNativeField(metadata.fields);
             const objectIdField = objectIdFieldFromLayer(metadata);
-            if (!native || !objectIdField || native.name === objectIdField) {
-                throw sourceFailure('ArcGIS layer has no recognized stable parcel key and object ID.', { code: 'missing-stable-id' });
+            const native = profile.chooseId(metadata.fields, objectIdField);
+            if (!native || !objectIdField || (native.name === objectIdField && !profile.idMayBeObjectId)) {
+                throw sourceFailure(`ArcGIS layer has no recognized stable ${profile.noun} key and object ID.`, { code: 'missing-stable-id' });
             }
-            const outFields = [...new Set([objectIdField, native.name])];
+            const { extras, outFields } = withExtras(profile, metadata.fields, [objectIdField, native.name]);
             return descriptorBase('arcgis', {
                 endpoint, idField: native.name, idType: native.idType, objectIdField,
-                parcelNumberField: native.name, outFields
+                parcelNumberField: native.name, outFields, ...extras
             }, city, metricSrid);
         });
         if (result) return result;
@@ -418,8 +513,8 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
                 stage('capabilities');
                 const capabilitiesUrl = addQuery(wfsUrl.href, { service: 'WFS', request: 'GetCapabilities' });
                 const capabilities = await requestText('wfs', 'GetCapabilities', capabilitiesUrl);
-                const declared = wfsTypeNames(capabilities).filter(parcelLike);
-                if (declared.length !== 1) throw sourceFailure('WFS capabilities do not identify exactly one parcel feature type.', { code: 'ambiguous-feature-type' });
+                const declared = wfsTypeNames(capabilities).filter(profile.layerLike);
+                if (declared.length !== 1) throw sourceFailure(`WFS capabilities do not identify exactly one ${profile.noun} feature type.`, { code: 'ambiguous-feature-type' });
                 featureType = declared[0];
                 version = capabilities.match(/<(?:(?:[\w.-]+):)?(?:WFS_Capabilities|WFS_CapabilitiesType)\b[^>]*\bversion\s*=\s*['"]([^'"]+)/i)?.[1] || version;
             }
@@ -431,12 +526,14 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
             const describe = addQuery(wfsUrl.href, { service: 'WFS', version, request: 'DescribeFeatureType',
                 [version === '1.1.0' ? 'typeName' : 'typeNames']: featureType });
             const schema = await requestText('wfs', 'DescribeFeatureType', describe);
-            const native = chooseNativeField(wfsSchemaFields(schema));
-            if (!native) throw sourceFailure('WFS feature type exposes no recognized stable parcel key.', { code: 'missing-stable-id' });
+            const schemaFields = wfsSchemaFields(schema);
+            const native = profile.chooseId(schemaFields);
+            if (!native) throw sourceFailure(`WFS feature type exposes no recognized stable ${profile.noun} key.`, { code: 'missing-stable-id' });
+            const { extras, outFields } = withExtras(profile, schemaFields, [native.name]);
             return descriptorBase('wfs', {
                 endpoint: wfsUrl.href, featureType, typeName: featureType, version,
                 idField: native.name, idType: native.idType, parcelNumberField: native.name,
-                outFields: [native.name]
+                outFields, ...extras
             }, city, metricSrid);
         });
         if (result) return result;
@@ -452,29 +549,32 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
             if (!collectionId) {
                 stage('collections');
                 const body = await requestJson('ogc-api', 'collections metadata', `${prefix}/collections?f=json`);
-                const candidates = (body.collections || []).filter(item => parcelLike(item.id) || parcelLike(item.title));
-                if (candidates.length !== 1) throw sourceFailure('OGC API does not identify exactly one parcel collection.', { code: 'ambiguous-collection' });
+                const candidates = (body.collections || []).filter(item => profile.layerLike(item.id) || profile.layerLike(item.title));
+                if (candidates.length !== 1) throw sourceFailure(`OGC API does not identify exactly one ${profile.noun} collection.`, { code: 'ambiguous-collection' });
                 collectionId = candidates[0].id;
             }
             const endpoint = `${prefix}/collections/${encodeURIComponent(collectionId)}/items`;
             stage('collection-metadata');
             const collection = await requestJson('ogc-api', 'collection metadata', `${prefix}/collections/${encodeURIComponent(collectionId)}?f=json`);
-            let native = chooseNativeField(schemaProperties(collection));
+            let ogcFields = schemaProperties(collection);
+            let native = profile.chooseId(ogcFields);
             if (!native) {
                 stage('collection-sample');
                 const sampleUrl = addQuery(endpoint, { bbox: bbox.join(','), limit: '1', crs: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84', f: 'json' });
                 const sample = await requestJson('ogc-api', 'collection sample', sampleUrl, 'application/geo+json, application/json');
                 const props = sample?.features?.[0]?.properties;
                 if (props && typeof props === 'object') {
-                    native = chooseNativeField(Object.entries(props).map(([name, value]) => ({
+                    ogcFields = Object.entries(props).map(([name, value]) => ({
                         name, type: Number.isSafeInteger(value) ? 'integer' : typeof value === 'string' ? 'string' : ''
-                    })));
+                    }));
+                    native = profile.chooseId(ogcFields);
                 }
             }
-            if (!native) throw sourceFailure('OGC API collection schema exposes no filterable stable parcel key.', { code: 'missing-stable-id' });
+            if (!native) throw sourceFailure(`OGC API collection schema exposes no filterable stable ${profile.noun} key.`, { code: 'missing-stable-id' });
+            const { extras, outFields } = withExtras(profile, ogcFields, [native.name]);
             return descriptorBase('ogc-api', {
                 endpoint, collection: collectionId, idField: native.name, idType: native.idType,
-                parcelNumberField: native.name, outFields: [native.name]
+                parcelNumberField: native.name, outFields, ...extras
             }, city, metricSrid);
         });
         if (result) return result;
@@ -490,17 +590,18 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
             stage('dataset-metadata');
             const metadata = await requestJson('socrata', 'dataset metadata', metadataUrl);
             const columns = Array.isArray(metadata.columns) ? metadata.columns : [];
-            const nativeColumn = chooseNativeField(columns.map(column => ({
+            const socrataFields = columns.map(column => ({
                 name: column.fieldName, alias: column.name, type: socrataFieldType(column)
-            })));
+            }));
+            const nativeColumn = profile.chooseId(socrataFields);
             const geometryField = propertyGeometryField(columns);
-            if (!nativeColumn || !geometryField) throw sourceFailure('Socrata dataset lacks a stable parcel key or polygon field.', { code: 'missing-parcel-schema' });
+            if (!nativeColumn || !geometryField) throw sourceFailure(`Socrata dataset lacks a stable ${profile.noun} key or polygon field.`, { code: 'missing-parcel-schema' });
             const endpoint = `${origin}/resource/${socrata.id}.json`;
-            const outFields = [...new Set([nativeColumn.name, ':id', ':updated_at'])];
+            const { extras, outFields } = withExtras(profile, socrataFields, [nativeColumn.name, ':id', ':updated_at']);
             return descriptorBase('socrata', {
                 endpoint, idField: nativeColumn.name, idType: 'string', objectIdField: ':id',
                 geometryField, versionField: ':updated_at', parcelNumberField: nativeColumn.name,
-                outFields
+                outFields, ...extras
             }, city, metricSrid);
         });
         if (result) return result;
@@ -552,8 +653,8 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
                 throw sourceFailure('Snapshot must use WGS84 GeoJSON coordinates.', { code: 'snapshot-crs-unsupported' });
             }
             const fields = Object.keys(collection.features[0]?.properties || {}).map(name => ({ name, type: typeof collection.features[0].properties[name] === 'number' ? 'integer' : 'string' }));
-            const native = chooseNativeField(fields);
-            if (!native) throw sourceFailure('Snapshot features expose no recognized stable parcel key.', { code: 'missing-stable-id' });
+            const native = profile.chooseId(fields);
+            if (!native) throw sourceFailure(`Snapshot features expose no recognized stable ${profile.noun} key.`, { code: 'missing-stable-id' });
             for (const feature of collection.features) {
                 if (feature?.type !== 'Feature' || !validateGeometry(feature.geometry)) {
                     throw sourceFailure('Snapshot contains a non-polygon or invalid polygon feature.', { code: 'invalid-snapshot-geometry' });
@@ -561,10 +662,11 @@ export async function discoverCustomParcelSource({ url: rawUrl, city, metricSrid
                 const featureExtent = geometryBbox(feature);
                 if (!covers(extent, featureExtent)) throw sourceFailure('Snapshot feature lies outside its declared WGS84 extent.', { code: 'snapshot-extent-mismatch' });
             }
+            const { extras, outFields } = withExtras(profile, fields, [native.name]);
             return descriptorBase('geojson-snapshot', {
                 endpoint: inputUrl.href, idFields: [native.name], idType: native.idType,
-                parcelNumberField: native.name, outFields: [native.name], bbox: extent,
-                expectedSnapshotFeatures: collection.features.length, expectedEtag: etag
+                parcelNumberField: native.name, outFields, bbox: extent,
+                expectedSnapshotFeatures: collection.features.length, expectedEtag: etag, ...extras
             }, city, metricSrid);
         });
         if (result) return result;

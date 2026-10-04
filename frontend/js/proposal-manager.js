@@ -1727,7 +1727,7 @@ const ProposalManager = {
                 const response = await fetch(`${backendBase}/buildings/under`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                    body: JSON.stringify({ regions: chunk, city })
+                    body: JSON.stringify({ regions: chunk, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
                 });
                 if (!response.ok) { console.warn('[replay] bulk building fetch HTTP', response.status); continue; }
                 const payload = await response.json();

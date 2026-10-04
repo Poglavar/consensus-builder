@@ -190,6 +190,10 @@ test.describe('World navigation and open ground @features', () => {
     await expect(page.locator('.world-handoff')).toBeVisible();
     releaseDownload();
     await expect(page.locator('.world-handoff')).toHaveCount(0, { timeout: 15000 });
+    // Explore has OpenStreetMap buildings, so the pick arrives in 3D first (js/world/arrival.js).
+    const arrival = page.locator('.world-arrival-card');
+    await expect(arrival).toBeVisible({ timeout: 20000 });
+    await arrival.getByRole('button', { name: 'Explore the map' }).click();
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeGreaterThan(15);
     await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.002);

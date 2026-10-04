@@ -95,7 +95,9 @@ export function createPublicSourceFetch({ lookupImpl = lookup, requestImpl = req
                 try {
                     req = requestImpl({ protocol: 'https:', hostname: host, port: 443, path: `${url.pathname}${url.search}`,
                         method, agent: false, servername: isIP(host) ? undefined : host, rejectUnauthorized: true,
+                        // A descriptive User-Agent: Overpass (and other public APIs) refuse requests without one.
                         headers: { Accept: 'application/geo+json, application/json', 'Accept-Encoding': 'identity',
+                            'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)',
                             ...(method === 'POST' ? { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': String(Buffer.byteLength(options.body)) } : {}) },
                         lookup: (_hostname, opts, callback) => {
                             if (typeof opts === 'function') { callback = opts; opts = {}; }

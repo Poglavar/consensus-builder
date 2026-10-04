@@ -44,6 +44,9 @@ function stagedRowToFeature(row) {
             height_m: Number.isFinite(height) && height > 0
                 ? height
                 : (Number.isFinite(floors) && floors > 0 ? floors * 3 : null),
+            measured_height_m: Number.isFinite(height) && height > 0 ? height : null,
+            levels: Number.isFinite(floors) && floors > 0 ? floors : null,
+            building: row.class || row.subtype || null,
             name: (row.names && (row.names.primary || row.names.common?.local)) || null
         }
     };
@@ -58,7 +61,7 @@ async function fetchStagedOsmBuildings(pool, bbox, city) {
 
     const [w, s, e, n] = bbox;
     const { rows } = await pool.query(
-        `SELECT osm_id, names, height, num_floors, ST_AsGeoJSON(geom)::json AS geometry
+        `SELECT osm_id, names, height, num_floors, class, subtype, ST_AsGeoJSON(geom)::json AS geometry
            FROM overture_building_footprint
           WHERE city = $5
             AND osm_id IS NOT NULL

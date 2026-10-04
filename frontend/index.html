@@ -1066,6 +1066,18 @@
                             </select>
                         </label>
 
+                        <!-- Your own sources, kept in this browser per city (js/parcel-source-settings.js).
+                             OpenStreetMap is the default for everything; roads stay OSM-only. -->
+                        <div class="control-group-title" data-i18n-key="dataSources.title">Data sources</div>
+                        <div class="btn-group data-source-choices">
+                            <button type="button" id="parcel-source-settings-button" class="btn btn-secondary" onclick="openParcelSourceSettings()">
+                                <span data-i18n-key="parcelSources.title">Choose a parcel source</span>
+                            </button>
+                            <button type="button" id="building-source-settings-button" class="btn btn-secondary" onclick="openBuildingSourceSettings()">
+                                <span data-i18n-key="buildingSources.title">Choose a building source</span>
+                            </button>
+                        </div>
+
                         <div class="control-group-title" data-i18n-key="mapShell.maintenance.storedTitle">Stored in this browser</div>
                         <!-- Parcel upkeep keeps its data-section wrapper: a city without parcels hides it. -->
                         <div class="accordion-section sheet-subsection" data-section="parcels">
@@ -1168,9 +1180,6 @@
                             </button>
                             <button type="button" id="parcel-source-notice-button" class="btn btn-secondary" onclick="openParcelSourceNotice()">
                                 <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
-                            </button>
-                            <button type="button" id="parcel-source-settings-button" class="btn btn-secondary" onclick="openParcelSourceSettings()">
-                                <span data-i18n-key="parcelSources.title">Choose a parcel source</span>
                             </button>
                         </div>
                         <hr>

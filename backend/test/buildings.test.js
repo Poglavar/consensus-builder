@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { setupBuildingsRoute } from '../routes/buildings.js';
 import { createRouteApp } from './helpers/create-route-app.js';
@@ -265,12 +265,21 @@ describe('POST /buildings/footprints', () => {
         expect(pool.getCalls().length).toBe(0);
     });
 
-    it('reports unsupported for an unknown city instead of falling back to Zagreb', async () => {
-        const res = await request(app).post('/buildings/footprints').send({ geometry, city: 'atlantis' });
+    it('serves an unknown city from OpenStreetMap instead of falling back to Zagreb', async () => {
+        // Live Overpass is stubbed: a unit test never touches the network.
+        const overpass = vi.fn(async () => ({ ok: true, json: async () => ({ elements: [] }) }));
+        vi.stubGlobal('fetch', overpass);
+        try {
+            const res = await request(app).post('/buildings/footprints').send({ geometry, city: 'atlantis' });
 
-        expect(res.status).toBe(200);
-        expect(res.body.supported).toBe(false);
-        expect(pool.getCalls().length).toBe(0);
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject({ supported: true, source: 'osm-footprints' });
+            expect(overpass).toHaveBeenCalled();
+            // Only the staged-OSM city lookup reaches the database; Zagreb's survey tables never do.
+            expect(pool.getCalls().every(call => !/dgu_building|gdi_building/.test(call.sql))).toBe(true);
+        } finally {
+            vi.unstubAllGlobals();
+        }
     });
 
     it('returns 500 when the footprint query fails', async () => {

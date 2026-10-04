@@ -24,7 +24,8 @@ describe('new city parcel source configs', () => {
             expect(city.parcels).toMatchObject({ sourceId, idPrefix, liveRadiusKm: radiusKm, ownership: false });
             expect(Number(city.projection.metricCrs.replace('EPSG:', ''))).toBe(metricSrid);
             expect(city.parcels.attribution).toContain('href=');
-            expect(city.buildings.source).toBe('none');
+            // OpenStreetMap is the default building source for every city without its own.
+            expect(city.buildings.source).toBe('osm');
         }
         expect(manager.getCityConfig('savar').map.defaultZoom).toBe(19);
         expect(manager.getCityConfig('london').parcels.attribution).toContain('City of London authority only');

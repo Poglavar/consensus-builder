@@ -230,21 +230,31 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
             }
 
-            const provider = buildingProviders.resolve(city);
+            // A user-chosen building source (`source`) wins over the city's own.
+            const provider = buildingProviders.forRequest({ city, source: body.source });
             if (!provider) {
                 return res.status(400).json({ error: `No 3D building source for city '${city}'.` });
             }
 
             const result = await provider.near(geometry, bufferMeters);
+            // OSM: how many heights are measured, storey-derived or estimated, and whether the
+            // upstream answered only in part (Overpass throttling).
+            const extra = {};
+            if (result.heights !== undefined) extra.heights = result.heights;
+            if (result.partial !== undefined) extra.partial = result.partial;
+            // The upstream failed outright: the browser tells the person instead of drawing nothing.
+            if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
             if (!proposalIds.length) {
-                return res.json({ buildings: result.buildings, count: result.count, source: result.source });
+                return res.json({ buildings: result.buildings, count: result.count, source: result.source, ...extra });
             }
 
             const proposals = await fetchProposalsForCarve(pool, proposalIds);
             const carveContext = carveRecordsFor(proposals);
             const buildings = carveBuildings(result.buildings, carveContext);
-            res.json({ buildings, count: buildings.length, source: result.source });
+            res.json({ buildings, count: buildings.length, source: result.source, ...extra });
         } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
             console.error('Error in POST /buildings/near:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -293,7 +303,8 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
             }
 
-            const provider = buildingProviders.resolve(city);
+            // A user-chosen building source (`source`) wins over the city's own.
+            const provider = buildingProviders.forRequest({ city, source: body.source });
             if (!provider) {
                 return res.status(400).json({ error: `No 3D building source for city '${city}'.` });
             }
@@ -314,6 +325,8 @@ export function setupBuildingsRoute(app, pool) {
                 + `record(s) → ${carves.length} building(s) affected (matched by object_id)`);
             res.json({ carves, count: carves.length, source: result.source });
         } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
             console.error('Error in POST /buildings/carve:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -370,7 +383,8 @@ export function setupBuildingsRoute(app, pool) {
                 }
             }
 
-            const provider = buildingProviders.resolveExact(city);
+            // A user-chosen building source (`source`) wins over the city's own.
+            const provider = buildingProviders.forRequest({ city, source: body.source });
             if (!provider || typeof provider.footprintsUnder !== 'function') {
                 return res.json({ supported: false, regions: {}, truncated: false, source: null });
             }
@@ -382,9 +396,12 @@ export function setupBuildingsRoute(app, pool) {
                 regions: out,
                 truncated: result.truncated === true,
                 scope: result.scope === undefined ? null : result.scope,
-                source: result.source
+                source: result.source,
+                ...(result.unavailable ? { unavailable: true, retryAfter: result.retryAfter ?? null } : {})
             });
         } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
             console.error('Error in POST /buildings/under:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -400,7 +417,8 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
             }
 
-            const provider = buildingProviders.resolveExact(city);
+            // A user-chosen building source (`source`) wins over the city's own.
+            const provider = buildingProviders.forRequest({ city, source: body.source });
             if (!provider || typeof provider.footprints !== 'function') {
                 return res.json({ supported: false, footprints: [], count: 0, source: null });
             }
@@ -417,9 +435,12 @@ export function setupBuildingsRoute(app, pool) {
                 // Worth reporting: "874 buildings, scope croatia" is the difference between a city
                 // with its own survey and one reading the countrywide pull.
                 scope: result.scope === undefined ? null : result.scope,
-                source: result.source
+                source: result.source,
+                ...(result.unavailable ? { unavailable: true, retryAfter: result.retryAfter ?? null } : {})
             });
         } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
             console.error('Error in POST /buildings/footprints:', err);
             res.status(500).json({ error: 'Internal server error' });
         }

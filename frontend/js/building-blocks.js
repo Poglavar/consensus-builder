@@ -3777,7 +3777,7 @@ function ensureExistingFootprints() {
     existingFootprintsPromise = fetch(`${getBackendBaseForBlockify()}/buildings/footprints`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ geometry, city })
+        body: JSON.stringify({ geometry, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
     }).then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();

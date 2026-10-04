@@ -124,3 +124,79 @@ describe('osmCellsForBbox', () => {
         expect(cells[0].bbox[2]).toBeGreaterThanOrEqual(15.9742);
     });
 });
+
+describe('cold cells share one Overpass request', () => {
+    it('fetches every missing cell of a bbox in one request and caches each cell', async () => {
+        const { createOverpassCellSource, buildOverpassQuery, overpassElementsToGeoJSON } = await import('../buildings/osm-reference.js');
+        const way = (id, lon, lat) => ({ type: 'way', id, tags: { building: 'yes' }, geometry: [
+            { lon, lat }, { lon: lon + 0.0001, lat }, { lon: lon + 0.0001, lat: lat + 0.0001 }, { lon, lat: lat + 0.0001 }
+        ] });
+        const calls = [];
+        const realFetch = globalThis.fetch;
+        globalThis.fetch = async (url, init) => {
+            calls.push(decodeURIComponent(String(init.body)));
+            return { ok: true, json: async () => ({ elements: [way(1, 30.0012, 10.0012), way(2, 30.0112, 10.0062)] }) };
+        };
+        try {
+            const source = createOverpassCellSource({ label: 'test', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON });
+            const bbox = [30.0, 10.0, 30.0149, 10.0099]; // 3 × 2 cells of 0.005°
+            const first = await source(bbox);
+            expect(calls).toHaveLength(1);
+            expect(first.features.map(f => f.id).sort()).toEqual(['w1', 'w2']);
+            expect(first.partial).toBe(false);
+            const again = await source([30.011, 10.006, 30.0149, 10.0099]);
+            expect(calls).toHaveLength(1);
+            expect(again.features.map(f => f.id)).toEqual(['w2']);
+        } finally {
+            globalThis.fetch = realFetch;
+        }
+    });
+});
+
+describe('each Overpass endpoint has its own throttle and cache', () => {
+    it('keeps a mirror answering while the default backs off, and never serves its answers to the default', async () => {
+        const { createOverpassCellSource, buildOverpassQuery, overpassElementsToGeoJSON } = await import('../buildings/osm-reference.js');
+        const way = (id, lon, lat) => ({ type: 'way', id, tags: { building: 'yes' }, geometry: [
+            { lon, lat }, { lon: lon + 0.0001, lat }, { lon: lon + 0.0001, lat: lat + 0.0001 }, { lon, lat: lat + 0.0001 }
+        ] });
+        const mirror = 'https://mirror.example/api/interpreter';
+        const calls = [];
+        const realFetch = globalThis.fetch;
+        // The default endpoint throttles; the mirror answers.
+        globalThis.fetch = async url => {
+            calls.push(String(url));
+            return { ok: false, status: 429, text: async () => 'rate limited' };
+        };
+        const mirrorFetch = async url => {
+            calls.push(String(url));
+            return { ok: true, json: async () => ({ elements: [way(9, 40.0012, 20.0012)] }) };
+        };
+        try {
+            const source = createOverpassCellSource({ label: 'test', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON });
+            const bbox = [40.0, 20.0, 40.004, 20.004];
+            await expect(source(bbox)).rejects.toMatchObject({ status: 503 });
+            const fromMirror = await source(bbox, { overpassUrl: mirror, fetchImpl: mirrorFetch });
+            expect(fromMirror.features.map(f => f.id)).toEqual(['w9']);
+            // The default is still cooling off and holds nothing: the mirror's cell is not its cell.
+            const before = calls.length;
+            const error = await source(bbox).catch(e => e);
+            expect(error.status).toBe(503);
+            expect(error.retryAfter).toBeGreaterThan(0);
+            expect(calls.length).toBe(before);
+        } finally {
+            globalThis.fetch = realFetch;
+        }
+    });
+});
+
+describe('a failed combined request', () => {
+    it('is not retried cell by cell, so a dead server fails once and fast', async () => {
+        const { createOverpassCellSource, buildOverpassQuery, overpassElementsToGeoJSON } = await import('../buildings/osm-reference.js');
+        let calls = 0;
+        const dead = async () => { calls += 1; throw new Error('Public source request aborted or timed out.'); };
+        const source = createOverpassCellSource({ label: 'test', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON });
+        const bbox = [50.0, 30.0, 50.0149, 30.0099]; // 3 × 2 cells
+        await expect(source(bbox, { overpassUrl: 'https://dead.example/api/interpreter', fetchImpl: dead })).rejects.toThrow();
+        expect(calls).toBe(1);
+    });
+});

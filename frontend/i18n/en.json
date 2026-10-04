@@ -573,7 +573,9 @@
             "showGdi": "3D buildings (GDI)",
             "showDgu": "Official cadastre (DGU)",
             "showOsm": "Map buildings (OSM)",
-            "showProposed": "Show proposed buildings"
+            "showProposed": "Show proposed buildings",
+            "showOverture": "Overture buildings (3D model)",
+            "showCustom": "Your building source"
         },
         "stations": {
             "title": "Stations",
@@ -3774,6 +3776,11 @@
         "hints": {
             "viewAngle": "Press Ctrl (or Cmd) and drag to change the view angle",
             "viewAngleTouch": "Drag with two fingers to change the view angle"
+        },
+        "buildingsSource": {
+            "osm": "OpenStreetMap buildings",
+            "estimated": "{{count}} of {{total}} heights estimated",
+            "partial": "some may be missing"
         }
     },
     "structureEditor": {
@@ -4360,5 +4367,28 @@
         "timeout": "This parcel source timed out. Try again shortly.",
         "unavailable": "This parcel source is temporarily unavailable.",
         "loadedRemain": "Already loaded parcels remain visible. Retry or choose another source."
+    },
+    "dataSources": {
+        "title": "Data sources"
+    },
+    "buildingSources": {
+        "title": "Choose a building source",
+        "intro": "Add a public HTTPS URL of building footprints for this city, or of an OpenStreetMap mirror (an Overpass API address ending in /interpreter). We try each supported format and read a height or storey field when it has one; other heights are estimated.",
+        "url": "Building source URL",
+        "matched": "Adapter found: {{adapter}}. {{count}} buildings in the test area. Coverage outside this area depends on the source.",
+        "defaultGdi": "Zagreb 3D model (GDI)",
+        "levelsOnly": "Heights from the storey field {{field}}, 3 m per storey.",
+        "noHeights": "This source has no height field; heights are estimated.",
+        "heightField": "Heights from the field {{field}}, in",
+        "heightUnit": "Height unit",
+        "metres": "metres",
+        "feet": "feet",
+        "overpass": "An OpenStreetMap mirror: heights come from OpenStreetMap where mapped and are estimated elsewhere.",
+        "retry": "Retry buildings",
+        "osmUnavailable": "Building data could not be loaded right now: the OpenStreetMap server is busy.",
+        "customUnavailable": "Your building source did not answer, so buildings could not be loaded here.",
+        "unavailable": "Building data could not be loaded right now.",
+        "tryAgainIn": "Try again in about {{minutes}} min, or plug in your own mirror or source.",
+        "tryAgainLater": "Try again later, or plug in your own mirror or source."
     }
 }

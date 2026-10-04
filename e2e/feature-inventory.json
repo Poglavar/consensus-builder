@@ -594,6 +594,24 @@
       "specs": [
         "tests/search-and-commands.spec.ts"
       ]
+    },
+    {
+      "id": "settings.parcelSourceNotice",
+      "specs": [
+        "tests/data-sources.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.parcelSourceSettings",
+      "specs": [
+        "tests/data-sources.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.buildingSourceSettings",
+      "specs": [
+        "tests/data-sources.spec.ts"
+      ]
     }
   ],
   "workflows": [

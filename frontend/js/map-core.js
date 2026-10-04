@@ -405,12 +405,15 @@ async function loadProviderFootprints(bounds, city) {
     const response = await fetch(`${base}/buildings/footprints`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ geometry, city })
+        body: JSON.stringify({ geometry, city, source: CityConfigManager.getBuildingSourceId?.() })
     });
     if (!response.ok) throw new Error('Failed to fetch building footprints');
     const payload = await response.json();
     // A city with no footprint capability is not an error and not worth a status line about zero.
     if (!payload || payload.supported === false) return null;
+    // The upstream failed outright (OSM throttling, a user's source down): an empty answer here is
+    // not "no buildings", and must not be merged or claimed as covered.
+    if (payload.unavailable) throw Object.assign(new Error('Building source unavailable'), { unavailable: true, retryAfter: payload.retryAfter ?? null });
     const features = (payload.footprints || [])
         .filter(entry => entry && entry.geometry)
         .map(entry => ({
@@ -425,6 +428,33 @@ async function loadProviderFootprints(bounds, city) {
         }));
     return { features, truncated: payload.truncated === true };
 }
+
+// A building load whose upstream failed (throttled OpenStreetMap, a person's own source down): said in
+// the building banner, with Retry and the source chooser, never silently. Viewport loads then wait
+// out the upstream's own retry time instead of asking again on every pan.
+let buildingsRetryAt = 0;
+// `fromOsm` marks a failure of the OpenStreetMap reference layer, which is OSM whatever the city uses.
+function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false) {
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds) && seconds > 0) buildingsRetryAt = Date.now() + seconds * 1000;
+    console.warn(`[${new Date().toISOString()}] [buildings] building data unavailable${seconds > 0 ? `; retry in ${seconds}s` : ''}`);
+    const settings = window.ParcelSourceSettings;
+    if (!settings || typeof settings.reportFailure !== 'function') return;
+    const manager = window.CityConfigManager;
+    let origin = 'other';
+    try {
+        if (fromOsm) origin = 'osm';
+        else if (manager?.getBuildingSourceId?.()) origin = 'custom';
+        else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'osm') origin = 'osm';
+    } catch (_) { /* the generic wording is still true */ }
+    settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin }), 'building', retry);
+}
+window.reportBuildingsUnavailable = reportBuildingsUnavailable;
+function clearBuildingsUnavailable() {
+    buildingsRetryAt = 0;
+    window.ParcelSourceSettings?.clearFailure?.(window, 'building');
+}
+window.clearBuildingsUnavailable = clearBuildingsUnavailable;
 
 // Fetch buildings from data source. With `boundsOverride` (L.LatLngBounds) the fetch targets that
 // area regardless of zoom — used by corridor tools to cover drawn geometry; without it, the
@@ -467,6 +497,9 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
     // serves the CADASTRE, which is a different survey and must never enter this pool.
     const providerCity = req ? null : footprintProviderCity();
     if (!req && !providerCity) return;
+    // Inside the upstream's back-off a viewport pan asks for nothing; a tool covering its own
+    // geometry still asks (the backend answers from its cache or says unavailable at once).
+    if (!boundsOverride && Date.now() < buildingsRetryAt) return;
 
     // "Buildings" here are the SURVEYED ones — the existing-building reference layer for the current
     // viewport, nothing to do with proposals. Said plainly, because these two lines sit in the same
@@ -537,6 +570,7 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
         try { window.buildingLayer = buildingLayer; } catch (_) { }
         try { window.dispatchEvent(new CustomEvent('buildingsLayerUpdated')); } catch (_) { }
 
+        clearBuildingsUnavailable();
         if (announce && typeof updateStatus === 'function') {
             const surveyed = loaded.features.length;
             updateStatus(surveyed
@@ -550,6 +584,10 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
         if (typeof updateStatus === 'function') {
             updateStatus('Error fetching building data. Please try again.');
         }
+        reportBuildingsUnavailable(error && error.retryAfter, () => {
+            buildingsRetryAt = 0;
+            fetchBuildings(boundsOverride, { announce: true });
+        });
     }
 }
 
@@ -653,6 +691,7 @@ async function fetchOsmBuildings(boundsOverride = null) {
             osmBuildingsRetryAt = Date.now() + seconds * 1000;
             console.warn(`[buildings] OSM reference is rate-limited upstream; not asking again for ${seconds}s`);
             showFetchedOsmBuildingLayer();
+            reportBuildingsUnavailable(seconds, () => { osmBuildingsRetryAt = 0; fetchOsmBuildings(boundsOverride); }, true);
             return;
         }
         if (!response.ok) throw new Error(`Failed to fetch OSM building data (HTTP ${response.status})`);
@@ -669,8 +708,10 @@ async function fetchOsmBuildings(boundsOverride = null) {
         const checkbox = document.getElementById('showBuildingsOsm');
         if (!checkbox || checkbox.checked) osmBuildingLayer.addTo(map);
         try { window.osmBuildingLayer = osmBuildingLayer; } catch (_) { }
+        clearBuildingsUnavailable();
     } catch (error) {
         console.error('Error fetching OSM building data:', error);
+        reportBuildingsUnavailable(null, () => fetchOsmBuildings(boundsOverride), true);
     }
 }
 window.fetchOsmBuildings = fetchOsmBuildings;
@@ -830,6 +871,8 @@ function updateTotalSpentDisplay() {
     }
 }
 
+let buildingFollowTimer = null;
+
 // Set up map event handlers
 function setupMapEventHandlers() {
     // Map movement handlers
@@ -853,10 +896,17 @@ function setupMapEventHandlers() {
             ['showBuildingsDgu', typeof fetchDguBuildings === 'function' ? fetchDguBuildings : null],
             ['showBuildingsOsm', typeof fetchOsmBuildings === 'function' ? fetchOsmBuildings : null]
         ];
-        followMap.forEach(([id, fetcher]) => {
-            const box = document.getElementById(id);
-            if (box && box.checked && fetcher) fetcher();
-        });
+        // After the same pause as parcels: a pan is a burst of moveends, and each fetch may go out to
+        // a rate-limited upstream (public Overpass rations requests per machine).
+        if (buildingFollowTimer) clearTimeout(buildingFollowTimer);
+        const debounceMs = (parcelFetchConfig && typeof parcelFetchConfig.getDebounce === 'function') ? parcelFetchConfig.getDebounce() : 500;
+        buildingFollowTimer = setTimeout(() => {
+            buildingFollowTimer = null;
+            followMap.forEach(([id, fetcher]) => {
+                const box = document.getElementById(id);
+                if (box && box.checked && fetcher) fetcher();
+            });
+        }, debounceMs);
 
         isMapMoving = false;
     });

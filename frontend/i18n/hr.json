@@ -604,7 +604,9 @@
             "showGdi": "3D zgrade (GDI)",
             "showDgu": "Službeni katastar (DGU)",
             "showOsm": "Zgrade s karte (OSM)",
-            "showProposed": "Prikaži predložene zgrade"
+            "showProposed": "Prikaži predložene zgrade",
+            "showOverture": "Overture zgrade (3D model)",
+            "showCustom": "Tvoj izvor zgrada"
         },
         "stations": {
             "title": "Postaje",
@@ -3811,6 +3813,11 @@
         "hints": {
             "viewAngle": "Drži Ctrl (ili Cmd) i povuci za promjenu kuta pogleda",
             "viewAngleTouch": "Povuci s dva prsta za promjenu kuta pogleda"
+        },
+        "buildingsSource": {
+            "osm": "OpenStreetMap zgrade",
+            "estimated": "{{count}} od {{total}} visina procijenjeno",
+            "partial": "neke možda nedostaju"
         }
     },
     "structureEditor": {
@@ -4399,5 +4406,28 @@
         "timeout": "Ovaj izvor nije odgovorio na vrijeme. Pokušaj uskoro ponovno.",
         "unavailable": "Ovaj izvor čestica trenutačno nije dostupan.",
         "loadedRemain": "Već učitane čestice ostaju vidljive. Pokušaj ponovno ili odaberi drugi izvor."
+    },
+    "dataSources": {
+        "title": "Izvori podataka"
+    },
+    "buildingSources": {
+        "title": "Odaberi izvor zgrada",
+        "intro": "Dodaj javni HTTPS URL tlocrta zgrada za ovaj grad ili OpenStreetMap zrcala (adresa Overpass API-ja koja završava na /interpreter). Isprobavamo svaki podržani format i čitamo polje visine ili broja katova ako postoji; ostale visine se procjenjuju.",
+        "url": "URL izvora zgrada",
+        "matched": "Pronađen adapter: {{adapter}}. {{count}} zgrada u testnom području. Pokrivenost izvan tog područja ovisi o izvoru.",
+        "defaultGdi": "3D model Zagreba (GDI)",
+        "levelsOnly": "Visine iz polja broja katova {{field}}, 3 m po katu.",
+        "noHeights": "Ovaj izvor nema polje visine; visine se procjenjuju.",
+        "heightField": "Visine iz polja {{field}}, u",
+        "heightUnit": "Jedinica visine",
+        "metres": "metrima",
+        "feet": "stopama",
+        "overpass": "OpenStreetMap zrcalo: visine dolaze iz OpenStreetMapa gdje su ucrtane, a drugdje se procjenjuju.",
+        "retry": "Ponovno učitaj zgrade",
+        "osmUnavailable": "Podaci o zgradama trenutno se ne mogu učitati: OpenStreetMap poslužitelj je zauzet.",
+        "customUnavailable": "Tvoj izvor zgrada nije odgovorio pa se zgrade ovdje nisu mogle učitati.",
+        "unavailable": "Podaci o zgradama trenutno se ne mogu učitati.",
+        "tryAgainIn": "Pokušaj ponovno za otprilike {{minutes}} min ili dodaj vlastito zrcalo ili izvor.",
+        "tryAgainLater": "Pokušaj ponovno kasnije ili dodaj vlastito zrcalo ili izvor."
     }
 }
