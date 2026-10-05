@@ -27,12 +27,38 @@ const FEATURE_CAP = 8000;          // above the densest zoom-17..19 viewport; on
 const MAX_SPAN_DEG = 0.06;         // ~6.6 km — a safety valve; the frontend zoom-gates to small boxes
 const FETCH_TIMEOUT_MS = 25000;
 
+// A paid endpoint that refuses us (a bad key, a Referer it does not accept, the month's credits
+// spent) stays refused for a while, so we stop asking and use the next endpoint.
+const REFUSED_COOLOFF_MS = 15 * 60 * 1000;
+// Tracestrack checks the Referer against the one set in its dashboard; the public servers ignore it.
+const OVERPASS_REFERER = 'https://urbangametheory.xyz/';
+
 // Shared by every Overpass source here, per endpoint: Overpass throttles per client, not per query,
 // so a 429 for buildings must also quiet the streets source. A mirror someone plugged in has its own
 // clock, so the public server throttling us never silences it.
 const throttledUntil = new Map();
-const endpointOf = options => options.overpassUrl || process.env.OVERPASS_URL || DEFAULT_OVERPASS_URL;
 const throttleEndsAt = endpoint => throttledUntil.get(endpoint) || 0;
+
+// The endpoints our own requests try, in order: the paid Tracestrack instance when its key is set
+// (TRACESTRACK_API_KEY, a secret, so it lives only in .env), then the public server. A user's mirror
+// (options.overpassUrl) is the only endpoint for its own requests.
+function endpointChain(options) {
+    if (options.overpassUrl) return [options.overpassUrl];
+    const chain = [];
+    const key = process.env.TRACESTRACK_API_KEY;
+    if (key && /^[A-Za-z0-9]{16,128}$/.test(key)) chain.push(`https://api.tracestrack.com/overpass/${key}/interpreter`);
+    chain.push(process.env.OVERPASS_URL || DEFAULT_OVERPASS_URL);
+    return chain;
+}
+// When the whole chain is cooling, the earliest moment one of its endpoints may be asked again.
+function chainCoolingUntil(chain) {
+    const ends = chain.map(throttleEndsAt);
+    return ends.every(end => end > cacheNow()) ? Math.min(...ends) : 0;
+}
+// For logs: the host only. Tracestrack's key is part of its URL path and must never be printed.
+function hostOf(endpoint) {
+    try { return new URL(endpoint).hostname; } catch (_) { return 'overpass'; }
+}
 
 function cacheNow() { return Date.now(); }
 
@@ -173,39 +199,74 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
     // events, must be four Overpass calls and not eight.
     const inFlight = new Map();
 
-    // One Overpass request for a WGS84 bbox → { features, truncated }. Throws with .status on failure.
-    async function queryOverpass(bbox, options, cap) {
-        const overpassUrl = endpointOf(options);
-        // A user's mirror goes through the public-URL guard (options.fetchImpl); ours does not need it.
+    // One Overpass request to ONE endpoint → { features, truncated }. Throws with .status on failure,
+    // after starting that endpoint's cool-off when it throttled, refused or did not answer.
+    async function queryEndpoint(overpassUrl, bbox, options, cap) {
+        const own = !options.overpassUrl;
+        // A user's mirror goes through the public-URL guard (options.fetchImpl); ours do not need it.
         const fetchImpl = options.fetchImpl || fetch;
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+        const started = cacheNow();
         let json;
         try {
-            const resp = await fetchImpl(overpassUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    // OSM's Overpass usage policy REQUIRES a descriptive User-Agent; requests without
-                    // one are rejected with HTTP 406. Node's fetch sends none, so set it explicitly.
-                    'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)'
-                },
-                body: `data=${encodeURIComponent(buildQuery(bbox))}`,
-                signal: controller.signal
-            });
+            let resp;
+            try {
+                resp = await fetchImpl(overpassUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        // OSM's Overpass usage policy REQUIRES a descriptive User-Agent; requests without
+                        // one are rejected with HTTP 406. Node's fetch sends none, so set it explicitly.
+                        'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)',
+                        ...(own ? { Referer: OVERPASS_REFERER } : {})
+                    },
+                    body: `data=${encodeURIComponent(buildQuery(bbox))}`,
+                    signal: controller.signal
+                });
+            } catch (err) {
+                // No answer at all (timeout, network): asking again at once would only wait again.
+                throttledUntil.set(overpassUrl, cacheNow() + THROTTLE_COOLOFF_MS);
+                throw err;
+            }
             if (!resp.ok) {
                 // 429 (too many requests) and 504 (the query queue timed out) both mean the same
-                // thing to us: back off. Anything else is a genuine upstream failure.
-                if (resp.status === 429 || resp.status === 504) throttledUntil.set(overpassUrl, cacheNow() + THROTTLE_COOLOFF_MS);
-                const err = new Error(`Overpass HTTP ${resp.status} (${label}): ${(await resp.text()).slice(0, 200)}`);
-                err.status = (resp.status === 429 || resp.status === 504) ? 503 : 502;
+                // thing to us: back off. 401/402/403 is a paid endpoint refusing the key, the Referer
+                // or a spent month. Anything else is a genuine upstream failure.
+                const throttled = resp.status === 429 || resp.status === 504;
+                const refused = [401, 402, 403].includes(resp.status);
+                if (throttled) throttledUntil.set(overpassUrl, cacheNow() + THROTTLE_COOLOFF_MS);
+                if (refused) throttledUntil.set(overpassUrl, cacheNow() + REFUSED_COOLOFF_MS);
+                const err = new Error(`Overpass HTTP ${resp.status} from ${hostOf(overpassUrl)} (${label}): ${(await resp.text()).slice(0, 200)}`);
+                err.status = throttled ? 503 : 502;
+                if (refused) console.error(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} refused us (HTTP ${resp.status}); not asking it again for ${REFUSED_COOLOFF_MS / 60000} min`);
                 throw err;
             }
             json = await resp.json();
         } finally {
             clearTimeout(timer);
         }
-        return convert(json && json.elements, cap);
+        const fc = convert(json && json.elements, cap);
+        if (own) console.log(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} answered in ${cacheNow() - started} ms (${fc.features.length} features)`);
+        return fc;
+    }
+
+    // One Overpass request for a WGS84 bbox, trying the endpoint chain in order and skipping any
+    // that is cooling off. Throws the last failure when none answered.
+    async function queryOverpass(bbox, options, cap) {
+        let failure = null;
+        for (const endpoint of endpointChain(options)) {
+            if (throttleEndsAt(endpoint) > cacheNow()) continue;
+            try {
+                return await queryEndpoint(endpoint, bbox, options, cap);
+            } catch (err) {
+                failure = err;
+                console.warn(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(endpoint)} failed (${err.status || err.name}): ${String(err.message).split(':')[0]}`);
+            }
+        }
+        const err = failure || new Error('Every Overpass endpoint is backing off');
+        err.status = err.status || 503;
+        throw err;
     }
 
     function remember(key, fc) {
@@ -278,11 +339,12 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
             throw err;
         }
 
-        // Cache entries are per endpoint: what a user's mirror answered must never be served to
-        // anyone reading the default.
-        const endpoint = endpointOf(options);
-        const cells = osmCellsForBbox(bbox, options.cellDeg).map(cell => ({ ...cell, key: `${endpoint}|${cell.key}` }));
-        const cooling = throttleEndsAt(endpoint) > cacheNow();
+        // Cache entries are per source: what a user's mirror answered must never be served to anyone
+        // reading the default. Our own endpoints serve the same data, so they share one scope.
+        const chain = endpointChain(options);
+        const scope = options.overpassUrl || 'default';
+        const cells = osmCellsForBbox(bbox, options.cellDeg).map(cell => ({ ...cell, key: `${scope}|${cell.key}` }));
+        const cooling = chainCoolingUntil(chain) > cacheNow();
         const features = [];
         const seen = new Set();
         let truncated = false;
@@ -335,7 +397,8 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
         if (!features.length && (failure || cooling)) {
             const err = failure || new Error('Overpass is rate-limiting us; backing off');
             err.status = err.status || 503;
-            if (throttleEndsAt(endpoint) > cacheNow()) err.retryAfter = Math.ceil((throttleEndsAt(endpoint) - cacheNow()) / 1000);
+            const until = chainCoolingUntil(chain);
+            if (until > cacheNow()) err.retryAfter = Math.ceil((until - cacheNow()) / 1000);
             throw err;
         }
         return { type: 'FeatureCollection', features, truncated, partial };

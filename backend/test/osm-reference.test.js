@@ -1,6 +1,6 @@
 // Unit tests for the pure parts of the OSM buildings reference layer: the Overpass `out geom;`
 // element → GeoJSON conversion, the height tag reading, and the bbox query builder. No network.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -198,5 +198,70 @@ describe('a failed combined request', () => {
         const bbox = [50.0, 30.0, 50.0149, 30.0099]; // 3 × 2 cells
         await expect(source(bbox, { overpassUrl: 'https://dead.example/api/interpreter', fetchImpl: dead })).rejects.toThrow();
         expect(calls).toBe(1);
+    });
+});
+
+describe('our endpoint chain: Tracestrack first, the public server after', () => {
+    const way = (id, lon, lat) => ({ type: 'way', id, tags: { building: 'yes' }, geometry: [
+        { lon, lat }, { lon: lon + 0.0001, lat }, { lon: lon + 0.0001, lat: lat + 0.0001 }, { lon, lat: lat + 0.0001 }
+    ] });
+    async function withChain(key, publicUrl, fetchFn, run) {
+        const saved = { key: process.env.TRACESTRACK_API_KEY, url: process.env.OVERPASS_URL, fetch: globalThis.fetch };
+        const logs = [];
+        const spies = ['log', 'warn', 'error'].map(level => vi.spyOn(console, level).mockImplementation((...args) => logs.push(args.join(' '))));
+        process.env.TRACESTRACK_API_KEY = key;
+        process.env.OVERPASS_URL = publicUrl;
+        globalThis.fetch = fetchFn;
+        try { return await run(logs); } finally {
+            spies.forEach(spy => spy.mockRestore());
+            globalThis.fetch = saved.fetch;
+            if (saved.key === undefined) delete process.env.TRACESTRACK_API_KEY; else process.env.TRACESTRACK_API_KEY = saved.key;
+            if (saved.url === undefined) delete process.env.OVERPASS_URL; else process.env.OVERPASS_URL = saved.url;
+        }
+    }
+
+    it('asks Tracestrack first, with the Referer its dashboard checks', async () => {
+        const { createOverpassCellSource, buildOverpassQuery, overpassElementsToGeoJSON } = await import('../buildings/osm-reference.js');
+        const calls = [];
+        await withChain('aaaa1111bbbb2222cccc3333', 'https://public-a.example/api/interpreter', async (url, init) => {
+            calls.push({ url: String(url), referer: init.headers.Referer });
+            return { ok: true, json: async () => ({ elements: [way(3, 60.0012, 40.0012)] }) };
+        }, async () => {
+            const source = createOverpassCellSource({ label: 'test', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON });
+            const fc = await source([60.0, 40.0, 60.004, 40.004]);
+            expect(fc.features.map(f => f.id)).toEqual(['w3']);
+        });
+        expect(calls).toEqual([{ url: 'https://api.tracestrack.com/overpass/aaaa1111bbbb2222cccc3333/interpreter', referer: 'https://urbangametheory.xyz/' }]);
+    });
+
+    it('falls through to the public server when Tracestrack refuses, stops asking it, and never prints the key', async () => {
+        const { createOverpassCellSource, buildOverpassQuery, overpassElementsToGeoJSON } = await import('../buildings/osm-reference.js');
+        const key = 'dddd4444eeee5555ffff6666';
+        const calls = [];
+        await withChain(key, 'https://public-b.example/api/interpreter', async url => {
+            calls.push(new URL(String(url)).hostname);
+            return String(url).includes('tracestrack')
+                ? { ok: false, status: 403, text: async () => 'Referrer mismatch.' }
+                : { ok: true, json: async () => ({ elements: [way(4, 61.0012, 41.0012)] }) };
+        }, async logs => {
+            const source = createOverpassCellSource({ label: 'test', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON });
+            expect((await source([61.0, 41.0, 61.004, 41.004])).features.map(f => f.id)).toEqual(['w4']);
+            await source([61.1, 41.1, 61.104, 41.104]);
+            expect(logs.join('\n')).not.toContain(key);
+        });
+        // The refusal sends the first request on to the public server; the next one skips Tracestrack.
+        expect(calls).toEqual(['api.tracestrack.com', 'public-b.example', 'public-b.example']);
+    });
+
+    it('reports when to try again once every endpoint is backing off, without the key in the error', async () => {
+        const { createOverpassCellSource, buildOverpassQuery, overpassElementsToGeoJSON } = await import('../buildings/osm-reference.js');
+        const key = 'gggg7777hhhh8888iiii9999';
+        await withChain(key, 'https://public-c.example/api/interpreter', async () => ({ ok: false, status: 429, text: async () => 'slow down' }), async () => {
+            const source = createOverpassCellSource({ label: 'test', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON });
+            const error = await source([62.0, 42.0, 62.004, 42.004]).catch(e => e);
+            expect(error.status).toBe(503);
+            expect(error.retryAfter).toBeGreaterThan(0);
+            expect(String(error.message)).not.toContain(key);
+        });
     });
 });
