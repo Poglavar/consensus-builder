@@ -135,6 +135,7 @@
     let stationGroup = null; // placeable bus/tram/underground/elevated station models
     let existingTransitAlignmentGroup = null; // immutable tram/heavy-rail snapshot (city-gated)
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
+    let waterGroup = null; // real-world sea, lakes and rivers (OpenFreeMap tiles), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
     let latestProposalDraftPreviewDetail = null;
@@ -4531,12 +4532,14 @@
                 console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly();
                 updateBuildingsLoader();
+                ensureNearbyWater();
             })
             .catch(err => {
                 console.warn('Failed to fetch nearby buildings:', err);
                 nearbyProposalBuildingsFetching = false;
                 updateBuildingsLoader();
                 reportNearbyBuildingsUnavailable(null);
+                ensureNearbyWater();
             });
     }
 
@@ -4699,12 +4702,127 @@
         }
     }
 
+    // --- Real-world water (sea, lakes, rivers, streams) ---
+    // Fetched via POST /decor/water for the same query geometry and radius as the trees, every piece
+    // already a polygon (the backend widens river and stream lines), drawn flat just above the ground
+    // in one material. A scene holds a few dozen pieces at most, so it costs next to nothing.
+    const WATER_STORAGE_KEY = 'cb_3d_water_enabled';
+    let nearbyWater = [];           // [{ geometry, kind }] from the backend
+    let nearbyWaterKey = null;
+    let nearbyWaterFetching = false;
+    let waterEnabled = true;
+    let waterMaterial = null;
+
+    function loadWaterEnabledPref() {
+        try {
+            const v = PersistentStorage.getItem(WATER_STORAGE_KEY);
+            if (v === '0') return false;
+        } catch (_) { }
+        return true; // default ON
+    }
+
+    function disposeWaterGroup() {
+        if (!waterGroup) return;
+        for (let i = waterGroup.children.length - 1; i >= 0; i--) {
+            const child = waterGroup.children[i];
+            waterGroup.remove(child);
+            if (child.geometry) child.geometry.dispose();
+        }
+    }
+
+    function rebuildWaterOnly() {
+        if (!isActive || !waterGroup) return;
+        disposeWaterGroup();
+        if (!waterEnabled || !nearbyWater.length || !origin3857) return;
+        if (!waterMaterial) {
+            // Below planned lakes (0.065) and above the parcel slabs; the offset keeps it off the ground.
+            waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40,
+                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+        }
+        for (const piece of nearbyWater) {
+            try {
+                polygonFeatureToMeshes({ type: 'Feature', geometry: piece.geometry }, waterMaterial, 0.04, 0)
+                    .forEach(mesh => { mesh.userData.water = piece.kind; waterGroup.add(mesh); });
+            } catch (error) {
+                console.warn('[3D] water piece skipped', piece.kind, error);
+            }
+        }
+    }
+
+    // The box the loaded buildings cover, [w, s, e, n], or null. Water is cut to it, so it reaches as
+    // far as the buildings do whatever the source: the OSM provider answers whole grid cells, well past
+    // the radius, and other sources have their own shapes.
+    function loadedBuildingsExtent() {
+        let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
+        for (const building of nearbyProposalBuildings || []) {
+            for (const face of building.faces || []) {
+                for (const point of (face.coordinates && face.coordinates[0]) || []) {
+                    if (point[0] < w) w = point[0];
+                    if (point[0] > e) e = point[0];
+                    if (point[1] < s) s = point[1];
+                    if (point[1] > n) n = point[1];
+                }
+            }
+        }
+        return Number.isFinite(w) && e > w && n > s ? [w, s, e, n] : null;
+    }
+
+    function ensureNearbyWater() {
+        // Wait for the buildings: their extent is the area to cover.
+        if (!waterEnabled || nearbyWaterFetching || nearbyProposalBuildingsFetching) return;
+        const extent = loadedBuildingsExtent();
+        let queryGeometry, buffer;
+        if (extent) {
+            const [w, s, e, n] = extent;
+            queryGeometry = { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] };
+            buffer = 0;
+        } else {
+            // No buildings (none here, or they failed): the radius around the scene anchor.
+            queryGeometry = sceneTreeLoadGeometry;
+            buffer = buildingLoadRadiusM;
+        }
+        if (!queryGeometry) return;
+        const key = JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
+        if (key === nearbyWaterKey) return;
+        nearbyWaterFetching = true;
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        fetch(`${base}/decor/water`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ geometry: queryGeometry, buffer_meters: buffer })
+        })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                nearbyWater = (payload && Array.isArray(payload.areas)) ? payload.areas : [];
+                nearbyWaterKey = key;
+                nearbyWaterFetching = false;
+                console.log(`[3D] Loaded ${nearbyWater.length} nearby water pieces (${sceneTreeLoadGeometrySource}+${buffer}m)`);
+                rebuildWaterOnly();
+            })
+            .catch(err => {
+                // Scenery: the scene stands without it, so this is a log line, not a banner.
+                console.warn('Failed to fetch nearby water:', err);
+                nearbyWaterFetching = false;
+            });
+    }
+
+    function setWaterEnabled(on) {
+        waterEnabled = !!on;
+        try { PersistentStorage.setItem(WATER_STORAGE_KEY, waterEnabled ? '1' : '0'); } catch (_) { }
+        if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
+        if (waterEnabled) {
+            ensureNearbyWater();
+            rebuildWaterOnly();
+        }
+    }
+
     // Registry of renderable scenery layers: maps an osm_decor `kind` to its panel label and
     // enable/disable hooks. The 3D panel renders a checkbox per layer that BOTH appears here AND is
     // reported available by GET /decor/layers for the current city. Add a layer's renderer + an entry
     // here and it shows up automatically wherever it's been ingested.
     const DECOR_LAYERS = {
-        trees: { label: 'Trees', isEnabled: () => treesEnabled, setEnabled: (on) => setTreesEnabled(on) }
+        trees: { label: 'Trees', isEnabled: () => treesEnabled, setEnabled: (on) => setTreesEnabled(on) },
+        water: { label: 'Water', isEnabled: () => waterEnabled, setEnabled: (on) => setWaterEnabled(on) }
     };
 
     // Render one checkbox per available scenery layer (intersection of DECOR_LAYERS and `available`).
@@ -5494,6 +5612,8 @@
         // Trees follow the same near-query; fetch if enabled, and rebuild from whatever we have.
         ensureNearbyTrees();
         rebuildTreesOnly();
+        ensureNearbyWater();
+        rebuildWaterOnly();
 
         // Freshly rebuilt geometry gets the current selection treatment without moving the camera.
         if (isolatedParcelId !== null) applyParcelEmphasis();
@@ -5591,15 +5711,18 @@
         lakeGroup = new THREE.Group();
         stationGroup = new THREE.Group();
         treesGroup = new THREE.Group();
+        waterGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
+        waterEnabled = loadWaterEnabledPref();
         plannedRepresentation = loadPlannedRepresentation();
         try {
             setFacadeAppearance(PersistentStorage.getItem(FACADE_PREF_KEY) === '1',
                 PersistentStorage.getItem(FACADE_STYLE_KEY), false);
         } catch (_) { }
         treesGroup.visible = treesEnabled && !realisticLayerActive;
+        waterGroup.visible = waterEnabled && !realisticLayerActive;
         scene.add(flatGroup);
         scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
@@ -5609,6 +5732,7 @@
         scene.add(lakeGroup);
         scene.add(stationGroup);
         scene.add(treesGroup);
+        scene.add(waterGroup);
         scene.add(proposalInteractionGroup);
         scene.add(proposalDraftGroup);
         existingTransitAlignmentGroup = null; // rebuilt from the cached city sources below
@@ -6065,6 +6189,8 @@
         sceneLoadGeometrySource = 'camera';
         sceneTreeLoadGeometry = null;
         sceneTreeLoadGeometrySource = 'camera';
+        waterGroup = null;
+        nearbyWaterKey = null;
         flatGroup = null;
         corridorGroup = null;
         terrainCorridorGroup = null;
@@ -6843,6 +6969,7 @@
         realisticLayerActive = !!on;
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         // Photo mode is view-only: hide the model-mode building controls (radius / built / proposed)
         // and drop any isolation + the "Proposal info" panel, so the whole cut scene and all its
         // proposals are shown. Restored on return to model 3D.

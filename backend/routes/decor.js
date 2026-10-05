@@ -10,12 +10,15 @@
 
 import { createOvertureTreesProvider } from '../decor/overture-trees.js';
 import { OVERTURE_CITIES } from '../buildings/overture-cities.js';
+import { createWaterProvider } from '../decor/openfreemap-water.js';
 
 // Which osm_decor kinds are renderable scenery toggles in the 3D view. Buildings are not scenery —
 // they render via the Built/Both/Planned controls. Extend as new kinds get a renderer.
 const SCENERY_LAYERS = ['trees'];
+// Layers every city has, whatever is ingested: water comes from OpenFreeMap's worldwide tiles.
+const WORLDWIDE_LAYERS = ['water'];
 
-export function setupDecorRoute(app, pool) {
+export function setupDecorRoute(app, pool, { waterProvider = createWaterProvider() } = {}) {
     // One trees provider per Overture city, resolved by the CityConfigManager id the client sends.
     const treeProviders = {};
     for (const cityId of Object.keys(OVERTURE_CITIES)) {
@@ -29,7 +32,7 @@ export function setupDecorRoute(app, pool) {
     app.get('/decor/layers', async (req, res) => {
         try {
             const city = typeof req.query.city === 'string' ? req.query.city : '';
-            if (!city) return res.json({ layers: [] });
+            if (!city) return res.json({ layers: WORLDWIDE_LAYERS });
 
             const cached = layersCache.get(city);
             if (cached && (cached.at + LAYERS_TTL_MS) > Date.now()) {
@@ -40,8 +43,8 @@ export function setupDecorRoute(app, pool) {
             // regional load (sibenik → sjeverna-dalmacija), so an unmapped city has no scenery.
             const region = OVERTURE_CITIES[city]?.region;
             if (!region) {
-                layersCache.set(city, { at: Date.now(), layers: [] });
-                return res.json({ layers: [] });
+                layersCache.set(city, { at: Date.now(), layers: WORLDWIDE_LAYERS });
+                return res.json({ layers: WORLDWIDE_LAYERS });
             }
 
             const { rows } = await pool.query(
@@ -50,7 +53,7 @@ export function setupDecorRoute(app, pool) {
             );
             // Preserve SCENERY_LAYERS order so toggles render in a stable, intentional sequence.
             const present = new Set(rows.map(r => r.kind));
-            const layers = SCENERY_LAYERS.filter(l => present.has(l));
+            const layers = [...SCENERY_LAYERS.filter(l => present.has(l)), ...WORLDWIDE_LAYERS];
             layersCache.set(city, { at: Date.now(), layers });
             res.json({ layers });
         } catch (err) {
@@ -96,6 +99,28 @@ export function setupDecorRoute(app, pool) {
         } catch (err) {
             console.error('Error in POST /decor/near:', err);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // POST /decor/water - sea, lakes, rivers and streams within `buffer_meters` of a GeoJSON geometry,
+    // anywhere on Earth. Body: { geometry, buffer_meters? }.
+    // Response: { areas: [{ geometry: Polygon|MultiPolygon, kind }], count, source: 'openfreemap' }
+    app.post('/decor/water', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const geometry = body.geometry;
+            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
+            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
+                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
+            }
+            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
+                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
+            }
+            res.json(await waterProvider.near(geometry, bufferMeters));
+        } catch (err) {
+            // Scenery: the scene draws without water, and the log says why.
+            console.error('Error in POST /decor/water:', err.message);
+            res.status(502).json({ error: 'Water could not be loaded.' });
         }
     });
 }
