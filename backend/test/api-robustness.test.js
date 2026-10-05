@@ -223,6 +223,9 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
         // request got past the gate, whose refusal is 403 { error: 'Forbidden' }.
         const server = app();
         expect(READ_ONLY_POST_PATHS).toContain('/buildings/footprints');
+        // 3D scenery reads: one per scene, never counted against the write budget.
+        expect(READ_ONLY_POST_PATHS).toContain('/decor/near');
+        expect(READ_ONLY_POST_PATHS).toContain('/decor/water');
         for (const path of READ_ONLY_POST_PATHS) {
             const res = await request(server).post(path).send({});
             expect(res.status, path).toBe(400);

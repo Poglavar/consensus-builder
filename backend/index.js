@@ -232,6 +232,8 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/parcels/under',
     '/parcel-sources/discover',
     '/building-sources/discover',
+    '/decor/near',
+    '/decor/water',
     '/proposals/batch',
     '/proposals/binding'
 ]);
