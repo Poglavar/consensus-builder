@@ -105,6 +105,8 @@
 
     function closeModal() {
         if (modalElement) {
+            modalElement.__unregisterEscape?.();
+            modalElement.__unregisterEscape = null;
             modalElement.classList.remove('visible');
             modalElement.setAttribute('aria-hidden', 'true');
         }
@@ -129,6 +131,12 @@
         currentIndex = 0;
         updateModalContent();
         modalElement.classList.add('visible');
+        modalElement.__unregisterEscape?.();
+        modalElement.__unregisterEscape = window.ModalEscape?.register(modalElement, () => {
+            const current = unreadQueue[currentIndex];
+            if (current) { readSet.add(current.number); persistReadSet(); }
+            closeModal();
+        });
         modalElement.setAttribute('aria-hidden', 'false');
         modalElement.focus({ preventScroll: true });
     }
@@ -170,14 +178,7 @@
 
         document.addEventListener('keydown', (event) => {
             if (!modalElement.classList.contains('visible')) return;
-            if (event.key === 'Escape') {
-                const current = unreadQueue[currentIndex];
-                if (current) {
-                    readSet.add(current.number);
-                    persistReadSet();
-                }
-                closeModal();
-            } else if (event.key === 'Enter' || event.key === ' ') {
+            if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 advanceModal();
             }

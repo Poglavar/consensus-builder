@@ -170,6 +170,19 @@
     right: calc(var(--map-shell-edge) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
     height: var(--map-shell-button-size);
     box-sizing: border-box;
+    min-width: 0;
+}
+
+#map-container #username-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#map-container .username-display .user-avatar,
+#map-container .username-display .wallet-status-icon {
+    flex: 0 0 auto;
 }
 
 /* Visually hidden, still read out (e.g. the simulation's play/pause label in the Activity sheet). */
@@ -954,6 +967,21 @@ body.app-loading .map-shell-cluster {
 
     /* Clear of the compact search box top-left (css/map-search.css). */
     #map-container .username-display {
+        padding: 6px 8px;
+        gap: 4px;
+        font-size: 12px;
         max-width: calc(100vw - 2 * var(--map-shell-edge) - 2 * var(--map-shell-button-size) - 3 * var(--map-shell-gap) - var(--map-search-compact-width));
     }
+}
+
+/* Keep a few readable name characters alongside the avatar and connection state on small phones. */
+@media (max-width: 359.98px) {
+    #map-container .username-display { padding: 6px; gap: 3px; }
+    #map-container .username-display .user-avatar { width: 20px; height: 20px; box-sizing: border-box; }
+    #map-container .username-display .wallet-status-icon { margin-left: 0; font-size: 12px; }
+}
+
+/* A touch device has no command-key shortcut to use. */
+@media (hover: none), (pointer: coarse) {
+    [data-command-palette-shortcut], .map-search__shortcut { display: none; }
 }

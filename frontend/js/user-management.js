@@ -423,6 +423,8 @@ function autoStartGame() {
 function showWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
     modal.style.display = 'flex';
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, hideWelcomeModal);
 
     // If guest is personalizing, pre-fill with their current avatar
     if (currentUserAgent && currentUserAgent.isGuest) {
@@ -451,6 +453,8 @@ function showWelcomeModal() {
 // Hide welcome modal
 function hideWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = null;
     modal.style.display = 'none';
 
     // Hide takeover section
@@ -671,19 +675,6 @@ function setupWelcomeModalEventListeners() {
         closeBtn.onclick = hideWelcomeModal;
     }
 
-    // Escape closes it like its × does (it opens from the user bubble over the map). Registered
-    // once: this setup runs on every open.
-    if (!document.body.dataset.welcomeEscapeBound) {
-        document.body.dataset.welcomeEscapeBound = '1';
-        document.addEventListener('keydown', event => {
-            const modal = document.getElementById('welcome-modal');
-            if (event.key !== 'Escape' || !modal || modal.style.display === 'none') return;
-            event.preventDefault();
-            event.stopPropagation();
-            hideWelcomeModal();
-        });
-    }
-
     // Takeover event listeners
     takeoverYesBtn.addEventListener('click', handleTakeoverYes);
     takeoverNoBtn.addEventListener('click', handleTakeoverNo);
@@ -785,6 +776,8 @@ function openTakeoverAgentDialog(agentId) {
         const modal = document.getElementById('welcome-modal');
         if (modal) {
             modal.style.display = 'flex';
+            modal.__unregisterEscape?.();
+            modal.__unregisterEscape = window.ModalEscape?.register(modal, hideWelcomeModal);
         }
         const input = document.getElementById('username-input');
         if (input) {
@@ -923,7 +916,7 @@ function updateUsernameDisplay() {
         // Replace content with avatar, name, and status icon
         usernameDisplay.innerHTML = `
             <img src="${getAvatarImagePath(currentUserAgent.avatarIndex)}" alt="Avatar" class="user-avatar">
-            <span id="username-text">${currentUserAgent.name}</span>
+            <span id="username-text">${escapeHtml(currentUserAgent.name)}</span>
             ${statusIcon}
             ${badgeHtml}
         `;
@@ -957,6 +950,8 @@ function updateUsernameDisplay() {
 function showLogoutModal() {
     const modal = document.getElementById('logout-modal');
     modal.style.display = 'flex';
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, hideLogoutModal);
 
     // Setup event listeners
     setupLogoutModalEventListeners();
@@ -965,6 +960,8 @@ function showLogoutModal() {
 // Hide logout modal
 function hideLogoutModal() {
     const modal = document.getElementById('logout-modal');
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = null;
     modal.style.display = 'none';
 }
 
@@ -1915,6 +1912,7 @@ async function getAvailableChainOptions() {
 function closeChainSelectionModal() {
     const overlay = document.querySelector('.chain-modal-overlay');
     if (overlay && overlay.parentElement) {
+        overlay.__unregisterEscape?.();
         overlay.parentElement.removeChild(overlay);
     }
 }
@@ -2067,6 +2065,7 @@ async function openChainSelectionModal() {
     `;
 
     document.body.appendChild(overlay);
+    overlay.__unregisterEscape = window.ModalEscape?.register(overlay, closeChainSelectionModal);
     overlay.focus({ preventScroll: true });
 
     overlay.addEventListener('click', (event) => {
@@ -2080,11 +2079,6 @@ async function openChainSelectionModal() {
         closeButton.addEventListener('click', closeChainSelectionModal);
     }
 
-    overlay.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeChainSelectionModal();
-        }
-    });
 
     overlay.addEventListener('click', event => {
         const button = event.target.closest('[data-chain-id]');

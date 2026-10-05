@@ -274,9 +274,7 @@
             renderSoundControl();
             if (sound.enabled) void sound.prepare();
         });
-        document.addEventListener('keydown', event => {
-            if (event.key === 'Escape' && !panel.hidden) closeExperience();
-        });
+        panel.__unregisterEscape = global.ModalEscape?.register(panel, closeExperience);
         return state.ui;
     }
 
@@ -944,6 +942,7 @@
         sound.stopAll();
         restoreMapInteractions();
         if (state.ui) {
+            state.ui.panel.__unregisterEscape?.();
             resetOverlay();
             state.ui.overlay.hidden = true;
             state.ui.panel.hidden = true;

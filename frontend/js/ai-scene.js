@@ -339,9 +339,6 @@
 
         overlayEl.querySelector('.ai-scene-close').addEventListener('click', closeOverlay);
         overlayEl.addEventListener('click', (e) => { if (e.target === overlayEl) closeOverlay(); });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !overlayEl.hidden) closeOverlay();
-        });
         overlayEl.querySelector('.ai-scene-generate').addEventListener('click', generate);
         overlayEl.querySelector('.ai-scene-model').addEventListener('change', () => {
             try { localStorage.setItem(MODEL_STORAGE_KEY, selectedModel()); } catch (_) { /* private mode */ }
@@ -461,7 +458,11 @@
     }
 
     function closeOverlay() {
-        if (overlayEl) overlayEl.hidden = true;
+        if (overlayEl) {
+            overlayEl.__unregisterEscape?.();
+            overlayEl.__unregisterEscape = null;
+            overlayEl.hidden = true;
+        }
     }
 
     function openOverlay() {
@@ -510,6 +511,8 @@
         setBusy(false);
         updateSessionTotal();
         overlayEl.hidden = false;
+        overlayEl.__unregisterEscape?.();
+        overlayEl.__unregisterEscape = window.ModalEscape?.register(overlayEl, closeOverlay);
         populateModelSelect(); // async — fills the dropdown when the list arrives
     }
 

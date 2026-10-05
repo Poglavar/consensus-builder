@@ -1,7 +1,11 @@
 // Exercises the actual styled-alert implementation with a small DOM and keyboard event harness.
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import vm from 'node:vm';
+
+const require = createRequire(import.meta.url);
+const { createRouter } = require('../../frontend/js/ui/modal-escape.js');
 
 function harness() {
     const listeners = new Set(), frames = [];
@@ -25,19 +29,24 @@ function harness() {
         }
     }
     document.body = new Element('body');
+    document.defaultView = { getComputedStyle: element => ({ display: element.style.display || 'block', visibility: element.style.visibility || 'visible', zIndex: element.style.zIndex || '0' }) };
     document.createElement = tag => new Element(tag);
     document.createTextNode = text => ({ textContent: text });
     const opener = document.body.appendChild(new Element('button')); opener.focus();
     const code = readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8');
     const source = code.slice(code.indexOf('    function showStyledAlert('), code.indexOf('    window.showStyledAlert = showStyledAlert;'));
-    const context = vm.createContext({ document, requestAnimationFrame: fn => frames.push(fn),
+    const router = createRouter(document);
+    const context = vm.createContext({ document, window: { ModalEscape: router }, requestAnimationFrame: fn => frames.push(fn),
         renderMessageLines: (target, message) => { target.textContent = message; } });
     vm.runInContext(source, context);
     const key = (value, shiftKey = false) => {
-        const event = { key: value, shiftKey, preventDefault: vi.fn(), stopPropagation: vi.fn(), stopImmediatePropagation: vi.fn() };
-        [...listeners].forEach(fn => fn(event)); return event;
+        const event = { key: value, shiftKey, defaultPrevented: false, immediateStopped: false,
+            preventDefault: vi.fn(function () { event.defaultPrevented = true; }), stopPropagation: vi.fn(),
+            stopImmediatePropagation: vi.fn(function () { event.immediateStopped = true; }) };
+        for (const listener of listeners) { listener(event); if (event.immediateStopped) break; }
+        return event;
     };
-    return { document, opener, listeners, key, open: context.showStyledAlert, frame: () => frames.splice(0).forEach(fn => fn()) };
+    return { document, opener, listeners, router, key, open: context.showStyledAlert, frame: () => frames.splice(0).forEach(fn => fn()) };
 }
 
 describe('styled alert keyboard and focus', () => {
@@ -55,7 +64,7 @@ describe('styled alert keyboard and focus', () => {
         h.key('Tab', true); expect(h.document.activeElement).toBe(link);
         h.key('Escape'); await done;
         expect(h.document.activeElement).toBe(h.opener);
-        expect(h.listeners.size).toBe(0);
+        expect(h.router.size()).toBe(0);
         expect(overlay.parentNode).toBeNull();
     });
     it('captures map shortcuts and restores focus on OK without leaving a listener', async () => {
@@ -65,7 +74,7 @@ describe('styled alert keyboard and focus', () => {
         expect(event.preventDefault).not.toHaveBeenCalled();
         h.document.activeElement.events.click(); await done;
         expect(h.document.activeElement).toBe(h.opener);
-        expect(h.listeners.size).toBe(0);
+        expect(h.router.size()).toBe(0);
     });
     it('closes from backdrop and prevents delayed focus after closing', async () => {
         const h = harness(); const done = h.open('Information');
@@ -79,6 +88,6 @@ describe('styled alert keyboard and focus', () => {
         const second = h.open('Second'); const dialog = h.document.body.children[1].children[0];
         expect(dialog.children[0].id).not.toBe(id);
         h.opener.focus(); h.key('Tab'); expect(h.document.activeElement).toBe(dialog.querySelectorAll()[0]);
-        h.opener.focus(); h.key('Enter'); await second; expect(h.listeners.size).toBe(0);
+        h.opener.focus(); h.key('Enter'); await second; expect(h.router.size()).toBe(0);
     });
 });

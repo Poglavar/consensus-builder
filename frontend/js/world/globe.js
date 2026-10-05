@@ -910,6 +910,14 @@
         global.addEventListener('i18n:translationsLoaded', onLanguage);
 
         document.body.appendChild(root);
+        root.__unregisterEscape = global.ModalEscape?.register(root, () => {
+            if (!results.hidden) return false; // let the focused search input clear its results
+            if (selected) { deselect(); return true; }
+            if (opts.closable === false) return false;
+            global.WorldView.close();
+            if (typeof opts.onClose === 'function') opts.onClose();
+            return true;
+        });
         document.body.classList.add('world-view-open');
         renderStaticText();
         resizeObserver.observe(root);
@@ -922,6 +930,7 @@
             close() {
                 if (closed) return;
                 closed = true;
+                root.__unregisterEscape?.();
                 if (raf) cancelAnimationFrame(raf);
                 if (flight) { flight.resolve(false); flight = null; }
                 resizeObserver.disconnect();

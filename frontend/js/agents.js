@@ -1520,6 +1520,7 @@ async function showAgentDialog(agentId, options = {}) {
         </div>
     `;
     document.body.appendChild(modal);
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeAgentDialog);
     if (readOnly) {
         applyAgentDialogReadOnlyState(modal);
     }
@@ -3003,6 +3004,7 @@ function closeAgentDialog() {
     const modal = document.querySelector('.agent-dialog-modal');
     if (modal) {
         const onClose = typeof modal.__onClose === 'function' ? modal.__onClose : null;
+        modal.__unregisterEscape?.();
         if (typeof modal.__i18nCleanup === 'function') {
             try { modal.__i18nCleanup(); } catch (_) { }
         }

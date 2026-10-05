@@ -374,3 +374,9 @@ body.app-loading .map-search {
         padding: 10px 16px;
     }
 }
+
+/* Explore's compass label shares the narrow top row with the account button. */
+@media (max-width: 359.98px) {
+    body.explore-city { --map-search-compact-width: 120px; }
+    .map-search__chip.is-explore { max-width: 76px; }
+}

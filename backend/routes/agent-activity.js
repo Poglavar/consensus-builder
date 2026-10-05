@@ -247,12 +247,31 @@ function controllerOf(summary = {}) {
     return 'algorithm';
 }
 
-function runEvents(row) {
-    const summary = row.summary || {};
-    const controller = controllerOf(summary);
-    const actor = {
-        id: String(row.persona), name: String(row.persona), kind: 'agent', controller, wallet: summary.wallet || null
+function personaWallet(book, persona) {
+    const name = String(persona || '');
+    if (!name) return null;
+    return book?.entries?.find(entry => entry.kind === 'wallet' && entry.persona === name)?.address || null;
+}
+
+function runActor(row, summary, book) {
+    const wallet = summary.wallet || personaWallet(book, row.persona);
+    return {
+        id: String(row.persona), name: String(row.persona), kind: 'agent', controller: controllerOf(summary), wallet
     };
+}
+
+function activityActorForRun(eventActor, runActor, persona) {
+    if (!eventActor) return runActor;
+    // A run can record an activity performed by another actor. Only add the run's known wallet
+    // where the event explicitly identifies the run persona; never use it to relabel that actor.
+    const actor = { ...eventActor };
+    const isRunPersona = [actor.id, actor.name, actor.persona].some(value => String(value || '') === String(persona));
+    return isRunPersona && !actor.wallet && runActor.wallet ? { ...actor, wallet: runActor.wallet } : actor;
+}
+
+function runEvents(row, book = null) {
+    const summary = row.summary || {};
+    const actor = runActor(row, summary, book);
     const base = {
         source: 'live', actor, ok: row.status !== 'failed',
         occurredAt: row.updated_at || row.started_at, recordedAt: row.updated_at || row.started_at,
@@ -284,7 +303,7 @@ function runEvents(row) {
             ...event,
             id: event.id || `activity:${row.run_id}:${index}`,
             source: 'live',
-            actor: event.actor || actor,
+            actor: activityActorForRun(event.actor, actor, row.persona),
             runId: row.run_id,
             model: event.model || base.model,
             modelCostUsd: event.modelCostUsd ?? base.modelCostUsd,
@@ -410,7 +429,7 @@ function mergeEvents(...lists) {
     });
 }
 
-function runDetail(row, costs = []) {
+function runDetail(row, costs = [], book = null) {
     const summary = row.summary || {};
     const recordedCost = costs.reduce((total, cost) => total + (Number(cost.usd) || 0), 0);
     const summaryCost = Number(summary.decisionResult?.costUsd ?? summary.pickCostUsd ?? 0);
@@ -418,7 +437,7 @@ function runDetail(row, costs = []) {
         id: row.run_id,
         persona: row.persona,
         role: summary.role || 'proposer',
-        wallet: summary.wallet || null,
+        wallet: summary.wallet || personaWallet(book, row.persona),
         mode: row.mode,
         status: row.status,
         stage: row.stage,
@@ -600,7 +619,7 @@ export function setupAgentActivityRoute(app, pool, {
             const publicById = new Map(proposalAccounts.rows.map(row => [String(row.proposal_id), row]));
             const events = mergeEvents(
                 chain,
-                runs.rows.flatMap(runEvents),
+                runs.rows.flatMap(row => runEvents(row, book)),
                 proposals.rows.flatMap(proposalEvents),
                 publicProposalEvents(publicProposals.rows),
                 executedProposalEvents(lifecycle.rows, proposalIds, publicById)
@@ -632,7 +651,7 @@ export function setupAgentActivityRoute(app, pool, {
                   LIMIT $1`,
                 [controller ? 250 : limit]
             );
-            const runs = rows.map(row => runDetail(row, []))
+            const runs = rows.map(row => runDetail(row, [], book))
                 .filter(run => !controller || run.controller === controller)
                 .slice(0, limit);
             return res.json({ runs, count: runs.length });
@@ -665,7 +684,7 @@ export function setupAgentActivityRoute(app, pool, {
                   ORDER BY created_at ASC, id ASC`,
                 [runId]
             );
-            return res.json({ run: runDetail(row, costs.rows), events: runEvents(row) });
+            return res.json({ run: runDetail(row, costs.rows, book), events: runEvents(row, book) });
         } catch (error) {
             console.error('GET /agent/runs/:runId failed', error);
             return res.status(500).json({ error: 'Failed to read agent run' });

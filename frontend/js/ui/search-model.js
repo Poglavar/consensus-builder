@@ -156,6 +156,38 @@
             .map(item => item.proposal);
     }
 
+    // Browser-local work has not necessarily been uploaded, so it cannot appear in the server
+    // summary search. Match the fields a person can recognise (title, author and durable id) and
+    // retain the usual exact/prefix/word/substring ordering.
+    function rankLocalProposals(proposals, query) {
+        const text = String(query || '').trim();
+        if (!text || !Array.isArray(proposals)) return [];
+        return proposals
+            .map((proposal, index) => {
+                const fields = [proposal && proposal.title, proposal && proposal.name,
+                    proposal && proposal.proposalName, proposal && proposal.author,
+                    proposal && proposal.proposalId, proposal && proposal.serverProposalId];
+                const ranks = fields.map(field => matchRank(field, text)).filter(rank => rank !== null);
+                return { proposal, index, rank: ranks.length ? Math.min(...ranks) : null };
+            })
+            .filter(entry => entry.proposal && entry.rank !== null)
+            .sort((a, b) => (a.rank - b.rank) || (a.index - b.index))
+            .slice(0, GROUP_LIMITS.proposals)
+            .map(entry => Object.assign({}, entry.proposal, { searchRank: entry.rank, localOnly: true }));
+    }
+
+    // A published record may also live in this browser. Keep that local copy (it has the complete
+    // authored geometry and opens without a download prompt) and suppress its server summary.
+    function mergeProposalSearchResults(local, remote, currentCityId) {
+        const localItems = Array.isArray(local) ? local : [];
+        const localServerIds = new Set(localItems
+            .map(proposal => String(proposal && proposal.serverProposalId || ''))
+            .filter(Boolean));
+        const remoteItems = (Array.isArray(remote) ? remote : [])
+            .filter(proposal => !localServerIds.has(String(proposal && (proposal.id ?? proposal.proposalId) || '')));
+        return localItems.concat(rankProposals(remoteItems, currentCityId));
+    }
+
     // Photon GeoJSON → plain places. `type` is Photon's feature class (house, street, city, ...).
     function parsePhoton(payload) {
         const features = payload && Array.isArray(payload.features) ? payload.features : [];
@@ -318,6 +350,8 @@
         rankCities,
         resolveProposalCityId,
         rankProposals,
+        rankLocalProposals,
+        mergeProposalSearchResults,
         parsePhoton,
         placeZoom,
         haversineKm,

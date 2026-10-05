@@ -127,11 +127,12 @@ describe('ranking', () => {
     });
 
     it('resolves a proposal city id or code, and leaves placeholders unknown', () => {
-        const ids = CITIES.map(c => c.id);
+        const ids = CITIES.map(c => c.id).concat('explore');
         expect(Model.resolveProposalCityId('zagreb', ids, { zg: 'zagreb' })).toBe('zagreb');
         expect(Model.resolveProposalCityId('ZG', ids, { zg: 'zagreb' })).toBe('zagreb');
         expect(Model.resolveProposalCityId('city', ids, { zg: 'zagreb' })).toBeNull();
         expect(Model.resolveProposalCityId('', ids, {})).toBeNull();
+        expect(Model.resolveProposalCityId('explore', ids, {})).toBe('explore');
     });
 
     it('puts proposals in the current city first and otherwise keeps the server order', () => {
@@ -139,6 +140,25 @@ describe('ranking', () => {
             { id: 1, cityId: 'split' }, { id: 2, cityId: 'zagreb' }, { id: 3, cityId: null }, { id: 4, cityId: 'zagreb' }
         ], 'zagreb');
         expect(ranked.map(p => p.id)).toEqual([2, 4, 1, 3]);
+    });
+
+    it('finds unpublished local proposals by title, author or durable id', () => {
+        const local = Model.rankLocalProposals([
+            { proposalId: 'draft-42', title: 'Tokyo pocket park', author: 'Mina' },
+            { proposalId: 'draft-99', title: 'River crossing', author: 'Sam' }
+        ], 'mina');
+        expect(local).toHaveLength(1);
+        expect(local[0]).toMatchObject({ proposalId: 'draft-42', localOnly: true, searchRank: 0 });
+        expect(Model.rankLocalProposals([{ proposalId: 'draft-42', title: 'Tokyo pocket park' }], '42')[0])
+            .toMatchObject({ proposalId: 'draft-42', localOnly: true });
+    });
+
+    it('keeps a local copy once when the server search also finds its uploaded row', () => {
+        const local = [{ proposalId: 'draft-42', serverProposalId: '701', localOnly: true }];
+        const merged = Model.mergeProposalSearchResults(local, [
+            { id: '701', cityId: 'zagreb' }, { id: '702', cityId: 'zagreb' }
+        ], 'zagreb');
+        expect(merged.map(proposal => proposal.id || proposal.proposalId)).toEqual(['draft-42', '702']);
     });
 
     it('orders groups by their best match, drops empty ones and cuts each to its limit', () => {

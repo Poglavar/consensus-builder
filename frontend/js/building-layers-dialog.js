@@ -104,9 +104,11 @@
 
             function cleanup(result) {
                 document.removeEventListener('keydown', onKeydown, true);
+                unregisterEscape?.();
                 if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
                 resolve(result);
             }
+            const unregisterEscape = global.ModalEscape?.register(overlay, () => cleanup(null));
             const answer = () => {
                 const picked = {};
                 SURVEYS.forEach(survey => { picked[survey.key] = !!inputs[survey.key].checked; });
@@ -115,10 +117,7 @@
             };
 
             function onKeydown(event) {
-                if (event.key === 'Escape') {
-                    event.preventDefault();
-                    cleanup(null);
-                } else if (event.key === 'Enter') {
+                if (event.key === 'Enter') {
                     // Enter means Show wherever the focus sits — including on a checkbox, where
                     // Enter would otherwise do nothing at all.
                     event.preventDefault();

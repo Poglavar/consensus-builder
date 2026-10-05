@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-05: Activity profiles use wallet-or-id identity; run wallets are enriched from the backend address book because controller type describes event provenance, not a separate actor. Blocking dialogs register their real dismiss callbacks with `ModalEscape`; drawing editors retain staged Escape behavior and nested confirmations take precedence.
+
 - 2026-10-02: Arrivals show the area's proposal count and pulse until discovery; 3D parcel selection emphasizes in place while retaining context. Selected is temporary UI state, separate from applied/unapplied: an unapplied selected preview accepts clicks until another map selection or background click clears it.
 
 - 2026-10-02: The globe's color-coded recent activity includes city or approximate country locations; proposal clicks frame the existing local applied/unapplied preview with Activity reachable, and deliberate map zoom-out to level 4 returns to the globe. Wheel/swipe interaction switches the list to manual scrolling; cross-city clicks retain the globe frame until the proposal is framed, so the default world map never flashes.

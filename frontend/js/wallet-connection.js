@@ -492,12 +492,6 @@
             maybeCloseOnConnected();
         }, 500);
 
-        const handleKeydown = (event) => {
-            if (event.key === 'Escape') {
-                walletManager.closeConnectorModal();
-            }
-        };
-
         overlay.addEventListener('click', event => {
             if (event.target === overlay) {
                 walletManager.closeConnectorModal();
@@ -507,8 +501,6 @@
         overlay.querySelector('[data-wallet-modal-close]').addEventListener('click', () => {
             walletManager.closeConnectorModal();
         });
-
-        overlay.addEventListener('keydown', handleKeydown);
 
         overlay.addEventListener('click', event => {
             const button = event.target.closest('[data-wallet-connector]');
@@ -522,6 +514,7 @@
 
         connectorModal = {
             overlay,
+            unregisterEscape: globalScope.ModalEscape?.register(overlay, () => walletManager.closeConnectorModal()),
             detachProvidersListener,
             detachConnectListener,
             detachSolanaConnect,
@@ -662,7 +655,8 @@
 
     function destroyConnectorModal() {
         if (!connectorModal) return;
-        const { overlay, detachProvidersListener, detachConnectListener, detachSolanaConnect, detachStateListener, handleKeydown } = connectorModal;
+        const { overlay, detachProvidersListener, detachConnectListener, detachSolanaConnect, detachStateListener, unregisterEscape } = connectorModal;
+        unregisterEscape?.();
         if (detachProvidersListener) {
             detachProvidersListener();
         }
@@ -680,7 +674,6 @@
             connectorModalCheckTimer = null;
         }
         if (overlay) {
-            overlay.removeEventListener('keydown', handleKeydown);
             if (overlay.parentElement) {
                 overlay.parentElement.removeChild(overlay);
             }

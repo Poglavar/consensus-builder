@@ -813,6 +813,7 @@ async function renderActivityExplorer() {
         if (!actorExplorerController) {
             actorExplorerController = window.ActorExplorer.mount(actors, {
                 events: visible,
+                showFilters: false,
                 openProposal: showProposalFromLog,
                 loadRun: async runId => {
                     const response = await fetch(`${activityApiBase()}/agent/runs/${encodeURIComponent(runId)}`);
@@ -919,6 +920,7 @@ function showGameLogDialog(options = {}) {
     `;
 
     document.body.appendChild(modal);
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeGameLogDialog);
     if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
         try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
     }
@@ -931,6 +933,7 @@ function showGameLogDialog(options = {}) {
 function closeGameLogDialog() {
     const modal = document.querySelector('.game-log-modal');
     if (modal) {
+        modal.__unregisterEscape?.();
         document.body.removeChild(modal);
     }
     actorExplorerController = null;

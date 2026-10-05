@@ -2282,22 +2282,16 @@
             }
 
             function cleanup(result) {
-                document.removeEventListener('keydown', onKeydown, true);
+                unregisterEscape?.();
                 if (overlay && overlay.parentNode) {
                     overlay.parentNode.removeChild(overlay);
                 }
                 resolve(result);
             }
 
-            // Escape cancels, like showStyledChoice. Without it the key went to the page behind:
-            // it closed the sheet the confirm was opened from and left the confirm up.
-            function onKeydown(event) {
-                if (event.key !== 'Escape') return;
-                event.preventDefault();
-                event.stopPropagation();
-                cleanup(false);
-            }
-            document.addEventListener('keydown', onKeydown, true);
+            // The shared capture router cancels this prompt before an underlying sheet/editor can
+            // see Escape, so a nested confirmation never closes both layers.
+            const unregisterEscape = window.ModalEscape?.register(overlay, () => cleanup(false));
 
             cancelBtn.addEventListener('click', () => cleanup(false));
             okBtn.addEventListener('click', () => cleanup(true));
@@ -2343,6 +2337,7 @@
 
             function cleanup(result) {
                 document.removeEventListener('keydown', onKeydown, true);
+                unregisterEscape?.();
                 if (overlay && overlay.parentNode) {
                     overlay.parentNode.removeChild(overlay);
                 }
@@ -2361,12 +2356,6 @@
             });
 
             function onKeydown(event) {
-                if (event.key === 'Escape') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    cleanup(null);
-                    return;
-                }
                 // Enter must ALWAYS mean the primary choice, even when something stole the
                 // focus after the dialog opened (then no button would receive the key).
                 if (event.key === 'Enter' && !dialog.contains(document.activeElement)) {
@@ -2389,6 +2378,7 @@
                 // page behind the dialog — drawing hotkeys (F/U/R) listen on document too.
                 event.stopPropagation();
             }
+            const unregisterEscape = window.ModalEscape?.register(overlay, () => cleanup(null));
             document.addEventListener('keydown', onKeydown, true);
 
             overlay.addEventListener('click', (event) => {
@@ -2472,6 +2462,7 @@
                 if (closed) return;
                 closed = true;
                 document.removeEventListener('keydown', onKeydown, true);
+                unregisterEscape?.();
                 if (overlay && overlay.parentNode) {
                     overlay.parentNode.removeChild(overlay);
                 }
@@ -2484,10 +2475,7 @@
             function onKeydown(event) {
                 event.stopPropagation();
                 event.stopImmediatePropagation();
-                if (event.key === 'Escape') {
-                    event.preventDefault();
-                    cleanup();
-                } else if (event.key === 'Tab') {
+                if (event.key === 'Tab') {
                     event.preventDefault();
                     const targets = Array.from(dialog.querySelectorAll('a[href], button'));
                     const current = targets.indexOf(document.activeElement);
@@ -2499,6 +2487,7 @@
                     cleanup();
                 }
             }
+            const unregisterEscape = window.ModalEscape?.register(overlay, cleanup);
             document.addEventListener('keydown', onKeydown, true);
 
             okBtn.addEventListener('click', cleanup);

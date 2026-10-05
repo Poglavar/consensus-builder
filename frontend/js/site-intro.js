@@ -23,6 +23,7 @@
         global.__siteIntroInitialized = true;
 
         let previousFocus = null;
+        let unregisterEscape = null;
 
         function readSeen() {
             try { return global.localStorage.getItem(STORAGE_KEY); } catch (_) { return null; }
@@ -41,6 +42,8 @@
         function openSiteIntro(options = {}) {
             previousFocus = doc.activeElement;
             modal.hidden = false;
+            unregisterEscape?.();
+            unregisterEscape = global.ModalEscape?.register(modal, closeSiteIntro);
             modal.classList.add('is-open');
             doc.body.classList.add('site-intro-open');
             if (options.remember !== false) rememberSeen();
@@ -53,6 +56,8 @@
             if (modal.hidden) return;
             modal.classList.remove('is-open');
             modal.hidden = true;
+            unregisterEscape?.();
+            unregisterEscape = null;
             doc.body.classList.remove('site-intro-open');
             if (previousFocus && typeof previousFocus.focus === 'function') {
                 previousFocus.focus({ preventScroll: true });
@@ -70,11 +75,6 @@
         });
         doc.addEventListener('keydown', event => {
             if (modal.hidden) return;
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                closeSiteIntro();
-                return;
-            }
             if (event.key !== 'Tab') return;
             const focusable = focusableElements();
             if (!focusable.length) return;

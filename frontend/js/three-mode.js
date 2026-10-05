@@ -5748,6 +5748,11 @@
         // Build content
         origin3857 = getOrigin3857();
         captureSceneLoadGeometry();
+        // Loading the real-world context must not depend on a parcel or proposal mesh being
+        // produced below. Explore has neither, but its frozen camera anchor is still a valid
+        // /buildings/near query. Starting it here also leaves the rest of scene construction
+        // free to fail independently of the context request.
+        ensureNearbyProposalBuildings();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
         // Corridors render into their own group (not flatGroup): in realistic mode the parcel

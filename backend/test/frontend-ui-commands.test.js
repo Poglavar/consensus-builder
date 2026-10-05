@@ -38,6 +38,14 @@ const openingTags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}
 
 // Interactive controls in the sheets that are deliberately NOT commands, and why.
 const NOT_COMMANDS = {
+    // View controls now follow the search/user row in DOM order, inside the floating shell's
+    // markup range; their handlers belong to the map view rather than the sheet registry.
+    'mode-walk-toggle': 'map view control',
+    'cadastre-view-toggle': 'map view control',
+    'mode-2d-toggle': 'map view control',
+    'mode-3d-toggle': 'map view control',
+    'mode-realistic-toggle': 'map view control',
+    'mode-ai-toggle': 'map view control',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',
     'dev-badge': 'indicator, not an action',

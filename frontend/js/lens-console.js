@@ -139,6 +139,16 @@
         renderAttestations(result.attestations);
     }
 
+    async function refreshStatus() {
+        const serviceUrl = state.serviceUrl;
+        const result = await client.fetchStatus({ serviceUrl });
+        if (state.serviceUrl !== serviceUrl) return;
+        if (result.outcome.kind !== 'ok') return showError(doc.getElementById('lc-status'), outcomeMessage(result.outcome));
+        state.status = result.body;
+        renderStatus();
+        renderWallet();
+    }
+
     async function loadService() {
         const input = doc.getElementById('lc-service-url');
         const target = doc.getElementById('lc-status');
@@ -240,7 +250,7 @@
             line(t('lensConsole.attestations.hash', 'Account hash'), body.accountHash || '—', true)
         );
         if (body.address) target.prepend(explorerLink(body.address));
-        await loadAttestations();
+        await Promise.all([refreshStatus(), loadAttestations()]);
     }
 
     // Everything rendered from state, redrawn in the new language.

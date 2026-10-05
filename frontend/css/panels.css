@@ -22,9 +22,8 @@
    400-560 / 480), so the right-hand column read as a ragged stack. Give a panel `.right-dock-panel`
    and it inherits the width — never re-declare a width on the panel itself.
 
-   On mobile the same class flips to the bottom-sheet policy: full width, at most half the screen,
-   with whatever scrolls beyond that reachable inside (every one of these panels also has a minimize
-   control, so it can be collapsed to its header strip). */
+   On phones the same class becomes a bottom sheet. It opens tall enough to make the parcel build
+   palette useful, stays above the Game bar, and can be resized from its handle. */
 :root {
     --right-dock-width: 400px;
     --right-dock-gap: 10px;
@@ -44,8 +43,52 @@
         --right-dock-gap: 0px;
     }
 
-    .right-dock-panel {
-        max-height: 50vh;
+    .info-panel.right-dock-panel {
+        /* The default leaves the search/mode controls visible on a short phone while giving the
+           build palette enough vertical room to use without immediately scrolling. JS can replace
+           the height with a clamped pixel value while the handle is dragged. */
+        --mobile-dock-sheet-height: 66dvh;
+        height: min(var(--mobile-dock-sheet-height), calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
+    }
+
+    /* The desktop parcel panel has an ID-level 50vh declaration. Keep the shared sheet height
+       authoritative after the phone breakpoint switches it into the common dock. */
+    #parcel-info-panel.right-dock-panel {
+        height: min(var(--mobile-dock-sheet-height), calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
+    }
+
+    .mobile-dock-sheet-handle {
+        display: block;
+        flex: 0 0 24px;
+        width: 100%;
+        margin: 0;
+        padding: 7px 0 5px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        cursor: ns-resize;
+        touch-action: none;
+    }
+
+    .mobile-dock-sheet-handle::after {
+        display: block;
+        width: 36px;
+        height: 4px;
+        margin: 0 auto;
+        border-radius: 999px;
+        background: var(--cb-text-faint);
+        content: '';
+    }
+
+    .mobile-dock-sheet-handle:focus-visible {
+        outline: 2px solid var(--cb-focus);
+        outline-offset: -3px;
+    }
+
+    .info-panel.right-dock-panel.is-minimized .mobile-dock-sheet-handle {
+        display: none;
     }
 }
 
@@ -1849,23 +1892,17 @@ above the scroll fold.
         padding: 6px 4px; /* Reduced padding for mobile */
     }
     
-    /* Parcel info panel takes up 1/3 of screen on mobile */
-    #parcel-info-panel {
-        height: 33vh;
-        max-height: 33vh;
-    }
-
     #map-container:has(#parcel-info-panel.visible) .leaflet-bottom.leaflet-right {
-        bottom: calc(33vh + 10px);
+        bottom: calc(min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px) + 10px);
     }
 
     #area-monitor-detail-panel {
-        max-height: 33vh;
+        max-height: 50vh;
     }
 
     #map-container:has(#parcel-info-panel.visible) #area-monitor-detail-panel {
-        bottom: calc(33vh + 12px) !important;
-        max-height: 33vh;
+        bottom: calc(min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px) + 12px) !important;
+        max-height: 50vh;
     }
     
     /* Width and the half-screen cap come from .right-dock-panel; only the scroll behaviour is
@@ -1875,7 +1912,8 @@ above the scroll fold.
     }
 
     #block-info-panel {
-        max-height: 50vh;
+        height: min(66dvh, calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
     }
     
     /* Parcel proposals list uses full width on mobile */

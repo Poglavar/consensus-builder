@@ -877,7 +877,7 @@
     function teardownStationEditor() {
         const previous = stationEditor;
         if (!previous) return null;
-        try { global.document?.removeEventListener('keydown', previous.onKey, true); } catch (_) { }
+        try { previous.unregisterEscape?.(); } catch (_) { }
         try { previous.panel?.removeEventListener('click', previous.onClick); } catch (_) { }
         try { previous.panel?.removeEventListener('input', previous.onInput); } catch (_) { }
         try { previous.panel?.classList.remove('is-open'); } catch (_) { }
@@ -959,15 +959,11 @@
             if (action === 'cancel') void cancelStationGeometryEditor();
             else if (action === 'save') saveStationGeometryEditor();
         };
-        stationEditor.onKey = event => {
-            if (event.key !== 'Escape') return;
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            void cancelStationGeometryEditor();
-        };
         panel.addEventListener('input', stationEditor.onInput);
         panel.addEventListener('click', stationEditor.onClick);
-        global.document?.addEventListener('keydown', stationEditor.onKey, true);
+        stationEditor.unregisterEscape = global.ModalEscape?.register(panel, () => {
+            void cancelStationGeometryEditor();
+        });
         try { global.hideProposalDetailsPanel?.(true); } catch (_) { }
         try { global.hideParcelInfoPanel?.(); } catch (_) { }
         global.transitStationGeometryEditorActive = true;

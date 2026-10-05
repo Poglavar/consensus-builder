@@ -218,6 +218,8 @@ function openStatusLogDialog() {
     const parts = statusLogDialogElements();
     if (!parts) return;
     parts.overlay.style.display = 'flex';
+    parts.overlay.__unregisterEscape?.();
+    parts.overlay.__unregisterEscape = window.ModalEscape?.register(parts.overlay, closeStatusLogDialog);
     renderStatusLogDialog();
 }
 
@@ -225,6 +227,8 @@ function closeStatusLogDialog() {
     const parts = statusLogDialogElements();
     if (!parts) return;
     parts.overlay.style.display = 'none';
+    parts.overlay.__unregisterEscape?.();
+    parts.overlay.__unregisterEscape = null;
     statusLogDialogRendered = 0;
 }
 
@@ -237,16 +241,6 @@ function initStatusLogDialog() {
     if (copyButton) copyButton.addEventListener('click', copyStatusLog);
     parts.overlay.addEventListener('click', event => {
         if (event.target === parts.overlay) closeStatusLogDialog();
-    });
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && statusLogDialogIsOpen()) {
-            // preventDefault marks the key as handled: stopPropagation does not reach the other
-            // document listeners, and the Activity sheet's Escape (map-shell.js) runs after this
-            // one, finds the dialog already gone and would close the sheet too.
-            event.preventDefault();
-            event.stopPropagation();
-            closeStatusLogDialog();
-        }
     });
 }
 

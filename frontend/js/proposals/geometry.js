@@ -266,6 +266,14 @@ function collectProposalFeatureSets(proposal, options = {}) {
         });
     }
 
+    // A site-first proposal can intentionally have neither cadastral parcels nor a separately
+    // generated body yet. The site is still the proposal's authored map anchor and must remain
+    // visible when selected (particularly in Explore), rather than falling through to no shape.
+    if (primaryFeatures.length === 0 && proposal?.site) {
+        const siteFeature = normaliseToFeature(proposal.site, { source: 'proposal-site' });
+        if (siteFeature) primaryFeatures.push(siteFeature);
+    }
+
     if (primaryFeatures.length === 0 && parcelFeatures.length > 0) {
         primaryFeatures.push(...parcelFeatures);
     }
@@ -357,9 +365,18 @@ function resolveStandaloneProposalFocusBounds(proposal) {
         return storedBounds;
     }
 
+    // `site` is the authored spatial anchor for parcel-less Explore proposals. It is durable
+    // proposal geometry, not a guessed map centre. Include every persisted body variant too:
+    // downloaded/local records do not all use the legacy buildingProposal shape.
     const geometryFeatures = [];
+    if (proposal.site) geometryFeatures.push({ type: 'Feature', geometry: proposal.site.geometry || proposal.site });
     if (proposal.buildingProposal && proposal.buildingProposal.buildingFeature) {
         geometryFeatures.push(proposal.buildingProposal.buildingFeature);
+    }
+    if (Array.isArray(proposal.geometry?.buildings)) {
+        proposal.geometry.buildings.forEach(feature => {
+            if (feature && feature.geometry) geometryFeatures.push(feature);
+        });
     }
     if (proposal.structureProposal && proposal.structureProposal.geometry) {
         geometryFeatures.push({ type: 'Feature', geometry: proposal.structureProposal.geometry });

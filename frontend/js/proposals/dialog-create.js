@@ -981,6 +981,7 @@ function showProposalDialog(overrides = null) {
     `;
 
     document.body.appendChild(modal);
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeProposalDialog);
 
     // Reset stored screenshot
     proposalModalScreenshotDataUrl = null;
@@ -1530,6 +1531,7 @@ function closeProposalDialog() {
     try { if (typeof window !== 'undefined') window.releaseEditorSeededMultiSelection?.(); } catch (_) { }
     const modal = document.querySelector('.create-proposal-modal');
     if (modal) {
+        modal.__unregisterEscape?.();
         modal.remove();
     }
     currentProposalTool = null;
@@ -1771,6 +1773,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         </div>`;
 
     document.body.appendChild(modal);
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeProposalDialog);
     if (typeof refreshLensPatternPreviews === 'function') {
         refreshLensPatternPreviews();
     }

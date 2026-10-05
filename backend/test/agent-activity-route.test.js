@@ -226,6 +226,23 @@ describe('agent activity', () => {
         expect(events[1]).toMatchObject({ rationale: null });
     });
 
+    it('fills a run persona wallet from the address book, including its own recorded activities', () => {
+        const book = { entries: [{ kind: 'wallet', persona: 'densifier-01', address: 'persona-wallet' }] };
+        const events = runEvents({
+            ...row,
+            summary: {
+                controller: 'algorithm',
+                activities: [
+                    { action: { type: 'create' }, actor: { id: 'densifier-01', name: 'densifier-01', controller: 'algorithm' } },
+                    { action: { type: 'accept' }, actor: { id: 'other-persona', name: 'other-persona', controller: 'algorithm' } }
+                ]
+            }
+        }, book);
+        expect(events[0].actor.wallet).toBe('persona-wallet');
+        expect(events[1].actor).not.toHaveProperty('wallet');
+        expect(runDetail(row, [], book).wallet).toBe('persona-wallet');
+    });
+
     it('keeps run rationale and exact cost evidence in an explicit drill-down shape', () => {
         const detail = runDetail(row, [{
             item: 'c1', provider: 'anthropic', model: 'claude-opus-5', batch_id: 'msgbatch-1',

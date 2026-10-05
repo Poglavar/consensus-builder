@@ -72,6 +72,13 @@ describe('data source backend override', () => {
         expect(url).not.toContain(':3000');
     });
 
+    it('routes NYC parcel discovery through the worktree backend instead of a fixed port', () => {
+        const { window } = bootWithOverride({ parcels: { source: 'parcel-nyc' } });
+        const request = window.buildParcelRequestParams('', { latLonBbox: '-74.01,40.71,-74,40.72' });
+        expect(request.url).toBe('http://localhost:4179/parcel-nyc?bbox=-74.01%2C40.71%2C-74%2C40.72&limit=2000');
+        expect(request.ownershipBase).toBe('http://localhost:4179/parcel-nyc');
+    });
+
     it('leaves no request builder hardcoding a base URL', () => {
         // The real guard: LOCAL_BASE / UGT_BASE must appear ONLY inside getBackendBase(), which is
         // the single place that consults the override. Anywhere else is another silent port-3000 bug

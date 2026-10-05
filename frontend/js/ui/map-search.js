@@ -240,18 +240,27 @@
         const source = state.proposals;
         const current = currentCityId();
         const cityIds = configuredCities().map(city => city.id);
+        // Explore is deliberately absent from the city picker, but server results can be authored
+        // there. Treat it as a real route target so a parcel-less proposal reloads into its own
+        // storage scope and the downloaded site's coordinates frame the correct location.
+        const exploreId = manager()?.EXPLORE_CITY_ID || 'explore';
+        if (!cityIds.includes(exploreId)) cityIds.push(exploreId);
         const codes = cityCodeMap();
         const fresh = source.query === query ? source.items : [];
-        const withCity = fresh.map(raw => Object.assign({}, raw, { cityId: Model.resolveProposalCityId(raw.city, cityIds, codes) }));
-        const items = Model.rankProposals(withCity, current).map(raw => {
+        const local = localProposals(query);
+        const withCity = fresh
+            .map(raw => Object.assign({}, raw, { cityId: Model.resolveProposalCityId(raw.city, cityIds, codes) }));
+        const results = Model.mergeProposalSearchResults(local, withCity, current);
+        const items = results.map(raw => {
             const otherCity = raw.cityId && raw.cityId !== current;
             const id = String(raw.id ?? raw.proposalId);
             return item({
                 key: `proposal:${id}`,
                 kind: 'proposal',
+                rank: Number.isFinite(raw.searchRank) ? raw.searchRank : 2,
                 icon: 'fas fa-file-signature',
                 label: raw.title || raw.name || t('mapSearch.untitledProposal', 'Proposal {{id}}', { id }),
-                sublabel: [raw.author,
+                sublabel: [raw.author, raw.localOnly ? t('mapSearch.localProposal', 'On this device') : '',
                     otherCity ? t('mapSearch.inCity', 'In {{city}}', { city: shortCityLabel(manager().getCityLabel(raw.cityId)) }) : '']
                     .filter(Boolean).join(' · '),
                 run: () => runProposal(raw)
@@ -261,6 +270,20 @@
             t('mapSearch.proposalsLoading', 'Searching proposals…'),
             t('mapSearch.proposalsError', 'Could not search proposals'));
         return { id: 'proposals', label: t('mapSearch.groups.proposals', 'Proposals'), items, status: items.length ? null : status };
+    }
+
+    function localProposals(query) {
+        try {
+            const store = win.proposalStorage;
+            if (!store) return [];
+            const records = typeof store.peekAllProposals === 'function'
+                ? store.peekAllProposals()
+                : (typeof store.getAllProposals === 'function' ? store.getAllProposals() : []);
+            return Model.rankLocalProposals(records, query);
+        } catch (error) {
+            console.warn('[map-search] could not search local proposals', error);
+            return [];
+        }
     }
 
     function placesGroup(query) {
@@ -504,6 +527,13 @@
     // through the shared-link path: /proposals/<id> in the URL and the city-mismatch prompt, which
     // reloads into that city keeping the path (or drops the path when the person stays).
     async function runProposal(raw) {
+        if (raw.localOnly) {
+            const proposalId = win.getProposalKey(raw) || raw.proposalId;
+            if (!proposalId || !win.openProposalFromList(proposalId, { proposal: raw, closeSheets: true })) return;
+            clearQuery();
+            close({ blur: true });
+            return;
+        }
         const serverId = String(raw.id ?? raw.proposalId);
         const key = `proposal:${serverId}`;
         if (raw.cityId && raw.cityId !== currentCityId()) {
@@ -534,9 +564,10 @@
             // A freshly downloaded proposal opens collapsed, as from the list.
             win.__openProposalDetailsCollapsed = true;
         }
+        if (!win.openProposalFromList(win.getProposalKey(proposal) || serverId, { proposal, closeSheets: true })) return;
         state.notes.delete(key);
+        clearQuery();
         close({ blur: true });
-        win.openProposalFromList(win.getProposalKey(proposal) || serverId, { proposal, closeSheets: true });
     }
 
     function runPlace(place, where) {
@@ -703,6 +734,14 @@
             }
         }
         render();
+    }
+
+    function clearQuery() {
+        state.query = '';
+        state.input.value = '';
+        state.clear.hidden = true;
+        state.notes.clear();
+        scheduleFetches();
     }
 
     function setQuery(text) {

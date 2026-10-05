@@ -618,6 +618,9 @@ async function showAllProposalsModal() {
     }
 
     modal.style.display = 'block';
+    if (wasHidden) {
+        modal.__unregisterEscape = window.ModalEscape?.register(modal, () => closeProposalList());
+    }
 
     // On the open action only (not on every re-render): fold away an open sheet so the map keeps
     // the rest of the screen, and request search-box autofocus (honored inside the render, which may be
@@ -699,6 +702,7 @@ function closeSharePlanPanel() {
     // Leaving the panel with a subset chosen must not leave the map dimmed behind it.
     try { document.body.classList.remove('share-plan-highlighting'); } catch (_) { }
     if (state) {
+        try { state.unregisterEscape?.(); } catch (_) { }
         try { document.removeEventListener('keydown', state.onKeyDown); } catch (_) { }
         try { if (state.root && state.root.parentNode) state.root.parentNode.removeChild(state.root); } catch (_) { }
         try {
@@ -1735,11 +1739,8 @@ function showSharePlanPanel(options) {
         };
 
         document.body.appendChild(panelRoot);
-        const onKeyDown = (event) => {
-            if (event.key === 'Escape') closeSharePlanPanel();
-        };
-        document.addEventListener('keydown', onKeyDown);
-        _sharePlanPanelState = { root: panelRoot, overlayGroups, onKeyDown, token: panelToken };
+        const unregisterEscape = window.ModalEscape?.register(panelRoot, closeSharePlanPanel);
+        _sharePlanPanelState = { root: panelRoot, overlayGroups, unregisterEscape, token: panelToken };
 
         // Clicking a proposal ON THE MAP finds it in the list. The map and the panel are two views
         // of one plan, so pointing at something in either should say where it is in the other —
@@ -2036,18 +2037,11 @@ function showSimpleShareModal(options = {}) {
         }
     }
 
-    function onKeyDown(event) {
-        if (!closeOnEscape) return;
-        if (event.key === 'Escape') {
-            closeModal();
-        }
-    }
-
     function closeModal() {
         if (didClose) return;
         didClose = true;
+        unregisterEscape?.();
         try { overlay.removeEventListener('click', onOverlayClick); } catch (_) { }
-        try { document.removeEventListener('keydown', onKeyDown); } catch (_) { }
         try { overlay.remove(); } catch (_) { }
 
         try {
@@ -2059,7 +2053,7 @@ function showSimpleShareModal(options = {}) {
 
     closeBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', onOverlayClick);
-    document.addEventListener('keydown', onKeyDown);
+    const unregisterEscape = closeOnEscape ? window.ModalEscape?.register(overlay, closeModal) : null;
 
     return modalApi;
 }

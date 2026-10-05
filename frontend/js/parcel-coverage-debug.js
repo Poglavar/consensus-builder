@@ -367,6 +367,8 @@
             return;
         }
         modalElement.style.display = 'flex';
+        modalElement.__unregisterEscape?.();
+        modalElement.__unregisterEscape = window.ModalEscape?.register(modalElement, closeModal);
         attachGlobalListeners();
         ensureMap();
         if (coverageMap) {
@@ -380,16 +382,9 @@
             return;
         }
         modalElement.style.display = 'none';
+        modalElement.__unregisterEscape?.();
+        modalElement.__unregisterEscape = null;
         detachGlobalListeners();
-    }
-
-    function handleDocumentKeydown(event) {
-        if (event.key === 'Escape' && isModalOpen()) {
-            // Handled: the Settings sheet it opens from must not close on the same key.
-            event.preventDefault();
-            event.stopPropagation();
-            closeModal();
-        }
     }
 
     function handleOverlayClick(event) {
@@ -425,7 +420,6 @@
         }
 
         modalElement.addEventListener('click', handleOverlayClick);
-        window.addEventListener('keydown', handleDocumentKeydown);
 
         // Keep modal in sync if coverage updates while it's closed, so that summary is fresh when opened
         window.addEventListener('parcelCoverageUpdated', function () {

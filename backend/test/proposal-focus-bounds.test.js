@@ -78,6 +78,17 @@ function loadBoundsHarness(proposal, findParcelById = () => null, producedFeatur
 }
 
 describe('last-applied proposal focus bounds', () => {
+    it('uses the authored site as the anchor for a proposal without cadastre parcels', () => {
+        const proposal = {
+            proposalId: 'explore-park',
+            cadastreParcelIds: [],
+            site: buildingFeature().geometry
+        };
+        const { context, geometryBounds } = loadBoundsHarness(proposal);
+
+        expect(context.resolveStandaloneProposalFocusBounds(proposal)).toBe(geometryBounds);
+    });
+
     it('uses authored building geometry before retired parents when there are no children', () => {
         const proposal = {
             proposalId: 'block',

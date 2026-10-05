@@ -33,7 +33,9 @@
     }
 
     function actorKey(actor = {}) {
-        return [actor.kind || 'human', actor.controller || 'human', actor.wallet || actor.id || actor.name || 'unknown'].join(':');
+        // A person can use an algorithmic run and an LLM run with the same wallet. Controller is
+        // provenance of an event, not a second identity, so it must not split their profile.
+        return actor.wallet || actor.id || actor.name || 'unknown';
     }
 
     function isoTime(value) {
@@ -247,7 +249,7 @@
 
     // openProposal(id): when the host can open a proposal in place (the map), proposal links call it
     // instead of navigating away; the standalone page keeps plain /proposals/<id> links.
-    function mount(element, { events = [], loadRun = null, openProposal = null } = {}) {
+    function mount(element, { events = [], loadRun = null, openProposal = null, showFilters = true } = {}) {
         if (!element || !root?.document) throw new Error('ActorExplorer.mount needs an element and a document');
         const doc = root.document;
         let allEvents = newestFirst(events);
@@ -264,7 +266,8 @@
         const profiles = doc.createElement('section'); profiles.className = 'ae-profiles'; profiles.setAttribute('aria-label', 'Actor profiles');
         const activity = doc.createElement('section'); activity.className = 'ae-activity'; activity.setAttribute('aria-label', 'Activity');
         const detail = doc.createElement('aside'); detail.className = 'ae-run-detail'; detail.setAttribute('aria-live', 'polite');
-        element.append(filters, profiles, activity, detail);
+        if (showFilters) element.append(filters);
+        element.append(profiles, activity, detail);
 
         function renderRun(run) {
             detail.replaceChildren();

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { activityRowHtml, backendBase, buildActorProfiles, eventDetail, eventsInvolvingActor, filterEvents, runCostTotal } = require('../../frontend/js/actor-explorer.js');
+const { activityRowHtml, actorKey, backendBase, buildActorProfiles, eventDetail, eventsInvolvingActor, filterEvents, runCostTotal } = require('../../frontend/js/actor-explorer.js');
 
 const events = [
     { id: 'human-pledge', actor: { id: 'person-1', name: 'Dana', kind: 'human', controller: 'human' }, action: { type: 'pledge' }, entity: { type: 'proposal', id: 'p1' }, transaction: 'human-tx', recordedAt: '2026-09-20T10:00:00Z' },
@@ -18,6 +18,25 @@ describe('actor explorer view model', () => {
         expect(profiles.map(profile => profile.actor.controller).sort()).toEqual(['algorithm', 'human', 'llm']);
         const llm = profiles.find(profile => profile.actor.controller === 'llm');
         expect(llm).toMatchObject({ activityCount: 2, proposalIds: ['p2'], transactionCount: 2, modelCostUsd: 0.0054 });
+    });
+
+    it('uses wallet-or-id identity, so a persona stays together across algorithm and LLM runs', () => {
+        const samePersona = [
+            { id: 'algorithm-run', actor: { id: 'densifier-01', name: 'Densifier', controller: 'algorithm', wallet: 'wallet-d' }, action: { type: 'run_status' } },
+            { id: 'llm-run', actor: { id: 'densifier-01', name: 'Densifier', controller: 'llm', wallet: 'wallet-d' }, action: { type: 'create' } },
+            { id: 'chain-stake', actor: { id: 'wallet-d', name: 'Densifier', controller: 'algorithm', wallet: 'wallet-d' }, action: { type: 'stake' } }
+        ];
+        expect(actorKey(samePersona[0].actor)).toBe('wallet-d');
+        expect(buildActorProfiles(samePersona)).toHaveLength(1);
+        expect(buildActorProfiles(samePersona)[0]).toMatchObject({ key: 'wallet-d', activityCount: 3 });
+    });
+
+    it('keeps actors with distinct wallets in separate profiles even if their names match', () => {
+        const profiles = buildActorProfiles([
+            { id: 'one', actor: { id: 'same-persona', name: 'Same persona', controller: 'algorithm', wallet: 'wallet-one' }, action: { type: 'run_status' } },
+            { id: 'two', actor: { id: 'same-persona', name: 'Same persona', controller: 'llm', wallet: 'wallet-two' }, action: { type: 'run_status' } }
+        ]);
+        expect(profiles.map(profile => profile.key).sort()).toEqual(['wallet-one', 'wallet-two']);
     });
 
     it('filters across shared fields without hiding the non-LLM actor types', () => {

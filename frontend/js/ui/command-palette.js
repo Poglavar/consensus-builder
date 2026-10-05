@@ -195,6 +195,7 @@
         backdrop.appendChild(dialog);
         doc.body.appendChild(backdrop);
         Object.assign(state, { backdrop, input, list, title, footer });
+        state.unregisterEscape = win.ModalEscape?.register(backdrop, () => close({ restoreFocus: true }));
         input.addEventListener('input', render);
         input.addEventListener('keydown', onKeyDown);
         backdrop.addEventListener('mousedown', event => {

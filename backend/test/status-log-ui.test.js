@@ -105,7 +105,7 @@ describe('the whole log, and somewhere to read it', () => {
     });
 
     it('closes on Escape and on a click outside it', () => {
-        expect(ui).toContain("if (event.key === 'Escape' && statusLogDialogIsOpen())");
+        expect(ui).toContain('window.ModalEscape?.register(parts.overlay, closeStatusLogDialog);');
         expect(ui).toContain('if (event.target === parts.overlay) closeStatusLogDialog();');
     });
 

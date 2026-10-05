@@ -333,6 +333,7 @@
         dialog.appendChild(body);
         overlay.appendChild(dialog);
         document.body.appendChild(overlay);
+        overlay.__unregisterEscape = window.ModalEscape?.register(overlay, hidePlanStatsModal);
 
         if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
             try { window.i18n.applyTranslations(overlay); } catch (_) { /* ignore */ }
@@ -658,12 +659,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         initializePlanStatsUi();
-        document.addEventListener('keydown', (evt) => {
-            if (evt.key === 'Escape') {
-                const modal = document.getElementById('plan-stats-modal');
-                if (modal && modal.style.display === 'flex') hidePlanStatsModal();
-            }
-        });
     });
 
     window.showPlanStatsModal = openPlanStats;

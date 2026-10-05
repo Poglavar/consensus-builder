@@ -420,20 +420,9 @@
         return CbFormat.formatDate(dateValue);
     }
 
-    // Escape closes the list. Stopped here so the same key does not also close the Tools sheet the
-    // list was opened from (the sheet's own Escape is skipped while a blocking dialog is open, and
-    // this one has just been removed by the time that check runs).
-    function onMonitorListKeydown(event) {
-        if (event.key !== 'Escape') return;
-        event.preventDefault();
-        event.stopPropagation();
-        removeMonitorListModal();
-    }
-
     function removeMonitorListModal() {
-        document.removeEventListener('keydown', onMonitorListKeydown, true);
         const modal = document.getElementById('area-monitor-list-modal');
-        if (modal) modal.remove();
+        if (modal) { modal.__unregisterEscape?.(); modal.remove(); }
         const backdrop = document.getElementById('area-monitor-list-backdrop');
         if (backdrop) backdrop.remove();
     }
@@ -476,7 +465,6 @@
         modal.setAttribute('role', 'dialog');
         modal.setAttribute('aria-modal', 'true');
         modal.setAttribute('aria-label', lblTitle);
-        document.addEventListener('keydown', onMonitorListKeydown, true);
         // Flex column with a scrollable content region pins the title and filter
         // input to the top; only the list shrinks/scrolls when there are many monitors.
         // Fixed height (not max-height) keeps the modal centered in the same spot as
@@ -504,6 +492,7 @@
         `;
 
         document.body.appendChild(modal);
+        modal.__unregisterEscape = global.ModalEscape?.register(modal, removeMonitorListModal);
 
         const closeButton = modal.querySelector('#am-list-close');
         if (closeButton) {

@@ -62,6 +62,19 @@ describe('road proposal highlight geometry', () => {
 });
 
 describe('proposal parcel outlines', () => {
+    it('draws a parcel-less proposal from its authored site', () => {
+        const geometry = loadGeometry();
+        const proposal = { proposalId: 'explore-site', cadastreParcelIds: [], site: multiPolygon };
+
+        const result = geometry.collectProposalFeatureSets(proposal);
+
+        expect(result.primaryFeatures).toHaveLength(1);
+        expect(result.primaryFeatures[0]).toMatchObject({
+            geometry: multiPolygon,
+            properties: { source: 'proposal-site' }
+        });
+    });
+
     it('styles the live road-cut pieces returned for a durable cadastral anchor', () => {
         const bounds = { pad: vi.fn(function () { return this; }) };
         const left = { liveParcelId: 'HR-A#left' };

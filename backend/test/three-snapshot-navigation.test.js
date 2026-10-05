@@ -75,4 +75,14 @@ describe('3D snapshot navigation', () => {
         expect(threeModeSource).toContain('snapshotNavigation.resolveExitMapCenter(');
         expect(threeModeSource).toContain('map.setView([exitMapCenter.lat, exitMapCenter.lng], zoom, { animate: false });');
     });
+
+    it('starts the nearby-building query from the frozen entry anchor before parcel rendering', () => {
+        const initScene = threeModeSource.slice(
+            threeModeSource.indexOf('    function initScene()'),
+            threeModeSource.indexOf('    function startLoop()')
+        );
+        expect(initScene).toMatch(
+            /captureSceneLoadGeometry\(\);[\s\S]*?ensureNearbyProposalBuildings\(\);[\s\S]*?buildParcels3D\(flatGroup\);/
+        );
+    });
 });

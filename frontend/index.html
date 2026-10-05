@@ -267,27 +267,6 @@
             <span id="floating-status-text"></span>
         </div>
 
-        <!-- 3D Toggle Button and 3D Container -->
-        <button id="mode-walk-toggle" class="map-mode-walk-btn" title="Take a walk through your changes" aria-label="Take a walk through your changes" data-i18n-key="threeMode.toggle.walk" data-i18n-attr="title,aria-label" hidden>
-            <i class="fas fa-person-walking" aria-hidden="true"></i>
-        </button>
-        <button id="cadastre-view-toggle" class="map-mode-toggle" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i></button>
-        <button id="mode-2d-toggle" class="map-mode-toggle" title="Switch to 2D" data-i18n-key="threeMode.toggle.switchTo2d" data-i18n-attr="title">2D</button>
-        <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to model (3D)" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title">3D</button>
-        <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Photo view (Google Photorealistic 3D)" aria-label="Photo view (Google Photorealistic 3D)" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
-            <i class="fas fa-globe" aria-hidden="true"></i>
-        </button>
-        <button id="mode-ai-toggle" class="map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
-            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
-        </button>
-        <div id="three-container" aria-hidden="true"></div>
-
-        <!-- Username Display -->
-        <div id="username-display" class="username-display" role="button" tabindex="0">
-            <i class="fas fa-user"></i>
-            <span id="username-text">Guest</span>
-        </div>
-
         <!-- ===== Floating map shell (js/ui/map-shell.js, css/map-shell.css) =====
              The map is the whole interface. What the old left sidebar held now lives in a few
              floating buttons and the sheets they open (a popover on desktop, a bottom sheet under
@@ -298,6 +277,12 @@
         <!-- The search box (omnibox) with the city chip, js/ui/map-search.js, top-left. The mode
              strip is laid out underneath it (see --map-mode-slot-* in map.css). -->
         <div id="map-search-slot" class="map-shell-slot map-shell-slot--search"></div>
+
+        <!-- Username Display -->
+        <div id="username-display" class="username-display" role="button" tabindex="0">
+            <i class="fas fa-user"></i>
+            <span id="username-text">Guest</span>
+        </div>
 
         <!-- Phase 3 hook: the selection tray mounts here, bottom-centre, while parcels are selected. -->
         <div id="selection-tray-slot" class="map-shell-slot map-shell-slot--tray"></div>
@@ -315,6 +300,21 @@
                 <i class="fas fa-gear" aria-hidden="true"></i>
             </button>
         </div>
+
+        <!-- 3D Toggle Button and 3D Container -->
+        <button id="mode-walk-toggle" class="map-mode-walk-btn" title="Take a walk through your changes" aria-label="Take a walk through your changes" data-i18n-key="threeMode.toggle.walk" data-i18n-attr="title,aria-label" hidden>
+            <i class="fas fa-person-walking" aria-hidden="true"></i>
+        </button>
+        <button id="cadastre-view-toggle" class="map-mode-toggle" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i></button>
+        <button id="mode-2d-toggle" class="map-mode-toggle" title="Switch to 2D" data-i18n-key="threeMode.toggle.switchTo2d" data-i18n-attr="title">2D</button>
+        <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to model (3D)" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title">3D</button>
+        <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Photo view (Google Photorealistic 3D)" aria-label="Photo view (Google Photorealistic 3D)" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
+            <i class="fas fa-globe" aria-hidden="true"></i>
+        </button>
+        <button id="mode-ai-toggle" class="map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+        </button>
+        <div id="three-container" aria-hidden="true"></div>
 
         <!-- Bottom-right: Proposals (count badge mirrors #showProposalsButton), Tools, Activity -->
         <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right">
@@ -1548,6 +1548,7 @@
     <script>
         window.writeVersionedLocalScripts([
             'js/shared-utils.js',
+            'js/ui/modal-escape.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
@@ -1660,6 +1661,7 @@
             'js/map-controls.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',
+            'js/mobile-dock-sheet.js',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js',
             'js/ui/parcel-menu.js',

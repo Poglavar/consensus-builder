@@ -988,6 +988,8 @@ function closeProposalList(options = {}) {
 
     const modal = document.querySelector('.proposal-list-modal');
     if (modal) {
+        modal.__unregisterEscape?.();
+        modal.__unregisterEscape = null;
         modal.style.display = 'none';
         // When the Proposal List closes, clear any proposal-specific overlays/highlights
         try { clearProposalInfoHoverOverlay(); } catch (_) { }
