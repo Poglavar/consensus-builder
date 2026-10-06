@@ -2,6 +2,7 @@
 import { createBuildingProviders } from '../buildings/index.js';
 import { fetchOsmBuildings } from '../buildings/osm-reference.js';
 import { fetchStagedOsmBuildings } from '../buildings/osm-staged.js';
+import { attachNearbyFloorModels, nativeFloorModelSource } from '../buildings/floor-models.js';
 import {
     fetchProposalsForCarve,
     carveRecordsFor,
@@ -237,21 +238,30 @@ export function setupBuildingsRoute(app, pool) {
             }
 
             const result = await provider.near(geometry, bufferMeters);
+            const floorModelSource = nativeFloorModelSource(body.source, result.source);
             // OSM: how many heights are measured, storey-derived or estimated, and whether the
             // upstream answered only in part (Overpass throttling).
-            const extra = {};
+            const extra = { floorModelSource };
             if (result.heights !== undefined) extra.heights = result.heights;
             if (result.partial !== undefined) extra.partial = result.partial;
             // The upstream failed outright: the browser tells the person instead of drawing nothing.
             if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
             if (!proposalIds.length) {
-                return res.json({ buildings: result.buildings, count: result.count, source: result.source, ...extra });
+                const buildings = await attachNearbyFloorModels(pool, city || 'zagreb', floorModelSource, result.buildings);
+                return res.json({ buildings, count: result.count, source: result.source, ...extra });
             }
 
             const proposals = await fetchProposalsForCarve(pool, proposalIds);
             const carveContext = carveRecordsFor(proposals);
             const buildings = carveBuildings(result.buildings, carveContext);
-            res.json({ buildings, count: buildings.length, source: result.source, ...extra });
+            // A cut proxy no longer has the authored floor shape. Enrich only untouched
+            // objects (carveBuildings deliberately preserves those object references).
+            const originals = new Set(result.buildings);
+            const modeled = await attachNearbyFloorModels(pool, city || 'zagreb', floorModelSource,
+                buildings.filter(building => originals.has(building)));
+            const byId = new Map(modeled.map(building => [building.object_id, building]));
+            const enriched = buildings.map(building => originals.has(building) ? byId.get(building.object_id) : building);
+            res.json({ buildings: enriched, count: enriched.length, source: result.source, ...extra });
         } catch (err) {
             // A malformed user building source id is the caller's error.
             if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });

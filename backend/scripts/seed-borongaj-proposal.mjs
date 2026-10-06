@@ -10,6 +10,7 @@ import pg from 'pg';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
 import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
+import { attachBuildingFloorPlans } from '../proposals/building-floor-plans.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 await import('../../frontend/js/building-density-stats.js');
@@ -232,7 +233,7 @@ export async function constructBorongajProposal() {
         geometry: siteSourceFeature.geometry
     };
 
-    const buildings = [];
+    let buildings = [];
     for (const [sourceFeatureId, config] of Object.entries(VOLUMES)) {
         const sourceFeature = polygonById(source, sourceFeatureId);
         if (!sourceFeature) throw new Error(`Missing planned volume ${sourceFeatureId}.`);
@@ -273,6 +274,11 @@ export async function constructBorongajProposal() {
     if (buildings.length !== 9 || new Set(buildings.map(feature => feature.properties.name)).size !== 9) {
         throw new Error('Borongaj reconstruction must contain exactly nine uniquely named volumes.');
     }
+    // Interior authoring belongs to the canonical archive. Regenerating exterior metadata
+    // must retain it, and a changed footprint must force an explicit registration review.
+    const archive = JSON.parse(await readFile(PROPOSAL_PATH, 'utf8'));
+    buildings = attachBuildingFloorPlans(buildings,
+        archive.features.filter(feature => feature.properties?.['consensus:role'] === 'building')).buildings;
 
     const stats = densityStats.summarizeDensity({
         parcelFeature,

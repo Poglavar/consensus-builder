@@ -296,8 +296,60 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     }
 }
 
-/* Bottom-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
-   glTF models) are still loading. Upper-left, mirroring the photoreal tile-streaming pill. */
+/* Floor-plan toggle and source-accuracy status inside the 3D controls. */
+#three-container .three-mode-xray-row {
+    display: grid;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-2);
+    padding-top: var(--cb-space-3);
+    border-top: 1px solid var(--cb-line-strong);
+}
+
+#three-container .three-mode-xray-button {
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-3);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-weight: var(--cb-weight-semibold);
+    cursor: pointer;
+}
+
+#three-container .three-mode-xray-button[aria-pressed="true"] {
+    background: var(--cb-primary);
+    border-color: var(--cb-primary);
+    color: var(--cb-primary-ink);
+}
+
+#three-container .three-mode-xray-button:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+#three-container .three-mode-xray-note {
+    max-width: 240px;
+    font-size: var(--cb-text-xs);
+    line-height: var(--cb-leading);
+    color: var(--cb-text-muted);
+}
+
+#three-container .three-mode-floor-cutaway:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+}
+
+#three-container .three-mode-floor-cutaway select {
+    flex: 1;
+    min-width: 0;
+    max-width: 145px;
+}
+
+/* Loading badge for city meshes and uploaded glTF models, mirroring the photoreal pill. */
 #three-container .three-mode-buildings-loader {
     position: absolute;
     top: 12px;

@@ -85,6 +85,7 @@ DDL_FILES=(
     routes/transactions-ddl.sql
     routes/proposal-site-ddl.sql
     db/agents-ddl.sql
+    db/building-floor-model.sql
     ens/ens-plan-ddl.sql
     ens/parcel-ens-ddl.sql
 )

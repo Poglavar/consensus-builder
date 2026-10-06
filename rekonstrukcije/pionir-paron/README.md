@@ -69,6 +69,27 @@ node backend/scripts/migrate-pionir-reconstruction-archive.cjs --dry-run-bundle 
 node backend/scripts/migrate-pionir-reconstruction-archive.cjs --apply-bundle /tmp/pionir-paron.json --target production --confirm-production
 ```
 
+## Floor-plan source search
+
+The [source inventory](floor-source-inventory.json) records the October 2026 search across exactly the twelve imported sites, newest known design/phase evidence first. It separates actual downloaded drawings, surviving archive HTML, broken links and unverified leads. A missing result is not proof that a plan does not exist. Recovered drawings are extracted, registered and reviewed in the current floor-model corpus.
+
+| Search order | Project | Recovered floor evidence |
+|---:|---|---|
+| 1 | Zagrebačka avenija–Rudeš | No matching floor catalogue recovered. |
+| 2 | Borongajska–Čavićeva | **54 modeled floors** across six buildings including A1. A2/C2/C3 remain outside the authored floor corpus. |
+| 3 | Newer Lovinčićeva | E1 apartment PNG; whole basement -1 inset for C1/C2/CG. Above-ground E1/E2 PDFs tried return 404. Banovac requires separate parcel matching. |
+| 4 | Špansko-Sjever A–F | Five F PDFs with complete insets for level 1, level 7 and the recessed top floor. No A–E floor asset recovered. |
+| 5 | Savica F1–F3 | All eight F3 office-floor catalogues, ground through level 7, plus shared basement evidence. F1 apartment PNG contains no whole-floor inset. |
+| 6 | Špansko–Stenjevečki odvojak | N2 apartment and N3 project pages survive in Wayback; linked drawings were not recovered. |
+| 7 | Selska–Baštijanova–Vitezićeva | S4/S5 and S apartment pages survive; linked PDF/image requests return archive errors. |
+| 8 | Lovinčićeva F1–F5 | No matching floor-plan asset recovered; newer Lovinčićeva sales are a different site. |
+| 9 | Špansko C–D | Archived apartment pages expose original drawing URLs, but the binaries were not recovered. |
+| 10 | Folnegovićeva–Rapska | Ad and permit leads; no verified drawing matched to an imported footprint. |
+| 11 | Pergošićeva A1–A4 | Portfolio and ad leads; no verified whole-floor drawing or building-label mapping. |
+| 12 | Selska–Drniška | Portfolio context; no matching floor catalogue recovered. |
+
+The chronology overlaps and several completion dates remain unknown. Downloaded evidence is preserved locally under ignored `tmp/pionir-floor-sources/`, named by SHA-256 and extension; the committed inventory contains the portable URLs, checksums, coverage and gaps. The generic PostgreSQL/API and authoring contract is documented in [Building floor models](../../docs/building-floor-models.md).
+
 ## Historical portfolio candidates
 
 Pionir's [residential](https://pionir.hr/reference/stambeni-objekti/) and [mixed-use](https://pionir.hr/reference/stambeno-poslovni-objekti/) reference pages identify these as having at least three named buildings or houses. The portfolio pages do not consistently provide construction dates or site areas, so those fields remain unresolved rather than guessed.
@@ -105,3 +126,5 @@ Work order:
 4. Resolve historical candidates one site at a time. **Selska–Drniška, Pergošićeva A1–A4, Špansko C–D, Špansko–Stenjevečki odvojak and Selska–Baštijanova–Vitezićeva now have canonical observed-state proposals. Remetinečka A–C has been located but needs a defensible volume split and whole-site parcel union.**
 
 Official eDozvola source snapshots are refreshed reproducibly with `backend/scripts/fetch-pionir-edozvola-sources.mjs`. They use `consensus-builder.edozvola-source.v1`; these are evidence layers, not app proposals. Canonical building exports use `consensus-builder.reconstruction.v1`; companion road exports use `consensus-builder.corridor-reconstruction.v1`; both must pass an export/import/export identity check. Project manifests use `consensus-builder.reconstruction-plan.v1`.
+
+The current authored floor corpus spans 67 floors, nine owners and four sites: Borongajska–Čavićeva 54 floors across six buildings including A1; Savica F3 levels −1 and 0–7 with its shared basement owned once under F3; Špansko-Sjever F levels 1, 7 and 8 only; and Lovinčićeva's shared C1/CG/C2 basement once under C1. Elevations are estimated, missing levels are not cloned, and native identities preserve `sourceFeatureId`, `dguBuildingId` or `sourceLayerId`.

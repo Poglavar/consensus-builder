@@ -1,5 +1,19 @@
 # Špansko-Sjever A–F
 
+Floor-model coverage intentionally includes only F levels 1, 7 and 8. Missing floors remain missing and are not cloned from neighbouring catalogue plans. Elevations and registrations are estimated source-based proxies, with native identity fields retained for attachment.
+
+Author with PyMuPDF and Shapely installed, then review the local database import (dry run by default):
+
+```sh
+python3 backend/scripts/reconstruct-borongaj-floors.py \
+  --sources rekonstrukcije/pionir-paron/spansko-sjever-a-f/floor-plan-sources.json \
+  --proposal rekonstrukcije/pionir-paron/spansko-sjever-a-f/proposal.geojson \
+  --cache-dir /tmp/spansko-floor-cache --fetch --write
+PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
+  --archive rekonstrukcije/pionir-paron/spansko-sjever-a-f/proposal.geojson
+```
+
+
 Reconstruction of the six above-ground volumes A–F on current k.č. 2795/3, MB 340057, k.o. Stenjevec Jug (23,451.14 m² in the local current cadastre). The permit records use k.o. Stenjevec, MB 335592.
 
 - [`location-permit-amendment-2022.geojson`](location-permit-amendment-2022.geojson) archives the six official eDozvola polygons from case `P20221230-1168647-Z06`, class `UP/I-350-05/22-001/121`, final on 16 August 2022.

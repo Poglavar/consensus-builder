@@ -1,9 +1,31 @@
 // proposals/sharing-routes.js — proposal share actions and URL route handlers
+
 // (handleSharedPlanRoute etc.). Extracted from proposals.js. The share codec it uses
 // (base64UrlEncodeBytes/base64UrlDecodeToBytes/compressBytes/inflateBytes/decodeBytesToJson/
 // decodeSharedPayload) and the SHARE_* constants live in proposals/sharing.js and are used here as
 // globals; this file used to carry a duplicate set of them, which sharing.js (loaded later) shadowed
 // so they never actually ran.
+
+// Update the derived display evidence for unchanged shared buildings; the authored log stays intact.
+function refreshSharedFloorPlanModels(localProposals, loadedById) {
+    let refreshedFloors = 0;
+    for (const local of localProposals) {
+        if (local.replacementOfProposalId || local.sourceProposalId) continue;
+        const remote = loadedById.get(String(local.serverProposalId))
+            || loadedById.get(String(local.proposalId));
+        if (!remote?.geometry?.buildings?.some(building => building.properties?.floorPlans)) continue;
+        const current = (window.proposedBuildings || []).filter(building =>
+            String(building.properties?.proposalId) === String(local.proposalId));
+        const refreshed = window.__buildingFloorPlans.refreshRegisteredFloorPlans(current, remote.geometry.buildings);
+        if (!refreshed.changed) continue;
+        const replacements = new Map(current.map((building,index) => [building, refreshed.buildings[index]]));
+        window.proposedBuildings = window.proposedBuildings.map(building => replacements.get(building) || building);
+        refreshedFloors += refreshed.changed;
+    }
+    if (refreshedFloors) window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated'));
+
+    return refreshedFloors;
+}
 
 function getSharedGroundService() {
     if (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository) {
@@ -1908,6 +1930,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // Now the already-applied members are simply skipped by the filter below and only what is
         // missing is attempted. The one thing this gives up is that a member applied locally will
         // not pick up a repaired server definition on re-open; unapplying it explicitly still will.
+
+        refreshSharedFloorPlanModels(incomingAlreadyApplied, loadedById);
 
         // Counted over COVERED incoming ids, not list length — with a source and its
         // replacement both standing, the list double-counts one member.

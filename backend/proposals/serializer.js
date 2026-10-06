@@ -139,6 +139,13 @@ export function stripLocalProposalState(proposal) {
     delete sanitized.childFeatures;
 
     if (sanitized.geometry && typeof sanitized.geometry === 'object') {
+        // Architectural evidence is owned by the building registry and joined by read routes.
+        // Saving an API response or a copied proposal must not persist a stale model snapshot.
+        for (const building of sanitized.geometry.buildings || []) {
+            if (!building.properties) continue;
+            delete building.properties.floorPlans;
+            delete building.properties.floorModel;
+        }
         delete sanitized.geometry.parentFeatures;
         delete sanitized.geometry.childFeatures;
         if (sanitized.roadProposal) {

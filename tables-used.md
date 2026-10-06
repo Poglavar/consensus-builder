@@ -99,6 +99,7 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - public.planned_land_use
 - public.planned_road
 - consensus.proposal
+- consensus.building_floor_model
 - public.road_parcel_classification
 - public.street
 - consensus.urban_rule

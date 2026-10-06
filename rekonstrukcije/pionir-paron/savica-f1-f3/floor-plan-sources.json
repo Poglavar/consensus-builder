@@ -1,0 +1,174 @@
+{
+  "schema": "consensus-builder.floor-plan-sources.v1",
+  "retrievedAt": "2026-10-07",
+  "buildings": [
+    {
+      "id": "F3",
+      "northInDrawing": "up",
+      "floors": [
+        {
+          "level": -1,
+          "elevationM": -3,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/prizemlje-min.pdf",
+            "sha256": "277a33122cc50cb676e2a0e3a372cadb0d7b71cde0c5f3dd6a8077ee97ec0e94",
+            "page": 2,
+            "crop": [
+              60.0,
+              262.0,
+              967.25,
+              599.5
+            ],
+            "method": "reviewed raster mask and traced service cores"
+          },
+          "apartments": []
+        },
+        {
+          "level": 0,
+          "elevationM": 0,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/prizemlje-min.pdf",
+            "sha256": "277a33122cc50cb676e2a0e3a372cadb0d7b71cde0c5f3dd6a8077ee97ec0e94",
+            "page": 1,
+            "crop": [
+              478.0,
+              87.0,
+              1055.0,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        },
+        {
+          "level": 1,
+          "elevationM": 3,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/1kat-min.pdf",
+            "sha256": "a61bf15c590a8075debab1fd05bcdae0b6a616078bb3d597faec7a4ee73e3d27",
+            "page": 1,
+            "crop": [
+              472.0,
+              87.0,
+              1049.0,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        },
+        {
+          "level": 2,
+          "elevationM": 6,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/2kat-min.pdf",
+            "sha256": "d0bf8e4985c63a9ed432696915d5a5cac67679eb249c2dc1162f3c7d3b228640",
+            "page": 1,
+            "crop": [
+              480.5,
+              87.0,
+              1057.5,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        },
+        {
+          "level": 3,
+          "elevationM": 9,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/3kat-min.pdf",
+            "sha256": "a332e764647bf6dae2936ef5ce3f4e4d2d148a7bffd4c4dca85cbde4f0be4ae0",
+            "page": 1,
+            "crop": [
+              474.5,
+              87.0,
+              1051.5,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        },
+        {
+          "level": 4,
+          "elevationM": 12,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/4kat-min.pdf",
+            "sha256": "f632a782cf76f36ef010605b02a8b78a947ccfdb0c69ce71cbb72b24736c1acf",
+            "page": 1,
+            "crop": [
+              478.5,
+              87.0,
+              1055.5,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        },
+        {
+          "level": 5,
+          "elevationM": 15,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/5kat-min.pdf",
+            "sha256": "fb1c976b095144d6e2b490786f709f671630b7de2522e798d51d1cc357e89204",
+            "page": 1,
+            "crop": [
+              477.5,
+              87.0,
+              1054.5,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        },
+        {
+          "level": 6,
+          "elevationM": 18,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/6kat-min.pdf",
+            "sha256": "a9ae1aac37bfe93282a6568c63377080a94fe03649b0d6ad739824b49d140002",
+            "page": 1,
+            "crop": [
+              476.5,
+              87.0,
+              1053.5,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        },
+        {
+          "level": 7,
+          "elevationM": 21,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/7kat-min.pdf",
+            "sha256": "202e3932405d75d02eff76b5cf4b994611cd1aa3d555615f6a6620d3c2903227",
+            "page": 1,
+            "crop": [
+              474.0,
+              87.0,
+              1051.0,
+              762.0
+            ],
+            "method": "reviewed raster trace; source frame translated to the common building coordinates"
+          },
+          "apartments": []
+        }
+      ]
+    }
+  ]
+}

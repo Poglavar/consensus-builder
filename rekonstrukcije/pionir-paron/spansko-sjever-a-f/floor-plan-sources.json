@@ -1,0 +1,410 @@
+{
+  "schema": "consensus-builder.floor-plan-sources.v1",
+  "retrievedAt": "2026-10-07",
+  "buildings": [
+    {
+      "id": "F",
+      "northInDrawing": "up",
+      "strokeGray": 0,
+      "floors": [
+        {
+          "level": 1,
+          "elevationM": 3,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-15.pdf",
+            "sha256": "92e34c736498cd70a4f76ebaa115a107534994b2aab9dbe24c9b10205d19d866",
+            "page": 1,
+            "crop": [
+              146.6,
+              526.4,
+              424.3,
+              805.8
+            ],
+            "wallExtraction": "orthogonal-network",
+            "reviewedStairGeometry": {
+              "flights": [
+                {
+                  "a": [
+                    0.60569,
+                    0.274159
+                  ],
+                  "b": [
+                    0.590025,
+                    0.274159
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 3,
+                  "riseFraction": [
+                    0,
+                    0.2
+                  ]
+                },
+                {
+                  "a": [
+                    0.576413,
+                    0.287581
+                  ],
+                  "b": [
+                    0.576413,
+                    0.332319
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 9,
+                  "riseFraction": [
+                    0.2,
+                    0.8
+                  ]
+                },
+                {
+                  "a": [
+                    0.590025,
+                    0.345383
+                  ],
+                  "b": [
+                    0.60569,
+                    0.345383
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 3,
+                  "riseFraction": [
+                    0.8,
+                    1
+                  ]
+                }
+              ],
+              "landings": [
+                [
+                  [
+                    0.562838,
+                    0.261632
+                  ],
+                  [
+                    0.590025,
+                    0.261632
+                  ],
+                  [
+                    0.590025,
+                    0.287581
+                  ],
+                  [
+                    0.562838,
+                    0.287581
+                  ]
+                ],
+                [
+                  [
+                    0.562838,
+                    0.332319
+                  ],
+                  [
+                    0.590025,
+                    0.332319
+                  ],
+                  [
+                    0.590025,
+                    0.358268
+                  ],
+                  [
+                    0.562838,
+                    0.358268
+                  ]
+                ]
+              ],
+              "voids": [
+                [
+                  [
+                    0.562838,
+                    0.261632
+                  ],
+                  [
+                    0.60641,
+                    0.261632
+                  ],
+                  [
+                    0.60641,
+                    0.358268
+                  ],
+                  [
+                    0.562838,
+                    0.358268
+                  ]
+                ]
+              ],
+              "landingRiseFractions": [
+                0.2,
+                0.8
+              ]
+            }
+          },
+          "apartments": []
+        },
+        {
+          "level": 7,
+          "elevationM": 21,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-126.pdf",
+            "sha256": "39f1cc61f36f49045836415c66ae2dec320df7a7e58242b075985410aef52c7f",
+            "page": 1,
+            "crop": [
+              146.6,
+              526.4,
+              424.3,
+              805.8
+            ],
+            "wallExtraction": "orthogonal-network",
+            "reviewedStairGeometry": {
+              "flights": [
+                {
+                  "a": [
+                    0.60569,
+                    0.274159
+                  ],
+                  "b": [
+                    0.590025,
+                    0.274159
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 3,
+                  "riseFraction": [
+                    0,
+                    0.2
+                  ]
+                },
+                {
+                  "a": [
+                    0.576413,
+                    0.287581
+                  ],
+                  "b": [
+                    0.576413,
+                    0.332319
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 9,
+                  "riseFraction": [
+                    0.2,
+                    0.8
+                  ]
+                },
+                {
+                  "a": [
+                    0.590025,
+                    0.345383
+                  ],
+                  "b": [
+                    0.60569,
+                    0.345383
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 3,
+                  "riseFraction": [
+                    0.8,
+                    1
+                  ]
+                }
+              ],
+              "landings": [
+                [
+                  [
+                    0.562838,
+                    0.261632
+                  ],
+                  [
+                    0.590025,
+                    0.261632
+                  ],
+                  [
+                    0.590025,
+                    0.287581
+                  ],
+                  [
+                    0.562838,
+                    0.287581
+                  ]
+                ],
+                [
+                  [
+                    0.562838,
+                    0.332319
+                  ],
+                  [
+                    0.590025,
+                    0.332319
+                  ],
+                  [
+                    0.590025,
+                    0.358268
+                  ],
+                  [
+                    0.562838,
+                    0.358268
+                  ]
+                ]
+              ],
+              "voids": [
+                [
+                  [
+                    0.562838,
+                    0.261632
+                  ],
+                  [
+                    0.60641,
+                    0.261632
+                  ],
+                  [
+                    0.60641,
+                    0.358268
+                  ],
+                  [
+                    0.562838,
+                    0.358268
+                  ]
+                ]
+              ],
+              "landingRiseFractions": [
+                0.2,
+                0.8
+              ]
+            }
+          },
+          "apartments": []
+        },
+        {
+          "level": 8,
+          "elevationM": 24,
+          "elevationBasis": "estimated",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-128.pdf",
+            "sha256": "63b0942cf9356c98990f7c89ff7a426418f681ecb316296641f8614c8427dd3f",
+            "page": 1,
+            "crop": [
+              146.6,
+              526.4,
+              424.3,
+              805.8
+            ],
+            "wallExtraction": "orthogonal-network",
+            "reviewedStairGeometry": {
+              "flights": [
+                {
+                  "a": [
+                    0.60569,
+                    0.274159
+                  ],
+                  "b": [
+                    0.590025,
+                    0.274159
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 3,
+                  "riseFraction": [
+                    0,
+                    0.2
+                  ]
+                },
+                {
+                  "a": [
+                    0.576413,
+                    0.287581
+                  ],
+                  "b": [
+                    0.576413,
+                    0.332319
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 9,
+                  "riseFraction": [
+                    0.2,
+                    0.8
+                  ]
+                },
+                {
+                  "a": [
+                    0.590025,
+                    0.345383
+                  ],
+                  "b": [
+                    0.60569,
+                    0.345383
+                  ],
+                  "widthPdfPoints": 7.2,
+                  "steps": 3,
+                  "riseFraction": [
+                    0.8,
+                    1
+                  ]
+                }
+              ],
+              "landings": [
+                [
+                  [
+                    0.562838,
+                    0.261632
+                  ],
+                  [
+                    0.590025,
+                    0.261632
+                  ],
+                  [
+                    0.590025,
+                    0.287581
+                  ],
+                  [
+                    0.562838,
+                    0.287581
+                  ]
+                ],
+                [
+                  [
+                    0.562838,
+                    0.332319
+                  ],
+                  [
+                    0.590025,
+                    0.332319
+                  ],
+                  [
+                    0.590025,
+                    0.358268
+                  ],
+                  [
+                    0.562838,
+                    0.358268
+                  ]
+                ]
+              ],
+              "voids": [
+                [
+                  [
+                    0.562838,
+                    0.261632
+                  ],
+                  [
+                    0.60641,
+                    0.261632
+                  ],
+                  [
+                    0.60641,
+                    0.358268
+                  ],
+                  [
+                    0.562838,
+                    0.358268
+                  ]
+                ]
+              ],
+              "landingRiseFractions": [
+                0.2,
+                0.8
+              ]
+            }
+          },
+          "apartments": []
+        }
+      ],
+      "elevationNote": "Only published floors 1, 7 and recessed floor 8 are reconstructed. Intermediate layouts have not been inferred; 3 m storeys are estimated."
+    }
+  ]
+}

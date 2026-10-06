@@ -19,11 +19,36 @@ function loadSharedImportHelpers(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase };`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase, refreshSharedFloorPlanModels };`,
         context
     );
     return context.sharedImportHelpersForTest;
 }
+
+describe('shared floor model refresh', () => {
+    it('updates only derived buildings belonging to the applied source and requests one redraw', () => {
+        const local = { proposalId:'local',serverProposalId:'server',applied:true,geometry:{untouched:true} };
+        const before=structuredClone(local),target={properties:{proposalId:'local'}},other={properties:{proposalId:'another'}};
+        const plans={schema:'model'},sources=[{properties:{floorPlans:plans}}];
+        const refresh=vi.fn(current=>({changed:1,buildings:current.map(b=>({...b,properties:{...b.properties,floorPlans:plans}}))}));
+        const browser={proposedBuildings:[target,other],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
+        const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser,CustomEvent:class{constructor(type){this.type=type;}}});
+        expect(refreshSharedFloorPlanModels([local],new Map([['server',{geometry:{buildings:sources}}]]))).toBe(1);
+        expect(refresh).toHaveBeenCalledExactlyOnceWith([target],sources);
+        expect(browser.proposedBuildings[0].properties.floorPlans).toBe(plans);
+        expect(browser.proposedBuildings[1]).toBe(other);
+        expect(target.properties.floorPlans).toBeUndefined();expect(local).toEqual(before);
+        expect(browser.dispatchEvent).toHaveBeenCalledOnce();
+        expect(browser.dispatchEvent.mock.calls[0][0].type).toBe('proposedBuildingsUpdated');
+    });
+    it('leaves replacements, missing sources and unchanged models untouched', () => {
+        const refresh=vi.fn(()=>({changed:0,buildings:[]})),browser={proposedBuildings:[],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
+        const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser});
+        const remote=new Map([['server',{geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
+        expect(refreshSharedFloorPlanModels([{proposalId:'edit',serverProposalId:'server',replacementOfProposalId:'original'},{proposalId:'absent'},{proposalId:'same',serverProposalId:'server'}],remote)).toBe(0);
+        expect(refresh).toHaveBeenCalledOnce();expect(browser.dispatchEvent).not.toHaveBeenCalled();
+    });
+});
 
 describe('shared-plan progress labels', () => {
     const t = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
