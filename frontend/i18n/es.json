@@ -4502,6 +4502,7 @@
         "tryAgainLater": "Inténtalo más tarde, o conecta tu propio espejo o fuente."
     },
     "groundFallback": {
+        "reopen": "Elegir cómo continuar",
         "title": "No se pudo cargar ningún registro de parcelas aquí",
         "back": "← Volver a las opciones",
         "status": {
@@ -4510,7 +4511,7 @@
             "refused": "El registro de parcelas de {city} rechazó la solicitud ({detail}).",
             "broken": "El registro de parcelas de {city} respondió, pero no con datos de parcelas ({detail}).",
             "unknown": "No se pudo cargar el registro de parcelas de {city} ({detail}).",
-            "dismissed": "Registro de parcelas no disponible. Usa el botón de actualizar para ver las opciones de nuevo.",
+            "dismissed": "El registro de parcelas no está disponible. Abre las opciones de parcelas para elegir cómo continuar.",
             "retrying": "Reintentando el registro de parcelas…",
             "urlInstalled": "Cargando parcelas desde tu enlace al registro durante esta sesión.",
             "schellingInstalled": "Dibujando el plan de Schelling {code} en memoria durante esta sesión."

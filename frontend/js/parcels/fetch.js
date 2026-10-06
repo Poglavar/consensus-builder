@@ -469,7 +469,8 @@
                 global.ParcelGroundFallback?.onGroundUnavailable?.({
                     error,
                     bounds: requestedBounds,
-                    city: currentCity()
+                    city: currentCity(),
+                    message: parcelFailureMessage(error)
                 });
             } catch (offerError) {
                 console.error('[fetchParcelData] could not offer ground fallback', offerError);
@@ -495,13 +496,18 @@
     // await the fetch (boot, visibility toggles, data-source switch) go through
     // fetchParcelDataReported, which reports and resolves null; awaiting callers may reuse the
     // reporter in their own catch.
-    function reportParcelFetchFailure(error, source) {
+    function parcelFailureMessage(error) {
         const message = error && error.message ? error.message : String(error || 'unknown error');
-        console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
-        const userMessage = global.ParcelSourceHealth?.describeFailure?.(error, {
+        return global.ParcelSourceHealth?.describeFailure?.(error, {
             offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n),
             loaded: loadedParcelCounts()
         }) || `Cadastral ground failed to load: ${message}`;
+    }
+
+    function reportParcelFetchFailure(error, source) {
+        const message = error && error.message ? error.message : String(error || 'unknown error');
+        console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
+        const userMessage = parcelFailureMessage(error);
         global.updateStatus?.(userMessage);
         global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
     }

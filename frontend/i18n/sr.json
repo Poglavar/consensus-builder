@@ -4490,6 +4490,7 @@
         "tryAgainLater": "Pokušaj ponovo kasnije ili dodaj sopstveno ogledalo ili izvor."
     },
     "groundFallback": {
+        "reopen": "Izaberite kako da nastavite",
         "title": "Ovde nije mogao da se učita nijedan registar parcela",
         "back": "← Nazad na opcije",
         "status": {
@@ -4498,7 +4499,7 @@
             "refused": "Registar parcela za {city} odbio je zahtev ({detail}).",
             "broken": "Registar parcela za {city} je odgovorio, ali ne podacima o parcelama ({detail}).",
             "unknown": "Registar parcela za {city} nije mogao da se učita ({detail}).",
-            "dismissed": "Registar parcela nije dostupan. Dugmetom za osvežavanje ponovo otvorite opcije.",
+            "dismissed": "Registar parcela nije dostupan. Otvorite opcije za parcele i izaberite kako da nastavite.",
             "retrying": "Ponovni pokušaj preuzimanja registra parcela…",
             "urlInstalled": "Parcele se za ovu sesiju učitavaju sa vašeg linka ka registru.",
             "schellingInstalled": "Šelingov plan {code} crta se u memoriji za ovu sesiju."

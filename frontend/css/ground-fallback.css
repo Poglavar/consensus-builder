@@ -1,6 +1,17 @@
 /* The "no parcel register could be loaded" screen (js/parcels/ground-fallback.js).
    Built on the cb-confirm overlay/dialog so it stacks and dims like every other prompt. */
 
+/* Recovery follows the introduction and uses the ordinary dialog plane, rather than the
+   confirmation plane. Reopening the intro also hides recovery without trapping its keys. */
+.ground-fallback-overlay {
+    z-index: var(--cb-z-dialog);
+}
+
+body.site-intro-open .ground-fallback-overlay {
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .ground-fallback-dialog {
     width: min(640px, calc(100% - 40px));
     max-height: calc(100vh - 48px);
@@ -19,7 +30,7 @@
     margin: 0;
     font-size: 18px;
     font-weight: 700;
-    color: #111827;
+    color: var(--cb-text-strong);
     line-height: 1.3;
 }
 
@@ -36,15 +47,15 @@
     border-radius: 8px;
     font-size: 14px;
     line-height: 1.45;
-    background: #f3f4f6;
-    color: #1f2937;
-    border-left: 4px solid #9ca3af;
+    background: var(--cb-surface-2);
+    color: var(--cb-text);
+    border-left: 4px solid var(--cb-text-faint);
 }
 
-.ground-fallback-status--temporary { background: #fffbeb; border-left-color: #f59e0b; }
-.ground-fallback-status--no-register { background: #eff6ff; border-left-color: #3b82f6; }
+.ground-fallback-status--temporary { background: var(--cb-warning-soft); border-left-color: var(--cb-warning); }
+.ground-fallback-status--no-register { background: var(--cb-primary-soft); border-left-color: var(--cb-primary); }
 .ground-fallback-status--refused,
-.ground-fallback-status--broken { background: #fef2f2; border-left-color: #ef4444; }
+.ground-fallback-status--broken { background: var(--cb-danger-soft); border-left-color: var(--cb-danger); }
 
 .ground-fallback-options {
     display: grid;
@@ -59,10 +70,10 @@
     gap: 4px;
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 10px;
-    background: #ffffff;
-    color: #111827;
+    background: var(--cb-surface);
+    color: var(--cb-text-strong);
     text-align: left;
     cursor: pointer;
     font: inherit;
@@ -71,10 +82,10 @@
 
 .ground-fallback-option:hover,
 .ground-fallback-option:focus-visible {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: var(--cb-primary);
+    box-shadow: 0 0 0 3px var(--cb-focus-ring);
     outline: none;
-    background: #f8fafc;
+    background: var(--cb-surface-2);
 }
 
 .ground-fallback-option.is-disabled {
@@ -89,7 +100,7 @@
 
 .ground-fallback-option-desc {
     font-size: 13px;
-    color: #4b5563;
+    color: var(--cb-text-muted);
     line-height: 1.4;
 }
 
@@ -109,21 +120,21 @@
 .ground-fallback-section h4 {
     margin: 4px 0 8px;
     font-size: 16px;
-    color: #111827;
+    color: var(--cb-text-strong);
 }
 
 .ground-fallback-help {
     margin: 0 0 12px;
     font-size: 14px;
     line-height: 1.5;
-    color: #374151;
+    color: var(--cb-text);
 }
 
 .ground-fallback-input {
     width: 100%;
     box-sizing: border-box;
     padding: 10px 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 8px;
     font: inherit;
     font-size: 14px;
@@ -131,8 +142,8 @@
 
 .ground-fallback-input:focus {
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: var(--cb-primary);
+    box-shadow: 0 0 0 3px var(--cb-focus-ring);
 }
 
 .ground-fallback-result {
@@ -140,11 +151,11 @@
     margin: 10px 0 0;
     font-size: 13px;
     line-height: 1.45;
-    color: #374151;
+    color: var(--cb-text);
 }
 
-.ground-fallback-result.is-ok { color: #047857; }
-.ground-fallback-result.is-error { color: #b91c1c; }
+.ground-fallback-result.is-ok { color: var(--cb-success); }
+.ground-fallback-result.is-error { color: var(--cb-danger); }
 
 /* Schelling view */
 .ground-fallback-algorithms {
@@ -159,7 +170,7 @@
     align-items: flex-start;
     gap: 8px;
     padding: 10px 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 10px;
     cursor: pointer;
     font-size: 13px;
@@ -167,9 +178,9 @@
 }
 
 .ground-fallback-algorithm input { margin-top: 3px; }
-.ground-fallback-algorithm strong { display: block; font-size: 14px; color: #111827; }
-.ground-fallback-algorithm small { display: block; color: #4b5563; margin-top: 2px; }
-.ground-fallback-algorithm.is-selected { border-color: #2563eb; background: #eff6ff; }
+.ground-fallback-algorithm strong { display: block; font-size: 14px; color: var(--cb-text-strong); }
+.ground-fallback-algorithm small { display: block; color: var(--cb-text-muted); margin-top: 2px; }
+.ground-fallback-algorithm.is-selected { border-color: var(--cb-primary); background: var(--cb-primary-soft); }
 .ground-fallback-algorithm.is-disabled { opacity: 0.6; cursor: not-allowed; }
 
 .ground-fallback-schelling-grid {
@@ -183,7 +194,7 @@
     margin: 0 0 10px;
     font-size: 14px;
     line-height: 1.5;
-    color: #1f2937;
+    color: var(--cb-text);
 }
 
 .ground-fallback-preview {
@@ -196,25 +207,25 @@
 
 .ground-fallback-preview svg {
     display: block;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 6px;
-    background: #ffffff;
+    background: var(--cb-surface);
 }
 
 .ground-fallback-preview small {
     font-size: 12px;
-    color: #4b5563;
+    color: var(--cb-text-muted);
     text-align: center;
     line-height: 1.35;
 }
 
-.ground-fallback-preview-street { fill: #6b7280; }
-.ground-fallback-preview-block { fill: #fde68a; stroke: #b45309; stroke-width: 0.6; }
+.ground-fallback-preview-street { fill: var(--cb-text-muted); }
+.ground-fallback-preview-block { fill: var(--cb-warning-soft); stroke: var(--cb-warning); stroke-width: 0.6; }
 
 .ground-fallback-params {
     margin-top: 10px;
     padding: 8px 12px;
-    border: 1px dashed #d1d5db;
+    border: 1px dashed var(--cb-line-strong);
     border-radius: 8px;
     font-size: 13px;
 }
@@ -222,7 +233,7 @@
 .ground-fallback-params summary {
     cursor: pointer;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--cb-text);
 }
 
 .ground-fallback-param {
@@ -236,7 +247,7 @@
 .ground-fallback-param input {
     width: 96px;
     padding: 6px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 6px;
     font: inherit;
 }
@@ -245,8 +256,8 @@
     margin: 12px 0 0;
     padding: 8px 10px;
     border-radius: 6px;
-    background: #fffbeb;
-    color: #78350f;
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
     font-size: 12.5px;
     line-height: 1.45;
 }

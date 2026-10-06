@@ -18,12 +18,10 @@
 .parcel-source-settings .btn, .source-status .btn { margin: .5rem .4rem 0 0; }
 .parcel-source-settings a { color: var(--cb-primary); }
 .parcel-source-settings [hidden] { display: none; }
-/* Source failure banners. The building one waits in the corner stack; the parcel one sits in the
-   middle of the screen, since a failed parcel source changes what the whole map can show — under
-   dialogs, though, so it never covers the buttons of a confirm it meets. */
+/* Compact warnings reopen recovery after dismissal. The dialog itself owns the full choices. */
 .source-status-stack {
     position: fixed;
-    z-index: var(--cb-z-banner);
+    z-index: var(--cb-z-notice);
     right: 1rem;
     bottom: 4.5rem;
     width: min(30rem, calc(100vw - 2rem));
@@ -31,15 +29,9 @@
     flex-direction: column;
     gap: var(--cb-space-2);
 }
-#parcel-source-status.source-status {
-    position: fixed;
-    z-index: var(--cb-z-notice);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(30rem, calc(100vw - 2rem));
-    max-height: calc(100dvh - 2rem);
-    overflow-y: auto;
+body.site-intro-open .source-status-stack,
+body.ground-fallback-open #parcel-source-status {
+    display: none;
 }
 .source-status {
     box-sizing: border-box;

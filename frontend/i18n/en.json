@@ -4451,6 +4451,7 @@
         "tryAgainLater": "Try again later, or plug in your own mirror or source."
     },
     "groundFallback": {
+        "reopen": "Choose how to continue",
         "title": "No parcel register could be loaded here",
         "back": "← Back to the options",
         "status": {
@@ -4459,7 +4460,7 @@
             "refused": "The parcel register for {city} refused the request ({detail}).",
             "broken": "The parcel register for {city} answered, but not with parcel data ({detail}).",
             "unknown": "The parcel register for {city} could not be loaded ({detail}).",
-            "dismissed": "Parcel register unavailable. Use the refresh button to see the options again.",
+            "dismissed": "Parcel register unavailable. Open the parcel options to choose how to continue.",
             "retrying": "Retrying the parcel register…",
             "urlInstalled": "Loading parcels from your register link for this session.",
             "schellingInstalled": "Drawing the Schelling plan {code} in memory for this session."

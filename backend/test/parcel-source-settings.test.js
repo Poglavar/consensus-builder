@@ -222,10 +222,10 @@ describe('building failure banner', () => {
         const firstRetry = vi.fn(), latestRetry = vi.fn();
         settings.reportFailure(global, 'buildings failed', 'building', firstRetry);
         settings.reportFailure(global, 'buildings still failing', 'building', latestRetry);
-        // The parcel banner is centred, so it lives on the body outside the stack's banner layer.
-        expect(document.getElementById('parcel-source-status').parent).toBe(document.body);
+        // Both warnings stay compact in the corner; parcel recovery owns the detailed choices.
         const stack = document.getElementById('source-status-stack');
-        expect(stack.children.map(node => node.id)).toEqual(['building-source-status']);
+        expect(document.getElementById('parcel-source-status').parent).toBe(stack);
+        expect(stack.children.map(node => node.id)).toEqual(['parcel-source-status', 'building-source-status']);
         const banner = document.getElementById('building-source-status');
         expect(banner.querySelector('p').textContent).toBe('buildings still failing');
         const [retry, choose] = banner.children.filter(node => node.tag === 'button');
@@ -237,6 +237,18 @@ describe('building failure banner', () => {
         settings.clearFailure(global);
         expect(document.getElementById('parcel-source-status')).toBeNull();
         expect(stack.children).toEqual([]);
+    });
+
+    it('reopens the wider parcel recovery choices from the compact warning', () => {
+        const document = fakeDocument();
+        const openOptions = vi.fn();
+        const global = { document, ParcelGroundFallback: { openOptions } };
+        settings.reportFailure(global, 'source unavailable');
+        const banner = document.getElementById('parcel-source-status');
+        const buttons = banner.children.filter(node => node.tag === 'button');
+        expect(buttons.map(node => node.textContent)).toEqual(['Choose how to continue', 'Dismiss source warning']);
+        buttons[0].listeners.click();
+        expect(openOptions).toHaveBeenCalledOnce();
     });
 
     it('accepts an OpenStreetMap mirror as a building choice only', () => {

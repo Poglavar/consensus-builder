@@ -62,6 +62,7 @@
             if (previousFocus && typeof previousFocus.focus === 'function') {
                 previousFocus.focus({ preventScroll: true });
             }
+            global.dispatchEvent(new CustomEvent('siteintro:closed'));
         }
 
         doc.querySelectorAll('[data-site-intro-open]').forEach(button => {

@@ -70,7 +70,8 @@ describe('session ground on the World’s Fair branch', () => {
         window.ParcelGroundFallback = { ...window.ParcelGroundFallback, onGroundUnavailable: offer };
         window.CadastralParcelRepository = { ensureBounds: vi.fn(async () => { throw failure; }) };
         await expect(window.fetchParcelData()).rejects.toBe(failure);
-        expect(offer).toHaveBeenCalledWith({ error: failure, bounds: 'view-bounds', city: 'live' });
+        expect(offer).toHaveBeenCalledWith({ error: failure, bounds: 'view-bounds', city: 'live',
+            message: 'Cadastral ground failed to load: Failed to fetch' });
         expect(window._fetchParcelDataInProgress).toBe(false);
         const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
         try {

@@ -4490,6 +4490,7 @@
         "tryAgainLater": "Pokušaj ponovno kasnije ili dodaj vlastito zrcalo ili izvor."
     },
     "groundFallback": {
+        "reopen": "Odaberite kako nastaviti",
         "title": "Ovdje se nije mogao učitati nijedan registar čestica",
         "back": "← Natrag na mogućnosti",
         "status": {
@@ -4498,7 +4499,7 @@
             "refused": "Registar čestica za {city} odbio je zahtjev ({detail}).",
             "broken": "Registar čestica za {city} odgovorio je, ali ne podacima o česticama ({detail}).",
             "unknown": "Registar čestica za {city} nije se mogao učitati ({detail}).",
-            "dismissed": "Registar čestica nije dostupan. Gumbom za osvježavanje ponovno otvorite mogućnosti.",
+            "dismissed": "Registar čestica nije dostupan. Otvorite opcije za čestice i odaberite kako nastaviti.",
             "retrying": "Ponovni pokušaj dohvata registra čestica…",
             "urlInstalled": "Čestice se za ovu sesiju učitavaju s vaše poveznice na registar.",
             "schellingInstalled": "Schellingov plan {code} crta se u memoriji za ovu sesiju."

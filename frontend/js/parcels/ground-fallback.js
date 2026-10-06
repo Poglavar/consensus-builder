@@ -27,7 +27,9 @@
     const SAMPLE_FEATURE_LIMIT = 2000;
 
     const sources = new Map();          // cityId -> source
+    const failures = new Map();         // cityId -> latest recovery context, retained for reopening
     let openDialog = null;
+    let pendingDialog = null;
 
     // ---- small helpers ------------------------------------------------------------------------
 
@@ -123,7 +125,7 @@
             return { kind: 'no-register', retryable: false, detail: '' };
         }
         const message = String(error && error.message || error || '');
-        const httpStatus = Number(error && error.status);
+        const httpStatus = Number(error && (error.upstreamStatus ?? error.status));
         if (Number.isFinite(httpStatus) && httpStatus > 0) {
             if (httpStatus >= 500 || httpStatus === 408 || httpStatus === 429) {
                 return { kind: 'temporary', retryable: true, detail: `HTTP ${httpStatus}` };
@@ -458,13 +460,29 @@
     function dismiss(city) { writeSession(DISMISSED_KEY_PREFIX + city, '1'); }
     function resetDismissal(city) { writeSession(DISMISSED_KEY_PREFIX + String(city || currentCityId()), null); }
 
+    function introVisible() {
+        const intro = global.document?.getElementById('site-intro-modal');
+        return Boolean(intro && !intro.hidden);
+    }
+
+    function presentDialog(context) {
+        if (introVisible()) {
+            pendingDialog = context;
+            return null;
+        }
+        pendingDialog = null;
+        return showDialog(context);
+    }
+
     // Called by fetch.js when a viewport request fails. Shows the dialog once per city per session
     // unless the visitor asked again (the refresh button resets the dismissal).
     function onGroundUnavailable(detail = {}) {
         const city = String(detail.city || currentCityId());
-        if (!city || sources.has(city) || openDialog || isDismissed(city)) return false;
         const verdict = classify(detail.error, { parcelSettings: cityParcelSettings(city) });
-        showDialog({ city, verdict, error: detail.error, bounds: detail.bounds, explicit: detail.explicit === true });
+        const context = { ...detail, city, verdict, explicit: detail.explicit === true };
+        failures.set(city, context);
+        if (!city || sources.has(city) || openDialog || isDismissed(city)) return false;
+        presentDialog(context);
         return true;
     }
 
@@ -537,7 +555,7 @@
         header.appendChild(closeBtn);
         dialog.appendChild(header);
 
-        const statusLine = el('p', `ground-fallback-status ground-fallback-status--${verdict.kind}`, describeVerdict(city, verdict));
+        const statusLine = el('p', `ground-fallback-status ground-fallback-status--${verdict.kind}`, context.message || describeVerdict(city, verdict));
         dialog.appendChild(statusLine);
 
         const body = el('div', 'ground-fallback-body');
@@ -547,15 +565,18 @@
             document.removeEventListener('keydown', onKeydown, true);
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             if (openDialog === overlay) openDialog = null;
+            document.body.classList.remove('ground-fallback-open');
         }
 
         function dismissAndClose() {
             dismiss(city);
             close();
-            status(t('groundFallback.status.dismissed', 'Parcel register unavailable. Use the refresh button to see the options again.'));
+            global.ParcelSourceSettings?.reportFailure?.(global, context.message || describeVerdict(city, verdict));
+            status(t('groundFallback.status.dismissed', 'Parcel register unavailable. Open the parcel options to choose how to continue.'));
         }
 
         function onKeydown(event) {
+            if (introVisible()) return;
             if (event.key === 'Escape') {
                 event.preventDefault();
                 event.stopPropagation();
@@ -884,6 +905,7 @@
 
         renderOptions();
         document.body.appendChild(overlay);
+        document.body.classList.add('ground-fallback-open');
         openDialog = overlay;
         requestAnimationFrame(() => {
             const first = body.querySelector('button:not([disabled])');
@@ -897,8 +919,9 @@
         const city = String(detail.city || currentCityId());
         if (openDialog) return openDialog;
         resetDismissal(city);
-        const verdict = detail.verdict || classify(detail.error || null, { parcelSettings: cityParcelSettings(city) });
-        return showDialog({ city, verdict, error: detail.error || null, explicit: true });
+        const context = { ...failures.get(city), ...detail, city, explicit: true };
+        context.verdict = detail.verdict || classify(context.error || null, { parcelSettings: cityParcelSettings(city) });
+        return presentDialog(context);
     }
 
     const api = {
@@ -925,6 +948,11 @@
     // A reload within the tab keeps whatever the visitor chose, before the first viewport fetch.
     try { restoreFromSession(currentCityId()); } catch (_) { }
     if (global && typeof global.addEventListener === 'function') {
+        global.addEventListener('siteintro:closed', () => {
+            if (pendingDialog && pendingDialog.city === currentCityId() && !sources.has(pendingDialog.city)) {
+                presentDialog(pendingDialog);
+            }
+        });
         global.addEventListener('cityChanged', () => { try { restoreFromSession(currentCityId()); } catch (_) { } });
     }
 })(typeof window !== 'undefined' ? window : globalThis);
