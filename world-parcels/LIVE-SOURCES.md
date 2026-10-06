@@ -970,3 +970,127 @@ a pointer click opening its parcel menu, and a pan increasing retained coverage 
 through the native-projection adapter, with rendered outlines and the January 2026
 source notice checked visually. Both views had no source alerts or page errors.
 The task-owned browser was closed after inspection.
+
+## Gulf and Jordan — 6 October 2026
+
+English and Arabic discovery and technical attempts are indexed in
+[the Gulf research ledger](research/gulf-2026-10-06/index.json). Three city entries
+were added, bringing the configured total to **93 cities / 83 provider descriptors**.
+No parcel geometry was imported into the database.
+
+| City/country | Runtime result | Source and scope |
+| --- | --- | --- |
+| Doha, Qatar | Enabled | Official CGIS `CadastrePlots`, native `PIN`; `ENDDATE IS NULL` excludes 73 ended records. 254,337 current rows and distinct PINs nationally; 18 Doha cells and 316 exact lookups passed. |
+| Dubai, UAE | Enabled | Official DDA public Development Information System plot layer, native `PLOT_NUMBER`. Dubai Marina acceptance: 18 cells, 63 native IDs, forced paging, exact lookup, footprint and binding. Other emirates are separate sources. |
+| Amman, Jordan | Enabled, identified subset | Official DLS `DLS_KEY` parcel-key scope excludes null/single-space keys. Reads complete native parcel components through OID manifests. 18 cells, 895 exact keys and binding passed. Unidentified plots are outside the advertised scope. |
+| Kuwait | Technical hold | Official Municipality survey DGN parcel layer and viewer reset connections. GeoHub's 152 download archives contain no cadastral parcel dataset. Neither result proves that parcel data is absent. |
+| Oman | Partial Muscat enabled after follow-up | Mutrah now works through a compound native identity and complete disjoint parcel parts; see the resolution below. The broader PAIN-based exports retain conflicting boundaries. |
+| Saudi Arabia | Technical hold | Balady U Maps loads; anonymous parcel-promising ArcGIS folders return JSON 499 Token Required. Municipal alternatives timed out. |
+
+Dubai uses the `dda-public-plots` adapter: it reads the same anonymous session
+provided by the public viewer, keeps it in memory for at most one minute, and
+renews once on ArcGIS 498/499. Its endpoint is fixed; sessions never enter the
+catalogue, browser responses, research evidence or logs. HTTP 403 and 429 retain
+normal source-health handling. No account credentials are required.
+
+The federal UAE staging parcel schema returned **zero rows**. Al Ain's reachable
+estimated-value plot export has ambiguous native keys and lifecycle, so it remains
+a recorded candidate. Ajman's public embedded map contains permits/park statistics,
+not parcel polygons. Terms and licences remain informational for every source;
+the holds above concern actual access or cadastral identity.
+
+Validation: **290 focused headless tests passed in 18 files**. A dedicated headed
+Chrome inspection showed 84 initial Doha parcels (142 after panning), 45 Dubai
+parcels and 569 Amman parcels. Doha and Amman parcel clicks opened their action
+menus; all three views had no source warnings or page errors. Evidence is in
+[the browser check](research/gulf-2026-10-06/browser-check.json).
+
+
+## Oman conflict resolution — 6 October 2026
+
+Muscat now uses the official municipal Mutrah parcel service through the live ArcGIS
+adapter, bringing the configured total to **94 cities / 84 provider descriptors**.
+The enabled scope has **12,185 native plot groups across 12,212 component rows**.
+The map attribution and source information identify this as partial Mutrah coverage;
+6,534 rows without a new plot number are outside this scope. No parcel table or
+geometry snapshot was imported.
+
+`PLOTUID` identifies old plots and can survive subdivision. The source's `NEWPLOTNO`
+separates their new plots. All 22 repeated non-null combinations were independently
+queried: their component geometries were disjoint, and the new housing-area and
+phase references agreed. The adapter now supports typed compound native keys,
+using the existing reversible component codec, and reads every component of each
+observed key before publishing a parcel. Exact reads use the same native tuple;
+transport `OBJECTID` values never become parcel identity.
+
+Viewport queries use four-corner projection to the source's **EPSG:32640**; the
+Web Mercator variant disagreed on count and ID manifests. Downstream consumers
+receive the existing canonical WGS84 contract. For this source, component assembly
+rejects changed administrative references and overlaps above one square centimetre.
+That tiny allowance addresses a measured reprojection sliver; it does not permit
+competing boundary versions. Nine-digit normalization makes repeated geometry
+assembly stable across viewport and exact reads.
+
+The older EnglishWebsite PAIN export remains held separately: its dates are null,
+its status is constant, and even the measured-area subset has 13 pairs of overlapping
+competing boundaries. The camping basemap also lacks a proven unique native key.
+These failures, token-gated alternatives and the successful resolution remain in
+[the Oman investigation ledger](research/oman-resolution-2026-10-06/index.json).
+
+Validation: **331 headless tests passed in 18 files**. The final live gate passed
+18 viewport cells, forced pagination, all 189 observed native IDs, footprint reads
+and complete proposal binding. A headed browser loaded 76 parcels, opened a parcel's
+action menu with a pointer click, and streamed to 189 retained parcels after panning.
+The completed view had no source warning or uncaught page error. See
+[the acceptance record](research/oman-resolution-2026-10-06/mutrah-acceptance.json)
+and [the browser check](research/oman-resolution-2026-10-06/browser-check.json).
+
+## U.S. capitals: the last three resolved (2026-10-07)
+
+Frankfort, Oklahoma City and Pierre now have configured live adapters. The cohort is
+**51/51 jurisdictions: all 50 state capitals plus Washington, D.C.** This counts capital
+entry coverage, not complete current parcel coverage of every city or state. The app
+now has 97 configured city entries and 87 executable provider descriptors, including
+the Gulf and Oman additions already in this worktree.
+
+The new [retry ledger](research/us-capitals-retry-2026-10-07/index.json) links the executed
+English searches, publisher evidence, current source descriptors, earlier failures and
+live acceptance. No parcel geometry was imported into the database or retained in the
+research records; source conditions remain informational.
+
+| Capital | Resolution and source scope | Exact native identities |
+| --- | --- | ---: |
+| Frankfort | Franklin County PVA's `PARCEL_ID` plus `PARCEL` distinguishes native split components. Complete disjoint groups must agree on `MAP`. Blank components excluded; mixed record years do not establish current boundary dates. | 654 |
+| Oklahoma City | Newly discovered Oklahoma County Assessor public ArcGIS layer. Complete `accountno` groups must agree on `pin` and `propertyid`. Covers the county portion of the city; 632 rows without account identity excluded. | 610 |
+| Pierre | Public ISG Missouri River Long Distance Trail project mirror labelled **2023**. Complete identified `PARCEL_ID` groups must agree on `RECORD_`. Third-party source; upstream supplier and updates after 2023 remain unverified. | 349 |
+
+All three use the existing canonical ArcGIS path: viewport, exact-ID, footprint and
+proposal-binding reads return the same complete native parcel groups. Transport OIDs
+remain paging identifiers. Each group rejects material overlap and inconsistent
+references; the integration does not select arbitrary source types, years or versions.
+Frankfort's single-key and incomplete-group failures and Oklahoma's first single-row
+account attempt remain recorded beside the working descriptors.
+
+Pierre's blank and zero identifiers grouped unrelated shapes. The 674 zero-key rows
+all have a blank `RECORD_`; treating zero as unassigned is an explicit inference and
+exclusion, not a publisher-defined status. Excluding those unidentified records lets
+real parcel groups pass without weakening overlap checks. The shared fixed filter
+now permits an empty-string exclusion consistently in geometry, count, manifest and
+exact queries, and still rejects invalid positive empty filters. The dated third-party
+scope is visible in Pierre's map attribution and source notice.
+
+The original OKC city endpoint still returns Incapsula HTML, and Hughes County's
+Beacon viewer returns HTTP403, including ordinary requests from the configured dev
+runtime. Those failures remain distinct from the now-working alternate sources.
+Oklahoma research also verified a tiny polygon sample from the OGI statewide WFS
+(February 2026 snapshot); it is recorded as an alternate candidate, with its catalogue
+access-mode discrepancy, without claiming statewide adapter acceptance.
+
+Live acceptance passed **54 viewport cells and all 1,613 retained native identities**,
+including forced three-row paging against independent counts, stable geometry across
+views and exact rereads, footprint queries and complete proposal binding. All **344
+focused headless checks across 16 files** passed, including other U.S. gateways,
+composite/complete-part semantics, blank exclusions, OGC/Socrata filters, source-only
+binding, generated coverage and Gulf regressions. Headed Chrome checks verified all
+three cities loading, opening parcel menus by pointer click and streaming after pans;
+source notices were visible and the settled views had no source alerts or page errors.

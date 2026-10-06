@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-07",
+  "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+  "bbox": [
+    -100.355,
+    44.365,
+    -100.3525,
+    44.3675
+  ],
+  "rows": 67,
+  "distinctParcelId": 58,
+  "distinctRecord": 57,
+  "distinctTownship": 2,
+  "duplicateAccounts": 2,
+  "groups": [
+    {
+      "nativeParcelId": "5000",
+      "viewportRows": 2,
+      "exactRows": 2,
+      "distinctRecord": 1,
+      "distinctTownship": 1,
+      "distinctSections": 1,
+      "overlapPairs": 0,
+      "maxOverlapM2": 0,
+      "minComponentAreaM2": 557.3073272507307,
+      "totalComponentAreaM2": 2505.154551199443
+    },
+    {
+      "nativeParcelId": " ",
+      "viewportRows": 9,
+      "exactRows": 419,
+      "distinctRecord": 1,
+      "distinctTownship": 7,
+      "distinctSections": 15,
+      "overlapPairs": 43,
+      "maxOverlapM2": 0.0011121208203426004,
+      "minComponentAreaM2": 0.2539795616991433,
+      "totalComponentAreaM2": 10736480.343868164
+    }
+  ]
+}

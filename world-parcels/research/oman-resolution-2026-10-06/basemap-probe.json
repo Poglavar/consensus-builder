@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer/8",
+  "scope": "Muscat Municipality public GIS basemap Plots; national coverage not implied",
+  "attempts": [
+    {
+      "label": "all-row-count",
+      "parameters": {
+        "returnCountOnly": "true"
+      },
+      "httpStatus": 200,
+      "count": 295758,
+      "ms": 6641
+    },
+    {
+      "label": "native-identity-counts",
+      "parameters": {
+        "returnGeometry": "false",
+        "outStatistics": "[{\"statisticType\":\"count\",\"onStatisticField\":\"OBJECTID\",\"outStatisticFieldName\":\"rows_n\"},{\"statisticType\":\"count\",\"onStatisticField\":\"PLOTUID\",\"outStatisticFieldName\":\"keyed_n\"},{\"statisticType\":\"countDistinct\",\"onStatisticField\":\"PLOTUID\",\"outStatisticFieldName\":\"distinct_n\"}]"
+      },
+      "httpStatus": 200,
+      "error": {
+        "code": 400,
+        "extendedCode": -2147024809,
+        "message": "Invalid or missing input parameters.",
+        "details": []
+      },
+      "ms": 2553
+    },
+    {
+      "label": "Muscat-bounded-sample",
+      "parameters": {
+        "geometry": "58.38,23.587,58.383,23.59",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "PLOTUID,PLOTNO,DIRECTORATECD",
+        "outSR": "4326",
+        "returnGeometry": "true",
+        "resultRecordCount": "3"
+      },
+      "httpStatus": 200,
+      "error": {
+        "code": 400,
+        "message": "Failed to execute query.",
+        "details": []
+      },
+      "ms": 2332
+    },
+    {
+      "label": "directorate-counts",
+      "parameters": {
+        "groupByFieldsForStatistics": "DIRECTORATECD",
+        "returnGeometry": "false",
+        "outStatistics": "[{\"statisticType\":\"count\",\"onStatisticField\":\"OBJECTID\",\"outStatisticFieldName\":\"rows_n\"}]"
+      },
+      "httpStatus": 200,
+      "records": 7,
+      "sampleNativeIds": [
+        null,
+        null,
+        null
+      ],
+      "geometryTypes": [],
+      "statistics": [
+        {
+          "DIRECTORATECD": null,
+          "ROWS_N": 246
+        },
+        {
+          "DIRECTORATECD": 6,
+          "ROWS_N": 35504
+        },
+        {
+          "DIRECTORATECD": 2,
+          "ROWS_N": 43802
+        },
+        {
+          "DIRECTORATECD": 4,
+          "ROWS_N": 99806
+        },
+        {
+          "DIRECTORATECD": 3,
+          "ROWS_N": 94628
+        },
+        {
+          "DIRECTORATECD": 5,
+          "ROWS_N": 8462
+        },
+        {
+          "DIRECTORATECD": 1,
+          "ROWS_N": 13310
+        }
+      ],
+      "ms": 9312
+    }
+  ]
+}

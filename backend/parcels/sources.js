@@ -1,6 +1,7 @@
 // Resolves executable parcel descriptors and adapters for routes and authoritative proposal binding.
 import { readFileSync } from 'node:fs';
 import { createArcgisParcelSource } from './arcgis-source.js';
+import { createDdaParcelSource } from './dda-source.js';
 import { createWfsParcelSource } from './wfs-source.js';
 import { createDguParcelSource } from './dgu-source.js';
 import { createShenzhenLandCertainSource } from './shenzhen-source.js';
@@ -96,7 +97,7 @@ export function createParcelSource(descriptor, options = {}) {
         options = { ...options, fetchImpl: options.fetchImpl || customFetch };
     }
     validateCityMetrics(descriptor);
-    const factory = { 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
+    const factory = { 'dda-public-plots': createDdaParcelSource, 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
         'geojson-snapshot': createGeojsonSnapshotParcelSource, 'gml-snapshot': createGmlSnapshotParcelSource,
         'catastro-wfs': createCatastroWfsParcelSource, 'dlrs-sheet': createDlrsSheetParcelSource,
         socrata: createSocrataParcelSource }[descriptor.adapter];

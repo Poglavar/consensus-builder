@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-06",
+  "updatedAt": "2026-10-07",
   "queueSource": "https://population.un.org/wup/",
   "sources": [
     {
@@ -2441,33 +2441,29 @@
     },
     {
       "sourceId": "jo-dls-cassini-mapserver",
-      "name": "DLS_Cassini MapServer layer 3 (Parcels)",
-      "operator": "Department of Lands and Survey (DLS), Jordan",
+      "name": "Jordan DLS identified cadastral parcel parts",
+      "operator": "Department of Lands and Survey, Jordan",
       "countryCode": "JO",
-      "scope": "Country-level DLS service found in retry (research/retry/countries/JO.json); this run confirms it returns parcels at central Amman (31.9836N, 35.9602E)",
+      "scope": "Identified DLS cadastral parcels with non-null, nonblank DLS_KEY; unkeyed plots are outside the advertised scope.",
       "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
-      "method": "GET ArcGIS REST query",
-      "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
       "crs": "native Palestine Grid (Cassini); outSR=4326 accepted",
       "verificationStatus": "verified_sample_city_scope",
       "reuseStatus": "terms not read; official viewer maps.dls.gov.jo/dlsweb uses a captcha iframe",
       "verifiedCityIds": [
         "wup2025:850"
       ],
-      "evidenceFile": "research/retry/cities/amman.json",
+      "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-amman-parts-gate.json",
       "liveIntegration": {
-        "status": "held",
-        "reason": "All 89 retained native GLOBALIDs round-trip exactly, but bounded coverage is incomplete because polygon validation fails in ten cells and repeated/omitted OIDs fail six.",
-        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
-        "technicalBlockers": [
-          "Most tested nonempty cells are rejected for invalid polygon geometry.",
-          "Several cells fail closed because pagination repeats or omits object IDs."
+        "status": "enabled",
+        "cityIds": [
+          "amman"
         ],
-        "termsAreInformational": true,
-        "previousAssessment": {
-          "reason": "Bounded samples showed useful polygons, but complete paging and native-key exact identity validation had not been completed.",
-          "evidenceFile": "research/amman-live-assessment.json"
-        }
+        "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-amman-parts-gate.json",
+        "reason": "18 viewports, complete paging, all retained native IDs, footprint and complete binding passed.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -2494,7 +2490,45 @@
           "outcome": "technical-hold",
           "detail": "All 89 retained native GLOBALIDs round-trip exactly, but bounded coverage is incomplete because polygon validation fails in ten cells and repeated/omitted OIDs fail six.",
           "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+          "operation": "Configured viewport/paging/exact-ID/footprint/binding acceptance",
+          "outcome": "success",
+          "detail": "Partial identified parcels. Central Amman verified. All source components for each native DLS parcel key are read before publication.",
+          "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-amman-parts-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "operation": "Alternate endpoint, access, identity or completeness probe",
+          "outcome": "see-evidence",
+          "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-amman-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "operation": "Alternate endpoint, access, identity or completeness probe",
+          "outcome": "see-evidence",
+          "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-amman-keyed-gate.json"
         }
+      ],
+      "previousLiveIntegration": {
+        "status": "held",
+        "reason": "All 89 retained native GLOBALIDs round-trip exactly, but bounded coverage is incomplete because polygon validation fails in ten cells and repeated/omitted OIDs fail six.",
+        "evidenceFile": "research/next-five-source-attempts-2026-10-03.json",
+        "technicalBlockers": [
+          "Most tested nonempty cells are rejected for invalid polygon geometry.",
+          "Several cells fail closed because pagination repeats or omits object IDs."
+        ],
+        "termsAreInformational": true,
+        "previousAssessment": {
+          "reason": "Bounded samples showed useful polygons, but complete paging and native-key exact identity validation had not been completed.",
+          "evidenceFile": "research/amman-live-assessment.json"
+        }
+      },
+      "latestResearchFiles": [
+        "research/gulf-2026-10-06/saudi-jordan-amman-gate.json",
+        "research/gulf-2026-10-06/saudi-jordan-amman-keyed-gate.json"
       ]
     },
     {
@@ -5266,26 +5300,26 @@
       "previousResearchSourceId": "us-capital-ks-parcel-research"
     },
     {
-      "sourceId": "us-capital-ky-parcel-research",
-      "name": "Parcels (FranklinCountyKY_WFS)",
-      "operator": "Franklin County Property Valuation Administrator / Schneider Geospatial hosted GIS",
+      "sourceId": "us-ky-frankfort-parcels",
+      "name": "Franklin County PVA identified parcel map",
+      "operator": "Franklin County Property Valuation Administrator / Schneider Geospatial",
       "countryCode": "US",
       "stateCode": "KY",
-      "scope": "Evidence around Frankfort only; no statewide completeness claim.",
+      "scope": "Identified Franklin County PVA parcel-map groups, using the published PARCEL_ID and PARCEL components together. Complete non-overlapping parts are retained. Capital-area acceptance does not establish countywide current cadastral completeness.",
       "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
-      "method": "ArcGIS polygon layer",
-      "responseFormat": "ArcGIS polygon layer",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
       "verificationStatus": "verified_sample_capital_scope",
       "reuseStatus": "Source conditions are informational; format and adapter engineering do not imply absence of parcel data.",
       "evidenceFile": "research/us-capitals-2026-10-06/ky.json",
       "liveIntegration": {
-        "status": "held",
-        "cityIds": [],
-        "evidenceFile": "research/us-capitals-batch-five-identity-conclusions-2026-10-06.json",
-        "reason": "Native parcel/map identifiers resolve to conflicting ground and map labels; verified current parcel identity semantics remain unresolved. Municipal map alternatives lack cadastral layers; a same-name hosted alternative belongs to Illinois.",
-        "technicalBlockers": [
-          "Native parcel/map identifiers resolve to conflicting ground and map labels; verified current parcel identity semantics remain unresolved. Municipal map alternatives lack cadastral layers; a same-name hosted alternative belongs to Illinois."
+        "status": "enabled",
+        "cityIds": [
+          "frankfort"
         ],
+        "evidenceFile": "research/us-capitals-retry-2026-10-07/frankfort-composite-parts-gate.json",
+        "reason": "Identified Franklin County PVA map parcel groups; mixed record years, current boundary date unestablished; complete bounded, exact-native and source-binding acceptance passed.",
+        "technicalBlockers": [],
         "termsAreInformational": true
       },
       "verifiedCityIds": [
@@ -5387,8 +5421,42 @@
           "outcome": 200,
           "detail": "Rejected geographic mismatch: Web Mercator extent locates this Frankfort near longitude -87.9 latitude 41.5, Illinois, not Kentucky.",
           "evidenceFile": "research/us-capitals-batch-five-identity-ky-mirror-2026-10-06.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+          "operation": "18 viewport cells, complete paging/manifests, all retained IDs and authoritative binding",
+          "outcome": "success",
+          "detail": "No parcel geometry imported or retained in research evidence.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/live-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+          "operation": "Capital retry: initial identity/component acceptance",
+          "outcome": "failed",
+          "detail": "Parcel provider returned conflicting geometry for one parcel ID.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/frankfort-composite-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+          "operation": "English local-source discovery, publisher and native identity investigation",
+          "outcome": "verified_source_scope",
+          "detail": "Identified Franklin County PVA map parcel groups; mixed record years, current boundary date unestablished",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/frankfort.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+          "operation": "Complete identified parcel groups, exact rereads and authoritative binding",
+          "outcome": "success",
+          "detail": "No persistent parcel import; source coverage and limitations remain explicit.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/frankfort-composite-parts-gate.json"
         }
-      ]
+      ],
+      "previousResearchSourceId": "us-capital-ky-parcel-research",
+      "latestResearchFile": "research/us-capitals-retry-2026-10-07/frankfort.json"
     },
     {
       "sourceId": "us-la-ebr-baton-rouge-parcels",
@@ -7732,29 +7800,31 @@
       "previousResearchSourceId": "us-capital-oh-parcel-research"
     },
     {
-      "sourceId": "us-capital-ok-parcel-research",
-      "name": "OK County Assessor Parcels",
+      "sourceId": "us-ok-oklahoma_city-parcels",
+      "name": "Oklahoma County public assessment parcels",
       "operator": "Oklahoma County Assessor",
       "countryCode": "US",
       "stateCode": "OK",
-      "scope": "Oklahoma County",
-      "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
-      "method": "ArcGIS parcel polygon service",
-      "responseFormat": "ArcGIS parcel polygon service",
-      "verificationStatus": "lead",
+      "scope": "Oklahoma County assessment-account footprints around Oklahoma City; the city also extends into counties not served by this source. Account footprints may comprise multiple lots or disjoint pieces.",
+      "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
+      "verificationStatus": "verified_sample_capital_scope",
       "reuseStatus": "Source conditions are informational; format and adapter engineering do not imply absence of parcel data.",
       "evidenceFile": "research/us-capitals-2026-10-06/ok.json",
       "liveIntegration": {
-        "status": "held",
-        "cityIds": [],
-        "evidenceFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json",
-        "reason": "Original hosted county layer covers a small patch and returns zero in 18 capital cells. Correct city parcel services return Incapsula HTML access blocks; no readable capital-wide alternative acquired.",
-        "technicalBlockers": [
-          "Original hosted county layer covers a small patch and returns zero in 18 capital cells. Correct city parcel services return Incapsula HTML access blocks; no readable capital-wide alternative acquired."
+        "status": "enabled",
+        "cityIds": [
+          "oklahoma_city"
         ],
+        "evidenceFile": "research/us-capitals-retry-2026-10-07/oklahoma-city-parts-gate.json",
+        "reason": "Oklahoma County assessment parcels; other Oklahoma City counties excluded; complete bounded, exact-native and source-binding acceptance passed.",
+        "technicalBlockers": [],
         "termsAreInformational": true
       },
-      "verifiedCityIds": [],
+      "verifiedCityIds": [
+        "us-capital:OK"
+      ],
       "integrationAttempts": [
         {
           "checkedAt": "2026-10-06",
@@ -7861,8 +7931,49 @@
           "outcome": "failed",
           "detail": "Live acceptance comparison failed (==); geometry/completeness details omitted.",
           "evidenceFile": "research/us-capitals-batch-five-access-retry-live-2026-10-06.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+          "operation": "18 viewport cells, complete paging/manifests, all retained IDs and authoritative binding",
+          "outcome": "success",
+          "detail": "No parcel geometry imported or retained in research evidence.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/live-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+          "operation": "Capital retry: initial identity/component acceptance",
+          "outcome": "failed",
+          "detail": "Parcel provider returned conflicting geometry for one parcel ID.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/oklahoma-city-initial-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+          "operation": "English local-source discovery, publisher and native identity investigation",
+          "outcome": "verified_source_scope",
+          "detail": "Oklahoma County assessment parcels; other Oklahoma City counties excluded",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/oklahoma-city.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "operation": "Ordinary official viewer/service read from configured dev runtime",
+          "outcome": "access-blocked",
+          "detail": "Original city ArcGIS endpoint returned Incapsula HTML.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/runtime-network-probes.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+          "operation": "Complete identified parcel groups, exact rereads and authoritative binding",
+          "outcome": "success",
+          "detail": "No persistent parcel import; source coverage and limitations remain explicit.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/oklahoma-city-parts-gate.json"
         }
-      ]
+      ],
+      "previousResearchSourceId": "us-capital-ok-parcel-research",
+      "latestResearchFile": "research/us-capitals-retry-2026-10-07/oklahoma-city.json"
     },
     {
       "sourceId": "us-or-marion-salem-parcels",
@@ -8529,29 +8640,31 @@
       "previousResearchSourceId": "us-capital-sc-parcel-research"
     },
     {
-      "sourceId": "us-capital-sd-parcel-research",
-      "name": "Hughes County Real Estate Information (Beacon GIS viewer)",
-      "operator": "Hughes County Equalization Department / Beacon Software",
+      "sourceId": "us-sd-pierre-parcels",
+      "name": "Hughes County Parcels 2023 — ISG project mirror",
+      "operator": "ISG (Missouri River Long Distance Trail project)",
       "countryCode": "US",
       "stateCode": "SD",
-      "scope": "Hughes County",
-      "endpoint": "https://beacon.schneidercorp.com/Application.aspx?AppID=940&LayerID=18376&PageID=8187&PageTypeID=2",
-      "method": "Interactive parcel GIS map is documented by the county; service format and open read path unverified.",
-      "responseFormat": "Interactive parcel GIS map is documented by the county; service format and open read path unverified.",
-      "verificationStatus": "lead",
+      "scope": "Identified Hughes County parcel groups in ISG’s 2023 Missouri River Long Distance Trail project mirror; Pierre-area runtime acceptance only, not current county-authoritative or statewide completeness.",
+      "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
+      "verificationStatus": "verified_sample_capital_scope",
       "reuseStatus": "Source conditions are informational; format and adapter engineering do not imply absence of parcel data.",
       "evidenceFile": "research/us-capitals-2026-10-06/sd.json",
       "liveIntegration": {
-        "status": "held",
-        "cityIds": [],
-        "evidenceFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json",
-        "reason": "District III county feed is canceled/404; officially linked Beacon GIS returns HTTP403. An older project mirror lacks verified parcel lineage; no reachable verified polygon feed acquired.",
-        "technicalBlockers": [
-          "District III county feed is canceled/404; officially linked Beacon GIS returns HTTP403. An older project mirror lacks verified parcel lineage; no reachable verified polygon feed acquired."
+        "status": "enabled",
+        "cityIds": [
+          "pierre"
         ],
+        "evidenceFile": "research/us-capitals-retry-2026-10-07/pierre-identified-parts-gate.json",
+        "reason": "ISG third-party parcel mirror · 2023 snapshot · identified parcels only; complete bounded, exact-native and source-binding acceptance passed.",
+        "technicalBlockers": [],
         "termsAreInformational": true
       },
-      "verifiedCityIds": [],
+      "verifiedCityIds": [
+        "us-capital:SD"
+      ],
       "integrationAttempts": [
         {
           "checkedAt": "2026-10-06",
@@ -8585,8 +8698,57 @@
           "outcome": "technical_hold",
           "detail": "Official county portal identifies GIS map access through Beacon, and city archived Beacon parcel document corroborates parcel IDs. Verified HTTPS provider request returns 403. Public ArcGIS searches found no official alternate query endpoint. This is a blocked public read path, not evidence absent cadastral data or unsupported geometry format.",
           "evidenceFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+          "operation": "18 viewport cells, complete paging/manifests, all retained IDs and authoritative binding",
+          "outcome": "success",
+          "detail": "No parcel geometry imported or retained in research evidence.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/live-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+          "operation": "Capital retry: initial identity/component acceptance",
+          "outcome": "failed",
+          "detail": "Parcel provider returned conflicting geometry for one parcel ID.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/pierre-mirror-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+          "operation": "Capital retry: initial identity/component acceptance",
+          "outcome": "failed",
+          "detail": "Parcel provider components could not form a valid complete parcel. Cause: Parcel components overlap.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/pierre-mirror-parts-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+          "operation": "English local-source discovery, publisher and native identity investigation",
+          "outcome": "verified_source_scope",
+          "detail": "ISG third-party parcel mirror · 2023 snapshot · identified parcels only",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/pierre.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "operation": "Ordinary official viewer/service read from configured dev runtime",
+          "outcome": "access-blocked",
+          "detail": "Original Beacon viewer returned HTTP403.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/runtime-network-probes.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+          "operation": "Complete identified parcel groups, exact rereads and authoritative binding",
+          "outcome": "success",
+          "detail": "No persistent parcel import; source coverage and limitations remain explicit.",
+          "evidenceFile": "research/us-capitals-retry-2026-10-07/pierre-identified-parts-gate.json"
         }
-      ]
+      ],
+      "previousResearchSourceId": "us-capital-sd-parcel-research",
+      "latestResearchFile": "research/us-capitals-retry-2026-10-07/pierre.json"
     },
     {
       "sourceId": "us-tn-nashville-parcels",
@@ -9790,6 +9952,262 @@
         }
       ],
       "previousResearchSourceId": "us-capital-wy-parcel-research"
+    },
+    {
+      "sourceId": "qa-cgis-approved-cadastre",
+      "countryCode": "QA",
+      "name": "Qatar CGIS approved surveyed cadastral plots (current records)",
+      "operator": "Centre for GIS, Qatar",
+      "scope": "Qatar official approved cadastral plots with ENDDATE IS NULL; national current native PIN count verified.",
+      "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
+      "verificationStatus": "verified_sample_city_scope",
+      "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-current-acceptance.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "doha"
+        ],
+        "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-current-acceptance.json",
+        "reason": "18 viewports, complete paging, all retained native IDs, footprint and complete binding passed.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0",
+          "operation": "Configured viewport/paging/exact-ID/footprint/binding acceptance",
+          "outcome": "success",
+          "detail": "Current approved plots only; 73 ended records excluded. Doha viewports verified; broader national viewport coverage not asserted.",
+          "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-current-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "operation": "Alternate endpoint, access, identity or completeness probe",
+          "outcome": "see-evidence",
+          "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-plural-acceptance.json"
+        }
+      ],
+      "verifiedCityIds": [
+        "live:doha"
+      ],
+      "latestResearchFiles": [
+        "research/gulf-2026-10-06/qatar-kuwait-plural-acceptance.json"
+      ]
+    },
+    {
+      "sourceId": "ae-dubai-dda-public-plots",
+      "countryCode": "AE",
+      "name": "Dubai DDA public cadastral plots",
+      "operator": "Dubai Development Authority",
+      "scope": "Dubai plots published in the public DDA Development Information System; UAE nationwide coverage not asserted.",
+      "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+      "method": "Public-viewer session + ArcGIS REST",
+      "responseFormat": "WGS84 GeoJSON",
+      "verificationStatus": "verified_sample_city_scope",
+      "evidenceFile": "research/gulf-2026-10-06/uae-dubai-live-gate.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "dubai"
+        ],
+        "evidenceFile": "research/gulf-2026-10-06/uae-dubai-live-gate.json",
+        "reason": "18 viewports, complete paging, all retained native IDs, footprint and complete binding passed.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+          "operation": "Configured viewport/paging/exact-ID/footprint/binding acceptance",
+          "outcome": "success",
+          "detail": "Official public-viewer plot layer; Dubai Marina area verified. Other emirates are separate sources.",
+          "evidenceFile": "research/gulf-2026-10-06/uae-dubai-live-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "operation": "Alternate endpoint, access, identity or completeness probe",
+          "outcome": "see-evidence",
+          "evidenceFile": "research/gulf-2026-10-06/uae-metadata.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "operation": "Alternate endpoint, access, identity or completeness probe",
+          "outcome": "see-evidence",
+          "evidenceFile": "research/gulf-2026-10-06/uae-viewers.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "operation": "Alternate endpoint, access, identity or completeness probe",
+          "outcome": "see-evidence",
+          "evidenceFile": "research/gulf-2026-10-06/uae-public-apps.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "operation": "Alternate endpoint, access, identity or completeness probe",
+          "outcome": "see-evidence",
+          "evidenceFile": "research/gulf-2026-10-06/uae-dubai-identity-counts.json"
+        }
+      ],
+      "verifiedCityIds": [
+        "wup2025:865"
+      ],
+      "latestResearchFiles": [
+        "research/gulf-2026-10-06/uae-metadata.json",
+        "research/gulf-2026-10-06/uae-viewers.json",
+        "research/gulf-2026-10-06/uae-public-apps.json",
+        "research/gulf-2026-10-06/uae-dubai-identity-counts.json"
+      ]
+    },
+    {
+      "sourceId": "kw-municipality-survey-parcels",
+      "name": "Kuwait parcel source candidates",
+      "countryCode": "KW",
+      "operator": "Kuwait Municipality",
+      "endpoint": "https://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1",
+      "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-findings.json",
+      "verificationStatus": "candidate_technical_hold",
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Official Municipality DGN survey polygon layer and its viewer reset connections on laptop. Native identity/current scope/live reads unverified. Access failure does not establish parcel absence.",
+        "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-findings.json",
+        "technicalBlockers": [
+          "Official Municipality DGN survey polygon layer and its viewer reset connections on laptop. Native identity/current scope/live reads unverified. Access failure does not establish parcel absence."
+        ],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1",
+          "operation": "English/Arabic discovery and live technical verification",
+          "outcome": "technical-hold",
+          "detail": "Official Municipality DGN survey polygon layer and its viewer reset connections on laptop. Native identity/current scope/live reads unverified. Access failure does not establish parcel absence.",
+          "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-findings.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "om-muscat-public-plot-candidates",
+      "name": "Oman parcel source candidates",
+      "countryCode": "OM",
+      "operator": "Muscat Municipality",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+      "evidenceFile": "research/gulf-2026-10-06/oman-research.json",
+      "verificationStatus": "candidate_technical_hold",
+      "liveIntegration": {
+        "status": "held",
+        "reason": "EnglishWebsite PAIN + PLOTNUM still has overlapping competing boundaries; even measured-area subset has 13 such pairs. No lifecycle/date rule resolves them. Another Mutrah service is now enabled under a separate source descriptor.",
+        "evidenceFile": "research/oman-resolution-2026-10-06/index.json",
+        "technicalBlockers": [
+          "Overlapping same-key geometry without a current/version discriminator."
+        ],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+          "operation": "English/Arabic discovery and live technical verification",
+          "outcome": "technical-hold",
+          "detail": "293860 publicly readable plot polygons. Identified PAIN280660rows contains525duplicatekeys. CompoundPAIN+PLOTNUMstill192duplicatepairs,105conflictinggeometryversions; no genuine current/history discriminator. Other official PLOTUID service counts timeout35sec, SeebJSON499; housing/NCSI403. Data exists; technical identity/access hold.",
+          "evidenceFile": "research/gulf-2026-10-06/oman-research.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+          "operation": "Viewer, lifecycle, old/new references and measured-area subset audit",
+          "outcome": "identity-conflicts-remain",
+          "detail": "EnglishWebsite PAIN + PLOTNUM still has overlapping competing boundaries; even measured-area subset has 13 such pairs. No lifecycle/date rule resolves them. Another Mutrah service is now enabled under a separate source descriptor.",
+          "evidenceFile": "research/oman-resolution-2026-10-06/measured-area-audit.json"
+        }
+      ],
+      "previousLiveIntegration": {
+        "status": "held",
+        "reason": "293860 publicly readable plot polygons. Identified PAIN280660rows contains525duplicatekeys. CompoundPAIN+PLOTNUMstill192duplicatepairs,105conflictinggeometryversions; no genuine current/history discriminator. Other official PLOTUID service counts timeout35sec, SeebJSON499; housing/NCSI403. Data exists; technical identity/access hold.",
+        "evidenceFile": "research/gulf-2026-10-06/oman-research.json",
+        "technicalBlockers": [
+          "293860 publicly readable plot polygons. Identified PAIN280660rows contains525duplicatekeys. CompoundPAIN+PLOTNUMstill192duplicatepairs,105conflictinggeometryversions; no genuine current/history discriminator. Other official PLOTUID service counts timeout35sec, SeebJSON499; housing/NCSI403. Data exists; technical identity/access hold."
+        ],
+        "termsAreInformational": true
+      },
+      "relatedEnabledSourceIds": [
+        "om-muscat-mutrah-plots"
+      ]
+    },
+    {
+      "sourceId": "sa-balady-umaps-parcel-candidates",
+      "name": "Saudi Arabia parcel source candidates",
+      "countryCode": "SA",
+      "operator": "Ministry of Municipalities and Housing, Saudi Arabia",
+      "endpoint": "https://umaps.momah.gov.sa/server/rest/services",
+      "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-sa-assessment.json",
+      "verificationStatus": "candidate_technical_hold",
+      "liveIntegration": {
+        "status": "held",
+        "reason": "Official Balady U Maps root reachable; actual parcel-promising umaps/MOJ/Hosted folders returnJSON499TokenRequired. Anonymous app disabled. Riyadh/Jeddah/EasternProvince municipalservices timeout. Data not declared absent.",
+        "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-sa-assessment.json",
+        "technicalBlockers": [
+          "Official Balady U Maps root reachable; actual parcel-promising umaps/MOJ/Hosted folders returnJSON499TokenRequired. Anonymous app disabled. Riyadh/Jeddah/EasternProvince municipalservices timeout. Data not declared absent."
+        ],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://umaps.momah.gov.sa/server/rest/services",
+          "operation": "English/Arabic discovery and live technical verification",
+          "outcome": "technical-hold",
+          "detail": "Official Balady U Maps root reachable; actual parcel-promising umaps/MOJ/Hosted folders returnJSON499TokenRequired. Anonymous app disabled. Riyadh/Jeddah/EasternProvince municipalservices timeout. Data not declared absent.",
+          "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-sa-assessment.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "om-muscat-mutrah-plots",
+      "name": "Muscat Municipality Mutrah identified cadastral plots",
+      "countryCode": "OM",
+      "operator": "Muscat Municipality",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "scope": "Mutrah Directorate in Muscat: plots with published PLOTUID and new plot number. Unnumbered plots are outside this partial source; Oman nationwide coverage is not provided.",
+      "method": "ArcGIS REST adapter, native UTM bounds, composite native IDs and complete disjoint components",
+      "responseFormat": "WGS84 GeoJSON",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "evidenceFile": "research/oman-resolution-2026-10-06/mutrah-acceptance.json",
+      "verifiedCityIds": [
+        "live:muscat"
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "muscat"
+        ],
+        "evidenceFile": "research/oman-resolution-2026-10-06/mutrah-acceptance.json",
+        "reason": "18 native-UTM viewports, complete paging, all retained composite native IDs, footprint and binding passed. All 22 repeated compound keys independently audited as disjoint parts.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+          "operation": "Single PLOTUID identity and projected Web Mercator OID manifests",
+          "outcome": "failed",
+          "detail": "PLOTUID can identify old parent plots after subdivision. Web Mercator spatial count and manifest disagree in a sampled viewport. Both failures preserved.",
+          "evidenceFile": "research/oman-resolution-2026-10-06/mutrah-composite-gate.json"
+        },
+        {
+          "checkedAt": "2026-10-06",
+          "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+          "operation": "Composite native identity and source-CRS viewport acceptance",
+          "outcome": "success",
+          "detail": "12,185 native plot groups across 12,212 rows verified. Complete disjoint parts use the old plot UID plus new plot number; new area and phase must agree. 6,534 rows without a new plot number remain outside this subset.",
+          "evidenceFile": "research/oman-resolution-2026-10-06/mutrah-acceptance.json"
+        }
+      ]
     }
   ],
   "countryCoverage": [
@@ -11194,8 +11612,13 @@
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 52,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/riyadh.json"
+      "sourceIds": [
+        "sa-balady-umaps-parcel-candidates"
+      ],
+      "researchFile": "research/riyadh.json",
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "technical-hold",
+      "latestTechnicalResult": "Official Balady U Maps root reachable; actual parcel-promising umaps/MOJ/Hosted folders returnJSON499TokenRequired. Anonymous app disabled. Riyadh/Jeddah/EasternProvince municipalservices timeout. Data not declared absent."
     },
     {
       "cityId": "wup2025:7233",
@@ -11375,7 +11798,14 @@
       ],
       "researchFile": "research/retry/cities/amman.json",
       "previousResearchFile": "research/amman.json",
-      "retryFile": "research/retry/cities/amman.json"
+      "retryFile": "research/retry/cities/amman.json",
+      "liveAcceptanceFile": "research/gulf-2026-10-06/saudi-jordan-amman-parts-gate.json",
+      "dataFindings": {
+        "evidence": "city-polygon-sample",
+        "format": "ArcGIS polygon layer",
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled"
+      }
     },
     {
       "cityId": "wup2025:3303",
@@ -11614,9 +12044,18 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 76,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/dubai.json"
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "ae-dubai-dda-public-plots"
+      ],
+      "researchFile": "research/dubai.json",
+      "liveAcceptanceFile": "research/gulf-2026-10-06/uae-dubai-live-gate.json",
+      "dataFindings": {
+        "evidence": "city-polygon-sample",
+        "format": "ArcGIS polygon layer",
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled"
+      }
     },
     {
       "cityId": "wup2025:8371",
@@ -12019,10 +12458,15 @@
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 100,
       "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
+      "sourceIds": [
+        "sa-balady-umaps-parcel-candidates"
+      ],
       "researchFile": "research/jeddah.json",
       "previousResearchFile": "research/jeddah.json",
-      "retryFile": "research/retry/cities/jeddah.json"
+      "retryFile": "research/retry/cities/jeddah.json",
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "technical-hold",
+      "latestTechnicalResult": "Official Balady U Maps root reachable; actual parcel-promising umaps/MOJ/Hosted folders returnJSON499TokenRequired. Anonymous app disabled. Riyadh/Jeddah/EasternProvince municipalservices timeout. Data not declared absent."
     },
     {
       "cityId": "wup2025:305",
@@ -12037,10 +12481,15 @@
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 101,
       "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
+      "sourceIds": [
+        "kw-municipality-survey-parcels"
+      ],
       "researchFile": "research/kuwait-city.json",
       "previousResearchFile": "research/kuwait-city.json",
-      "retryFile": "research/retry/cities/kuwait-city.json"
+      "retryFile": "research/retry/cities/kuwait-city.json",
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "technical-hold",
+      "latestTechnicalResult": "Official Municipality DGN survey polygon layer and its viewer reset connections on laptop. Native identity/current scope/live reads unverified. Access failure does not establish parcel absence."
     },
     {
       "cityId": "wup2025:1806",
@@ -14292,14 +14741,18 @@
         "evidence": "capital-polygon-sample",
         "format": "ArcGIS polygon layer",
         "nativeSampleVerified": true,
-        "runtimeReadiness": "adapter-work-required"
+        "runtimeReadiness": "enabled"
       },
       "researchFile": "research/us-capitals-2026-10-06/ky.json",
       "parcelStatus": "verified_sample_capital_scope",
       "sourceIds": [
+        "us-ky-frankfort-parcels"
+      ],
+      "latestAttemptFile": "research/us-capitals-retry-2026-10-07/frankfort.json",
+      "previousSourceIds": [
         "us-capital-ky-parcel-research"
       ],
-      "latestAttemptFile": "research/us-capitals-batch-five-identity-conclusions-2026-10-06.json"
+      "liveAcceptanceFile": "research/us-capitals-retry-2026-10-07/frankfort-composite-parts-gate.json"
     },
     {
       "cityId": "us-capital:LA",
@@ -14866,17 +15319,21 @@
       "capital": true,
       "capitalResearchFile": "research/us-capitals-2026-10-06/ok.json",
       "dataFindings": {
-        "evidence": "published-parcel-lead",
-        "format": "ArcGIS parcel polygon service",
-        "nativeSampleVerified": false,
-        "runtimeReadiness": "source-access-or-format-work-required"
+        "evidence": "capital-polygon-sample",
+        "format": "ArcGIS polygon layer",
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled"
       },
       "researchFile": "research/us-capitals-2026-10-06/ok.json",
-      "parcelStatus": "lead",
+      "parcelStatus": "verified_sample_capital_scope",
       "sourceIds": [
+        "us-ok-oklahoma_city-parcels"
+      ],
+      "latestAttemptFile": "research/us-capitals-retry-2026-10-07/oklahoma-city.json",
+      "previousSourceIds": [
         "us-capital-ok-parcel-research"
       ],
-      "latestAttemptFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json"
+      "liveAcceptanceFile": "research/us-capitals-retry-2026-10-07/oklahoma-city-parts-gate.json"
     },
     {
       "cityId": "us-capital:OR",
@@ -15016,17 +15473,21 @@
       "capital": true,
       "capitalResearchFile": "research/us-capitals-2026-10-06/sd.json",
       "dataFindings": {
-        "evidence": "published-parcel-lead",
-        "format": "Interactive parcel GIS map is documented by the county; service format and open read path unverified.",
-        "nativeSampleVerified": false,
-        "runtimeReadiness": "source-access-or-format-work-required"
+        "evidence": "capital-polygon-sample",
+        "format": "ArcGIS polygon layer",
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled"
       },
       "researchFile": "research/us-capitals-2026-10-06/sd.json",
-      "parcelStatus": "lead",
+      "parcelStatus": "verified_sample_capital_scope",
       "sourceIds": [
+        "us-sd-pierre-parcels"
+      ],
+      "latestAttemptFile": "research/us-capitals-retry-2026-10-07/pierre.json",
+      "previousSourceIds": [
         "us-capital-sd-parcel-research"
       ],
-      "latestAttemptFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json"
+      "liveAcceptanceFile": "research/us-capitals-retry-2026-10-07/pierre-identified-parts-gate.json"
     },
     {
       "cityId": "us-capital:TN",
@@ -15297,6 +15758,51 @@
         "us-capital-wy-parcel-research"
       ],
       "liveAcceptanceFile": "research/us-capitals-batch-five-live-2026-10-06.json"
+    },
+    {
+      "cityId": "live:doha",
+      "name": "Doha",
+      "country": "Qatar",
+      "countryCode": "QA",
+      "centerLatLon": [
+        25.2854,
+        51.531
+      ],
+      "citySource": "https://geoportal.gisqatar.org.qa/qmape/index.html",
+      "sourceIds": [
+        "qa-cgis-approved-cadastre"
+      ],
+      "parcelStatus": "verified_sample_city_scope",
+      "liveAcceptanceFile": "research/gulf-2026-10-06/qatar-kuwait-current-acceptance.json",
+      "dataFindings": {
+        "evidence": "city-polygon-sample",
+        "format": "ArcGIS polygon layer",
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled"
+      }
+    },
+    {
+      "cityId": "live:muscat",
+      "name": "Muscat",
+      "country": "Oman",
+      "countryCode": "OM",
+      "centerLatLon": [
+        23.597065274496654,
+        58.55548313911143
+      ],
+      "citySource": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "sourceIds": [
+        "om-muscat-mutrah-plots"
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "liveAcceptanceFile": "research/oman-resolution-2026-10-06/mutrah-acceptance.json",
+      "dataFindings": {
+        "evidence": "city-polygon-sample",
+        "format": "ArcGIS polygon layer",
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled",
+        "scope": "Mutrah Directorate in Muscat: plots with published PLOTUID and new plot number. Unnumbered plots are outside this partial source; Oman nationwide coverage is not provided."
+      }
     }
   ],
   "countryProbes": [
@@ -15304,14 +15810,22 @@
       "countryCode": "AE",
       "country": "United Arab Emirates",
       "reportedStatus": "temporarily_unavailable",
-      "status": "subnational_only",
-      "accessModel": "unknown",
-      "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AE.json",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "anonymous-public-viewer-session",
+      "checkedAt": "2026-10-06",
+      "evidenceFile": "research/gulf-2026-10-06/uae-findings.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/AE.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "previousAssessment": {
+        "status": "subnational_only",
+        "evidenceFile": "research/countries/AE.json",
+        "checkedAt": "2026-09-29"
+      },
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "enabled-subnational",
+      "latestTechnicalResult": "Public anonymous DDA viewer supplies temporary GIS session. Fixed public plot layer verified across18DubaiMarina cells,63nativeplot IDs/exactlookups,paging,footprint,binding. No account, no persisted session credential. Other emirates not inferred."
     },
     {
       "countryCode": "AF",
@@ -16489,12 +17003,20 @@
       "reportedStatus": "temporarily_unavailable",
       "status": "national_online_cadastre_verified_sample",
       "accessModel": "unknown",
-      "checkedAt": "2026-09-29",
+      "checkedAt": "2026-10-06",
       "evidenceFile": "research/countries/JO.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/JO.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "previousAssessment": {
+        "status": "national_online_cadastre_verified_sample",
+        "evidenceFile": "research/countries/JO.json",
+        "checkedAt": "2026-09-29"
+      },
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "enabled-partial",
+      "latestTechnicalResult": "Official DLS_KEY parcel-key semantics; identified subset excludes null and single-space keys. Reads all source rows of each native parcel key. 18Amman cells,895exactkeys passed."
     },
     {
       "countryCode": "JP",
@@ -16612,12 +17134,20 @@
       "reportedStatus": "temporarily_unavailable",
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
-      "checkedAt": "2026-09-29",
+      "checkedAt": "2026-10-06",
       "evidenceFile": "research/countries/KW.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/KW.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "previousAssessment": {
+        "status": "temporarily_unavailable",
+        "evidenceFile": "research/countries/KW.json",
+        "checkedAt": "2026-09-29"
+      },
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "technical-hold",
+      "latestTechnicalResult": "Official Municipality DGN survey polygon layer and its viewer reset connections on laptop. Native identity/current scope/live reads unverified. Access failure does not establish parcel absence."
     },
     {
       "countryCode": "KZ",
@@ -17123,14 +17653,29 @@
       "countryCode": "OM",
       "country": "Oman",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
-      "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/OM.json",
+      "status": "subnational_only",
+      "accessModel": "open-municipal-identified-subset",
+      "checkedAt": "2026-10-06",
+      "evidenceFile": "research/oman-resolution-2026-10-06/index.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/OM.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": false,
+      "previousAssessment": {
+        "status": "temporarily_unavailable",
+        "evidenceFile": "research/countries/OM.json",
+        "checkedAt": "2026-09-29"
+      },
+      "latestAssessmentFile": "research/oman-resolution-2026-10-06/index.json",
+      "runtimeReadiness": "enabled-partial",
+      "latestTechnicalResult": "Mutrah in Muscat enabled: 12,185 identified native plot groups, 12,212 component rows. Native UTM queries and composite oldUID/newnumber resolve original conflicts. Other Muscat exports retain competing boundaries; Oman nationwide coverage not asserted.",
+      "previousOmanInvestigation": {
+        "status": "partial_or_unofficial_sample",
+        "accessModel": "anonymous-municipal-polygons-with-identity-conflicts",
+        "evidenceFile": "research/gulf-2026-10-06/oman-research.json",
+        "runtimeReadiness": "technical-hold",
+        "latestTechnicalResult": "293860 publicly readable plot polygons. Identified PAIN280660rows contains525duplicatekeys. CompoundPAIN+PLOTNUMstill192duplicatepairs,105conflictinggeometryversions; no genuine current/history discriminator. Other official PLOTUID service counts timeout35sec, SeebJSON499; housing/NCSI403. Data exists; technical identity/access hold."
+      }
     },
     {
       "countryCode": "PA",
@@ -17282,14 +17827,22 @@
       "countryCode": "QA",
       "country": "Qatar",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
-      "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/QA.json",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "anonymous-query",
+      "checkedAt": "2026-10-06",
+      "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-findings.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/QA.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": false,
+      "previousAssessment": {
+        "status": "temporarily_unavailable",
+        "evidenceFile": "research/countries/QA.json",
+        "checkedAt": "2026-09-29"
+      },
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "enabled",
+      "latestTechnicalResult": "Official plural surveyed plot service; current ENDDATE null scope. 254337 current rows and distinct native PINs. 18 Doha viewports and 316 exact native lookups passed."
     },
     {
       "countryCode": "RE",
@@ -17376,12 +17929,20 @@
       "reportedStatus": "temporarily_unavailable",
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
-      "checkedAt": "2026-09-29",
+      "checkedAt": "2026-10-06",
       "evidenceFile": "research/countries/SA.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/SA.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "previousAssessment": {
+        "status": "temporarily_unavailable",
+        "evidenceFile": "research/countries/SA.json",
+        "checkedAt": "2026-09-29"
+      },
+      "latestAssessmentFile": "research/gulf-2026-10-06/index.json",
+      "runtimeReadiness": "technical-hold",
+      "latestTechnicalResult": "Official Balady U Maps root reachable; actual parcel-promising umaps/MOJ/Hosted folders returnJSON499TokenRequired. Anonymous app disabled. Riyadh/Jeddah/EasternProvince municipalservices timeout. Data not declared absent."
     },
     {
       "countryCode": "SB",
@@ -22023,7 +22584,10 @@
     "US": {
       "scope": "50 states plus Washington, D.C.",
       "indexFile": "research/us-capitals-2026-10-06/index.json",
-      "stateCoverageMeaning": "Counts configured city providers within states, never whole-state completeness."
+      "stateCoverageMeaning": "Counts configured city providers within states, never whole-state completeness.",
+      "latestResearchFile": "research/us-capitals-retry-2026-10-07/index.json",
+      "configuredCapitals": 51,
+      "remainingCapitals": []
     }
   }
 }

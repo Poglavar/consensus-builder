@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "method": "Dedicated headed Chrome manual inspection via agent-browser; no browser test suite.",
+  "frontend": "http://localhost:5638/",
+  "backend": "http://localhost:4638",
+  "frontendCacheControl": "no-store, must-revalidate",
+  "cities": [
+    {
+      "city": "oklahoma_city",
+      "initialParcels": 181,
+      "initialCells": 9,
+      "pannedParcels": 372,
+      "pannedCells": 12,
+      "pointerClickOpenedParcelMenu": true,
+      "selectedNativeId": "R010014800",
+      "sourceNoticeVisible": true,
+      "sourceAlerts": 0,
+      "pageErrors": 0
+    },
+    {
+      "city": "frankfort",
+      "initialParcels": 237,
+      "initialCells": 9,
+      "pannedParcels": 349,
+      "pannedCells": 12,
+      "pointerClickOpenedParcelMenu": true,
+      "selectedNativeId": "061-42-02-005.00~5",
+      "sourceNoticeVisible": true,
+      "sourceAlerts": 0,
+      "pageErrors": 0
+    },
+    {
+      "city": "pierre",
+      "initialParcels": 285,
+      "initialCells": 9,
+      "pannedParcels": 330,
+      "pannedCells": 12,
+      "pointerClickOpenedParcelMenu": true,
+      "selectedNativeId": "9383",
+      "sourceNoticeVisible": true,
+      "sourceAlerts": 0,
+      "pageErrors": 0
+    }
+  ],
+  "browserClosed": true,
+  "headlessValidation": {
+    "files": 16,
+    "passed": 344,
+    "failed": 0,
+    "scope": "New and existing U.S. gateway/binding routes, ArcGIS composite/complete parts, empty exclusions, OGC API/Socrata filters, generated coverage and Gulf regression tests."
+  }
+}

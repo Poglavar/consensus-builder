@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Muscat",
+      "sourceId": "om-muscat-mutrah-plots",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5525,
+            23.592499999999998,
+            58.555,
+            23.595
+          ],
+          "count": 21,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 8,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "manifest",
+        "parameterLength": 245,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=UTF-8"
+      }
+    }
+  ]
+}

@@ -3413,7 +3413,14 @@
             "olympia": "Olympia, United States",
             "providence": "Providence, United States",
             "tallahassee": "Tallahassee, United States",
-            "topeka": "Topeka, United States"
+            "topeka": "Topeka, United States",
+            "doha": "Doha, Qatar",
+            "dubai": "Dubai, United Arab Emirates",
+            "amman": "Amman, Jordan",
+            "muscat": "Muscat, Oman",
+            "frankfort": "Frankfort, United States",
+            "oklahoma_city": "Oklahoma City, United States",
+            "pierre": "Pierre, United States"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",

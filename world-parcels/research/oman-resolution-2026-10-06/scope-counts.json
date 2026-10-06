@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query",
+  "attempts": [
+    {
+      "operation": "identified",
+      "where": "PAIN IS NOT NULL AND PAIN <> ' '",
+      "httpStatus": 200,
+      "count": 280660
+    },
+    {
+      "operation": "surveyedArea",
+      "where": "PAIN IS NOT NULL AND PAIN <> ' ' AND AREA_SQ_M2 IS NOT NULL AND AREA_SQ_M2 <> ' '",
+      "httpStatus": 200,
+      "count": 104250
+    },
+    {
+      "operation": "edited",
+      "where": "LAST_EDITED_DATE IS NOT NULL",
+      "httpStatus": 200,
+      "count": 0
+    },
+    {
+      "operation": "created",
+      "where": "CREATED_DATE IS NOT NULL",
+      "httpStatus": 200,
+      "count": 0
+    },
+    {
+      "operation": "namedBlock",
+      "where": "PAIN IS NOT NULL AND PAIN <> ' ' AND BLOCK_EN IS NOT NULL AND BLOCK_EN <> ' '",
+      "httpStatus": 200,
+      "count": 270159
+    }
+  ]
+}

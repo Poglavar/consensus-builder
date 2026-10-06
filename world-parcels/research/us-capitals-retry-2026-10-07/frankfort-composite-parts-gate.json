@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Frankfort",
+      "stateCode": "KY",
+      "sourceId": "us-ky-frankfort-parcels",
+      "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.197500000000005,
+            -84.875,
+            38.2
+          ],
+          "count": 92,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.875,
+            38.197500000000005,
+            -84.8725,
+            38.2
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8725,
+            38.197500000000005,
+            -84.87,
+            38.2
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.2,
+            -84.875,
+            38.2025
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.875,
+            38.2,
+            -84.8725,
+            38.2025
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8725,
+            38.2,
+            -84.87,
+            38.2025
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.2025,
+            -84.875,
+            38.205000000000005
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.875,
+            38.2025,
+            -84.8725,
+            38.205000000000005
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8725,
+            38.2025,
+            -84.87,
+            38.205000000000005
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.87,
+            38.197500000000005,
+            -84.8675,
+            38.2
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8675,
+            38.197500000000005,
+            -84.865,
+            38.2
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.865,
+            38.197500000000005,
+            -84.8625,
+            38.2
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.87,
+            38.2,
+            -84.8675,
+            38.2025
+          ],
+          "count": 77,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8675,
+            38.2,
+            -84.865,
+            38.2025
+          ],
+          "count": 64,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.865,
+            38.2,
+            -84.8625,
+            38.2025
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.87,
+            38.2025,
+            -84.8675,
+            38.205000000000005
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8675,
+            38.2025,
+            -84.865,
+            38.205000000000005
+          ],
+          "count": 94,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.865,
+            38.2025,
+            -84.8625,
+            38.205000000000005
+          ],
+          "count": 106,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -84.8725,
+          38.2025,
+          -84.87,
+          38.205000000000005
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 654,
+      "exactResolved": 654,
+      "nativeIds": [
+        "061-24-14-017.02~17.02",
+        "061-24-14-017.01~17.01",
+        "061-24-14-018.00~18"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ky-frankfort-parcels",
+        "parcels": 1,
+        "siteM2": 1383.22
+      },
+      "requests": 166
+    }
+  ]
+}

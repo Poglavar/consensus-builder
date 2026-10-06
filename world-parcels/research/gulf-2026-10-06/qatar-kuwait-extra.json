@@ -1,0 +1,107 @@
+{
+  "checkedAt": "2026-10-06",
+  "networkOrigin": "authorized laptop network",
+  "attempts": [
+    {
+      "url": "https://gismaps.baladia.gov.kw/",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": null,
+      "error": "[Errno 54] Connection reset by peer",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "http://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1?f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": null,
+      "error": "[Errno 54] Connection reset by peer",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://www.baladia.gov.kw/",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": null,
+      "error": "[Errno 54] Connection reset by peer",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://gis.csb.gov.kw/ar/",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 25215,
+      "publicServiceLinks": []
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0?f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 5441,
+      "metadata": {
+        "name": "حدود الأراضي المساحية المعتمدة",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "capabilities": "Map,Query,Data"
+      },
+      "fields": [
+        "OBJECTID",
+        "ENDDATE",
+        "GFCODE",
+        "CDST_KEY",
+        "PIN",
+        "JOB",
+        "PDAREA",
+        "STARTDATE",
+        "EMP_NUM",
+        "SHAPE",
+        "SHAPE.AREA",
+        "SHAPE.LEN",
+        "GLOBALID",
+        "REF_NUMBER",
+        "PD_NO",
+        "COMMENTS"
+      ]
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0/query?where=1%3D1&returnGeometry=false&outFields=PIN%2CENDDATE%2CGFCODE&resultRecordCount=3&f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 557,
+      "nativeSamples": [
+        {
+          "PIN": 52220112,
+          "ENDDATE": null,
+          "GFCODE": "PDGVCDST"
+        },
+        {
+          "PIN": 70313426,
+          "ENDDATE": null,
+          "GFCODE": "PDGVCDST"
+        },
+        {
+          "PIN": 70419818,
+          "ENDDATE": null,
+          "GFCODE": "PDGVCDST"
+        }
+      ]
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0/query?where=ENDDATE+IS+NULL&returnCountOnly=true&f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 16,
+      "response": {
+        "count": 251207
+      }
+    }
+  ]
+}

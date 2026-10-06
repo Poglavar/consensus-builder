@@ -1,0 +1,95 @@
+[
+  {
+    "url": "https://balady.gov.sa/ar/services/الخرائط-الحضرية",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error timed out>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://gis.eamana.gov.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://maps.eamana.gov.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://services.jeddah.gov.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error timed out>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://rbrs.rcrc.gov.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "text/html; charset=UTF-8",
+    "bytes": 372704,
+    "scriptUrls": [
+      "/libraries/klaro/dist/klaro-no-translations-no-css.js",
+      "/core/assets/vendor/jquery/jquery.min.js",
+      "https://unpkg.com/quicklink@3.0.1/dist/quicklink.umd.js",
+      "/sites/default/files/js/js_Zo7xy5FUlS-jiEu1R3ato5UTrF39aGe-WE3166jhH3U.js",
+      "https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js",
+      "/themes/custom/momrah-theme/js/flatpickr-custom.js",
+      "/themes/custom/momrah-theme/js/ui_related.js",
+      "/themes/custom/momrah-theme/js/custom.js",
+      "/themes/custom/momrah-theme/js/momrah-slider.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js",
+      "/themes/custom/momrah-theme/js/toast.js",
+      "/sites/default/files/js/js_jGvg8CfSKB0930aXD3zve3vMkBJv5KQXZt5wRUGFS-4.js"
+    ]
+  },
+  {
+    "url": "https://eservices.alriyadh.gov.sa/Pages/MapViewer.aspx",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error timed out>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://www.eamana.gov.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error timed out>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://www.jeddah.gov.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error timed out>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://maps.dls.gov.jo/dlsweb/",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "text/html",
+    "bytes": 29321,
+    "scriptUrls": []
+  },
+  {
+    "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3?f=json",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "application/json; charset=UTF-8",
+    "bytes": 14788,
+    "scriptUrls": []
+  }
+]

@@ -3464,7 +3464,14 @@
             "olympia": "Olympia, Estados Unidos",
             "providence": "Providence, Estados Unidos",
             "tallahassee": "Tallahassee, Estados Unidos",
-            "topeka": "Topeka, Estados Unidos"
+            "topeka": "Topeka, Estados Unidos",
+            "doha": "Doha, Catar",
+            "dubai": "Dubai, Emiratos Árabes Unidos",
+            "amman": "Amman, Jordania",
+            "muscat": "Mascate, Omán",
+            "frankfort": "Frankfort, Estados Unidos",
+            "oklahoma_city": "Oklahoma City, Estados Unidos",
+            "pierre": "Pierre, Estados Unidos"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",

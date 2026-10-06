@@ -1,0 +1,1065 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "OM",
+  "checkedAt": "2026-10-06",
+  "network": "Darwin laptop direct curl, sandbox escalation approved",
+  "dataExistence": "Official Muscat polygon cadastral datasets verified; national cadastral service described but no national integration-ready endpoint verified.",
+  "status": "verified-data-present-not-integration-ready",
+  "searches": [
+    {
+      "language": "en",
+      "queries": [
+        "Oman Muscat cadastral parcels GIS ArcGIS housing land plots map",
+        "Oman national spatial data infrastructure parcels NCSI geoportal ArcGIS cadastral",
+        "site:arcgis.com Oman Ministry Housing parcels",
+        "site:geoportal.mm.gov.om Plots PAIN",
+        "site:map.ncsi.gov.om rest/services",
+        "Oman cadastre FeatureServer"
+      ]
+    },
+    {
+      "language": "ar",
+      "queries": [
+        "عمان مسقط قطع الأراضي المخططات المساحية وزارة الإسكان التخطيط العمراني خدمات الخرائط",
+        "عمان بنك الخرائط أملاك الخارطة الرقمية قطع الأراضي صلالة صحار نزوى",
+        "صلالة قطع الأراضي خرائط جغرافية"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services?f=json",
+      "origin": "geoportal.mm.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "200 application/json; charset=UTF-8",
+      "exit": 0,
+      "bytes": 557,
+      "error": "",
+      "serviceError": null,
+      "keys": [
+        "currentVersion",
+        "folders",
+        "services"
+      ]
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6?f=pjson",
+      "origin": "geoportal.mm.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "200 text/plain; charset=UTF-8",
+      "exit": 0,
+      "bytes": 11842,
+      "error": "",
+      "serviceError": null,
+      "keys": [
+        "currentVersion",
+        "cimVersion",
+        "id",
+        "name",
+        "type",
+        "description",
+        "geometryType",
+        "sourceSpatialReference",
+        "spatialReference",
+        "copyrightText",
+        "parentLayer",
+        "subLayers",
+        "minScale",
+        "maxScale",
+        "referenceScale",
+        "drawingInfo",
+        "defaultVisibility",
+        "extent",
+        "hasAttachments",
+        "htmlPopupType",
+        "displayField",
+        "typeIdField",
+        "subtypeFieldName",
+        "subtypeField",
+        "defaultSubtypeCode",
+        "fields",
+        "geometryField",
+        "indexes",
+        "subtypes",
+        "relationships",
+        "canModifyLayer",
+        "canScaleSymbols",
+        "hasLabels",
+        "capabilities",
+        "maxRecordCount",
+        "maxSelectionCount",
+        "supportsStatistics",
+        "supportsExceedsLimitStatistics",
+        "supportsAdvancedQueries",
+        "supportedQueryFormats",
+        "isDataVersioned",
+        "ownershipBasedAccessControlForFeatures",
+        "useStandardizedQueries",
+        "supportedSpatialRelationships",
+        "advancedQueryCapabilities",
+        "supportsDatumTransformation",
+        "dateFieldsTimeReference",
+        "preferredTimeReference",
+        "datesInUnknownTimezone",
+        "hasGeometryProperties",
+        "geometryProperties",
+        "hasMetadata",
+        "isDataArchived",
+        "archivingInfo",
+        "supportsCoordinatesQuantization",
+        "supportsDynamicLegends",
+        "serviceItemId"
+      ],
+      "layer": {
+        "name": "Plots",
+        "geometryType": "esriGeometryPolygon",
+        "objectIdField": null,
+        "maxRecordCount": 1000,
+        "extent": {
+          "xmin": -2303893.6382,
+          "ymin": -2401873.6097,
+          "xmax": 1026881.1247,
+          "ymax": 2703638.238,
+          "spatialReference": {
+            "wkid": 32640,
+            "latestWkid": 32640,
+            "xyTolerance": 0.001,
+            "zTolerance": 2,
+            "mTolerance": 0.001,
+            "falseX": -5120900,
+            "falseY": -9998100,
+            "xyUnits": 239989398.10619283,
+            "falseZ": 0,
+            "zUnits": 1,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        },
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": false,
+          "supportsCurrentUserQueries": true
+        }
+      },
+      "fields": [
+        {
+          "name": "PAIN",
+          "alias": "PAIN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "OBJECTID",
+          "alias": "OBJECTID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "PLOTNUM",
+          "alias": "PLOTNUM",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "LANDUSE",
+          "alias": "LANDUSE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SUB_LANDUSE",
+          "alias": "SUB_LANDUSE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "GOVERNORATE_AR",
+          "alias": "GOVERNORATE_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "GOVERNORATE_EN",
+          "alias": "GOVERNORATE_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "WILLAYAT_AR",
+          "alias": "WILLAYAT_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "WILLAYAT_EN",
+          "alias": "WILLAYAT_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "VILLAGE_AR",
+          "alias": "VILLAGE_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "VILLAGE_EN",
+          "alias": "VILLAGE_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "BLOCK_AR",
+          "alias": "BLOCK_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "BLOCK_EN",
+          "alias": "BLOCK_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "AREA_SQ_M2",
+          "alias": "AREA_SQ_M2",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "REMARK",
+          "alias": "REMARK",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "FLOORE",
+          "alias": "FLOORE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "HEIGHT",
+          "alias": "HEIGHT",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "B_AREA",
+          "alias": "B_AREA",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SB_BACK",
+          "alias": "SB_BACK",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SB_FRONT",
+          "alias": "SB_FRONT",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SB_SIDE",
+          "alias": "SB_SIDE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "PARKING",
+          "alias": "PARKING",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "CONDITIONS",
+          "alias": "CONDITIONS",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "NOTES",
+          "alias": "NOTES",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "O_PAIN",
+          "alias": "O_PAIN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "O_PLOTNUM",
+          "alias": "O_PLOTNUM",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "LANDSTATUS",
+          "alias": "LANDSTATUS",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "DESCRIPTION",
+          "alias": "Description",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SOURCE_PROJECTION",
+          "alias": "Source_Projection",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "STATUS",
+          "alias": "STATUS",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "CREATED_DATE",
+          "alias": "created_date",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "name": "LAST_EDITED_DATE",
+          "alias": "last_edited_date",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "name": "SHAPE",
+          "alias": "Shape",
+          "type": "esriFieldTypeGeometry"
+        },
+        {
+          "name": "SHAPE.AREA",
+          "alias": "SHAPE.AREA",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE.LEN",
+          "alias": "SHAPE.LEN",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=1%3D1&returnCountOnly=true&f=json",
+      "origin": "geoportal.mm.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "200 application/json; charset=UTF-8",
+      "exit": 0,
+      "bytes": 16,
+      "error": "",
+      "serviceError": null,
+      "keys": [
+        "count"
+      ]
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11/query?where=1%3D1&returnCountOnly=true&f=json",
+      "origin": "geoportal.mm.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "200 application/json; charset=UTF-8",
+      "exit": 0,
+      "bytes": 62,
+      "error": "",
+      "serviceError": {
+        "code": 499,
+        "message": "Token Required",
+        "details": []
+      },
+      "keys": [
+        "error"
+      ]
+    },
+    {
+      "url": "https://gis.mm.gov.om/",
+      "origin": "gis.mm.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "000 ",
+      "exit": 28,
+      "bytes": 0,
+      "error": "curl: (28) Connection timed out after 20006 milliseconds",
+      "links": []
+    },
+    {
+      "url": "https://mohup.gov.om/",
+      "origin": "mohup.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "000 ",
+      "exit": 28,
+      "bytes": 0,
+      "error": "curl: (28) Connection timed out after 20005 milliseconds",
+      "links": []
+    },
+    {
+      "url": "https://www.housing.gov.om/portalapp/home",
+      "origin": "www.housing.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "403 application/json",
+      "exit": 0,
+      "bytes": 83,
+      "error": "",
+      "serviceError": null,
+      "keys": [
+        "code",
+        "message",
+        "RequestId"
+      ]
+    },
+    {
+      "url": "https://portal.mohup.gov.om/",
+      "origin": "portal.mohup.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "000 ",
+      "exit": 28,
+      "bytes": 0,
+      "error": "curl: (28) Connection timed out after 20004 milliseconds",
+      "links": []
+    },
+    {
+      "url": "https://map.ncsi.gov.om/",
+      "origin": "map.ncsi.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "403 text/html",
+      "exit": 0,
+      "bytes": 1204,
+      "error": "",
+      "links": []
+    },
+    {
+      "url": "https://www.nsdi.gov.om/",
+      "origin": "www.nsdi.gov.om",
+      "transport": "laptop-direct-curl",
+      "status": "000 ",
+      "exit": 6,
+      "bytes": 0,
+      "error": "curl: (6) Could not resolve host: www.nsdi.gov.om",
+      "links": []
+    },
+    {
+      "url": "https://omanreal.com/MapPS",
+      "origin": "omanreal.com",
+      "transport": "laptop-direct-curl",
+      "status": "404 text/html; charset=utf-8",
+      "exit": 0,
+      "bytes": 11324,
+      "error": "",
+      "links": [
+        "https://www.googletagmanager.com/gtag/js?id=G-WEDBP3L8G9",
+        "http://omanreal.com/Home/Error?code=404&amp;langCode=ar",
+        "http://omanreal.com/Home/Error?code=404",
+        "/dist/vendor/common.css?v=ZVGxrpte5NOppD9CNJb6GW698kVo6U52hhmcYpSi96s",
+        "/dist/app/home.css?v=g5LldyJ_1NzcAAzaRyXL50hvJ-QMS5W8O4NH1ttGFuw",
+        "https://s3.omanreal.com/omanreal-public/cdn/tailwindcss-browser@4.js",
+        "/",
+        "/assets/images/logo.svg",
+        "/Map",
+        "/p",
+        "https://omanreal.com/n/top-projects-listings",
+        "#",
+        "/Helper/SetLanguage?returnUrl=%2FHome%2FError%3Fcode%3D404&amp;culture=ar",
+        "/Helper/SetLanguage?returnUrl=%2FHome%2FError%3Fcode%3D404&amp;culture=en",
+        "/NewPost",
+        "/Personal/Favourite",
+        "/assets/images/profile-placeholder.png",
+        "/Personal/MyProfile",
+        "/Personal/AgencyProfile",
+        "/Personal/MyListings",
+        "/Personal/RecentlyViewed",
+        "/Personal/AccountSettings",
+        "/Account/SignOut",
+        "https://apis.google.com/js/api:client.js",
+        "/dist/vendor/common.js?v=6zhds4r5EbomDfh9uFFimi4cnlXA8oCcdb48BbuRcrM",
+        "/dist/vendor/form_plugins.js?v=BoF8kdHFfdpLVoI5oy7pA8wHlyKNI0NV-3BmdRVnRRE",
+        "/dist/app/agency_list.js?v=IqxVnSQYNtzG1sKedY8hPb8HQE7sFX6pw3OHmAKbj-I",
+        "/dist/app/home.js?v=DbSl6YD9oJTaZ2RAyMpMk7uAzRN_yo656BJMfRGVqsQ"
+      ]
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?f=json&q=Oman%20parcels&num=30",
+      "origin": "www.arcgis.com",
+      "transport": "laptop-direct-curl",
+      "status": "200 application/json;charset=utf-8",
+      "exit": 0,
+      "bytes": 6534,
+      "error": "",
+      "serviceError": null,
+      "keys": [
+        "total",
+        "start",
+        "num",
+        "nextStart",
+        "results"
+      ],
+      "items": [
+        {
+          "id": "45c4e9a574e24ba3926387464732ea47",
+          "title": "AIDA Oman Masterplan",
+          "owner": "itoperations@darglobal.co.uk",
+          "url": "https://services-ap1.arcgis.com/V32oeVCZuoRqSlE2/arcgis/rest/services/AIDA_Oman_Masterplan_WFL1/FeatureServer",
+          "type": "Feature Service"
+        },
+        {
+          "id": "91929415601c4a30a80a734615974271",
+          "title": "OmanParcel",
+          "owner": "istadmin",
+          "url": "https://services7.arcgis.com/W7BaGPCSPJVcqB8J/arcgis/rest/services/OmanParcel/FeatureServer",
+          "type": "Feature Service"
+        },
+        {
+          "id": "b539ecda14c846569cee95f2ea98ef43",
+          "title": "Oman Tender board (Urban Design Database)",
+          "owner": "sam19sam95",
+          "url": "https://services5.arcgis.com/eQnkfR6f0zPJIy65/arcgis/rest/services/urban_design_database_c4efdc94c69945538b52f36e614a3c09/FeatureServer",
+          "type": "Feature Service"
+        },
+        {
+          "id": "899e3c2346df4a82a1ad25762afd0c11",
+          "title": "Oman - SHC (Urban Database)",
+          "owner": "sam19sam95",
+          "url": "https://services5.arcgis.com/eQnkfR6f0zPJIy65/arcgis/rest/services/urban_database_298894bc6e414ebebe9e1172535d678c/FeatureServer",
+          "type": "Feature Service"
+        },
+        {
+          "id": "dc5fd4789da24a9f92fd390d28edda73",
+          "title": "Oman - SHC (Urban Database View)",
+          "owner": "sam19sam95",
+          "url": "https://services5.arcgis.com/eQnkfR6f0zPJIy65/arcgis/rest/services/urban_database_view_1080c0c3157f4c37913cdefcbf63eda0/FeatureServer",
+          "type": "Feature Service"
+        }
+      ]
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4/query",
+      "origin": "geoportal.mm.gov.om",
+      "httpStatus": null,
+      "curlExit": 28,
+      "operation": "small central WGS84 bbox count",
+      "timeoutSeconds": 35,
+      "assessment": "No bytes; transport unavailable, not absent"
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM/ArabicWebsite_mmm12c/MapServer?f=json",
+      "origin": "geoportal.mm.gov.om",
+      "httpStatus": 200,
+      "assessment": "Arabic official service layer6 الأراضي polygon confirmed"
+    },
+    {
+      "url": "https://omanreal.com/Map",
+      "origin": "omanreal.com",
+      "httpStatus": 200,
+      "assessment": "Current map and its public JS readable; no complete viewport polygon enumeration identified"
+    }
+  ],
+  "candidates": [
+    {
+      "name": "Muscat municipal English website",
+      "dataExistence": "verified official live polygon metadata",
+      "identity": "PAIN string; null samples and missing native key in central live viewport fail gate",
+      "geometryType": "esriGeometryPolygon",
+      "spatialReference": {
+        "wkid": 32640,
+        "latestWkid": 32640,
+        "xyTolerance": 0.001,
+        "zTolerance": 2,
+        "mTolerance": 0.001,
+        "falseX": -5120900,
+        "falseY": -9998100,
+        "xyUnits": 239989398.10619283,
+        "falseZ": 0,
+        "zUnits": 1,
+        "falseM": -100000,
+        "mUnits": 10000
+      },
+      "fields": [
+        {
+          "name": "PAIN",
+          "alias": "PAIN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "OBJECTID",
+          "alias": "OBJECTID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "PLOTNUM",
+          "alias": "PLOTNUM",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "LANDUSE",
+          "alias": "LANDUSE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SUB_LANDUSE",
+          "alias": "SUB_LANDUSE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "GOVERNORATE_AR",
+          "alias": "GOVERNORATE_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "GOVERNORATE_EN",
+          "alias": "GOVERNORATE_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "WILLAYAT_AR",
+          "alias": "WILLAYAT_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "WILLAYAT_EN",
+          "alias": "WILLAYAT_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "VILLAGE_AR",
+          "alias": "VILLAGE_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "VILLAGE_EN",
+          "alias": "VILLAGE_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "BLOCK_AR",
+          "alias": "BLOCK_AR",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "BLOCK_EN",
+          "alias": "BLOCK_EN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "AREA_SQ_M2",
+          "alias": "AREA_SQ_M2",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "REMARK",
+          "alias": "REMARK",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "FLOORE",
+          "alias": "FLOORE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "HEIGHT",
+          "alias": "HEIGHT",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "B_AREA",
+          "alias": "B_AREA",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SB_BACK",
+          "alias": "SB_BACK",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SB_FRONT",
+          "alias": "SB_FRONT",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SB_SIDE",
+          "alias": "SB_SIDE",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "PARKING",
+          "alias": "PARKING",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "CONDITIONS",
+          "alias": "CONDITIONS",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "NOTES",
+          "alias": "NOTES",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "O_PAIN",
+          "alias": "O_PAIN",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "O_PLOTNUM",
+          "alias": "O_PLOTNUM",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "LANDSTATUS",
+          "alias": "LANDSTATUS",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "DESCRIPTION",
+          "alias": "Description",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SOURCE_PROJECTION",
+          "alias": "Source_Projection",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "STATUS",
+          "alias": "STATUS",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "CREATED_DATE",
+          "alias": "created_date",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "name": "LAST_EDITED_DATE",
+          "alias": "last_edited_date",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "name": "SHAPE",
+          "alias": "Shape",
+          "type": "esriFieldTypeGeometry"
+        },
+        {
+          "name": "SHAPE.AREA",
+          "alias": "SHAPE.AREA",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE.LEN",
+          "alias": "SHAPE.LEN",
+          "type": "esriFieldTypeDouble"
+        }
+      ],
+      "nativeIds": [
+        "1-32-044-01-238",
+        "1-32-044-01-250"
+      ],
+      "completeness": "unverified until gate passes",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+      "recordCount": 293860,
+      "gate": "oman-gate.json"
+    },
+    {
+      "name": "Muscat Mutrah Directorate",
+      "dataExistence": "verified official live polygon metadata",
+      "identity": "PLOTUID integer, description explicitly unique ID for each plot, distinct OBJECTID transport locator",
+      "geometryType": "esriGeometryPolygon",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857,
+        "xyTolerance": 0.001,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -20037700,
+        "falseY": -30241100,
+        "xyUnits": 10000,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      },
+      "fields": [
+        {
+          "name": "OBJECTID",
+          "alias": "OBJECTID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "DIRECTORATECD",
+          "alias": "Directorate Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "AREACD",
+          "alias": "Area Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "BLOCKNO",
+          "alias": "Block Number",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "NEWPHASECD",
+          "alias": "New Phases Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "NEWPHASESNAME_E",
+          "alias": "New Phases Name English",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "KROOKINO",
+          "alias": "Krooki Number",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "PLOTUID",
+          "alias": "Plot Unique ID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "PLOTNO",
+          "alias": "Plot Number",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "NEWPLOTNO",
+          "alias": "New Plot Number",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "PLOTAREA",
+          "alias": "Plot Area",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "PLOTUSAGECD",
+          "alias": "Plot Usage Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "PERMITNO",
+          "alias": "Permit Number",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "PERMITYEAR",
+          "alias": "Permit Year",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "PERMITTYPE",
+          "alias": "Permit Type",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "FLAG",
+          "alias": "Flag",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "CREATEDDATE",
+          "alias": "Created Date",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "name": "CREATEDBY",
+          "alias": "Created By",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "MODIFYDATE",
+          "alias": "Modify Date",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "name": "MODIFIEDBY",
+          "alias": "Modified By",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SOURCECD",
+          "alias": "Source Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "NEWHOUSINGAREANAME_E",
+          "alias": "New Housing Area Name English",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "NEWPHASESNAME_A",
+          "alias": "NewPhasesName_Arabic",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "NEWHOUSINGAREANAME_A",
+          "alias": "NewHousingAreaName Arabic",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "WILAYATCD",
+          "alias": "wilayat Code",
+          "type": "esriFieldTypeSmallInteger"
+        },
+        {
+          "name": "WILAYATNAME_A",
+          "alias": "Wilayat Name Arabic",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "WILAYATNAME_E",
+          "alias": "Wilayat Name English",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "HOUSINGAREACD",
+          "alias": "Housing Area Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "NEWHOUSINGAREACD",
+          "alias": "New Housing Area Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "HOUSINGAREANAME_A",
+          "alias": "Housing Area Name Arabic",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "HOUSINGAREANAME_E",
+          "alias": "Housing Area Name English",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SQUARENO",
+          "alias": "Square Number",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SQNUMBER_W",
+          "alias": "SqNumber_W",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "DIRECTORATENAME_E",
+          "alias": "Directorate Name English",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "DIRECTORATENAME_A",
+          "alias": "Directorate Name Arabic",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "SHAPE",
+          "alias": "SHAPE",
+          "type": "esriFieldTypeGeometry"
+        },
+        {
+          "name": "SHAPE.AREA",
+          "alias": "SHAPE.AREA",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE.LEN",
+          "alias": "SHAPE.LEN",
+          "type": "esriFieldTypeDouble"
+        }
+      ],
+      "nativeIds": [],
+      "completeness": "unverified until gate passes",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "gate": "oman-mutrah-gate.json"
+    },
+    {
+      "name": "SeebContract_MIL1",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11",
+      "dataExistence": "official search index two months old describes polygons and PLOTUID",
+      "access": "HTTP200 ArcGIS499 Token Required metadata and count; not data absence",
+      "identity": "PLOTUID documented system generated unique plot ID"
+    },
+    {
+      "name": "OmanReal commercial mirror",
+      "endpoint": "https://omanreal.com/Map",
+      "dataExistence": "current JS references cadastral PAIN/krooki identifiers and polygon shape, LandParcels/byPainNo and byPoint API",
+      "access": "Map HTTP200; legacy MapPS404",
+      "identity": "PAIN string; official upstream attribution not yet independently confirmed; no viewport enumeration completeness API observed"
+    },
+    {
+      "name": "OmanParcel hosted Salalah-area candidate",
+      "endpoint": "https://services7.arcgis.com/W7BaGPCSPJVcqB8J/arcgis/rest/services/OmanParcel/FeatureServer/0",
+      "publisher": "istadmin (official provenance unconfirmed)",
+      "dataExistence": "readable polygon layer at Salalah-area extent [54.1516,17.0724,54.1603,17.0855]",
+      "nativeIdField": "APN",
+      "nativeIdType": "string",
+      "nativeIds": [
+        "120-17-067",
+        "120-17-073",
+        "120-17-085"
+      ],
+      "sourceAttribute": "Public Works",
+      "projectAttribute": "Sector 3",
+      "assessment": "Attribution insufficient to establish actual official cadastral fabric; no runtime admission or geometry retention."
+    }
+  ],
+  "privacy": "No parcel geometry imported or retained; no owner/credentials retained; at most three native identifiers per record.",
+  "licence": "Municipality metadata copyright MM GIS; licence informational; access and native identity/completeness are actual blockers.",
+  "aggregate": {
+    "officialEnglishPolygonCount": 293860,
+    "strictGatePassed": false,
+    "officialEnglishGateFailure": "missing native PAIN in central viewport; preserve completeness rather than filter unidentified parcels",
+    "officialMutrahGateFailure": "adapter 15s timeout; independent direct count 35s also timed out with no bytes",
+    "oldCloud403NotAbsence": true
+  },
+  "sources": [
+    "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+    "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+    "https://mohup.gov.om/",
+    "https://portal.mohup.gov.om/",
+    "https://map.ncsi.gov.om/NCSIWebHelpen/start.htm",
+    "https://omanreal.com/Map"
+  ],
+  "nationalAssessment": "NCSI documentation offers FileGDB/GeoJSON/KML/SHP exports generally, current map403 cannot establish cadastral catalogue. MOHUP Amlak/eServices and map bank exist; current housing403 and MOHUP portal timeouts prevent public national layer inspection. Other major cities searches included Salalah/Sohar/Nizwa; hosted small Salalah candidate official provenance unconfirmed.",
+  "identifiedSubsetFollowup": {
+    "scope": "PAIN IS NOT NULL AND PAIN <> ' '",
+    "sourceRows": 280660,
+    "distinctPAIN": 279761,
+    "duplicatePAINKeys": 525,
+    "duplicateSourceRows": 1424,
+    "gate": "oman-identified-gate.json",
+    "completedViewportCells": 17,
+    "requests": 18,
+    "failure": "conflicting geometry for one native PAIN in cell18",
+    "notExcludedForMissingOutsideScope": true,
+    "duplicateSemantics": "Two repeated PAIN keys represent 31 and29 distinct PLOTNUM values; cannot safely union as cadastral multipart identity. Details in oman-duplicate-semantics.json",
+    "sqlCaution": "NOT IN ('',' ') returned zero rows: provider empty-string NULL semantics; use non-null and <> space",
+    "siblingLighting": "Actual service metadata has no parcel layer",
+    "nextOption": "A source-native composite PAIN+PLOTNUM might identify subdivided plots, but uniqueness/exact consistency not established and existing adapter supports single field."
+  },
+  "compositeFollowup": {
+    "fields": [
+      "PAIN",
+      "PLOTNUM"
+    ],
+    "actualTypes": [
+      "esriFieldTypeString",
+      "esriFieldTypeString"
+    ],
+    "cadastralSemanticsSource": "https://www.fig.net/resources/proceedings/fig_proceedings/fig2017/papers/ts07a/TS07A_al_najashi_8568.pdf",
+    "scopeSourceRows": 280660,
+    "impliedDistinctPairs": 280459,
+    "duplicatePairs": 192,
+    "duplicateRows": 393,
+    "allDuplicatePairsVerified": true,
+    "conflictingGeometryPairs": 105,
+    "identicalGeometryPairs": 87,
+    "status": "all VACANT, no history discriminator",
+    "materialConflict": "one inspected pair polygons370/350/345m² fully overlapping, symmetricdifference up to25m²",
+    "candidate": "/tmp/gulf-oman-composite-candidate.json",
+    "integrationReady": false,
+    "evidence": [
+      "oman-composite.json",
+      "oman-composite-semantics.json",
+      "oman-composite-overlap.json",
+      "oman-composite-placeholders.json"
+    ]
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "scope": "Official Muscat GIS viewer identity and current-record behavior",
+  "viewer": {
+    "officialSite": "https://www.mm.gov.om/ar/page.aspx?paid=1",
+    "discovery": "Official Arabic municipal page links its GIS subsite (نظم المعلومات الجغرافية) to https://gis.mm.gov.om/.",
+    "viewerUrl": "https://gis.mm.gov.om/GIS115/WebPages/Landing/ExploreInteractiveMap.aspx",
+    "helpUrl": "https://gis.mm.gov.om/Help11.pdf",
+    "helpLanguage": "Arabic",
+    "helpVersionEvidence": "Search index reports Help11.pdf published about six years ago."
+  },
+  "documentedWorkflow": {
+    "task": "Search for location and data of a parcel using its old plot number (البحث عن موقع و بيانات قطعة الأرض باستخدام الرقم القديم لقطعة الأرض).",
+    "input": "The help says to enter the old plot number from the cadastral sketch (krooki); its example is 2076.",
+    "observedResult": "The help screenshot shows Plots (16), a numbered candidate list with OBJECTID values, plus map highlights; the viewer is explicitly documented to return more than one result for an old plot-number search.",
+    "selectionSemantics": "The help instructs the user to continue to a following step to reach the parcel they seek. Evidence available here does not specify a deterministic ranking, lifecycle field, or automatic current-record rule.",
+    "administrativeContext": "A separate help screenshot/search result shows Locate Phase with Wilayat Al Seeb, Area Al Mabelah South, and Phase PH2; it establishes these as viewer search/context fields, not that they are applied to old-plot lookup or resolve its duplicates."
+  },
+  "identityAssessment": {
+    "oldPlotNumber": "Search key only; one-to-many according to the official viewer documentation.",
+    "objectId": "Viewer result/list identifier shown in help; not shown to be a stable cadastral identity or lifecycle discriminator.",
+    "currentRecordRule": "Not established by the accessible help evidence.",
+    "duplicateResolution": "Human review in the viewer is documented as required after an ambiguous search, but the actual follow-up workflow and evidence a user should compare could not be verified during this run.",
+    "result": "Viewer evidence resolves that PAIN/old plot number can be ambiguous; it does not establish a machine-selectable current parcel among overlaps. Do not infer currentness from OBJECTID, display order, or geometry overlap."
+  },
+  "publicRequestFindings": [
+    {
+      "target": "https://www.mm.gov.om/ar/page.aspx?paid=1",
+      "transport": "web search/open",
+      "result": "Official municipal Arabic page was readable; it lists a GIS subsite link to gis.mm.gov.om."
+    },
+    {
+      "target": "https://gis.mm.gov.om/Help11.pdf",
+      "transport": "web search index",
+      "result": "Search index returned Arabic instructional text and screenshots described above."
+    },
+    {
+      "target": "https://gis.mm.gov.om/Help11.pdf",
+      "transport": "web open",
+      "result": "Fetch timed out."
+    },
+    {
+      "target": "https://gis.mm.gov.om/",
+      "transport": "web open/click from official municipal link",
+      "result": "Fetch timed out."
+    },
+    {
+      "target": "https://gis.mm.gov.om/GIS115/WebPages/Landing/ExploreInteractiveMap.aspx",
+      "transport": "web search result then web open/browser navigation",
+      "result": "Search located this official viewer URL; web open timed out and browser navigation timed out."
+    },
+    {
+      "target": "https://gis.mm.gov.om/Help11.pdf",
+      "transport": "anonymous curl after network escalation",
+      "result": "Hostname resolved to 212.72.22.13, TCP/TLS fetch made no progress and timed out at 60 seconds; no file received. No login/token/CAPTCHA bypass attempted."
+    },
+    {
+      "target": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11",
+      "transport": "prior project evidence in world-parcels/research/gulf-2026-10-06/oman-research.json",
+      "result": "Anonymous ArcGIS REST metadata/count returned HTTP 200 with ArcGIS error 499 Token Required; this is an access gate, not evidence of no data. No token was sought or supplied."
+    },
+    {
+      "target": "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer/8?f=pjson",
+      "transport": "anonymous HTTPS REST request",
+      "result": "HTTP 200; public Feature Layer named Plots. Metadata has fields listed in newlyReviewedLayer, hasMetadata=true, and no PLOTUID, date, lifecycle/currentness field, or description of a parcel key."
+    },
+    {
+      "target": "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer/info/iteminfo?f=json",
+      "transport": "anonymous HTTPS REST request",
+      "result": "HTTP 200; item title MMGISBasemap, description English Website2, basemap tag, accessInformation MM GIS, empty licenseInfo."
+    },
+    {
+      "target": "https://geoportal.mm.gov.om/portal/sharing/rest/content/items/ddff7704f22b42839ae7092e20b96e43/data?f=json",
+      "transport": "anonymous HTTPS REST request",
+      "result": "HTTP 200; public Web AppBuilder configuration title CampingLocationsMap; configured query is on camping points and prompts for WILLAYATCD."
+    },
+    {
+      "target": "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/CampingLocationWebLayer/MapServer?f=pjson",
+      "transport": "anonymous HTTPS REST request",
+      "result": "HTTP 200 with ArcGIS error 499 Token Required. No token was sought or supplied."
+    }
+  ],
+  "adapterRecommendation": {
+    "now": "Keep the readable EnglishWebsite_mmm12c layer blocked from canonical ingestion under its existing identity/completeness gate. Treat old plot number as a lookup key only. Do not merge or choose one overlapping feature as current based on PAIN, OBJECTID, response order, or geometry alone.",
+    "possiblePublicPath": "Use the documented viewer as a human-assisted lookup/reference surface only; ingestion requires an anonymously readable authoritative layer whose stable native identity and current/historic semantics are explicitly verified, plus a completeness gate.",
+    "neededEvidence": [
+      "The follow-up help step after the 16-result old-number search and any explicit selection criterion.",
+      "Viewer network configuration/query endpoints and public layer IDs, if accessible without authentication.",
+      "A field or source rule that explicitly marks current versus superseded records, or an official authoritative endpoint with one current record per plot identity.",
+      "An identified, sampled viewport audit showing no omitted/ambiguous parcels and agreement with viewer results."
+    ]
+  },
+  "sources": [
+    "https://www.mm.gov.om/ar/page.aspx?paid=1",
+    "https://gis.mm.gov.om/",
+    "https://gis.mm.gov.om/GIS115/WebPages/Landing/ExploreInteractiveMap.aspx",
+    "https://gis.mm.gov.om/Help11.pdf",
+    "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+    "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11",
+    "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer",
+    "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer/8",
+    "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer/info/iteminfo?f=json",
+    "https://geoportal.mm.gov.om/portal/sharing/rest/content/items/bc0bde5be15b487ba964f7826decf8e0?f=json",
+    "https://geoportal.mm.gov.om/portal/sharing/rest/content/items/ddff7704f22b42839ae7092e20b96e43?f=json",
+    "https://geoportal.mm.gov.om/portal/sharing/rest/content/items/ddff7704f22b42839ae7092e20b96e43/data?f=json",
+    "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/CampingLocationWebLayer/MapServer",
+    "https://www.mm.gov.om/NewNewsDetails.aspx?MID=59&MoID=1&NID=2533"
+  ],
+  "privacy": "No geometry, owner attributes, credentials, tokens, or personal paths retained.",
+  "newlyReviewedLayer": {
+    "endpoint": "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer/8",
+    "itemInfoEndpoint": "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer/info/iteminfo?f=json",
+    "serviceName": "CAMPING_LOCATION/MMGISBasemap",
+    "serviceItemId": "bc0bde5be15b487ba964f7826decf8e0",
+    "itemMetadata": {
+      "title": "MMGISBasemap",
+      "summary": "this is abase map for gis data",
+      "description": "English Website2",
+      "tags": [
+        "English Website2",
+        "gis",
+        "basemap"
+      ],
+      "accessInformation": "MM GIS",
+      "licenseInfo": "",
+      "access": "public",
+      "layerName": "Plots",
+      "layerDescription": "",
+      "sourceServiceDescription": "English Website2",
+      "totalFeatures": 295758,
+      "meaning": "Official ArcGIS item calls this a basemap; the empty layer description gives no cadastral-key definition."
+    },
+    "layerIdentityMetadata": {
+      "hasPLOTUID": false,
+      "rowIdField": "OBJECTID",
+      "uniqueAttributeIndex": "OBJECTID (isUnique=true)",
+      "declaredCompositeUniqueIndex": false,
+      "nativeOrCandidateFields": [
+        {
+          "name": "WILAYATCD",
+          "alias": "Wilayat Code",
+          "type": "esriFieldTypeSmallInteger"
+        },
+        {
+          "name": "NEWHOUSINGAREACD",
+          "alias": "New Housing Area Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "NEWPHASECD",
+          "alias": "New Phases Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "NEWPLOTNO",
+          "alias": "New Plot Number",
+          "type": "esriFieldTypeString",
+          "length": 14
+        },
+        {
+          "name": "DIRECTORATECD",
+          "alias": "Directorate Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "AREACD",
+          "alias": "Area Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "BLOCKNO",
+          "alias": "Block Number",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "HOUSINGAREACD",
+          "alias": "Housing Area Code",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "SQUARENO",
+          "alias": "Square Number",
+          "type": "esriFieldTypeString",
+          "length": 50
+        },
+        {
+          "name": "PLOTNO",
+          "alias": "Plot Number",
+          "type": "esriFieldTypeString",
+          "length": 14
+        }
+      ],
+      "lifecycleSignalsObserved": [],
+      "interpretation": "Metadata supplies hierarchical-looking administrative and old/new plot-number fields but declares no parcel UID, composite key, current/superseded field, effective date, or history rule. Field labels alone do not prove a native parcel identity or currentness rule."
+    },
+    "aggregateOnlyDuplicateChecks": [
+      {
+        "fields": [
+          "WILAYATCD",
+          "NEWHOUSINGAREACD",
+          "NEWPHASECD",
+          "NEWPLOTNO"
+        ],
+        "where": "all four fields IS NOT NULL",
+        "result": "At least one repeated tuple; grouped count query returned groups with COUNT(OBJECTID)>1."
+      },
+      {
+        "fields": [
+          "DIRECTORATECD",
+          "AREACD",
+          "BLOCKNO",
+          "PLOTNO"
+        ],
+        "where": "all four fields IS NOT NULL",
+        "result": "At least one repeated tuple; grouped count query returned groups with COUNT(OBJECTID)>1."
+      },
+      {
+        "fields": [
+          "HOUSINGAREACD",
+          "SQUARENO",
+          "PLOTNO"
+        ],
+        "where": "all three fields IS NOT NULL",
+        "result": "At least one repeated tuple; grouped count query returned groups with COUNT(OBJECTID)>1."
+      }
+    ],
+    "queryBehavior": "All three checks requested grouped attribute counts only, returnGeometry=false; no geometry or attribute tuples are retained here. Their observed duplicates mean these plausible direct field combinations are not unique in this layer.",
+    "conclusion": "No source-backed unique composite native key can be established from this layer. OBJECTID is the only declared unique attribute index, while tested hierarchy/plot combinations repeat. Do not use OBJECTID or an unverified composite to collapse overlapping records; this layer also has no visible lifecycle fields to select a current version."
+  },
+  "campingViewerContext": {
+    "officialMunicipalNews": "https://www.mm.gov.om/NewNewsDetails.aspx?MID=59&MoID=1&NID=2533",
+    "officialApplicationItem": "https://geoportal.mm.gov.om/portal/sharing/rest/content/items/ddff7704f22b42839ae7092e20b96e43?f=json",
+    "officialApplicationData": "https://geoportal.mm.gov.om/portal/sharing/rest/content/items/ddff7704f22b42839ae7092e20b96e43/data?f=json",
+    "publicApplicationTitle": "MMCampingWebApplication",
+    "applicationSnippet": "THIS MAP IS USED TO show the camping Location in Muscat",
+    "applicationAccess": "public",
+    "webMap": "MMGISBasemap_WEBMAP, public; it includes MMGISBasemap plus separate CampingLocations and CampingLocationWebLayer operational layers.",
+    "queryWidget": "A configured CampingLocations query filters on WILLAYATCD and operates on its own point FeatureServer layer. The public configuration does not query the Plots sublayer as a parcel-identity search.",
+    "officialUse": "Municipal news says the interactive map lets camping-permit applicants choose designated camping locations. This establishes the use of the public app, not that the basemap plot polygons are a current cadastral register."
+  }
+}

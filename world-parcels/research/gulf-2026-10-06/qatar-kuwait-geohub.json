@@ -1,0 +1,662 @@
+{
+  "checkedAt": "2026-10-06",
+  "status": "catalogue_inspected_no_parcel_dataset_listed",
+  "requests": [
+    {
+      "url": "https://kuwait-geohub.org/geohub/gis-maps",
+      "origin": "authorized laptop direct curl",
+      "status": 200,
+      "assessment": "Full public HTML inspected; all listed downloadable archive names and Arabic/English labels examined."
+    },
+    {
+      "url": "https://kuwait-geohub.org/geohub/about2",
+      "origin": "web indexed official academic publisher page",
+      "assessment": "Publisher describes digitization/georeferencing of scientific maps and source attribution; not government cadastral feed."
+    },
+    {
+      "url": "https://kuwait-geohub.org/",
+      "origin": "web indexed publisher page",
+      "assessment": "Voluntary academic platform authored by Dr Abdullatif Fahad Alyaqout, Kuwait University Geography."
+    }
+  ],
+  "executedSearches": [
+    "site:kuwait-geohub.org قسائم قطع أراضي",
+    "site:kuwait-geohub.org parcels plots cadastral",
+    "site:kuwait-geohub.org تحميل shapefile مناطق قطع"
+  ],
+  "downloadCount": 152,
+  "downloadInventory": [
+    {
+      "title": "Kuwait Boundaries with Islands",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/kuwait.zip"
+    },
+    {
+      "title": "International and Maritime Boundaries",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/kuwait_borders.zip"
+    },
+    {
+      "title": "Maritime",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/kuwait_maritime.zip"
+    },
+    {
+      "title": "Kuwaiti-Saudi Divided Zone",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/divided_zone_marine_boundary_2024.zip"
+    },
+    {
+      "title": "Governorates Boundaries",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/gov_paci.zip"
+    },
+    {
+      "title": "Neighbourhoods Boundaries",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/nbhoods_paci.zip"
+    },
+    {
+      "title": "Street Network",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/kuwait_streets.zip"
+    },
+    {
+      "title": "Digital Elevation Model (DEM)",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/elevation_2021.rar"
+    },
+    {
+      "title": "Bathymetry",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/bathymetry_2021.rar"
+    },
+    {
+      "title": "Governorates 1975",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/governorates_1975.zip"
+    },
+    {
+      "title": "Governorates 1985",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/governorates_1985.zip"
+    },
+    {
+      "title": "Governorates 1995",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/governorates_1995.zip"
+    },
+    {
+      "title": "Historical Sites",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/historical_sites_2005.zip"
+    },
+    {
+      "title": "Historical Urban Grow",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/historical_urban_grow_2001.zip"
+    },
+    {
+      "title": "Landuse",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/landuse_2001.zip"
+    },
+    {
+      "title": "Oil Released Areas",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/oil_released_areas_2005.zip"
+    },
+    {
+      "title": "Digital Surface Model (DSM) 30m",
+      "url": "https://www.dropbox.com/scl/fi/hbhjs4pz5a9jpvejpibbd/glo30_dsm_2016.zip?rlkey=l4xdl6tirxt1v135fexgenmu0&dl=1"
+    },
+    {
+      "title": "Digital Surface Model (DSM) 90m",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/glo90_dsm_2016.zip"
+    },
+    {
+      "title": "Porposed International Railroad",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/international_railroad_2005.zip"
+    },
+    {
+      "title": "Urban Landuse",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/urban_landuse_2005.zip"
+    },
+    {
+      "title": "Ecosystems",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/ecosystems_2007.zip"
+    },
+    {
+      "title": "Physiographic Provinces",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/physiographic_provinces_1984.zip"
+    },
+    {
+      "title": "Lag Deposits",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/lag_deposits_1993.zip"
+    },
+    {
+      "title": "Sand Encroachment",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_encroachment_2003.zip"
+    },
+    {
+      "title": "Mobile Sand Bodies",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/mobile_sand_bodies_2000.zip"
+    },
+    {
+      "title": "Simplified Geomorphology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/simplified_geomorphology_1993.zip"
+    },
+    {
+      "title": "Geomorphology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/geomorphology_2000.zip"
+    },
+    {
+      "title": "Sabkha",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sabkha_2011.zip"
+    },
+    {
+      "title": "Sand Transport Zones",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_transport_zones_2009.zip"
+    },
+    {
+      "title": "Sand Transport Rate",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_transport_rate_2009.zip"
+    },
+    {
+      "title": "Soil Compaction from the Gulf War",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/soil_compaction_gulf_war_1991.zip"
+    },
+    {
+      "title": "Structural Elements",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/structural_elements_1996.zip"
+    },
+    {
+      "title": "Soil Type",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/soil_types_1993.zip"
+    },
+    {
+      "title": "Geomorphological Units",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/geomorphological_units_2001.zip"
+    },
+    {
+      "title": "Sedimentomorphology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sedimentomorphic_1984.zip"
+    },
+    {
+      "title": "Sand Dunes",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_dunes_2022.zip"
+    },
+    {
+      "title": "Land Degradation Indicators",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/land_degredation_indicators_2005.zip"
+    },
+    {
+      "title": "Geology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/geology_1969.zip"
+    },
+    {
+      "title": "Simplified Surface Geology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/simplified_surface_geology_1981.zip"
+    },
+    {
+      "title": "Boubiyan Sedimentomorphology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/boubiyan_sedimentomorphology_2012.zip"
+    },
+    {
+      "title": "Geomorphological Provinces",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/geomorphological_provices_2000.zip"
+    },
+    {
+      "title": "Sand Dune Fields",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_dune_fields_2000.zip"
+    },
+    {
+      "title": "Components of Al-Dibdiba Fluvial Fan",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/components_of_aldibdiba_fluvial_fan_2011.zip"
+    },
+    {
+      "title": "Khabra",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/khabra_1990.zip"
+    },
+    {
+      "title": "Preliminary Land Degradation",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/preliminary_land_degradation_1997.zip"
+    },
+    {
+      "title": "Sand Dune Zones",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_dune_zones_2022.zip"
+    },
+    {
+      "title": "Salt Marshes",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/saltmarshes_2021.rar"
+    },
+    {
+      "title": "General Geology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/general_geology_2001.zip"
+    },
+    {
+      "title": "Great Soil Group",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/great_soil_group_2001.zip"
+    },
+    {
+      "title": "Gatch-like Deposits",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/gatch_like_deposits_2013.zip"
+    },
+    {
+      "title": "Geomorphic Zones",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/geomorphic_zones_1995.zip"
+    },
+    {
+      "title": "Geomorphological Units",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/geomorphological_units_2003.zip"
+    },
+    {
+      "title": "Surface Sediments",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/surface_sediments_1993.zip"
+    },
+    {
+      "title": "Simplified Surface Sediments",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/simplified_surface_sediments_1989.zip"
+    },
+    {
+      "title": "Minefield Breaching Sector",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/minefields_breaching_sector_2003.zip"
+    },
+    {
+      "title": "Active Sand Zones",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/active_sand_zones_2005.zip"
+    },
+    {
+      "title": "Iraqi Minefields",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/iraqi_minefields_2001.zip"
+    },
+    {
+      "title": "Southern Oil Trenches",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/southern_oil_trenches_2001.zip"
+    },
+    {
+      "title": "Sand Encroachment",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_encroachment_2006.zip"
+    },
+    {
+      "title": "Sand Encroachment",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sand_encroachment_raster_2006.zip"
+    },
+    {
+      "title": "Morphostructure",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/morphostructure_1994.zip"
+    },
+    {
+      "title": "Direct Sources of Sand and Dust Storms",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/direct_sources_of_sands_and_dust_storms_2019.zip"
+    },
+    {
+      "title": "Corridor of Shifting Sands",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/corridor_of_shifting_sands_2019.zip"
+    },
+    {
+      "title": "Dibbdiba Gravel",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/dibbdiba_gravel_1980.zip"
+    },
+    {
+      "title": "Quaternary Sediments",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/quaternary_sediments_1978.zip"
+    },
+    {
+      "title": "Generalized Geology",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/generalized_geology_1981.zip"
+    },
+    {
+      "title": "Free-air Anomaly",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/free_air_anomaly_1990.zip"
+    },
+    {
+      "title": "Bouguer Anomaly",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/bouguer_anomaly_1990.zip"
+    },
+    {
+      "title": "Main Marrat Reservoir Gross Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/main_marrat_reservoir_gross_isopach_1997.zip"
+    },
+    {
+      "title": "Marrat Formation Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/marrat_formation_isopach_1997.zip"
+    },
+    {
+      "title": "Kuwait Jurassic Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/kuwait_jurassic_isopach_1997.zip"
+    },
+    {
+      "title": "Najmah Formation Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/najmah_formation_isopach_1997.zip"
+    },
+    {
+      "title": "Sargelu Formation Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/sargelu_formation_isopach_1997.zip"
+    },
+    {
+      "title": "Top Hith Formation Structure",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/top_hith_formation_structure_1997.zip"
+    },
+    {
+      "title": "Top Najmah Formation Structure",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/top_najmah_formation_structure_1997.zip"
+    },
+    {
+      "title": "Gotnia Formation Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/gotnia_formation_isopach_1997.zip"
+    },
+    {
+      "title": "Dhruma Formation Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/dhruma_formation_isopach_1997.zip"
+    },
+    {
+      "title": "Hith Formation Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/hith_formation_isopach_1997.zip"
+    },
+    {
+      "title": "Coastal Sabkha",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/coastal_sabkha_1999.zip"
+    },
+    {
+      "title": "Simplified Structural Map",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/simplified_structural_map_1999.zip"
+    },
+    {
+      "title": "Areas of Aeolian Activity",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/areas_of_aeolian_activity_2019.zip"
+    },
+    {
+      "title": "Wind Corridor",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/wind_corridor_2019.zip"
+    },
+    {
+      "title": "Coastal Geomorphology",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/coastal_geomorphology_1990.zip"
+    },
+    {
+      "title": "Kuwait Bay Bottom Lithofacies",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/kuwait_bay_lithofacies_1982.zip"
+    },
+    {
+      "title": "Marine Bottom Sediments",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/marine_bottom_sediments_1984.zip"
+    },
+    {
+      "title": "Seabed Texture",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/seabed_texture_1984.zip"
+    },
+    {
+      "title": "Shoreline Type",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/shoreline_type_1985.zip"
+    },
+    {
+      "title": "Coral Reef",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/coral_reefs_2003.zip"
+    },
+    {
+      "title": "Dolphin Territory",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/dolphin_distribution_2022.zip"
+    },
+    {
+      "title": "Shrimp Zone",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/shrimp_zone_2003.zip"
+    },
+    {
+      "title": "Tidal Flats",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/tidalflat_2021.rar"
+    },
+    {
+      "title": "Living Ostracods",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/kuwait_bay_living_ostracods_1983.zip"
+    },
+    {
+      "title": "Pearl Oyster Beds",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/kuwait_pearl_oyster_beds_1993.zip"
+    },
+    {
+      "title": "Penaeid Shrimps",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/penaeid_shrimps_1986.zip"
+    },
+    {
+      "title": "Pearl Diving",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/pearl_diving_2014_source.zip"
+    },
+    {
+      "title": "Distribution of Dolomite",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/distribution_of_dolomite_1984.zip"
+    },
+    {
+      "title": "Low-mg Calcite",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/low_mg_calcite_1984.zip"
+    },
+    {
+      "title": "Dolomite",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/dolomite_1984.zip"
+    },
+    {
+      "title": "High-mg Calcite",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/high_mg%20_calcite_1984.zip"
+    },
+    {
+      "title": "distribution of Illite Monmorillionite Mixed Layer Clay",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/distribution_of_illite_monmorillionite_mixed-layer_clay_1984.zip"
+    },
+    {
+      "title": "Distribution of Illite",
+      "url": "https://kuwait-geohub.org/shapefiles/marine_coastal/distribution_of_illite_1984.zip"
+    },
+    {
+      "title": "Gravel Sources",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/gravel_sources_2000.zip"
+    },
+    {
+      "title": "Sand Sources",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/sand_sources_2000.zip"
+    },
+    {
+      "title": "Mineral Resources",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/mineral_resources_2000.zip"
+    },
+    {
+      "title": "Oil Fields",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/oil_fields_2000.zip"
+    },
+    {
+      "title": "Protected Area",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/protected_areas_2023.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/vegetation_1955.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/vegetation_1964.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/vegetation_1966.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/vegetation_1969.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/vegetation_1969_2.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/vegetation_1974.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/vegetation_1995.zip"
+    },
+    {
+      "title": "Vegetation",
+      "url": "https://kuwait-geohub.org/shapefiles/terrestrial/vegetation_2001.zip"
+    },
+    {
+      "title": "Agricultural and Livestock Areas",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/agricultural_and_livestock_areas_2005.zip"
+    },
+    {
+      "title": "Agricultural and Livestock Future Expansion",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/agricultural_and_livestock_future_expansion_2005.zip"
+    },
+    {
+      "title": "Oil Fields",
+      "url": "https://kuwait-geohub.org/shapefiles/natural_resources/oil_fields_2005.zip"
+    },
+    {
+      "title": "Groundwater Fields",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/groundwater_fields_2018.zip"
+    },
+    {
+      "title": "Groundwater Level",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/groundwater_level_2002.zip"
+    },
+    {
+      "title": "Groundwater Total Dissolved Solids (TDS)",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/groundwater_tds_2002.zip"
+    },
+    {
+      "title": "Dammam Aquifer Iso-salinity",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/dammam_aquifer_isosalinity_2000.zip"
+    },
+    {
+      "title": "Kuwait Group Depletion in 1960-90",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/kuwait_group_level_depletion_60_90_1998.zip"
+    },
+    {
+      "title": "Kuwait Group Predicted Depletion in 2010",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/kuwait_group_2010_predicted_depletion_1998.zip"
+    },
+    {
+      "title": "Dammam Aquifer Iso-salinity",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/dammam_aquifer_isosalinity_2010.zip"
+    },
+    {
+      "title": "Dammam Aquifer Relative Abundance",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/dammam_aquifer_relative_abundance_water_quality_2010.zip"
+    },
+    {
+      "title": "Drainage System Zones",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/drainage_system_zones_1997.zip"
+    },
+    {
+      "title": "Groundwater Fields",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/groundwater_fields_2005.zip"
+    },
+    {
+      "title": "Isohypes of Dammam Formation",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/isohypes_top_dammam_1994.zip"
+    },
+    {
+      "title": "Paleo-drainage Systems",
+      "url": "https://kuwait-geohub.org/shapefiles/hydrology/paleo_drainage_systems_2025.zip"
+    },
+    {
+      "title": "Land",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/basemap/land_naturalearth_2023.zip"
+    },
+    {
+      "title": "Oceans",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/basemap/oceans_naturalearth_2023.zip"
+    },
+    {
+      "title": "Countries",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/basemap/countries_naturalearth_2023.zip"
+    },
+    {
+      "title": "Dominant Desert Vegetation Type in Arabia",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/dominant_desert_vegetation_types_arabia_2001.zip"
+    },
+    {
+      "title": "Landscapes of the Arabian Peninsula",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/landscape_of_the_arabian_peninsula_2001.zip"
+    },
+    {
+      "title": "Main Climatic Zones of the Arabian Peninsula",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/main_climatic_zones_of_the_arabian_peninsula_2001_source.zip"
+    },
+    {
+      "title": "Main Geologic Subdivisions of Arabia",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/main_geologic_subdivisions_of_the_arabian_peninsula_2001.zip"
+    },
+    {
+      "title": "Variation of the Soil Types of Arabia",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/variation_of_soil_types_of_the_arabian_peninsula_2001.zip"
+    },
+    {
+      "title": "Generalized Geology of Arabia",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/generalized_geology_of_arabia_2010.zip"
+    },
+    {
+      "title": "Arabian Gulf Bottom Types",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/arabian_gulf_bottom_types_1997.zip"
+    },
+    {
+      "title": "Arabian Gulf Productive Trawling Grounds",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/arabian_gulf_productive_trawling_grounds_1997.zip"
+    },
+    {
+      "title": "Middle East Oil and Gas Fields",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/oil_gas_middle_east_2007.zip"
+    },
+    {
+      "title": "Arabian Gulf Bottom Sediments",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/arabian_gulf_bottom_sediments_1996.zip"
+    },
+    {
+      "title": "ROPME Area (OSM)",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/basemap/ropme_osm_2024.zip"
+    },
+    {
+      "title": "ROPME Area (NaturalEarth)",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/basemap/ropme_ne_2024.zip"
+    },
+    {
+      "title": "Pearl Oyster Beds",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/arabian_gulf_pearl_1915.zip"
+    },
+    {
+      "title": "Early Jurassic Late Liassic",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/early_jurassic_late_liassic_1980.zip"
+    },
+    {
+      "title": "Late Jurassic Late Oxfordian Early Kimmeridgian",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/late_jurassic_late_oxfordian_early_kimmeridgian_1980.zip"
+    },
+    {
+      "title": "Late Jurassic Tithonian",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/late_jurassic_tithonian_1980.zip"
+    },
+    {
+      "title": "Mid Permian Deposition",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/mid_permian_deposition_1980.zip"
+    },
+    {
+      "title": "Middle Jurassic Bathonian",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/middle_jurassic_bathonian_1980.zip"
+    },
+    {
+      "title": "Jurassic Lithofacies",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/jurassic_lithofacies_1970.zip"
+    },
+    {
+      "title": "Jurassic Isopach",
+      "url": "https://kuwait-geohub.org/shapefiles/regional/natural/jurassic_isopach_1970.zip"
+    }
+  ],
+  "parcelTermMatches": [],
+  "rejectedNearMatches": [
+    {
+      "name": "Neighbourhoods Boundaries / حدود المناطق",
+      "url": "https://kuwait-geohub.org/shapefiles/basemap/nbhoods_paci.zip",
+      "source": "PACI2023",
+      "reason": "Neighbourhood administrative boundaries, not parcel lots."
+    },
+    {
+      "name": "Landuse2001 and Urban Landuse2005",
+      "reason": "Historical land-use thematic maps, not cadastral identities."
+    },
+    {
+      "name": "القطع المرجانية / Coral Reefs2003",
+      "reason": "Arabic قطع substring refers coral reefs, not land plots."
+    },
+    {
+      "name": "Agricultural and Livestock Areas2005",
+      "reason": "Thematic agriculture land-use areas and future expansions, not parcel boundaries."
+    }
+  ],
+  "termsInformational": "Downloads available to all; cite original source and academic platform. Never treated as blocker.",
+  "conclusion": "No cadastral parcel dataset listed in this inspected catalogue. This finding does not establish absence of cadastral data in Kuwait. Strong official municipal survey candidate remains transport-blocked as previously documented.",
+  "noGeometryDownloaded": true
+}

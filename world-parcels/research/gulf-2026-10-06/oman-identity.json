@@ -1,0 +1,75 @@
+[
+  {
+    "name": "all",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=1%3D1&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 293860
+    }
+  },
+  {
+    "name": "identified",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+NOT+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 0
+    }
+  },
+  {
+    "name": "empty",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 0
+    }
+  },
+  {
+    "name": "distinct",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+NOT+IN+%28%27%27%2C%27+%27%29&outStatistics=%5B%7B%22statisticType%22%3A+%22countDistinct%22%2C+%22onStatisticField%22%3A+%22PAIN%22%2C+%22outStatisticFieldName%22%3A+%22distinctPAIN%22%7D%5D&returnGeometry=false&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "error": {
+        "code": 400,
+        "extendedCode": -2147024809,
+        "message": "Invalid or missing input parameters.",
+        "details": []
+      }
+    }
+  },
+  {
+    "name": "duplicates",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+NOT+IN+%28%27%27%2C%27+%27%29&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C+%22onStatisticField%22%3A+%22PAIN%22%2C+%22outStatisticFieldName%22%3A+%22n%22%7D%5D&groupByFieldsForStatistics=PAIN&having=COUNT%28PAIN%29%3E1&orderByFields=n+DESC&resultRecordCount=3&returnGeometry=false&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "displayFieldName": "",
+      "fieldAliases": {
+        "PAIN": "PAIN",
+        "N": "N"
+      },
+      "fields": [
+        {
+          "name": "PAIN",
+          "type": "esriFieldTypeString",
+          "alias": "PAIN",
+          "length": 255
+        },
+        {
+          "name": "N",
+          "type": "esriFieldTypeBigInteger",
+          "alias": "N"
+        }
+      ],
+      "features": []
+    }
+  }
+]

@@ -3024,6 +3024,367 @@
       "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
       "attribution": "Shawnee County Appraiser GIS and Mapping Division. Adapted to WGS84.",
       "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "qa-cgis-approved-cadastre",
+      "countryCode": "QA",
+      "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "qa-cgis:",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID",
+        "PIN",
+        "CDST_KEY",
+        "ENDDATE",
+        "GFCODE"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "attributeNull": [
+        "ENDDATE"
+      ],
+      "adapter": "arcgis",
+      "cityIds": [
+        "doha"
+      ],
+      "metricSrid": 32639,
+      "name": "Qatar CGIS approved surveyed cadastral plots (current records)",
+      "operator": "Centre for GIS, Qatar",
+      "catalogueUrl": "https://geoportal.gisqatar.org.qa/printpin/",
+      "scope": "Qatar official approved cadastral plots with ENDDATE IS NULL; national current native PIN count verified.",
+      "coverageNote": "Current approved plots only; 73 ended records excluded. Doha viewports verified; broader national viewport coverage not asserted.",
+      "evidenceFile": "research/gulf-2026-10-06/qatar-kuwait-current-acceptance.json",
+      "attribution": "Centre for GIS, Qatar. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2,
+      "idPattern": "^[1-9][0-9]*$",
+      "sourceCrs": "EPSG:2932, Qatar National Grid; service output EPSG:4326"
+    },
+    {
+      "id": "ae-dubai-dda-public-plots",
+      "adapter": "dda-public-plots",
+      "countryCode": "AE",
+      "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+      "idField": "PLOT_NUMBER",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AE-DDA-",
+      "outFields": [
+        "OBJECTID",
+        "PLOT_NUMBER"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "cityIds": [
+        "dubai"
+      ],
+      "metricSrid": 32640,
+      "name": "Dubai DDA public cadastral plots",
+      "operator": "Dubai Development Authority",
+      "catalogueUrl": "https://gis.dda.gov.ae/dis/",
+      "scope": "Dubai plots published in the public DDA Development Information System; UAE nationwide coverage not asserted.",
+      "coverageNote": "Official public-viewer plot layer; Dubai Marina area verified. Other emirates are separate sources.",
+      "evidenceFile": "research/gulf-2026-10-06/uae-dubai-live-gate.json",
+      "attribution": "Dubai Development Authority. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2,
+      "sourceCrs": "EPSG:3997, WGS 84 / Dubai Local TM; service output EPSG:4326"
+    },
+    {
+      "id": "jo-dls-cassini-mapserver",
+      "countryCode": "JO",
+      "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+      "idField": "DLS_KEY",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "jo-dls:",
+      "idType": "string",
+      "idPattern": "^[0-9]{15}$",
+      "parcelNumberField": "PARCEL_ID",
+      "outFields": [
+        "OBJECTID",
+        "DLS_KEY",
+        "PARCEL_ID",
+        "VILL_CODE",
+        "HOD_CODE",
+        "SECTOR_CODE"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "attributeNotNull": [
+        "DLS_KEY"
+      ],
+      "attributeExclusions": {
+        "DLS_KEY": [
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "name": "Jordan DLS identified cadastral parcel parts",
+      "operator": "Department of Lands and Survey, Jordan",
+      "catalogueUrl": "https://maps.dls.gov.jo/dlsweb/",
+      "scope": "Identified DLS cadastral parcels with non-null, nonblank DLS_KEY; unkeyed plots are outside the advertised scope.",
+      "coverageNote": "Partial identified parcels. Central Amman verified. All source components for each native DLS parcel key are read before publication.",
+      "nativeIdFields": [
+        "DLS_KEY"
+      ],
+      "sourceCrs": "EPSG:28191, Palestine 1923 / Palestine Grid (Cassini); service reprojection to WGS84",
+      "termsNote": "Informational only, not a runtime eligibility gate.",
+      "adapter": "arcgis",
+      "cityIds": [
+        "amman"
+      ],
+      "metricSrid": 32636,
+      "evidenceFile": "research/gulf-2026-10-06/saudi-jordan-amman-parts-gate.json",
+      "attribution": "Department of Lands and Survey, Jordan. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "om-muscat-mutrah-plots",
+      "adapter": "arcgis",
+      "countryCode": "OM",
+      "cityIds": [
+        "muscat"
+      ],
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "OM-MM-MUTRAH-",
+      "parcelNumberField": "NEWPLOTNO",
+      "outFields": [
+        "OBJECTID",
+        "PLOTUID",
+        "PLOTNO",
+        "NEWPLOTNO",
+        "NEWHOUSINGAREACD",
+        "NEWPHASECD"
+      ],
+      "metricSrid": 32640,
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsSrid": 32640,
+      "boundsProjection": "+proj=utm +zone=40 +datum=WGS84 +units=m +no_defs",
+      "idFields": [
+        "PLOTUID",
+        "NEWPLOTNO"
+      ],
+      "idFieldTypes": {
+        "PLOTUID": "integer",
+        "NEWPLOTNO": "string"
+      },
+      "attributeNotNull": [
+        "PLOTUID",
+        "NEWPLOTNO"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "disjointParts": true,
+      "partMatchFields": [
+        "NEWHOUSINGAREACD",
+        "NEWPHASECD"
+      ],
+      "attributeExclusions": {
+        "NEWPLOTNO": [
+          " "
+        ]
+      },
+      "name": "Muscat Municipality Mutrah identified cadastral plots",
+      "operator": "Muscat Municipality",
+      "catalogueUrl": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "scope": "Mutrah Directorate in Muscat: plots with published PLOTUID and new plot number. Unnumbered plots are outside this partial source; Oman nationwide coverage is not provided.",
+      "coverageNote": "12,185 native plot groups across 12,212 rows verified. Complete disjoint parts use the old plot UID plus new plot number; new area and phase must agree. 6,534 rows without a new plot number remain outside this subset.",
+      "sourceCrs": "EPSG:32640, WGS 84 / UTM zone 40N; viewport corners projected locally and parcel geometry returned in WGS84.",
+      "evidenceFile": "research/oman-resolution-2026-10-06/mutrah-acceptance.json",
+      "attribution": "Muscat Municipality. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "us-ky-frankfort-parcels",
+      "name": "Franklin County PVA identified parcel map",
+      "adapter": "arcgis",
+      "cityIds": [
+        "frankfort"
+      ],
+      "countryCode": "US",
+      "stateCode": "KY",
+      "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+      "idFields": [
+        "PARCEL_ID",
+        "PARCEL"
+      ],
+      "idFieldTypes": {
+        "PARCEL_ID": "string",
+        "PARCEL": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-KY-FRANKFORT-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "PARCEL",
+        "MAPNUM",
+        "MAP",
+        "BLOCK",
+        "SOURCE_TYP",
+        "v_SY"
+      ],
+      "parcelNumberField": "PARCEL",
+      "attributeNotNull": [
+        "PARCEL_ID",
+        "PARCEL"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32616,
+      "maxConcurrentQueries": 2,
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "disjointParts": true,
+      "partsCoordinatePrecision": 9,
+      "partMatchFields": [
+        "MAP"
+      ],
+      "attributeExclusions": {
+        "PARCEL_ID": [
+          "",
+          " "
+        ],
+        "PARCEL": [
+          "",
+          " "
+        ]
+      },
+      "operator": "Franklin County Property Valuation Administrator / Schneider Geospatial",
+      "catalogueUrl": "https://franklincountypva.com/",
+      "coverageNote": "Identified Franklin County PVA map parcel groups; mixed record years, current boundary date unestablished",
+      "evidenceFile": "research/us-capitals-retry-2026-10-07/frankfort-composite-parts-gate.json",
+      "attribution": "Franklin County Property Valuation Administrator / Schneider Geospatial. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "scope": "Identified Franklin County PVA parcel-map groups, using the published PARCEL_ID and PARCEL components together. Complete non-overlapping parts are retained. Capital-area acceptance does not establish countywide current cadastral completeness.",
+      "caveats": [
+        "PARCEL_ID alone conflicts with native parcel components; the reversible compound identity retains both published identifiers without inventing a replacement cadastral number.",
+        "Nonblank PARCEL_ID and PARCEL required. Same-key parts must not overlap and must agree on MAP; conflicting groups fail visibly.",
+        "Mixed v_SY values are not a proven lifecycle filter or current-boundary date. No source-type or arbitrary latest-year filter is applied."
+      ]
+    },
+    {
+      "id": "us-ok-oklahoma_city-parcels",
+      "name": "Oklahoma County public assessment parcels",
+      "adapter": "arcgis",
+      "cityIds": [
+        "oklahoma_city"
+      ],
+      "countryCode": "US",
+      "stateCode": "OK",
+      "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+      "idField": "accountno",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-OK-OKLAHOMA_CITY-",
+      "outFields": [
+        "OBJECTID",
+        "accountno",
+        "pin",
+        "propertyid"
+      ],
+      "attributeNotNull": [
+        "accountno"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32614,
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "disjointParts": true,
+      "partsCoordinatePrecision": 9,
+      "partMatchFields": [
+        "pin",
+        "propertyid"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Oklahoma County Assessor",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=244ff1c03cf34c459092e10142b13b01",
+      "coverageNote": "Oklahoma County assessment parcels; other Oklahoma City counties excluded",
+      "evidenceFile": "research/us-capitals-retry-2026-10-07/oklahoma-city-parts-gate.json",
+      "attribution": "Oklahoma County Assessor. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "scope": "Oklahoma County assessment-account footprints around Oklahoma City; the city also extends into counties not served by this source. Account footprints may comprise multiple lots or disjoint pieces.",
+      "caveats": [
+        "Native accountno is an assessment-account identity. Complete disjoint components must agree on pin and propertyid; overlapping or inconsistent groups fail visibly.",
+        "632 county rows lack accountno and are excluded from identified-account scope.",
+        "Layer dataLastEditDate observed 2026-09-26 is a service-edit timestamp, not the date of every legal boundary."
+      ]
+    },
+    {
+      "id": "us-sd-pierre-parcels",
+      "name": "Hughes County Parcels 2023 — ISG project mirror",
+      "adapter": "arcgis",
+      "cityIds": [
+        "pierre"
+      ],
+      "countryCode": "US",
+      "stateCode": "SD",
+      "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+      "idField": "PARCEL_ID",
+      "idType": "string",
+      "objectIdField": "FID",
+      "idPrefix": "US-SD-PIERRE-",
+      "outFields": [
+        "FID",
+        "PARCEL_ID",
+        "RECORD_"
+      ],
+      "attributeNotNull": [
+        "PARCEL_ID"
+      ],
+      "attributeExclusions": {
+        "PARCEL_ID": [
+          "",
+          " ",
+          "0"
+        ]
+      },
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32614,
+      "maxConcurrentQueries": 2,
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "disjointParts": true,
+      "partsCoordinatePrecision": 9,
+      "partMatchFields": [
+        "RECORD_"
+      ],
+      "operator": "ISG (Missouri River Long Distance Trail project)",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=c8dcdb4426b6464d908fed8ca24d4900",
+      "coverageNote": "ISG third-party parcel mirror · 2023 snapshot · identified parcels only",
+      "scope": "Identified Hughes County parcel groups in ISG’s 2023 Missouri River Long Distance Trail project mirror; Pierre-area runtime acceptance only, not current county-authoritative or statewide completeness.",
+      "evidenceFile": "research/us-capitals-retry-2026-10-07/pierre-identified-parts-gate.json",
+      "attribution": "ISG project parcel mirror, labelled 2023. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "caveats": [
+        "Third-party planning-project mirror labelled 2023; layer XML records February 9, 2023 creation/synchronization. ArcGIS publication in February 2026 does not make the parcel boundaries current.",
+        "The upstream supplier is not identified in publisher metadata. Native numbering agrees with the county Beacon record convention after leading-zero formatting; provenance beyond the ISG project is not asserted.",
+        "Blank and zero parcel keys are excluded. The 674 zero-key rows share a blank RECORD_ value and cannot identify individual parcels; zero as an unassigned placeholder is an inference.",
+        "All parts of a native PARCEL_ID must agree on RECORD_ and have no material overlap; ambiguous groups fail visibly."
+      ]
     }
   ]
 }

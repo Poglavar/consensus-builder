@@ -3450,7 +3450,14 @@
             "olympia": "Olympia, SAD",
             "providence": "Providence, SAD",
             "tallahassee": "Tallahassee, SAD",
-            "topeka": "Topeka, SAD"
+            "topeka": "Topeka, SAD",
+            "doha": "Doha, Katar",
+            "dubai": "Dubai, Ujedinjeni Arapski Emirati",
+            "amman": "Amman, Jordan",
+            "muscat": "Muskat, Oman",
+            "frankfort": "Frankfort, SAD",
+            "oklahoma_city": "Oklahoma City, SAD",
+            "pierre": "Pierre, SAD"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",

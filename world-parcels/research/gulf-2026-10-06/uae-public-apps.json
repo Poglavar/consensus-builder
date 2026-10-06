@@ -1,0 +1,152 @@
+{
+  "checkedAt": "2026-10-06",
+  "attempts": [
+    {
+      "url": "https://gis.dda.gov.ae/dis/js/index.js",
+      "httpStatus": 200,
+      "serviceUrls": [
+        "https://wa.me/?text=Please%20check%20this%20plot%20information%0Ahttps://gis.dda.gov.ae/dis/?plotnumber=",
+        "https://gis.dda.gov.ae/dis/?plotnumber="
+      ],
+      "operations": [
+        "/core/Map",
+        "/core/views",
+        "/core/identity",
+        "/core/layers",
+        "/core/Basemap",
+        "/core/geometry",
+        "/core/widgets",
+        "/core/core",
+        "/ui/UI",
+        "/core/rest",
+        "/support/Query"
+      ]
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/7661257e77a04c6f9fd7f49682abd566/data?f=json",
+      "httpStatus": 200,
+      "operationalLayers": [
+        {
+          "id": "featColl_1315",
+          "title": "رخص البناء 2017",
+          "itemId": "004566067dd843a8bfd863f683fa216e",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            null
+          ]
+        },
+        {
+          "id": "featColl_4771",
+          "title": "احصائيات زوار الحدائق 2017",
+          "itemId": "3b3f398188914c0aa5424659ccf0dd88",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            null
+          ]
+        },
+        {
+          "id": "Sector_shapefile_4468",
+          "title": "رخص البناء 2018",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            8
+          ]
+        },
+        {
+          "id": "parks_Data_shapefile_6041",
+          "title": "احصائيات زوار الحدائق 2018",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            12
+          ]
+        },
+        {
+          "id": "Permits_2019_shapefile_1081",
+          "title": "رخص البناء 2019",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            8
+          ]
+        },
+        {
+          "id": "Parks2019_shapefile_9106",
+          "title": "احصائية زوار الحدائق للعام 2019",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            12
+          ]
+        },
+        {
+          "id": "Permits_shapefile_7517",
+          "title": "رخص البناء 2020",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            8
+          ]
+        },
+        {
+          "id": "Parks_shapefile_3591",
+          "title": "احصائية زوار الحدائق للعام 2020",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            15
+          ]
+        },
+        {
+          "id": "Permit2021_shapefile_8425",
+          "title": "رخص البناء 2021",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            8
+          ]
+        },
+        {
+          "id": "Parks2021_shapefile_3173",
+          "title": "احصائية زوار الحدائق للعام 2021",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            18
+          ]
+        },
+        {
+          "id": "featColl_7696",
+          "title": "رخص البناء - للعام 2022",
+          "itemId": "8dc10490e1264beb915dc15306d71d93",
+          "layerType": "ArcGISFeatureLayer"
+        },
+        {
+          "id": "featColl_2159",
+          "title": "احصائية زوار الحدائق للعام 2022",
+          "itemId": "a9f2f8b063134a8a8626db57e7ccdfa2",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            null
+          ]
+        },
+        {
+          "id": "Permits2023_shapefile_9321",
+          "title": "رخص البناء - للعام 2023",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            8
+          ]
+        },
+        {
+          "id": "Parks2023_shapefile_7087",
+          "title": "احصائية زوار الحدائق للعام 2023",
+          "layerType": "ArcGISFeatureLayer",
+          "featureCount": [
+            18
+          ]
+        },
+        {
+          "id": "1987959eb05-layer-15",
+          "title": "رخص البناء - للعام 2024",
+          "url": "https://www.arcgis.com/sharing/rest/content/items/6704006f52964deb9528584cfd2a915b/data",
+          "itemId": "6704006f52964deb9528584cfd2a915b",
+          "layerType": "GeoJSON"
+        }
+      ]
+    }
+  ]
+}

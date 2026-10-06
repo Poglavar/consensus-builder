@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-10-06",
+  "executedSearches": [
+    "Dubai Abu Dhabi cadastral parcels GIS plot boundaries open data ArcGIS DMT",
+    "دبي خريطة الأراضي حدود قطع الأراضي دبي البلدية مخطط مساحي بيانات مفتوحة",
+    "أبوظبي قطع الأراضي خريطة جيوسمارت دائرة البلديات النقل الخدمات المكانية",
+    "الإمارات الشارقة عجمان رأس الخيمة خرائط قطع الأراضي نظم معلومات جغرافية",
+    "site:gis.dda.gov.ae Plot PARCELID Dubai",
+    "site:geosmart.dmt.gov.ae \"Plot\"",
+    "Dubai parcel polygon \"FeatureServer\"",
+    "دبي البيانات المفتوحة قطع الأراضي مخططات Plot GIS",
+    "site:geosmart.dmt.gov.ae/arcgis/rest/services \"Plots\"",
+    "site:stgnsdi.fgic.gov.ae \"Parcel\" \"ParcelID\"",
+    "site:gis.dda.gov.ae \"Plot\" \"ENTITY_NAME\"",
+    "site:geosmart.dmt.gov.ae \"Survey\" \"Plot\"",
+    "Abu Dhabi Al Ain land parcels plot GeoSmart GIS open data",
+    "دبي جيو دبي خريطة قطعة أرض رقم الأرض خدمة GIS",
+    "الشارقة دائرة التخطيط والمساحة خريطة الأراضي GIS ArcGIS",
+    "عجمان خريطة الأراضي GIS دائرة البلدية مخططات القطع",
+    "الشارقة بيانات مكانية قطع الأراضي خريطة GIS دائرة التخطيط والمساحة",
+    "UAE Dubai cadastral parcel polygons shapefile WFS open data GeoDubai",
+    "رأس الخيمة خريطة قطع الأراضي نظم المعلومات الجغرافية بيانات مفتوحة",
+    "Fujairah Umm Al Quwain cadastral parcels GIS open data map"
+  ],
+  "status": "Dubai public-viewer adapter enabled; other feeds retained as technical candidates",
+  "findings": [
+    {
+      "source": "Dubai DDA publicviewer",
+      "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+      "result": "103,734 plot rows; no missing PLOT_NUMBER values. Full 18-cell acceptance passed with 63 native IDs. CountDistinct statistic returned 400, recorded without inferring global uniqueness. No raw geometry or credentials saved."
+    },
+    {
+      "source": "Federal FGIC stagingcadastre",
+      "endpoint": "https://stgnsdi.fgic.gov.ae/publishing/rest/services/LandParcels/Land_Parcels/MapServer/2",
+      "result": "Live polygonmetadata readable; nationalcount0,extentNaN. Schema is not proof of actual national data."
+    },
+    {
+      "source": "AlAin DMT GeoSmart estimatedvalueplotlayer",
+      "endpoint": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0",
+      "result": "10,819 polygons readable; UTM_CODE has conflicting geometry. Positive LMS_PLOT_I scope has 822 rows but key 926 returns 32 polygons. TEMPORALST lifecycle ambiguous. FID never used as cadastral identity."
+    },
+    {
+      "source": "Dubai Municipality historicGISendpoint",
+      "endpoint": "https://gis.dm.gov.ae/arcgis/rest/services",
+      "result": "Redirect200HTMLmunicipalhomepage, notparcelJSON. GeoDubai transporttimeouts recorded separately."
+    },
+    {
+      "source": "Ajman Arabic spatialdatapage",
+      "endpoint": "https://www.am.gov.ae/ar/البيانات-المكانية/",
+      "result": "OfficialpublicArcGISwebmap7661257e77a04c6f9fd7f49682abd566 inspected. Building-permit/parkstatistics, notparcels. Official GIS/cadastral data request service confirms parcel boundary data exists; no anonymous liveparcel endpointverified."
+    },
+    {
+      "source": "Other UAE emirates",
+      "result": "ArabicandEnglishsearches executed. Sharjahofficialmaps/titleplanservices and FujairahGIScenterexist; no verified completeparcel feed found in this pass. Notclaimed absent."
+    }
+  ],
+  "attemptFiles": [
+    "uae-alain-acceptance.json",
+    "uae-alain-curl.json",
+    "uae-alain-findings.json",
+    "uae-alain-identified.json",
+    "uae-alain-lms-location.json",
+    "uae-alain-probes.json",
+    "uae-alain-subset.json",
+    "uae-dubai-identity-counts.json",
+    "uae-dubai-live-gate.json",
+    "uae-dubai-public-session.json",
+    "uae-metadata.json",
+    "uae-public-apps.json",
+    "uae-viewers.json"
+  ]
+}

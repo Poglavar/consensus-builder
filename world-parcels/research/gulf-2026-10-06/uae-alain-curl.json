@@ -1,0 +1,96 @@
+{
+  "attempts": [
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 10819
+      }
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=1%3D1&returnGeometry=false&outFields=UTM_CODE%2CLMS_PLOT_I%2CTEMPORALST%2CSTATUS%2CDISTRICT_1%2CCOMMUNITY1%2CROAD_NO_L1%2CPLOT_NUM1&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "nativeSamples": [
+        {
+          "UTM_CODE": "   7U7FFT",
+          "LMS_PLOT_I": 0,
+          "TEMPORALST": " ",
+          "STATUS": 0,
+          "DISTRICT_1": 0,
+          "COMMUNITY1": 1,
+          "ROAD_NO_L1": 2,
+          "PLOT_NUM1": 1
+        },
+        {
+          "UTM_CODE": "   7U8EJV",
+          "LMS_PLOT_I": 0,
+          "TEMPORALST": " ",
+          "STATUS": 0,
+          "DISTRICT_1": 0,
+          "COMMUNITY1": 1,
+          "ROAD_NO_L1": 2,
+          "PLOT_NUM1": 13
+        },
+        {
+          "UTM_CODE": "   7U8EJU",
+          "LMS_PLOT_I": 0,
+          "TEMPORALST": " ",
+          "STATUS": 0,
+          "DISTRICT_1": 0,
+          "COMMUNITY1": 1,
+          "ROAD_NO_L1": 2,
+          "PLOT_NUM1": 13
+        }
+      ],
+      "statuses": [
+        "069293",
+        " ",
+        "053173"
+      ],
+      "returnedRows": 1000,
+      "truncated": true
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=UTM_CODE+IS+NULL&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 0
+      }
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=LMS_PLOT_I+IS+NULL&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 0
+      }
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=TEMPORALST%3D%27Current%27&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 0
+      }
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=TEMPORALST%3D%27Existing%27&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 0
+      }
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=TEMPORALST+IS+NULL&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 0
+      }
+    }
+  ]
+}

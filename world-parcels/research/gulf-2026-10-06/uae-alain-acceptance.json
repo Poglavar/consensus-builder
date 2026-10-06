@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Al Ain estimated-value survey layer (unverified current scope)",
+      "sourceId": "ae-dmt-alain-survey-estimated",
+      "endpoint": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 3,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 134,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    }
+  ]
+}

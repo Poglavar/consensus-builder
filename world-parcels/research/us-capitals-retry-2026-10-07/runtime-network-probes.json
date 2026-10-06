@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "networkContext": "Configured application development host valhalla; ordinary public HTTPS requests with certificate verification. No alternate proxy or authentication bypass.",
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "Accept": "application/json,text/html;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9"
+  },
+  "timeoutSeconds": 35,
+  "requests": [
+    {
+      "city": "Oklahoma City",
+      "url": "https://gis.okc.gov/arcgis/rest/services/Public/Data_OKC_Gov_Application_Service/MapServer/3?f=pjson",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytesRead": 212,
+      "incapsulaBlock": true,
+      "assessment": "HTML access-block page, not ArcGIS JSON metadata.",
+      "referer": "https://www.okc.gov/"
+    },
+    {
+      "city": "Pierre",
+      "url": "https://beacon.schneidercorp.com/Application.aspx?AppID=940&LayerID=18376&PageID=8187&PageTypeID=2",
+      "httpStatus": 403,
+      "assessment": "Officially linked public viewer denied the ordinary request; no parcel geometry obtained.",
+      "referer": "https://hughescounty.org/realestate"
+    }
+  ],
+  "conclusion": "Both previously blocked public reads also fail at the configured dev runtime. These failures do not establish absence of parcel data."
+}

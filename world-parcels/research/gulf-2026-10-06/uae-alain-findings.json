@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-10-06",
+  "status": "reachable_but_not_admitted",
+  "endpoint": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0",
+  "sourceName": "Plot - Estimated Value",
+  "sourceSpatialReference": 32640,
+  "nationalScope": false,
+  "scope": "Al Ain valuation survey dataset,10819 polygons; current-ground status and cadastre completeness unverified.",
+  "nativeKeyFindings": {
+    "UTM_CODE": "Metadata string9; actual samples leading-space alphanumeric values unlike official DID-CID-RID-PID parcel address. Real adapter fails conflicting geometry for one key.",
+    "LMS_PLOT_I": "822 positive rows; zero elsewhere. Exact native key926 returns32 polygon features, so not unique native parcel key without further verified component semantics.",
+    "FID": "Transport object ID only; never used as cadastral identity."
+  },
+  "statusFindings": "10815 of10819 TEMPORALST values single blank space; first1000 returned also numeric053173/069293. No Current, Existing or NULL values. Cannot establish current vs proposed ground.",
+  "provenance": [
+    {
+      "url": "https://myland.dmt.gov.ae/mapservice/ar/index.html?x=54.44838&y=24.4217",
+      "observation": "Official Arabic viewer asks AlAin parcel address DID-CID-RID-PID, does not establish observed UTM_CODE strings."
+    },
+    {
+      "url": "https://www.dmt.gov.ae/ar-AE/aam/Media-Centre/News/T-Qusimati-system-to-monitor-the-status-of-citizens-lands",
+      "observation": "Official municipality describes parcel-status system by ID and land number."
+    }
+  ],
+  "executedSearches": [
+    "\"UTM_CODE\" \"plot\" \"Al Ain\"",
+    "\"LMS_PLOT_I\" parcel",
+    "\"TEMPORALST\" \"UTM_CODE\"",
+    "العين كود الأرض UTM_CODE البلدية رقم القسيمة",
+    "\"UTM code\" \"Al Ain\" plot number",
+    "\"Al Ain\" \"UTM\" \"district\" \"plot\"",
+    "\"UTM_CODE\" site:dmt.gov.ae",
+    "العين الرقم المرجعي القسيمة تسعة أرقام"
+  ],
+  "additionalAttempts": [
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0?f=json",
+      "origin": "laptop direct curl",
+      "status": 200,
+      "observation": "Polygon metadata; statistics,pagination,distinct unsupported."
+    },
+    {
+      "url": "https://myland.dmt.gov.ae/mapservice/ar/index.html",
+      "origin": "laptop direct curl",
+      "status": null,
+      "error": "curl28 timeout20s after0 of19223 bytes"
+    },
+    {
+      "operation": "query resultRecordCount3",
+      "origin": "laptop direct curl",
+      "serviceError": 400,
+      "message": "Pagination is not supported."
+    }
+  ],
+  "adapterAcceptance": "Failed after3 requests: conflicting geometry for native UTM_CODE. No descriptor recommended.",
+  "noGeometryRetained": true,
+  "noOwnerPropertiesRequested": true
+}

@@ -2738,6 +2738,181 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        doha: {
+            id: 'doha',
+            label: translateCityText('city.labels.doha', 'Doha, Qatar'),
+            currency: { locale: 'ar-QA', code: 'QAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [25.2854, 51.531], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32639',
+                metricDefinition: '+proj=utm +zone=39 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [25.2854, 51.531], fallbackDataset: [51.531, 25.2854]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'qa-cgis-approved-cadastre', idPrefix: 'qa-cgis:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://geoportal.gisqatar.org.qa/printpin/">Centre for GIS, Qatar · publisher &amp; conditions</a> · Current approved plots only; 73 ended records excluded. Doha viewports verified; broader national viewport coverage not asserted. · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dubai: {
+            id: 'dubai',
+            label: translateCityText('city.labels.dubai', 'Dubai, United Arab Emirates'),
+            currency: { locale: 'ar-AE', code: 'AED' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [25.095, 55.157], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32640',
+                metricDefinition: '+proj=utm +zone=40 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [25.095, 55.157], fallbackDataset: [55.157, 25.095]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'ae-dubai-dda-public-plots', idPrefix: 'AE-DDA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://gis.dda.gov.ae/dis/">Dubai Development Authority · publisher &amp; conditions</a> · Official public-viewer plot layer; Dubai Marina area verified. Other emirates are separate sources. · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        amman: {
+            id: 'amman',
+            label: translateCityText('city.labels.amman', 'Amman, Jordan'),
+            currency: { locale: 'ar-JO', code: 'JOD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [31.9836227976918, 35.9602148481902], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32636',
+                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [31.9836227976918, 35.9602148481902], fallbackDataset: [35.9602148481902, 31.9836227976918]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'jo-dls-cassini-mapserver', idPrefix: 'jo-dls:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://maps.dls.gov.jo/dlsweb/">Department of Lands and Survey, Jordan · publisher &amp; conditions</a> · Partial identified parcels. Central Amman verified. All source components for each native DLS parcel key are read before publication. · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        muscat: {
+            id: 'muscat',
+            label: translateCityText('city.labels.muscat', 'Muscat, Oman'),
+            currency: { locale: 'ar-OM', code: 'OMR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [23.597065274496654, 58.55548313911143], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32640',
+                metricDefinition: '+proj=utm +zone=40 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [23.597065274496654, 58.55548313911143], fallbackDataset: [58.55548313911143, 23.597065274496654]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'om-muscat-mutrah-plots', idPrefix: 'OM-MM-MUTRAH-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4">Muscat Municipality · publisher &amp; conditions</a> · Mutrah identified new-number plots only; partial Muscat coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        frankfort: {
+            id: 'frankfort',
+            label: translateCityText('city.labels.frankfort', 'Frankfort, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.2009, -84.8733], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [38.2009, -84.8733], fallbackDataset: [-84.8733, 38.2009]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ky-frankfort-parcels', idPrefix: 'US-KY-FRANKFORT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://franklincountypva.com/">Franklin County Property Valuation Administrator / Schneider Geospatial · publisher &amp; conditions</a> · Identified Franklin County PVA map parcel groups; mixed record years, current boundary date unestablished · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        oklahoma_city: {
+            id: 'oklahoma_city',
+            label: translateCityText('city.labels.oklahoma_city', 'Oklahoma City, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.4676, -97.5164], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [35.4676, -97.5164], fallbackDataset: [-97.5164, 35.4676]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ok-oklahoma_city-parcels', idPrefix: 'US-OK-OKLAHOMA_CITY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=244ff1c03cf34c459092e10142b13b01">Oklahoma County Assessor · publisher &amp; conditions</a> · Oklahoma County assessment parcels; other Oklahoma City counties excluded · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        pierre: {
+            id: 'pierre',
+            label: translateCityText('city.labels.pierre', 'Pierre, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.3683, -100.351], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [44.3683, -100.351], fallbackDataset: [-100.351, 44.3683]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-sd-pierre-parcels', idPrefix: 'US-SD-PIERRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=c8dcdb4426b6464d908fed8ca24d4900">ISG (Missouri River Long Distance Trail project) · publisher &amp; conditions</a> · ISG third-party parcel mirror · 2023 snapshot · identified parcels only · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

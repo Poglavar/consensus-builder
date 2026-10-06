@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "countryCode": "OM",
+  "purpose": "Resolve Oman source identity and transport conflicts; no parcel import.",
+  "previousAssessment": "research/gulf-2026-10-06/oman-research.json",
+  "status": "enabled-partial-muscat-mutrah",
+  "searches": [
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "Muscat Municipality PAIN PLOTNUM parcel data cadastral LAST_EDITED_DATE GIS"
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "site:geoportal.mm.gov.om \"PLOTUID\" \"MapServer\""
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "site:geoportal.mm.gov.om \"PAIN\" \"O_PAIN\""
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "Oman PAIN parcel number unique property aerial image WGS84 ONGD17 land plots cadastral"
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "site:geoportal.mm.gov.om \"MOH\" \"Plots\""
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "Muscat GIS plot parcel map \"PLOTUID\""
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "\"PAIN\" \"AREA_SQ_M2\" Oman"
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "\"geoportal.mm.gov.om\" \"Plots\" \"MOH\""
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "\"Oman\" \"cadastral\" \"WFS\""
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "site:geoportal.mm.gov.om/server/rest/services \"Plots\" -EnglishWebsite -SeebContract -Mutrah -MUSCAT.Plots"
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "site:geoportal.mm.gov.om \"PAIN\" -EnglishWebsite -ArabicWebsite"
+    },
+    {
+      "language": "en",
+      "script": "Latin",
+      "checkedAt": "2026-10-06",
+      "query": "\"Muscat\" \"PLOTUID\" \"FeatureServer\""
+    },
+    {
+      "language": "ar",
+      "script": "Arabic",
+      "checkedAt": "2026-10-06",
+      "query": "بلدية مسقط الرقم المساحي رقم القطعة الخرائط البيانات الجغرافية الأراضي خرائط تفاعلية"
+    },
+    {
+      "language": "ar",
+      "script": "Arabic",
+      "checkedAt": "2026-10-06",
+      "query": "عمان الرقم المساحي القديم الجديد رقم القطعة المخطط PAIN GIS"
+    },
+    {
+      "language": "ar",
+      "script": "Arabic",
+      "checkedAt": "2026-10-06",
+      "query": "site:gis.mm.gov.om \"الرقم المساحي\""
+    },
+    {
+      "language": "ar",
+      "script": "Arabic",
+      "checkedAt": "2026-10-06",
+      "query": "site:geoportal.mm.gov.om \"قطع الأراضي\" -Mutrah"
+    }
+  ],
+  "findings": {
+    "publicPainLayer": "All 293860 rows share STATUS=VACANT and LANDSTATUS=null. All CREATED_DATE and LAST_EDITED_DATE are null. Conflicting native-key geometries cannot be selected by lifecycle/date. Prior conflicts retained.",
+    "mutrah": "Enabled the identified new-number subset: 12,212 source rows / 12,185 compound PLOTUID+NEWPLOTNO groups. All 22 repeated nonnull pairs were audited: disjoint components, agreeing new area and phase. Complete components are fetched before publication. 6,534 rows with null new plot number remain outside this subset.",
+    "campingBasemap": "Public basemap has295758 plot rows across six Muscat directorates. No PLOTUID field exposed. Complete new Wilayat/area/phase/plot references cover235489 rows, with at least2000 duplicate groups (aggregate result truncated); not a proven replacement identity.",
+    "alignment": "Both parcel layers returned ArcGIS499 Token Required on current direct reads.",
+    "transport": "Web Mercator viewport count/manifest disagreement resolved by four-corner projection to native EPSG:32640. Final 18-cell gate and 189 exact native lookups passed. Source geometry stays WGS84 to all downstream consumers.",
+    "numericSeams": "A source-disjoint pair gained a 0.0000062m² overlap in WGS84; nine-digit normalization reduced it to 0.000000062m². Runtime rejects overlap exceeding 0.0001m² (one square centimetre), plus mismatched new administrative references.",
+    "measuredAreaSubset": "Nonblank measured area did not resolve the older PAIN layer: 50 duplicate pairs included 13 overlapping competing geometries. It remains a separate recorded technical hold."
+  },
+  "evidenceFiles": [
+    "alternates.json",
+    "basemap-keys.json",
+    "basemap-probe.json",
+    "browser-check.json",
+    "catalogue.json",
+    "conflicts.json",
+    "enoc.json",
+    "lifecycle.json",
+    "measured-area-audit.json",
+    "measured-area-subset.json",
+    "more-services.json",
+    "mutrah-acceptance.json",
+    "mutrah-composite-gate.json",
+    "mutrah-duplicates.json",
+    "mutrah-example-metrics.json",
+    "mutrah-offset-gate.json",
+    "mutrah-rounding.json",
+    "mutrah-utm-composite-gate.json",
+    "mutrah-zero-overlap-gate.json",
+    "scope-counts.json",
+    "viewer.json"
+  ],
+  "privacy": "Only aggregate counts, source metadata and up to three native-reference examples per probe retained. No parcel geometry, owner data, credentials or imported tables.",
+  "discoveredUrls": [
+    "https://geoportal.mm.gov.om/server/rest/services/AlignmentBoundariesWebLayer/MapServer",
+    "https://geoportal.mm.gov.om/server/rest/services/CAMPING_LOCATION/MMGISBasemap/MapServer",
+    "https://geoportal.mm.gov.om/server/rest/services/Linking_business_activities_spatially_MIL1/MapServer/9/iteminfo",
+    "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+    "https://gis.mm.gov.om/Help11.pdf",
+    "https://gov.om/w/renew-cadastral-plan"
+  ],
+  "searchResultAssociation": "URLs are leads discovered across the recorded search pass; individual result lists were not retained.",
+  "validation": {
+    "headless": {
+      "files": 18,
+      "passed": 331
+    },
+    "acceptance": "mutrah-acceptance.json",
+    "browser": "browser-check.json"
+  },
+  "runtime": {
+    "cityId": "muscat",
+    "sourceId": "om-muscat-mutrah-plots",
+    "configuredCityCount": 94,
+    "providerDescriptorCount": 84,
+    "nationwideCoverage": false,
+    "parcelImport": false
+  }
+}

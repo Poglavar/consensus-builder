@@ -1,0 +1,196 @@
+{
+  "checkedAt": "2026-10-06",
+  "networkOrigin": "authorized laptop network",
+  "attempts": [
+    {
+      "url": "https://giss.baladia.gov.kw/kmeguide/",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": null,
+      "error": "[Errno 54] Connection reset by peer",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?f=json&q=Kuwait%20parcel",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 58,
+      "catalogSummary": {
+        "total": 0,
+        "items": []
+      }
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?f=json&q=Qatar%20parcel",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 9704,
+      "catalogSummary": {
+        "total": 8,
+        "items": [
+          {
+            "id": "3f15711b6e00485d9fbf0d8ab691a04d",
+            "owner": "Leo.Ortega_ParsonsCorp",
+            "title": "Qatar Bore Hole Location Map_WFL1",
+            "type": "Feature Service",
+            "url": "https://services2.arcgis.com/IyWyHrbMCpt7AL8E/arcgis/rest/services/Qatar_Bore_Hole_Location_Map_WFL1/FeatureServer"
+          },
+          {
+            "id": "e0335dc2eebf48d296531f8b7c0a97d8",
+            "owner": "Leo.Ortega_ParsonsCorp",
+            "title": "Qatar GEC Projects Basemap_WFL1",
+            "type": "Feature Service",
+            "url": "https://services2.arcgis.com/IyWyHrbMCpt7AL8E/arcgis/rest/services/Qatar_GEC_Projects_Basemap_WFL1/FeatureServer"
+          },
+          {
+            "id": "f4f86c59884e439aa99196c4cfcac42b",
+            "owner": "SolutionEngineering",
+            "title": "POC - Qatar Parcel Search (GVH)",
+            "type": "Web Mapping Application",
+            "url": "https://apps.geocortex.com/workflow/designer/#workflow=f4f86c59884e439aa99196c4cfcac42b"
+          },
+          {
+            "id": "6ae74a7f412f413ead3dbd5c8bb70987",
+            "owner": "SolutionEngineering",
+            "title": "POC - Qatar Parcel Search (WAB)",
+            "type": "Web Mapping Application",
+            "url": "https://apps.geocortex.com/workflow/designer/#workflow=6ae74a7f412f413ead3dbd5c8bb70987"
+          },
+          {
+            "id": "4b5fb08f6d82447480291aae9788b2f4",
+            "owner": "Youssef_Maher",
+            "title": "Qatar (Urban Database View)",
+            "type": "Feature Service",
+            "url": "https://services7.arcgis.com/yiuFazTjHE8F5gzQ/arcgis/rest/services/urban_database_view_54b75d7e407a4aafbc0daa8762d942fc/FeatureServer"
+          },
+          {
+            "id": "6f55e46eae5849f48924e291c4e12a3c",
+            "owner": "SolutionEngineering",
+            "title": "POC - Qatar Parcel Report",
+            "type": "Web Mapping Application",
+            "url": "https://gedemo.geocortex.com/geocortex/reporting/"
+          },
+          {
+            "id": "de7a77f3acdc49ac9e73b4d1ca731364",
+            "owner": "SolutionEngineering",
+            "title": "POC - Qatar Parcel Report - VSR",
+            "type": "Web Mapping Application",
+            "url": "https://apps.vertigisstudio.com/reporting/"
+          },
+          {
+            "id": "73a73d48de144491bcfa1f4b86282869",
+            "owner": "SolutionEngineering",
+            "title": "POC - Qatar Parcel Search (GXW)",
+            "type": "Web Mapping Application",
+            "url": "https://apps.geocortex.com/workflow/designer/#workflow=73a73d48de144491bcfa1f4b86282869"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://gismaps.baladia.gov.kw/",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": null,
+      "error": "[Errno 54] Connection reset by peer",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "http://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1?f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": null,
+      "error": "[Errno 54] Connection reset by peer",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://www.baladia.gov.kw/",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": null,
+      "error": "[Errno 54] Connection reset by peer",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://gis.csb.gov.kw/ar/",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 25215,
+      "publicServiceLinks": []
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0?f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 5441,
+      "metadata": {
+        "name": "حدود الأراضي المساحية المعتمدة",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "capabilities": "Map,Query,Data"
+      },
+      "fields": [
+        "OBJECTID",
+        "ENDDATE",
+        "GFCODE",
+        "CDST_KEY",
+        "PIN",
+        "JOB",
+        "PDAREA",
+        "STARTDATE",
+        "EMP_NUM",
+        "SHAPE",
+        "SHAPE.AREA",
+        "SHAPE.LEN",
+        "GLOBALID",
+        "REF_NUMBER",
+        "PD_NO",
+        "COMMENTS"
+      ]
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0/query?where=1%3D1&returnGeometry=false&outFields=PIN%2CENDDATE%2CGFCODE&resultRecordCount=3&f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 557,
+      "nativeSamples": [
+        {
+          "PIN": 52220112,
+          "ENDDATE": null,
+          "GFCODE": "PDGVCDST"
+        },
+        {
+          "PIN": 70313426,
+          "ENDDATE": null,
+          "GFCODE": "PDGVCDST"
+        },
+        {
+          "PIN": 70419818,
+          "ENDDATE": null,
+          "GFCODE": "PDGVCDST"
+        }
+      ]
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0/query?where=ENDDATE+IS+NULL&returnCountOnly=true&f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 16,
+      "response": {
+        "count": 251207
+      }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+  "scope": "Measured-area identified plots only; not a current/version selection rule.",
+  "attempts": [
+    {
+      "label": "count",
+      "parameters": {
+        "where": "PAIN IS NOT NULL AND PAIN <> ' ' AND PLOTNUM IS NOT NULL AND PLOTNUM <> ' ' AND AREA_SQ_M2 IS NOT NULL AND AREA_SQ_M2 <> ' '",
+        "f": "json",
+        "returnCountOnly": "true"
+      },
+      "httpStatus": 200,
+      "count": 104250
+    },
+    {
+      "label": "duplicate-pairs",
+      "parameters": {
+        "where": "PAIN IS NOT NULL AND PAIN <> ' ' AND PLOTNUM IS NOT NULL AND PLOTNUM <> ' ' AND AREA_SQ_M2 IS NOT NULL AND AREA_SQ_M2 <> ' '",
+        "f": "json",
+        "groupByFieldsForStatistics": "PAIN,PLOTNUM",
+        "outStatistics": "[{\"statisticType\":\"count\",\"onStatisticField\":\"OBJECTID\",\"outStatisticFieldName\":\"n\"}]",
+        "havingClause": "COUNT(OBJECTID)>1",
+        "returnGeometry": "false"
+      },
+      "httpStatus": 200,
+      "groups": 50,
+      "duplicateRows": 100,
+      "samples": [
+        {
+          "PAIN": "1-35-051-02-563",
+          "PLOTNUM": "308",
+          "N": 2
+        },
+        {
+          "PAIN": "01-05-008-02-605",
+          "PLOTNUM": "605",
+          "N": 2
+        },
+        {
+          "PAIN": "01-05-003-09-3285",
+          "PLOTNUM": "3285",
+          "N": 2
+        }
+      ]
+    }
+  ]
+}

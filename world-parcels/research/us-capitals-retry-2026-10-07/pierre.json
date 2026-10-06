@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "stateCode": "SD",
+  "state": "South Dakota",
+  "capital": "Pierre",
+  "county": "Hughes County",
+  "previousStatus": "technical_hold",
+  "newStatus": "verified_sample_partial_coverage",
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "Accept": "application/json,text/html;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://hughescounty.org/realestate",
+    "refererAppliedTo": "Only the Beacon viewer request. The configured dev-host urllib request did not use a cookie jar. The subsequent ArcGIS metadata and bounded query requests used an empty in-memory cookie jar with no credentials or manually supplied cookies."
+  },
+  "changedByHeaders": false,
+  "foundViaViewerInspection": false,
+  "foundViaPublicArcGISSharing": true,
+  "searchManifest": {
+    "language": "English (U.S. local terminology; no separate local-language community identified for these county and state portals)",
+    "queries": [
+      "Pierre South Dakota GIS parcels Hughes County GIS parcel viewer map data download",
+      "site:arcgis.com Hughes County South Dakota parcels",
+      "site:gis.sd.gov/arcgis1/rest/services Hughes parcels South Dakota MapServer",
+      "site:sdgis.sd.gov/arcgis1/rest/services Hughes County South Dakota parcel GIS",
+      "Pierre GIS parcels site:cityofpierre.org",
+      "Pierre GIS parcel data site:cityofpierre.org",
+      "Hughes County SD parcel GIS ArcGIS",
+      "\"Hughes County\" SD \"parcel\" GIS FeatureServer",
+      "South Dakota GIS parcel data public access county parcel GIS South Dakota official data hub Hughes County",
+      "Pierre South Dakota parcel boundaries open data GIS official county city ArcGIS download",
+      "Hughes County GIS ArcGIS Pierre SD parcels mapping",
+      "Hughes County South Dakota parcel polygons official GIS",
+      "Hughes County SD assessor GIS parcels Hughes County tax parcel map parcel ID"
+    ],
+    "searchMethod": "Web search and direct reads of official county/city/state and provider ArcGIS catalog pages.",
+    "priorEvidence": [
+      "world-parcels/research/us-capitals-2026-10-06/sd.json",
+      "world-parcels/research/us-capitals-batch-five-access-conclusions-2026-10-06.json",
+      "world-parcels/research/us-capitals-retry-2026-10-07/runtime-network-probes.json"
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://hughescounty.org/realestate",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Hughes County page identifies Beacon Software as the property information portal; it says GIS information is available on a map, some information is free, and other information is subscription-gated. It supplies informational-only and accuracy disclaimers. This is a portal lead, not parcel geometry verification."
+    },
+    {
+      "url": "https://beacon.schneidercorp.com/Application.aspx?AppID=940&LayerID=18376&PageID=8187&PageTypeID=2",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "unknown",
+      "referer": "https://hughescounty.org/realestate",
+      "assessment": "Ordinary request from the configured dev runtime with Chrome-like User-Agent, Accept and Accept-Language and the official county Referer returned 403; that urllib request did not use a cookie jar. A separate tab opened through the existing Chrome extension-backed browser surface (not a dedicated headed Chrome session) rendered a 'Just a moment...' challenge page and did not reach the application. No CAPTCHA or access-control bypass was attempted. A prior 2026-10-06 browser fetch reported HTTP 402. These denials concern the Beacon viewer and provide no geographic-block evidence."
+    },
+    {
+      "url": "https://beaconaux.schneidercorp.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Schneider's public Beacon directory lists Hughes County, South Dakota among supported areas. Its page documents Beacon/qPublic as local government GIS and property-record reporting software. Directory access did not reveal a Hughes-specific geometry service URL."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Inspected Schneider's ArcGIS REST service catalog before considering a service path. Catalog lists MeadeCountySD_REST and MeadeCountySD_WFS and CityofMadisonSD services, but no HughesCountySD service. Thus there is no catalog-supported Hughes endpoint to test; no endpoint path was guessed."
+    },
+    {
+      "url": "https://sdgis.sd.gov/arcgis1/rest/services",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "South Dakota GIS official ArcGIS catalog root inspected. Listed state services include boundaries, PLSS and address/geocoding; no parcel service at root."
+    },
+    {
+      "url": "https://sdgis.sd.gov/arcgis1/rest/services/SD_All",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official SD_All catalog lists city boundaries, PLSS, natural resources and rivers/lakes; no parcel service. Statewide PLSS sections/townships are survey-grid polygons, not tax parcel boundaries."
+    },
+    {
+      "url": "https://sdgis.sd.gov/arcgis1/rest/services/DOR",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Department of Revenue folder lists rooftop address geocoders and RV25_TaxMatch only. The latter's service metadata lists City Boundary and Special Tax District layers, so it is not parcel geometry."
+    },
+    {
+      "url": "https://sdgis.sd.gov/arcgis1/rest/services/DOR/RV25_TaxMatch/MapServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official ArcGIS metadata confirms this layer inventory is tax-district/city-boundary data, not tax parcels."
+    },
+    {
+      "url": "https://www.cityofpierre.org/AgendaCenter/ViewFile/Item/32?fileID=5360",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "assessment": "City-published static Beacon parcel report/map dated 2021-06-17. It shows a Parcel ID field and map layer labels including Parcels, City Labels and Roads. It confirms a historical parcel map existed and its displayed parcel identifier convention, but is one old report rather than a polygon service. Personal owner/address attributes in the PDF were not copied into this evidence."
+    },
+    {
+      "url": "https://www.cityofpierre.org/Directory/Home/DepartmentListing?DID=14",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official city Engineering / Planning page lists a GIS Technician contact but no public parcel endpoint or data download."
+    },
+    {
+      "url": "https://hughescounty.org/map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official county map page embeds a Google map, not a cadastral or parcel viewer."
+    },
+    {
+      "url": "https://services.arcgis.com/3xOwF6p0r7IHIjfn/ArcGIS/rest/services/Hughes_County_Data/FeatureServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "ArcGIS public item titled Hughes_County_Data was checked as a potential mirror. Its listed layers are transportation, legislative, municipal and hydrology, with extent around longitude -97 and latitude 35, identifying Hughes County, Oklahoma rather than South Dakota; rejected as a geographic namesake."
+    },
+    {
+      "url": "https://services1.arcgis.com/AhXvNWFdL7hH4TjJ/ArcGIS/rest/services/PenningtonParcels/FeatureServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official South Dakota Pennington County/Rapid City parcel service surfaced while checking state-hosted public item lineage; its publisher and metadata identify Pennington County, outside Hughes County. Not a Pierre source."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Hughes%20County%20parcels&num=30&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Public ArcGIS sharing search returned a Hughes County Parcels 2023 item, owner isg.BusinessAnalyst, item id c8dcdb4426b6464d908fed8ca24d4900; snippet identifies the SD Missouri River Long Distance Trail project. Also found a separate older Parcels - SD - Hughes County item owned by GDITAdmin whose District III service is unavailable."
+    },
+    {
+      "url": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Public layer metadata confirms esriGeometryPolygon; native objectIdField FID (OID); PARCEL_ID and RECORD_ are strings; item serviceItemId c8dcdb4426b6464d908fed8ca24d4900. Display field is OWNER_NAME, but no owner or address fields were requested in the bounded sample. Layer extent includes Pierre and Hughes County."
+    },
+    {
+      "url": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13/metadata?f=xml",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "ESRI layer metadata identifies Parcels2023, Shapefile distribution format, NAD 1983 StatePlane South Dakota North US feet (latest WKID 4457), and create/sync/modify date 2023-02-09. It contains no source citation, lineage, terms, or field-code explanation."
+    },
+    {
+      "url": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Bounded Pierre query used bbox [-100.3535,44.3668,-100.3505,44.3698], inSR 4326, resultRecordCount 3, outFields PARCEL_ID,FID and returnGeometry=true. Three nonempty polygon records had closed rings; IDs observed were 11331, 6647 and 5250. Service reports exceededTransferLimit=true, so this is a bounded sample, not complete coverage. No geometry or owner attributes were saved."
+    },
+    {
+      "url": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13/query?where=PARCEL_ID%3D%2711899%27%20OR%20RECORD_%3D%2711899%27",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact identifier read returned one closed polygon for unpadded ID 11899 (FID 3173), matching the number shown with a leading zero in the 2021 City of Pierre Beacon report. Geometry extent is in the Pierre/Hughes area. The padded value was not found, which is consistent with the county's note that leading zeros can matter in its search UI; it does not negate the unpadded exact match. Geometry and owner fields were not retained."
+    },
+    {
+      "url": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13/query?where=PARCEL_ID%3D%270%27",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Aggregate-only check: 674 source rows have PARCEL_ID='0'; all 674 group under RECORD_ equal to one ASCII space. This pattern strongly indicates an unassigned placeholder, but the publisher's metadata does not explicitly define it as such. No geometry or other attributes were retrieved."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/ba682bca6a5146d7b46da6380725670e/data?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "The public Missouri River Long Distance Trail Web Map (owner ISGGISAdmin in the public ISG ArcGIS organization) directly references Hughes County Parcels 2023 layer 13. This establishes use of the dated mirror in an ISG project, not its original county data supplier."
+    }
+  ],
+  "source": {
+    "sourceId": "us-sd-pierre-parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+    "name": "Hughes County Parcels 2023",
+    "operator": "ISG ArcGIS Online organization / isg.BusinessAnalyst publisher",
+    "scope": "Hughes County by item title; Pierre capital area verified across 18 viewport cells and 349 exact native parcel groups. Countywide completeness and current boundary dates are unverified.",
+    "idField": "PARCEL_ID",
+    "recordField": "RECORD_",
+    "objectIdField": "FID",
+    "idType": "string",
+    "outFields": [
+      "PARCEL_ID",
+      "RECORD_",
+      "FID"
+    ],
+    "idSemantics": "PARCEL_ID and RECORD_ matched on the three bounded sample rows and exact ID read. The Beacon report's six-character example matched after removing a leading zero. IDs can appear on more than one geometry component, so do not treat them as unique row IDs; FID is the service row object ID. Layer metadata lacks an explicit field definition.",
+    "sourceDate": "2023-02-09",
+    "publisherLineage": "The public ISG-owned Missouri River Long Distance Trail Web Map includes this layer. ISG organization metadata names the publisher ISG; the official ISG site documents a Pierre office and GIS services. The layer item snippet is the trail-project name. No upstream assessor/county source is named.",
+    "attribution": "ArcGIS accessInformation and licenseInfo are blank; XML metadata has no source citation. Record the missing attribution/terms as unknown; this does not invalidate the observed public read.",
+    "reuseStatus": "Public feature query verified; dated project mirror, with incomplete upstream provenance and reuse terms."
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "us-sd-pierre-parcels",
+    "requestUrl": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13/query",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -100.3535,
+      44.3668,
+      -100.3505,
+      44.3698
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "Response records summarized below; raw geometries were not retained.",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "PARCEL_ID",
+    "objectIdField": "FID",
+    "responseFile": null,
+    "pagination": {
+      "resultRecordCount": 3,
+      "exceededTransferLimit": true
+    },
+    "nativeIDs": [
+      "11331",
+      "6647",
+      "5250"
+    ],
+    "exactIdReadCount": 1,
+    "exactIdReadGeometry": "One closed polygon; unpadded ID 11899.",
+    "exactIdReadNativeId": "11899"
+  },
+  "identifiedPartsGate": {
+    "status": "passed",
+    "proofFile": "world-parcels/research/us-capitals-retry-2026-10-07/pierre-identified-parts-gate.json",
+    "viewportCells": 18,
+    "uniqueNativeIds": 349,
+    "exactResolved": 349,
+    "allExactRereadsStable": true,
+    "footprintCount": 4,
+    "pagingComplete": true,
+    "note": "Configured adapter acceptance for Pierre capital-area scope; this validates identified parcel components and exact rereads, not countywide completeness or upstream source lineage."
+  },
+  "geoBlockSuspected": false,
+  "coverageAssessment": {
+    "claimedScope": "ISG's public 2023 Hughes County parcel mirror, used by its Missouri River Long Distance Trail Web Map. Hughes County separately identifies Beacon as its real estate GIS viewer.",
+    "verifiedOpenScope": "18 Pierre viewport cells and all 349 retained native parcel groups passed complete paging, exact rereads, footprint queries and source binding.",
+    "countrywideVerified": false,
+    "cityCountyStatus": "Verified public vector sample in capital-area scope, from a 2023-dated ISG project mirror. Currentness after 2023 and countywide completeness are unverified."
+  },
+  "remainingUncertainty": "The 2023 mirror has a verified Pierre sample and an exact ID consistent with the number formatting in the 2021 City of Pierre Beacon report after removing its leading zero. The item and project Web Map identify ISG as publisher/consumer but name no upstream assessor or county data source. The service's metadata does not define PARCEL_ID/RECORD_ semantics or explicitly define the single-space/zero sentinel; a mirror-wide audit found 674 PARCEL_ID='0' rows all paired with RECORD_ equal to one space. Repeated IDs may describe disjoint geometry components. Completeness, updates after 2023, and reuse terms remain undocumented.",
+  "nextStep": "Use the configured dated ISG project mirror with identified native keys and complete disjoint parts. Upstream lineage and boundary updates after 2023 remain unverified; the current county Beacon feed can replace this source after access and equivalent-identity verification."
+}

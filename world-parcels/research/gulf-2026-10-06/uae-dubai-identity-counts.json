@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+  "publicViewer": "https://gis.dda.gov.ae/dis/",
+  "attempts": [
+    {
+      "operation": "missing-native-id",
+      "httpStatus": 200,
+      "count": 0
+    },
+    {
+      "operation": "distinct-native-ids",
+      "httpStatus": 200,
+      "error": {
+        "code": 400,
+        "extendedCode": -2147024809,
+        "message": "Invalid or missing input parameters.",
+        "details": []
+      }
+    }
+  ]
+}

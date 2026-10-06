@@ -535,3 +535,33 @@ describe('explicit non-null source scope', () => {
             .queryBounds([-79.384, 43.652, -79.383, 43.653])).rejects.toThrow(/invalid native parcel ID/);
     });
 });
+
+describe('explicit current lifecycle scope', () => {
+    const scoped = { ...descriptor, outFields: [...descriptor.outFields, 'ENDDATE'], attributeNull: ['ENDDATE'] };
+    const current = () => { const row = feature(1, 12345); row.properties.ENDDATE = null; return row; };
+    it('uses current-only scope for viewport, exact IDs and footprint reads', async () => {
+        const row = current();
+        const { fetchImpl, calls } = makeFetch([response([row]), response([row]), response([row])]);
+        const source = createArcgisParcelSource(scoped, { fetchImpl });
+        await source.queryBounds([-79.384, 43.652, -79.383, 43.653]);
+        await source.queryIds(['CA-ON-TORONTO-12345']);
+        await source.queryGeometry(row.geometry);
+        expect(calls.map(call => call.searchParams.get('where'))).toEqual([
+            'ENDDATE IS NULL', '(ENDDATE IS NULL) AND (PARCELID IN (12345))', 'ENDDATE IS NULL'
+        ]);
+    });
+    it.each([0, 1720000000000, undefined])('rejects ended or omitted lifecycle attributes if the provider ignores scope: %s', async date => {
+        const row = current();
+        if (date === undefined) delete row.properties.ENDDATE;
+        else row.properties.ENDDATE = date;
+        const { fetchImpl } = makeFetch([response([row])]);
+        await expect(createArcgisParcelSource(scoped, { fetchImpl })
+            .queryBounds([-79.384, 43.652, -79.383, 43.653])).rejects.toThrow(/configured ground status/);
+    });
+    it.each([null, 'ENDDATE', ['unpublished'], ['ENDDATE) OR 1=1'], [42]])('rejects unsafe or unreadable lifecycle declarations: %j', fields => {
+        expect(() => createArcgisParcelSource({ ...scoped, attributeNull: fields })).toThrow(/attribute filter/);
+    });
+    it('rejects contradictory null and non-null source scopes', () => {
+        expect(() => createArcgisParcelSource({ ...scoped, attributeNotNull: ['ENDDATE'] })).toThrow(/attribute filter/);
+    });
+});

@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Doha",
+      "sourceId": "qa-cgis-approved-cadastre",
+      "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5275,
+            25.2825,
+            51.53,
+            25.285
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.53,
+            25.2825,
+            51.5325,
+            25.285
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5325,
+            25.2825,
+            51.535000000000004,
+            25.285
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5275,
+            25.285,
+            51.53,
+            25.2875
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.53,
+            25.285,
+            51.5325,
+            25.2875
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5325,
+            25.285,
+            51.535000000000004,
+            25.2875
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5275,
+            25.2875,
+            51.53,
+            25.29
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.53,
+            25.2875,
+            51.5325,
+            25.29
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5325,
+            25.2875,
+            51.535000000000004,
+            25.29
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.535000000000004,
+            25.2825,
+            51.5375,
+            25.285
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5375,
+            25.2825,
+            51.54,
+            25.285
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.54,
+            25.2825,
+            51.542500000000004,
+            25.285
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.535000000000004,
+            25.285,
+            51.5375,
+            25.2875
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5375,
+            25.285,
+            51.54,
+            25.2875
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.54,
+            25.285,
+            51.542500000000004,
+            25.2875
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.535000000000004,
+            25.2875,
+            51.5375,
+            25.29
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5375,
+            25.2875,
+            51.54,
+            25.29
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.54,
+            25.2875,
+            51.542500000000004,
+            25.29
+          ],
+          "count": 24,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          51.5275,
+          25.2825,
+          51.53,
+          25.285
+        ],
+        "forcedPageSize": 3,
+        "count": 5,
+        "returned": 5,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 316,
+      "exactResolved": 316,
+      "nativeIds": [
+        "4290013",
+        "4380001",
+        "4060021"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:qa-cgis-approved-cadastre",
+        "parcels": 1,
+        "siteM2": 77501.2
+      },
+      "requests": 27
+    }
+  ]
+}

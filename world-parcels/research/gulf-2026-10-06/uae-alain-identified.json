@@ -1,0 +1,46 @@
+{
+  "attempts": [
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=LMS_PLOT_I+%3E+0&returnGeometry=false&outFields=UTM_CODE%2CLMS_PLOT_I%2CTEMPORALST%2CSTATUS%2CDISTRICT_1%2CCOMMUNITY1%2CROAD_NO_L1%2CPLOT_NUM1&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "nativeSamples": [
+        {
+          "UTM_CODE": "   7U9DBS",
+          "LMS_PLOT_I": 926,
+          "TEMPORALST": " ",
+          "STATUS": 0,
+          "DISTRICT_1": 0,
+          "COMMUNITY1": 1,
+          "ROAD_NO_L1": 4,
+          "PLOT_NUM1": 1
+        },
+        {
+          "UTM_CODE": "   7U8EXW",
+          "LMS_PLOT_I": 918,
+          "TEMPORALST": " ",
+          "STATUS": 0,
+          "DISTRICT_1": 0,
+          "COMMUNITY1": 1,
+          "ROAD_NO_L1": 4,
+          "PLOT_NUM1": 2
+        },
+        {
+          "UTM_CODE": "   5S9LQV",
+          "LMS_PLOT_I": 25,
+          "TEMPORALST": " ",
+          "STATUS": 0,
+          "DISTRICT_1": 0,
+          "COMMUNITY1": 12,
+          "ROAD_NO_L1": 2,
+          "PLOT_NUM1": 35
+        }
+      ],
+      "statuses": [
+        " "
+      ],
+      "returnedRows": 822,
+      "truncated": null
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-10-06",
+  "attempts": [
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services?f=json",
+      "httpStatus": 200,
+      "services": [
+        {
+          "name": "CampingLocations",
+          "type": "FeatureServer"
+        },
+        {
+          "name": "CampingLocations",
+          "type": "MapServer"
+        },
+        {
+          "name": "CampingLocationWebLayer",
+          "type": "MapServer"
+        },
+        {
+          "name": "MMLightingLayer",
+          "type": "MapServer"
+        },
+        {
+          "name": "Mutrah_Directorate_Map_Service_MIL1",
+          "type": "MapServer"
+        },
+        {
+          "name": "ProposedPestSites",
+          "type": "MapServer"
+        },
+        {
+          "name": "Public_Park",
+          "type": "MapServer"
+        },
+        {
+          "name": "SatelliteImages2018_pro_MIL1",
+          "type": "MapServer"
+        }
+      ],
+      "folders": [
+        "AddressFDC",
+        "CAMPING_LOCATION",
+        "eNOC",
+        "Hosted",
+        "MM",
+        "MM_Survey",
+        "TechnicalStudies",
+        "Utilities"
+      ],
+      "metadata": {}
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM?f=json",
+      "httpStatus": 200,
+      "services": [
+        {
+          "name": "MM/ArabicWebsite_mmm12c",
+          "type": "MapServer"
+        },
+        {
+          "name": "MM/EnglishWebsite_mmm12c",
+          "type": "MapServer"
+        },
+        {
+          "name": "MM/EnglishWebsiteLighting_mmm12c",
+          "type": "MapServer"
+        }
+      ],
+      "folders": [],
+      "metadata": {}
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/iteminfo?f=json",
+      "httpStatus": 200,
+      "metadata": {
+        "title": "Plots",
+        "snippet": "",
+        "summary": "",
+        "description": "",
+        "tags": []
+      }
+    }
+  ]
+}

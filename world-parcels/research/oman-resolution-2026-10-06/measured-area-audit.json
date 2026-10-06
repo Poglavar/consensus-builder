@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+  "scope": {
+    "where": "PAIN IS NOT NULL AND PAIN <> ' ' AND PLOTNUM IS NOT NULL AND PLOTNUM <> ' ' AND AREA_SQ_M2 IS NOT NULL AND AREA_SQ_M2 <> ' '",
+    "count": 104250,
+    "qualification": "Measured-area identified subset only; area availability is not evidence of currentness or record precedence."
+  },
+  "duplicateKeys": {
+    "fields": ["PAIN", "PLOTNUM"],
+    "groupCount": 50,
+    "duplicateRows": 100,
+    "multiplicity": {"allGroups": 2},
+    "transport": "Anonymous ArcGIS REST grouped statistics, f=json, returnGeometry=false, havingClause=COUNT(OBJECTID)>1; HTTP 200."
+  },
+  "geometryAudit": {
+    "status": "complete",
+    "pairGroupsRequested": 50,
+    "pairQueriesSucceeded": 50,
+    "httpStatus": 200,
+    "featuresReturned": 100,
+    "featuresPerPair": {"allPairs": 2},
+    "requestErrors": 0,
+    "geometryOrAnalysisErrors": 0,
+    "requestShape": "One bounded query per duplicate PAIN/PLOTNUM pair; f=geojson, outSR=4326, returnGeometry=true, outFields=OBJECTID,PAIN,PLOTNUM,AREA_SQ_M2.",
+    "inMemoryMethod": {
+      "geometryRetention": "GeoJSON geometries were passed from anonymous requests directly through memory to Turf; no geometry was written to disk or retained in this evidence.",
+      "rawCoordinateEquality": "Compared the parsed GeoJSON geometry coordinate sequences and polygon structure exactly.",
+      "ringNormalization": "Also compared coordinate sequences after canonical ring start, winding direction, ring order, and polygon order; this detects representation-only changes such as ring rotation/reversal.",
+      "topology": "Used Turf intersection area and both directed differences (A minus B and B minus A); symmetric difference is the sum of the two difference areas.",
+      "areaUnits": "Turf geodesic area from GeoJSON output in WGS 84; square metres.",
+      "equivalenceTolerance": "Topologically equivalent when symmetric-difference area <= max(0.01 m2, 1e-6 * the larger feature area) and positive intersection area is present.",
+      "disjointRule": "Area-disjoint when intersection area <= 0.01 m2; this is an interiors/area test and does not distinguish boundary-only touching."
+    },
+    "classificationCounts": {
+      "coordinateSequenceIdentical": 24,
+      "sameCoordinatesOnlyRingOrPolygonOrderChanged": 0,
+      "topologicallyEquivalentWithinTolerance": 1,
+      "areaDisjoint": 12,
+      "overlappingCompetingShapes": 13
+    },
+    "classMetrics": {
+      "coordinateSequenceIdentical": {
+        "pairCount": 24,
+        "featureAreaM2Min": 50.2412,
+        "featureAreaM2Max": 8332.5669,
+        "symmetricDifferenceM2": 0
+      },
+      "topologicallyEquivalentWithinTolerance": {
+        "pairCount": 1,
+        "featureAreaM2": 603.0508,
+        "overlapM2": 603.0508,
+        "symmetricDifferenceM2": 0.0003375
+      },
+      "areaDisjoint": {
+        "pairCount": 12,
+        "overlapM2": 0,
+        "symmetricDifferenceM2Min": 502.8656,
+        "symmetricDifferenceM2Median": 1211.0888,
+        "symmetricDifferenceM2Max": 15399.5234
+      },
+      "overlappingCompetingShapes": {
+        "pairCount": 13,
+        "overlapM2Min": 45.1849,
+        "overlapM2Median": 714.4266,
+        "overlapM2Max": 23519.1081,
+        "symmetricDifferenceM2Min": 0.1739,
+        "symmetricDifferenceM2Median": 224.1492,
+        "symmetricDifferenceM2Max": 5958338.7685,
+        "intersectionOverUnionMin": 0.0001265,
+        "intersectionOverUnionMedian": 0.905093,
+        "intersectionOverUnionMax": 0.999506
+      }
+    },
+    "samples": [
+      {
+        "nativePair": ["1-35-051-02-033", "212"],
+        "classification": "coordinateSequenceIdentical",
+        "featureAreasM2": [8332.5669, 8332.5669],
+        "overlapM2": 8332.5669,
+        "symmetricDifferenceM2": 0
+      },
+      {
+        "nativePair": ["01-05-003-09-3285", "3285"],
+        "classification": "areaDisjoint",
+        "featureAreasM2": [879.4158, 331.6729],
+        "overlapM2": 0,
+        "symmetricDifferenceM2": 1211.0888
+      },
+      {
+        "nativePair": ["01-03-009-01-1674", "1674"],
+        "classification": "overlappingCompetingShapes",
+        "featureAreasM2": [23519.1081, 23533.2481],
+        "overlapM2": 23519.1081,
+        "symmetricDifferenceM2": 14.14
+      }
+    ]
+  },
+  "finding": "A nonblank AREA_SQ_M2 requirement does not resolve duplicate PAIN+PLOTNUM identities. Of 50 duplicate pairs, 24 share exactly identical coordinate sequences, one is equivalent within the stated area tolerance, 12 are area-disjoint, and 13 are materially different shapes with positive overlap. The key therefore mixes exact duplicate rows with distinct disjoint and overlapping geometries; area presence cannot establish which row is current or authoritative.",
+  "limits": [
+    "This audits only the 104250-row measured-area subset, not all service features or completeness of a viewport.",
+    "Turf measurements use WGS 84 GeoJSON and floating-point geodesic area; the stated tolerance is explicit and only classifies geometric equivalence within that bound.",
+    "No lifecycle or effective-date selection rule was tested or inferred.",
+    "No geometry, owner attributes, credentials, or row OBJECTIDs are retained. At most three native PAIN/PLOTNUM pairs are included as examples."
+  ]
+}

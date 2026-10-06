@@ -1,0 +1,549 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "stateCode": "KY",
+  "state": "Kentucky",
+  "capital": "Frankfort",
+  "centerLatLon": [
+    38.2009,
+    -84.8733
+  ],
+  "previousEvidence": {
+    "date": "2026-10-06",
+    "files": [
+      "world-parcels/research/us-capitals-2026-10-06/ky.json",
+      "world-parcels/research/us-capitals-batch-five-identity-ky-city-2026-10-06.json",
+      "world-parcels/research/us-capitals-batch-five-identity-ky-mirror-2026-10-06.json",
+      "world-parcels/research/us-capitals-batch-five-identity-conclusions-2026-10-06.json",
+      "world-parcels/research/us-capitals-batch-five-identity-diagnosis-2026-10-06.json"
+    ],
+    "priorStatus": "hold-native-identity-unresolved",
+    "priorFinding": "The live FranklinCountyKY_WFS parcel service returned two records with shared MAPNUM/PARCEL_ID 061-00-00-103.00 but PARCEL components 103 and 103.18, and SOURCE_TYP PVA MAP versus DEED."
+  },
+  "status": "verified_sample_capital_scope_identity_gate_passed",
+  "source": {
+    "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+    "adapter": "arcgis",
+    "layerName": "Parcels",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:2246 (per live service metadata)",
+    "operator": "Franklin County Property Valuation Administrator; hosted by Schneider Geospatial",
+    "objectIdField": "OBJECTID",
+    "nativeIdentityCandidate": {
+      "idFields": [
+        "PARCEL_ID",
+        "PARCEL"
+      ],
+      "idFieldTypes": {
+        "PARCEL_ID": "string",
+        "PARCEL": "string"
+      },
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "PARCEL",
+        "MAPNUM",
+        "MAP",
+        "BLOCK",
+        "SOURCE_TYP",
+        "v_SY"
+      ],
+      "excludedBlankComponents": [
+        "PARCEL_ID",
+        "PARCEL"
+      ],
+      "assessment": "The composite separates the observed PVA MAP and DEED records at the 103 examples, and the coordinator's 18-cell Frankfort adapter gate passed with 654 composite IDs, exact lookups, paging/count, footprint, and source binding. Countywide aggregate results also show repeated PARCEL_ID+PARCEL groups; use complete disjoint geometries only where verified and do not treat the fields as a one-row-per-ID key or union overlapping records."
+    },
+    "scope": "Franklin County PVA parcel polygons; a bounded Frankfort sample was verified and the coordinator reports an 18-cell capital-footprint gate pass. Countywide coverage is not claimed for the Frankfort footprint.",
+    "metricSrid": 32616,
+    "countyFeatureCount": 23444,
+    "coordinatorGate": {
+      "status": "passed",
+      "footprintCells": 18,
+      "compositeNativeIds": 654,
+      "exactLookupResults": "all 654 exact lookups returned identical complete disjoint group geometry",
+      "otherChecks": [
+        "forced paging/count",
+        "footprint",
+        "authoritative source binding"
+      ],
+      "evidenceLocation": "research/us-capitals-retry-2026-10-07/frankfort-composite-parts-gate.json",
+      "limitation": "The gate verifies the configured Frankfort footprint; it is not a countywide proof that every repeated composite group is current or disjoint."
+    },
+    "sourceId": "us-ky-frankfort-parcels"
+  },
+  "publisherIdentitySemantics": {
+    "kentuckyDorGeoSyncDocument": {
+      "url": "https://revenue.ky.gov/PVANetwork/Documents/Web_Setup_Print2.pdf",
+      "title": "GeoSync 3.2.56 Map Annotation and Printing Instructions",
+      "revisionDate": "2006-03-22",
+      "observedDefinitions": [
+        "MUID is described as MapSync Unique IDentifying number and should be in all editable layers.",
+        "Parcel_ID should contain the entire parcel number (example 001-20-03-004.00).",
+        "Map# contains map number and block, Block stores the block, and Parcel stores the parcel component; parcel suffixes such as 4.05 are explicitly used for a split."
+      ],
+      "limitation": "This is an official statewide workflow document, not a Franklin County schema statement. The public Franklin layer has no MUID field."
+    },
+    "franklinPvaTaxLingo": {
+      "url": "https://franklincountypva.com/tax-lingo/",
+      "observedDefinitions": [
+        "PIN is glossed as Property Identification Number (Map number).",
+        "Block and Lot are described as frequent components of a geographically organized PIN; block refers to an individual map and lot to an individual parcel on the map."
+      ],
+      "limitation": "This vocabulary does not explain duplicate component rows or define MAPNUM, PARCEL_ID, MAP, BLOCK, PARCEL, SOURCE_TYP, or v_SY in the live service."
+    },
+    "franklinLayerSchema": {
+      "metadataRequest": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0?f=pjson",
+      "httpStatus": 200,
+      "fieldsObserved": {
+        "MAPNUM": "string",
+        "PARCEL_ID": "string",
+        "MAP": "string",
+        "BLOCK": "string",
+        "PARCEL": "string",
+        "SOURCE_TYP": "string; coded values DEED, PLAT, PVA MAP, SURVEY",
+        "v_SY": "integer",
+        "OBJECTID": "OID"
+      },
+      "metadataLimitations": [
+        "No layer description or copyright text",
+        "No MUID",
+        "No publication/current-ground date",
+        "No field description for v_SY",
+        "No lifecycle or edit-tracking metadata"
+      ]
+    },
+    "countywideComponentComparison": {
+      "summary": "MAP/BLOCK/PARCEL are not a complete one-row-per-cadastral-record reference in this service. A grouped aggregate returned repeated triples (top group count 7); MAP/BLOCK/PARCEL omit the split suffix in many rows. In an inspected triple, MAP=074-12, BLOCK=13, PARCEL=6 included distinct full PARCEL_ID/MAPNUM suffixes .05, .06 and .08. MAPNUM and PARCEL_ID agree in the inspected 103 rows, but do not always agree with the exposed PARCEL component.",
+      "blankAndNullCounts": {
+        "totalFeatures": 23444,
+        "PARCEL_ID_null": 0,
+        "PARCEL_ID_blank": 56,
+        "PARCEL_null": 521,
+        "PARCEL_blank": 2,
+        "MAP_null": 520,
+        "MAP_blank": 2,
+        "BLOCK_null": 1044,
+        "BLOCK_blank": 7463,
+        "PARCEL_ID_and_PARCEL_both_nonblank": 22865
+      },
+      "aggregateMethod": "ArcGIS count-only predicates and groupByFieldsForStatistics with identifiers and count only; no geometry or owner fields.",
+      "caveat": "The unfiltered grouped aggregate returned 2,000 rows and exceededTransferLimit=true. These are lower-bound duplicate observations, not a full inventory of repeated groups."
+    }
+  },
+  "identityAndGeometryProof": {
+    "boundedExamples": [
+      {
+        "nativeParcelIds": [
+          "061-00-00-103.00",
+          "061-00-00-103.18"
+        ],
+        "evidence": "For PARCEL_ID 061-00-00-103.00, a 3-record exact-key query returned 2 polygons: MAPNUM/PARCEL_ID 103.00, MAP 061, blank BLOCK, PARCEL 103, SOURCE_TYP PVA MAP, v_SY 2017; and the same MAPNUM/PARCEL_ID, MAP 061, null BLOCK, PARCEL 103.18, SOURCE_TYP DEED, v_SY 2017. For PARCEL_ID 103.18, the exact-key query returned 2 different polygons: PVA MAP with PARCEL 103.00 and v_SY null; DEED with PARCEL 103.18 and v_SY null. Grouped counts for each PARCEL_ID+PARCEL pair were 1 in these four rows.",
+        "geometryComparison": "GEOS comparison of the four returned EPSG:4326 polygons found zero positive-area intersection across every pair. The two rows sharing key 103.00 share a boundary only. No union or source-type/v_SY filter was applied.",
+        "officialMapNumberCorroboration": {
+          "url": "https://www.frankfort.ky.gov/AgendaCenter/ViewFile/Agenda/_09262022-551",
+          "observation": "A 2022 City of Frankfort ordinance identifies 061-00-00-103.18 as a PVA Map Number, corroborating that suffix as an assessor-recognized map number; it does not explain the 2017 duplicate component rows or establish current geometry."
+        }
+      },
+      {
+        "nativeParcelId": "039-00-00-072.00",
+        "aggregateCountForPARCEL_ID_plus_PARCEL": 17,
+        "groupedSourceAndVersion": [
+          {
+            "SOURCE_TYP": "PVA MAP",
+            "v_SY": 1972,
+            "rowCount": 17
+          }
+        ],
+        "sampleGeometry": "The first 3 of 17 rows were inspected. Two are disjoint; one pair touches only at a boundary; no positive-area overlap was found among the three. The remaining 14 geometries were not examined. This is evidence for a multipart possibility, not proof of complete group disjointness or publisher-defined multipart semantics."
+      }
+    ],
+    "countyAggregateIdentityAudit": {
+      "PARCEL_ID_plus_PARCEL": {
+        "grouping": [
+          "PARCEL_ID",
+          "PARCEL"
+        ],
+        "orderedBy": "row_count DESC",
+        "requestedResultRecordCount": 3,
+        "actualRowsReturned": 2000,
+        "exceededTransferLimit": true,
+        "assessment": "Repeated composite groups exist. The top nonblank group observed has 17 rows; blank PARCEL_ID groups were also present (one observed count 38). Full countywide group inventory and geometry overlap checks were not performed."
+      },
+      "MAP_BLOCK_PARCEL": {
+        "grouping": [
+          "MAP",
+          "BLOCK",
+          "PARCEL"
+        ],
+        "requestedResultRecordCount": 3,
+        "actualRowsReturned": 2000,
+        "exceededTransferLimit": true,
+        "topObservedDuplicateCount": 7,
+        "assessment": "The component triple repeats, and PARCEL can omit the split suffix. It cannot replace the full parcel identifier in this layer."
+      },
+      "countDistinctAttempt": "ArcGIS countdistinct statistics returned HTTP 200 with an ArcGIS 400 error; no count-distinct conclusion was derived."
+    }
+  },
+  "currencyAndCurrentGround": {
+    "assessment": "Not established. The live service has SOURCE_TYP categories and v_SY values spanning 1900 through 2026, null values, and a small anomalous 5202 value. The field v_SY is undocumented in the service. A current service response and 2026-valued rows do not prove that every geometry is the current cadastral boundary. No version or SOURCE_TYP filter was applied.",
+    "aggregateObservations": {
+      "featureCount": 23444,
+      "groupedRowsRepresented": 23444,
+      "v_SY_nonNullMin": 1900,
+      "v_SY_nonNullMax": 5202,
+      "v_SY_nullRows": 3586,
+      "v_SY_2026_rows": 1028,
+      "v_SY_2025_rows": 1207
+    },
+    "additionalEvidence": [
+      {
+        "url": "https://franklincountypva.com/general-information/real-property/",
+        "observation": "The PVA describes annual assessment of taxable real property and examination at least once every four years; that is assessment administration, not a map-geometry refresh guarantee."
+      },
+      {
+        "url": "https://revenue.ky.gov/Property/Mapping-Services/Pages/default.aspx",
+        "observation": "Kentucky DOR offers GIS digital data products through requests first made to the local PVA; page lists a $50 request fee and per-parcel prices. This is a possible official data-request path, not a verified public endpoint."
+      }
+    ]
+  },
+  "officialAlternativeAndViewerSearch": {
+    "countyLinkedViewer": {
+      "officialEntry": "https://franklincounty.ky.gov/",
+      "webAppItem": "https://bluegrassadd.maps.arcgis.com/apps/webappviewer/index.html?id=e96a2a025f974cf681de1b0bd6082d69",
+      "publicArcGISItem": "https://www.arcgis.com/sharing/rest/content/items/e96a2a025f974cf681de1b0bd6082d69?f=pjson",
+      "webMapData": "https://www.arcgis.com/sharing/rest/content/items/b81e4b45494944f69bec47131a89ad29/data?f=json",
+      "itemTitle": "FranklinCountyZoning",
+      "itemModified": "2024-08-12",
+      "operationalLayers": [
+        "County Boundary",
+        "Future Landuse",
+        "FranklinZoning",
+        "River",
+        "FloodZone",
+        "City Limits",
+        "Roads",
+        "Addresses"
+      ],
+      "assessment": "Official county page links this ArcGIS app and describes it as including zoning. The public web-map configuration contains no cadastral parcel layer; it is not an alternative parcel source."
+    },
+    "PvaPropertySearch": {
+      "officialPage": "https://franklincountypva.com/",
+      "observation": "The PVA advertises a free basic property search and a subscription service for additional records. Search results and official PVA-linked 2023 report PDFs identify qPublic/Schneider as the interface.",
+      "viewerUrl": "https://qpublic.schneidercorp.com/Application.aspx?AppID=1025&LayerID=21571&PageTypeID=2&PageID=9206",
+      "viewerRequestResult": "Direct browser-header GET returned HTTP 403 challenge HTML titled 'Just a moment...'. No challenge was bypassed. The layer service remained directly queryable. The challenge is a viewer-access observation, not a claim that the underlying service is blocked."
+    },
+    "otherOfficialPaths": [
+      {
+        "url": "https://franklincountyclerk.ky.gov/search-your-land-records-here/",
+        "observation": "eCCLIX is an indexed deed/land-record search with subscription/commercial and limited resident access; it is not a parcel-polygon download."
+      },
+      {
+        "url": "https://kygeonet.ky.gov/",
+        "observation": "Kentucky describes its public ArcGIS server as statewide mapping services; catalog search found a PVA parcel service for Webster County, not a verified Franklin County statewide feed. Kentucky’s mapping program documents county-specific PVA data products and a request route through the local PVA."
+      }
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "Live layer metadata; polygon geometry, schema, EPSG:2246, 2,000 max records. No publisher identity/lifecycle description."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=1%3D1&geometry=-84.8743%2C38.1999%2C-84.8723%2C38.2019&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CMAPNUM%2CPARCEL_ID%2CMAP%2CBLOCK%2CPARCEL%2CSOURCE_TYP%2Cv_SY&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Frankfort bbox about 220 m across; three polygon records returned with identifier/source/version fields and geometry only; transfer limit reached."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID%3D%27061-00-00-103.00%27&outFields=OBJECTID%2CMAPNUM%2CPARCEL_ID%2CMAP%2CBLOCK%2CPARCEL%2CSOURCE_TYP%2Cv_SY&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Two exact-key polygons; no owner attributes requested; geometry kept in /tmp only."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID%3D%27061-00-00-103.18%27&outFields=OBJECTID%2CMAPNUM%2CPARCEL_ID%2CMAP%2CBLOCK%2CPARCEL%2CSOURCE_TYP%2Cv_SY&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Two exact-key polygons; no owner attributes requested; geometry kept in /tmp only."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID%3D%27061-00-00-103.00%27&groupByFieldsForStatistics=PARCEL_ID%2CPARCEL&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22row_count%22%7D%5D&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Scoped aggregate: two (PARCEL_ID,PARCEL) groups, row_count 1 each."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID%3D%27061-00-00-103.18%27&groupByFieldsForStatistics=PARCEL_ID%2CPARCEL&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22row_count%22%7D%5D&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Scoped aggregate: two (PARCEL_ID,PARCEL) groups, row_count 1 each."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID+IS+NOT+NULL+AND+PARCEL+IS+NOT+NULL&outFields=PARCEL_ID%2CPARCEL&groupByFieldsForStatistics=PARCEL_ID%2CPARCEL&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22row_count%22%7D%5D&orderByFields=row_count+DESC&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Countywide identifier-only aggregate returned 2,000 groups and exceededTransferLimit=true. Highest observed blank-key pair count 38; highest observed nonblank (PARCEL_ID,PARCEL) pair count 17. A resultRecordCount of 3 was not honored for this grouped MapServer query."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=MAP%3D%27074-12%27+AND+BLOCK%3D%2713%27+AND+PARCEL%3D%276%27&outFields=OBJECTID%2CPARCEL_ID%2CPARCEL%2CMAPNUM%2CMAP%2CBLOCK%2CSOURCE_TYP%2Cv_SY&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "A maximum-three attribute-only inspection of one repeated MAP/BLOCK/PARCEL triple showed three separate full-number suffixes (.05, .08, .06), demonstrating the bare PARCEL component omits split suffixes."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID%3D%27039-00-00-072.00%27+AND+PARCEL%3D%2772%27&outFields=OBJECTID%2CPARCEL_ID%2CPARCEL%2CMAPNUM%2CMAP%2CBLOCK%2CSOURCE_TYP%2Cv_SY&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Three of 17 exact composite-key geometries inspected; all same PVA MAP / v_SY=1972. Two disjoint, one pair boundary-touching, none overlap by area. Remaining 14 not fetched."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Aggregate total 23,444 layer rows."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID+IS+NULL&returnCountOnly=true&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Aggregate null count 0."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL+IS+NULL&returnCountOnly=true&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Aggregate null count 521."
+    },
+    {
+      "url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=1025&LayerID=21571&PageTypeID=2&PageID=9206",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "The public PVA-linked qPublic viewer returned a challenge page ('Just a moment...'); no challenge bypassed. Does not negate the independently queryable parcel layer."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/e96a2a025f974cf681de1b0bd6082d69/data?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Public county-linked FranklinCountyZoning web-map config inspected; operational layers contain no parcels."
+    }
+  ],
+  "failedAttempts": [
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0?f=pjson",
+      "method": "GET",
+      "result": "The initial sandboxed Python request failed DNS name resolution before reaching the provider. The same request with browser headers returned HTTP 200 after authorized network escalation; this is not a provider failure."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID+IS+NOT+NULL+AND+PARCEL+IS+NOT+NULL&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22rows%22%7D%2C%7B%22statisticType%22%3A%22countdistinct%22%2C%22onStatisticField%22%3A%22PARCEL_ID%22%2C%22outStatisticFieldName%22%3A%22distinct_parcel_id%22%7D%2C%7B%22statisticType%22%3A%22countdistinct%22%2C%22onStatisticField%22%3A%22PARCEL%22%2C%22outStatisticFieldName%22%3A%22distinct_parcel_component%22%7D%5D&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "resultError": "ArcGIS error code 400, Invalid or missing input parameters; no statistics conclusion was derived."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID+IS+NOT+NULL+AND+PARCEL+IS+NOT+NULL&outFields=PARCEL_ID%2CPARCEL&groupByFieldsForStatistics=PARCEL_ID%2CPARCEL&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22row_count%22%7D%5D&havingClause=COUNT%28OBJECTID%29+%3E+1&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "resultError": "ArcGIS error code 400, Unable to complete operation; no duplicate result was inferred from this attempt."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/e96a2a025f974cf681de1b0bd6082d69?f=pjson",
+      "method": "GET",
+      "result": "The web tool could not open this ArcGIS REST URL; a direct public browser-header request succeeded."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/e96a2a025f974cf681de1b0bd6082d69/data?f=json",
+      "method": "GET",
+      "result": "The web tool could not open this ArcGIS REST URL; a direct public browser-header request succeeded."
+    },
+    {
+      "url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=1025&LayerID=21571&PageTypeID=2&PageID=9206",
+      "method": "GET",
+      "result": "The web tool could not open this qPublic URL; a direct public browser-header request returned a 403 challenge page. No bypass was attempted."
+    }
+  ],
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Accept": "application/json,text/plain,*/* (HTML viewer: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8)",
+    "Accept-Language": "en-US,en;q=0.9",
+    "cookies": "requests.Session cookie jar enabled; no service token used",
+    "TLS": "verified; no TLS bypass",
+    "timeoutSeconds": 35
+  },
+  "searchLog": [
+    {
+      "date": "2026-10-07",
+      "query": "site:franklincountypva.com MAPNUM parcel map number parcel split Franklin County KY PVA",
+      "resultUrls": [
+        "https://franklincountypva.com/tax-lingo/",
+        "https://www.frankfort.ky.gov/AgendaCenter/ViewFile/Agenda/_09262022-551",
+        "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "Kentucky statewide parcel data Frankfort Franklin County cadastral GIS parcels official",
+      "resultUrls": [
+        "https://kygeonet.ky.gov/",
+        "https://technology.ky.gov/gis/pages/default.aspx",
+        "https://opengisdata.ky.gov/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "Franklin County Kentucky PVA GIS PARCEL_ID MAPNUM SOURCE_TYP parcel 103.18",
+      "resultUrls": [
+        "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+        "https://franklincountypva.com/tax-lingo/",
+        "https://www.frankfort.ky.gov/AgendaCenter/ViewFile/Agenda/_09262022-551"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "Kentucky PVA map number Parcel ID map block parcel mapping official manual cadastral identifier",
+      "resultUrls": [
+        "https://revenue.ky.gov/PVANetwork/Documents/Web_Setup_Print2.pdf",
+        "https://revenue.ky.gov/PVANetwork/Documents/AdministrativeManual2015.pdf"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:revenue.ky.gov PVA \"map number\" parcel identifier MAP BLOCK PARCEL Kentucky assessment manual",
+      "resultUrls": [
+        "https://revenue.ky.gov/PVANetwork/Documents/Web_Setup_Print2.pdf",
+        "https://revenue.ky.gov/PVANetwork/Documents/AdministrativeManual2015.pdf"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "Franklin County KY PVA parcel map data download GIS layer SOURCE_TYP deed parcel",
+      "resultUrls": [
+        "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+        "https://revenue.ky.gov/Property/Mapping-Services/Pages/default.aspx"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:franklincounty.ky.gov \"County Map Portal\" parcels Franklin County GIS",
+      "resultUrls": [
+        "https://franklincounty.ky.gov/",
+        "https://bluegrassadd.maps.arcgis.com/apps/webappviewer/index.html?id=e96a2a025f974cf681de1b0bd6082d69"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:opengisdata.ky.gov Franklin County parcel PVA GIS parcels",
+      "resultUrls": [
+        "https://opengisdata.ky.gov/",
+        "https://kygeonet.ky.gov/arcgis/rest/services/WGS84WM_Services/Ky_PVA_Webster_Parcels_WGS84WM/MapServer/1"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:kygeonet.ky.gov/arcgis/rest/services Franklin PVA Parcels MapServer",
+      "resultUrls": [
+        "https://kygeonet.ky.gov/arcgis/rest/services/WGS84WM_Services/Ky_PVA_Webster_Parcels_WGS84WM/MapServer/1"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "Kentucky GIS parcel polygons Franklin County PVA download MUID public",
+      "resultUrls": [
+        "https://revenue.ky.gov/PVANetwork/Documents/Web_Setup_Print2.pdf",
+        "https://revenue.ky.gov/Property/Mapping-Services/Pages/default.aspx",
+        "https://kygeonet.ky.gov/arcgis/rest/services/WGS84WM_Services/Ky_PVA_Webster_Parcels_WGS84WM/MapServer/1"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:franklincountypva.com \"Property Search\" Franklin County KY GIS",
+      "resultUrls": [
+        "https://franklincountypva.com/",
+        "https://franklincountypva.com/faqs/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "Franklin County PVA Property Search Kentucky Franklin official map online Parcel Search",
+      "resultUrls": [
+        "https://franklincountypva.com/",
+        "https://franklincountypva.com/faqs/",
+        "https://franklincounty.ky.gov/pva/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:franklincounty.ky.gov \"GIS Map\" \"Parcels\" Franklin County Kentucky",
+      "resultUrls": [
+        "https://franklincounty.ky.gov/",
+        "https://franklincounty.ky.gov/pz-documents/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:franklincountypva.com \"Property Search\" \"Franklin\" \"qpublic\"",
+      "resultUrls": [
+        "https://franklincountypva.com/",
+        "https://franklincountypva.com/local-links/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:franklincountypva.com \"quick link\" \"Property Search\"",
+      "resultUrls": [
+        "https://franklincountypva.com/",
+        "https://franklincountypva.com/faqs/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "Franklin County PVA KY free property search map PVA official parcel viewer GIS property search website",
+      "resultUrls": [
+        "https://franklincountypva.com/",
+        "https://qpublic.schneidercorp.com/",
+        "https://revenue.ky.gov/Property/Mapping-Services/Pages/default.aspx"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "site:qpublic.net/ky/franklin Franklin County PVA map viewer current parcels",
+      "resultUrls": [
+        "https://qpublic.schneidercorp.com/",
+        "https://franklincountypva.com/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "qPublic Franklin County KY PVA Property Search official URL",
+      "resultUrls": [
+        "https://qpublic.schneidercorp.com/",
+        "https://franklincountypva.com/"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "query": "\"qPublic.net - Franklin County, KY PVA\" site:frankfort.ky.gov DocumentCenter 103.18",
+      "resultUrls": [
+        "https://www.frankfort.ky.gov/DocumentCenter/View/4016/2023-3-2-408-Swigert-Avenue-eligible-property-application",
+        "https://www.frankfort.ky.gov/DocumentCenter/View/4011/2023-3-2-716-Brawner-Street-eligible-property-application"
+      ]
+    }
+  ],
+  "remainingUncertainty": "The county layer exposes no published MUID and no definition for v_SY or per-row lifecycle. Statewide guidance supports the meaning of full Parcel_ID plus map/block/parcel components, but the live Franklin County feed violates one-row-per-PARCEL_ID conventions and repeated PARCEL_ID+PARCEL pairs occur countywide. The coordinator verified complete disjoint compound groups within the configured Frankfort gate; untested groups and their version/current-boundary semantics remain unresolved. No alternate open Franklin County or City of Frankfort cadastral feed was verified. The official DOR digital data request path and official PVA/qPublic search remain leads, not public parcel-polygon download endpoints."
+}

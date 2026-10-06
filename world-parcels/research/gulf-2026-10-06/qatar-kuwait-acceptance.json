@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Doha",
+      "sourceId": "qa-cgis-approved-cadastre",
+      "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5275,
+            25.2825,
+            51.53,
+            25.285
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.53,
+            25.2825,
+            51.5325,
+            25.285
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5325,
+            25.2825,
+            51.535000000000004,
+            25.285
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5275,
+            25.285,
+            51.53,
+            25.2875
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.53,
+            25.285,
+            51.5325,
+            25.2875
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5325,
+            25.285,
+            51.535000000000004,
+            25.2875
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5275,
+            25.2875,
+            51.53,
+            25.29
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.53,
+            25.2875,
+            51.5325,
+            25.29
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5325,
+            25.2875,
+            51.535000000000004,
+            25.29
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.535000000000004,
+            25.2825,
+            51.5375,
+            25.285
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5375,
+            25.2825,
+            51.54,
+            25.285
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.54,
+            25.2825,
+            51.542500000000004,
+            25.285
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.535000000000004,
+            25.285,
+            51.5375,
+            25.2875
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5375,
+            25.285,
+            51.54,
+            25.2875
+          ],
+          "count": 60,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.54,
+            25.285,
+            51.542500000000004,
+            25.2875
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.535000000000004,
+            25.2875,
+            51.5375,
+            25.29
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5375,
+            25.2875,
+            51.54,
+            25.29
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.54,
+            25.2875,
+            51.542500000000004,
+            25.29
+          ],
+          "count": 24,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider pagination repeated or omitted an object ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 21,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 289,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    }
+  ]
+}

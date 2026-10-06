@@ -1,0 +1,57 @@
+{
+  "aggregate": {
+    "duplicatePairs": 192,
+    "verifiedPairs": 192,
+    "failedPairs": 0,
+    "conflictingGeometryPairs": 105,
+    "identicalGeometryPairs": 87,
+    "duplicateSourceRows": 393
+  },
+  "examples": [
+    {
+      "nativePair": [
+        "01-03-002-01-6220",
+        "6220"
+      ],
+      "rows": 4,
+      "differentGeometry": 3,
+      "statuses": {
+        "VACANT": 4
+      },
+      "landStatuses": {
+        "None": 4
+      }
+    },
+    {
+      "nativePair": [
+        "01-05-007-01-6216",
+        "6216"
+      ],
+      "rows": 3,
+      "differentGeometry": 2,
+      "statuses": {
+        "VACANT": 3
+      },
+      "landStatuses": {
+        "None": 3
+      }
+    },
+    {
+      "nativePair": [
+        "01-05-007-01-6222",
+        "6222"
+      ],
+      "rows": 3,
+      "differentGeometry": 2,
+      "statuses": {
+        "VACANT": 3
+      },
+      "landStatuses": {
+        "None": 3
+      }
+    }
+  ],
+  "statusDistributions": {
+    "VACANT": 192
+  }
+}

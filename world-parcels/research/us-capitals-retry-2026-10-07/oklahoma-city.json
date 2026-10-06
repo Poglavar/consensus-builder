@@ -1,0 +1,285 @@
+{
+  "kind": "city",
+  "key": "oklahoma-city",
+  "checkedAt": "2026-10-07",
+  "previousStatus": "technical_hold",
+  "previousEvidence": [
+    "world-parcels/research/us-capitals-2026-10-06/ok.json",
+    "world-parcels/research/us-capitals-batch-five-access-conclusions-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-retry-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-mirror-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-alternates-2026-10-06.json"
+  ],
+  "newStatus": "verified_sample_partial_coverage",
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "Accept": "application/geo+json,application/json,text/plain,*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.oklahomacounty.org/Elected-Offices/Assessor/pageindex8072/8/around-the-city",
+    "Cookie handling": "curl cookie jar used; no session cookie was needed"
+  },
+  "changedByHeaders": false,
+  "foundViaViewerInspection": false,
+  "geoBlockSuspected": false,
+  "verifiedParcelResponse": {
+    "sourceId": "us-ok-oklahoma_city-parcels",
+    "requestUrl": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-97.5175%2C35.4665%2C-97.5153%2C35.4687&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=accountno%2Cpin&returnGeometry=true&resultRecordCount=3",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -97.5175,
+      35.4665,
+      -97.5153,
+      35.4687
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "accountno",
+    "idType": "string",
+    "sampleNativeIDs": [
+      "R010014792",
+      "R124432000",
+      "R010013436"
+    ],
+    "secondaryParcelField": "pin",
+    "samplePinValues": [
+      "2730-01-001-4792",
+      "2730-12-443-2000",
+      "2730-01-001-3436"
+    ],
+    "responseFile": null,
+    "pagination": "Three-record bounded direct sample. Configured adapter acceptance later exercised 18 viewport cells, complete account-component reads, count/manifest paging forced to three records, and exact ID rereads."
+  },
+  "source": {
+    "sourceId": "us-ok-oklahoma_city-parcels",
+    "name": "TaxParcelPublic / Oklahoma County Tax Parcels",
+    "operator": "Oklahoma County Assessor; public ArcGIS item owner `artimcon` matches the county GIS manager identified in county records",
+    "scope": "Oklahoma County parcel layer; verified sample covers the Oklahoma County portion of Oklahoma City only, not every county within the city limits",
+    "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+    "method": "ArcGIS FeatureServer query",
+    "responseFormat": "GeoJSON",
+    "crs": "Layer WKID 102724 (latest WKID 2267); sample returned in EPSG:4326",
+    "idField": "accountno",
+    "idFieldSemantics": "The public popup labels accountno as Account Number. It is an assessment-account grouping key, not a row-unique feature ID: countywide aggregate queries found repeated accountno values. Use complete components and verify same-account pin/propertyid consistency; OBJECTID/globalid are transport or row IDs, not parcel identity.",
+    "secondaryParcelField": "pin",
+    "objectIdField": "OBJECTID",
+    "maxRecordCount": 2000,
+    "reuseStatus": "Public ArcGIS item states no special restrictions or limitations were provided; no explicit reuse licence was found. County layer used for the accepted sample."
+  },
+  "liveAcceptance": {
+    "status": "passed",
+    "evidenceFile": "world-parcels/research/us-capitals-retry-2026-10-07/oklahoma-city-parts-gate.json",
+    "viewportCells": 18,
+    "uniqueNativeAccounts": 610,
+    "exactResolved": 610,
+    "pagingCheck": {
+      "bbox": [
+        -97.515,
+        35.465,
+        -97.5125,
+        35.4675
+      ],
+      "forcedPageSize": 3,
+      "independentRows": 7,
+      "distinctAccounts": 6,
+      "complete": true,
+      "returnedAccounts": 6
+    },
+    "geometryPolicy": "Account components were read in full, grouped by accountno, checked for matching pin/propertyid, and rejected on positive-area overlap or inconsistent groups."
+  },
+  "aggregateIdentityCheck": {
+    "checkedAt": "2026-10-07",
+    "method": "ArcGIS server-side count and distinct-value aggregate queries; no parcel geometries or owner attributes returned",
+    "totalRows": 337044,
+    "nonnullAccountno": 336412,
+    "distinctAccountno": 331174,
+    "nonnullPin": 336412,
+    "distinctPin": 331540,
+    "note": "Both identifier columns have 632 nulls and repeated non-null values countywide. They are not one-row-unique; accountno is used as the assessment-account identity and repeated rows are handled as validated components."
+  },
+  "freshness": {
+    "layerDataLastEditDate": "2026-09-26T09:05:44.192Z",
+    "layerLastEditDate": "2026-09-26T09:05:44.192Z",
+    "arcgisItemModified": "2025-03-13T14:52:48Z",
+    "note": "The layer's editingInfo dataLastEditDate is the data timestamp. The ArcGIS item's modified field is item-metadata time and is older. ArcGIS's indexed item page reports a separate July 25, 2026 data date; the live layer metadata now reports September 26, 2026."
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.oklahomacounty.org/Elected-Offices/Assessor/pageindex8072/8/around-the-city",
+      "observation": "Official Oklahoma County Assessor page describes its public parcel database and interactive county GIS map; it identifies these as official assessor records."
+    },
+    {
+      "url": "https://www.arcgis.com/home/item.html?id=244ff1c03cf34c459092e10142b13b01",
+      "observation": "Public ArcGIS item named TaxParcelPublic / Oklahoma County Tax Parcels; owner artimcon; public sharing; indexed page lists data updated July 25, 2026 and no special restrictions or limitations provided."
+    },
+    {
+      "url": "https://oklahomacounty.legistar.com/View.ashx?GUID=4DC97C9C-567A-48F3-8BF5-BC43A32FECD9&ID=13992272&M=F",
+      "observation": "Official county procurement record identifies Timothy Conner as Oklahoma County GIS Manager with email artimcon@oklahomacounty.org, matching the ArcGIS item owner username."
+    },
+    {
+      "url": "https://storymaps.arcgis.com/stories/ca63608078de453893a67b4005637c0e",
+      "observation": "Oklahoma GIS Day story lists Timothy Conner as GIS Tech at the Oklahoma County Assessor's Office and gives the artimcon@oklahomacounty.org contact; supports county GIS role."
+    },
+    {
+      "url": "https://ogidev.okmaps.org/OGI/RestDataAccessItem.aspx?UUID=7c55e990-048e-499d-a20c-58fc5b730562",
+      "observation": "Official Oklahoma GIS Data Clearinghouse record for Statewide Parcels-2/1/2026. Describes a PRP compilation from county assessors, a February 1, 2026 snapshot, and a view-only WMS/no-download access note."
+    }
+  ],
+  "alternates": [
+    {
+      "name": "Oklahoma OGI Statewide Parcels snapshot",
+      "sourceId": "ogi_wms:current_statewide_parcels",
+      "endpoint": "https://okmaps.org/geoserver/ows",
+      "method": "WFS 2.0 GetFeature",
+      "requestUrl": "https://okmaps.org/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=ogi_wms%3Acurrent_statewide_parcels&count=3&srsName=EPSG%3A4326&bbox=-97.5175%2C35.4665%2C-97.5153%2C35.4687%2CEPSG%3A4326&outputFormat=application%2Fjson&propertyName=accountnumber%2Cparcelid%2Cthe_geom",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "parcelRecordCount": 3,
+      "geometryType": "MultiPolygon",
+      "closedRings": true,
+      "nativeFields": [
+        "parcelid",
+        "accountnumber"
+      ],
+      "sampleNativeIDs": [
+        "R010017150",
+        "R010015152",
+        "R010015125"
+      ],
+      "catalogDate": "2026-02-01",
+      "catalogAccessNote": "Catalog describes this data as view-only through WMS and says downloads are unavailable, but the public production GeoServer WFS endpoint and bounded GetFeature request returned polygon geometries without authentication. This is a documented access-mode discrepancy; retain as a statewide candidate for later comparison. No 18-cell acceptance was run. Owner attributes were explicitly excluded from the successful sample request."
+    },
+    {
+      "name": "Oklahoma City GIS Non-Zoning Parcels",
+      "endpoint": "https://gis.okc.gov/arcgis/rest/services/Public/EncodeOKCWebMap/MapServer/8",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Current browser-like request returned Incapsula challenge HTML rather than ArcGIS JSON. Search-indexed official service metadata names TriCounty Parcels and exposes a Pin field, but no live polygon query was verified through this path."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/244ff1c03cf34c459092e10142b13b01?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Public item metadata: title TaxParcelPublic, owner artimcon, sharing public, URL points to services8 FeatureServer, item modified timestamp 2025-03-13T14:52:48Z."
+    },
+    {
+      "url": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Polygon layer named TaxParcelPublic; extent is Oklahoma County; native fields accountno and pin; OID OBJECTID; live editingInfo.dataLastEditDate 2026-09-26T09:05:44.192Z; maxRecordCount 2000."
+    },
+    {
+      "url": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-97.5175%2C35.4665%2C-97.5153%2C35.4687&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=accountno%2Cpin&returnGeometry=true&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Returned three closed Polygon features with accountno and pin. No owner or mailing fields were requested. Repeating with the official assessor Referer and cookie jar yielded the same result."
+    },
+    {
+      "url": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0/query?f=json&where=1%3D1&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Server-side total row count 337044; no parcel rows or geometry returned."
+    },
+    {
+      "url": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0/query?f=json&where=1%3D1&returnDistinctValues=true&returnCountOnly=true&returnGeometry=false&outFields=accountno",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Server-side distinct accountno count 331174; no parcel rows or geometry returned."
+    },
+    {
+      "url": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0/query?f=json&where=1%3D1&returnDistinctValues=true&returnCountOnly=true&returnGeometry=false&outFields=pin",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Server-side distinct pin count 331540; no parcel rows or geometry returned."
+    },
+    {
+      "url": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0/query?f=json&where=1%3D1&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22accountno%22%2C%22outStatisticFieldName%22%3A%22nonnullAccountno%22%7D%2C%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22pin%22%2C%22outStatisticFieldName%22%3A%22nonnullPin%22%7D%5D",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Aggregate counts of non-null accountno and pin were both 336412."
+    },
+    {
+      "url": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0/query?f=json&where=1%3D1&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22*%22%2C%22outStatisticFieldName%22%3A%22rows%22%7D%5D&groupByFieldsForStatistics=accttype&orderByFields=accttype",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Aggregate accttype counts only; groups were null 632, Agricultural 3151, Comm Res 276, Commercial 16748, Exempt 12426, Industrial 6557, Partial Exem 185, Public Servi 553, Residential 296516."
+    },
+    {
+      "url": "https://gis.okc.gov/arcgis/rest/services/Public/Data_OKC_Gov_Application_Service/MapServer/3?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Incapsula request-unsuccessful page instead of ArcGIS JSON; same response also observed from the configured dev host."
+    },
+    {
+      "url": "https://gis.okc.gov/arcgis/rest/services/Public/EncodeOKCWebMap/MapServer/8?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Incapsula HTML. Search index lists TriCounty Parcels as a polygon layer but live access was not verified."
+    },
+    {
+      "url": "https://ogidev.okmaps.org/OGI/RestDataAccessItem.aspx?UUID=7c55e990-048e-499d-a20c-58fc5b730562",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official OGI metadata describes Statewide Parcels-2/1/2026, PRP county-assessor snapshot, view-only/WMS access and no download."
+    },
+    {
+      "url": "https://ogidev.okmaps.org/OGI/xmlmetadatadownload.aspx?LayerUUID=7c55e990-048e-499d-a20c-58fc5b730562",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "assessment": "Catalog ISO metadata identifies the OGI WMS layer name ogi_wms:current_statewide_parcels."
+    },
+    {
+      "url": "https://okmaps.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "Public capabilities expose queryable Statewide Parcels and Oklahoma County parcel map layers."
+    },
+    {
+      "url": "https://okmaps.org/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "Public WFS capabilities available; response advertised WFS 2.0.0."
+    },
+    {
+      "url": "https://okmaps.org/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=ogi_wms%3Acurrent_statewide_parcels",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2",
+      "assessment": "Schema identifies geometry field the_geom, parcelid string, and accountnumber integer."
+    },
+    {
+      "url": "https://okmaps.org/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=ogi_wms%3Acurrent_statewide_parcels&count=3&srsName=EPSG%3A4326&bbox=-97.5175%2C35.4665%2C-97.5153%2C35.4687%2CEPSG%3A4326&outputFormat=application%2Fjson&propertyName=accountnumber%2Cparcelid%2Cthe_geom",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Three closed MultiPolygon features returned for the same tiny Oklahoma City area using only parcelid, accountnumber and geometry; owner field excluded. This statewide candidate was not passed through the 18-cell acceptance gate."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Oklahoma County Tax Parcels; catalog layer extent is county-sized.",
+    "verifiedOpenScope": "Oklahoma City downtown sample and 18-cell acceptance within Oklahoma County; no records sampled from the city's other county portions.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The accepted layer verifies the Oklahoma County portion of Oklahoma City, not all municipal parcels in Oklahoma City. The source includes repeated and null accountno/pin values countywide, so complete account components must continue to be grouped and validated. The OGI statewide WFS query returned polygons but its clearinghouse metadata still documents view-only WMS access and no download; it is a dated alternate candidate, not an accepted adapter source.",
+  "nextStep": "Use the accepted Oklahoma County ArcGIS source for this capital with accountno complete-parts identity, pin/propertyid consistency checks, and overlap rejection. Keep the OGI 2026 statewide WFS candidate for later source-level comparison and verify city coverage outside Oklahoma County separately.",
+  "accessBlockAssessment": "Incapsula HTML blocks observed from laptop and configured dev runtime; geographical cause unproven."
+}

@@ -1,0 +1,111 @@
+{
+  "checkedAt": "2026-10-06",
+  "publicViewer": "https://gis.dda.gov.ae/dis/",
+  "purpose": "Anonymous viewer session access; no temporary credential values retained",
+  "attempts": [
+    {
+      "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+      "httpStatus": 200,
+      "metadata": {
+        "name": "Plot",
+        "description": "",
+        "extent": {
+          "ymin": 2744146.592,
+          "xmin": 461782.9419999998,
+          "ymax": 2800032.99,
+          "xmax": 522487.56400000025,
+          "spatialReference": {
+            "falseM": -100000,
+            "xyTolerance": 0.001,
+            "mUnits": 10000,
+            "zUnits": 10000,
+            "latestWkid": 3997,
+            "zTolerance": 0.001,
+            "wkid": 3997,
+            "xyUnits": 10000,
+            "mTolerance": 0.001,
+            "falseX": -5123200,
+            "falseY": -10002100,
+            "falseZ": -100000
+          }
+        },
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "advancedQueryCapabilities": {
+          "supportsSqlExpression": true,
+          "supportsQueryWithResultType": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsSqlFormat": false,
+          "useStandardizedQueries": true,
+          "supportsResultPaginationToken": false,
+          "supportsQueryWithCacheHint": false,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsCurrentUserQueries": true,
+          "supportsQueryWithLodSR": false,
+          "supportsPagination": true,
+          "supportsMaxRecordCountFactor": false,
+          "supportsStatistics": true,
+          "supportsTrueCurve": true,
+          "supportsOrderBy": true,
+          "supportsLod": false,
+          "supportsQueryWithDistance": true,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsReturningQueryExtent": true,
+          "supportsDistinct": true,
+          "supportsTimeRelation": true,
+          "supportsQueryAnalytic": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true
+        },
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "alias": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "domain": null
+          },
+          {
+            "name": "SHAPE",
+            "alias": "SHAPE",
+            "type": "esriFieldTypeGeometry",
+            "domain": null
+          },
+          {
+            "name": "PLOT_NUMBER",
+            "alias": "Plot Number",
+            "type": "esriFieldTypeString",
+            "length": 20,
+            "domain": null
+          },
+          {
+            "name": "OLD_PLOT_NUMBERS",
+            "alias": "Old Plot Number",
+            "type": "esriFieldTypeString",
+            "length": 255,
+            "domain": null
+          },
+          {
+            "name": "SHAPE.STArea()",
+            "alias": "SHAPE.STArea()",
+            "type": "esriFieldTypeDouble",
+            "domain": null
+          },
+          {
+            "name": "SHAPE.STLength()",
+            "alias": "SHAPE.STLength()",
+            "type": "esriFieldTypeDouble",
+            "domain": null
+          }
+        ]
+      }
+    },
+    {
+      "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13/query?where=1%3D1&returnCountOnly=true&f=json",
+      "httpStatus": 200,
+      "count": 103734,
+      "metadata": {}
+    }
+  ],
+  "viewerHttpStatus": 200,
+  "publicSessionProvided": true
+}

@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-06",
+  "networkOrigin": "authorized laptop network",
+  "attempts": [
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0/query?where=ENDDATE+IS+NULL&outFields=PIN&returnDistinctValues=true&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "origin": "authorized laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 16,
+      "response": {
+        "count": 254337
+      }
+    }
+  ]
+}

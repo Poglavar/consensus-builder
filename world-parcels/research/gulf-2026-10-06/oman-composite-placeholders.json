@@ -1,0 +1,23 @@
+[
+  {
+    "name": "painPlaceholder",
+    "where": "PAIN IN ('-','0','3','SUB OF PLOT NO 232')",
+    "result": {
+      "count": 88
+    }
+  },
+  {
+    "name": "plotPlaceholder",
+    "where": "PAIN IS NOT NULL AND PLOTNUM IN ('-','0','00','000','Unknown','UNKNOWN')",
+    "result": {
+      "count": 8
+    }
+  },
+  {
+    "name": "painStandardShape",
+    "where": "PAIN LIKE '%-%-%-%-%' AND PLOTNUM IS NOT NULL",
+    "result": {
+      "count": 280477
+    }
+  }
+]

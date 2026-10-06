@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "English and Arabic source discovery, actual live adapter acceptance and technical failure records. No parcel database imports. Terms informational.",
+  "conclusions": [
+    {
+      "countryCode": "QA",
+      "country": "Qatar",
+      "status": "enabled",
+      "cityIds": [
+        "doha"
+      ],
+      "sourceId": "qa-cgis-approved-cadastre",
+      "evidenceFile": "qatar-kuwait-findings.json",
+      "acceptanceFile": "qatar-kuwait-current-acceptance.json",
+      "detail": "Official plural surveyed plot service; current ENDDATE null scope. 254337 current rows and distinct native PINs. 18 Doha viewports and 316 exact native lookups passed."
+    },
+    {
+      "countryCode": "AE",
+      "country": "United Arab Emirates",
+      "status": "enabled-subnational",
+      "cityIds": [
+        "dubai"
+      ],
+      "sourceId": "ae-dubai-dda-public-plots",
+      "evidenceFile": "uae-dubai-public-session.json",
+      "acceptanceFile": "uae-dubai-live-gate.json",
+      "detail": "The public anonymous DDA viewer supplies a temporary GIS session. Its fixed public plot layer passed 18 Dubai Marina cells, 63 native plot IDs/exact lookups, paging, footprint and binding. No account or persisted session credential. Coverage of other emirates is not inferred."
+    },
+    {
+      "countryCode": "JO",
+      "country": "Jordan",
+      "status": "enabled-partial",
+      "cityIds": [
+        "amman"
+      ],
+      "sourceId": "jo-dls-cassini-mapserver",
+      "evidenceFile": "saudi-jordan-amman-candidate.json",
+      "acceptanceFile": "saudi-jordan-amman-parts-gate.json",
+      "detail": "Official DLS_KEY parcel-key scope excludes null and single-space keys. Every source component for each native parcel key is read. Acceptance passed 18 Amman cells and 895 exact keys."
+    },
+    {
+      "countryCode": "KW",
+      "country": "Kuwait",
+      "status": "technical-hold",
+      "cityIds": [],
+      "sourceId": "kw-municipality-survey-parcels",
+      "endpoint": "https://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1",
+      "evidenceFile": "qatar-kuwait-findings.json",
+      "detail": "Official Municipality DGN survey polygon layer and its viewer reset connections on laptop. Kuwait GeoHub catalogue inspected: 152 downloadable archives, none labelled cadastral parcels. Native identity/current scope/live reads remain unverified. These findings do not establish parcel absence."
+    },
+    {
+      "countryCode": "OM",
+      "country": "Oman",
+      "status": "technical-hold",
+      "cityIds": [],
+      "sourceId": "om-muscat-public-plot-candidates",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+      "evidenceFile": "oman-research.json",
+      "detail": "Muscat publishes 293,860 plot polygons. The identified PAIN scope has 280,660 rows and 525 repeated keys. PAIN + PLOTNUM still has 192 repeated pairs; 105 have conflicting geometry, with no current/history discriminator. The PLOTUID service count timed out after 35 seconds; Seeb returns JSON 499; housing/NCSI return 403. Data exists; identity and access prevent a reliable source."
+    },
+    {
+      "countryCode": "SA",
+      "country": "Saudi Arabia",
+      "status": "technical-hold",
+      "cityIds": [],
+      "sourceId": "sa-balady-umaps-parcel-candidates",
+      "endpoint": "https://umaps.momah.gov.sa/server/rest/services",
+      "evidenceFile": "saudi-jordan-sa-assessment.json",
+      "detail": "Official Balady U Maps root reachable; actual parcel-promising umaps/MOJ/Hosted folders returnJSON499TokenRequired. Anonymous app disabled. Riyadh/Jeddah/EasternProvince municipalservices timeout. Data not declared absent."
+    }
+  ],
+  "attemptFiles": [
+    "browser-check.json",
+    "oman-composite-overlap.json",
+    "oman-composite-placeholders.json",
+    "oman-composite-semantics.json",
+    "oman-composite.json",
+    "oman-duplicate-semantics.json",
+    "oman-gate.json",
+    "oman-identified-gate.json",
+    "oman-identity-scoped.json",
+    "oman-identity.json",
+    "oman-mutrah-gate.json",
+    "oman-research.json",
+    "qatar-kuwait-acceptance.json",
+    "qatar-kuwait-alternatives.json",
+    "qatar-kuwait-current-acceptance.json",
+    "qatar-kuwait-current-scope.json",
+    "qatar-kuwait-extra.json",
+    "qatar-kuwait-findings.json",
+    "qatar-kuwait-geohub.json",
+    "qatar-kuwait-key-uniqueness.json",
+    "qatar-kuwait-manifest-acceptance.json",
+    "qatar-kuwait-plural-acceptance.json",
+    "qatar-kuwait-probes.json",
+    "saudi-jordan-amman-candidate.json",
+    "saudi-jordan-amman-gate.json",
+    "saudi-jordan-amman-keyed-gate.json",
+    "saudi-jordan-amman-parts-gate.json",
+    "saudi-jordan-discovery-retry.json",
+    "saudi-jordan-discovery.json",
+    "saudi-jordan-sa-assessment.json",
+    "saudi-jordan-searches.json",
+    "saudi-jordan-umaps-folders.json",
+    "saudi-jordan-umaps-services.json",
+    "saudi-jordan-umaps.json",
+    "uae-alain-acceptance.json",
+    "uae-alain-curl.json",
+    "uae-alain-findings.json",
+    "uae-alain-identified.json",
+    "uae-alain-lms-location.json",
+    "uae-alain-probes.json",
+    "uae-alain-subset.json",
+    "uae-dubai-identity-counts.json",
+    "uae-dubai-live-gate.json",
+    "uae-dubai-public-session.json",
+    "uae-findings.json",
+    "uae-metadata.json",
+    "uae-public-apps.json",
+    "uae-viewers.json"
+  ]
+}

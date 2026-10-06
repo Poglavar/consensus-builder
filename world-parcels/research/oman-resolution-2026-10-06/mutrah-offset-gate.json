@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Muscat",
+      "sourceId": "om-muscat-mutrah-plots",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5525,
+            23.592499999999998,
+            58.555,
+            23.595
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.555,
+            23.592499999999998,
+            58.5575,
+            23.595
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5575,
+            23.592499999999998,
+            58.56,
+            23.595
+          ],
+          "count": 20,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 4,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 319,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    }
+  ]
+}

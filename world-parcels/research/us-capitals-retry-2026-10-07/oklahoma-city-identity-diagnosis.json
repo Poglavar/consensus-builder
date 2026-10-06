@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-07",
+  "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+  "bbox": [
+    -97.515,
+    35.465,
+    -97.5125,
+    35.4675
+  ],
+  "rows": 7,
+  "distinctAccountno": 6,
+  "distinctPin": 6,
+  "distinctGlobalid": 7,
+  "duplicateAccounts": 1,
+  "groups": [
+    {
+      "nativeAccountno": "R133563000",
+      "viewportRows": 2,
+      "exactRows": 2,
+      "distinctPin": 1,
+      "distinctGlobalid": 2,
+      "distinctPropertyid": 1,
+      "types": [
+        "Exempt"
+      ],
+      "parentAccountPresent": 0,
+      "overlapPairs": 0,
+      "maxOverlapM2": 0,
+      "minComponentAreaM2": 454.3608918963753,
+      "totalComponentAreaM2": 5155.256157395886
+    }
+  ]
+}

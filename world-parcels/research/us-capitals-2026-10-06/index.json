@@ -19,7 +19,7 @@
     "appCities": 44
   },
   "after": {
-    "statesWithConfiguredCities": 47,
+    "statesWithConfiguredCities": 50,
     "stateCodes": [
       "AK",
       "AL",
@@ -37,6 +37,7 @@
       "IL",
       "IN",
       "KS",
+      "KY",
       "LA",
       "MA",
       "MD",
@@ -55,10 +56,12 @@
       "NV",
       "NY",
       "OH",
+      "OK",
       "OR",
       "PA",
       "RI",
       "SC",
+      "SD",
       "TN",
       "TX",
       "UT",
@@ -72,21 +75,19 @@
     "federalDistricts": [
       "DC"
     ],
-    "configuredCapitals": 48,
-    "configuredStateCapitals": 47,
-    "appCities": 90,
-    "USAppCities": 52,
-    "capitalsRemainingToIntegrate": 3
+    "configuredCapitals": 51,
+    "configuredStateCapitals": 50,
+    "appCities": 97,
+    "USAppCities": 55,
+    "capitalsRemainingToIntegrate": 0
   },
   "researchCounts": {
     "jurisdictions": 51,
-    "capitalPolygonSamples": 49,
-    "nativeSampleVerified": 49,
-    "publishedLeadsWithoutCapitalPolygonSample": 2,
+    "capitalPolygonSamples": 51,
+    "nativeSampleVerified": 51,
+    "publishedLeadsWithoutCapitalPolygonSample": 0,
     "runtimeReadiness": {
-      "enabled": 48,
-      "adapter-work-required": 1,
-      "source-access-or-format-work-required": 2
+      "enabled": 51
     }
   },
   "newBatch": [
@@ -539,11 +540,12 @@
       "status": "verified_sample_capital_scope",
       "hasCapitalPolygonSample": true,
       "nativeSampleVerified": true,
-      "runtimeReadiness": "adapter-work-required",
-      "sourceId": "us-capital-ky-parcel-research",
-      "appCityId": null,
-      "nextStep": "Native parcel/map identifiers resolve to conflicting ground and map labels; verified current parcel identity semantics remain unresolved. Municipal map alternatives lack cadastral layers; a same-name hosted alternative belongs to Illinois.",
-      "latestAttemptFile": "research/us-capitals-batch-five-identity-conclusions-2026-10-06.json"
+      "runtimeReadiness": "enabled",
+      "sourceId": "us-ky-frankfort-parcels",
+      "appCityId": "frankfort",
+      "nextStep": "Configured gateway; use source notice for scope and retry outages.",
+      "latestAttemptFile": "research/us-capitals-batch-five-identity-conclusions-2026-10-06.json",
+      "liveAcceptanceFile": "research/us-capitals-retry-2026-10-07/live-acceptance.json"
     },
     {
       "order": 19,
@@ -1029,17 +1031,18 @@
       "alreadyConfigured": false,
       "jurisdictionType": "state",
       "evidenceFile": "research/us-capitals-2026-10-06/ok.json",
-      "evidence": "published-parcel-lead",
+      "evidence": "capital-polygon-sample",
       "format": "ArcGIS parcel polygon service",
       "discoveryStatus": "lead",
-      "status": "lead",
-      "hasCapitalPolygonSample": false,
-      "nativeSampleVerified": false,
-      "runtimeReadiness": "source-access-or-format-work-required",
-      "sourceId": "us-capital-ok-parcel-research",
-      "appCityId": null,
-      "nextStep": "Original hosted county layer covers a small patch and returns zero in 18 capital cells. Correct city parcel services return Incapsula HTML access blocks; no readable capital-wide alternative acquired.",
-      "latestAttemptFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json"
+      "status": "verified_sample_capital_scope",
+      "hasCapitalPolygonSample": true,
+      "nativeSampleVerified": true,
+      "runtimeReadiness": "enabled",
+      "sourceId": "us-ok-oklahoma_city-parcels",
+      "appCityId": "oklahoma_city",
+      "nextStep": "Configured gateway; use source notice for scope and retry outages.",
+      "latestAttemptFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json",
+      "liveAcceptanceFile": "research/us-capitals-retry-2026-10-07/live-acceptance.json"
     },
     {
       "order": 38,
@@ -1158,17 +1161,18 @@
       "alreadyConfigured": false,
       "jurisdictionType": "state",
       "evidenceFile": "research/us-capitals-2026-10-06/sd.json",
-      "evidence": "published-parcel-lead",
+      "evidence": "capital-polygon-sample",
       "format": "Interactive parcel GIS map is documented by the county; service format and open read path unverified.",
       "discoveryStatus": "lead",
-      "status": "lead",
-      "hasCapitalPolygonSample": false,
-      "nativeSampleVerified": false,
-      "runtimeReadiness": "source-access-or-format-work-required",
-      "sourceId": "us-capital-sd-parcel-research",
-      "appCityId": null,
-      "nextStep": "District III county feed is canceled/404; officially linked Beacon GIS returns HTTP403. An older project mirror lacks verified parcel lineage; no reachable verified polygon feed acquired.",
-      "latestAttemptFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json"
+      "status": "verified_sample_capital_scope",
+      "hasCapitalPolygonSample": true,
+      "nativeSampleVerified": true,
+      "runtimeReadiness": "enabled",
+      "sourceId": "us-sd-pierre-parcels",
+      "appCityId": "pierre",
+      "nextStep": "Configured gateway; use source notice for scope and retry outages.",
+      "latestAttemptFile": "research/us-capitals-batch-five-access-conclusions-2026-10-06.json",
+      "liveAcceptanceFile": "research/us-capitals-retry-2026-10-07/live-acceptance.json"
     },
     {
       "order": 43,
@@ -1428,5 +1432,14 @@
       "SD"
     ],
     "allCapitalJurisdictionsProcessed": true
+  },
+  "latestRetry": {
+    "checkedAt": "2026-10-07",
+    "cityIds": [
+      "frankfort",
+      "oklahoma_city",
+      "pierre"
+    ],
+    "evidenceFile": "research/us-capitals-retry-2026-10-07/index.json"
   }
 }

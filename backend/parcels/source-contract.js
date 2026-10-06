@@ -108,6 +108,7 @@ export function canonicalParcelFeature(descriptor, feature, nativeId) {
 // The same fixed attribute expressions work in ArcGIS SQL, OGC CQL2 and Socrata SoQL.
 export function createParcelAttributeFilter(descriptor) {
     const nonNullFields = descriptor.attributeNotNull === undefined ? [] : descriptor.attributeNotNull;
+    const nullFields = descriptor.attributeNull === undefined ? [] : descriptor.attributeNull;
     const validField = field => typeof field === 'string' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(field)
         && descriptor.outFields.includes(field);
     const entries = Object.entries(descriptor.attributeFilters || {}).map(([field, value]) =>
@@ -115,18 +116,20 @@ export function createParcelAttributeFilter(descriptor) {
     entries.push(...Object.entries(descriptor.attributeExclusions || {}).map(([field, value]) =>
         [field, Array.isArray(value) ? value : [value], true]));
     if (!Array.isArray(nonNullFields) || nonNullFields.length > 80 || nonNullFields.some(field => !validField(field))
-        || entries.some(([field, values]) => !validField(field)
-        || !values.length || values.length > 80 || values.some(value => typeof value !== 'boolean' && (typeof value !== 'string' || !value || value.length > 256)))) {
+        || !Array.isArray(nullFields) || nullFields.length > 80 || nullFields.some(field => !validField(field) || nonNullFields.includes(field))
+        || entries.some(([field, values, exclude]) => !validField(field)
+        || !values.length || values.length > 80 || values.some(value => typeof value !== 'boolean' && (typeof value !== 'string' || (!value && !exclude) || value.length > 256)))) {
         throw new Error('Invalid parcel attribute filter.');
     }
     const where = entries.map(([field, values, exclude]) => {
         const literals = values.map(value => typeof value === 'boolean' ? String(value) : `'${value.replaceAll("'", "''")}'`);
         return literals.length === 1 ? `${field} ${exclude ? '<>' : '='} ${literals[0]}`
             : `${field} ${exclude ? 'NOT IN' : 'IN'} (${literals.join(',')})`;
-    }).concat(nonNullFields.map(field => `${field} IS NOT NULL`)).join(' AND ');
+    }).concat(nonNullFields.map(field => `${field} IS NOT NULL`), nullFields.map(field => `${field} IS NULL`)).join(' AND ');
     // SQL comparisons exclude NULL; enforce the same boundary if a provider ignores its filter.
     return { where, matches: props => entries.every(([field, values, exclude]) =>
         exclude ? props[field] !== null && props[field] !== undefined && !values.includes(props[field])
             : values.includes(props[field]))
-        && nonNullFields.every(field => props[field] !== null && props[field] !== undefined) };
+        && nonNullFields.every(field => props[field] !== null && props[field] !== undefined)
+        && nullFields.every(field => props[field] === null) };
 }

@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Muscat",
+      "sourceId": "om-muscat-mutrah-plots",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5525,
+            23.592499999999998,
+            58.555,
+            23.595
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.555,
+            23.592499999999998,
+            58.5575,
+            23.595
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5575,
+            23.592499999999998,
+            58.56,
+            23.595
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5525,
+            23.595,
+            58.555,
+            23.5975
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.555,
+            23.595,
+            58.5575,
+            23.5975
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5575,
+            23.595,
+            58.56,
+            23.5975
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5525,
+            23.5975,
+            58.555,
+            23.599999999999998
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.555,
+            23.5975,
+            58.5575,
+            23.599999999999998
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5575,
+            23.5975,
+            58.56,
+            23.599999999999998
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.56,
+            23.592499999999998,
+            58.5625,
+            23.595
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5625,
+            23.592499999999998,
+            58.565,
+            23.595
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.565,
+            23.592499999999998,
+            58.5675,
+            23.595
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.56,
+            23.595,
+            58.5625,
+            23.5975
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5625,
+            23.595,
+            58.565,
+            23.5975
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.565,
+            23.595,
+            58.5675,
+            23.5975
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.56,
+            23.5975,
+            58.5625,
+            23.599999999999998
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.5625,
+            23.5975,
+            58.565,
+            23.599999999999998
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.565,
+            23.5975,
+            58.5675,
+            23.599999999999998
+          ],
+          "count": 4,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          58.5575,
+          23.595,
+          58.56,
+          23.5975
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 189,
+      "exactResolved": 189,
+      "nativeIds": [
+        "153494~234",
+        "222187~149",
+        "31390~198"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:om-muscat-mutrah-plots",
+        "parcels": 1,
+        "siteM2": 470.28
+      },
+      "requests": 130
+    }
+  ]
+}
