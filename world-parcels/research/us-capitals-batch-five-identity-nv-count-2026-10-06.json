@@ -1,0 +1,39 @@
+{
+  "stateCode": "NV",
+  "city": "carson_city",
+  "endpoint": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0/query",
+  "attempts": [
+    {
+      "query": {
+        "where": "County='Carson City'",
+        "geometry": "-119.77,39.16,-119.7675,39.1625",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "f": "json",
+        "returnCountOnly": "true"
+      },
+      "status": 200,
+      "response": {
+        "count": 61
+      }
+    },
+    {
+      "query": {
+        "where": "County='Carson City'",
+        "geometry": "-119.77,39.16,-119.7675,39.1625",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "f": "json",
+        "returnIdsOnly": "true"
+      },
+      "status": 200,
+      "response": {
+        "objectIdFieldName": "OBJECTID",
+        "objectIdCount": 62,
+        "uniqueObjectIds": 62
+      }
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "topeka",
+      "stateCode": "KS",
+      "sourceId": "us-ks-topeka-parcels",
+      "endpoint": "https://gis.sncoapps.us/arcgis2/rest/services/Parcels/MapServer/0",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 290,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    },
+    {
+      "city": "jackson",
+      "stateCode": "MS",
+      "sourceId": "us-ms-jackson-parcels",
+      "endpoint": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider is unavailable.",
+        "code": "parcel-source-unavailable",
+        "cause": "fetch failed"
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 271
+      }
+    },
+    {
+      "city": "tallahassee",
+      "stateCode": "FL",
+      "sourceId": "us-fl-tallahassee-parcels",
+      "endpoint": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider access is blocked (HTTP 403).",
+        "code": "parcel-source-blocked",
+        "upstreamStatus": 403
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 270,
+        "httpStatus": 403,
+        "contentType": "text/html"
+      }
+    },
+    {
+      "city": "oklahoma_city",
+      "stateCode": "OK",
+      "sourceId": "us-ok-oklahoma-city-parcels",
+      "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.465,
+            -97.5175,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.465,
+            -97.515,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.465,
+            -97.5125,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.4675,
+            -97.5175,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.4675,
+            -97.515,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.4675,
+            -97.5125,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.47,
+            -97.5175,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.47,
+            -97.515,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.47,
+            -97.5125,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.465,
+            -97.51,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.465,
+            -97.5075,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.465,
+            -97.505,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.4675,
+            -97.51,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.4675,
+            -97.5075,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.4675,
+            -97.505,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.47,
+            -97.51,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.47,
+            -97.5075,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.47,
+            -97.505,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "AssertionError",
+        "message": "Live acceptance comparison failed (==); geometry/completeness details omitted.",
+        "code": "ERR_ASSERTION"
+      },
+      "requests": 18,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 278,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8"
+      }
+    }
+  ]
+}

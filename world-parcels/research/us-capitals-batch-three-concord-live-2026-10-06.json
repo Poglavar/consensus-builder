@@ -1,0 +1,371 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "concord",
+      "sourceId": "us-concord-parcels",
+      "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.5425,
+            43.205000000000005,
+            -71.54,
+            43.2075
+          ],
+          "count": 73,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.54,
+            43.205000000000005,
+            -71.53750000000001,
+            43.2075
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53750000000001,
+            43.205000000000005,
+            -71.53500000000001,
+            43.2075
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.5425,
+            43.2075,
+            -71.54,
+            43.21
+          ],
+          "count": 80,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.54,
+            43.2075,
+            -71.53750000000001,
+            43.21
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53750000000001,
+            43.2075,
+            -71.53500000000001,
+            43.21
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.5425,
+            43.21,
+            -71.54,
+            43.212500000000006
+          ],
+          "count": 76,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.54,
+            43.21,
+            -71.53750000000001,
+            43.212500000000006
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53750000000001,
+            43.21,
+            -71.53500000000001,
+            43.212500000000006
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53500000000001,
+            43.205000000000005,
+            -71.53250000000001,
+            43.2075
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53250000000001,
+            43.205000000000005,
+            -71.53,
+            43.2075
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53,
+            43.205000000000005,
+            -71.5275,
+            43.2075
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53500000000001,
+            43.2075,
+            -71.53250000000001,
+            43.21
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53250000000001,
+            43.2075,
+            -71.53,
+            43.21
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53,
+            43.2075,
+            -71.5275,
+            43.21
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53500000000001,
+            43.21,
+            -71.53250000000001,
+            43.212500000000006
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53250000000001,
+            43.21,
+            -71.53,
+            43.212500000000006
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53,
+            43.21,
+            -71.5275,
+            43.212500000000006
+          ],
+          "count": 4,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -71.53,
+          43.2075,
+          -71.5275,
+          43.21
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 373,
+      "exactResolved": 373,
+      "nativeIds": [
+        "07046-2917",
+        "07046-2916",
+        "07046-2923"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-concord-parcels",
+        "parcels": 1,
+        "siteM2": 290.61
+      },
+      "requests": 28,
+      "proposedDescriptor": {
+        "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "NH Parcels",
+        "operator": "New Hampshire GRANIT / NH Department of Environmental Services",
+        "idField": "nh_gis_id",
+        "objectIdField": "objectid",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "objectid",
+          "nh_gis_id",
+          "town"
+        ],
+        "metricSrid": 32619,
+        "attributeFilters": {
+          "town": "Concord"
+        },
+        "id": "us-concord-parcels",
+        "idPrefix": "us-concord:",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "gridSize": 0.0025,
+        "maxConcurrent": 2,
+        "attributeExclusions": {
+          "nh_gis_id": "07046-0"
+        }
+      },
+      "metadata": {
+        "city": "concord",
+        "metadataUrl": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0?f=pjson",
+        "geometryType": "esriGeometryPolygon",
+        "name": "NH Parcels",
+        "description": "",
+        "copyrightText": "",
+        "serviceItemId": "41356aa9df1042519511f06d8ac6f309",
+        "editingInfo": {},
+        "advancedQueryCapabilities": {
+          "supportsSqlExpression": true,
+          "supportsQueryWithResultType": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsQueryWithCacheHint": false,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsCurrentUserQueries": true,
+          "supportsQueryAttachmentsWithReturnUrl": true,
+          "fullTextSearchCapabilities": {
+            "supportsOperator": true,
+            "supportsSearchOperator": true
+          },
+          "supportsDefaultSR": true,
+          "supportsQueryDateBins": false,
+          "supportsQueryWithLodSR": true,
+          "supportsPaginationOnAggregatedQueries": true,
+          "supportsPagination": true,
+          "supportsMaxRecordCountFactor": true,
+          "fullTextSearchableFields": [],
+          "supportsStatistics": true,
+          "supportsOrderBy": true,
+          "supportsReturningGeometryProperties": true,
+          "supportsFullTextSearch": true,
+          "supportsQueryWithDistance": true,
+          "supportsLod": true,
+          "supportsSpatialAggregationStatistics": false,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryAttachments": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryAttachmentsCountOnly": true,
+          "supportsOrderByOnlyOnLayerFields": false,
+          "supportsOutFieldSqlExpression": true,
+          "supportsTopFeaturesQuery": true,
+          "supportsReturningGeometryEnvelope": true,
+          "supportsDistinct": true,
+          "supportsReturningGeometryCentroid": true,
+          "supportsQueryAnalytic": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true
+        },
+        "maxRecordCount": 2000,
+        "fields": [
+          {
+            "nullable": false,
+            "defaultValue": null,
+            "editable": false,
+            "length": 4,
+            "type": "esriFieldTypeOID",
+            "modelName": "objectid",
+            "domain": null,
+            "name": "objectid",
+            "alias": "OBJECTID"
+          },
+          {
+            "modelName": "nh_gis_id",
+            "nullable": true,
+            "editable": true,
+            "defaultValue": null,
+            "domain": null,
+            "name": "nh_gis_id",
+            "length": 100,
+            "alias": "NH_GIS_ID",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "modelName": "town",
+            "nullable": true,
+            "editable": true,
+            "defaultValue": null,
+            "domain": null,
+            "name": "town",
+            "length": 25,
+            "alias": "Town",
+            "type": "esriFieldTypeString"
+          }
+        ]
+      },
+      "officialReferences": [
+        "https://www.concordnh.gov/436/GIS",
+        "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0"
+      ],
+      "reuseConditions": {
+        "status": "Public query service; attribution to NH GRANIT/NHDES; municipality accuracy disclaimer at official GIS page. No explicit license text on queried layer or item.",
+        "blocking": false
+      },
+      "identityDiagnosis": {
+        "excludedKey": "07046-0",
+        "reason": "Observed ambiguous/nonunique native key 07046-0 occurs across five disjoint source rows with null U_ID and DisplayId. Publisher documentation reviewed does not establish its parcel semantics. Explicitly exclude this key from identified-parcel scope; do not invent IDs or merge unrelated geometry.",
+        "diagnosticFile": "research/us-capitals-batch-three-east-concord-duplicates-2026-10-06.json",
+        "failedProof": "research/us-capitals-batch-three-east-initial-live-2026-10-06.json"
+      }
+    }
+  ]
+}

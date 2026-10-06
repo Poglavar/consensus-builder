@@ -1,0 +1,704 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "montgomery",
+      "stateCode": "AL",
+      "sourceId": "us-al-montgomery-city-parcels",
+      "endpoint": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.3025,
+            32.362500000000004,
+            -86.3,
+            32.365
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.3,
+            32.362500000000004,
+            -86.2975,
+            32.365
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.2975,
+            32.362500000000004,
+            -86.295,
+            32.365
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.3025,
+            32.365,
+            -86.3,
+            32.3675
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.3,
+            32.365,
+            -86.2975,
+            32.3675
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.2975,
+            32.365,
+            -86.295,
+            32.3675
+          ],
+          "count": 37,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.3025,
+            32.3675,
+            -86.3,
+            32.370000000000005
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.3,
+            32.3675,
+            -86.2975,
+            32.370000000000005
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.2975,
+            32.3675,
+            -86.295,
+            32.370000000000005
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.295,
+            32.362500000000004,
+            -86.2925,
+            32.365
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.2925,
+            32.362500000000004,
+            -86.28999999999999,
+            32.365
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.28999999999999,
+            32.362500000000004,
+            -86.2875,
+            32.365
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.295,
+            32.365,
+            -86.2925,
+            32.3675
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.2925,
+            32.365,
+            -86.28999999999999,
+            32.3675
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.28999999999999,
+            32.365,
+            -86.2875,
+            32.3675
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.295,
+            32.3675,
+            -86.2925,
+            32.370000000000005
+          ],
+          "count": 95,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.2925,
+            32.3675,
+            -86.28999999999999,
+            32.370000000000005
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.28999999999999,
+            32.3675,
+            -86.2875,
+            32.370000000000005
+          ],
+          "count": 1,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider pagination repeated or omitted an object ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 36
+    },
+    {
+      "city": "phoenix",
+      "stateCode": "AZ",
+      "sourceId": "us-az-maricopa-assessor-parcels",
+      "endpoint": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0775,
+            33.445,
+            -112.075,
+            33.4475
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.075,
+            33.445,
+            -112.0725,
+            33.4475
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0725,
+            33.445,
+            -112.07000000000001,
+            33.4475
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0775,
+            33.4475,
+            -112.075,
+            33.449999999999996
+          ],
+          "count": 114,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.075,
+            33.4475,
+            -112.0725,
+            33.449999999999996
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0725,
+            33.4475,
+            -112.07000000000001,
+            33.449999999999996
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0775,
+            33.449999999999996,
+            -112.075,
+            33.4525
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.075,
+            33.449999999999996,
+            -112.0725,
+            33.4525
+          ],
+          "count": 219,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0725,
+            33.449999999999996,
+            -112.07000000000001,
+            33.4525
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.07000000000001,
+            33.445,
+            -112.06750000000001,
+            33.4475
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.06750000000001,
+            33.445,
+            -112.065,
+            33.4475
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.065,
+            33.445,
+            -112.0625,
+            33.4475
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.07000000000001,
+            33.4475,
+            -112.06750000000001,
+            33.449999999999996
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.06750000000001,
+            33.4475,
+            -112.065,
+            33.449999999999996
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.065,
+            33.4475,
+            -112.0625,
+            33.449999999999996
+          ],
+          "count": 226,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.07000000000001,
+            33.449999999999996,
+            -112.06750000000001,
+            33.4525
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.06750000000001,
+            33.449999999999996,
+            -112.065,
+            33.4525
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.065,
+            33.449999999999996,
+            -112.0625,
+            33.4525
+          ],
+          "count": 61,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -112.0775,
+          33.445,
+          -112.075,
+          33.4475
+        ],
+        "forcedPageSize": 3,
+        "count": 6,
+        "returned": 6,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 733,
+      "exactResolved": 733,
+      "nativeIds": [
+        "11222049B",
+        "11222074A",
+        "11222075A"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-az-maricopa-assessor-parcels",
+        "parcels": 1,
+        "siteM2": 19549.29
+      },
+      "requests": 34
+    },
+    {
+      "city": "little_rock",
+      "stateCode": "AR",
+      "sourceId": "us-ar-ago-parcels-pulaski",
+      "endpoint": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.2925,
+            34.7425,
+            -92.29,
+            34.745
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.29,
+            34.7425,
+            -92.28750000000001,
+            34.745
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28750000000001,
+            34.7425,
+            -92.28500000000001,
+            34.745
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.2925,
+            34.745,
+            -92.29,
+            34.747499999999995
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.29,
+            34.745,
+            -92.28750000000001,
+            34.747499999999995
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28750000000001,
+            34.745,
+            -92.28500000000001,
+            34.747499999999995
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.2925,
+            34.747499999999995,
+            -92.29,
+            34.75
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.29,
+            34.747499999999995,
+            -92.28750000000001,
+            34.75
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28750000000001,
+            34.747499999999995,
+            -92.28500000000001,
+            34.75
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28500000000001,
+            34.7425,
+            -92.28250000000001,
+            34.745
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28250000000001,
+            34.7425,
+            -92.28,
+            34.745
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28,
+            34.7425,
+            -92.2775,
+            34.745
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28500000000001,
+            34.745,
+            -92.28250000000001,
+            34.747499999999995
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28250000000001,
+            34.745,
+            -92.28,
+            34.747499999999995
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28,
+            34.745,
+            -92.2775,
+            34.747499999999995
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28500000000001,
+            34.747499999999995,
+            -92.28250000000001,
+            34.75
+          ],
+          "count": 60,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28250000000001,
+            34.747499999999995,
+            -92.28,
+            34.75
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.28,
+            34.747499999999995,
+            -92.2775,
+            34.75
+          ],
+          "count": 37,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -92.2925,
+          34.7425,
+          -92.29,
+          34.745
+        ],
+        "forcedPageSize": 3,
+        "count": 14,
+        "returned": 14,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 420,
+      "exactResolved": 420,
+      "nativeIds": [
+        "34L-046.00-001.00",
+        "34L-046.00-024.00",
+        "34L-047.00-021.00"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ar-ago-parcels-pulaski",
+        "parcels": 1,
+        "siteM2": 2964.22
+      },
+      "requests": 32
+    },
+    {
+      "city": "sacramento",
+      "stateCode": "CA",
+      "sourceId": "us-ca-sacramento-active-parcels",
+      "endpoint": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 1
+    }
+  ]
+}

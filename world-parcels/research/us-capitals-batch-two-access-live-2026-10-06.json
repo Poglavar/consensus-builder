@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "springfield",
+      "stateCode": "IL",
+      "sourceId": "us-il-springfield-parcels",
+      "endpoint": "https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.655,
+            39.7775,
+            -89.6525,
+            39.78
+          ],
+          "count": 48,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.6525,
+            39.7775,
+            -89.65,
+            39.78
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.65,
+            39.7775,
+            -89.64750000000001,
+            39.78
+          ],
+          "count": 53,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.655,
+            39.78,
+            -89.6525,
+            39.7825
+          ],
+          "count": 97,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.6525,
+            39.78,
+            -89.65,
+            39.7825
+          ],
+          "count": 85,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.65,
+            39.78,
+            -89.64750000000001,
+            39.7825
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.655,
+            39.7825,
+            -89.6525,
+            39.785000000000004
+          ],
+          "count": 62,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.6525,
+            39.7825,
+            -89.65,
+            39.785000000000004
+          ],
+          "count": 75,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.65,
+            39.7825,
+            -89.64750000000001,
+            39.785000000000004
+          ],
+          "count": 77,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.64750000000001,
+            39.7775,
+            -89.64500000000001,
+            39.78
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.64500000000001,
+            39.7775,
+            -89.6425,
+            39.78
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.6425,
+            39.7775,
+            -89.64,
+            39.78
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.64750000000001,
+            39.78,
+            -89.64500000000001,
+            39.7825
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.64500000000001,
+            39.78,
+            -89.6425,
+            39.7825
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.6425,
+            39.78,
+            -89.64,
+            39.7825
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.64750000000001,
+            39.7825,
+            -89.64500000000001,
+            39.785000000000004
+          ],
+          "count": 83,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.64500000000001,
+            39.7825,
+            -89.6425,
+            39.785000000000004
+          ],
+          "count": 63,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.6425,
+            39.7825,
+            -89.64,
+            39.785000000000004
+          ],
+          "count": 86,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -89.64750000000001,
+          39.7775,
+          -89.64500000000001,
+          39.78
+        ],
+        "forcedPageSize": 3,
+        "count": 19,
+        "returned": 17,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 999,
+      "exactResolved": 999,
+      "nativeIds": [
+        "22040426013",
+        "22040404026",
+        "22040404032"
+      ],
+      "footprintCount": 7,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-il-springfield-parcels",
+        "parcels": 1,
+        "siteM2": 24301.6
+      },
+      "requests": 193
+    }
+  ]
+}

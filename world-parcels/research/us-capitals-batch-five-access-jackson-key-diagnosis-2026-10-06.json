@@ -1,0 +1,93 @@
+{
+  "stateCode": "MS",
+  "city": "jackson",
+  "endpoint": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11",
+  "status": "diagnosed",
+  "rows": 34,
+  "keyAssessment": {
+    "dpin": {
+      "unique": 15,
+      "missing": 0
+    },
+    "mapref": {
+      "unique": 15,
+      "missing": 0
+    },
+    "parcel": {
+      "unique": 15,
+      "missing": 0
+    },
+    "parcel_f": {
+      "unique": 15,
+      "missing": 0
+    }
+  },
+  "streetRowCounts": {
+    "NO": 34
+  },
+  "duplicateGroups": [
+    {
+      "dpin": "001840000011000000",
+      "rows": 4,
+      "maprefCount": 1,
+      "parcelCount": 1,
+      "streetRows": {
+        "NO": 4
+      }
+    },
+    {
+      "dpin": "001840000012000000",
+      "rows": 2,
+      "maprefCount": 1,
+      "parcelCount": 1,
+      "streetRows": {
+        "NO": 2
+      }
+    },
+    {
+      "dpin": "001850000009000000",
+      "rows": 2,
+      "maprefCount": 1,
+      "parcelCount": 1,
+      "streetRows": {
+        "NO": 2
+      }
+    }
+  ],
+  "assessment": "All genuine identifier fields have same repeated groups and streetrow field is NO for every sampled row; no lifecycle field identifies unique current parcels. No blind union accepted.",
+  "executedSearches": [
+    {
+      "language": "English",
+      "query": "Hinds County GIS parcel DPIN mapref parcel"
+    },
+    {
+      "language": "English",
+      "query": "\"CMPDD\" \"Hinds\" \"Parcels\" ArcGIS"
+    },
+    {
+      "language": "English",
+      "query": "\"Jackson\" \"dpin\" \"streetrow\""
+    }
+  ],
+  "references": [
+    "https://gis.cmpdd.org/server/rest/services/Hosted/Hinds_County_Map/FeatureServer/24",
+    "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+    "https://hindscounty.maps.arcgis.com/apps/webappviewer/index.html?id=3a3ddb35007441989b460d3aa81f9277"
+  ],
+  "alternatives": [
+    {
+      "stateCode": "MS",
+      "city": "jackson",
+      "endpoint": "https://gis.cmpdd.org/server/rest/services/Hosted/Hinds_County_Map/FeatureServer/24",
+      "status": "gate_running",
+      "assessment": "Official county viewer Parcels 2024 native dpin and system objectid."
+    },
+    {
+      "stateCode": "MS",
+      "city": "jackson",
+      "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+      "status": "metadata",
+      "assessment": "MDEQ official Hinds parcel polygons, native PPIN integer; source credit County Tax Assessor and Tristate."
+    }
+  ]
+}

@@ -128,7 +128,8 @@
       "catalogueUrl": "https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about",
       "cityIds": [
         "los_angeles"
-      ]
+      ],
+      "stateCode": "CA"
     },
     {
       "id": "us-fl-miamidade-pa-parcels",
@@ -160,7 +161,8 @@
       "parcelNumberField": "FOLIO",
       "cityIds": [
         "miami"
-      ]
+      ],
+      "stateCode": "FL"
     },
     {
       "id": "us-dc-dcgis-tax-lots",
@@ -194,7 +196,8 @@
       "catalogueUrl": "https://opendata.dc.gov/datasets/DCGIS::tax-lots",
       "cityIds": [
         "washington_dc"
-      ]
+      ],
+      "stateCode": "DC"
     },
     {
       "id": "fr-ign-parcellaire-express",
@@ -460,7 +463,8 @@
       "catalogueUrl": "https://data.sf.gov/d/acdm-wktn",
       "cityIds": [
         "san_francisco"
-      ]
+      ],
+      "stateCode": "CA"
     },
     {
       "id": "de-be-alkis-flurstuecke-wfs",
@@ -1011,7 +1015,8 @@
       "defaultForCity": false,
       "evidenceFile": "research/db-city-us-live-2026-10-03.json",
       "scope": "NYC five borough tax lots; distinct BBL identity, imported SWIS identity is not assumed equivalent.",
-      "licenceNote": "Source terms are informational; users choose their source and intended use."
+      "licenceNote": "Source terms are informational; users choose their source and intended use.",
+      "stateCode": "NY"
     },
     {
       "id": "us-co-oit-public-parcels-denver",
@@ -1043,7 +1048,8 @@
       "licenceNote": "Source terms are informational; users choose their source and intended use.",
       "attributeFilters": {
         "countyName": "Denver"
-      }
+      },
+      "stateCode": "CO"
     },
     {
       "id": "si-gurs-kn-parcele-wfs",
@@ -1258,6 +1264,1766 @@
         "Native plot number is scoped by survey, district office, mouza and sheet. No owner fields are retained.",
         "Whole small sheet is cached in memory for five minutes. A changed feature count requires a coverage recheck and is reported unavailable."
       ]
+    },
+    {
+      "id": "us-al-montgomery-city-parcels",
+      "name": "City of Montgomery GIS — Montgomery",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0",
+      "idField": "PID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "US-AL-MONTGOMERY-",
+      "outFields": [
+        "OBJECTID",
+        "PID",
+        "ParcelNo"
+      ],
+      "parcelNumberField": "ParcelNo",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32616,
+      "countryCode": "US",
+      "stateCode": "AL",
+      "cityIds": [
+        "montgomery"
+      ],
+      "boundsQueryMode": "object-ids",
+      "operator": "City of Montgomery GIS",
+      "scope": "Municipal parcel service sampled in Montgomery; no Alabama-wide coverage claim.",
+      "caveats": [
+        "Stable PID is used for identity; padded ParcelNo remains a display label.",
+        "Count/OID manifests avoid a repeated terminal page observed under offset paging."
+      ],
+      "catalogueUrl": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0",
+      "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+      "attribution": "City of Montgomery GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-ak-cbj-parcels",
+      "name": "City and Borough of Juneau GIS — Juneau",
+      "adapter": "arcgis",
+      "endpoint": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3",
+      "idField": "tax_id",
+      "objectIdField": "FID",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9]+$",
+      "idPrefix": "US-AK-CBJ-",
+      "outFields": [
+        "FID",
+        "tax_id"
+      ],
+      "parcelNumberField": "tax_id",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32608,
+      "countryCode": "US",
+      "stateCode": "AK",
+      "cityIds": [
+        "juneau"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeExclusions": {
+        "tax_id": [
+          "UNASSIGNED",
+          " "
+        ]
+      },
+      "nativeGeometryMode": "parts",
+      "operator": "City and Borough of Juneau GIS",
+      "scope": "Identified municipal parcel-code groups around Juneau; all geometric components sharing tax_id form one canonical group. Excludes UNASSIGNED and blank-placeholder records; no Alaska-wide claim.",
+      "caveats": [
+        "A native tax_id can have several disconnected geometry rows; all components are fetched and dissolved before publishing a canonical parcel.",
+        "The municipal server rejects offsets and ordering; bounded and native-key reads use complete count/OID manifests.",
+        "Unassigned or blank parcel codes have no verified stable identity and are outside this identified-parcel source.",
+        "Component coordinates are normalized to 9 decimal degrees (sub-millimetre rounding) before polygon union to avoid numerical ring-assembly failures.",
+        "A canonical parcel represents the complete municipal tax_id group, not a claim that each component is a separate legal lot. Provider queries are limited to two concurrently; failures remain retryable."
+      ],
+      "catalogueUrl": "https://juneau.org/finance/assessor-office",
+      "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+      "attribution": "City and Borough of Juneau GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "us-az-maricopa-assessor-parcels",
+      "name": "Maricopa County Assessor's Office — Phoenix",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0",
+      "idField": "APN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{8}[A-Za-z]?$",
+      "idPrefix": "US-AZ-MARICOPA-",
+      "outFields": [
+        "OBJECTID",
+        "APN"
+      ],
+      "parcelNumberField": "APN",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32612,
+      "countryCode": "US",
+      "stateCode": "AZ",
+      "cityIds": [
+        "phoenix"
+      ],
+      "operator": "Maricopa County Assessor's Office",
+      "scope": "Maricopa County assessment parcels, with a conservative Phoenix entry area; no Arizona-wide coverage claim.",
+      "caveats": [
+        "APN is a string, including letter suffixes; OBJECTID is only a transport row key."
+      ],
+      "catalogueUrl": "https://mcassessor.maricopa.gov/",
+      "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+      "attribution": "Maricopa County Assessor's Office. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-ar-ago-parcels-pulaski",
+      "name": "Arkansas GIS Office — Little Rock",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6",
+      "idField": "parcelid",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9.-]+$",
+      "idPrefix": "US-AR-PULASKI-",
+      "outFields": [
+        "objectid",
+        "parcelid",
+        "county"
+      ],
+      "parcelNumberField": "parcelid",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32615,
+      "countryCode": "US",
+      "stateCode": "AR",
+      "cityIds": [
+        "little_rock"
+      ],
+      "attributeFilters": {
+        "county": "Pulaski"
+      },
+      "operator": "Arkansas GIS Office",
+      "scope": "Arkansas county-contributed polygons restricted to Pulaski County; Little Rock entry only.",
+      "caveats": [
+        "Native parcelid is scoped by a fixed Pulaski county filter.",
+        "County-contributed statewide service may contain missing or older records elsewhere; whole-state completeness is not claimed."
+      ],
+      "catalogueUrl": "https://gis.arkansas.gov/",
+      "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+      "attribution": "Arkansas GIS Office. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-ca-sacramento-active-parcels",
+      "name": "Sacramento County GIS — Sacramento",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8",
+      "idField": "PARCEL_NUMBER",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{14}$",
+      "idPrefix": "US-CA-SACRAMENTO-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_NUMBER",
+        "APN_DASH"
+      ],
+      "parcelNumberField": "APN_DASH",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32610,
+      "countryCode": "US",
+      "stateCode": "CA",
+      "cityIds": [
+        "sacramento"
+      ],
+      "operator": "Sacramento County GIS",
+      "scope": "Sacramento County active GIS parcel base; Sacramento entry only, no California-wide coverage claim.",
+      "caveats": [
+        "The full 14-character PARCEL_NUMBER is identity; shortened APN10 can collide across subparcels.",
+        "Assessment parcel geometry can include separately numbered subparcels; it is not ownership or a certified legal survey."
+      ],
+      "catalogueUrl": "https://data.saccounty.gov/",
+      "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+      "attribution": "Sacramento County GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-ct-hartford-parcels",
+      "name": "Connecticut GIS Office — Hartford (2025)",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "idField": "Parcel_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "US-CT-HARTFORD-",
+      "outFields": [
+        "OBJECTID",
+        "Parcel_ID",
+        "Town_Name"
+      ],
+      "parcelNumberField": "Parcel_ID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32618,
+      "countryCode": "US",
+      "stateCode": "CT",
+      "cityIds": [
+        "hartford"
+      ],
+      "operator": "Connecticut GIS Office",
+      "scope": "2025 municipal parcel compilation restricted to Town_Name Hartford; no Connecticut-wide completeness claim. Each canonical identity is the complete native parcel-code geometry group within the fixed town/county scope. Blank or unassigned parcel-code rows are excluded.",
+      "attribution": "Connecticut GIS Office. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeFilters": {
+        "Town_Name": "Hartford"
+      },
+      "catalogueUrl": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "caveats": [
+        "Native Parcel_ID is scoped by a fixed Hartford municipal filter. Municipal submissions retain their publication vintage.",
+        "The publisher can map one native parcel code to multiple same-vintage polygons. All components are fetched and dissolved; this group is not a claim that each component is a separate legal lot.",
+        "The observed single-space placeholder has no stable parcel identity and is excluded; failed cells remain retryable."
+      ],
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "attributeExclusions": {
+        "Parcel_ID": [
+          " "
+        ]
+      },
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-de-kent-dover-parcels",
+      "name": "Delaware FirstMap — Dover",
+      "adapter": "arcgis",
+      "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9-]+$",
+      "idPrefix": "US-DE-KENT-",
+      "outFields": [
+        "OBJECTID",
+        "PIN",
+        "COUNTY"
+      ],
+      "parcelNumberField": "PIN",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32618,
+      "countryCode": "US",
+      "stateCode": "DE",
+      "cityIds": [
+        "dover"
+      ],
+      "operator": "State of Delaware FirstMap (Delaware Geospatial Data Exchange)",
+      "scope": "Statewide parcel layer scoped to verified Kent County; native PIN retained verbatim.",
+      "attribution": "State of Delaware FirstMap (Delaware Geospatial Data Exchange). Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeFilters": {
+        "COUNTY": "Kent"
+      },
+      "catalogueUrl": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-ga-fulton-atlanta-parcels",
+      "name": "Fulton County GIS — Atlanta",
+      "adapter": "arcgis",
+      "endpoint": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+      "idField": "ParcelID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9]+(?: +[A-Za-z0-9]+)*$",
+      "idPrefix": "US-GA-FULTON-",
+      "outFields": [
+        "OBJECTID",
+        "ParcelID"
+      ],
+      "parcelNumberField": "ParcelID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32616,
+      "countryCode": "US",
+      "stateCode": "GA",
+      "cityIds": [
+        "atlanta"
+      ],
+      "operator": "Fulton County GIS",
+      "scope": "Fulton County Tax Parcel layer; only native ParcelID and transport OBJECTID requested.",
+      "attribution": "Fulton County GIS. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "catalogueUrl": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+      "caveats": [
+        "Only Fulton County portions of Atlanta are covered. Native ParcelID internal spaces are retained verbatim."
+      ],
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-hi-honolulu-parcels",
+      "name": "Hawaii Statewide GIS — Honolulu (May 2026)",
+      "adapter": "arcgis",
+      "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "idField": "tmk",
+      "objectIdField": "objectid",
+      "idType": "integer",
+      "idPattern": "^(0|[1-9][0-9]*)$",
+      "idPrefix": "US-HI-HONOLULU-",
+      "outFields": [
+        "objectid",
+        "tmk",
+        "county"
+      ],
+      "parcelNumberField": "tmk",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32604,
+      "countryCode": "US",
+      "stateCode": "HI",
+      "cityIds": [
+        "honolulu"
+      ],
+      "operator": "Hawaii Statewide GIS Program",
+      "scope": "Statewide TMK layer scoped by verified county=Honolulu; provider describes boundaries as visual reference, not survey-level accuracy.",
+      "attribution": "Hawaii Statewide GIS Program. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeFilters": {
+        "county": "Honolulu"
+      },
+      "catalogueUrl": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "caveats": [
+        "May 2026 county compilation; Honolulu contributor dated April 30, 2026. Boundaries are a visual reference, not a certified survey."
+      ],
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-id-ada-boise-parcels",
+      "name": "Idaho Geospatial Office — Boise",
+      "adapter": "arcgis",
+      "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "idField": "PARCEL_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9-]+$",
+      "idPrefix": "US-ID-ADA-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "County"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32611,
+      "countryCode": "US",
+      "stateCode": "ID",
+      "cityIds": [
+        "boise"
+      ],
+      "operator": "Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County",
+      "scope": "County-submitted Idaho parcels, limited to Ada County at Boise; partial snapshot, no statewide completeness claim. Each canonical identity is the complete native parcel-code geometry group within the fixed town/county scope.",
+      "attribution": "Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeFilters": {
+        "County": "Ada"
+      },
+      "catalogueUrl": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "The publisher can map one native parcel code to multiple same-vintage polygons. All components are fetched and dissolved; this group is not a claim that each component is a separate legal lot."
+      ],
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-il-springfield-parcels",
+      "name": "City of Springfield GIS Parcels",
+      "operator": "City of Springfield GIS",
+      "stateCode": "IL",
+      "endpoint": "https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-IL-SPRINGFIELD-",
+      "idType": "string",
+      "idPattern": "^\\d{11}$",
+      "outFields": [
+        "PIN",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PIN",
+      "metricSrid": 32616,
+      "pageSize": 500,
+      "maxBboxKm2": 25,
+      "maxFeatures": 10000,
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "cityIds": [
+        "springfield"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "scope": "City of Springfield and nearby city GIS parcel-view coverage, including the state capital. Native 11-digit PIN values identify source assessor parcel groups; where a PIN has multiple source polygon rows, the adapter unions all rows into one complete parcel geometry.",
+      "caveats": [
+        "The source is a city GIS parcel view with zoning relationships. Parcel boundaries are approximate assessment mapping, not a legal survey or title determination. Multi-row PIN groups are aggregated and must remain complete."
+      ],
+      "catalogueUrl": "https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2",
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "attribution": "City of Springfield GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-la-ebr-baton-rouge-parcels",
+      "name": "East Baton Rouge Parish Assessor tax parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0",
+      "idField": "ASSESSMENT_NUM",
+      "idType": "string",
+      "idPattern": "^[0-9]+(-[0-9]+)*$",
+      "objectIdField": "ID",
+      "idPrefix": "US-LA-EBR-",
+      "outFields": [
+        "ID",
+        "ASSESSMENT_NUM"
+      ],
+      "parcelNumberField": "ASSESSMENT_NUM",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "stateCode": "LA",
+      "metricSrid": 32615,
+      "cityIds": [
+        "baton_rouge"
+      ],
+      "operator": "EBRGIS; East Baton Rouge Parish Assessor's Office; Department of Information Services",
+      "scope": "East Baton Rouge Parish assessor tax-account parcels configured for Baton Rouge only. One canonical native ASSESSMENT_NUM represents the complete assessor-account geometry group; no Louisiana-wide coverage claim.",
+      "catalogueUrl": "https://catalog.data.gov/dataset/tax-parcel",
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "attribution": "EBRGIS; East Baton Rouge Parish Assessor's Office; Department of Information Services. Adapted to WGS84.",
+      "licenceNote": "Official public data service; no named open-data licence found in reviewed metadata; accuracy/reliance disclaimer applies.",
+      "attributeExclusions": {
+        "ASSESSMENT_NUM": [
+          "000-0000-0"
+        ]
+      },
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "partsCoordinatePrecision": 9,
+      "caveats": [
+        "The official EBR GIS metadata describes tax-parcel features as a single lot or a group of lots held under one taxpayer account. Distinct source polygons with the same ASSESSMENT_NUM and PRONO are completely fetched and dissolved as one assessor-account footprint; this does not claim the account is one legal parcel.",
+        "The all-zero ASSESSMENT_NUM placeholder is excluded because bounded samples show it has no PRONO, STATUS, ward, subdivision or lot/block identity fields.",
+        "ASSESSMENT_NUM is kept verbatim as a string, including leading zeroes and all published hyphen formats."
+      ],
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "us-me-augusta-parcels",
+      "name": "Maine GeoLibrary Organized Towns parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Parcels_Organized_Towns/FeatureServer/10",
+      "idField": "MAP_BK_LOT",
+      "idType": "string",
+      "idPattern": "^[0-9A-Za-z .-]+$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-ME-AUGUSTA-",
+      "outFields": [
+        "OBJECTID",
+        "TOWN",
+        "MAP_BK_LOT"
+      ],
+      "parcelNumberField": "MAP_BK_LOT",
+      "attributeFilters": {
+        "TOWN": "Augusta"
+      },
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "stateCode": "ME",
+      "metricSrid": 32619,
+      "cityIds": [
+        "augusta"
+      ],
+      "operator": "Maine GeoLibrary with voluntarily submitted municipality-maintained parcel data",
+      "scope": "Maine GeoLibrary organized-town parcels with a fixed Augusta town filter; configured for Augusta only, no statewide completeness claim.",
+      "catalogueUrl": "https://mainegeolibrary-maine.hub.arcgis.com/maps/maine::maine-parcels-organized-towns-feature/about",
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "attribution": "Maine GeoLibrary and contributing municipality data. Adapted to WGS84.",
+      "licenceNote": "Municipalities contribute voluntarily; no single open-data licence found in reviewed metadata. GeoLibrary states updates are non-regular and warns parcel maps do not replace surveys."
+    },
+    {
+      "id": "us-md-annapolis-parcels",
+      "name": "City of Annapolis GIS — Annapolis",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-MD-ANNAPOLIS-",
+      "outFields": [
+        "OBJECTID",
+        "PIN"
+      ],
+      "parcelNumberField": "PIN",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32618,
+      "countryCode": "US",
+      "stateCode": "MD",
+      "cityIds": [
+        "annapolis"
+      ],
+      "operator": "City of Annapolis GIS",
+      "scope": "City of Annapolis municipal parcel polygons; no Maryland-wide coverage claim.",
+      "catalogueUrl": "https://annapolis.gov/2324/GIS-and-Maps",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "caveats": [
+        "Publisher describes this as the development version of the city parcel layer. Reference geometry is not a certified legal survey or ownership evidence."
+      ],
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "attribution": "City of Annapolis GIS. Adapted to WGS84."
+    },
+    {
+      "id": "us-ma-boston-current-parcels",
+      "name": "City of Boston GIS — current fee parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0",
+      "idField": "LOC_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[MF]_[0-9]+_[0-9]+$",
+      "idPrefix": "US-MA-BOSTON-",
+      "outFields": [
+        "OBJECTID",
+        "LOC_ID",
+        "MAP_PAR_ID",
+        "POLY_TYPE"
+      ],
+      "parcelNumberField": "MAP_PAR_ID",
+      "attributeFilters": {
+        "POLY_TYPE": "FEE"
+      },
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32619,
+      "countryCode": "US",
+      "stateCode": "MA",
+      "cityIds": [
+        "boston"
+      ],
+      "operator": "City of Boston GIS / Assessing",
+      "scope": "Current Boston fee parcel polygons only (POLY_TYPE FEE). Water, rights of way and TAX-only polygons are outside this ground source. Multiple same-LOC_ID fee polygon rows form one complete native locational parcel group.",
+      "catalogueUrl": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0?f=pjson",
+      "caveats": [
+        "LOC_ID is the publisher-documented unique locational identifier of the parcel polygon; assessor MAP_PAR_ID is a display label, not canonical identity.",
+        "Uses the current city service instead of the historical Parcels09 layer. Multiple assessment records can relate to one geographic parcel; no ownership records are requested.",
+        "Fee parcel polygons only; other published polygon types remain outside this source.",
+        "Observed repeated LOC_ID rows also have the same assessor map reference. All fee polygon components of the native group are resolved before publishing geometry."
+      ],
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+      "attribution": "City of Boston GIS / Assessing. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-in-marion-indianapolis-parcels",
+      "name": "IndianaMap Parcel Boundaries of Indiana Current — Marion County",
+      "adapter": "arcgis",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "idField": "local_id",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "objectIdField": "objectid",
+      "idPrefix": "US-IN-MARION-",
+      "outFields": [
+        "objectid",
+        "local_id",
+        "county_id",
+        "state_parcel_id"
+      ],
+      "parcelNumberField": "state_parcel_id",
+      "attributeFilters": {
+        "county_id": "49"
+      },
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "stateCode": "IN",
+      "metricSrid": 32616,
+      "cityIds": [
+        "indianapolis"
+      ],
+      "operator": "Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap",
+      "scope": "Marion County parcels from the IndianaMap statewide compilation, fixed to county_id 49; configured for Indianapolis only, no statewide completeness claim.",
+      "catalogueUrl": "https://www.in.gov/gis/geoinsights/posts/data-harvest/",
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "Indiana Geographic Information Office, IndianaMap Parcel Boundaries of Indiana Current. Adapted to WGS84.",
+      "licenceNote": "Official service publishes parcel geometry and county fields; no named open-data licence was stated in the reviewed service metadata."
+    },
+    {
+      "id": "us-ia-des-moines-parcels",
+      "name": "University of Iowa public mirror of Iowa statewide parcels, 2017",
+      "operator": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror",
+      "stateCode": "IA",
+      "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "idField": "STATEPARID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-IA-",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "STATEPARID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "STATEPARID",
+      "metricSrid": 32615,
+      "pageSize": 500,
+      "maxBboxKm2": 25,
+      "maxFeatures": 10000,
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "cityIds": [
+        "des_moines"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Iowa statewide assessment parcel snapshot last updated at most 2 November 2017; includes Des Moines, Polk County. STATEPARID is source county-qualified parcel code; all rows in its complete source group form the native parcel geometry.",
+      "caveats": [
+        "Historical 2017 snapshot supplied as-is; not current assessment data or a legal survey. Same STATEPARID groups also share source UNPARCELID and PARCELNUMB."
+      ],
+      "catalogueUrl": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-mi-lansing-parcels",
+      "name": "Ingham County Parcels 2025 public service",
+      "operator": "Ingham County Equalization parcel data; public publisher Ingham County Drain Office",
+      "stateCode": "MI",
+      "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+      "idField": "PARCELNUM",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-MI-",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "PARCELNUM",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PARCELNUM",
+      "metricSrid": 32616,
+      "pageSize": 500,
+      "maxBboxKm2": 25,
+      "maxFeatures": 10000,
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "cityIds": [
+        "lansing"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Ingham County Equalization 2025 assessment parcel polygons, including downtown Lansing.",
+      "caveats": [
+        "Assessment mapping; not a legal survey.",
+        "Lansing areas in Eaton and Clinton counties are outside this source."
+      ],
+      "catalogueUrl": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "Ingham County Equalization parcel data; public publisher Ingham County Drain Office. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-mn-ramsey-saint-paul-parcels",
+      "name": "Ramsey County Tax Parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4",
+      "idField": "ParcelID",
+      "idType": "string",
+      "idPattern": "^[0-9]{12}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-MN-RAMSEY-",
+      "outFields": [
+        "OBJECTID",
+        "ParcelID"
+      ],
+      "parcelNumberField": "ParcelID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "stateCode": "MN",
+      "metricSrid": 32615,
+      "cityIds": [
+        "saint_paul"
+      ],
+      "operator": "Ramsey County GIS",
+      "scope": "Ramsey County parcel service; configured for Saint Paul only.",
+      "catalogueUrl": "https://www.stpaul.gov/departments/planning-and-economic-development/maps-and-data",
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "Ramsey County GIS Tax Parcels. Adapted to WGS84.",
+      "licenceNote": "Official public county service; source conditions informational."
+    },
+    {
+      "id": "us-mo-jefferson_city-parcels",
+      "name": "Cole County GIS / Jefferson City (JCMO_ADMIN) — Jefferson City",
+      "adapter": "arcgis",
+      "endpoint": "https://services6.arcgis.com/rXa0aMElf2BPjgBA/arcgis/rest/services/JCBaseMap/FeatureServer/15",
+      "idField": "PID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,19}$",
+      "idPrefix": "US-MO-JEFFERSON_CITY-",
+      "outFields": [
+        "OBJECTID",
+        "PID"
+      ],
+      "parcelNumberField": "PID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32615,
+      "countryCode": "US",
+      "stateCode": "MO",
+      "cityIds": [
+        "jefferson_city"
+      ],
+      "operator": "Cole County GIS / Jefferson City (JCMO_ADMIN)",
+      "scope": "Public capital-region cadastral polygons around Jefferson City.",
+      "catalogueUrl": "https://www.colecounty.org/424/GISMapping",
+      "licenceNote": "Source conditions informational; users choose source and intended use.",
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "Cole County GIS / Jefferson City (JCMO_ADMIN). Adapted to WGS84."
+    },
+    {
+      "id": "us-mt-helena-parcels",
+      "name": "Montana Parcels (Montana Cadastral Framework)",
+      "adapter": "arcgis",
+      "endpoint": "https://gisservice.mt.gov/ArcGIS/rest/services/msdi_cadastral_map_v1/MapServer/1",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{17}$",
+      "idPrefix": "US-MT-HELENA-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID"
+      ],
+      "parcelNumberField": "PARCELID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32612,
+      "countryCode": "US",
+      "stateCode": "MT",
+      "cityIds": [
+        "helena"
+      ],
+      "operator": "Montana Department of Revenue and county GIS offices; integrated by Montana State Library",
+      "scope": "Capital-region parcel polygons around Helena.",
+      "catalogueUrl": "https://www.msl.mt.gov/geoinfo/msdi/cadastral/",
+      "licenceNote": "Source conditions informational; users choose source and intended use.",
+      "caveats": [
+        "NULL PARCELID source rows have no cadastral identity and are excluded through explicit attributeNotNull; no synthesized parcel identity."
+      ],
+      "attributeNotNull": [
+        "PARCELID"
+      ],
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "Montana Department of Revenue and county GIS offices; integrated by Montana State Library. Adapted to WGS84."
+    },
+    {
+      "id": "us-ne-lincoln-parcels",
+      "name": "City of Lincoln / Lancaster County (CountyCityPub) — Lincoln",
+      "adapter": "arcgis",
+      "endpoint": "https://services1.arcgis.com/wpJGOi6N4Rq5cqFv/arcgis/rest/services/TaxParcels/FeatureServer/0",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID_1",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,19}$",
+      "idPrefix": "US-NE-LINCOLN-",
+      "outFields": [
+        "OBJECTID_1",
+        "PARCELID"
+      ],
+      "parcelNumberField": "PARCELID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32614,
+      "countryCode": "US",
+      "stateCode": "NE",
+      "cityIds": [
+        "lincoln"
+      ],
+      "operator": "City of Lincoln / Lancaster County (CountyCityPub)",
+      "scope": "Public capital-region cadastral polygons around Lincoln.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=1da5644990874ff2857daffa043b3617",
+      "licenceNote": "Source conditions informational; users choose source and intended use.",
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "City of Lincoln / Lancaster County (CountyCityPub). Adapted to WGS84."
+    },
+    {
+      "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "NH Parcels",
+      "operator": "New Hampshire GRANIT / NH Department of Environmental Services",
+      "idField": "nh_gis_id",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "objectid",
+        "nh_gis_id",
+        "town"
+      ],
+      "metricSrid": 32619,
+      "attributeFilters": {
+        "town": "Concord"
+      },
+      "id": "us-nh-concord-parcels",
+      "idPrefix": "US-NH-CONCORD-",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "attributeExclusions": {
+        "nh_gis_id": "07046-0"
+      },
+      "maxConcurrentQueries": 2,
+      "stateCode": "NH",
+      "countryCode": "US",
+      "catalogueUrl": "https://www.granit.unh.edu/",
+      "scope": "Identified Concord assessment parcels from NH GRANIT/NHDES.",
+      "caveats": [
+        "One observed nonunique native key, 07046-0, has five disjoint rows and no replacement U_ID/DisplayId. It is explicitly excluded; the published semantics do not establish a single multipart parcel."
+      ],
+      "parcelNumberField": "nh_gis_id",
+      "cityIds": [
+        "concord"
+      ],
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "New Hampshire GRANIT / NH Department of Environmental Services. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Cad_parcel_mod4 (Parcels_Composite_NJ_WM)",
+      "operator": "New Jersey Office of Information Technology, Office of GIS (NJOGIS)",
+      "idField": "PAMS_PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "PAMS_PIN"
+      ],
+      "metricSrid": 32618,
+      "id": "us-nj-trenton-parcels",
+      "idPrefix": "US-NJ-TRENTON-",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "stateCode": "NJ",
+      "countryCode": "US",
+      "catalogueUrl": "https://nj.gov/njgin/edata/parcels/",
+      "scope": "New Jersey composite parcel service, configured for Trenton; no statewide completeness claim.",
+      "caveats": [
+        "County-contributed assessment geometry; accuracy and dates vary."
+      ],
+      "parcelNumberField": "PAMS_PIN",
+      "cityIds": [
+        "trenton"
+      ],
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "New Jersey Office of Information Technology, Office of GIS (NJOGIS). Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+      "adapter": "arcgis",
+      "name": "Santa Fe County Parcels",
+      "operator": "Santa Fe County GIS Division",
+      "idField": "parcel_number",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "parcel_number"
+      ],
+      "parcelNumberField": "parcel_number",
+      "metricSrid": 32613,
+      "id": "us-nm-santa-fe-parcels",
+      "idPrefix": "US-NM-SANTA-FE-",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "stateCode": "NM",
+      "countryCode": "US",
+      "catalogueUrl": "https://www.santafecountynm.gov/growth-management/gis",
+      "scope": "Santa Fe County assessment parcels served through the City GIS service; configured for Santa Fe.",
+      "caveats": [
+        "Assessment mapping; not a legal survey."
+      ],
+      "cityIds": [
+        "santa_fe"
+      ],
+      "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
+      "attribution": "Santa Fe County GIS Division. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1",
+      "adapter": "arcgis",
+      "name": "NYS Tax Parcels Public (2024, published May 2026)",
+      "operator": "New York State Office of Information Technology Services, Geospatial Services; contributing counties",
+      "idField": "SWIS_SBL_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "SWIS_SBL_ID",
+        "COUNTY_NAME"
+      ],
+      "parcelNumberField": "SWIS_SBL_ID",
+      "metricSrid": 32618,
+      "attributeFilters": {
+        "COUNTY_NAME": "Albany"
+      },
+      "id": "us-ny-albany-parcels",
+      "idPrefix": "US-NY-ALBANY-",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "stateCode": "NY",
+      "countryCode": "US",
+      "catalogueUrl": "https://gis.ny.gov/parcel-polygon-metadata",
+      "scope": "Albany County subset of the NYS public 2024 tax parcel compilation.",
+      "caveats": [
+        "2024 assessment data published May 2026; not a current survey."
+      ],
+      "cityIds": [
+        "albany"
+      ],
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "New York State Office of Information Technology Services, Geospatial Services; contributing counties. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+      "adapter": "arcgis",
+      "name": "NC OneMap Parcels (polys)",
+      "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
+      "scope": "Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; configured for Raleigh.",
+      "idField": "parno",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "outFields": [
+        "parno",
+        "objectid",
+        "stcntyfips"
+      ],
+      "parcelNumberField": "parno",
+      "id": "us-nc-wake-raleigh-parcels",
+      "stateCode": "NC",
+      "cityIds": [
+        "raleigh"
+      ],
+      "idPrefix": "US-NC-WAKE-",
+      "metricSrid": 32617,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+      ],
+      "attributeFilters": {
+        "stcntyfips": "37183"
+      },
+      "countryCode": "US",
+      "catalogueUrl": "https://www.nconemap.gov/pages/parcels",
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "NDGISHUB Parcels (State Parcel Program)",
+      "operator": "North Dakota Information Technology / ND GIS Hub",
+      "scope": "Burleigh County only, fixed CountyName Burleigh in the ND GIS Hub compilation; configured for Bismarck.",
+      "idField": "GISID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "GISID",
+        "OBJECTID",
+        "CountyName"
+      ],
+      "parcelNumberField": "GISID",
+      "metricSrid": 32614,
+      "idPrefix": "US-ND-BURLEIGH-",
+      "attributeFilters": {
+        "CountyName": "Burleigh"
+      },
+      "id": "us-nd-burleigh-bismarck-parcels",
+      "stateCode": "ND",
+      "cityIds": [
+        "bismarck"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+      ],
+      "countryCode": "US",
+      "catalogueUrl": "https://www.gis.nd.gov/parcel-program",
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "North Dakota Information Technology / ND GIS Hub. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features_WebMercator/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Tax Parcel",
+      "operator": "Franklin County Auditor, GIS",
+      "scope": "Franklin County Auditor tax parcels, configured for Columbus; outside-county city areas excluded.",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "PARCELID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PARCELID",
+      "metricSrid": 32617,
+      "idPrefix": "US-OH-FRANKLIN-",
+      "id": "us-oh-franklin-columbus-parcels",
+      "stateCode": "OH",
+      "cityIds": [
+        "columbus"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage.",
+        "Official WebMercator service uses strict count/OID manifest reads because offset pagination repeated or omitted OIDs."
+      ],
+      "countryCode": "US",
+      "catalogueUrl": "https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS",
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "Franklin County Auditor, GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0",
+      "adapter": "arcgis",
+      "name": "Marion County Public Parcels",
+      "operator": "Marion County Assessor and GIS",
+      "scope": "Marion County public taxlots; configured for Salem. West Salem in Polk County is outside this source.",
+      "idField": "TAXLOT",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "TAXLOT",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "TAXLOT",
+      "metricSrid": 32610,
+      "idPrefix": "US-OR-MARION-",
+      "id": "us-or-marion-salem-parcels",
+      "stateCode": "OR",
+      "cityIds": [
+        "salem"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+      ],
+      "countryCode": "US",
+      "catalogueUrl": "https://www.co.marion.or.us/AO",
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "Marion County Assessor and GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0",
+      "adapter": "arcgis",
+      "name": "Cadastral Parcels (Ownership Parcels)",
+      "operator": "Metro Nashville GIS",
+      "scope": "Davidson County",
+      "idField": "APN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "APN"
+      ],
+      "parcelNumberField": "APN",
+      "attributeFilters": {},
+      "metricSrid": 32616,
+      "idPrefix": "US-TN-NASHVILLE-",
+      "id": "us-tn-nashville-parcels",
+      "stateCode": "TN",
+      "cityIds": [
+        "nashville"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "catalogueUrl": "https://www.nashville.gov/departments/planning/mapping-and-gis",
+      "countryCode": "US",
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Bounded capital-area acceptance does not establish full county coverage or currency."
+      ],
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "Metro Nashville GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-tx-austin-parcels",
+      "countryCode": "US",
+      "stateCode": "TX",
+      "cityIds": [
+        "austin"
+      ],
+      "adapter": "arcgis",
+      "endpoint": "https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0",
+      "name": "City of Austin TCAD Parcels",
+      "operator": "City of Austin / Travis Central Appraisal District",
+      "scope": "Travis County TCAD parcels hosted by the City of Austin; bounded capital-area acceptance only.",
+      "idField": "PID_10",
+      "objectIdField": "OBJECTID_1",
+      "idType": "string",
+      "idPattern": ".+",
+      "idPrefix": "US-TX-TRAVIS-",
+      "outFields": [
+        "PID_10",
+        "OBJECTID_1"
+      ],
+      "parcelNumberField": "PID_10",
+      "metricSrid": 32614,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0",
+      "caveats": [
+        "City and county coverage beyond sampled cells is untested."
+      ],
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "City of Austin / Travis Central Appraisal District. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Utah State Parcels",
+      "operator": "Utah Geospatial Resource Center and local government",
+      "scope": "Salt Lake County only, enforced by County=SaltLake; capital-area sample.",
+      "idField": "PARCEL_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "PARCEL_ID",
+        "OBJECTID",
+        "County"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "metricSrid": 32612,
+      "idPrefix": "US-UT-SALTLAKE-",
+      "attributeFilters": {
+        "County": "SaltLake"
+      },
+      "id": "us-ut-salt-lake-city-parcels",
+      "countryCode": "US",
+      "stateCode": "UT",
+      "cityIds": [
+        "salt_lake_city"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+      "caveats": [
+        "County-scoped capital-area acceptance only; statewide compilation completeness varies."
+      ],
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "Utah Geospatial Resource Center and local government. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Vermont SPAN assessment parcels",
+      "operator": "Vermont Center for Geographic Information / local municipalities",
+      "scope": "SPAN-identified Grand List assessment accounts at Montpelier, assembled by complete native-account manifests; unidentified exempt shapes excluded.",
+      "idField": "SPAN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "SPAN",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "SPAN",
+      "metricSrid": 32618,
+      "idPrefix": "US-VT-MONTPELIER-",
+      "attributeFilters": null,
+      "id": "us-vt-montpelier-parcels",
+      "countryCode": "US",
+      "stateCode": "VT",
+      "cityIds": [
+        "montpelier"
+      ],
+      "attributeNotNull": [
+        "SPAN"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://www.montpelier-vt.org/528/Maps-GIS",
+      "caveats": [
+        "Represents Grand List assessment account boundaries by publisher SPAN; an account may contain multiple mapped/legal lots and is not asserted to be one legal cadastral lot.",
+        "Unidentified exempt rail, road and water polygons with null SPAN are excluded consistently.",
+        "Montpelier sampled data use 2025 parcel and Grand List years; capital-area acceptance does not establish full municipal coverage."
+      ],
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "partsCoordinatePrecision": 9,
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "Vermont Center for Geographic Information / local municipalities. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Virginia Parcels",
+      "operator": "Virginia Geographic Information Network / Virginia Department of Emergency Management",
+      "scope": "Richmond capital-area sample of the statewide VGIN compilation; wider coverage untested.",
+      "idField": "VGIN_QPID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPattern": "^[0-9]+$",
+      "outFields": [
+        "VGIN_QPID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "VGIN_QPID",
+      "metricSrid": 32618,
+      "idPrefix": "US-VA-RICHMOND-",
+      "attributeFilters": null,
+      "id": "us-va-richmond-parcels",
+      "stateCode": "VA",
+      "cityIds": [
+        "richmond"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "Capital-area acceptance only; this does not establish full municipal or statewide completeness."
+      ],
+      "countryCode": "US",
+      "catalogueUrl": "https://www.rva.gov/index.php/assessor-real-estate/gismapping",
+      "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+      "attribution": "Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-nv-carson_city-parcels",
+      "name": "Nevada county parcels — Carson City",
+      "adapter": "arcgis",
+      "endpoint": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,19}$",
+      "idPrefix": "US-NV-CARSON_CITY-",
+      "outFields": [
+        "OBJECTID",
+        "PIN",
+        "County",
+        "SourceDate"
+      ],
+      "parcelNumberField": "PIN",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32611,
+      "countryCode": "US",
+      "stateCode": "NV",
+      "cityIds": [
+        "carson_city"
+      ],
+      "operator": "Nevada Division of Water Resources / State Demographer",
+      "scope": "Carson City county parcel compilation; observed source date January 2026",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=7816480981d44f8fbc30a326144d32e1",
+      "attributeFilters": {
+        "County": "Carson City"
+      },
+      "caveats": [
+        "Observed Carson City SourceDate 2026-01-01; capital-area acceptance does not establish complete municipal coverage.",
+        "Provider-native NAD83 UTM envelope queries avoid inconsistent provider reprojection counts; response geometry remains WGS84."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "maxConcurrentQueries": 2,
+      "boundsSrid": 26911,
+      "boundsProjection": "+proj=utm +zone=11 +datum=NAD83 +units=m +no_defs",
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Nevada Division of Water Resources / State Demographer. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-wv-charleston-parcels",
+      "name": "West Virginia statewide parcels — Charleston",
+      "adapter": "arcgis",
+      "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "idField": "CleanParcelID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{20}$",
+      "idPrefix": "US-WV-CHARLESTON-",
+      "outFields": [
+        "OBJECTID",
+        "CleanParcelID"
+      ],
+      "parcelNumberField": "CleanParcelID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32617,
+      "countryCode": "US",
+      "stateCode": "WV",
+      "cityIds": [
+        "charleston"
+      ],
+      "operator": "West Virginia GIS Technical Center / county assessors",
+      "scope": "West Virginia assessment compilation with county-qualified CleanParcelID; configured for Charleston only, no statewide completeness claim.",
+      "catalogueUrl": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "caveats": [
+        "Assessment mapping; coverage and update dates vary.",
+        "Live service declares Tax Year 2023."
+      ],
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "West Virginia GIS Technical Center / county assessors. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-wy-cheyenne-parcels",
+      "name": "Laramie County parcels — Cheyenne",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "idField": "statepidn",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPrefix": "US-WY-CHEYENNE-LARAMIE-",
+      "outFields": [
+        "objectid",
+        "statepidn",
+        "accountno"
+      ],
+      "parcelNumberField": "statepidn",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32613,
+      "countryCode": "US",
+      "stateCode": "WY",
+      "cityIds": [
+        "cheyenne"
+      ],
+      "operator": "Laramie County",
+      "scope": "Laramie County assessment parcel mapping configured for Cheyenne. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "caveats": [
+        "Assessment mapping; not a boundary survey.",
+        "Assessment parcels with accountno present only; RAILROAD placeholder with null assessment account and lifecycle fields is excluded."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeNotNull": [
+        "accountno"
+      ],
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Laramie County. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-sc-columbia-parcels",
+      "name": "City of Columbia Parcel",
+      "adapter": "arcgis",
+      "endpoint": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/8",
+      "idField": "tms",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "US-SC-COLUMBIA-",
+      "outFields": [
+        "objectid",
+        "tms"
+      ],
+      "parcelNumberField": "tms",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "stateCode": "SC",
+      "cityIds": [
+        "columbia"
+      ],
+      "metricSrid": 32617,
+      "operator": "Woolpert / Richland and Lexington County tax-parcel data",
+      "catalogueUrl": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/info/iteminfo",
+      "scope": "Partial municipal tax-assessment parcel layer in Richland and Lexington Counties; service currently contains 456 polygons, not citywide coverage",
+      "caveats": [
+        "Partial source: only the 456 source polygons are represented; broader municipal coverage is not asserted.",
+        "Publisher describes tax-assessment parcels created before April 2010 and maintained with address/street updates; parcel currency not established."
+      ],
+      "maxConcurrentQueries": 2,
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Woolpert / Richland and Lexington County tax-parcel data. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Harrisburg Property Tax Parcels September 2026 snapshot",
+      "operator": "City of Harrisburg GIS / Dauphin County Tax Assessment",
+      "scope": "City of Harrisburg property tax parcel snapshot September 18 2026",
+      "idField": "PID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "PID"
+      ],
+      "parcelNumberField": "PID",
+      "metricSrid": 32618,
+      "idPrefix": "US-PA-HARRISBURG-",
+      "attributeFilters": {},
+      "id": "us-pa-harrisburg-parcels",
+      "stateCode": "PA",
+      "cityIds": [
+        "harrisburg"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "catalogueUrl": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+      "countryCode": "US",
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Official municipal snapshot September 18 2026.",
+        "Geometry represents the publisher-defined unique native PID parcel group, retaining every component; subdivision cause is not inferred."
+      ],
+      "maxConcurrentQueries": 2,
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "City of Harrisburg GIS / Dauphin County Tax Assessment. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-ms-jackson-parcels",
+      "countryCode": "US",
+      "stateCode": "MS",
+      "cityIds": [
+        "jackson"
+      ],
+      "idPrefix": "US-MS-JACKSON-",
+      "adapter": "arcgis",
+      "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+      "name": "MDEQ Hinds County Parcel Polygons",
+      "operator": "Mississippi Department of Environmental Quality / Hinds County Tax Assessor / Tristate Consulting",
+      "scope": "Hinds County official state parcel compilation",
+      "catalogueUrl": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer",
+      "idField": "PARNO",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "PARNO",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PARNO",
+      "metricSrid": 32615,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "Official state parcel compilation snapshot; current tax-year date must be observed.",
+        "Capital-area acceptance only."
+      ],
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Mississippi Department of Environmental Quality / Hinds County Tax Assessor / Tristate Consulting. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-wi-madison-parcels",
+      "name": "Dane County parcels — Madison",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "US-WI-MADISON-DANE-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "CONAME"
+      ],
+      "parcelNumberField": "PARCELID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32616,
+      "countryCode": "US",
+      "stateCode": "WI",
+      "cityIds": [
+        "madison"
+      ],
+      "operator": "Wisconsin State Cartographer’s Office / Dane County",
+      "scope": "Dane County assessment parcel mapping configured for Madison. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "caveats": [
+        "Assessment mapping; not a boundary survey."
+      ],
+      "attributeFilters": {
+        "CONAME": "DANE"
+      },
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Wisconsin State Cartographer’s Office / Dane County. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-wa-olympia-parcels",
+      "name": "Thurston County parcels — Olympia",
+      "adapter": "arcgis",
+      "endpoint": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+      "idField": "PARCEL_NO",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "US-WA-OLYMPIA-THURSTON-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_NO",
+        "STATUS_IND"
+      ],
+      "parcelNumberField": "PARCEL_NO",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32610,
+      "countryCode": "US",
+      "stateCode": "WA",
+      "cityIds": [
+        "olympia"
+      ],
+      "operator": "Thurston County",
+      "scope": "Thurston County assessment parcel mapping configured for Olympia. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+      "caveats": [
+        "Assessment mapping; not a boundary survey.",
+        "Native PARCEL_NO is the county’s 11-digit assessor property identifier. The complete set of source polygons with this property identifier is treated as one assessment-property footprint, without asserting it is one legal lot.",
+        "Only active assessment-property records STATUS_IND=A are configured. Fabric-only records without assessment lifecycle attributes include short internal numbers, RR and UNKNOWN and are outside this scope."
+      ],
+      "idPattern": "^[0-9]{11}$",
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "partsCoordinatePrecision": 9,
+      "attributeFilters": {
+        "STATUS_IND": "A"
+      },
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Thurston County. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Providence city parcel tree canopy mirror published 2025",
+      "operator": "City of Providence GIS",
+      "scope": "Identified municipal native CAMA-link parcel groups in official dated 2011–2018 canopy-analysis mirror modified February 2025; excludes null/blank CAMA_LINK rows",
+      "idField": "CAMA_LINK",
+      "objectIdField": "FID",
+      "idType": "string",
+      "outFields": [
+        "FID",
+        "CAMA_LINK"
+      ],
+      "parcelNumberField": "CAMA_LINK",
+      "metricSrid": 32619,
+      "idPrefix": "US-RI-PROVIDENCE-",
+      "attributeFilters": {},
+      "id": "us-ri-providence-parcels",
+      "stateCode": "RI",
+      "cityIds": [
+        "providence"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=bab934a85fe94f1d885dcaa6b3f16229",
+      "countryCode": "US",
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Dated official parcel mirror; canopy analysis years do not establish parcel currency.",
+        "Native CAMA_LINK follows the RIGIS unique parcel-to-CAMA linkage semantics; geometry retains all components of each identified native link group.",
+        "Null/blank CAMA_LINK rows excluded explicitly; municipal numeric PropertyID catalogue identity is not asserted."
+      ],
+      "maxConcurrentQueries": 1,
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeNotNull": [
+        "CAMA_LINK"
+      ],
+      "attributeExclusions": {
+        "CAMA_LINK": " "
+      },
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "City of Providence GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-fl-tallahassee-parcels",
+      "countryCode": "US",
+      "stateCode": "FL",
+      "cityIds": [
+        "tallahassee"
+      ],
+      "idPrefix": "US-FL-TALLAHASSEE-",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/EXLU_2025_WM/FeatureServer/19",
+      "name": "TLCGIS Existing Land Use 2025",
+      "operator": "Tallahassee-Leon County Planning Department / TLCGIS",
+      "scope": "Leon County parcel-based existing land use snapshot 2025",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=0647430cc90e435093e9d064cb22481f",
+      "idField": "TAXID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "TAXID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "TAXID",
+      "metricSrid": 32616,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "Official parcel-based land-use snapshot reflecting November 2025; current cadastral updates after this snapshot are not represented.",
+        "Sampled capital-area acceptance does not establish all municipal parcels are present."
+      ],
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Tallahassee-Leon County Planning Department / TLCGIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "us-ks-topeka-parcels",
+      "countryCode": "US",
+      "stateCode": "KS",
+      "cityIds": [
+        "topeka"
+      ],
+      "idPrefix": "US-KS-TOPEKA-",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.sncoapps.us/arcgis2/rest/services/Parcels/MapServer/0",
+      "name": "Shawnee County Parcels",
+      "operator": "Shawnee County Appraiser GIS and Mapping Division",
+      "scope": "Shawnee County parcel polygons",
+      "catalogueUrl": "https://snco.gov/ap/mapping.php",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "PIN",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PIN",
+      "metricSrid": 32614,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "Acceptance proves sampled capital-area scope only."
+      ],
+      "evidenceFile": "research/us-capitals-batch-five-live-2026-10-06.json",
+      "attribution": "Shawnee County Appraiser GIS and Mapping Division. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
     }
   ]
 }

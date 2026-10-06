@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "NJ",
+  "state": "New Jersey",
+  "capital": "Trenton",
+  "centerLatLon": [
+    40.2171,
+    -74.7429
+  ],
+  "query": {
+    "language": "English",
+    "text": "New Jersey NJGIN parcels FeatureServer current Parcels and MOD-IV Composite service"
+  },
+  "references": [
+    "https://nj.gov/njgin/edata/parcels/",
+    "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live polygon layer metadata; parcel key field identified."
+    },
+    {
+      "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0/query?where=1%3D1&geometry=-74.7439%2C40.2161%2C-74.7419%2C40.2181&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PAMS_PIN&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Small capital bbox sample, maximum three IDs and polygons; native town namespace filter used."
+    },
+    {
+      "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0/query?where=PAMS_PIN%3D%271111_29701_1%27&outFields=PAMS_PIN&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-key query returned one polygon with that key."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Cad_parcel_mod4 (Parcels_Composite_NJ_WM)",
+    "operator": "New Jersey Office of Information Technology, Office of GIS (NJOGIS)",
+    "idField": "PAMS_PIN",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "native text PIN with municipality/block/lot components; leading zeros preserved",
+    "outFields": "PAMS_PIN",
+    "metricSrid": 3857
+  },
+  "verification": {
+    "bbox": [
+      -74.7439,
+      40.2161,
+      -74.7419,
+      40.2181
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "1111_29701_1",
+      "1111_29601_1",
+      "1111_29701_2"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

@@ -1,0 +1,22 @@
+{
+  "stateCode": "KY",
+  "city": "frankfort",
+  "endpoint": "https://services.arcgis.com/SOVgyYCFVBkOrKDZ/arcgis/rest/services/Frankfort_Parcels_Public_View/FeatureServer/1?f=pjson",
+  "status": 200,
+  "metadata": {
+    "name": "FrankfortParcels",
+    "description": "",
+    "extent": {
+      "xmin": -9790109.7243,
+      "ymin": 5074377.973700002,
+      "xmax": -9768059.1317,
+      "ymax": 5094566.0244999975,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      }
+    },
+    "copyrightText": ""
+  },
+  "assessment": "Rejected geographic mismatch: Web Mercator extent locates this Frankfort near longitude -87.9 latitude 41.5, Illinois, not Kentucky."
+}

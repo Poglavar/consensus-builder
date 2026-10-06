@@ -1,0 +1,49 @@
+[
+  {
+    "endpoint": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/DauphinCounty/MapServer?f=pjson",
+    "status": 200,
+    "metadata": {
+      "name": null,
+      "description": "",
+      "copyrightText": "",
+      "layers": [
+        {
+          "id": 0,
+          "name": "DauphinCountyParcels202205",
+          "parentLayerId": -1,
+          "defaultVisibility": false,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0,
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon",
+          "supportsDynamicLegends": true
+        },
+        {
+          "id": 1,
+          "name": "DauphinCountyStreets202205",
+          "parentLayerId": -1,
+          "defaultVisibility": false,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0,
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline",
+          "supportsDynamicLegends": true
+        }
+      ],
+      "fields": null,
+      "error": null,
+      "objectIdField": null,
+      "advancedQueryCapabilities": null
+    }
+  },
+  {
+    "endpoint": "https://portal.carsoncity.gov/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36?f=pjson",
+    "error": "<urlopen error timed out>"
+  },
+  {
+    "endpoint": "https://webgis.providenceri.gov/server/rest/services/Parcels/PVD_Parcel_Boundaries/MapServer/0?f=pjson",
+    "error": "<urlopen error timed out>"
+  }
+]

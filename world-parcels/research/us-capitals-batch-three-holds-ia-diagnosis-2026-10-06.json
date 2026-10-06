@@ -1,0 +1,56 @@
+{
+  "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+  "rows": 508,
+  "duplicateNativeGroups": 3,
+  "examples": [
+    {
+      "nativeId": "77-02001268002000",
+      "rows": 4,
+      "uniqueGeometry": 2,
+      "county": "POLK",
+      "alternativeNativeIdentity": {
+        "rows": 4,
+        "distinctValues": 1,
+        "sameAcrossGroup": true
+      },
+      "parcelNumberIdentity": {
+        "rows": 4,
+        "distinctValues": 1,
+        "sameAcrossGroup": true
+      }
+    },
+    {
+      "nativeId": "77-03005078000000",
+      "rows": 4,
+      "uniqueGeometry": 2,
+      "county": "POLK",
+      "alternativeNativeIdentity": {
+        "rows": 4,
+        "distinctValues": 1,
+        "sameAcrossGroup": true
+      },
+      "parcelNumberIdentity": {
+        "rows": 4,
+        "distinctValues": 1,
+        "sameAcrossGroup": true
+      }
+    },
+    {
+      "nativeId": "77-02001354002000",
+      "rows": 3,
+      "uniqueGeometry": 3,
+      "county": "POLK",
+      "alternativeNativeIdentity": {
+        "rows": 3,
+        "distinctValues": 1,
+        "sameAcrossGroup": true
+      },
+      "parcelNumberIdentity": {
+        "rows": 3,
+        "distinctValues": 1,
+        "sameAcrossGroup": true
+      }
+    }
+  ],
+  "alternativeUNPARCELIDUnique": 500
+}

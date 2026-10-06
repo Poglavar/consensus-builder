@@ -63,6 +63,30 @@ describe('createHttpsJsonFetch', () => {
         getImpl.mock.calls[0][1].agent.destroy();
     });
 
+    it('sends long ArcGIS queries as POST bodies and exposes provider retry headers', async () => {
+        const response = readableResponse(['{"features":[]}']);
+        response.headers = { 'retry-after': '60' };
+        let request;
+        const requestImpl = respondingGet(response);
+        requestImpl.mockImplementation((url, options, callback) => {
+            request = new EventEmitter();
+            request.end = vi.fn(() => queueMicrotask(() => callback(response)));
+            return request;
+        });
+        const getImpl = vi.fn();
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl, requestImpl });
+        const body = 'where=' + 'x'.repeat(2000);
+        const result = await fetchJson('https://gis.cmpdd.org/arcgis/query', {
+            method: 'POST', body, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+        expect(getImpl).not.toHaveBeenCalled();
+        expect(requestImpl.mock.calls[0][1]).toMatchObject({ method: 'POST' });
+        expect(request.end).toHaveBeenCalledWith(body);
+        expect(result.headers.get('retry-after')).toBe('60');
+        await expect(result.json()).resolves.toEqual({ features: [] });
+        requestImpl.mock.calls[0][1].agent.destroy();
+    });
+
     it('rejects a streamed response that exceeds the byte limit', async () => {
         const response = readableResponse(['123', '456']);
         const fetchJson = createHttpsJsonFetch(extraCa, {

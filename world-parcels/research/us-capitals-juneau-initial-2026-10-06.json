@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "juneau",
+      "stateCode": "AK",
+      "sourceId": "us-ak-cbj-parcels",
+      "endpoint": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 3
+    },
+    {
+      "city": "juneau",
+      "stateCode": "AK",
+      "sourceId": "us-ak-cbj-parcels",
+      "endpoint": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned a missing or invalid native parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 3
+    },
+    {
+      "city": "juneau",
+      "stateCode": "AK",
+      "sourceId": "us-ak-cbj-parcels",
+      "endpoint": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.425,
+            58.29750000000001,
+            -134.4225,
+            58.300000000000004
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.4225,
+            58.29750000000001,
+            -134.42000000000002,
+            58.300000000000004
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.42000000000002,
+            58.29750000000001,
+            -134.41750000000002,
+            58.300000000000004
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.425,
+            58.300000000000004,
+            -134.4225,
+            58.3025
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.4225,
+            58.300000000000004,
+            -134.42000000000002,
+            58.3025
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.42000000000002,
+            58.300000000000004,
+            -134.41750000000002,
+            58.3025
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.425,
+            58.3025,
+            -134.4225,
+            58.30500000000001
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.4225,
+            58.3025,
+            -134.42000000000002,
+            58.30500000000001
+          ],
+          "count": 89,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.42000000000002,
+            58.3025,
+            -134.41750000000002,
+            58.30500000000001
+          ],
+          "count": 111,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.41750000000002,
+            58.29750000000001,
+            -134.41500000000002,
+            58.300000000000004
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.41500000000002,
+            58.29750000000001,
+            -134.41250000000002,
+            58.300000000000004
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.41250000000002,
+            58.29750000000001,
+            -134.41000000000003,
+            58.300000000000004
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.41750000000002,
+            58.300000000000004,
+            -134.41500000000002,
+            58.3025
+          ],
+          "count": 80,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -134.41500000000002,
+            58.300000000000004,
+            -134.41250000000002,
+            58.3025
+          ],
+          "count": 51,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider is unavailable.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 92
+    },
+    {
+      "city": "juneau",
+      "sourceId": "us-ak-cbj-parcels",
+      "endpoint": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3",
+      "operation": "Multipart polygon union without coordinate normalization",
+      "status": "failed",
+      "error": {
+        "code": "parcel-source-unavailable",
+        "message": "Numerical polygon-clipping ring assembly failed on the ninth cell."
+      },
+      "resolution": "All component coordinates normalized to 9 decimal degrees before union; subsequent full18-cell/all689-ID acceptance passed."
+    }
+  ]
+}

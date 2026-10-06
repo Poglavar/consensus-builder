@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "KY",
+  "state": "Kentucky",
+  "capital": "Frankfort",
+  "centerLatLon": [
+    38.2009,
+    -84.8733
+  ],
+  "query": {
+    "language": "English",
+    "text": "Frankfort Kentucky Franklin County PVA GIS parcel polygons FeatureServer official"
+  },
+  "references": [
+    "https://franklincountypva.com/",
+    "https://www.frankfort.ky.gov/274/Information-Technology",
+    "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live layer metadata reports polygon geometry and native parcel key."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=1%3D1&geometry=-84.8743%2C38.1999%2C-84.8723%2C38.2019&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Capital bbox sample, maximum three records, native key and geometry only."
+    },
+    {
+      "url": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0/query?where=PARCEL_ID%3D%27061-42-02-004.00%27&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-key round trip returned one polygon with the requested key."
+    }
+  ],
+  "source": {
+    "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+    "adapter": "arcgis",
+    "name": "Parcels (FranklinCountyKY_WFS)",
+    "operator": "Franklin County Property Valuation Administrator / Schneider Geospatial hosted GIS",
+    "idField": "PARCEL_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "native county assessor parcel number; retain hyphens and decimal suffix",
+    "outFields": "PARCEL_ID",
+    "parcelNumberField": "PARCEL_ID",
+    "metricSrid": 2246
+  },
+  "verification": {
+    "bbox": [
+      -84.8743,
+      38.1999,
+      -84.8723,
+      38.2019
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "061-42-02-004.00",
+      "061-42-02-003.00",
+      "061-42-06-001.00"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "19ce8802e7d-layer-1",
+    "title": "Addresses",
+    "url": "https://services2.arcgis.com/1Mn98EWnWi3Ezwj3/arcgis/rest/services/Addresses/FeatureServer/0",
+    "itemId": "ea40518b58a04332b1b96624fa6d64d3",
+    "layerType": "ArcGISFeatureLayer"
+  },
+  {
+    "id": "19ce8808bde-layer-2",
+    "title": "Zoning",
+    "url": "https://services2.arcgis.com/1Mn98EWnWi3Ezwj3/arcgis/rest/services/Zoning/FeatureServer/0",
+    "itemId": "4b3247db043d46259fd2fbfee778b0e2",
+    "layerType": "ArcGISFeatureLayer"
+  },
+  {
+    "id": "19ce88414f1-layer-22",
+    "title": "Streets",
+    "url": "https://services2.arcgis.com/1Mn98EWnWi3Ezwj3/arcgis/rest/services/Streets/FeatureServer/0",
+    "itemId": "83971f1ed0e64be9b6fe493dd652939a",
+    "layerType": "ArcGISFeatureLayer"
+  }
+]

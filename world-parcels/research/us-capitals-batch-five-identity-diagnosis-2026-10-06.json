@@ -1,0 +1,209 @@
+[
+  {
+    "stateCode": "KY",
+    "city": "frankfort",
+    "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+    "query": {
+      "where": "PARCEL_ID='061-00-00-103.00'",
+      "outFields": "OBJECTID,MAPNUM,PARCEL_ID,MAP,BLOCK,PARCEL,SOURCE_TYP,v_SY",
+      "returnGeometry": false,
+      "resultRecordCount": 3
+    },
+    "status": 200,
+    "response": {
+      "displayFieldName": "OwnerName",
+      "fieldAliases": {
+        "OBJECTID": "OBJECTID",
+        "MAPNUM": "MAPNUM",
+        "PARCEL_ID": "PARCEL_ID",
+        "MAP": "MAP",
+        "BLOCK": "BLOCK",
+        "PARCEL": "PARCEL",
+        "SOURCE_TYP": "SOURCE_TYP",
+        "v_SY": "V_SY"
+      },
+      "fields": [
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeOID",
+          "alias": "OBJECTID"
+        },
+        {
+          "name": "MAPNUM",
+          "type": "esriFieldTypeString",
+          "alias": "MAPNUM",
+          "length": 25
+        },
+        {
+          "name": "PARCEL_ID",
+          "type": "esriFieldTypeString",
+          "alias": "PARCEL_ID",
+          "length": 25
+        },
+        {
+          "name": "MAP",
+          "type": "esriFieldTypeString",
+          "alias": "MAP",
+          "length": 6
+        },
+        {
+          "name": "BLOCK",
+          "type": "esriFieldTypeString",
+          "alias": "BLOCK",
+          "length": 9
+        },
+        {
+          "name": "PARCEL",
+          "type": "esriFieldTypeString",
+          "alias": "PARCEL",
+          "length": 25
+        },
+        {
+          "name": "SOURCE_TYP",
+          "type": "esriFieldTypeString",
+          "alias": "SOURCE_TYP",
+          "length": 20
+        },
+        {
+          "name": "v_SY",
+          "type": "esriFieldTypeInteger",
+          "alias": "V_SY"
+        }
+      ],
+      "features": [
+        {
+          "attributes": {
+            "OBJECTID": 22277,
+            "MAPNUM": "061-00-00-103.00",
+            "PARCEL_ID": "061-00-00-103.00",
+            "MAP": "061",
+            "BLOCK": "",
+            "PARCEL": "103",
+            "SOURCE_TYP": "PVA MAP",
+            "v_SY": 2017
+          }
+        },
+        {
+          "attributes": {
+            "OBJECTID": 22278,
+            "MAPNUM": "061-00-00-103.00",
+            "PARCEL_ID": "061-00-00-103.00",
+            "MAP": "061",
+            "BLOCK": null,
+            "PARCEL": "103.18",
+            "SOURCE_TYP": "DEED",
+            "v_SY": 2017
+          }
+        }
+      ]
+    }
+  },
+  {
+    "stateCode": "RI",
+    "city": "providence",
+    "endpoint": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+    "query": {
+      "where": "TownCode='PR'",
+      "outFields": "TownCode,PlatLot",
+      "returnGeometry": false,
+      "resultRecordCount": 3
+    },
+    "status": 200,
+    "response": {
+      "displayFieldName": "PlatLot",
+      "fieldAliases": {
+        "TownCode": "TownCode",
+        "PlatLot": "PlatLot"
+      },
+      "fields": [
+        {
+          "name": "TownCode",
+          "type": "esriFieldTypeString",
+          "alias": "TownCode",
+          "length": 2
+        },
+        {
+          "name": "PlatLot",
+          "type": "esriFieldTypeString",
+          "alias": "PlatLot",
+          "length": 25
+        }
+      ],
+      "features": [
+        {
+          "attributes": {
+            "TownCode": "PR",
+            "PlatLot": "PR 059-0291-0000"
+          }
+        },
+        {
+          "attributes": {
+            "TownCode": "PR",
+            "PlatLot": "PR 059-0202-0000"
+          }
+        },
+        {
+          "attributes": {
+            "TownCode": "PR",
+            "PlatLot": "PR 059-0388-0000"
+          }
+        }
+      ],
+      "exceededTransferLimit": true
+    }
+  },
+  {
+    "stateCode": "SC",
+    "city": "columbia",
+    "endpoint": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/8",
+    "query": {
+      "where": "1=1",
+      "outFields": "objectid,tms",
+      "returnGeometry": false,
+      "resultRecordCount": 3
+    },
+    "status": 200,
+    "response": {
+      "features": [
+        {
+          "attributes": {
+            "tms": "11404-05-03",
+            "objectid": 1
+          }
+        },
+        {
+          "attributes": {
+            "tms": "11503-06-29",
+            "objectid": 2
+          }
+        },
+        {
+          "attributes": {
+            "tms": "09109-08-02",
+            "objectid": 3
+          }
+        }
+      ],
+      "exceededTransferLimit": true,
+      "objectIdFieldName": "objectid",
+      "fields": [
+        {
+          "defaultValue": null,
+          "length": 4,
+          "type": "esriFieldTypeOID",
+          "modelName": "objectid",
+          "name": "objectid",
+          "alias": "OBJECTID"
+        },
+        {
+          "modelName": "TMS",
+          "defaultValue": null,
+          "name": "tms",
+          "length": 30,
+          "alias": "TMS",
+          "type": "esriFieldTypeString"
+        }
+      ]
+    }
+  }
+]

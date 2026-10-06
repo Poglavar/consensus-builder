@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "HI",
+  "state": "Hawaii",
+  "capital": "Honolulu",
+  "centerLatLon": [
+    21.3099,
+    -157.8581
+  ],
+  "query": {
+    "language": "English",
+    "text": "Hawaii official Honolulu GIS TMK parcel layer state parcels"
+  },
+  "references": [
+    {
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25?f=pjson",
+      "observation": "Source layer metadata queried for geometry, native key field and object ID schema."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Hawaii%20official%20Honolulu%20GIS%20TMK%20parcel%20layer%20state%20parcels",
+      "observation": "English web search used to locate official capital/state parcel information."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Layer metadata confirms esriGeometryPolygon and native tmk field (esriFieldTypeInteger)."
+    },
+    {
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.85875000000001%2C21.3094125%2C-157.85745%2C21.310387499999997&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=tmk&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Capital bbox returned 6 polygons, native IDs and geometry only; rings checked closed and finite."
+    },
+    {
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=tmk%3D121010052&outFields=tmk&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Exact native key read returned 1 feature(s), includes the same key and valid geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+    "adapter": "arcgis",
+    "name": "Statewide TMKs (ParcelsZoning layer 25)",
+    "operator": "State of Hawaii Office of Planning and Sustainable Development, Statewide GIS Program",
+    "idField": "tmk",
+    "objectIdField": null,
+    "idType": "esriFieldTypeInteger",
+    "idPattern": "Returned native text values preserved verbatim (including leading zeros and any whitespace).",
+    "outFields": [
+      "tmk"
+    ],
+    "parcelNumberField": "tmk",
+    "metricSrid": "requested outSR=4326",
+    "proposedIdPrefix": "us-hi-county"
+  },
+  "verification": {
+    "bbox": [
+      -157.85875000000001,
+      21.3094125,
+      -157.85745,
+      21.310387499999997
+    ],
+    "count": 6,
+    "nativeIDs": [
+      121010052,
+      121010053,
+      121009011
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "Coverage completeness (all four counties, Kauai not sampled) not measured; only Oahu and Hawaii Island tested.",
+  "priorResearchFile": "research/subnational/US/HI.json"
+}

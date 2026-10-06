@@ -1,0 +1,103 @@
+{
+  "stateCode": "RI",
+  "city": "providence",
+  "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0/query",
+  "status": 200,
+  "query": {
+    "where": "PROPID=' ' OR PROPID='025-0196-0000'",
+    "outFields": "PROPID,CAMA_LINK,PLAT,LOT,UNIT",
+    "returnGeometry": "false",
+    "resultRecordCount": 3,
+    "f": "json"
+  },
+  "response": {
+    "objectIdFieldName": "FID",
+    "uniqueIdField": {
+      "name": "FID",
+      "isSystemMaintained": true
+    },
+    "globalIdFieldName": "",
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    },
+    "fields": [
+      {
+        "name": "PROPID",
+        "type": "esriFieldTypeString",
+        "alias": "PROPID",
+        "sqlType": "sqlTypeNVarchar",
+        "length": 254,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "CAMA_LINK",
+        "type": "esriFieldTypeString",
+        "alias": "CAMA_LINK",
+        "sqlType": "sqlTypeNVarchar",
+        "length": 254,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "PLAT",
+        "type": "esriFieldTypeString",
+        "alias": "PLAT",
+        "sqlType": "sqlTypeNVarchar",
+        "length": 254,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "LOT",
+        "type": "esriFieldTypeString",
+        "alias": "LOT",
+        "sqlType": "sqlTypeNVarchar",
+        "length": 10,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "UNIT",
+        "type": "esriFieldTypeString",
+        "alias": "UNIT",
+        "sqlType": "sqlTypeNVarchar",
+        "length": 254,
+        "domain": null,
+        "defaultValue": null
+      }
+    ],
+    "exceededTransferLimit": true,
+    "features": [
+      {
+        "attributes": {
+          "PROPID": " ",
+          "CAMA_LINK": " ",
+          "PLAT": " ",
+          "LOT": " ",
+          "UNIT": " "
+        }
+      },
+      {
+        "attributes": {
+          "PROPID": " ",
+          "CAMA_LINK": "1100487",
+          "PLAT": " ",
+          "LOT": " ",
+          "UNIT": " "
+        }
+      },
+      {
+        "attributes": {
+          "PROPID": " ",
+          "CAMA_LINK": "1150630",
+          "PLAT": " ",
+          "LOT": " ",
+          "UNIT": " "
+        }
+      }
+    ]
+  }
+}

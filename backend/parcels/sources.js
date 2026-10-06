@@ -45,6 +45,39 @@ export function withSourceCooldown(adapter, { now = Date.now } = {}) {
     return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry') });
 }
 
+// Share a FIFO request budget across every query method used for one provider. A released slot is
+// handed to its waiter directly, so new calls cannot jump the queue or oversubscribe the limit.
+export function withSourceConcurrency(adapter, { limit = 2 } = {}) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 16) {
+        throw new TypeError('Parcel source concurrency limit must be an integer from 1 to 16.');
+    }
+    let active = 0;
+    const waiting = [];
+    const acquire = () => {
+        if (active < limit) {
+            active++;
+            return Promise.resolve(makeRelease());
+        }
+        return new Promise(resolve => waiting.push(resolve));
+    };
+    const makeRelease = () => {
+        let released = false;
+        return () => {
+            if (released) return;
+            released = true;
+            const next = waiting.shift();
+            if (next) next(makeRelease());
+            else active--;
+        };
+    };
+    const invoke = method => async (...args) => {
+        const release = await acquire();
+        try { return await adapter[method](...args); }
+        finally { release(); }
+    };
+    return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry') });
+}
+
 function validateCityMetrics(descriptor) {
     const metrics = descriptor.metricSridByCity;
     if (metrics === undefined) return;
@@ -86,8 +119,11 @@ export function resolveParcelSourceDescriptor(sourceId) {
 export function runtimeParcelSource(descriptor) {
     if (!runtimeSources.has(descriptor.id)) {
         if (runtimeSources.size >= 160) runtimeSources.delete(runtimeSources.keys().next().value);
-        runtimeSources.set(descriptor.id, withSourceCooldown(createParcelSource(descriptor, descriptor.id.startsWith('custom.') || descriptor.caCertificate || descriptor.adapter === 'gml-snapshot'
-            ? {} : { fetchImpl: (...args) => globalThis.fetch(...args) })));
+        const adapter = createParcelSource(descriptor, descriptor.id.startsWith('custom.') || descriptor.caCertificate || descriptor.adapter === 'gml-snapshot'
+            ? {} : { fetchImpl: (...args) => globalThis.fetch(...args) });
+        const cooled = withSourceCooldown(adapter);
+        runtimeSources.set(descriptor.id, descriptor.maxConcurrentQueries === undefined
+            ? cooled : withSourceConcurrency(cooled, { limit: descriptor.maxConcurrentQueries }));
     }
     return runtimeSources.get(descriptor.id);
 }

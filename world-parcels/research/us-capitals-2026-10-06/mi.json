@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "MI",
+  "state": "Michigan",
+  "capital": "Lansing",
+  "centerLatLon": [
+    42.7325,
+    -84.5555
+  ],
+  "query": {
+    "language": "English",
+    "text": "Lansing Michigan official GIS parcels City of Lansing parcel layer ArcGIS data"
+  },
+  "references": [
+    "https://www.michigan.gov/dtmb/services/maps/mgf-data-hub/boundaries-and-mgf/tax-parcels",
+    "https://data-lansing.opendata.arcgis.com/",
+    "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live layer metadata identifies Lansing_Parcels_08182026 as polygon geometry; PID is a native parcel key candidate; OWNER fields excluded."
+    },
+    {
+      "url": "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0/query?where=1%3D1&geometry=-84.5565%2C42.7315%2C-84.5545%2C42.7335&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Capital bbox query returned zero features; no sample or exact-ID verification."
+    },
+    {
+      "url": "https://gis2.cityofeastlansing.com/arcgis/rest/services/Parcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "20-second timeout for an East Lansing neighbor-city service; excluded from Lansing coverage."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Lansing_Parcels_08182026",
+    "operator": "City of Lansing",
+    "idField": "PID",
+    "objectIdField": "FID",
+    "idType": "string",
+    "idPattern": "native parcel identifier string; exact identity unverified",
+    "outFields": "PID"
+  },
+  "verification": {
+    "bbox": [
+      -84.5565,
+      42.7315,
+      -84.5545,
+      42.7335
+    ],
+    "count": 0,
+    "nativeIDs": [],
+    "exactCount": 0,
+    "geometryvalid": null,
+    "capitalLocation": false
+  },
+  "status": "candidate_capital_endpoint",
+  "nextStep": "Check whether the zero-result bbox reflects a layer-extent mismatch or reprojection behavior; project the downtown box to the layer native coordinate system, then retry only ID and geometry. The public layer is a data-found lead, not a verified capital sample.",
+  "additionalAttempt": {
+    "url": "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0/query?where=1%3D1&geometry=2190500%2C344000%2C2191500%2C345000&geometryType=esriGeometryEnvelope&inSR=3419&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "assessment": "A bounded query using the advertised native spatial reference returned three parcel polygons with PID only, but returned geometries transform to longitude about -94.89, latitude 39.24 (Kansas), not Lansing. This confirms an extent/projection or source-content mismatch; capital sample remains unverified."
+  }
+}

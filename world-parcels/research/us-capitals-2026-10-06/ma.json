@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "MA",
+  "state": "Massachusetts",
+  "capital": "Boston",
+  "centerLatLon": [
+    42.3601,
+    -71.0589
+  ],
+  "query": {
+    "language": "English",
+    "text": "Boston Massachusetts official GIS parcel data parcels ArcGIS service"
+  },
+  "references": [
+    "https://www.mass.gov/info-details/massgis-data-property-tax-parcels",
+    "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels09/MapServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels09/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Layer metadata with native field and geometry type"
+    },
+    {
+      "url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels09/MapServer/0/query?where=1%3D1&geometry=-71.0600%2C42.3590%2C-71.0580%2C42.3610&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID_LONG&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Bounded capital query, maximum 3 records, ID and geometry only"
+    },
+    {
+      "url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels09/MapServer/0/query?where=PID_LONG%3D%270302892000%27&outFields=PID_LONG&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-ID round trip, one record, ID and geometry only"
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels09/MapServer/0",
+    "adapter": "arcgis",
+    "name": "ASG.parcels_09",
+    "operator": "City of Boston GIS / EGIS",
+    "idField": "PID_LONG",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "10-digit string parcel identifier",
+    "outFields": "PID_LONG",
+    "parcelNumberField": "PID_LONG",
+    "metricSrid": 2249
+  },
+  "verification": {
+    "bbox": [
+      -71.06,
+      42.359,
+      -71.058,
+      42.361
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "0302892000",
+      "0302615000",
+      "0302616000"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

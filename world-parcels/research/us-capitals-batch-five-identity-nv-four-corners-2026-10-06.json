@@ -1,0 +1,40 @@
+{
+  "stateCode": "NV",
+  "city": "carson_city",
+  "endpoint": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0/query",
+  "projectionMethod": "Four-corner transformed envelope EPSG4326 to EPSG26911 using PROJ NAD83 UTM11",
+  "attempts": [
+    {
+      "status": 200,
+      "query": {
+        "where": "County='Carson City'",
+        "geometry": "260663.638393,4338180.233561,260888.148227,4338464.335733",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "26911",
+        "spatialRel": "esriSpatialRelIntersects",
+        "f": "json",
+        "returnCountOnly": "true"
+      },
+      "response": {
+        "count": 62
+      }
+    },
+    {
+      "status": 200,
+      "query": {
+        "where": "County='Carson City'",
+        "geometry": "260663.638393,4338180.233561,260888.148227,4338464.335733",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "26911",
+        "spatialRel": "esriSpatialRelIntersects",
+        "f": "json",
+        "returnIdsOnly": "true"
+      },
+      "response": {
+        "objectIdFieldName": "OBJECTID",
+        "objectIdCount": 62,
+        "uniqueObjectIdCount": 62
+      }
+    }
+  ]
+}

@@ -1,0 +1,3020 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Full normalized cases and strict acceptance aggregates; metadata only, no raw parcel geometry retained.",
+  "sources": [
+    {
+      "city": "raleigh",
+      "stateCode": "NC",
+      "sourceId": "us-nc-wake-raleigh-parcels",
+      "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.6425,
+            35.775000000000006,
+            -78.64,
+            35.7775
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.64,
+            35.775000000000006,
+            -78.6375,
+            35.7775
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.6375,
+            35.775000000000006,
+            -78.635,
+            35.7775
+          ],
+          "count": 37,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.6425,
+            35.7775,
+            -78.64,
+            35.78
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.64,
+            35.7775,
+            -78.6375,
+            35.78
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.6375,
+            35.7775,
+            -78.635,
+            35.78
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.6425,
+            35.78,
+            -78.64,
+            35.782500000000006
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.64,
+            35.78,
+            -78.6375,
+            35.782500000000006
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.6375,
+            35.78,
+            -78.635,
+            35.782500000000006
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.635,
+            35.775000000000006,
+            -78.63250000000001,
+            35.7775
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.63250000000001,
+            35.775000000000006,
+            -78.63,
+            35.7775
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.63,
+            35.775000000000006,
+            -78.6275,
+            35.7775
+          ],
+          "count": 93,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.635,
+            35.7775,
+            -78.63250000000001,
+            35.78
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.63250000000001,
+            35.7775,
+            -78.63,
+            35.78
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.63,
+            35.7775,
+            -78.6275,
+            35.78
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.635,
+            35.78,
+            -78.63250000000001,
+            35.782500000000006
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.63250000000001,
+            35.78,
+            -78.63,
+            35.782500000000006
+          ],
+          "count": 85,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -78.63,
+            35.78,
+            -78.6275,
+            35.782500000000006
+          ],
+          "count": 92,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -78.64,
+          35.78,
+          -78.6375,
+          35.782500000000006
+        ],
+        "forcedPageSize": 3,
+        "count": 9,
+        "returned": 9,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 732,
+      "exactResolved": 732,
+      "nativeIds": [
+        "1703678831",
+        "1703678106",
+        "1703675136"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-nc-wake-raleigh-parcels",
+        "parcels": 1,
+        "siteM2": 2444.35
+      },
+      "requests": 35,
+      "case": {
+        "city": "raleigh",
+        "center": [
+          35.7796,
+          -78.6382
+        ],
+        "descriptor": {
+          "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+          "adapter": "arcgis",
+          "name": "NC OneMap Parcels (polys)",
+          "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
+          "scope": "Statewide aggregated parcel dataset (publisher reports all 100 counties and Eastern Band of Cherokee Indians); sample verified in Wake County",
+          "idField": "parno",
+          "objectIdField": "objectid",
+          "idType": "string",
+          "outFields": [
+            "parno",
+            "objectid",
+            "stcntyfips"
+          ],
+          "parcelNumberField": "parno",
+          "id": "us-nc-wake-raleigh-parcels",
+          "stateCode": "NC",
+          "cityIds": [
+            "raleigh"
+          ],
+          "idPrefix": "US-NC-WAKE-",
+          "metricSrid": 32617,
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "caveats": [
+            "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+          ],
+          "attributeFilters": {
+            "stcntyfips": "37183"
+          },
+          "countryCode": "US",
+          "catalogueUrl": "https://www.nconemap.gov/pages/parcels",
+          "maxConcurrentQueries": 2
+        },
+        "researchFile": "world-parcels/research/us-capitals-2026-10-06/nc.json"
+      },
+      "metadata": {
+        "city": "raleigh",
+        "httpStatus": 200,
+        "name": "Parcels (polys)",
+        "description": "NOTE: To download parcels by county DO NOT use the map. Instead, click the Download button and then click \"Download parcels by county or all counties at once.\"This digital geospatial dataset represents parcel boundaries with standard core attributes for a collection of parcel data from North Carolina county data producers and the Eastern Band of Cherokee Indians. The Integrated Cadastral Data Exchange project transformed source datasets from county data producers to create a standardized dataset with consistent attributes (fields). The individual standardized county datasets were aggregated into a single dataset. The aggregated parcel dataset includes all 100 counties in North Carolina plus lands of the Eastern Band of Cherokee Indians. The source geometry is retained as published by individual county data producers. This dataset includes attributes such as ownership, area in acres, assessed value, and other core cadastral attributes. Web services have both polygons (parcel boundaries) and points representing each property, placed at or near the geometric center, with the same set of attributes.See the NC OneMap parcels page for much more information.",
+        "geometryType": "esriGeometryPolygon",
+        "maxRecordCount": 5000,
+        "spatialReference": {
+          "wkid": 102719,
+          "latestWkid": 2264,
+          "xyTolerance": 0.003280833333333333,
+          "zTolerance": 0.001,
+          "mTolerance": 0.001,
+          "falseX": -121841900,
+          "falseY": -93659000,
+          "xyUnits": 36365718.124241434,
+          "falseZ": -100000,
+          "zUnits": 10000,
+          "falseM": -100000,
+          "mUnits": 10000
+        },
+        "fields": [
+          {
+            "name": "objectid",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID"
+          },
+          {
+            "name": "parno",
+            "type": "esriFieldTypeString",
+            "alias": "Parcel Number"
+          },
+          {
+            "name": "altparno",
+            "type": "esriFieldTypeString",
+            "alias": "Alternate Parcel Number"
+          },
+          {
+            "name": "ownname",
+            "type": "esriFieldTypeString",
+            "alias": "Owner Name"
+          },
+          {
+            "name": "improvval",
+            "type": "esriFieldTypeDouble",
+            "alias": "Improved Value\n"
+          },
+          {
+            "name": "landval",
+            "type": "esriFieldTypeDouble",
+            "alias": "Land Value\n"
+          },
+          {
+            "name": "parval",
+            "type": "esriFieldTypeDouble",
+            "alias": "Parcel Value\n"
+          },
+          {
+            "name": "mailadd",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address"
+          },
+          {
+            "name": "munit",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address Unit Number"
+          },
+          {
+            "name": "mcity",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address City"
+          },
+          {
+            "name": "mstate",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address State"
+          },
+          {
+            "name": "mzip",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address Zip"
+          },
+          {
+            "name": "siteadd",
+            "type": "esriFieldTypeString",
+            "alias": "Full Site Address"
+          },
+          {
+            "name": "sunit",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Unit Number"
+          },
+          {
+            "name": "scity",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address City"
+          },
+          {
+            "name": "gisacres",
+            "type": "esriFieldTypeDouble",
+            "alias": "GIS Acres"
+          },
+          {
+            "name": "struct",
+            "type": "esriFieldTypeString",
+            "alias": "Structure Indicator"
+          },
+          {
+            "name": "multistruc",
+            "type": "esriFieldTypeString",
+            "alias": "Multiple Structures"
+          },
+          {
+            "name": "saledate",
+            "type": "esriFieldTypeDate",
+            "alias": "Last Sale Date\n"
+          },
+          {
+            "name": "saledatetx",
+            "type": "esriFieldTypeString",
+            "alias": "Last Sale Date Text"
+          },
+          {
+            "name": "legdecfull",
+            "type": "esriFieldTypeString",
+            "alias": "Full Legal Description"
+          },
+          {
+            "name": "parusecode",
+            "type": "esriFieldTypeString",
+            "alias": "Tax Parcel Use Code"
+          },
+          {
+            "name": "parusedesc",
+            "type": "esriFieldTypeString",
+            "alias": "Tax Parcel Use Code Description"
+          },
+          {
+            "name": "parusecd2",
+            "type": "esriFieldTypeString",
+            "alias": "Second Tax Parcel Use Code"
+          },
+          {
+            "name": "parusedsc2",
+            "type": "esriFieldTypeString",
+            "alias": "Second Tax Parcel Use Description"
+          },
+          {
+            "name": "parvaltype",
+            "type": "esriFieldTypeString",
+            "alias": "Type of Value Reported"
+          },
+          {
+            "name": "owntype",
+            "type": "esriFieldTypeString",
+            "alias": "Owner Type"
+          },
+          {
+            "name": "recareano",
+            "type": "esriFieldTypeDouble",
+            "alias": "Record Area Number"
+          },
+          {
+            "name": "recareatx",
+            "type": "esriFieldTypeString",
+            "alias": "Record Area Text"
+          },
+          {
+            "name": "revisedate",
+            "type": "esriFieldTypeDate",
+            "alias": "Revised Date"
+          },
+          {
+            "name": "sourceref",
+            "type": "esriFieldTypeString",
+            "alias": "Source Document Reference"
+          },
+          {
+            "name": "sourcedate",
+            "type": "esriFieldTypeDate",
+            "alias": "Source Document Date"
+          },
+          {
+            "name": "sourcedatx",
+            "type": "esriFieldTypeString",
+            "alias": "Source Document Date Text"
+          },
+          {
+            "name": "subdivisio",
+            "type": "esriFieldTypeString",
+            "alias": "Subdivision Name"
+          },
+          {
+            "name": "nparno",
+            "type": "esriFieldTypeString",
+            "alias": "National Parcel Number"
+          },
+          {
+            "name": "cntyname",
+            "type": "esriFieldTypeString",
+            "alias": "County Name"
+          },
+          {
+            "name": "cntyfips",
+            "type": "esriFieldTypeString",
+            "alias": "County FIPS Code"
+          },
+          {
+            "name": "stfips",
+            "type": "esriFieldTypeString",
+            "alias": "State FIPS Code"
+          },
+          {
+            "name": "stcntyfips",
+            "type": "esriFieldTypeString",
+            "alias": "State-County FIPS Code"
+          },
+          {
+            "name": "gnisid",
+            "type": "esriFieldTypeInteger",
+            "alias": "GNIS Identifier"
+          },
+          {
+            "name": "sourceagnt",
+            "type": "esriFieldTypeString",
+            "alias": "Information Source"
+          },
+          {
+            "name": "transfdate",
+            "type": "esriFieldTypeDate",
+            "alias": "Transform Date"
+          },
+          {
+            "name": "maddpref",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address Prefix"
+          },
+          {
+            "name": "maddrno",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address Number"
+          },
+          {
+            "name": "maddstname",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Street Full Name"
+          },
+          {
+            "name": "maddstr",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address Street Name"
+          },
+          {
+            "name": "maddstsuf",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address Street Suffix"
+          },
+          {
+            "name": "maddsttyp",
+            "type": "esriFieldTypeString",
+            "alias": "Mailing Address Street Type"
+          },
+          {
+            "name": "ownfrst",
+            "type": "esriFieldTypeString",
+            "alias": "Owner First Name"
+          },
+          {
+            "name": "ownlast",
+            "type": "esriFieldTypeString",
+            "alias": "Owner Last Name"
+          },
+          {
+            "name": "revdatetx",
+            "type": "esriFieldTypeString",
+            "alias": "Revised Date text"
+          },
+          {
+            "name": "reviseyear",
+            "type": "esriFieldTypeString",
+            "alias": "Revised Year"
+          },
+          {
+            "name": "saddno",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Number"
+          },
+          {
+            "name": "saddpref",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Prefix"
+          },
+          {
+            "name": "saddstname",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Street Name"
+          },
+          {
+            "name": "saddstr",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Street Name"
+          },
+          {
+            "name": "saddstsuf",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Street Suffix"
+          },
+          {
+            "name": "saddsttyp",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Street Type"
+          },
+          {
+            "name": "sstate",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address State"
+          },
+          {
+            "name": "stname",
+            "type": "esriFieldTypeString",
+            "alias": "State Name"
+          },
+          {
+            "name": "subowntype",
+            "type": "esriFieldTypeString",
+            "alias": "Subsurface Owner Type"
+          },
+          {
+            "name": "subsurfown",
+            "type": "esriFieldTypeString",
+            "alias": "Subsurface Owner"
+          },
+          {
+            "name": "szip",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address Zip"
+          },
+          {
+            "name": "structno",
+            "type": "esriFieldTypeInteger",
+            "alias": "Number of Structures"
+          },
+          {
+            "name": "structyear",
+            "type": "esriFieldTypeInteger",
+            "alias": "Structure Year"
+          },
+          {
+            "name": "ownname2",
+            "type": "esriFieldTypeString",
+            "alias": "Full Second Owner Name"
+          },
+          {
+            "name": "presentval",
+            "type": "esriFieldTypeString",
+            "alias": "Present Use Value"
+          },
+          {
+            "name": "mapref",
+            "type": "esriFieldTypeString",
+            "alias": "Map Reference"
+          },
+          {
+            "name": "shape",
+            "type": "esriFieldTypeGeometry",
+            "alias": "Shape"
+          },
+          {
+            "name": "st_area(shape)",
+            "type": "esriFieldTypeDouble",
+            "alias": "st_area(shape)"
+          },
+          {
+            "name": "st_perimeter(shape)",
+            "type": "esriFieldTypeDouble",
+            "alias": "st_perimeter(shape)"
+          }
+        ],
+        "capabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": true
+        }
+      },
+      "proposedDescriptor": {
+        "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+        "adapter": "arcgis",
+        "name": "NC OneMap Parcels (polys)",
+        "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
+        "scope": "Statewide aggregated parcel dataset (publisher reports all 100 counties and Eastern Band of Cherokee Indians); sample verified in Wake County",
+        "idField": "parno",
+        "objectIdField": "objectid",
+        "idType": "string",
+        "outFields": [
+          "parno",
+          "objectid",
+          "stcntyfips"
+        ],
+        "parcelNumberField": "parno",
+        "id": "us-nc-wake-raleigh-parcels",
+        "stateCode": "NC",
+        "cityIds": [
+          "raleigh"
+        ],
+        "idPrefix": "US-NC-WAKE-",
+        "metricSrid": 32617,
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "caveats": [
+          "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+        ],
+        "attributeFilters": {
+          "stcntyfips": "37183"
+        },
+        "countryCode": "US",
+        "catalogueUrl": "https://www.nconemap.gov/pages/parcels",
+        "maxConcurrentQueries": 2
+      }
+    },
+    {
+      "city": "bismarck",
+      "stateCode": "ND",
+      "sourceId": "us-nd-burleigh-bismarck-parcels",
+      "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7875,
+            46.805,
+            -100.785,
+            46.8075
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.785,
+            46.805,
+            -100.7825,
+            46.8075
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7825,
+            46.805,
+            -100.78,
+            46.8075
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7875,
+            46.8075,
+            -100.785,
+            46.809999999999995
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.785,
+            46.8075,
+            -100.7825,
+            46.809999999999995
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7825,
+            46.8075,
+            -100.78,
+            46.809999999999995
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7875,
+            46.809999999999995,
+            -100.785,
+            46.8125
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.785,
+            46.809999999999995,
+            -100.7825,
+            46.8125
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7825,
+            46.809999999999995,
+            -100.78,
+            46.8125
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.78,
+            46.805,
+            -100.7775,
+            46.8075
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7775,
+            46.805,
+            -100.77499999999999,
+            46.8075
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.77499999999999,
+            46.805,
+            -100.7725,
+            46.8075
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.78,
+            46.8075,
+            -100.7775,
+            46.809999999999995
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7775,
+            46.8075,
+            -100.77499999999999,
+            46.809999999999995
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.77499999999999,
+            46.8075,
+            -100.7725,
+            46.809999999999995
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.78,
+            46.809999999999995,
+            -100.7775,
+            46.8125
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7775,
+            46.809999999999995,
+            -100.77499999999999,
+            46.8125
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.77499999999999,
+            46.809999999999995,
+            -100.7725,
+            46.8125
+          ],
+          "count": 71,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -100.78,
+          46.8075,
+          -100.7775,
+          46.809999999999995
+        ],
+        "forcedPageSize": 3,
+        "count": 8,
+        "returned": 8,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 508,
+      "exactResolved": 508,
+      "nativeIds": [
+        "1-064-005",
+        "1-050-030",
+        "1-048-055"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-nd-burleigh-bismarck-parcels",
+        "parcels": 1,
+        "siteM2": 627.7
+      },
+      "requests": 31,
+      "case": {
+        "city": "bismarck",
+        "center": [
+          46.8083,
+          -100.7837
+        ],
+        "descriptor": {
+          "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+          "adapter": "arcgis",
+          "name": "NDGISHUB Parcels (State Parcel Program)",
+          "operator": "North Dakota Information Technology / ND GIS Hub",
+          "scope": "statewide",
+          "idField": "GISID",
+          "objectIdField": "OBJECTID",
+          "idType": "string",
+          "outFields": [
+            "GISID",
+            "OBJECTID",
+            "CountyName"
+          ],
+          "parcelNumberField": "GISID",
+          "metricSrid": 32614,
+          "idPrefix": "US-ND-BURLEIGH-",
+          "attributeFilters": {
+            "CountyName": "Burleigh"
+          },
+          "id": "us-nd-burleigh-bismarck-parcels",
+          "stateCode": "ND",
+          "cityIds": [
+            "bismarck"
+          ],
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "caveats": [
+            "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+          ],
+          "countryCode": "US",
+          "catalogueUrl": "https://www.gis.nd.gov/parcel-program",
+          "maxConcurrentQueries": 2
+        },
+        "researchFile": "world-parcels/research/us-capitals-2026-10-06/nd.json"
+      },
+      "metadata": {
+        "city": "bismarck",
+        "httpStatus": 200,
+        "name": "Parcels",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "objectIdField": "OBJECTID",
+        "maxRecordCount": 2000,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        },
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID"
+          },
+          {
+            "name": "GISID",
+            "type": "esriFieldTypeString",
+            "alias": "GIS ID"
+          },
+          {
+            "name": "UniqueGISID",
+            "type": "esriFieldTypeString",
+            "alias": "Unique GIS ID"
+          },
+          {
+            "name": "CountyName",
+            "type": "esriFieldTypeString",
+            "alias": "County Name"
+          },
+          {
+            "name": "CountyFIPS",
+            "type": "esriFieldTypeString",
+            "alias": "County FIPS Code"
+          },
+          {
+            "name": "Lot",
+            "type": "esriFieldTypeString",
+            "alias": "Lot"
+          },
+          {
+            "name": "Block",
+            "type": "esriFieldTypeString",
+            "alias": "Block"
+          },
+          {
+            "name": "SubdivisionPlat",
+            "type": "esriFieldTypeString",
+            "alias": "Subdivision Plat"
+          },
+          {
+            "name": "Section",
+            "type": "esriFieldTypeString",
+            "alias": "Section"
+          },
+          {
+            "name": "Township",
+            "type": "esriFieldTypeString",
+            "alias": "Township"
+          },
+          {
+            "name": "Range",
+            "type": "esriFieldTypeString",
+            "alias": "Range"
+          },
+          {
+            "name": "SectionNumber",
+            "type": "esriFieldTypeSmallInteger",
+            "alias": "Section Number"
+          },
+          {
+            "name": "TownshipNumber",
+            "type": "esriFieldTypeSmallInteger",
+            "alias": "Township Number"
+          },
+          {
+            "name": "RangeNumber",
+            "type": "esriFieldTypeSmallInteger",
+            "alias": "Range Number"
+          },
+          {
+            "name": "TownshipName",
+            "type": "esriFieldTypeString",
+            "alias": "Township Name"
+          },
+          {
+            "name": "CalculatedAcres",
+            "type": "esriFieldTypeDouble",
+            "alias": "Calculated Acres"
+          },
+          {
+            "name": "FeatureType",
+            "type": "esriFieldTypeString",
+            "alias": "Feature Type"
+          },
+          {
+            "name": "Ownership",
+            "type": "esriFieldTypeString",
+            "alias": "Ownership"
+          },
+          {
+            "name": "SourceID",
+            "type": "esriFieldTypeString",
+            "alias": "Source ID"
+          },
+          {
+            "name": "SourceType",
+            "type": "esriFieldTypeString",
+            "alias": "Source Type"
+          },
+          {
+            "name": "SourceDate",
+            "type": "esriFieldTypeDate",
+            "alias": "Source Date"
+          },
+          {
+            "name": "AutomationMethod",
+            "type": "esriFieldTypeString",
+            "alias": "Automation Method"
+          },
+          {
+            "name": "AutomationType",
+            "type": "esriFieldTypeString",
+            "alias": "Automation Type"
+          },
+          {
+            "name": "AutomationComment",
+            "type": "esriFieldTypeString",
+            "alias": "Automation Comment"
+          },
+          {
+            "name": "LastUpdateDate",
+            "type": "esriFieldTypeDate",
+            "alias": "Last Update Date"
+          },
+          {
+            "name": "Editor",
+            "type": "esriFieldTypeString",
+            "alias": "Editor"
+          },
+          {
+            "name": "DateImported",
+            "type": "esriFieldTypeDate",
+            "alias": "Date Imported"
+          },
+          {
+            "name": "GlobalID",
+            "type": "esriFieldTypeGlobalID",
+            "alias": "GlobalID"
+          },
+          {
+            "name": "Shape__Area",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape__Area"
+          },
+          {
+            "name": "Shape__Length",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape__Length"
+          }
+        ],
+        "capabilities": {
+          "supportsPagination": true,
+          "supportsPaginationOnAggregatedQueries": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsQueryWithDistance": true,
+          "supportsOutDistance": true,
+          "supportsReturningQueryExtent": true,
+          "supportsStatistics": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsQueryWithResultType": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsCountDistinct": true,
+          "supportsPercentileStatistics": true,
+          "supportsApproxPercentileStatistics": true,
+          "supportsSpatialAggregationStatistics": true,
+          "supportsTrueCurve": true,
+          "supportedSpatialAggregationStatistics": [
+            "EnvelopeAggregate",
+            "CentroidAggregate",
+            "ConvexHullAggregate"
+          ],
+          "supportsLod": true,
+          "supportsQueryWithLodSR": false,
+          "supportedLodTypes": [
+            "geohash"
+          ],
+          "supportsReturningGeometryCentroid": true,
+          "supportsReturningGeometryEnvelope": true,
+          "supportsReturningGeometryProperties": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsCurrentUserQueries": true,
+          "supportsHavingClause": true,
+          "supportsOutFieldSQLExpression": true,
+          "supportsMaxRecordCountFactor": true,
+          "supportsTopFeaturesQuery": true,
+          "supportsDisjointSpatialRel": true,
+          "supportsQueryWithCacheHint": true,
+          "supportedOperationsWithCacheHint": [
+            "query",
+            "queryTopFilter",
+            "queryAnalytics",
+            "queryAttachments",
+            "queryRelated",
+            "queryBins",
+            "queryPivot"
+          ],
+          "supportsQueryAnalytic": true,
+          "supportsQueryPivot": true,
+          "supportsQueryBins": true,
+          "supportsDefaultSR": true,
+          "supportsTranslations": false,
+          "supportsAggIds": true,
+          "supportsQueryWithCollation": true,
+          "supportsISODOW": true,
+          "supportsISOWeek": true,
+          "supportsFullTextSearch": true,
+          "fullTextSearchCapabilities": {
+            "supportsAccentSensitivity": true,
+            "supportsStopWords": true,
+            "supportsSearchOperator": true,
+            "supportsOperator": true
+          }
+        },
+        "namespaceProbe": {
+          "httpStatus": 200,
+          "records": [
+            {
+              "GISID": "1-102-001",
+              "UniqueGISID": "38015-1-102-001",
+              "CountyName": "Burleigh",
+              "CountyFIPS": "38015"
+            }
+          ]
+        }
+      },
+      "proposedDescriptor": {
+        "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "NDGISHUB Parcels (State Parcel Program)",
+        "operator": "North Dakota Information Technology / ND GIS Hub",
+        "scope": "statewide",
+        "idField": "GISID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "GISID",
+          "OBJECTID",
+          "CountyName"
+        ],
+        "parcelNumberField": "GISID",
+        "metricSrid": 32614,
+        "idPrefix": "US-ND-BURLEIGH-",
+        "attributeFilters": {
+          "CountyName": "Burleigh"
+        },
+        "id": "us-nd-burleigh-bismarck-parcels",
+        "stateCode": "ND",
+        "cityIds": [
+          "bismarck"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "caveats": [
+          "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+        ],
+        "countryCode": "US",
+        "catalogueUrl": "https://www.gis.nd.gov/parcel-program",
+        "maxConcurrentQueries": 2
+      }
+    },
+    {
+      "city": "columbus",
+      "stateCode": "OH",
+      "sourceId": "us-oh-franklin-columbus-parcels",
+      "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features_WebMercator/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83.0025,
+            39.9575,
+            -83,
+            39.96
+          ],
+          "count": 240,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83,
+            39.9575,
+            -82.9975,
+            39.96
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9975,
+            39.9575,
+            -82.995,
+            39.96
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83.0025,
+            39.96,
+            -83,
+            39.9625
+          ],
+          "count": 163,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83,
+            39.96,
+            -82.9975,
+            39.9625
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9975,
+            39.96,
+            -82.995,
+            39.9625
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83.0025,
+            39.9625,
+            -83,
+            39.965
+          ],
+          "count": 290,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83,
+            39.9625,
+            -82.9975,
+            39.965
+          ],
+          "count": 166,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9975,
+            39.9625,
+            -82.995,
+            39.965
+          ],
+          "count": 85,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.995,
+            39.9575,
+            -82.9925,
+            39.96
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9925,
+            39.9575,
+            -82.99,
+            39.96
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.99,
+            39.9575,
+            -82.9875,
+            39.96
+          ],
+          "count": 153,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.995,
+            39.96,
+            -82.9925,
+            39.9625
+          ],
+          "count": 284,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9925,
+            39.96,
+            -82.99,
+            39.9625
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.99,
+            39.96,
+            -82.9875,
+            39.9625
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.995,
+            39.9625,
+            -82.9925,
+            39.965
+          ],
+          "count": 119,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9925,
+            39.9625,
+            -82.99,
+            39.965
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.99,
+            39.9625,
+            -82.9875,
+            39.965
+          ],
+          "count": 41,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -83,
+          39.96,
+          -82.9975,
+          39.9625
+        ],
+        "forcedPageSize": 3,
+        "count": 20,
+        "returned": 20,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 1556,
+      "exactResolved": 1556,
+      "nativeIds": [
+        "010-007484",
+        "010-008460",
+        "010-012779"
+      ],
+      "footprintCount": 5,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-oh-franklin-columbus-parcels",
+        "parcels": 1,
+        "siteM2": 2678.21
+      },
+      "requests": 130,
+      "case": {
+        "city": "columbus",
+        "center": [
+          39.9612,
+          -82.9988
+        ],
+        "descriptor": {
+          "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features_WebMercator/FeatureServer/0",
+          "adapter": "arcgis",
+          "name": "Tax Parcel",
+          "operator": "Franklin County Auditor, GIS",
+          "scope": "county",
+          "idField": "PARCELID",
+          "objectIdField": "OBJECTID",
+          "idType": "string",
+          "outFields": [
+            "PARCELID",
+            "OBJECTID"
+          ],
+          "parcelNumberField": "PARCELID",
+          "metricSrid": 32617,
+          "idPrefix": "US-OH-FRANKLIN-",
+          "id": "us-oh-franklin-columbus-parcels",
+          "stateCode": "OH",
+          "cityIds": [
+            "columbus"
+          ],
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "caveats": [
+            "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage.",
+            "Official WebMercator service uses strict count/OID manifest reads because offset pagination repeated or omitted OIDs."
+          ],
+          "countryCode": "US",
+          "catalogueUrl": "https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS",
+          "maxConcurrentQueries": 2,
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids"
+        },
+        "researchFile": "world-parcels/research/us-capitals-2026-10-06/oh.json"
+      },
+      "proposedDescriptor": {
+        "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features_WebMercator/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Tax Parcel",
+        "operator": "Franklin County Auditor, GIS",
+        "scope": "county",
+        "idField": "PARCELID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "PARCELID",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "PARCELID",
+        "metricSrid": 32617,
+        "idPrefix": "US-OH-FRANKLIN-",
+        "id": "us-oh-franklin-columbus-parcels",
+        "stateCode": "OH",
+        "cityIds": [
+          "columbus"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "caveats": [
+          "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage.",
+          "Official WebMercator service uses strict count/OID manifest reads because offset pagination repeated or omitted OIDs."
+        ],
+        "countryCode": "US",
+        "catalogueUrl": "https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS",
+        "maxConcurrentQueries": 2,
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids"
+      },
+      "metadata": {
+        "checkedAt": "2026-10-06",
+        "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features_WebMercator/FeatureServer/0",
+        "httpStatus": 200,
+        "name": "Tax Parcel",
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID"
+          },
+          {
+            "name": "PARCELID",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "LOWPARCELID",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "BUILDING",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "UNIT",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "STATEDAREA",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "ACRES",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "LGLSTARTDT",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CVTTXCD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CVTTXDSCRP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "SCHLTXCD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "SCHLDSCRP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "NBHDCD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "AUDMAP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "AUDRTG",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CLASSCD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CLASSDSCRP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "SITEADDRESS",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "ZIPCD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PRPRTYDSCRP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PRPRTYDSCRP2",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PRPRTYDSCRP3",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CNVYNAME",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "OWNERNME1",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "OWNERNME2",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "OWNERNME3",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "MAILNME1",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "MAILNME2",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "SALEDATE",
+            "type": "esriFieldTypeDate"
+          },
+          {
+            "name": "SALEPRICE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PSTLNME1",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PSTLNME2",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PSTLADDRES",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PSTLCITYSTZIP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CAUV",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "OWNEROCCUPIED",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "HOMSTD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "RENTAL",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "FLOOD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PCLASS",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "USECD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PCLASSDSCRP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "FLOORCOUNT",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "RESFLRAREA_AG",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "RESFLRAREA_BG",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "RESFLRAREA",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "RESYRBLT",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "RESYRBLTEFF",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "RESSTRTYP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CLASSMOD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "NOCARDS",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "ATTIC",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "BASEMENT",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "ROOMS",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "BATHS",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "HBATHS",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "BEDRMS",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "FIREPLC",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "AIRCOND",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "WALL",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "COND",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "GRADE",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "HEIGHT",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "BLDTYP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "BLDGAREA",
+            "type": "esriFieldTypeInteger"
+          },
+          {
+            "name": "STRCLASS",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PROPTYP",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "LNDVALUEBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "BLDVALUEBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "TOTVALUEBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "CAUVLNDBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "TIFLUC",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "LNDVALUETIF",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "BLDVALUETIF",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "TOTVALUETIF",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "EXPLUC",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "LNDVALUEEXP",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "BLDVALUEEXP",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "TOTVALUEEXP",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_CLASSCD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PR_LNDVALUEBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_BLDVALUEBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_TOTVALUEBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_CAUVLNDBASE",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_TIFLUC",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PR_LNDVALUETIF",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_BLDVALUETIF",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_TOTVALUETIF",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_EXPLUC",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PR_LNDVALUEEXP",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_BLDVALUEEXP",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PR_TOTVALUEEXP",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "CNTTXBLVAL",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PRVTXBLVAL",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "ASSDVALYRCG",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "ASSDPCNTCG",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "TXBLVALYRCHG",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "TXBLPCNTCHG",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "PRVWNTTXOD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PRVSMRTXOD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "TOTPRVTXTOD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CNTWNTTXOD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "CNTSMRTXOD",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "TOTCNTTXOD",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "TXODYRCHG",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "TXODPCNTCHG",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "WATERSERV",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "SEWERSERV",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "X_COORD",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "Y_COORD",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "LASTUPDATE",
+            "type": "esriFieldTypeDate"
+          },
+          {
+            "name": "VALID",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "Shape__Area",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "Shape__Length",
+            "type": "esriFieldTypeDouble"
+          },
+          {
+            "name": "LEASE",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "GUID",
+            "type": "esriFieldTypeGUID"
+          }
+        ],
+        "count": 20,
+        "manifestCount": 20
+      }
+    },
+    {
+      "city": "oklahoma-city",
+      "stateCode": "OK",
+      "sourceId": "us-ok-oklahoma-oklahoma-city-parcels",
+      "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.465,
+            -97.5175,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.465,
+            -97.515,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.465,
+            -97.5125,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.4675,
+            -97.5175,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.4675,
+            -97.515,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.4675,
+            -97.5125,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.47,
+            -97.5175,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.47,
+            -97.515,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.47,
+            -97.5125,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.465,
+            -97.51,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.465,
+            -97.5075,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.465,
+            -97.505,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.4675,
+            -97.51,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.4675,
+            -97.5075,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.4675,
+            -97.505,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.47,
+            -97.51,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.47,
+            -97.5075,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.47,
+            -97.505,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "AssertionError",
+        "message": "Live acceptance comparison failed (==); geometry/completeness details omitted.",
+        "code": "ERR_ASSERTION"
+      },
+      "requests": 18,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 278,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8"
+      },
+      "case": {
+        "city": "oklahoma-city",
+        "center": [
+          35.4676,
+          -97.5164
+        ],
+        "descriptor": {
+          "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+          "adapter": "arcgis",
+          "name": "OK County Assessor Parcels",
+          "operator": "Oklahoma County Assessor",
+          "scope": "Oklahoma County",
+          "idField": "AcctNum",
+          "objectIdField": "OBJECTID",
+          "idType": "string",
+          "outFields": [
+            "AcctNum",
+            "OBJECTID"
+          ],
+          "parcelNumberField": "AcctNum",
+          "metricSrid": 32614,
+          "idPrefix": "US-OK-OKLAHOMA-",
+          "id": "us-ok-oklahoma-oklahoma-city-parcels",
+          "stateCode": "OK",
+          "cityIds": [
+            "oklahoma_city"
+          ],
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "caveats": [
+            "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+          ],
+          "countryCode": "US",
+          "catalogueUrl": "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/2",
+          "maxConcurrentQueries": 2
+        },
+        "researchFile": "world-parcels/research/us-capitals-2026-10-06/ok.json"
+      },
+      "metadata": {
+        "city": "oklahoma-city",
+        "httpStatus": 200,
+        "name": "OK County Assessor Parcels",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "objectIdField": "OBJECTID",
+        "maxRecordCount": 2000,
+        "spatialReference": {
+          "wkid": 102039,
+          "latestWkid": 102039
+        },
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID"
+          },
+          {
+            "name": "AcctNum",
+            "type": "esriFieldTypeString",
+            "alias": "AcctNum"
+          },
+          {
+            "name": "OwnName",
+            "type": "esriFieldTypeString",
+            "alias": "OwnName"
+          },
+          {
+            "name": "AssrLink",
+            "type": "esriFieldTypeString",
+            "alias": "AssrLink"
+          },
+          {
+            "name": "DateUpdt",
+            "type": "esriFieldTypeDate",
+            "alias": "DateUpdt"
+          },
+          {
+            "name": "Shape__Area",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape__Area"
+          },
+          {
+            "name": "Shape__Length",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape__Length"
+          }
+        ],
+        "capabilities": {
+          "supportsPagination": true,
+          "supportsPaginationOnAggregatedQueries": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsQueryWithDistance": true,
+          "supportsOutDistance": true,
+          "supportsReturningQueryExtent": true,
+          "supportsStatistics": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsQueryWithResultType": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsCountDistinct": true,
+          "supportsPercentileStatistics": true,
+          "supportsApproxPercentileStatistics": true,
+          "supportsSpatialAggregationStatistics": true,
+          "supportsTrueCurve": true,
+          "supportedSpatialAggregationStatistics": [
+            "EnvelopeAggregate",
+            "CentroidAggregate",
+            "ConvexHullAggregate"
+          ],
+          "supportsLod": true,
+          "supportsQueryWithLodSR": false,
+          "supportedLodTypes": [
+            "geohash"
+          ],
+          "supportsReturningGeometryCentroid": true,
+          "supportsReturningGeometryEnvelope": true,
+          "supportsReturningGeometryProperties": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsCurrentUserQueries": true,
+          "supportsHavingClause": true,
+          "supportsOutFieldSQLExpression": true,
+          "supportsMaxRecordCountFactor": true,
+          "supportsTopFeaturesQuery": true,
+          "supportsDisjointSpatialRel": true,
+          "supportsQueryWithCacheHint": true,
+          "supportedOperationsWithCacheHint": [
+            "query",
+            "queryTopFilter",
+            "queryAnalytics",
+            "queryAttachments",
+            "queryRelated",
+            "queryBins",
+            "queryPivot"
+          ],
+          "supportsQueryAnalytic": true,
+          "supportsQueryPivot": true,
+          "supportsQueryBins": true,
+          "supportsDefaultSR": true,
+          "supportsTranslations": false,
+          "supportsAggIds": true,
+          "supportsQueryWithCollation": true,
+          "supportsISODOW": true,
+          "supportsISOWeek": true,
+          "supportsFullTextSearch": true,
+          "fullTextSearchCapabilities": {
+            "supportsAccentSensitivity": true,
+            "supportsStopWords": true,
+            "supportsSearchOperator": true,
+            "supportsOperator": true
+          }
+        }
+      }
+    },
+    {
+      "city": "salem",
+      "stateCode": "OR",
+      "sourceId": "us-or-marion-salem-parcels",
+      "endpoint": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.04,
+            44.940000000000005,
+            -123.03750000000001,
+            44.9425
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03750000000001,
+            44.940000000000005,
+            -123.03500000000001,
+            44.9425
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03500000000001,
+            44.940000000000005,
+            -123.03250000000001,
+            44.9425
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.04,
+            44.9425,
+            -123.03750000000001,
+            44.945
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03750000000001,
+            44.9425,
+            -123.03500000000001,
+            44.945
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03500000000001,
+            44.9425,
+            -123.03250000000001,
+            44.945
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.04,
+            44.945,
+            -123.03750000000001,
+            44.947500000000005
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03750000000001,
+            44.945,
+            -123.03500000000001,
+            44.947500000000005
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03500000000001,
+            44.945,
+            -123.03250000000001,
+            44.947500000000005
+          ],
+          "count": 37,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03250000000001,
+            44.940000000000005,
+            -123.03000000000002,
+            44.9425
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03000000000002,
+            44.940000000000005,
+            -123.0275,
+            44.9425
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.0275,
+            44.940000000000005,
+            -123.025,
+            44.9425
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03250000000001,
+            44.9425,
+            -123.03000000000002,
+            44.945
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03000000000002,
+            44.9425,
+            -123.0275,
+            44.945
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.0275,
+            44.9425,
+            -123.025,
+            44.945
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03250000000001,
+            44.945,
+            -123.03000000000002,
+            44.947500000000005
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03000000000002,
+            44.945,
+            -123.0275,
+            44.947500000000005
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.0275,
+            44.945,
+            -123.025,
+            44.947500000000005
+          ],
+          "count": 35,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -123.03000000000002,
+          44.940000000000005,
+          -123.0275,
+          44.9425
+        ],
+        "forcedPageSize": 3,
+        "count": 12,
+        "returned": 12,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 460,
+      "exactResolved": 460,
+      "nativeIds": [
+        "073W22DC04500",
+        "073W22DC04600",
+        "073W22DC06200"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-or-marion-salem-parcels",
+        "parcels": 1,
+        "siteM2": 6388.96
+      },
+      "requests": 32,
+      "case": {
+        "city": "salem",
+        "center": [
+          44.9429,
+          -123.0351
+        ],
+        "descriptor": {
+          "endpoint": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0",
+          "adapter": "arcgis",
+          "name": "Marion County Public Parcels",
+          "operator": "Marion County Assessor and GIS",
+          "scope": "Marion County",
+          "idField": "TAXLOT",
+          "objectIdField": "OBJECTID",
+          "idType": "string",
+          "outFields": [
+            "TAXLOT",
+            "OBJECTID"
+          ],
+          "parcelNumberField": "TAXLOT",
+          "metricSrid": 32610,
+          "idPrefix": "US-OR-MARION-",
+          "id": "us-or-marion-salem-parcels",
+          "stateCode": "OR",
+          "cityIds": [
+            "salem"
+          ],
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "caveats": [
+            "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+          ],
+          "countryCode": "US",
+          "catalogueUrl": "https://www.co.marion.or.us/AO",
+          "maxConcurrentQueries": 2
+        },
+        "researchFile": "world-parcels/research/us-capitals-2026-10-06/or.json"
+      },
+      "metadata": {
+        "city": "salem",
+        "httpStatus": 200,
+        "name": "Parcels",
+        "description": "Marion County tax assessors parcels with associated property data. ",
+        "geometryType": "esriGeometryPolygon",
+        "maxRecordCount": 1000,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        },
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID"
+          },
+          {
+            "name": "SHAPE",
+            "type": "esriFieldTypeGeometry",
+            "alias": "SHAPE"
+          },
+          {
+            "name": "TAXLOT",
+            "type": "esriFieldTypeString",
+            "alias": "Taxlot Number"
+          },
+          {
+            "name": "TAXACCT",
+            "type": "esriFieldTypeString",
+            "alias": "Property ID"
+          },
+          {
+            "name": "OTHERACCTS",
+            "type": "esriFieldTypeString",
+            "alias": "Other Accounts"
+          },
+          {
+            "name": "ALT_TAXLOT",
+            "type": "esriFieldTypeString",
+            "alias": "Alt Taxlot Number"
+          },
+          {
+            "name": "ALT_TAXACCT",
+            "type": "esriFieldTypeString",
+            "alias": "Alt Account Number"
+          },
+          {
+            "name": "STREETNUM",
+            "type": "esriFieldTypeString",
+            "alias": "Street Number"
+          },
+          {
+            "name": "PRE_DIR",
+            "type": "esriFieldTypeString",
+            "alias": "Street Directional Prefix"
+          },
+          {
+            "name": "STREETNAME",
+            "type": "esriFieldTypeString",
+            "alias": "Street Name"
+          },
+          {
+            "name": "STREETTYPE",
+            "type": "esriFieldTypeString",
+            "alias": "Street Type"
+          },
+          {
+            "name": "POST_DIR",
+            "type": "esriFieldTypeString",
+            "alias": "Street Directional Suffix"
+          },
+          {
+            "name": "UNITNUM",
+            "type": "esriFieldTypeString",
+            "alias": "Unit Number"
+          },
+          {
+            "name": "SITUS",
+            "type": "esriFieldTypeString",
+            "alias": "Site Address"
+          },
+          {
+            "name": "SITUSCSZ",
+            "type": "esriFieldTypeString",
+            "alias": "Site CSZ"
+          },
+          {
+            "name": "PLATNAME",
+            "type": "esriFieldTypeString",
+            "alias": "Plat Name"
+          },
+          {
+            "name": "BLOCK",
+            "type": "esriFieldTypeString",
+            "alias": "Block"
+          },
+          {
+            "name": "LOT",
+            "type": "esriFieldTypeString",
+            "alias": "Lot"
+          },
+          {
+            "name": "ACRES",
+            "type": "esriFieldTypeDouble",
+            "alias": "Acres"
+          },
+          {
+            "name": "LASTUPDATE",
+            "type": "esriFieldTypeDate",
+            "alias": "Last Update"
+          },
+          {
+            "name": "INSTNUM",
+            "type": "esriFieldTypeString",
+            "alias": "Instrument Num"
+          },
+          {
+            "name": "INSTTYPE",
+            "type": "esriFieldTypeString",
+            "alias": "Instrument Type"
+          },
+          {
+            "name": "INSTDATE",
+            "type": "esriFieldTypeDate",
+            "alias": "Instrument Date"
+          },
+          {
+            "name": "SALEPRICE",
+            "type": "esriFieldTypeInteger",
+            "alias": "Sale Price"
+          },
+          {
+            "name": "OWNERNAME",
+            "type": "esriFieldTypeString",
+            "alias": "Owner Name"
+          },
+          {
+            "name": "OWNERADDR",
+            "type": "esriFieldTypeString",
+            "alias": "Owner Address"
+          },
+          {
+            "name": "OWNERCSZ",
+            "type": "esriFieldTypeString",
+            "alias": "Owner CSZ"
+          },
+          {
+            "name": "ZONECODE",
+            "type": "esriFieldTypeString",
+            "alias": "Zoning Code"
+          },
+          {
+            "name": "ZONEAUTH",
+            "type": "esriFieldTypeString",
+            "alias": "Zoning Authority"
+          },
+          {
+            "name": "ZONEWEB",
+            "type": "esriFieldTypeString",
+            "alias": "Zoning Website"
+          },
+          {
+            "name": "YEARBUILT",
+            "type": "esriFieldTypeInteger",
+            "alias": "Year Built"
+          },
+          {
+            "name": "BLDGAREA",
+            "type": "esriFieldTypeInteger",
+            "alias": "Building Area"
+          },
+          {
+            "name": "LIVINGAREA",
+            "type": "esriFieldTypeInteger",
+            "alias": "Living Area SF"
+          },
+          {
+            "name": "PROPCLASS",
+            "type": "esriFieldTypeString",
+            "alias": "Property Class"
+          },
+          {
+            "name": "PRPCLSDESC",
+            "type": "esriFieldTypeString",
+            "alias": "Prop Class Description"
+          },
+          {
+            "name": "RMVLND",
+            "type": "esriFieldTypeInteger",
+            "alias": "RMV Land"
+          },
+          {
+            "name": "RMVIMP",
+            "type": "esriFieldTypeInteger",
+            "alias": "RMV Imprvmnt"
+          },
+          {
+            "name": "RMVTOTAL",
+            "type": "esriFieldTypeInteger",
+            "alias": "RMV Total"
+          },
+          {
+            "name": "ASSDVAL",
+            "type": "esriFieldTypeInteger",
+            "alias": "Assessed Value"
+          },
+          {
+            "name": "TAXCODE",
+            "type": "esriFieldTypeString",
+            "alias": "Tax Codes"
+          },
+          {
+            "name": "CITY",
+            "type": "esriFieldTypeString",
+            "alias": "City"
+          },
+          {
+            "name": "SCHLDIST",
+            "type": "esriFieldTypeString",
+            "alias": "School District"
+          },
+          {
+            "name": "FIREDIST",
+            "type": "esriFieldTypeString",
+            "alias": "Fire District"
+          },
+          {
+            "name": "REFLINK",
+            "type": "esriFieldTypeString",
+            "alias": "Property Info"
+          },
+          {
+            "name": "MAPLINK",
+            "type": "esriFieldTypeString",
+            "alias": "Tax Map Image"
+          },
+          {
+            "name": "TAXLOTNS",
+            "type": "esriFieldTypeString",
+            "alias": "Taxlot Number NS"
+          }
+        ],
+        "capabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsHavingClause": true,
+          "supportsCountDistinct": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsPagination": true,
+          "supportsTrueCurve": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true
+        }
+      },
+      "proposedDescriptor": {
+        "endpoint": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0",
+        "adapter": "arcgis",
+        "name": "Marion County Public Parcels",
+        "operator": "Marion County Assessor and GIS",
+        "scope": "Marion County",
+        "idField": "TAXLOT",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "TAXLOT",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "TAXLOT",
+        "metricSrid": 32610,
+        "idPrefix": "US-OR-MARION-",
+        "id": "us-or-marion-salem-parcels",
+        "stateCode": "OR",
+        "cityIds": [
+          "salem"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "caveats": [
+          "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+        ],
+        "countryCode": "US",
+        "catalogueUrl": "https://www.co.marion.or.us/AO",
+        "maxConcurrentQueries": 2
+      }
+    }
+  ],
+  "holds": [
+    {
+      "city": "oklahoma-city",
+      "reason": "County source empty in18 capital cells. Official city dated mirrors return HTTP200 text/html to Node twice, preventing adapter metadata or geometry access."
+    }
+  ],
+  "evidenceFiles": [
+    "world-parcels/research/us-capitals-batch-four-north-columbus-alternate-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-columbus-completeness-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-columbus-manifest-case-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-columbus-manifest-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-columbus-webmercator-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-columbus-webmercator-case-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-columbus-webmercator-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-corrected-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-diagnosis-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-final-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-initial-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-metadata-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-oklahoma-alternates-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-oklahoma-transport-retry-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-four-north-results-2026-10-06.json"
+  ],
+  "passedSources": 4
+}

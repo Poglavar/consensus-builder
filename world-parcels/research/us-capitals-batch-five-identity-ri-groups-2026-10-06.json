@@ -1,0 +1,19 @@
+{
+  "stateCode": "RI",
+  "city": "providence",
+  "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0/query",
+  "status": 200,
+  "query": {
+    "where": "1=1",
+    "geometry": "-71.415,41.8225,-71.4125,41.825",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "outFields": "PROPID,PLAT,LOT,UNIT",
+    "returnGeometry": "false",
+    "f": "json"
+  },
+  "rows": 42,
+  "distinctPropid": 42,
+  "missingIds": 0,
+  "duplicates": []
+}

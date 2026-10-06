@@ -40,6 +40,26 @@ function makeFetch(pages) {
 }
 
 describe('createArcgisParcelSource', () => {
+    it('projects every viewport corner to the provider CRS while retaining WGS84 geometry and native exact IDs', async () => {
+        const ground = feature(1, '1001', polygon(-119.769, 39.161, -119.768, 39.162));
+        const { fetchImpl, calls } = makeFetch([response([ground]), response([ground])]);
+        const source = createArcgisParcelSource({ ...descriptor, boundsSrid: 26911,
+            boundsProjection: '+proj=utm +zone=11 +datum=NAD83 +units=m +no_defs' }, { fetchImpl });
+        const result = await source.queryBounds([-119.77, 39.16, -119.7675, 39.1625]);
+        expect(calls[0].searchParams.get('inSR')).toBe('26911');
+        expect(calls[0].searchParams.get('outSR')).toBe('4326');
+        // Independent PROJ reference, allowing metre-scale datum realization differences.
+        // The two diagonal corners clip the north/south edges by more than six metres.
+        const expected = [260663.638393, 4338180.233561, 260888.148227, 4338464.335733];
+        calls[0].searchParams.get('geometry').split(',').map(Number)
+            .forEach((value, i) => expect(Math.abs(value - expected[i])).toBeLessThan(2));
+        expect(result.features[0].geometry).toEqual(ground.geometry);
+        const exact = await source.queryIds([result.features[0].id]);
+        expect(calls[1].searchParams.has('geometry')).toBe(false);
+        expect(exact.features).toEqual(result.features);
+        expect(() => createArcgisParcelSource({ ...descriptor, boundsSrid: 26911 })).toThrow();
+        expect(() => createArcgisParcelSource({ ...descriptor, boundsProjection: '+proj=utm +zone=11' })).toThrow();
+    });
     it('pages a bounded query in object-id order and emits namespaced canonical IDs', async () => {
         const { fetchImpl, calls } = makeFetch([
             response([feature(1, '1001'), feature(2, '1002')], true),
@@ -220,6 +240,106 @@ describe('ArcGIS brace-wrapped GUID query literals', () => {
     });
 });
 
+describe('ArcGIS native parcels stored as multiple geometric rows', () => {
+    const partsDescriptor = { ...descriptor, idType: 'string', nativeGeometryMode: 'parts',
+        boundsQueryMode: 'object-ids', idsQueryMode: 'object-ids', pageSize: 1 };
+    const rows = [feature(1, '00100'), feature(2, '00100', polygon(-79.381, 43.6522, -79.3804, 43.6528))];
+    function partsFetch({ missing = false, incomplete = false, features = rows } = {}) {
+        return vi.fn(async url => {
+            const p = new URL(url).searchParams;
+            const nativeRead = !p.has('geometry');
+            const ids = nativeRead ? (missing ? [] : [1, 2]) : [1];
+            const payload = p.has('returnCountOnly') ? { count: ids.length }
+                : p.has('returnIdsOnly') ? { objectIds: incomplete && nativeRead ? [1] : ids, objectIdFieldName: 'OBJECTID' }
+                    : { type: 'FeatureCollection', features: features.filter(row => p.get('objectIds').split(',').includes(String(row.properties.OBJECTID))), exceededTransferLimit: false };
+            return { ok: true, status: 200, json: async () => payload };
+        });
+    }
+
+    it('expands a viewport component to the complete native parcel, preserving stable geometry on exact reads', async () => {
+        const fetchImpl = partsFetch();
+        const source = createArcgisParcelSource(partsDescriptor, { fetchImpl });
+        const bounds = await source.queryBounds([-79.384, 43.652, -79.383, 43.653]);
+        const exact = await source.queryIds(['CA-ON-TORONTO-00100']);
+        expect(bounds.features).toEqual(exact.features);
+        expect(bounds).toMatchObject({ complete: true, sourceRows: 2, viewportSourceRows: 1 });
+        expect(bounds.features).toHaveLength(1);
+        expect(bounds.features[0]).toMatchObject({ id: 'CA-ON-TORONTO-00100', geometry: { type: 'MultiPolygon' },
+            properties: { sourceParcelId: '00100', sourcePartCount: 2 } });
+        expect(bounds.features[0].geometry.coordinates).toHaveLength(2);
+        expect(fetchImpl.mock.calls.some(([url]) => new URL(url).searchParams.get('where') === "PARCELID IN ('00100')")).toBe(true);
+    });
+
+    it.each([{ missing: true }, { incomplete: true }])('fails the viewport when the complete native parcel cannot be resolved: %j', async options => {
+        const source = createArcgisParcelSource(partsDescriptor, { fetchImpl: partsFetch(options) });
+        await expect(source.queryBounds([-79.384, 43.652, -79.383, 43.653])).rejects.toThrow(/changed|object-ID/);
+    });
+
+    it('dissolves overlapping components after explicitly bounded coordinate normalization', async () => {
+        const features = [rows[0], feature(2, '00100', polygon(-79.38350000001, 43.65220000001, -79.38290000001, 43.65280000001))];
+        const source = createArcgisParcelSource({ ...partsDescriptor, partsCoordinatePrecision: 9 }, { fetchImpl: partsFetch({ features }) });
+        const result = await source.queryIds(['CA-ON-TORONTO-00100']);
+        expect(result.features).toHaveLength(1);
+        expect(result.features[0].geometry.type).toBe('Polygon');
+        expect(result.features[0].properties.sourcePartCount).toBe(2);
+        const ring = result.features[0].geometry.coordinates[0];
+        expect([Math.min(...ring.map(p => p[0])), Math.max(...ring.map(p => p[0]))]).toEqual([-79.3838, -79.3829]);
+        expect([Math.min(...ring.map(p => p[1])), Math.max(...ring.map(p => p[1]))]).toEqual([43.6522, 43.6528]);
+    });
+
+    it('rejects a component which collapses under the configured precision rather than publishing empty ground', async () => {
+        const tiny = feature(1, '00100', polygon(-79.38380000001, 43.65220000001, -79.38380000002, 43.65220000002));
+        const source = createArcgisParcelSource({ ...partsDescriptor, partsCoordinatePrecision: 9 }, { fetchImpl: partsFetch({ features: [tiny, rows[1]] }) });
+        await expect(source.queryIds(['CA-ON-TORONTO-00100'])).rejects.toThrow(/precision conversion/);
+        expect(() => createArcgisParcelSource({ ...partsDescriptor, partsCoordinatePrecision: 6 })).toThrow(/Invalid ArcGIS/);
+        expect(() => createArcgisParcelSource({ ...descriptor, partsCoordinatePrecision: 9 })).toThrow(/Invalid ArcGIS/);
+    });
+
+    it('bounds complete component reads and requires manifest modes for this explicit representation', async () => {
+        const source = createArcgisParcelSource({ ...partsDescriptor, maxFeatures: 1 }, { fetchImpl: partsFetch() });
+        await expect(source.queryBounds([-79.384, 43.652, -79.383, 43.653])).rejects.toThrow(/limit/);
+        expect(() => createArcgisParcelSource({ ...partsDescriptor, idsQueryMode: 'offset' })).toThrow(/Invalid ArcGIS/);
+        expect(() => createArcgisParcelSource({ ...partsDescriptor, nativeGeometryMode: 'unknown' })).toThrow(/Invalid ArcGIS/);
+    });
+});
+
+describe('ArcGIS object-ID native-key query mode', () => {
+    const nativeDescriptor = { ...descriptor, idType: 'string', idsQueryMode: 'object-ids',
+        attributeExclusions: { PARCELID: ['UNASSIGNED'] } };
+    const jsonResponse = payload => ({ ok: true, status: 200, json: async () => payload });
+
+    it('resolves native IDs through complete manifests without unsupported offset/order parameters', async () => {
+        const { fetchImpl, calls } = makeFetch([
+            jsonResponse({ count: 3 }), jsonResponse({ objectIds: [7, 8, 9], objectIdFieldName: 'OBJECTID' }),
+            response([feature(7, '00100'), feature(8, '00101')]), response([feature(9, '00102')])
+        ]);
+        const result = await createArcgisParcelSource(nativeDescriptor, { fetchImpl }).queryIds([
+            'CA-ON-TORONTO-00100', 'CA-ON-TORONTO-00101', 'CA-ON-TORONTO-00102', 'CA-ON-TORONTO-00999'
+        ]);
+        expect(result).toMatchObject({ complete: true, absentIds: ['CA-ON-TORONTO-00999'] });
+        expect(result.features.map(f => f.properties.sourceParcelId)).toEqual(['00100', '00101', '00102']);
+        expect(calls[0].searchParams.get('where')).toBe("(PARCELID <> 'UNASSIGNED') AND (PARCELID IN ('00100','00101','00102','00999'))");
+        expect(calls[1].searchParams.get('where')).toBe(calls[0].searchParams.get('where'));
+        expect(calls.every(url => !url.searchParams.has('resultOffset') && !url.searchParams.has('orderByFields'))).toBe(true);
+        expect(calls.slice(2).map(url => url.searchParams.get('objectIds'))).toEqual(['7,8', '9']);
+    });
+
+    it('reports absence only for a complete zero-count manifest and fails on a mismatched manifest', async () => {
+        const source = pages => createArcgisParcelSource(nativeDescriptor, { fetchImpl: makeFetch(pages).fetchImpl });
+        await expect(source([jsonResponse({ count: 0 }), jsonResponse({ objectIds: null })])
+            .queryIds(['CA-ON-TORONTO-00100'])).resolves.toMatchObject({ complete: true, features: [], absentIds: ['CA-ON-TORONTO-00100'] });
+        await expect(source([jsonResponse({ count: 2 }), jsonResponse({ objectIds: [7] })])
+            .queryIds(['CA-ON-TORONTO-00100'])).rejects.toThrow(/object-ID/);
+    });
+
+    it('rejects unexpected native IDs even when the returned OID belongs to the manifest', async () => {
+        const { fetchImpl } = makeFetch([jsonResponse({ count: 1 }), jsonResponse({ objectIds: [7] }), response([feature(7, '00200')])]);
+        await expect(createArcgisParcelSource(nativeDescriptor, { fetchImpl }).queryIds(['CA-ON-TORONTO-00100']))
+            .rejects.toThrow(/unexpected parcels/);
+        expect(() => createArcgisParcelSource({ ...descriptor, idsQueryMode: 'invalid' })).toThrow(/Invalid ArcGIS/);
+    });
+});
+
 describe('ArcGIS object-ID bounds query mode', () => {
     const objectIdDescriptor = { ...descriptor, boundsQueryMode: 'object-ids', pageSize: 2, maxFeatures: 10 };
     const bounds = [-79.384, 43.652, -79.383, 43.653];
@@ -383,5 +503,35 @@ describe('fixed native attribute exclusions', () => {
         await createArcgisParcelSource({ ...titleDescriptor, attributeExclusions: { PARCELID: ["O'Brien"] } }, { fetchImpl })
             .queryBounds([-79.384, 43.652, -79.383, 43.653]);
         expect(calls[0].searchParams.get('where')).toBe("PARCELID <> 'O''Brien'");
+    });
+});
+
+describe('explicit non-null source scope', () => {
+    const scoped = { ...descriptor, attributeNotNull: ['PARCELID'] };
+    it('constrains bounds, exact IDs and footprint reads to identified records', async () => {
+        const row = feature(1, 12345);
+        const { fetchImpl, calls } = makeFetch([response([row]), response([row]), response([row])]);
+        const source = createArcgisParcelSource(scoped, { fetchImpl });
+        await source.queryBounds([-79.384, 43.652, -79.383, 43.653]);
+        await source.queryIds(['CA-ON-TORONTO-12345']);
+        await source.queryGeometry(row.geometry);
+        expect(calls.map(call => call.searchParams.get('where'))).toEqual([
+            'PARCELID IS NOT NULL',
+            "(PARCELID IS NOT NULL) AND (PARCELID IN (12345))",
+            'PARCELID IS NOT NULL'
+        ]);
+    });
+    it.each([null, undefined])('fails unavailable if a provider ignores the non-null scope: %s', async native => {
+        const { fetchImpl } = makeFetch([response([feature(1, native)])]);
+        await expect(createArcgisParcelSource(scoped, { fetchImpl })
+            .queryBounds([-79.384, 43.652, -79.383, 43.653])).rejects.toThrow(/configured ground status/);
+    });
+    it.each([null, 'PARCELID', ['unpublished'], ['PARCELID) OR 1=1'], [42]])('rejects unsafe or unreadable field declarations: %j', fields => {
+        expect(() => createArcgisParcelSource({ ...descriptor, attributeNotNull: fields })).toThrow(/attribute filter/);
+    });
+    it('does not turn an empty native key into an identified parcel', async () => {
+        const { fetchImpl } = makeFetch([response([feature(1, '')])]);
+        await expect(createArcgisParcelSource({ ...scoped, idType: 'string' }, { fetchImpl })
+            .queryBounds([-79.384, 43.652, -79.383, 43.653])).rejects.toThrow(/invalid native parcel ID/);
     });
 });

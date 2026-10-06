@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "PA",
+  "state": "Pennsylvania",
+  "capital": "Harrisburg",
+  "centerLatLon": [
+    40.2732,
+    -76.8867
+  ],
+  "query": {
+    "language": "English",
+    "text": "Pennsylvania parcel viewer Harrisburg Dauphin County GIS parcels"
+  },
+  "references": [
+    {
+      "url": "https://www.dauphincounty.gov/government/support-services/property-taxes/tax-assessment",
+      "observation": "Official government GIS/parcel portal found by the recorded English web search."
+    },
+    {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0",
+      "observation": "Candidate official ArcGIS layer endpoint tested at the capital location."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "ArcGIS layer metadata fetched."
+    },
+    {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0/query?f=geojson&where=1%3D1&geometry=-76.8878%2C40.2721%2C-76.88560000000001%2C40.274300000000004&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PARCEL_ID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Capital-centered bounded query requested PARCEL_ID plus geometry only; count=3; geometry valid=True; duplicate sampled IDs=False; null IDs=0."
+    },
+    {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0/query?f=geojson&where=PARCEL_ID%3D%2706-018-025%27&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Exact native-key round trip for sample ID 06-018-025: 2 matches; valid geometry=True."
+    },
+    {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "Follow-up metadata confirmed ACCOUNT exists but all three bounded sample values were null."
+    },
+    {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0/query?f=geojson&where=1%3D1&geometry=-76.8878%2C40.2721%2C-76.88560000000001%2C40.274300000000004&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=ACCOUNT&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Follow-up attempted native ACCOUNT key, requested only ACCOUNT and geometry; 3 valid polygons but all sampled ACCOUNT values null."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0",
+    "adapter": "arcgis",
+    "name": "PA DEP Parcels",
+    "operator": "Pennsylvania Department of Environmental Protection",
+    "scope": "Multi-county compilation, publisher calls it partial",
+    "idField": "PARCEL_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "PARCEL_ID"
+    ],
+    "parcelNumberField": "PARCEL_ID",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -76.8878,
+      40.2721,
+      -76.88560000000001,
+      40.274300000000004
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "06-018-025",
+      "06-018-021",
+      "06-008-015"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 2,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": false,
+    "adapterReady": false,
+    "dataFormat": "ArcGIS county compilation polygons"
+  },
+  "status": "lead",
+  "remainingUncertainty": "Valid parcel polygons are present, but PARCEL_ID exact reads returned 2 geometries and alternate ACCOUNT values were null. Determine whether the split features require dissolve or another stable composite parcel key."
+}

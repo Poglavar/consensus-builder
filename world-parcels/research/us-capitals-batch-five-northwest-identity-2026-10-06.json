@@ -1,0 +1,108 @@
+{
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "city": "olympia",
+      "stateCode": "WA",
+      "endpoint": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+      "status": "assessment-property-group-documented",
+      "assessment": true,
+      "primarySources": [
+        "https://www.thurstoncountywa.gov/thurston-county-assessors-parcel-look-system",
+        "https://www.thurstoncountywa.gov/parcel-info-help",
+        "https://www.arcgis.com/sharing/rest/content/items/4ca0091703b345f8a72f68a4d173d9be?f=json",
+        "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4"
+      ],
+      "identityEvidence": "County assessor help identifies 11-digit parcel number as property number used to open one property record. Publisher layer PARCEL_NO is length 11, alias Parcel No, modelName PARCEL_NO, default <Enter PIN>. Configured geometry represents the entire assessor property footprint, not a claim of one legal lot.",
+      "query": {
+        "f": "json",
+        "where": "PARCEL_NO IN ('09850005000','31300300100','38600200500')",
+        "outFields": "PARCEL_NO,STATUS_IND,PROP_TYPE,SIGMA_YEAR,MapSource",
+        "returnGeometry": "false",
+        "resultRecordCount": "1000"
+      },
+      "nativeIds": [
+        "09850005000",
+        "31300300100",
+        "38600200500"
+      ],
+      "groups": [
+        {
+          "nativeId": "09850005000",
+          "rows": 28,
+          "signatures": [
+            [
+              "A",
+              "XMP",
+              2027,
+              "Parcel Fabric"
+            ]
+          ]
+        },
+        {
+          "nativeId": "31300300100",
+          "rows": 5,
+          "signatures": [
+            [
+              "A",
+              "XMP",
+              2027,
+              "Parcel Fabric"
+            ]
+          ]
+        },
+        {
+          "nativeId": "38600200500",
+          "rows": 2,
+          "signatures": [
+            [
+              "A",
+              "MUL",
+              2027,
+              "Parcel Fabric"
+            ]
+          ]
+        }
+      ],
+      "sourceDateNote": "Sample SIGMA_YEAR is 2027; this is an assessment cycle attribute, not a confirmed geometry publication date."
+    },
+    {
+      "city": "olympia",
+      "stateCode": "WA",
+      "endpoint": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+      "status": "explicit-assessment-scope",
+      "assessment": true,
+      "query": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "-122.905,47.0325,-122.8875,47.0425",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "returnGeometry": "false",
+        "outFields": "PARCEL_NO,STATUS_IND,PROP_TYPE,SIGMA_YEAR,MapSource",
+        "resultRecordCount": "2000"
+      },
+      "totalRows": 700,
+      "nonPropertyRows": 9,
+      "nonPropertyNativeIds": [
+        "5631",
+        "6619",
+        "7545"
+      ],
+      "nonPropertyLifecycleSignatures": [
+        [
+          null,
+          null,
+          null,
+          "Parcel Fabric"
+        ]
+      ],
+      "scope": "STATUS_IND = 'A'",
+      "assessmentRows": 679,
+      "invalidIdsWithinScope": 0,
+      "primarySources": [
+        "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4"
+      ]
+    }
+  ]
+}

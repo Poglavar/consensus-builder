@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "MS",
+  "state": "Mississippi",
+  "capital": "Jackson",
+  "centerLatLon": [
+    32.2988,
+    -90.1848
+  ],
+  "query": {
+    "language": "English",
+    "text": "Jackson Mississippi official GIS parcels Hinds County parcel boundaries GIS CMPDD ArcGIS"
+  },
+  "references": [
+    "https://www.jacksonms.gov/geographic-information-system-gis/",
+    "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11"
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live polygon layer metadata and native parcel-key fields."
+    },
+    {
+      "url": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11/query?where=1%3D1&geometry=-90.1858%2C32.2978%2C-90.1838%2C32.2998&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=dpin&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Capital bbox sample, maximum 3 features, parcel key and geometry only."
+    },
+    {
+      "url": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11/query?where=dpin%3D%27001910000034000001%27&outFields=dpin&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-key round trip returned one polygon with the requested ID only."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11",
+    "adapter": "arcgis",
+    "name": "Jackson Parcels - Hinds County",
+    "operator": "Central Mississippi Planning and Development District (CMPDD), City of Jackson Map Service",
+    "idField": "dpin",
+    "objectIdField": "objectid_12",
+    "idType": "string",
+    "idPattern": "18-digit parcel identifier string; retained as text",
+    "outFields": "dpin"
+  },
+  "verification": {
+    "bbox": [
+      -90.1858,
+      32.2978,
+      -90.1838,
+      32.2998
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "001910000034000001",
+      "001920000006000000",
+      "001910000067000000"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

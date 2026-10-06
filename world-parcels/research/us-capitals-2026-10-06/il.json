@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "IL",
+  "state": "Illinois",
+  "capital": "Springfield",
+  "centerLatLon": [
+    39.7817,
+    -89.6501
+  ],
+  "query": {
+    "language": "English",
+    "text": "official Illinois Springfield Sangamon County GIS parcel data GIS parcels"
+  },
+  "references": [
+    {
+      "url": "https://sangamonil.gov/departments/s-z/supervisor-of-assessments",
+      "observation": "Official county Assessor states it maintains digital parcel lines for all parcels in the county and points to county GIS."
+    },
+    {
+      "url": "https://gismaps.co.sangamon.il.us/tpv/",
+      "observation": "County parcel viewer, searchable by parcel number."
+    },
+    {
+      "url": "https://maps.springfield.il.us/server/rest/services/SANGIS/Cadastral_Parcel_View/MapServer?f=pjson",
+      "observation": "City SANGIS cadastral parcel viewer REST service; public page references its MapServer."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=official%20Illinois%20Springfield%20Sangamon%20County%20GIS%20parcel%20data%20GIS%20parcels",
+      "observation": "English search for official Springfield/Sangamon GIS."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://maps.springfield.il.us/server/rest/services/SANGIS/Cadastral_Parcel_View/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "REST response body is ArcGIS error 499 Token Required; no service token or credentials were guessed."
+    },
+    {
+      "url": "https://maps.springfield.il.us/server/rest/services/SANGIS/Cadastral_Parcel_View/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "Layer detail also returned 499 Token Required; parcel polygon response was not obtained."
+    },
+    {
+      "url": "https://cookcountyil.gov/agency/county-clerk/ccgisdata-parcel-2021",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Prior Cook County data is outside Springfield; not used as capital evidence."
+    }
+  ],
+  "source": {
+    "endpoint": "https://maps.springfield.il.us/server/rest/services/SANGIS/Cadastral_Parcel_View/MapServer/0",
+    "adapter": "arcgis",
+    "name": "SANGIS Cadastral Parcel View (candidate)",
+    "operator": "City of Springfield GIS",
+    "idField": null,
+    "objectIdField": null,
+    "idType": null,
+    "idPattern": null,
+    "outFields": [],
+    "parcelNumberField": null,
+    "metricSrid": null,
+    "proposedIdPrefix": "us-il-sangamon"
+  },
+  "verification": {
+    "bbox": [
+      -89.65075,
+      39.7812125,
+      -89.64945,
+      39.7821875
+    ],
+    "count": null,
+    "nativeIDs": [],
+    "exactCount": null,
+    "geometryvalid": null,
+    "capitallocation": null
+  },
+  "geometryFound": null,
+  "runtimeReadiness": "blocked",
+  "status": "viewer_only",
+  "limitations": "Official city/county viewers establish parcel-data availability leads, but the accessible ArcGIS API path returned Token Required and no feature geometry was tested. Existing Cook County evidence does not cover Springfield.",
+  "priorResearchFile": "research/subnational/US/IL.json"
+}

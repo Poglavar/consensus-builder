@@ -1,0 +1,718 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "charleston",
+      "stateCode": "WV",
+      "sourceId": "us-wv-charleston-parcels",
+      "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.345000000000006,
+            -81.635,
+            38.347500000000004
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.345000000000006,
+            -81.63250000000001,
+            38.347500000000004
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.345000000000006,
+            -81.63000000000001,
+            38.347500000000004
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.347500000000004,
+            -81.635,
+            38.35
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.347500000000004,
+            -81.63250000000001,
+            38.35
+          ],
+          "count": 84,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.347500000000004,
+            -81.63000000000001,
+            38.35
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.35,
+            -81.635,
+            38.352500000000006
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.35,
+            -81.63250000000001,
+            38.352500000000006
+          ],
+          "count": 78,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.35,
+            -81.63000000000001,
+            38.352500000000006
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.345000000000006,
+            -81.62750000000001,
+            38.347500000000004
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.345000000000006,
+            -81.625,
+            38.347500000000004
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.345000000000006,
+            -81.6225,
+            38.347500000000004
+          ],
+          "count": 82,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.347500000000004,
+            -81.62750000000001,
+            38.35
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.347500000000004,
+            -81.625,
+            38.35
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.347500000000004,
+            -81.6225,
+            38.35
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.35,
+            -81.62750000000001,
+            38.352500000000006
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.35,
+            -81.625,
+            38.352500000000006
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.35,
+            -81.6225,
+            38.352500000000006
+          ],
+          "count": 20,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -81.6375,
+          38.345000000000006,
+          -81.635,
+          38.347500000000004
+        ],
+        "forcedPageSize": 3,
+        "count": 8,
+        "returned": 8,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 766,
+      "exactResolved": 766,
+      "nativeIds": [
+        "20110013000100000000",
+        "20110013000500000000",
+        "20110013000800000000"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wv-charleston-parcels",
+        "parcels": 1,
+        "siteM2": 3944.3
+      },
+      "requests": 34
+    },
+    {
+      "city": "olympia",
+      "stateCode": "WA",
+      "sourceId": "us-wa-olympia-parcels",
+      "endpoint": "https://map.co.thurston.wa.us/arcgis/rest/services/Thurston/emap_parcels/MapServer/3",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 284,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    },
+    {
+      "city": "madison",
+      "stateCode": "WI",
+      "sourceId": "us-wi-madison-parcels",
+      "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.405,
+            43.07,
+            -89.4025,
+            43.0725
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4025,
+            43.07,
+            -89.4,
+            43.0725
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4,
+            43.07,
+            -89.39750000000001,
+            43.0725
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.405,
+            43.0725,
+            -89.4025,
+            43.074999999999996
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4025,
+            43.0725,
+            -89.4,
+            43.074999999999996
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4,
+            43.0725,
+            -89.39750000000001,
+            43.074999999999996
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.405,
+            43.074999999999996,
+            -89.4025,
+            43.0775
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4025,
+            43.074999999999996,
+            -89.4,
+            43.0775
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4,
+            43.074999999999996,
+            -89.39750000000001,
+            43.0775
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39750000000001,
+            43.07,
+            -89.39500000000001,
+            43.0725
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39500000000001,
+            43.07,
+            -89.3925,
+            43.0725
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.3925,
+            43.07,
+            -89.39,
+            43.0725
+          ],
+          "count": 95,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39750000000001,
+            43.0725,
+            -89.39500000000001,
+            43.074999999999996
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39500000000001,
+            43.0725,
+            -89.3925,
+            43.074999999999996
+          ],
+          "count": 57,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.3925,
+            43.0725,
+            -89.39,
+            43.074999999999996
+          ],
+          "count": 57,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39750000000001,
+            43.074999999999996,
+            -89.39500000000001,
+            43.0775
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39500000000001,
+            43.074999999999996,
+            -89.3925,
+            43.0775
+          ],
+          "count": 78,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.3925,
+            43.074999999999996,
+            -89.39,
+            43.0775
+          ],
+          "count": 97,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -89.4025,
+          43.0725,
+          -89.4,
+          43.074999999999996
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 546,
+      "exactResolved": 546,
+      "nativeIds": [
+        "070922101020",
+        "070922108018",
+        "070922108076"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wi-madison-parcels",
+        "parcels": 1,
+        "siteM2": 10533.24
+      },
+      "requests": 30
+    },
+    {
+      "city": "cheyenne",
+      "stateCode": "WY",
+      "sourceId": "us-wy-cheyenne-parcels",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/Planning/SmartGovParcels/MapServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.1375,
+            -104.8225,
+            41.14
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.1375,
+            -104.82000000000001,
+            41.14
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.1375,
+            -104.81750000000001,
+            41.14
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.14,
+            -104.8225,
+            41.1425
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.14,
+            -104.82000000000001,
+            41.1425
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.14,
+            -104.81750000000001,
+            41.1425
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.1425,
+            -104.8225,
+            41.145
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.1425,
+            -104.82000000000001,
+            41.145
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.1425,
+            -104.81750000000001,
+            41.145
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.1375,
+            -104.81500000000001,
+            41.14
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.1375,
+            -104.8125,
+            41.14
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.1375,
+            -104.81,
+            41.14
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.14,
+            -104.81500000000001,
+            41.1425
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.14,
+            -104.8125,
+            41.1425
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.14,
+            -104.81,
+            41.1425
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.1425,
+            -104.81500000000001,
+            41.145
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.1425,
+            -104.8125,
+            41.145
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.1425,
+            -104.81,
+            41.145
+          ],
+          "count": 0,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "AssertionError",
+        "message": "Live acceptance comparison failed (==); geometry/completeness details omitted.",
+        "code": "ERR_ASSERTION"
+      },
+      "requests": 18,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 271,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    }
+  ]
+}

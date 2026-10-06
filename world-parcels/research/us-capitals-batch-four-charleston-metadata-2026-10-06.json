@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "WV",
+  "city": "charleston",
+  "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+  "httpStatus": 200,
+  "metadata": {
+    "name": "WVParcels",
+    "description": "This parcel data is provided as a public service, as is, as available, and without warranties, expressed or implied. Parcel information is prepared for the inventory of real property found within WV County jurisdictions and is compiled from recorded deeds, plats and other public documents. Users are hereby notified that the aforementioned public record sources and County Assessors and Clerk offices should be consulted for verification of information. This service updated for Tax Year 2023.",
+    "copyrightText": "",
+    "geometryType": "esriGeometryPolygon",
+    "maxRecordCount": 2000,
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": true,
+      "supportsCurrentUserQueries": true
+    },
+    "fields": [
+      {
+        "name": "CleanParcelID",
+        "type": "esriFieldTypeString",
+        "alias": "CleanParcelID",
+        "length": 30,
+        "domain": null
+      },
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      }
+    ]
+  }
+}

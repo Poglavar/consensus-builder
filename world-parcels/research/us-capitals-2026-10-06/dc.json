@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "DC",
+  "state": "District of Columbia",
+  "capital": "Washington, D.C.",
+  "centerLatLon": [
+    38.9072,
+    -77.0369
+  ],
+  "query": {
+    "language": "English",
+    "text": "District of Columbia official Washington DC GIS tax lot parcels SSL"
+  },
+  "references": [
+    {
+      "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39?f=pjson",
+      "observation": "Source layer metadata queried for geometry, native key field and object ID schema."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=District%20of%20Columbia%20official%20Washington%20DC%20GIS%20tax%20lot%20parcels%20SSL",
+      "observation": "English web search used to locate official capital/state parcel information."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Layer metadata confirms esriGeometryPolygon and native SSL field (esriFieldTypeString)."
+    },
+    {
+      "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39/query?where=1%3D1&geometry=-77.03755%2C38.906712500000005%2C-77.03625000000001%2C38.9076875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=SSL&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Capital bbox returned 2 polygons, native IDs and geometry only; rings checked closed and finite."
+    },
+    {
+      "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39/query?where=SSL%3D%270182++++0830%27&outFields=SSL&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Exact native key read returned 1 feature(s), includes the same key and valid geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39",
+    "adapter": "arcgis",
+    "name": "DC GIS Property and Land, Tax Lots (layer 39)",
+    "operator": "Government of the District of Columbia (DC GIS; Real Property Tax Administration lots)",
+    "idField": "SSL",
+    "objectIdField": null,
+    "idType": "esriFieldTypeString",
+    "idPattern": "Returned native text values preserved verbatim (including leading zeros and any whitespace).",
+    "outFields": [
+      "SSL"
+    ],
+    "parcelNumberField": "SSL",
+    "metricSrid": "EPSG:4326 (outSR requested)",
+    "proposedIdPrefix": "us-dc-county"
+  },
+  "verification": {
+    "bbox": [
+      -77.03755,
+      38.906712500000005,
+      -77.03625000000001,
+      38.9076875
+    ],
+    "count": 2,
+    "nativeIDs": [
+      "0182    0830",
+      "0196    0832"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "District scope; SSL keys contain meaningful embedded spaces, preserved as returned.",
+  "priorResearchFile": "research/subnational/US/DC.json"
+}

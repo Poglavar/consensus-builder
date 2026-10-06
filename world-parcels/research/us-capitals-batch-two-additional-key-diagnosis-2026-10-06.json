@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "city": "hartford",
+      "stateCode": "CT",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "status": "native-key-diagnosis",
+      "attempts": [
+        {
+          "url": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0/query?where=Town_Name+%3D+%27Hartford%27&geometry=-72.6775%2C41.7675%2C-72.675%2C41.77&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&returnGeometry=false&outFields=OBJECTID%2CParcel_ID%2CTown_Name&f=json",
+          "httpStatus": 200,
+          "operation": "Native key and public namespace diagnosis",
+          "assessment": "No geometry or owner attributes requested."
+        }
+      ],
+      "findings": [
+        {
+          "native": " ",
+          "rows": [
+            {
+              "OBJECTID": 373049,
+              "Parcel_ID": " ",
+              "Town_Name": "Hartford"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "city": "boston",
+      "stateCode": "MA",
+      "endpoint": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/MapServer/0",
+      "status": "native-key-diagnosis",
+      "attempts": [
+        {
+          "url": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/MapServer/0/query?where=POLY_TYPE+%3D+%27FEE%27&geometry=-71.0625%2C42.36%2C-71.06%2C42.3625&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&returnGeometry=false&outFields=OBJECTID%2CLOC_ID%2CMAP_PAR_ID%2CPOLY_TYPE&f=json",
+          "httpStatus": 200,
+          "operation": "Native key and public namespace diagnosis",
+          "assessment": "No geometry or owner attributes requested."
+        }
+      ],
+      "findings": [
+        {
+          "native": "F_774845_2957368",
+          "rows": [
+            {
+              "OBJECTID": 91237,
+              "LOC_ID": "F_774845_2957368",
+              "MAP_PAR_ID": "0302644000",
+              "POLY_TYPE": "FEE"
+            },
+            {
+              "OBJECTID": 108312,
+              "LOC_ID": "F_774845_2957368",
+              "MAP_PAR_ID": "0302644000",
+              "POLY_TYPE": "FEE"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

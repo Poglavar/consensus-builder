@@ -598,3 +598,375 @@ including proposal binding without querying a parcel table. No ZIP, GML or parce
 is imported into the database or committed as batch evidence. Source conditions remain
 informational. Evidence: `research/batch-seven-live-cities-2026-10-04.json` and its linked
 publisher records. The full serial headless suite passed 7,290 tests, with six skipped.
+
+## U.S. capital research and five-city batch (2026-10-06)
+
+All 50 state capitals plus Washington, D.C. have fresh, capital-scoped research in
+`research/us-capitals-2026-10-06/`, with `index.json` separating data discovery from
+runtime readiness. Forty have observed capital-area polygon samples; 38 have initial
+native identity proof or full acceptance, while Harrisburg and Olympia still need
+identity work. Eleven have documented map/service/download leads without an obtained
+capital polygon sample. Timeouts, TLS/DNS failures, denied requests, zero samples,
+misprojected samples and unfetched archive leads remain in the per-source attempt history.
+A different format is adapter work, never evidence that parcel data does not exist.
+Cole County's official `CC_Parcels.zip` remains an alternative download lead for
+Jefferson City; its contents have not yet been inspected.
+
+| New city | Publisher/native identity | Retained IDs exact-resolved |
+| --- | --- | ---: |
+| Montgomery | City GIS / PID; padded ParcelNo is display only | 375 |
+| Juneau | City and Borough GIS / complete tax_id geometry groups | 689 |
+| Phoenix | Maricopa County Assessor / APN including letter suffixes | 733 |
+| Little Rock | Arkansas GIS Office / parcelid restricted to Pulaski County | 420 |
+| Sacramento | County active parcel base / full 14-character PARCEL_NUMBER | 837 |
+
+Every source passed 18 grid cells, completeness checks, forced small transport pages,
+exact reads of every retained native identity with matching geometry, footprint reads
+and authoritative proposal binding. Evidence is metadata and aggregates only in
+`research/us-capitals-live-batch-2026-10-06.json`. Initial failures remain linked there:
+Montgomery repeated a terminal offset page, Sacramento's shortened APN10 collided,
+and Juneau required complete geometry components plus numerical normalization.
+
+The ArcGIS adapter now explicitly supports native-key count/OID manifests for servers
+without paging. Source-controlled `nativeGeometryMode: parts` expands every observed
+native key to all its components before publishing a canonical union, so viewport and
+exact reads agree even when the view touches only one component. This requires complete
+OID manifests for both paths; ordinary sources still reject conflicting geometry for
+one identity. Juneau normalizes components to nine decimal degrees before union and
+excludes UNASSIGNED/blank placeholders. Each group represents the municipal tax_id,
+not independently identified legal lots. Invalid or incomplete components fail unavailable.
+Juneau has a shared two-query limit across viewport/exact/footprint calls; queued calls
+respect the existing provider cooldown. Automatic custom-URL discovery does not infer
+this specialized grouping policy from arbitrary duplicate native keys.
+
+A headed-browser check loaded 402 Juneau groups across nine grid cells with no source
+warning, opened a parcel action menu, then panned and retained 529 groups across twelve
+cells without a warning or page error. Earlier uncapped parallel requests had timed out;
+those failures are recorded alongside the successful retry. All five keep the shared
+canonical contract, source-health UI and source attribution; buildings default to OSM.
+No parcel table import is required, and existing imported cities retain their DB defaults.
+
+Configured U.S. cities now represent eight states (AK, AL, AR, AZ, CA, CO, FL, NY), plus
+D.C.; this is not statewide completeness. Seven of 51 capitals are configured, leaving
+44 to integrate: 31 have initial native sample proof, two need identity adapter work,
+and eleven need further access/format investigation. Overall there are 49 app cities
+and 39 executable provider descriptors. The original 200-city cohort is unchanged at
+32 configured of 63 verified candidates.
+
+The full serial headless suite passed 7,402 tests with six skipped; its only failure was
+the new evidence filenames violating the established lowercase path convention. After
+normalizing those filenames, all 78 focused adapter, concurrency, capital-binding,
+research-history and generated-coverage tests passed, including the final precision checks.
+
+## Ten more U.S. capitals (2026-10-06)
+
+Hartford, Dover, Atlanta, Honolulu, Boise, Springfield, Baton Rouge, Augusta,
+Annapolis and Boston are configured live parcel cities. Each passed 18 initial and
+shifted grid cells, forced small-page completeness, exact reads of every retained
+native key with matching geometry, footprint reads and complete source binding.
+The 180 cell checks exact-resolved 5,997 identities. Metadata, aggregates and retained
+failures are linked from `research/us-capitals-batch-two-live-2026-10-06.json`.
+No parcel geometry or ownership data was imported into parcel tables or committed as
+this batch's research evidence.
+
+| City | Native identity and source scope | Exact-resolved IDs |
+| --- | --- | ---: |
+| Hartford | Connecticut 2025 Parcel_ID; fixed Hartford filter and complete identified groups | 158 |
+| Dover | Delaware FirstMap PIN; fixed Kent County filter | 441 |
+| Atlanta | Fulton County ParcelID; letters and internal spaces preserved, DeKalb excluded | 246 |
+| Honolulu | Hawaii compilation tmk; fixed Honolulu County filter | 484 |
+| Boise | Idaho/Ada County PARCEL_ID; fixed Ada County filter and complete groups | 345 |
+| Springfield | City parcel/zoning view; complete 11-digit assessor PIN groups | 999 |
+| Baton Rouge | EBRGIS ASSESSMENT_NUM; complete assessor-account footprints | 1,018 |
+| Augusta | Maine GeoLibrary MAP_BK_LOT; fixed Augusta town filter | 432 |
+| Annapolis | City GIS PIN; publisher describes a development version | 1,010 |
+| Boston | Current city FeatureServer LOC_ID groups; FEE polygons only, MAP_PAR_ID display | 864 |
+
+Hartford, Boise, Springfield, Baton Rouge and Boston use the existing explicit
+complete-parts policy and shared two-query limit. Every observed native key is expanded
+to all matching source components before ground is published. These source-defined groups
+do not assert that each component is a separate legal lot. Source notices state group
+and coverage restrictions. Hartford's single-space placeholder and Baton Rouge's all-zero
+placeholder are excluded; other missing or invalid keys still fail unavailable. Atlanta's
+letters and internal double spaces are preserved. Augusta's map/lot strings, including
+spaces, remain scoped by municipality.
+
+Boston uses the current official FeatureServer instead of historical Parcels09.
+Its corresponding MapServer returned count 33 against 34 unique OIDs for one bounded
+query; the FeatureServer returned 34/34 and passed all acceptance checks. Count equality
+was retained. LOC_ID is the MassGIS locational polygon identifier; MAP_PAR_ID is the
+assessor-map display reference. Water, rights of way and TAX-only polygons are outside
+the configured FEE source.
+
+Technical investigations remain source-linked: Tallahassee queries and the advertised
+ZIP returned 403 or timed out; Topeka failed ordinary TLS certificate verification;
+Frankfort's repeated MAPNUM/PARCEL_ID maps to different parcel labels without a proven
+replacement identity or current-ground rule. Lansing's old source was Lansing, Kansas.
+The actual Ingham viewer proxy reset and its backing service required a token; a public
+2025 Ingham layer is a new metadata lead requiring publisher and capital verification.
+Des Moines has a dated 2017 university-mirror parcel sample, with publisher provenance
+and full runtime acceptance pending alongside the official Polk County atlas lead.
+None of these outcomes establishes absence of data. Source conditions are informational.
+
+Indianapolis and Saint Paul passed additional reserve checks and remain unconfigured
+for the next batch. Indianapolis exact-resolved 988 county-supplied local_id feature
+identities, with county_id 49 fixed and state_parcel_id display text; its initial conflicting
+state_parcel_id attempt is retained. Saint Paul exact-resolved 926 Ramsey County ParcelID
+values. Proposed descriptors are saved in their acceptance files.
+
+Totals: 17 of 51 capitals configured (16 state capitals plus D.C.), 34 remaining;
+18 represented states plus D.C., 21 U.S. app cities, 59 app cities overall and 49 executable
+provider descriptors. These are configured city providers, not statewide completeness.
+The original 200-city cohort remains 32 configured of 63 verified candidates.
+
+All 259 focused headless tests passed across 19 files, covering gateway/binding,
+multipart expansion from a one-component viewport, routing, source health, projections,
+translations, research history and generated coverage. A dedicated headed Boston browser
+loaded 452 retained parcels in nine cells, opened an action menu through a pointer click,
+then streamed to 844 retained parcels across fifteen cells without source warnings or
+page errors. The browser was closed after verification.
+
+
+## U.S. capitals: third live batch (2026-10-06)
+
+Indianapolis, Des Moines, Lansing, Saint Paul, Jefferson City, Helena, Lincoln,
+Concord, Trenton and Santa Fe are configured through live adapters. All ten passed
+18 initial/shifted grid cells, forced small-page completeness, exact reads of every
+retained native key with matching geometry, footprint reads and complete authoritative
+binding: 180 cells and 8,604 exact-resolved identities. Final app namespaces are covered
+by gateway, binding and deep-link tests. Metadata, aggregate diagnostics and failed
+attempts are linked from `research/us-capitals-batch-three-live-2026-10-06.json` and
+source registry history. No parcel geometry or ownership data was imported or saved as
+research payloads.
+
+| City | Native identity and configured scope | Exact-resolved IDs |
+| --- | --- | ---: |
+| Indianapolis | IndianaMap local_id; fixed Marion County county_id 49, state_parcel_id display | 988 |
+| Des Moines | Iowa HSEM university mirror, 2017; county-qualified STATEPARID groups | 441 |
+| Lansing | Ingham County 2025 PARCELNUM; Eaton/Clinton areas outside this feed | 369 |
+| Saint Paul | Ramsey County ParcelID | 926 |
+| Jefferson City | Official hosted City/Cole County base map PID | 377 |
+| Helena | Montana cadastral PARCELID; unidentified NULL-key rows excluded | 839 |
+| Lincoln | City/Lancaster County hosted TaxParcels PARCELID | 799 |
+| Concord | NH GRANIT/NHDES nh_gis_id; fixed town and explicit ambiguous-key exclusion | 373 |
+| Trenton | NJOGIS composite PAMS_PIN | 2,716 |
+| Santa Fe | Santa Fe County parcel_number through City GIS | 776 |
+
+Des Moines explicitly states the mirror's 2017 date. Duplicate rows with the same
+STATEPARID also share UNPARCELID and PARCELNUMB; complete source groups are assembled
+with the established parts policy, OID manifests on both reads, nine-decimal precision
+and a shared two-query limit. This presents assessment parcel groups without claiming
+each component is an independently identified legal lot. Lansing's public publisher
+was verified as the Ingham County Drain Office, publishing Equalization assessment data.
+It uses OID manifests without geometry grouping.
+
+Helena's server includes rows with NULL PARCELID. The shared attribute contract now
+supports explicit `attributeNotNull`, validates allowed published fields, applies the
+same IS NOT NULL scope to viewport/exact/footprint queries and rejects responses that
+ignore that scope. Other invalid identities still fail unavailable. Its app metric
+projection is WGS84 UTM zone 12. Concord's observed nonunique key 07046-0 spans five
+disjoint rows with null U_ID/DisplayId. Publisher semantics do not establish a single
+multipart parcel; the key is excluded from the identified-parcel scope, with the initial
+conflict and diagnosis preserved. Arbitrary duplicates are not inferred to be parts.
+
+Tallahassee still returns access-denied HTML, Topeka fails trusted TLS, and Frankfort's
+native-key collision remains unresolved. Jackson's CMPDD endpoint fails Node chain
+verification (including system CA mode), although plain curl with normal TLS succeeds.
+Carson City polygons are available through Nevada's public service, but the same scoped
+bbox returns count 5 versus six manifest objects and geometry rows. These technical
+failures are saved; none establishes absence of parcel data. TLS verification and
+completeness checks stay enforced. Source conditions remain informational.
+
+Albany passed 18 cells and 767 exact native IDs. Its proposed descriptor is saved in
+`research/us-capitals-batch-three-albany-reserve-2026-10-06.json` for the next batch;
+its source contains 2024 tax data published May 2026. Lincoln precedes Albany in the
+saved queue and fills this batch's tenth slot.
+
+Totals: 27/51 capitals configured (26 state capitals plus D.C.), 24 remaining;
+28 represented U.S. states plus D.C., 31 U.S. app cities, 69 app cities overall and
+59 executable provider descriptors. The research cohort now has 45 capital polygon
+samples, 42 with native sample proof, and six published leads without an obtained
+capital polygon sample. City providers do not imply statewide completeness. The
+original 200-city cohort remains 32 configured of 63 verified candidates.
+
+All 382 focused headless tests passed across 20 files. A dedicated headed Des Moines
+browser loaded 231 parcels across nine cells, opened an action menu with a pointer
+click, then streamed to 395 retained parcels across fifteen cells. The dated source
+notice was visible; the settled pan had no source warnings or page errors. The browser
+was closed after verification.
+
+
+## U.S. capitals: fourth live batch (2026-10-06)
+
+Albany, Raleigh, Bismarck, Columbus, Salem, Nashville, Austin, Salt Lake City,
+Montpelier and Richmond are configured through live adapters. Every city passed
+18 initial and shifted grid cells, independent count agreement under forced small
+pages or complete object-ID manifests, exact retrieval of every retained native ID
+with matching geometry, footprint reads and complete authoritative binding. This
+batch covered 180 cells and exact-resolved 8,805 native identities. Metadata, aggregate
+diagnostics and every failed attempt are retained in
+`research/us-capitals-batch-four-live-2026-10-06.json` and source-linked registry history.
+No geometry was imported into parcel tables or saved in research payloads.
+
+| City | Native identity and configured source scope | Exact-resolved IDs |
+| --- | --- | ---: |
+| Albany | NYS SWIS_SBL_ID; fixed Albany County, live service declares 2024 data published May 2026 | 767 |
+| Raleigh | NC OneMap parno; fixed Wake County FIPS 37183 and county namespace | 732 |
+| Bismarck | ND GIS Hub GISID; fixed Burleigh County and county namespace | 508 |
+| Columbus | Franklin County Auditor PARCELID; WebMercator FeatureServer with complete OID manifests | 1,556 |
+| Salem | Marion County TAXLOT; West Salem in Polk County excluded | 460 |
+| Nashville | Metro Nashville/Davidson County APN | 2,119 |
+| Austin | Official City TCAD layer PID_10; Travis County scope | 444 |
+| Salt Lake City | Utah compilation PARCEL_ID; fixed County=SaltLake | 1,154 |
+| Montpelier | VCGI SPAN assessment accounts; complete account geometry and identified shapes only | 581 |
+| Richmond | VGIN's safe-integer VGIN_QPID, independent of transport OBJECTID | 484 |
+
+Albany's live MapServer explicitly describes 2024 assessment data. The official
+file-geodatabase metadata describes primarily 2025 data, also published May 2026;
+the endpoint-specific notice preserves the distinction. This is recorded in
+`research/us-capitals-batch-four-albany-metadata-2026-10-06.json`.
+
+Columbus's original MapServer returned count 22 against 21 manifest objects for one
+bbox. Its FeatureServer and WebMercator offset reads repeated or omitted OIDs. The
+WebMercator FeatureServer returned consistent independent counts/manifests, and
+existing object-ID modes passed all viewport, exact and binding checks. Pagination
+failures are retained; neither counts nor identity checks were weakened.
+
+Vermont's official VCGI documents define SPAN as the School Property Account Number
+and describe one Grand List assessment record that may contain multiple mapped lots.
+The first scoped forced-page cell had 13 source rows representing 11 SPAN accounts;
+the repeated sampled account had three identical geometries. Across a bounded
+18-cell envelope, all 643 identified rows shared parcel/Grand List year 2025, type
+PARCEL and MATCH status, with no mixed years among 21 repeated groups. The explicit
+assessment-account descriptor expands every native account to all rows through both
+OID manifests, normalizes geometry to nine decimal degrees and uses a shared
+two-query limit. It exact-resolved 581 complete accounts. NULL SPAN shapes sampled
+as exempt road/rail/water have no replacement identity and are consistently excluded
+with `attributeNotNull`. The footer states 2025 assessment accounts, possible multiple
+lots and unidentified-shape exclusions. Legal-lot identity is not inferred from SPAN.
+Official semantics and aggregate evidence are linked in
+`research/us-capitals-batch-four-reserve-vt-groups-2026-10-06.json`.
+
+Oklahoma City's county endpoint returned no polygons in 18 cells; two official city
+mirror queries returned HTML on bounded retries. Harrisburg's fixed Dauphin DEP subset
+and official January 2024 city snapshot both conflicted on native keys. Providence's
+PlatLot conflicts, and its municipal alternative timed out with ordinary TLS. Columbia's
+vendor-hosted layer technically passed 14 TMS identities, but contains only 456 polygons;
+publisher lineage and municipal-assets versus broader cadastral scope remain unclear.
+Pierre's current District III feed returned 404/canceled item metadata; an older trail
+project mirror lacks confirmed parcel lineage. These remain technical/source-scope
+investigations, distinct from absent data. Source terms are informational.
+
+An initial Raleigh temporary descriptor used a research explanation as an ID regex;
+it incorrectly rejected valid keys. Its local validation failure is explicitly labelled
+and retained alongside the corrected passing descriptor. Incorrect case fields and
+case-sensitive scope corrections are recorded separately from provider failures.
+
+Charleston passed 18 cells and 766 exact native IDs, with a complete proposed descriptor
+saved in `research/us-capitals-batch-four-reserves-2026-10-06.json` for the next batch.
+Its live service declares Tax Year 2023, retained in the reserve notice.
+
+Totals: 37/51 capitals configured (36 state capitals plus D.C.), 14 remaining;
+37 represented U.S. states plus D.C., 41 U.S. app cities, 79 app cities overall and
+69 executable providers. Research has 47 capital polygon samples, 43 with native sample
+proof, and four leads without an obtained capital polygon sample. These are city-provider
+counts, not statewide completeness. The original 200-city cohort remains 32 configured
+of 63 verified candidates.
+
+All 402 focused headless tests passed across 21 files, including configured gateway,
+source-only binding, numeric native identity, exact/viewport group agreement, county
+filters, projections, deep links, membership, translations, history and generated
+coverage. A dedicated headed Montpelier browser loaded 265 assessment parcels across
+nine cells, opened a parcel menu with a pointer click, then retained 1,153 parcels across
+50 cells after selection/view changes and a pan. The settled map had no source warning
+or page error. Its source notice was checked and the browser was closed after use.
+
+
+## U.S. capitals: final remaining batch (2026-10-06)
+
+All 14 remaining jurisdictions were processed. Eleven sources passed and are now
+configured; Frankfort, Oklahoma City and Pierre retain specific technical holds.
+Research is complete for the 51-jurisdiction cohort; integration is 48/51, not 51/51.
+No source conditions blocked integration and no parcel geometry was imported.
+
+Strict live acceptance covered 198 viewport cells and 6,067 exact native identities,
+including forced small-page reads against independent counts, stable geometry after
+panning, footprint queries and complete authoritative source binding. Final aggregate
+proof is `research/us-capitals-batch-five-live-2026-10-06.json`; original failed reads,
+metadata, scope and identity diagnoses remain linked from each source in registry history.
+
+| Capital | Native identity and source scope | Exact native IDs |
+| --- | --- | ---: |
+| Carson City | PIN; State compilation · source date January 2026 | 837 |
+| Charleston | CleanParcelID; Tax Year 2023 · assessment mapping | 766 |
+| Cheyenne | statepidn; Laramie County assessment parcels · unidentified shapes excluded | 733 |
+| Columbia | tms; Partial source: 456 polygons · update year not established | 14 |
+| Harrisburg | PID; September 2026 · complete native PID parcel groups | 846 |
+| Jackson | PARNO; MDEQ Hinds County compilation · update year not established | 307 |
+| Madison | PARCELID; V12 2026 compilation · Dane County | 546 |
+| Olympia | PARCEL_NO; Active assessor-property footprints · may include multiple lots | 342 |
+| Providence | CAMA_LINK; 2011–2018 canopy-study mirror · identified CAMA-link groups | 463 |
+| Tallahassee | TAXID; November 2025 parcel-based mirror | 933 |
+| Topeka | PIN; Shawnee County assessment parcels | 280 |
+
+Carson City exposes a provider reprojection bug: the same WGS84 envelope returned
+count 61 versus 62 distinct OIDs. Four-corner native NAD83 UTM 11 envelope queries
+reconciled the manifests. ArcGIS now optionally accepts `boundsSrid` and
+`boundsProjection`, projects every viewport corner locally, and still returns WGS84
+geometry with native parcel identities. Strict counts remain required. This descriptor
+passed all 837 exact identities; no OID was promoted to parcel identity.
+
+Cheyenne's planning overlays had null geometry in both JSON and GeoJSON. Its real county
+basemap MapServer disagreed on counts/manifests; the FeatureServer sibling reconciled
+those reads. Assessment scope excludes null account numbers, including an unidentified
+railroad placeholder. Olympia uses the documented 11-digit assessor-property number,
+complete source components and active `STATUS_IND=A`; these are property footprints
+and may span multiple legal lots. Madison consistently scopes county-local PARCELID to
+Dane County. Harrisburg retains complete components of publisher-defined unique PID
+parcel groups from the September 18, 2026 official snapshot.
+
+Providence's blank PROPID grouped unrelated polygons across the city. Its numeric
+CAMA_LINK is used instead, with RIGIS parcel-to-CAMA linkage semantics; equivalence to a
+separate municipal numeric PropertyID catalogue is explicitly not asserted. Null/blank
+links are excluded consistently across viewport, exact and binding reads. The official
+canopy-study mirror is dated 2011–2018, item modified February 2025, and current cadastral
+currency is not inferred from that modification. Complete identified native-link groups
+passed. Columbia's publisher metadata confirms Richland/Lexington tax-assessment parcel
+lineage, but the source contains only 456 polygons. The map footer and descriptor clearly
+state partial coverage and unestablished update year.
+
+Jackson's CMPDD endpoints send an incomplete certificate chain. A public Go Daddy
+intermediate was verified against Node's normal roots and hostname, without disabling
+TLS. Once reachable, both city and 2024 county overlays conflicted on dpin geometry.
+The official MDEQ Hinds County source passed with PARNO and ordinary verified HTTPS;
+no new runtime certificate is required. The existing source-scoped HTTPS transport now
+preserves POST method/form bodies for long ArcGIS requests and exposes Retry-After.
+Topeka uses genuine county PIN, after repeated local PARCELNUM suffixes failed.
+Tallahassee uses the official November 2025 parcel-based land-use mirror. Charleston
+retains the explicit Tax Year 2023 service label.
+
+| Held capital | Remaining technical blocker |
+| --- | --- |
+| Frankfort | Native parcel/map identifiers conflict across ground/labels; usable current native identity remains unresolved. Municipal map alternatives lack cadastral layers; a same-name hosted mirror was in Illinois. |
+| Oklahoma City | The original hosted layer covers a small patch and has no parcels in the sampled center. Correct city feeds return Incapsula HTML access blocks. |
+| Pierre | District III feed is canceled/404; officially linked Beacon GIS returns 403. Older project mirror parcel lineage is unverified. |
+
+These holds are recorded as integration work, not evidence that parcel data does not
+exist. Source terms remain informational. No pending/unprocessed capital entries remain.
+Totals: 48/51 capitals configured, 47 states plus D.C. represented, 52 U.S. app cities,
+90 app cities overall and 80 executable providers. Research has 49 obtained capital
+polygon samples with native sample proof and two leads without an obtained sample.
+The original 200-city cohort remains 32 configured of 63 verified candidates.
+
+All 446 focused headless checks passed across 25 files, covering the final gateways,
+source-only binding, projection, complete groups, fixed scope, identity routing, source
+failures, translations, history and generated coverage. Independent PROJ values check
+four-corner projection within metre-scale datum differences; the live gate verifies
+counts and exact geometry using the configured transform.
+
+A dedicated headed browser verified Jackson loading 251 parcels across nine cells,
+a pointer click opening its parcel menu, and a pan increasing retained coverage to
+281 parcels across 12 cells. Carson City then loaded 302 parcels across nine cells
+through the native-projection adapter, with rendered outlines and the January 2026
+source notice checked visually. Both views had no source alerts or page errors.
+The task-owned browser was closed after inspection.

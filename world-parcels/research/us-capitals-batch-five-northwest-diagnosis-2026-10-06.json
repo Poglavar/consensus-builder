@@ -1,0 +1,124 @@
+{
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "city": "cheyenne",
+      "stateCode": "WY",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/Planning/SmartGovParcels/MapServer/1",
+      "status": "rejected-empty-city-area",
+      "assessment": true,
+      "query": {
+        "center": [
+          41.14,
+          -104.8202
+        ],
+        "viewportCells": 18
+      },
+      "reason": "All 18 capital grid cells returned zero parcels; no city-area completeness claim.",
+      "primarySources": [
+        "https://maps.laramiecounty.com/arcgis/rest/services/Planning/SmartGovParcels/MapServer/1"
+      ]
+    },
+    {
+      "city": "cheyenne",
+      "stateCode": "WY",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/Planning/Laramie_County_GIS_Overlay/MapServer/19",
+      "status": "rejected-null-geometries",
+      "assessment": true,
+      "query": {
+        "where": "statepidn = '14663132800400'",
+        "outFields": "statepidn,objectid",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "formats": [
+          "json",
+          "geojson"
+        ]
+      },
+      "nativeIds": [
+        "14663132800400"
+      ],
+      "reason": "Exact native-ID response omitted geometry in both formats. Maintenance layer20 likewise omitted sampled geometry.",
+      "primarySources": [
+        "https://maps.laramiecounty.com/arcgis/rest/services/Planning/Laramie_County_GIS_Overlay/MapServer/19"
+      ]
+    },
+    {
+      "city": "cheyenne",
+      "stateCode": "WY",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2",
+      "status": "rejected-count-manifest-mismatch",
+      "assessment": true,
+      "query": {
+        "geometry": [
+          -104.8175,
+          41.1375,
+          -104.815,
+          41.14
+        ],
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "where": "accountno IS NOT NULL",
+        "formats": [
+          "returnCountOnly",
+          "returnIdsOnly"
+        ]
+      },
+      "count": 44,
+      "uniqueManifestIds": 45,
+      "reason": "MapServer count disagrees with its complete object ID manifest; never weakened checks.",
+      "primarySources": [
+        "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2"
+      ]
+    },
+    {
+      "city": "cheyenne",
+      "stateCode": "WY",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "status": "alternate-count-manifest-agree",
+      "assessment": true,
+      "query": {
+        "geometry": [
+          -104.8175,
+          41.1375,
+          -104.815,
+          41.14
+        ],
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "where": "accountno IS NOT NULL",
+        "formats": [
+          "returnCountOnly",
+          "returnIdsOnly"
+        ]
+      },
+      "count": 45,
+      "uniqueManifestIds": 45,
+      "nativeIds": [
+        "RAILROAD"
+      ],
+      "scopeEvidence": "One RAILROAD placeholder row has null accountno, accttype, status and taxyear; configured scope requires accountno IS NOT NULL.",
+      "primarySources": [
+        "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2"
+      ]
+    },
+    {
+      "city": "olympia",
+      "stateCode": "WA",
+      "endpoint": "https://services2.arcgis.com/iupFdNb5KkJ6t83r/ArcGIS/rest/services/parcels_lite/FeatureServer/17",
+      "status": "rejected-empty-city-area",
+      "assessment": true,
+      "query": {
+        "center": [
+          47.0379,
+          -122.9007
+        ],
+        "viewportCells": 18
+      },
+      "reason": "Hosted parcels_lite zero capital-area parcels; not selected.",
+      "primarySources": [
+        "https://services2.arcgis.com/iupFdNb5KkJ6t83r/ArcGIS/rest/services/parcels_lite/FeatureServer/17"
+      ]
+    }
+  ]
+}

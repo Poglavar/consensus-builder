@@ -1,0 +1,163 @@
+[
+  {
+    "id": "f12412920ad2401f9c0f467d781f3ed6",
+    "owner": "ckostner_frankfort",
+    "title": "Frankfort Parcels Viewing",
+    "url": "https://services.arcgis.com/SOVgyYCFVBkOrKDZ/arcgis/rest/services/Frankfort_Parcels_Viewing/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "6d5817b8192e45fba1eb88162442325f",
+    "owner": "SkamaniaGIS",
+    "title": "StevensonCarson_SD_303",
+    "url": "https://services3.arcgis.com/uKh72TYBlxpm42Cm/arcgis/rest/services/StevensonCarson_SD_303/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "1fba9db8d6914293acc7cb8a5e38b1d9",
+    "owner": "Region9_EPA",
+    "title": "Carson River Estates Parcels, CRMS, 2015, NDEP",
+    "url": "https://services.arcgis.com/cJ9YHowT8TU7DUyn/arcgis/rest/services/CarsonRiverEstatesParcels_CRMS_2015_NDEP/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "540e250161114df59ce100b6597c6d51",
+    "owner": "jjhernandez1",
+    "title": "CarsonMapEPL05092024_WFL1_Original",
+    "url": "https://services1.arcgis.com/D9ezssdp37tr9wbT/arcgis/rest/services/CarsonMapEPL05092024_WFL1/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "04c24f2caf6d4761b3b7ec2ab7381870",
+    "owner": "ckostner_frankfort",
+    "title": "Frankfort Parcels Public View",
+    "url": "https://services.arcgis.com/SOVgyYCFVBkOrKDZ/arcgis/rest/services/Frankfort_Parcels_Public_View/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "bab934a85fe94f1d885dcaa6b3f16229",
+    "owner": "PVDGIS_Intern",
+    "title": "Providence Parcels_Tree Canopy Change 2011_2018_v1",
+    "url": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "f93b9968eee2470cadb3a476c9b180eb",
+    "owner": "PVDGIS_Admin",
+    "title": "Providence Parcels and Zoning Map",
+    "url": "",
+    "type": "Web Map"
+  },
+  {
+    "id": "c10914b840604415b64b63b0dd702c88",
+    "owner": "PVDGIS_Admin",
+    "title": "Providence Parcels and Zoning Map_MV",
+    "url": "",
+    "type": "Web Map"
+  },
+  {
+    "id": "775903072e3843039ab6b9d1c8b68385",
+    "owner": "CannDevGIS",
+    "title": "Providence_Providence_RI_CD_Parcels",
+    "url": "https://services9.arcgis.com/J0tsnoNKqR02vNPh/arcgis/rest/services/Providence_Providence_RI_CD_Parcels/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "4053c3a3496744029e549000ebbf6ac6",
+    "owner": "jkennedy_SpatialDataLogic",
+    "title": "New_Providence_Parcels",
+    "url": "https://services3.arcgis.com/DvTqoyLKkslnGFR5/arcgis/rest/services/New_Providence_Parcels/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "8a695b84c5934861b40773e832928b92",
+    "owner": "Maximilian.Kalber@mbakerintl.com_Baker",
+    "title": "Carson SWFIP_WFL1",
+    "url": "https://services1.arcgis.com/q8sarOko6mCDwiGm/arcgis/rest/services/Carson_SWFIP_WFL1/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "4c7fb470de054a17babf79d3a9592f22",
+    "owner": "jkennedy_SpatialDataLogic",
+    "title": "New Providence Parcels",
+    "url": null,
+    "type": "Web Map"
+  },
+  {
+    "id": "29b0764320c1449bb2a56081e74f9e02",
+    "owner": "wharcgisdeveloper",
+    "title": "City of Providence CT Parcels",
+    "url": "https://services6.arcgis.com/drkDXByy6E3bYW3a/arcgis/rest/services/city_of_providence_ct_parcels/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "429d233f5d984917826f0eb30ab2b1bc",
+    "owner": "wharcgisdeveloper",
+    "title": "East Providence CT Parcels",
+    "url": "https://services6.arcgis.com/drkDXByy6E3bYW3a/arcgis/rest/services/east_providence_ct_parcels/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "ffca5acfcf9249209beb4c854327b1cd",
+    "owner": "AntoinetteDowning",
+    "title": "Historic Districts of Providence FINAL_WFL1",
+    "url": "https://services3.arcgis.com/mlCBKKcEqz8ueynA/arcgis/rest/services/Historic_Districts_of_Providence_FINAL_WFL1/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "3c22c52e76124287ba8fed6cb778e918",
+    "owner": "TownofKitCarson",
+    "title": "Kit Carson Parcels",
+    "url": "https://services6.arcgis.com/wrDeAO8OsZKfOp2r/arcgis/rest/services/Kit_Carson_Parcels/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "c4bcdd2bbdde4068b380149f98e4d288",
+    "owner": "giraffeking",
+    "title": "Providence Parcels",
+    "url": null,
+    "type": "Web Map"
+  },
+  {
+    "id": "59c234bb9ad5443eb3749d8a0ce8b3eb",
+    "owner": "URIEDC_mike",
+    "title": "East Providence SLAMM Parcels 2050",
+    "url": "https://services2.arcgis.com/S8zZg9pg23JUEexQ/arcgis/rest/services/East_Providence_SLAMM_Parcels_2050/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "e77b432ed34e42b4abf40e5f54b1ddb5",
+    "owner": "URIEDC_mike",
+    "title": "East Providence SLAMM Parcels 2100",
+    "url": "https://services2.arcgis.com/S8zZg9pg23JUEexQ/arcgis/rest/services/East_Providence_SLAMM_Parcels_2100/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "33058f56eda34b1caa57ac8ca0b27df1",
+    "owner": "URIEDC_mike",
+    "title": "Providence SLAMM Parcels 2100",
+    "url": "https://services2.arcgis.com/S8zZg9pg23JUEexQ/arcgis/rest/services/Providence_SLAMM_Parcels_2100/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "c11ded77812d43bca56eef3864852d85",
+    "owner": "URIEDC_mike",
+    "title": "Providence SLAMM Parcels 2050",
+    "url": "https://services2.arcgis.com/S8zZg9pg23JUEexQ/arcgis/rest/services/Providence_SLAMM_Parcels_2050/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "f58053a4b81f4900998678b9497f1820",
+    "owner": "ckostner_frankfort",
+    "title": "Frankfort_Owned_Parcels_Public_View",
+    "url": "https://services.arcgis.com/SOVgyYCFVBkOrKDZ/arcgis/rest/services/Frankfort_Owned_Parcels_Public_View/FeatureServer",
+    "type": "Feature Service"
+  },
+  {
+    "id": "849f84fefdb644d198c390a34123a229",
+    "owner": "departedemployee",
+    "title": "City of Providence - Parcel Reporting (GVH)",
+    "url": "https://gedemo.geocortex.com/Html5Viewer/index.html?viewer=Providence.ProvidenceViewer",
+    "type": "Web Mapping Application"
+  }
+]

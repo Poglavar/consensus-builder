@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "IN",
+  "state": "Indiana",
+  "capital": "Indianapolis",
+  "centerLatLon": [
+    39.7684,
+    -86.1581
+  ],
+  "query": {
+    "language": "English",
+    "text": "official Indiana Indianapolis Marion County GIS parcel boundary GIS"
+  },
+  "references": [
+    {
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0?f=pjson",
+      "observation": "Source layer metadata queried for geometry, native key field and object ID schema."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=official%20Indiana%20Indianapolis%20Marion%20County%20GIS%20parcel%20boundary%20GIS",
+      "observation": "English web search used to locate official capital/state parcel information."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "Layer metadata confirms esriGeometryPolygon and native state_parcel_id field (esriFieldTypeString)."
+    },
+    {
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&geometry=-86.15875%2C39.7679125%2C-86.15745000000001%2C39.7688875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=state_parcel_id&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Capital bbox returned 5 polygons, native IDs and geometry only; rings checked closed and finite."
+    },
+    {
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id%3D%27491101240004000101%27&outFields=state_parcel_id&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Exact native key read returned 1 feature(s), includes the same key and valid geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Parcel Boundaries of Indiana Current (IndianaMap)",
+    "operator": "State of Indiana / IndianaMap (Indiana Geographic Information Office)",
+    "idField": "state_parcel_id",
+    "objectIdField": "objectid",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Returned native text values preserved verbatim (including leading zeros and any whitespace).",
+    "outFields": [
+      "state_parcel_id"
+    ],
+    "parcelNumberField": "state_parcel_id",
+    "metricSrid": "requested outSR=4326",
+    "proposedIdPrefix": "us-in-county"
+  },
+  "verification": {
+    "bbox": [
+      -86.15875,
+      39.7679125,
+      -86.15745000000001,
+      39.7688875
+    ],
+    "count": 5,
+    "nativeIDs": [
+      "491101240004000101",
+      "491101240179000101",
+      "491101240030000101"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "Completeness per county not measured; layer also carries address fields that were not requested.",
+  "priorResearchFile": "research/subnational/US/IN.json"
+}

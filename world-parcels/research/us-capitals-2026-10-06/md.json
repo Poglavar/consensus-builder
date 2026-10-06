@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "MD",
+  "state": "Maryland",
+  "capital": "Annapolis",
+  "centerLatLon": [
+    38.9784,
+    -76.4922
+  ],
+  "query": {
+    "language": "English",
+    "text": "official GIS parcel service Annapolis Maryland parcels ArcGIS FeatureServer"
+  },
+  "references": [
+    "https://annapolis.gov/2324/GIS-and-Maps",
+    "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1"
+  ],
+  "attempts": [
+    {
+      "url": "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Layer metadata with native field and geometry type"
+    },
+    {
+      "url": "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1/query?where=1%3D1&geometry=-76.4930%2C38.9778%2C-76.4910%2C38.9790&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PIN&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Bounded capital query, maximum 3 records, ID and geometry only"
+    },
+    {
+      "url": "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1/query?where=PIN%3D8520&outFields=PIN&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-ID round trip, one record, ID and geometry only"
+    }
+  ],
+  "source": {
+    "endpoint": "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1",
+    "adapter": "arcgis",
+    "name": "Annapolis Parcels",
+    "operator": "City of Annapolis GIS, Information Technology Office",
+    "idField": "PIN",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPattern": "integer",
+    "outFields": "PIN",
+    "parcelNumberField": "PIN",
+    "metricSrid": 2248
+  },
+  "verification": {
+    "bbox": [
+      -76.493,
+      38.9778,
+      -76.491,
+      38.979
+    ],
+    "count": 3,
+    "nativeIDs": [
+      8520,
+      8524,
+      8527
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

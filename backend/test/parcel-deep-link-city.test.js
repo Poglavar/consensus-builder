@@ -80,6 +80,23 @@ describe('parcelIdToCityId — prefixes that are unambiguous', () => {
     });
 });
 
+describe('configured US capital source parcel routing', () => {
+    it.each([
+        ['US-AL-MONTGOMERY-1004181031004000', 'montgomery', 'us-al-montgomery-city-parcels', 'EPSG:32616', 'Montgomery, United States'],
+        ['US-AK-CBJ-1C060C250020', 'juneau', 'us-ak-cbj-parcels', 'EPSG:32608', 'Juneau, United States'],
+        ['US-AZ-MARICOPA-11221002', 'phoenix', 'us-az-maricopa-assessor-parcels', 'EPSG:32612', 'Phoenix, United States'],
+        ['US-AR-PULASKI-34L-032.00-016.00', 'little_rock', 'us-ar-ago-parcels-pulaski', 'EPSG:32615', 'Little Rock, United States'],
+        ['US-CA-SACRAMENTO-00600360310000', 'sacramento', 'us-ca-sacramento-active-parcels', 'EPSG:32610', 'Sacramento, United States']
+    ])('routes %s to its configured city', (parcelId, cityId, sourceId, metricCrs, label) => {
+        expect(route.parcelIdToCityId(parcelId)).toBe(cityId);
+        const city = CityConfigManager.getCityConfig(cityId);
+        expect(city.label).toBe(label);
+        expect(city.parcels).toMatchObject({ source: 'parcel-source', sourceId });
+        expect(parcelId.startsWith(city.parcels.idPrefix)).toBe(true);
+        expect(city.projection.metricCrs).toBe(metricCrs);
+    });
+});
+
 describe('firstLatLngOfFeature', () => {
     it('reaches the first coordinate through Polygon and MultiPolygon nesting', () => {
         const polygon = { geometry: { coordinates: [[[15.88, 43.73], [15.89, 43.74]]] } };

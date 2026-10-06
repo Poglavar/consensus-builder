@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "boston",
+      "stateCode": "MA",
+      "sourceId": "us-ma-boston-current-parcels",
+      "endpoint": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.0625,
+            42.3575,
+            -71.06,
+            42.36
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.06,
+            42.3575,
+            -71.0575,
+            42.36
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.0575,
+            42.3575,
+            -71.055,
+            42.36
+          ],
+          "count": 40,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 4,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 308,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    }
+  ]
+}

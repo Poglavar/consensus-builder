@@ -1,0 +1,477 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "indianapolis",
+      "stateCode": "IN",
+      "sourceId": "us-in-marion-indianapolis-parcels",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.765,
+            -86.16,
+            39.7675
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.765,
+            -86.1575,
+            39.7675
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.765,
+            -86.155,
+            39.7675
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.7675,
+            -86.16,
+            39.769999999999996
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.7675,
+            -86.1575,
+            39.769999999999996
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.7675,
+            -86.155,
+            39.769999999999996
+          ],
+          "count": 155,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.769999999999996,
+            -86.16,
+            39.7725
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.769999999999996,
+            -86.1575,
+            39.7725
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.769999999999996,
+            -86.155,
+            39.7725
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.765,
+            -86.1525,
+            39.7675
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.765,
+            -86.14999999999999,
+            39.7675
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.765,
+            -86.1475,
+            39.7675
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.7675,
+            -86.1525,
+            39.769999999999996
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.7675,
+            -86.14999999999999,
+            39.769999999999996
+          ],
+          "count": 114,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.7675,
+            -86.1475,
+            39.769999999999996
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.769999999999996,
+            -86.1525,
+            39.7725
+          ],
+          "count": 83,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.769999999999996,
+            -86.14999999999999,
+            39.7725
+          ],
+          "count": 139,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.769999999999996,
+            -86.1475,
+            39.7725
+          ],
+          "count": 188,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -86.1575,
+          39.769999999999996,
+          -86.155,
+          39.7725
+        ],
+        "forcedPageSize": 3,
+        "count": 11,
+        "returned": 11,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 988,
+      "exactResolved": 988,
+      "nativeIds": [
+        "1050626",
+        "1379517",
+        "1050634"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-in-marion-indianapolis-parcels",
+        "parcels": 1,
+        "siteM2": 3951.01
+      },
+      "requests": 38
+    },
+    {
+      "city": "saint_paul",
+      "stateCode": "MN",
+      "sourceId": "us-mn-ramsey-saint-paul-parcels",
+      "endpoint": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.95,
+            -93.09,
+            44.9525
+          ],
+          "count": 333,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.95,
+            -93.0875,
+            44.9525
+          ],
+          "count": 427,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.95,
+            -93.08500000000001,
+            44.9525
+          ],
+          "count": 343,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.9525,
+            -93.09,
+            44.955
+          ],
+          "count": 237,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.9525,
+            -93.0875,
+            44.955
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.9525,
+            -93.08500000000001,
+            44.955
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.955,
+            -93.09,
+            44.9575
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.955,
+            -93.0875,
+            44.9575
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.955,
+            -93.08500000000001,
+            44.9575
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.95,
+            -93.08250000000001,
+            44.9525
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.95,
+            -93.08,
+            44.9525
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.95,
+            -93.0775,
+            44.9525
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.9525,
+            -93.08250000000001,
+            44.955
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.9525,
+            -93.08,
+            44.955
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.9525,
+            -93.0775,
+            44.955
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.955,
+            -93.08250000000001,
+            44.9575
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.955,
+            -93.08,
+            44.9575
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.955,
+            -93.0775,
+            44.9575
+          ],
+          "count": 34,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -93.08250000000001,
+          44.9525,
+          -93.08,
+          44.955
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 926,
+      "exactResolved": 926,
+      "nativeIds": [
+        "312922440077",
+        "312922430532",
+        "312922430531"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mn-ramsey-saint-paul-parcels",
+        "parcels": 1,
+        "siteM2": 473.75
+      },
+      "requests": 35
+    }
+  ]
+}

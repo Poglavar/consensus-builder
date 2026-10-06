@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "lincoln",
+      "stateCode": "NE",
+      "sourceId": "us-ne-lincoln-parcels",
+      "endpoint": "https://services1.arcgis.com/wpJGOi6N4Rq5cqFv/arcgis/rest/services/TaxParcels/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7075,
+            40.81,
+            -96.705,
+            40.8125
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.705,
+            40.81,
+            -96.7025,
+            40.8125
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7025,
+            40.81,
+            -96.7,
+            40.8125
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7075,
+            40.8125,
+            -96.705,
+            40.815
+          ],
+          "count": 200,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.705,
+            40.8125,
+            -96.7025,
+            40.815
+          ],
+          "count": 88,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7025,
+            40.8125,
+            -96.7,
+            40.815
+          ],
+          "count": 176,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7075,
+            40.815,
+            -96.705,
+            40.8175
+          ],
+          "count": 62,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.705,
+            40.815,
+            -96.7025,
+            40.8175
+          ],
+          "count": 77,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7025,
+            40.815,
+            -96.7,
+            40.8175
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7,
+            40.81,
+            -96.6975,
+            40.8125
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.6975,
+            40.81,
+            -96.695,
+            40.8125
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.695,
+            40.81,
+            -96.6925,
+            40.8125
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7,
+            40.8125,
+            -96.6975,
+            40.815
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.6975,
+            40.8125,
+            -96.695,
+            40.815
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.695,
+            40.8125,
+            -96.6925,
+            40.815
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7,
+            40.815,
+            -96.6975,
+            40.8175
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.6975,
+            40.815,
+            -96.695,
+            40.8175
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.695,
+            40.815,
+            -96.6925,
+            40.8175
+          ],
+          "count": 16,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -96.695,
+          40.815,
+          -96.6925,
+          40.8175
+        ],
+        "forcedPageSize": 3,
+        "count": 16,
+        "returned": 16,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 799,
+      "exactResolved": 799,
+      "nativeIds": [
+        "1026215016000",
+        "1026209003000",
+        "1026209009000"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ne-lincoln-parcels",
+        "parcels": 1,
+        "siteM2": 3961.19
+      },
+      "requests": 37,
+      "proposedDescriptor": {
+        "id": "us-ne-lincoln-parcels",
+        "name": "City of Lincoln / Lancaster County (CountyCityPub) — Lincoln",
+        "adapter": "arcgis",
+        "endpoint": "https://services1.arcgis.com/wpJGOi6N4Rq5cqFv/arcgis/rest/services/TaxParcels/FeatureServer/0",
+        "idField": "PARCELID",
+        "objectIdField": "OBJECTID_1",
+        "idType": "string",
+        "idPattern": "^[0-9]{1,19}$",
+        "idPrefix": "US-NE-LINCOLN-",
+        "outFields": [
+          "OBJECTID_1",
+          "PARCELID"
+        ],
+        "parcelNumberField": "PARCELID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 32614,
+        "countryCode": "US",
+        "stateCode": "NE",
+        "cityIds": [
+          "lincoln"
+        ],
+        "operator": "City of Lincoln / Lancaster County (CountyCityPub)",
+        "scope": "Public capital-region cadastral polygons around Lincoln.",
+        "catalogueUrl": "https://www.arcgis.com/home/item.html?id=1da5644990874ff2857daffa043b3617",
+        "licenceNote": "Source conditions informational; users choose source and intended use."
+      }
+    }
+  ]
+}

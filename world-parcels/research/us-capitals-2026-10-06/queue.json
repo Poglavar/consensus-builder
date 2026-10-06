@@ -1,0 +1,629 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "scope": "50 state capitals plus Washington, D.C.; alphabetical state/district order. Coordinates are approximate query centres, not source coverage.",
+  "capitalListReference": "https://people.sc.fsu.edu/~jburkardt/datasets/states/states.html",
+  "existingAppStates": [
+    "CA",
+    "CO",
+    "FL",
+    "NY"
+  ],
+  "existingAppFederalDistricts": [
+    "DC"
+  ],
+  "capitals": [
+    {
+      "order": 1,
+      "stateCode": "AL",
+      "state": "Alabama",
+      "capital": "Montgomery",
+      "centerLatLon": [
+        32.3668,
+        -86.3
+      ],
+      "priorResearchFile": "research/subnational/US/AL.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 2,
+      "stateCode": "AK",
+      "state": "Alaska",
+      "capital": "Juneau",
+      "centerLatLon": [
+        58.3016,
+        -134.4202
+      ],
+      "priorResearchFile": "research/subnational/US/AK.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 3,
+      "stateCode": "AZ",
+      "state": "Arizona",
+      "capital": "Phoenix",
+      "centerLatLon": [
+        33.4484,
+        -112.074
+      ],
+      "priorResearchFile": "research/subnational/US/AZ.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 4,
+      "stateCode": "AR",
+      "state": "Arkansas",
+      "capital": "Little Rock",
+      "centerLatLon": [
+        34.7465,
+        -92.2896
+      ],
+      "priorResearchFile": "research/subnational/US/AR.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 5,
+      "stateCode": "CA",
+      "state": "California",
+      "capital": "Sacramento",
+      "centerLatLon": [
+        38.5816,
+        -121.4944
+      ],
+      "priorResearchFile": "research/subnational/US/CA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 6,
+      "stateCode": "CO",
+      "state": "Colorado",
+      "capital": "Denver",
+      "centerLatLon": [
+        39.7392,
+        -104.9903
+      ],
+      "priorResearchFile": "research/subnational/US/CO.json",
+      "alreadyConfigured": true
+    },
+    {
+      "order": 7,
+      "stateCode": "CT",
+      "state": "Connecticut",
+      "capital": "Hartford",
+      "centerLatLon": [
+        41.7658,
+        -72.6734
+      ],
+      "priorResearchFile": "research/subnational/US/CT.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 8,
+      "stateCode": "DE",
+      "state": "Delaware",
+      "capital": "Dover",
+      "centerLatLon": [
+        39.1582,
+        -75.5244
+      ],
+      "priorResearchFile": "research/subnational/US/DE.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 9,
+      "stateCode": "DC",
+      "state": "District of Columbia",
+      "capital": "Washington, D.C.",
+      "centerLatLon": [
+        38.9072,
+        -77.0369
+      ],
+      "priorResearchFile": "research/subnational/US/DC.json",
+      "alreadyConfigured": true
+    },
+    {
+      "order": 10,
+      "stateCode": "FL",
+      "state": "Florida",
+      "capital": "Tallahassee",
+      "centerLatLon": [
+        30.4383,
+        -84.2807
+      ],
+      "priorResearchFile": "research/subnational/US/FL.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 11,
+      "stateCode": "GA",
+      "state": "Georgia",
+      "capital": "Atlanta",
+      "centerLatLon": [
+        33.749,
+        -84.388
+      ],
+      "priorResearchFile": "research/subnational/US/GA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 12,
+      "stateCode": "HI",
+      "state": "Hawaii",
+      "capital": "Honolulu",
+      "centerLatLon": [
+        21.3099,
+        -157.8581
+      ],
+      "priorResearchFile": "research/subnational/US/HI.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 13,
+      "stateCode": "ID",
+      "state": "Idaho",
+      "capital": "Boise",
+      "centerLatLon": [
+        43.615,
+        -116.2023
+      ],
+      "priorResearchFile": "research/subnational/US/ID.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 14,
+      "stateCode": "IL",
+      "state": "Illinois",
+      "capital": "Springfield",
+      "centerLatLon": [
+        39.7817,
+        -89.6501
+      ],
+      "priorResearchFile": "research/subnational/US/IL.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 15,
+      "stateCode": "IN",
+      "state": "Indiana",
+      "capital": "Indianapolis",
+      "centerLatLon": [
+        39.7684,
+        -86.1581
+      ],
+      "priorResearchFile": "research/subnational/US/IN.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 16,
+      "stateCode": "IA",
+      "state": "Iowa",
+      "capital": "Des Moines",
+      "centerLatLon": [
+        41.5868,
+        -93.625
+      ],
+      "priorResearchFile": "research/subnational/US/IA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 17,
+      "stateCode": "KS",
+      "state": "Kansas",
+      "capital": "Topeka",
+      "centerLatLon": [
+        39.0473,
+        -95.6752
+      ],
+      "priorResearchFile": "research/subnational/US/KS.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 18,
+      "stateCode": "KY",
+      "state": "Kentucky",
+      "capital": "Frankfort",
+      "centerLatLon": [
+        38.2009,
+        -84.8733
+      ],
+      "priorResearchFile": "research/subnational/US/KY.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 19,
+      "stateCode": "LA",
+      "state": "Louisiana",
+      "capital": "Baton Rouge",
+      "centerLatLon": [
+        30.4515,
+        -91.1871
+      ],
+      "priorResearchFile": "research/subnational/US/LA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 20,
+      "stateCode": "ME",
+      "state": "Maine",
+      "capital": "Augusta",
+      "centerLatLon": [
+        44.3106,
+        -69.7795
+      ],
+      "priorResearchFile": "research/subnational/US/ME.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 21,
+      "stateCode": "MD",
+      "state": "Maryland",
+      "capital": "Annapolis",
+      "centerLatLon": [
+        38.9784,
+        -76.4922
+      ],
+      "priorResearchFile": "research/subnational/US/MD.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 22,
+      "stateCode": "MA",
+      "state": "Massachusetts",
+      "capital": "Boston",
+      "centerLatLon": [
+        42.3601,
+        -71.0589
+      ],
+      "priorResearchFile": "research/subnational/US/MA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 23,
+      "stateCode": "MI",
+      "state": "Michigan",
+      "capital": "Lansing",
+      "centerLatLon": [
+        42.7325,
+        -84.5555
+      ],
+      "priorResearchFile": "research/subnational/US/MI.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 24,
+      "stateCode": "MN",
+      "state": "Minnesota",
+      "capital": "Saint Paul",
+      "centerLatLon": [
+        44.9537,
+        -93.09
+      ],
+      "priorResearchFile": "research/subnational/US/MN.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 25,
+      "stateCode": "MS",
+      "state": "Mississippi",
+      "capital": "Jackson",
+      "centerLatLon": [
+        32.2988,
+        -90.1848
+      ],
+      "priorResearchFile": "research/subnational/US/MS.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 26,
+      "stateCode": "MO",
+      "state": "Missouri",
+      "capital": "Jefferson City",
+      "centerLatLon": [
+        38.5767,
+        -92.1735
+      ],
+      "priorResearchFile": "research/subnational/US/MO.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 27,
+      "stateCode": "MT",
+      "state": "Montana",
+      "capital": "Helena",
+      "centerLatLon": [
+        46.5891,
+        -112.0391
+      ],
+      "priorResearchFile": "research/subnational/US/MT.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 28,
+      "stateCode": "NE",
+      "state": "Nebraska",
+      "capital": "Lincoln",
+      "centerLatLon": [
+        40.8136,
+        -96.7026
+      ],
+      "priorResearchFile": "research/subnational/US/NE.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 29,
+      "stateCode": "NV",
+      "state": "Nevada",
+      "capital": "Carson City",
+      "centerLatLon": [
+        39.1638,
+        -119.7674
+      ],
+      "priorResearchFile": "research/subnational/US/NV.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 30,
+      "stateCode": "NH",
+      "state": "New Hampshire",
+      "capital": "Concord",
+      "centerLatLon": [
+        43.2081,
+        -71.5376
+      ],
+      "priorResearchFile": "research/subnational/US/NH.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 31,
+      "stateCode": "NJ",
+      "state": "New Jersey",
+      "capital": "Trenton",
+      "centerLatLon": [
+        40.2171,
+        -74.7429
+      ],
+      "priorResearchFile": "research/subnational/US/NJ.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 32,
+      "stateCode": "NM",
+      "state": "New Mexico",
+      "capital": "Santa Fe",
+      "centerLatLon": [
+        35.687,
+        -105.9378
+      ],
+      "priorResearchFile": "research/subnational/US/NM.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 33,
+      "stateCode": "NY",
+      "state": "New York",
+      "capital": "Albany",
+      "centerLatLon": [
+        42.6526,
+        -73.7562
+      ],
+      "priorResearchFile": "research/subnational/US/NY.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 34,
+      "stateCode": "NC",
+      "state": "North Carolina",
+      "capital": "Raleigh",
+      "centerLatLon": [
+        35.7796,
+        -78.6382
+      ],
+      "priorResearchFile": "research/subnational/US/NC.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 35,
+      "stateCode": "ND",
+      "state": "North Dakota",
+      "capital": "Bismarck",
+      "centerLatLon": [
+        46.8083,
+        -100.7837
+      ],
+      "priorResearchFile": "research/subnational/US/ND.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 36,
+      "stateCode": "OH",
+      "state": "Ohio",
+      "capital": "Columbus",
+      "centerLatLon": [
+        39.9612,
+        -82.9988
+      ],
+      "priorResearchFile": "research/subnational/US/OH.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 37,
+      "stateCode": "OK",
+      "state": "Oklahoma",
+      "capital": "Oklahoma City",
+      "centerLatLon": [
+        35.4676,
+        -97.5164
+      ],
+      "priorResearchFile": "research/subnational/US/OK.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 38,
+      "stateCode": "OR",
+      "state": "Oregon",
+      "capital": "Salem",
+      "centerLatLon": [
+        44.9429,
+        -123.0351
+      ],
+      "priorResearchFile": "research/subnational/US/OR.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 39,
+      "stateCode": "PA",
+      "state": "Pennsylvania",
+      "capital": "Harrisburg",
+      "centerLatLon": [
+        40.2732,
+        -76.8867
+      ],
+      "priorResearchFile": "research/subnational/US/PA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 40,
+      "stateCode": "RI",
+      "state": "Rhode Island",
+      "capital": "Providence",
+      "centerLatLon": [
+        41.824,
+        -71.4128
+      ],
+      "priorResearchFile": "research/subnational/US/RI.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 41,
+      "stateCode": "SC",
+      "state": "South Carolina",
+      "capital": "Columbia",
+      "centerLatLon": [
+        34.0007,
+        -81.0348
+      ],
+      "priorResearchFile": "research/subnational/US/SC.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 42,
+      "stateCode": "SD",
+      "state": "South Dakota",
+      "capital": "Pierre",
+      "centerLatLon": [
+        44.3683,
+        -100.351
+      ],
+      "priorResearchFile": "research/subnational/US/SD.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 43,
+      "stateCode": "TN",
+      "state": "Tennessee",
+      "capital": "Nashville",
+      "centerLatLon": [
+        36.1627,
+        -86.7816
+      ],
+      "priorResearchFile": "research/subnational/US/TN.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 44,
+      "stateCode": "TX",
+      "state": "Texas",
+      "capital": "Austin",
+      "centerLatLon": [
+        30.2672,
+        -97.7431
+      ],
+      "priorResearchFile": "research/subnational/US/TX.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 45,
+      "stateCode": "UT",
+      "state": "Utah",
+      "capital": "Salt Lake City",
+      "centerLatLon": [
+        40.7608,
+        -111.891
+      ],
+      "priorResearchFile": "research/subnational/US/UT.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 46,
+      "stateCode": "VT",
+      "state": "Vermont",
+      "capital": "Montpelier",
+      "centerLatLon": [
+        44.2601,
+        -72.5754
+      ],
+      "priorResearchFile": "research/subnational/US/VT.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 47,
+      "stateCode": "VA",
+      "state": "Virginia",
+      "capital": "Richmond",
+      "centerLatLon": [
+        37.5407,
+        -77.436
+      ],
+      "priorResearchFile": "research/subnational/US/VA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 48,
+      "stateCode": "WA",
+      "state": "Washington",
+      "capital": "Olympia",
+      "centerLatLon": [
+        47.0379,
+        -122.9007
+      ],
+      "priorResearchFile": "research/subnational/US/WA.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 49,
+      "stateCode": "WV",
+      "state": "West Virginia",
+      "capital": "Charleston",
+      "centerLatLon": [
+        38.3498,
+        -81.6326
+      ],
+      "priorResearchFile": "research/subnational/US/WV.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 50,
+      "stateCode": "WI",
+      "state": "Wisconsin",
+      "capital": "Madison",
+      "centerLatLon": [
+        43.0731,
+        -89.4012
+      ],
+      "priorResearchFile": "research/subnational/US/WI.json",
+      "alreadyConfigured": false
+    },
+    {
+      "order": 51,
+      "stateCode": "WY",
+      "state": "Wyoming",
+      "capital": "Cheyenne",
+      "centerLatLon": [
+        41.14,
+        -104.8202
+      ],
+      "priorResearchFile": "research/subnational/US/WY.json",
+      "alreadyConfigured": false
+    }
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "saint_paul",
+      "stateCode": "MN",
+      "sourceId": "us-mn-ramsey-saint-paul-parcels",
+      "endpoint": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.95,
+            -93.09,
+            44.9525
+          ],
+          "count": 333,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.95,
+            -93.0875,
+            44.9525
+          ],
+          "count": 427,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.95,
+            -93.08500000000001,
+            44.9525
+          ],
+          "count": 343,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.9525,
+            -93.09,
+            44.955
+          ],
+          "count": 237,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.9525,
+            -93.0875,
+            44.955
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.9525,
+            -93.08500000000001,
+            44.955
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.955,
+            -93.09,
+            44.9575
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.955,
+            -93.0875,
+            44.9575
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.955,
+            -93.08500000000001,
+            44.9575
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.95,
+            -93.08250000000001,
+            44.9525
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.95,
+            -93.08,
+            44.9525
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.95,
+            -93.0775,
+            44.9525
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.9525,
+            -93.08250000000001,
+            44.955
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.9525,
+            -93.08,
+            44.955
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.9525,
+            -93.0775,
+            44.955
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.955,
+            -93.08250000000001,
+            44.9575
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.955,
+            -93.08,
+            44.9575
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.955,
+            -93.0775,
+            44.9575
+          ],
+          "count": 34,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -93.08250000000001,
+          44.9525,
+          -93.08,
+          44.955
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 926,
+      "exactResolved": 926,
+      "nativeIds": [
+        "312922440077",
+        "312922430532",
+        "312922430531"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mn-ramsey-saint-paul-parcels",
+        "parcels": 1,
+        "siteM2": 473.75
+      },
+      "requests": 35,
+      "runtimeReadiness": "acceptance-passed-not-configured",
+      "proposedDescriptor": {
+        "id": "us-mn-ramsey-saint-paul-parcels",
+        "name": "Ramsey County Tax Parcels",
+        "adapter": "arcgis",
+        "endpoint": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4",
+        "idField": "ParcelID",
+        "idType": "string",
+        "idPattern": "^[0-9]{12}$",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "US-MN-RAMSEY-",
+        "outFields": [
+          "OBJECTID",
+          "ParcelID"
+        ],
+        "parcelNumberField": "ParcelID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "countryCode": "US",
+        "stateCode": "MN",
+        "metricSrid": 32615,
+        "cityIds": [
+          "saint_paul"
+        ],
+        "operator": "Ramsey County GIS",
+        "scope": "Ramsey County parcel service; configured for Saint Paul only.",
+        "catalogueUrl": "https://www.stpaul.gov/departments/planning-and-economic-development/maps-and-data",
+        "evidenceFile": "research/us-capitals-batch-two-saint-paul-2026-10-06.json",
+        "attribution": "Ramsey County GIS Tax Parcels. Adapted to WGS84.",
+        "licenceNote": "Official public county service; source conditions informational."
+      }
+    }
+  ]
+}

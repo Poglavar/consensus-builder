@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "VA",
+  "state": "Virginia",
+  "capital": "Richmond",
+  "centerLatLon": [
+    37.5407,
+    -77.436
+  ],
+  "query": {
+    "language": "English",
+    "text": "Virginia parcel map Richmond city GIS parcels official statewide parcels"
+  },
+  "references": [
+    {
+      "url": "https://www.rva.gov/index.php/assessor-real-estate/gismapping",
+      "observation": "Official source found by the recorded English web query."
+    },
+    {
+      "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+      "observation": "Official parcel layer endpoint tested with an ID-and-geometry-only spatial sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "ArcGIS layer metadata retrieved; schema inspected without requesting personal parcel fields."
+    },
+    {
+      "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-77.4371%2C37.5396%2C-77.43490000000001%2C37.5418&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PARCELID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Tiny capital-centered bbox; requested only PARCELID and geometry; count=3, geometry valid=True, null IDs=0, duplicate IDs=False."
+    },
+    {
+      "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0/query?f=geojson&where=PARCELID%3D%27207936%27&outFields=PARCELID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Exact ID round trip for 207936: exact count 2, geometry valid=True."
+    },
+    {
+      "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "VGIN statewide metadata inspected; VGIN_QPID is a native locality-qualified parcel key candidate."
+    },
+    {
+      "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-77.4371%2C37.5396%2C-77.43490000000001%2C37.5418&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=VGIN_QPID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Capital-centered bbox requested VGIN_QPID and geometry only: 3 valid polygons, no null or duplicate sampled QPIDs."
+    },
+    {
+      "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0/query?f=geojson&where=VGIN_QPID%3D5176000028971&outFields=VGIN_QPID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Exact VGIN_QPID 5176000028971 returned 1 valid polygon."
+    }
+  ],
+  "source": {
+    "endpoint": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Virginia Parcels",
+    "operator": "Virginia Geographic Information Network / Virginia Department of Emergency Management",
+    "scope": "Statewide compilation with possible locality omissions",
+    "idField": "VGIN_QPID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeDouble",
+    "idPattern": null,
+    "outFields": [
+      "VGIN_QPID"
+    ],
+    "parcelNumberField": "VGIN_QPID",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -77.4371,
+      37.5396,
+      -77.43490000000001,
+      37.5418
+    ],
+    "count": 3,
+    "nativeIDs": [
+      5176000028971,
+      5176000031157,
+      5176000050840
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS FeatureServer polygon layer"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "The initial PARCELID field returned repeated feature IDs; the statewide VGIN_QPID field produced a unique native exact read at Richmond. Capital sample only; wider locality coverage is untested."
+}

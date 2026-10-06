@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "des-moines",
+      "stateCode": "IA",
+      "sourceId": "us-ia-des-moines-parcels",
+      "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.5825,
+            -93.625,
+            41.585
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.625,
+            41.5825,
+            -93.6225,
+            41.585
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6225,
+            41.5825,
+            -93.62,
+            41.585
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.585,
+            -93.625,
+            41.5875
+          ],
+          "count": 32,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 15,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 432,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8"
+      }
+    },
+    {
+      "city": "lansing",
+      "stateCode": "MI",
+      "sourceId": "us-mi-lansing-parcels",
+      "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.56,
+            42.730000000000004,
+            -84.5575,
+            42.7325
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5575,
+            42.730000000000004,
+            -84.555,
+            42.7325
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.555,
+            42.730000000000004,
+            -84.55250000000001,
+            42.7325
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.56,
+            42.7325,
+            -84.5575,
+            42.735
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5575,
+            42.7325,
+            -84.555,
+            42.735
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.555,
+            42.7325,
+            -84.55250000000001,
+            42.735
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.56,
+            42.735,
+            -84.5575,
+            42.737500000000004
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5575,
+            42.735,
+            -84.555,
+            42.737500000000004
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.555,
+            42.735,
+            -84.55250000000001,
+            42.737500000000004
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55250000000001,
+            42.730000000000004,
+            -84.55000000000001,
+            42.7325
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55000000000001,
+            42.730000000000004,
+            -84.5475,
+            42.7325
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5475,
+            42.730000000000004,
+            -84.545,
+            42.7325
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55250000000001,
+            42.7325,
+            -84.55000000000001,
+            42.735
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55000000000001,
+            42.7325,
+            -84.5475,
+            42.735
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5475,
+            42.7325,
+            -84.545,
+            42.735
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55250000000001,
+            42.735,
+            -84.55000000000001,
+            42.737500000000004
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55000000000001,
+            42.735,
+            -84.5475,
+            42.737500000000004
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5475,
+            42.735,
+            -84.545,
+            42.737500000000004
+          ],
+          "count": 22,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -84.56,
+          42.7325,
+          -84.5575,
+          42.735
+        ],
+        "forcedPageSize": 3,
+        "count": 10,
+        "returned": 10,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 369,
+      "exactResolved": 369,
+      "nativeIds": [
+        "33-01-01-16-306-001",
+        "33-01-01-16-307-002",
+        "33-01-01-16-311-003"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mi-lansing-parcels",
+        "parcels": 1,
+        "siteM2": 13566.85
+      },
+      "requests": 82,
+      "proposedDescriptor": {
+        "id": "us-mi-lansing-parcels",
+        "name": "Ingham County Parcels 2025 public service",
+        "operator": "Ingham County Equalization; Ingham County public ArcGIS publisher icdc_Admin",
+        "stateCode": "MI",
+        "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+        "idField": "PARCELNUM",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "US-MI-",
+        "idType": "string",
+        "idPattern": "^\\d{2}-\\d{2}-\\d{2}-\\d{2}-\\d{3}-\\d{3}$",
+        "outFields": [
+          "PARCELNUM",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "PARCELNUM",
+        "metricSrid": 32616,
+        "pageSize": 500,
+        "maxBboxKm2": 25,
+        "maxFeatures": 10000,
+        "adapter": "arcgis",
+        "countryCode": "US",
+        "cityIds": [
+          "lansing"
+        ],
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "scope": "Ingham County Equalization 2025 assessment parcel polygons, including downtown Lansing.",
+        "caveats": "Assessment mapping; not a legal survey.",
+        "catalogueUrl": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1"
+      }
+    }
+  ]
+}

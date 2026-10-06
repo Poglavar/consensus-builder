@@ -1,0 +1,873 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "hartford",
+      "stateCode": "CT",
+      "sourceId": "us-ct-hartford-parcels",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6775,
+            41.7625,
+            -72.675,
+            41.765
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.675,
+            41.7625,
+            -72.6725,
+            41.765
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6725,
+            41.7625,
+            -72.67,
+            41.765
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6775,
+            41.765,
+            -72.675,
+            41.7675
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.675,
+            41.765,
+            -72.6725,
+            41.7675
+          ],
+          "count": 29,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 20,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 279,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8"
+      }
+    },
+    {
+      "city": "dover",
+      "stateCode": "DE",
+      "sourceId": "us-de-kent-dover-parcels",
+      "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.5275,
+            39.155,
+            -75.525,
+            39.1575
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.525,
+            39.155,
+            -75.52250000000001,
+            39.1575
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.52250000000001,
+            39.155,
+            -75.52000000000001,
+            39.1575
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.5275,
+            39.1575,
+            -75.525,
+            39.16
+          ],
+          "count": 86,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.525,
+            39.1575,
+            -75.52250000000001,
+            39.16
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.52250000000001,
+            39.1575,
+            -75.52000000000001,
+            39.16
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.5275,
+            39.16,
+            -75.525,
+            39.1625
+          ],
+          "count": 76,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.525,
+            39.16,
+            -75.52250000000001,
+            39.1625
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.52250000000001,
+            39.16,
+            -75.52000000000001,
+            39.1625
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.52000000000001,
+            39.155,
+            -75.51750000000001,
+            39.1575
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.51750000000001,
+            39.155,
+            -75.515,
+            39.1575
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.515,
+            39.155,
+            -75.5125,
+            39.1575
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.52000000000001,
+            39.1575,
+            -75.51750000000001,
+            39.16
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.51750000000001,
+            39.1575,
+            -75.515,
+            39.16
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.515,
+            39.1575,
+            -75.5125,
+            39.16
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.52000000000001,
+            39.16,
+            -75.51750000000001,
+            39.1625
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.51750000000001,
+            39.16,
+            -75.515,
+            39.1625
+          ],
+          "count": 53,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -75.515,
+            39.16,
+            -75.5125,
+            39.1625
+          ],
+          "count": 25,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -75.52250000000001,
+          39.1575,
+          -75.52000000000001,
+          39.16
+        ],
+        "forcedPageSize": 3,
+        "count": 10,
+        "returned": 10,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 441,
+      "exactResolved": 441,
+      "nativeIds": [
+        "2-05-07709-03-1500-00001",
+        "2-05-07709-03-3800-00001",
+        "2-05-07709-03-3000-00001"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-de-kent-dover-parcels",
+        "parcels": 1,
+        "siteM2": 2646.15
+      },
+      "requests": 85
+    },
+    {
+      "city": "atlanta",
+      "stateCode": "GA",
+      "sourceId": "us-ga-fulton-atlanta-parcels",
+      "endpoint": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.3925,
+            33.745000000000005,
+            -84.39,
+            33.7475
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.39,
+            33.745000000000005,
+            -84.3875,
+            33.7475
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.3875,
+            33.745000000000005,
+            -84.385,
+            33.7475
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.3925,
+            33.7475,
+            -84.39,
+            33.75
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.39,
+            33.7475,
+            -84.3875,
+            33.75
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.3875,
+            33.7475,
+            -84.385,
+            33.75
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.3925,
+            33.75,
+            -84.39,
+            33.752500000000005
+          ],
+          "count": 84,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.39,
+            33.75,
+            -84.3875,
+            33.752500000000005
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.3875,
+            33.75,
+            -84.385,
+            33.752500000000005
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.385,
+            33.745000000000005,
+            -84.38250000000001,
+            33.7475
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.38250000000001,
+            33.745000000000005,
+            -84.38,
+            33.7475
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.38,
+            33.745000000000005,
+            -84.3775,
+            33.7475
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.385,
+            33.7475,
+            -84.38250000000001,
+            33.75
+          ],
+          "count": 13,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned a missing or invalid native parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 42,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 198,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    },
+    {
+      "city": "honolulu",
+      "stateCode": "HI",
+      "sourceId": "us-hi-honolulu-parcels",
+      "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.8625,
+            21.305,
+            -157.86,
+            21.3075
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.86,
+            21.305,
+            -157.85750000000002,
+            21.3075
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85750000000002,
+            21.305,
+            -157.85500000000002,
+            21.3075
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.8625,
+            21.3075,
+            -157.86,
+            21.310000000000002
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.86,
+            21.3075,
+            -157.85750000000002,
+            21.310000000000002
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85750000000002,
+            21.3075,
+            -157.85500000000002,
+            21.310000000000002
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.8625,
+            21.310000000000002,
+            -157.86,
+            21.3125
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.86,
+            21.310000000000002,
+            -157.85750000000002,
+            21.3125
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85750000000002,
+            21.310000000000002,
+            -157.85500000000002,
+            21.3125
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85500000000002,
+            21.305,
+            -157.85250000000002,
+            21.3075
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85250000000002,
+            21.305,
+            -157.85000000000002,
+            21.3075
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85000000000002,
+            21.305,
+            -157.84750000000003,
+            21.3075
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85500000000002,
+            21.3075,
+            -157.85250000000002,
+            21.310000000000002
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85250000000002,
+            21.3075,
+            -157.85000000000002,
+            21.310000000000002
+          ],
+          "count": 48,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85000000000002,
+            21.3075,
+            -157.84750000000003,
+            21.310000000000002
+          ],
+          "count": 67,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85500000000002,
+            21.310000000000002,
+            -157.85250000000002,
+            21.3125
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85250000000002,
+            21.310000000000002,
+            -157.85000000000002,
+            21.3125
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -157.85000000000002,
+            21.310000000000002,
+            -157.84750000000003,
+            21.3125
+          ],
+          "count": 7,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -157.85000000000002,
+          21.310000000000002,
+          -157.84750000000003,
+          21.3125
+        ],
+        "forcedPageSize": 3,
+        "count": 7,
+        "returned": 7,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 484,
+      "exactResolved": 484,
+      "nativeIds": [
+        "121017020",
+        "121011009",
+        "121025002"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-hi-honolulu-parcels",
+        "parcels": 1,
+        "siteM2": 3646.59
+      },
+      "requests": 87
+    },
+    {
+      "city": "boise",
+      "stateCode": "ID",
+      "sourceId": "us-id-ada-boise-parcels",
+      "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.205,
+            43.612500000000004,
+            -116.2025,
+            43.615
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.2025,
+            43.612500000000004,
+            -116.2,
+            43.615
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.2,
+            43.612500000000004,
+            -116.1975,
+            43.615
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.205,
+            43.615,
+            -116.2025,
+            43.6175
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.2025,
+            43.615,
+            -116.2,
+            43.6175
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.2,
+            43.615,
+            -116.1975,
+            43.6175
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.205,
+            43.6175,
+            -116.2025,
+            43.620000000000005
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.2025,
+            43.6175,
+            -116.2,
+            43.620000000000005
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.2,
+            43.6175,
+            -116.1975,
+            43.620000000000005
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.1975,
+            43.612500000000004,
+            -116.19500000000001,
+            43.615
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.19500000000001,
+            43.612500000000004,
+            -116.1925,
+            43.615
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -116.1925,
+            43.612500000000004,
+            -116.19,
+            43.615
+          ],
+          "count": 11,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 39,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 304,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8"
+      }
+    }
+  ]
+}

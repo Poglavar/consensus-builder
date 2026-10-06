@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "albany",
+      "stateCode": "NY",
+      "sourceId": "us-ny-albany-parcels",
+      "endpoint": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.76,
+            42.650000000000006,
+            -73.75750000000001,
+            42.6525
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75750000000001,
+            42.650000000000006,
+            -73.75500000000001,
+            42.6525
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75500000000001,
+            42.650000000000006,
+            -73.75250000000001,
+            42.6525
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.76,
+            42.6525,
+            -73.75750000000001,
+            42.655
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75750000000001,
+            42.6525,
+            -73.75500000000001,
+            42.655
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75500000000001,
+            42.6525,
+            -73.75250000000001,
+            42.655
+          ],
+          "count": 85,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.76,
+            42.655,
+            -73.75750000000001,
+            42.657500000000006
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75750000000001,
+            42.655,
+            -73.75500000000001,
+            42.657500000000006
+          ],
+          "count": 135,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75500000000001,
+            42.655,
+            -73.75250000000001,
+            42.657500000000006
+          ],
+          "count": 157,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75250000000001,
+            42.650000000000006,
+            -73.75000000000001,
+            42.6525
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75000000000001,
+            42.650000000000006,
+            -73.7475,
+            42.6525
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.7475,
+            42.650000000000006,
+            -73.745,
+            42.6525
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75250000000001,
+            42.6525,
+            -73.75000000000001,
+            42.655
+          ],
+          "count": 94,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75000000000001,
+            42.6525,
+            -73.7475,
+            42.655
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.7475,
+            42.6525,
+            -73.745,
+            42.655
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75250000000001,
+            42.655,
+            -73.75000000000001,
+            42.657500000000006
+          ],
+          "count": 145,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75000000000001,
+            42.655,
+            -73.7475,
+            42.657500000000006
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.7475,
+            42.655,
+            -73.745,
+            42.657500000000006
+          ],
+          "count": 19,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -73.76,
+          42.650000000000006,
+          -73.75750000000001,
+          42.6525
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 767,
+      "exactResolved": 767,
+      "nativeIds": [
+        "01010007600700010010000000",
+        "01010007600700010020020000",
+        "01010007600700010020010000"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ny-albany-parcels",
+        "parcels": 1,
+        "siteM2": 41202.43
+      },
+      "requests": 33,
+      "proposedDescriptor": {
+        "endpoint": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1",
+        "adapter": "arcgis",
+        "name": "NYS Tax Parcels Public (2024, published May 2026)",
+        "operator": "New York State Office of Information Technology Services, Geospatial Services; contributing counties",
+        "idField": "SWIS_SBL_ID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "SWIS_SBL_ID",
+          "COUNTY_NAME"
+        ],
+        "parcelNumberField": "SWIS_SBL_ID",
+        "metricSrid": 32618,
+        "attributeFilters": {
+          "COUNTY_NAME": "Albany"
+        },
+        "id": "us-ny-albany-parcels",
+        "idPrefix": "US-NY-ALBANY-",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "stateCode": "NY",
+        "countryCode": "US",
+        "catalogueUrl": "https://gis.ny.gov/parcel-polygon-metadata",
+        "scope": "Albany County subset of the NYS public 2024 tax parcel compilation.",
+        "caveats": [
+          "2024 assessment data published May 2026; not a current survey."
+        ],
+        "cityIds": [
+          "albany"
+        ],
+        "evidenceFile": "research/us-capitals-batch-four-albany-live-2026-10-06.json"
+      },
+      "sourceDataDate": "2024",
+      "sourcePublicationDate": "2026-05",
+      "metadataEvidenceFile": "research/us-capitals-batch-four-albany-metadata-2026-10-06.json"
+    }
+  ]
+}

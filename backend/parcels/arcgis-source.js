@@ -1,6 +1,7 @@
 // Adapts a fixed ArcGIS parcel layer to complete, canonical WGS84 parcel collections.
-import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
+import { bbox as geometryBbox, booleanIntersects, feature as geoFeature, union as polygonUnion } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
+import proj4 from 'proj4';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 export { validateBounds } from './source-contract.js';
 
@@ -20,7 +21,16 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || (descriptor.idQueryBraces !== undefined && typeof descriptor.idQueryBraces !== 'boolean')
         || (idQueryBraces && idType !== 'string')
         || ![undefined, 'offset', 'object-ids'].includes(descriptor.boundsQueryMode)
+        || ![undefined, 'offset', 'object-ids'].includes(descriptor.idsQueryMode)
+        || ![undefined, 'parts'].includes(descriptor.nativeGeometryMode)
+        || (descriptor.nativeGeometryMode === 'parts' && (descriptor.boundsQueryMode !== 'object-ids' || descriptor.idsQueryMode !== 'object-ids'))
+        || (descriptor.partsCoordinatePrecision !== undefined && (descriptor.nativeGeometryMode !== 'parts'
+            || !Number.isInteger(descriptor.partsCoordinatePrecision) || descriptor.partsCoordinatePrecision < 7 || descriptor.partsCoordinatePrecision > 12))
+        || (descriptor.boundsSrid !== undefined && (!Number.isInteger(descriptor.boundsSrid) || descriptor.boundsSrid <= 0
+            || typeof descriptor.boundsProjection !== 'string' || !descriptor.boundsProjection.length))
+        || (descriptor.boundsProjection !== undefined && descriptor.boundsSrid === undefined)
         || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid ArcGIS parcel source descriptor.');
+    const boundsProjection = descriptor.boundsSrid === undefined ? null : proj4('EPSG:4326', descriptor.boundsProjection);
 
     function validNativeId(value) {
         const text = String(value ?? '');
@@ -33,6 +43,21 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     // Fixed catalogue filters keep planned/versioned records out of authoritative ground.
     const attributeFilter = createParcelAttributeFilter(descriptor);
     const baseWhere = attributeFilter.where || '1=1';
+
+    function retainParcel(byId, canonical) {
+        const previous = byId.get(canonical.id);
+        if (!previous) { byId.set(canonical.id, canonical); return; }
+        if (JSON.stringify(previous.geometry) !== JSON.stringify(canonical.geometry)) {
+            if (descriptor.nativeGeometryMode !== 'parts') throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
+            try {
+                const merged = polygonUnion(geoFeature(previous.geometry), geoFeature(canonical.geometry));
+                if (!merged || !validateGeometry(merged.geometry)) throw new Error('Invalid parcel union.');
+                previous.geometry = merged.geometry;
+            } catch (cause) { throw Object.assign(upstreamError('Parcel provider components could not form a valid complete parcel.'), { cause }); }
+        }
+        if (descriptor.nativeGeometryMode === 'parts') previous.properties.sourcePartCount += canonical.properties.sourcePartCount;
+        else byId.set(canonical.id, canonical);
+    }
 
     async function request(search) {
         const signal = AbortSignal.timeout(15000);
@@ -51,7 +76,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         } catch (error) {
             if (signal.aborted || error.name === 'TimeoutError' || error.name === 'AbortError') throw upstreamError('Parcel provider timed out.', 504);
             if (error.status) throw error;
-            throw upstreamError('Parcel provider is unavailable.');
+            throw Object.assign(upstreamError('Parcel provider is unavailable.'), { cause: error });
         }
         if (payload.error) throw providerHttpError(payload.error.code);
         return payload;
@@ -71,7 +96,9 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             if (attributeFilter.where && params.where) search.set('where', `(${baseWhere}) AND (${params.where})`);
             const payload = await request(search);
             if (payload.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstreamError('Parcel provider returned an invalid FeatureCollection.');
-            const page = payload.features;
+            const page = descriptor.nativeGeometryMode === 'parts'
+                ? [...payload.features].sort((a, b) => Number(a.properties?.[objectIdField]) - Number(b.properties?.[objectIdField]))
+                : payload.features;
             if (offset + page.length > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
             for (const feature of page) {
                 const props = feature.properties || {};
@@ -87,13 +114,18 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                     throw upstreamError('Parcel provider pagination repeated or omitted an object ID.');
                 }
                 seenObjects.add(String(objectId));
-                const parcelId = `${idPrefix}${nativeId}`;
                 const canonical = canonicalParcelFeature(descriptor, feature, nativeId);
-                const previous = byId.get(parcelId);
-                if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(canonical.geometry)) {
-                    throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
+                if (descriptor.partsCoordinatePrecision !== undefined) {
+                    const factor = 10 ** descriptor.partsCoordinatePrecision;
+                    const round = value => Array.isArray(value) ? value.map(round) : Math.round(value * factor) / factor;
+                    canonical.geometry = { ...canonical.geometry, coordinates: round(canonical.geometry.coordinates) };
+                    const rings = canonical.geometry.type === 'Polygon' ? canonical.geometry.coordinates : canonical.geometry.coordinates.flat();
+                    if (!validateGeometry(canonical.geometry) || rings.some(ring => new Set(ring.slice(0, -1).map(point => point.join(','))).size < 3)) {
+                        throw upstreamError('Parcel component precision conversion produced invalid geometry.');
+                    }
                 }
-                byId.set(parcelId, canonical);
+                if (descriptor.nativeGeometryMode === 'parts') canonical.properties.sourcePartCount = 1;
+                retainParcel(byId, canonical);
             }
             // Some ArcGIS GeoJSON services omit the flag even for a truncated full page.
             const limitFlag = payload.exceededTransferLimit ?? payload.properties?.exceededTransferLimit;
@@ -108,17 +140,42 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             if (!page.length || offset + page.length >= maxFeatures) throw upstreamError('Parcel provider returned incomplete pagination.');
             offset += page.length;
         }
-        return { type: 'FeatureCollection', features: [...byId.values()], complete: true, sourceId: id, returnsWGS84: true };
+        return { type: 'FeatureCollection', features: [...byId.values()], complete: true, sourceId: id, returnsWGS84: true,
+            ...(descriptor.nativeGeometryMode === 'parts' ? { sourceRows: seenObjects.size } : {}) };
     }
 
     async function queryBounds(bbox) {
         validateBounds(bbox, maxBboxKm2);
-        const spatial = { geometry: bbox.join(','), geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects' };
+        // Some providers disagree on count and OID manifests when reprojecting envelopes.
+        // Project every corner locally; opposite corners alone can clip a rotated envelope.
+        const corners = boundsProjection ? [[bbox[0], bbox[1]], [bbox[0], bbox[3]], [bbox[2], bbox[1]], [bbox[2], bbox[3]]]
+            .map(point => boundsProjection.forward(point)) : null;
+        if (corners?.some(point => point.some(value => !Number.isFinite(value)))) throw new Error('Invalid projected parcel bounds.');
+        const projected = corners ? [Math.min(...corners.map(p => p[0])), Math.min(...corners.map(p => p[1])),
+            Math.max(...corners.map(p => p[0])), Math.max(...corners.map(p => p[1]))] : bbox;
+        const spatial = { geometry: projected.join(','), geometryType: 'esriGeometryEnvelope', inSR: String(descriptor.boundsSrid || 4326), spatialRel: 'esriSpatialRelIntersects' };
         if (descriptor.boundsQueryMode !== 'object-ids') return query(spatial);
+        const result = await queryObjectIds(spatial);
+        if (descriptor.nativeGeometryMode !== 'parts' || !result.features.length) return result;
+        // A viewport can hit only one component. Fetch every component of each observed native
+        // parcel before publishing it, so panning never changes the geometry of a retained ID.
+        const features = [], ids = result.features.map(feature => feature.id);
+        let sourceRows = 0;
+        for (let start = 0; start < ids.length; start += 80) {
+            const exact = await queryIds(ids.slice(start, start + 80));
+            if (exact.absentIds.length) throw upstreamError('Parcel provider changed between viewport and complete component reads.');
+            sourceRows += exact.sourceRows;
+            if (sourceRows > maxFeatures) throw upstreamError('Complete parcel components exceed the parcel limit; use a smaller area.');
+            features.push(...exact.features);
+        }
+        return { ...result, features, sourceRows, viewportSourceRows: result.sourceRows };
+    }
 
-        // Some layers time out on spatial geometry reads. Resolve bounded OIDs first,
-        // then retrieve exact batches; OIDs are transport tokens, never canonical IDs.
-        const base = { where: baseWhere, ...spatial, f: 'json' };
+    // Resolve complete OID manifests for spatial or native-key queries on older/slow layers.
+    // OIDs are transport tokens, never canonical IDs.
+    async function queryObjectIds(params) {
+        const base = { where: baseWhere, ...params, f: 'json' };
+        if (attributeFilter.where && params.where) base.where = `(${baseWhere}) AND (${params.where})`;
         const countResult = await request(new URLSearchParams({ ...base, returnCountOnly: 'true' }));
         if (!Number.isSafeInteger(countResult.count) || countResult.count < 0) throw upstreamError('Parcel provider returned an invalid count.');
         if (countResult.count > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
@@ -133,18 +190,14 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             throw upstreamError('Parcel provider returned an incomplete or invalid object-ID list.');
         }
         const byId = new Map();
+        if (descriptor.nativeGeometryMode === 'parts') objects.sort((a, b) => a - b);
         for (let start = 0; start < objects.length; start += pageSize) {
             const batch = objects.slice(start, start + pageSize);
             const page = await query({ objectIds: batch.join(',') }, new Set(batch.map(String)));
-            for (const feature of page.features) {
-                const previous = byId.get(feature.id);
-                if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(feature.geometry)) {
-                    throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
-                }
-                byId.set(feature.id, feature);
-            }
+            for (const feature of page.features) retainParcel(byId, feature);
         }
-        return { type: 'FeatureCollection', features: [...byId.values()], complete: true, sourceId: id, returnsWGS84: true };
+        return { type: 'FeatureCollection', features: [...byId.values()], complete: true, sourceId: id, returnsWGS84: true,
+            ...(descriptor.nativeGeometryMode === 'parts' ? { sourceRows: objects.length } : {}) };
     }
 
     async function queryIds(ids) {
@@ -160,7 +213,9 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const queryValue = idQueryBraces ? `{${tail}}` : tail;
             return idType === 'string' ? `'${queryValue.replaceAll("'", "''")}'` : tail;
         });
-        const result = await query({ where: `${idField} IN (${native.join(',')})` });
+        const params = { where: `${idField} IN (${native.join(',')})` };
+        // Older ArcGIS servers support native-key filters and OID reads but reject offsets/order.
+        const result = descriptor.idsQueryMode === 'object-ids' ? await queryObjectIds(params) : await query(params);
         if (result.features.some(feature => !unique.includes(feature.properties.parcelId))) throw upstreamError('Parcel ID query returned unexpected parcels.');
         const present = new Set(result.features.map(feature => feature.properties.parcelId));
         return { ...result, absentIds: unique.filter(value => !present.has(value)) };

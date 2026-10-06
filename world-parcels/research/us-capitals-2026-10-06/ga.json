@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "GA",
+  "state": "Georgia",
+  "capital": "Atlanta",
+  "centerLatLon": [
+    33.749,
+    -84.388
+  ],
+  "query": {
+    "language": "English",
+    "text": "Georgia official Atlanta GIS parcel layers Fulton County parcels"
+  },
+  "references": [
+    {
+      "url": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11?f=pjson",
+      "observation": "Fulton County Property Map Viewer tax parcel layer metadata."
+    },
+    {
+      "url": "https://www.atlantaga.gov/government/departments/city-planning/maps-and-gis",
+      "observation": "Official City of Atlanta GIS page links property and parcel mapping."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Georgia%20official%20Atlanta%20GIS%20parcel%20layers%20Fulton%20County%20parcels",
+      "observation": "English official-source search for Atlanta/Fulton parcels."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Fulton County property viewer contains polygon Tax Parcel layer 11."
+    },
+    {
+      "url": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11/query?where=1%3D1&geometry=-84.38865%2C33.7485125%2C-84.38735%2C33.7494875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=ParcelID&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Capital bbox returned 3 polygons; native ParcelID string and geometry only; IDs unique, rings closed and finite."
+    },
+    {
+      "url": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11/query?where=ParcelID%3D%2714+007700110279%27&outFields=ParcelID&returnGeometry=true&outSR=4326&f=json&resultRecordCount=4",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Exact native ParcelID returned one geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+    "adapter": "arcgis",
+    "name": "Fulton County Property Map Viewer Tax Parcel",
+    "operator": "Fulton County GIS",
+    "idField": "ParcelID",
+    "objectIdField": null,
+    "idType": "esriFieldTypeString",
+    "idPattern": "Padded native text key retained verbatim, including spaces.",
+    "outFields": [
+      "ParcelID"
+    ],
+    "parcelNumberField": "ParcelID",
+    "metricSrid": 2240,
+    "proposedIdPrefix": "us-ga-fulton"
+  },
+  "verification": {
+    "bbox": [
+      -84.38865,
+      33.7485125,
+      -84.38735,
+      33.7494875
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "14 007700110279",
+      "14 005200080273",
+      "14 007700110014"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "County parcel layer, not statewide. Previous DeKalb-only test was outside this Atlanta capital bbox; no statewide coverage implied.",
+  "priorResearchFile": "research/subnational/US/GA.json"
+}

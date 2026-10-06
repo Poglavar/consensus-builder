@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "NV",
+  "state": "Nevada",
+  "capital": "Carson City",
+  "centerLatLon": [
+    39.1638,
+    -119.7674
+  ],
+  "query": {
+    "language": "English",
+    "text": "Carson City Nevada official GIS parcel ArcGIS MapServer Parcels Carson City Open Data"
+  },
+  "references": [
+    "https://www.carsoncity.gov/Home/Components/ServiceDirectory/ServiceDirectory/168/7246",
+    "https://portal.carson.org/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36"
+  ],
+  "attempts": [
+    {
+      "url": "https://portal.carson.org/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "curl could not resolve portal.carson.org; official indexed ArcGIS layer metadata identifies polygon Parcels and native APN."
+    },
+    {
+      "url": "https://portal.carsoncity.gov/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "20-second timeout on current City GIS host alias."
+    },
+    {
+      "url": "https://arcgis.water.nv.gov/arcgis/rest/services/NDSL/Facilities_Map_V2/MapServer/63/query?where=1%3D1&geometry=260811%2C4338493%2C260988%2C4338621&geometryType=esriGeometryEnvelope&inSR=26911&spatialRel=esriSpatialRelIntersects&outFields=APN%2CCounty&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "State parcel map layer responded but Carson City bbox produced zero features; layer extent covers a different portion of Nevada, so not capital verification."
+    }
+  ],
+  "source": {
+    "endpoint": "https://portal.carson.org/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36",
+    "adapter": "arcgis",
+    "name": "Parcels",
+    "operator": "Carson City GIS Department and Carson City Assessor's Office",
+    "idField": "APN",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "13-character assessor parcel number string",
+    "outFields": "APN"
+  },
+  "verification": {
+    "bbox": [
+      -119.7684,
+      39.1628,
+      -119.7664,
+      39.164
+    ],
+    "count": 0,
+    "nativeIDs": [],
+    "exactCount": 0,
+    "geometryvalid": null,
+    "capitalLocation": false
+  },
+  "status": "temporarily_unavailable",
+  "nextStep": "Retry the official City GIS Maps endpoint or discover a current public service URL; then query only the Carson City bbox and exact-read one APN."
+}

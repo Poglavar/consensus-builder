@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "KS",
+  "state": "Kansas",
+  "capital": "Topeka",
+  "centerLatLon": [
+    39.0473,
+    -95.6752
+  ],
+  "query": {
+    "language": "English",
+    "text": "official Kansas Topeka Shawnee County GIS parcel data GIS parcels"
+  },
+  "references": [
+    {
+      "url": "https://www.cityofdover.gov/geographic-information-systems-gis-210322",
+      "observation": "Not used; irrelevant to Kansas."
+    },
+    {
+      "url": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0?f=pjson",
+      "observation": "Official City of Topeka FeatureServer layer Tax Parcel, polygon geometry, native fields PARCELNUM/PIN/PID/QuickRefID; OBJECTID is system object key."
+    },
+    {
+      "url": "https://snco.gov/ap/mapping.php",
+      "observation": "Official Shawnee County Appraiser GIS page documents current property mapping and about 75,000 parcels."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=official%20Kansas%20Topeka%20Shawnee%20County%20GIS%20parcel%20data%20GIS%20parcels",
+      "observation": "English search for official Topeka/Shawnee GIS parcel services."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "Official polygon layer metadata obtained through web; native parcel-number fields present, but a specific native key has not yet passed bbox uniqueness testing."
+    },
+    {
+      "url": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0/query?where=1%3D1%26geometry=-95.67585%2C39.0468125%2C-95.67455%2C39.0477875%26geometryType=esriGeometryEnvelope%26inSR=4326%26spatialRel=esriSpatialRelIntersects%26outFields=PIN%26returnGeometry=true%26outSR=4326%26resultRecordCount=4%26f=json",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Local HTTPS request failed certificate verification before any feature request; do not bypass TLS. Web metadata remains a lead."
+    }
+  ],
+  "source": {
+    "endpoint": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Topeka Parcels and Subdivisions \u2014 Tax Parcel",
+    "operator": "City of Topeka GIS",
+    "idField": "PIN",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Native PIN text field declared in metadata; values and unique property not sampled.",
+    "outFields": [
+      "PIN"
+    ],
+    "parcelNumberField": "PIN",
+    "metricSrid": 3419,
+    "proposedIdPrefix": "us-ks-shawnee"
+  },
+  "verification": {
+    "bbox": [
+      -95.67585,
+      39.0468125,
+      -95.67455,
+      39.0477875
+    ],
+    "count": null,
+    "nativeIDs": [],
+    "exactCount": null,
+    "geometryvalid": null,
+    "capitallocation": null
+  },
+  "geometryFound": null,
+  "runtimeReadiness": "blocked",
+  "status": "temporarily_unavailable",
+  "limitations": "Official Topeka layer and county parcel mapping are documented. Capital feature query and native key remain unverified because this network rejected the HTTPS certificate; TLS verification was kept enabled. Prior Douglas County sample is outside Topeka.",
+  "priorResearchFile": "research/subnational/US/KS.json"
+}

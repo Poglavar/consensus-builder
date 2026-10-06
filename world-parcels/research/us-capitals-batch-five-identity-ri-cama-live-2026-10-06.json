@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "providence",
+      "stateCode": "RI",
+      "sourceId": "us-ri-providence-parcels",
+      "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.4175,
+            41.82,
+            -71.415,
+            41.8225
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.415,
+            41.82,
+            -71.41250000000001,
+            41.8225
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.41250000000001,
+            41.82,
+            -71.41000000000001,
+            41.8225
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.4175,
+            41.8225,
+            -71.415,
+            41.824999999999996
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.415,
+            41.8225,
+            -71.41250000000001,
+            41.824999999999996
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.41250000000001,
+            41.8225,
+            -71.41000000000001,
+            41.824999999999996
+          ],
+          "count": 57,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.4175,
+            41.824999999999996,
+            -71.415,
+            41.8275
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.415,
+            41.824999999999996,
+            -71.41250000000001,
+            41.8275
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.41250000000001,
+            41.824999999999996,
+            -71.41000000000001,
+            41.8275
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.41000000000001,
+            41.82,
+            -71.40750000000001,
+            41.8225
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.40750000000001,
+            41.82,
+            -71.405,
+            41.8225
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.405,
+            41.82,
+            -71.4025,
+            41.8225
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.41000000000001,
+            41.8225,
+            -71.40750000000001,
+            41.824999999999996
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.40750000000001,
+            41.8225,
+            -71.405,
+            41.824999999999996
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.405,
+            41.8225,
+            -71.4025,
+            41.824999999999996
+          ],
+          "count": 48,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.41000000000001,
+            41.824999999999996,
+            -71.40750000000001,
+            41.8275
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.40750000000001,
+            41.824999999999996,
+            -71.405,
+            41.8275
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.405,
+            41.824999999999996,
+            -71.4025,
+            41.8275
+          ],
+          "count": 26,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -71.4175,
+          41.824999999999996,
+          -71.415,
+          41.8275
+        ],
+        "forcedPageSize": 3,
+        "count": 7,
+        "returned": 7,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 463,
+      "exactResolved": 463,
+      "nativeIds": [
+        "240405",
+        "240406",
+        "240617"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ri-providence-parcels",
+        "parcels": 1,
+        "siteM2": 755.92
+      },
+      "requests": 149
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "LA",
+  "state": "Louisiana",
+  "capital": "Baton Rouge",
+  "centerLatLon": [
+    30.4515,
+    -91.1871
+  ],
+  "query": {
+    "language": "English",
+    "text": "Baton Rouge Louisiana official GIS parcel service Tax Parcels 2026"
+  },
+  "references": [
+    "https://www.brla.gov/1328/Maps-and-Location-Based-Data",
+    "https://services.arcgis.com/KYvXadMcgf0K1EzK/ArcGIS/rest/services/Tax_Parcels_2026/FeatureServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://services.arcgis.com/KYvXadMcgf0K1EzK/ArcGIS/rest/services/Tax_Parcels_2026/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live layer metadata reports polygon geometry and native identifier fields."
+    },
+    {
+      "url": "https://services.arcgis.com/KYvXadMcgf0K1EzK/ArcGIS/rest/services/Tax_Parcels_2026/FeatureServer/0/query?where=1%3D1&geometry=-91.1881%2C30.4505%2C-91.1861%2C30.4525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=ASSESSMENT_NUM&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Capital bbox sample, maximum 3 features, native parcel key and geometry only."
+    },
+    {
+      "url": "https://services.arcgis.com/KYvXadMcgf0K1EzK/ArcGIS/rest/services/Tax_Parcels_2026/FeatureServer/0/query?where=ASSESSMENT_NUM%3D%27001-0935-5%27&outFields=ASSESSMENT_NUM&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "One exact native parcel-key round trip."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services.arcgis.com/KYvXadMcgf0K1EzK/ArcGIS/rest/services/Tax_Parcels_2026/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Tax Parcel (Tax_Parcels_2026)",
+    "operator": "EBRGIS; East Baton Rouge Assessor's Office; Department of Information Services",
+    "idField": "ASSESSMENT_NUM",
+    "objectIdField": "ID",
+    "idType": "string",
+    "idPattern": "assessment-number string with leading zeros and hyphens preserved",
+    "outFields": "ASSESSMENT_NUM",
+    "parcelNumberField": "ASSESSMENT_NUM",
+    "metricSrid": 3452
+  },
+  "verification": {
+    "bbox": [
+      -91.1881,
+      30.4505,
+      -91.1861,
+      30.4525
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "001-0935-5",
+      "001-1154-6",
+      "000-1514-8"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

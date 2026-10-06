@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "NH",
+  "state": "New Hampshire",
+  "capital": "Concord",
+  "centerLatLon": [
+    43.2081,
+    -71.5376
+  ],
+  "query": {
+    "language": "English",
+    "text": "New Hampshire GRANIT statewide parcels FeatureServer Concord NH parcel GIS"
+  },
+  "references": [
+    "https://www.concordnh.gov/436/GIS",
+    "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live polygon layer metadata; nh_gis_id and town fields identified."
+    },
+    {
+      "url": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0/query?where=town%3D%27Concord%27&geometry=-71.5386%2C43.2071%2C-71.5366%2C43.2091&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=nh_gis_id&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Small capital bbox sample, maximum three IDs and polygons; native town namespace filter used."
+    },
+    {
+      "url": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0/query?where=nh_gis_id%3D%2707046-3015%27&outFields=nh_gis_id&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-key query returned one polygon with that key."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "NH Parcels",
+    "operator": "New Hampshire GRANIT / NH Department of Environmental Services",
+    "idField": "nh_gis_id",
+    "objectIdField": "objectid",
+    "idType": "string",
+    "idPattern": "native town-map-lot identifier, e.g. 07046-3015; leading zero preserved",
+    "outFields": "nh_gis_id",
+    "metricSrid": 3857,
+    "attributeFilters": {
+      "town": "Concord"
+    }
+  },
+  "verification": {
+    "bbox": [
+      -71.5386,
+      43.2071,
+      -71.5366,
+      43.2091
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "07046-3015",
+      "07046-3019",
+      "07046-3020"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

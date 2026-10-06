@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Bounded official leads, metadata and request outcomes only; no geometry or owner data retained.",
+  "sources": [
+    {
+      "city": "jackson",
+      "endpoint": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11",
+      "status": "tls-trust-unresolved",
+      "nodeCause": "unable to verify the first certificate",
+      "curl": {
+        "httpStatus": 200,
+        "certificateVerification": "default, no -k"
+      },
+      "attempts": [
+        "Node native fetch",
+        "Node --use-system-ca",
+        "Plain curl HTTPS metadata HEAD"
+      ],
+      "alternativeSearch": "ArcGIS published Jackson feature-layer search returned no matching CMPDD parcel alternative."
+    },
+    {
+      "city": "jefferson_city",
+      "status": "official-host-alternates-found",
+      "attempts": [
+        {
+          "url": "https://www.midmogis.org/server/rest/services/ColeCO/Assessor/MapServer/18",
+          "result": "escalated connection timeout"
+        },
+        {
+          "url": "https://www.midmogis.org/GIS_Hyperlinks/Downloadables/CC_Parcels.zip",
+          "result": "escalated connection timeout; archive schema not obtained"
+        },
+        {
+          "url": "https://www.midmogis.org/server/rest/services/ColeCO/Public_Parcel/MapServer/0",
+          "result": "escalated connection timeout"
+        }
+      ],
+      "acceptedAlternate": "JCMO_ADMIN hosted JCBaseMap FeatureServer/15"
+    },
+    {
+      "city": "lincoln",
+      "status": "official-host-alternate-found",
+      "attempts": [
+        {
+          "url": "https://gis.lincoln.ne.gov/public/rest/services/Assessor/TaxParcels/MapServer/0",
+          "result": "escalated connection timeout"
+        }
+      ],
+      "acceptedAlternate": "CountyCityPub hosted TaxParcels FeatureServer/0"
+    },
+    {
+      "city": "carson_city",
+      "status": "provider-count-disagreement",
+      "attempts": [
+        {
+          "url": "https://portal.carsoncity.gov/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36",
+          "result": "escalated connection timeout"
+        },
+        {
+          "url": "https://portal.carson.org/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36",
+          "result": "no JSON response obtained"
+        }
+      ],
+      "alternate": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0",
+      "diagnosis": {
+        "bbox": [
+          -119.765,
+          39.160000000000004,
+          -119.7625,
+          39.1625
+        ],
+        "nativeFilter": "County = 'Carson City'",
+        "providerCount": 5,
+        "manifestObjects": 6,
+        "geometryRows": 6,
+        "sourceDate": "2026-01-01",
+        "assessment": "Provider count disagrees with IDs and geometry on same spatial and attribute query. Do not weaken count acceptance."
+      }
+    }
+  ]
+}

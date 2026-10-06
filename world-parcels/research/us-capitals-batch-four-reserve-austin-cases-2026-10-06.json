@@ -1,0 +1,42 @@
+[
+  {
+    "city": "austin",
+    "center": [
+      30.2672,
+      -97.7431
+    ],
+    "sourceNote": "City of Austin official TCAD parcel layer; Travis County capital-area scope.",
+    "descriptor": {
+      "id": "us-tx-austin-parcels",
+      "countryCode": "US",
+      "stateCode": "TX",
+      "cityIds": [
+        "austin"
+      ],
+      "adapter": "arcgis",
+      "endpoint": "https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0",
+      "name": "City of Austin TCAD Parcels",
+      "operator": "City of Austin / Travis Central Appraisal District",
+      "scope": "Travis County TCAD parcels hosted by the City of Austin; bounded capital-area acceptance only.",
+      "idField": "PID_10",
+      "objectIdField": "OBJECTID_1",
+      "idType": "string",
+      "idPattern": ".+",
+      "idPrefix": "US-TX-TRAVIS-",
+      "outFields": [
+        "PID_10",
+        "OBJECTID_1"
+      ],
+      "parcelNumberField": "PID_10",
+      "metricSrid": 32614,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0",
+      "caveats": [
+        "City and county coverage beyond sampled cells is untested."
+      ]
+    }
+  }
+]

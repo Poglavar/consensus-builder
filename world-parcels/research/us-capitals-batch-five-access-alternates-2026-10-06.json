@@ -1,0 +1,104 @@
+{
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "stateCode": "KS",
+      "city": "topeka",
+      "endpoint": "https://gis.sncoapps.us/arcgis2/rest/services/Parcels/MapServer/0",
+      "status": "metadata",
+      "metadata": {
+        "name": "Parcels",
+        "geometryType": "esriGeometryPolygon",
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID"
+          },
+          {
+            "name": "PARCELNUM",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PIN",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "PID",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "name": "TAXUNIT",
+            "type": "esriFieldTypeString"
+          }
+        ]
+      },
+      "keyAssessment": {
+        "PIN": {
+          "rows": 149,
+          "missing": 0,
+          "unique": 149,
+          "samples": [
+            "1093104018007000",
+            "1093104018009000",
+            "1093104017002000"
+          ]
+        },
+        "PID": {
+          "rows": 149,
+          "missing": 0,
+          "unique": 149,
+          "samples": [
+            "1093104018007000",
+            "1093104018009000",
+            "1093104017002000"
+          ]
+        },
+        "PARCELNUM": {
+          "rows": 149,
+          "missing": 0,
+          "unique": 56,
+          "samples": [
+            "7",
+            "9",
+            "2"
+          ]
+        },
+        "QUICKREFID": {
+          "rows": 149,
+          "missing": 0,
+          "unique": 149,
+          "samples": [
+            "R26511",
+            "R26513",
+            "R26505"
+          ]
+        }
+      }
+    },
+    {
+      "stateCode": "FL",
+      "city": "tallahassee",
+      "endpoint": "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/EXLU_2025_WM/FeatureServer/0",
+      "status": "metadata",
+      "metadata": {
+        "name": null,
+        "geometryType": null,
+        "fields": []
+      }
+    },
+    {
+      "stateCode": "OK",
+      "city": "oklahoma_city",
+      "endpoint": "https://gis.okc.gov/arcgis/rest/services/Public/Data_OKC_Gov_Application_Service/MapServer/3",
+      "status": "failed",
+      "assessment": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "stateCode": "FL",
+      "city": "tallahassee",
+      "endpoint": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParcel_D_WM/MapServer/0",
+      "status": "failed",
+      "assessment": "HTTP Error 403: Forbidden"
+    }
+  ]
+}

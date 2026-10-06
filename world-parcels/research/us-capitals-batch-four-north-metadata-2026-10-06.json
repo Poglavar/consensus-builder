@@ -1,0 +1,1651 @@
+{
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "city": "raleigh",
+      "httpStatus": 200,
+      "name": "Parcels (polys)",
+      "description": "NOTE: To download parcels by county DO NOT use the map. Instead, click the Download button and then click \"Download parcels by county or all counties at once.\"This digital geospatial dataset represents parcel boundaries with standard core attributes for a collection of parcel data from North Carolina county data producers and the Eastern Band of Cherokee Indians. The Integrated Cadastral Data Exchange project transformed source datasets from county data producers to create a standardized dataset with consistent attributes (fields). The individual standardized county datasets were aggregated into a single dataset. The aggregated parcel dataset includes all 100 counties in North Carolina plus lands of the Eastern Band of Cherokee Indians. The source geometry is retained as published by individual county data producers. This dataset includes attributes such as ownership, area in acres, assessed value, and other core cadastral attributes. Web services have both polygons (parcel boundaries) and points representing each property, placed at or near the geometric center, with the same set of attributes.See the NC OneMap parcels page for much more information.",
+      "geometryType": "esriGeometryPolygon",
+      "maxRecordCount": 5000,
+      "spatialReference": {
+        "wkid": 102719,
+        "latestWkid": 2264,
+        "xyTolerance": 0.003280833333333333,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -121841900,
+        "falseY": -93659000,
+        "xyUnits": 36365718.124241434,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      },
+      "fields": [
+        {
+          "name": "objectid",
+          "type": "esriFieldTypeOID",
+          "alias": "OBJECTID"
+        },
+        {
+          "name": "parno",
+          "type": "esriFieldTypeString",
+          "alias": "Parcel Number"
+        },
+        {
+          "name": "altparno",
+          "type": "esriFieldTypeString",
+          "alias": "Alternate Parcel Number"
+        },
+        {
+          "name": "ownname",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Name"
+        },
+        {
+          "name": "improvval",
+          "type": "esriFieldTypeDouble",
+          "alias": "Improved Value\n"
+        },
+        {
+          "name": "landval",
+          "type": "esriFieldTypeDouble",
+          "alias": "Land Value\n"
+        },
+        {
+          "name": "parval",
+          "type": "esriFieldTypeDouble",
+          "alias": "Parcel Value\n"
+        },
+        {
+          "name": "mailadd",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address"
+        },
+        {
+          "name": "munit",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address Unit Number"
+        },
+        {
+          "name": "mcity",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address City"
+        },
+        {
+          "name": "mstate",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address State"
+        },
+        {
+          "name": "mzip",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address Zip"
+        },
+        {
+          "name": "siteadd",
+          "type": "esriFieldTypeString",
+          "alias": "Full Site Address"
+        },
+        {
+          "name": "sunit",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Unit Number"
+        },
+        {
+          "name": "scity",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address City"
+        },
+        {
+          "name": "gisacres",
+          "type": "esriFieldTypeDouble",
+          "alias": "GIS Acres"
+        },
+        {
+          "name": "struct",
+          "type": "esriFieldTypeString",
+          "alias": "Structure Indicator"
+        },
+        {
+          "name": "multistruc",
+          "type": "esriFieldTypeString",
+          "alias": "Multiple Structures"
+        },
+        {
+          "name": "saledate",
+          "type": "esriFieldTypeDate",
+          "alias": "Last Sale Date\n"
+        },
+        {
+          "name": "saledatetx",
+          "type": "esriFieldTypeString",
+          "alias": "Last Sale Date Text"
+        },
+        {
+          "name": "legdecfull",
+          "type": "esriFieldTypeString",
+          "alias": "Full Legal Description"
+        },
+        {
+          "name": "parusecode",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Parcel Use Code"
+        },
+        {
+          "name": "parusedesc",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Parcel Use Code Description"
+        },
+        {
+          "name": "parusecd2",
+          "type": "esriFieldTypeString",
+          "alias": "Second Tax Parcel Use Code"
+        },
+        {
+          "name": "parusedsc2",
+          "type": "esriFieldTypeString",
+          "alias": "Second Tax Parcel Use Description"
+        },
+        {
+          "name": "parvaltype",
+          "type": "esriFieldTypeString",
+          "alias": "Type of Value Reported"
+        },
+        {
+          "name": "owntype",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Type"
+        },
+        {
+          "name": "recareano",
+          "type": "esriFieldTypeDouble",
+          "alias": "Record Area Number"
+        },
+        {
+          "name": "recareatx",
+          "type": "esriFieldTypeString",
+          "alias": "Record Area Text"
+        },
+        {
+          "name": "revisedate",
+          "type": "esriFieldTypeDate",
+          "alias": "Revised Date"
+        },
+        {
+          "name": "sourceref",
+          "type": "esriFieldTypeString",
+          "alias": "Source Document Reference"
+        },
+        {
+          "name": "sourcedate",
+          "type": "esriFieldTypeDate",
+          "alias": "Source Document Date"
+        },
+        {
+          "name": "sourcedatx",
+          "type": "esriFieldTypeString",
+          "alias": "Source Document Date Text"
+        },
+        {
+          "name": "subdivisio",
+          "type": "esriFieldTypeString",
+          "alias": "Subdivision Name"
+        },
+        {
+          "name": "nparno",
+          "type": "esriFieldTypeString",
+          "alias": "National Parcel Number"
+        },
+        {
+          "name": "cntyname",
+          "type": "esriFieldTypeString",
+          "alias": "County Name"
+        },
+        {
+          "name": "cntyfips",
+          "type": "esriFieldTypeString",
+          "alias": "County FIPS Code"
+        },
+        {
+          "name": "stfips",
+          "type": "esriFieldTypeString",
+          "alias": "State FIPS Code"
+        },
+        {
+          "name": "stcntyfips",
+          "type": "esriFieldTypeString",
+          "alias": "State-County FIPS Code"
+        },
+        {
+          "name": "gnisid",
+          "type": "esriFieldTypeInteger",
+          "alias": "GNIS Identifier"
+        },
+        {
+          "name": "sourceagnt",
+          "type": "esriFieldTypeString",
+          "alias": "Information Source"
+        },
+        {
+          "name": "transfdate",
+          "type": "esriFieldTypeDate",
+          "alias": "Transform Date"
+        },
+        {
+          "name": "maddpref",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address Prefix"
+        },
+        {
+          "name": "maddrno",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address Number"
+        },
+        {
+          "name": "maddstname",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Street Full Name"
+        },
+        {
+          "name": "maddstr",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address Street Name"
+        },
+        {
+          "name": "maddstsuf",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address Street Suffix"
+        },
+        {
+          "name": "maddsttyp",
+          "type": "esriFieldTypeString",
+          "alias": "Mailing Address Street Type"
+        },
+        {
+          "name": "ownfrst",
+          "type": "esriFieldTypeString",
+          "alias": "Owner First Name"
+        },
+        {
+          "name": "ownlast",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Last Name"
+        },
+        {
+          "name": "revdatetx",
+          "type": "esriFieldTypeString",
+          "alias": "Revised Date text"
+        },
+        {
+          "name": "reviseyear",
+          "type": "esriFieldTypeString",
+          "alias": "Revised Year"
+        },
+        {
+          "name": "saddno",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Number"
+        },
+        {
+          "name": "saddpref",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Prefix"
+        },
+        {
+          "name": "saddstname",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Street Name"
+        },
+        {
+          "name": "saddstr",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Street Name"
+        },
+        {
+          "name": "saddstsuf",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Street Suffix"
+        },
+        {
+          "name": "saddsttyp",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Street Type"
+        },
+        {
+          "name": "sstate",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address State"
+        },
+        {
+          "name": "stname",
+          "type": "esriFieldTypeString",
+          "alias": "State Name"
+        },
+        {
+          "name": "subowntype",
+          "type": "esriFieldTypeString",
+          "alias": "Subsurface Owner Type"
+        },
+        {
+          "name": "subsurfown",
+          "type": "esriFieldTypeString",
+          "alias": "Subsurface Owner"
+        },
+        {
+          "name": "szip",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address Zip"
+        },
+        {
+          "name": "structno",
+          "type": "esriFieldTypeInteger",
+          "alias": "Number of Structures"
+        },
+        {
+          "name": "structyear",
+          "type": "esriFieldTypeInteger",
+          "alias": "Structure Year"
+        },
+        {
+          "name": "ownname2",
+          "type": "esriFieldTypeString",
+          "alias": "Full Second Owner Name"
+        },
+        {
+          "name": "presentval",
+          "type": "esriFieldTypeString",
+          "alias": "Present Use Value"
+        },
+        {
+          "name": "mapref",
+          "type": "esriFieldTypeString",
+          "alias": "Map Reference"
+        },
+        {
+          "name": "shape",
+          "type": "esriFieldTypeGeometry",
+          "alias": "Shape"
+        },
+        {
+          "name": "st_area(shape)",
+          "type": "esriFieldTypeDouble",
+          "alias": "st_area(shape)"
+        },
+        {
+          "name": "st_perimeter(shape)",
+          "type": "esriFieldTypeDouble",
+          "alias": "st_perimeter(shape)"
+        }
+      ],
+      "capabilities": {
+        "useStandardizedQueries": true,
+        "supportsStatistics": true,
+        "supportsPercentileStatistics": true,
+        "supportsHavingClause": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsCountDistinct": true,
+        "supportsPagination": true,
+        "supportsLod": false,
+        "supportsQueryWithLodSR": false,
+        "supportsTrueCurve": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsReturningQueryExtent": true,
+        "supportsQueryWithDistance": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsSqlFormat": false,
+        "supportsQueryAnalytic": true
+      }
+    },
+    {
+      "city": "bismarck",
+      "httpStatus": 200,
+      "name": "Parcels",
+      "description": "",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "OBJECTID",
+      "maxRecordCount": 2000,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeOID",
+          "alias": "OBJECTID"
+        },
+        {
+          "name": "GISID",
+          "type": "esriFieldTypeString",
+          "alias": "GIS ID"
+        },
+        {
+          "name": "UniqueGISID",
+          "type": "esriFieldTypeString",
+          "alias": "Unique GIS ID"
+        },
+        {
+          "name": "CountyName",
+          "type": "esriFieldTypeString",
+          "alias": "County Name"
+        },
+        {
+          "name": "CountyFIPS",
+          "type": "esriFieldTypeString",
+          "alias": "County FIPS Code"
+        },
+        {
+          "name": "Lot",
+          "type": "esriFieldTypeString",
+          "alias": "Lot"
+        },
+        {
+          "name": "Block",
+          "type": "esriFieldTypeString",
+          "alias": "Block"
+        },
+        {
+          "name": "SubdivisionPlat",
+          "type": "esriFieldTypeString",
+          "alias": "Subdivision Plat"
+        },
+        {
+          "name": "Section",
+          "type": "esriFieldTypeString",
+          "alias": "Section"
+        },
+        {
+          "name": "Township",
+          "type": "esriFieldTypeString",
+          "alias": "Township"
+        },
+        {
+          "name": "Range",
+          "type": "esriFieldTypeString",
+          "alias": "Range"
+        },
+        {
+          "name": "SectionNumber",
+          "type": "esriFieldTypeSmallInteger",
+          "alias": "Section Number"
+        },
+        {
+          "name": "TownshipNumber",
+          "type": "esriFieldTypeSmallInteger",
+          "alias": "Township Number"
+        },
+        {
+          "name": "RangeNumber",
+          "type": "esriFieldTypeSmallInteger",
+          "alias": "Range Number"
+        },
+        {
+          "name": "TownshipName",
+          "type": "esriFieldTypeString",
+          "alias": "Township Name"
+        },
+        {
+          "name": "CalculatedAcres",
+          "type": "esriFieldTypeDouble",
+          "alias": "Calculated Acres"
+        },
+        {
+          "name": "FeatureType",
+          "type": "esriFieldTypeString",
+          "alias": "Feature Type"
+        },
+        {
+          "name": "Ownership",
+          "type": "esriFieldTypeString",
+          "alias": "Ownership"
+        },
+        {
+          "name": "SourceID",
+          "type": "esriFieldTypeString",
+          "alias": "Source ID"
+        },
+        {
+          "name": "SourceType",
+          "type": "esriFieldTypeString",
+          "alias": "Source Type"
+        },
+        {
+          "name": "SourceDate",
+          "type": "esriFieldTypeDate",
+          "alias": "Source Date"
+        },
+        {
+          "name": "AutomationMethod",
+          "type": "esriFieldTypeString",
+          "alias": "Automation Method"
+        },
+        {
+          "name": "AutomationType",
+          "type": "esriFieldTypeString",
+          "alias": "Automation Type"
+        },
+        {
+          "name": "AutomationComment",
+          "type": "esriFieldTypeString",
+          "alias": "Automation Comment"
+        },
+        {
+          "name": "LastUpdateDate",
+          "type": "esriFieldTypeDate",
+          "alias": "Last Update Date"
+        },
+        {
+          "name": "Editor",
+          "type": "esriFieldTypeString",
+          "alias": "Editor"
+        },
+        {
+          "name": "DateImported",
+          "type": "esriFieldTypeDate",
+          "alias": "Date Imported"
+        },
+        {
+          "name": "GlobalID",
+          "type": "esriFieldTypeGlobalID",
+          "alias": "GlobalID"
+        },
+        {
+          "name": "Shape__Area",
+          "type": "esriFieldTypeDouble",
+          "alias": "Shape__Area"
+        },
+        {
+          "name": "Shape__Length",
+          "type": "esriFieldTypeDouble",
+          "alias": "Shape__Length"
+        }
+      ],
+      "capabilities": {
+        "supportsPagination": true,
+        "supportsPaginationOnAggregatedQueries": true,
+        "supportsQueryRelatedPagination": true,
+        "supportsQueryWithDistance": true,
+        "supportsOutDistance": true,
+        "supportsReturningQueryExtent": true,
+        "supportsStatistics": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsQueryWithResultType": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsAdvancedQueryRelated": true,
+        "supportsCountDistinct": true,
+        "supportsPercentileStatistics": true,
+        "supportsApproxPercentileStatistics": true,
+        "supportsSpatialAggregationStatistics": true,
+        "supportsTrueCurve": true,
+        "supportedSpatialAggregationStatistics": [
+          "EnvelopeAggregate",
+          "CentroidAggregate",
+          "ConvexHullAggregate"
+        ],
+        "supportsLod": true,
+        "supportsQueryWithLodSR": false,
+        "supportedLodTypes": [
+          "geohash"
+        ],
+        "supportsReturningGeometryCentroid": true,
+        "supportsReturningGeometryEnvelope": true,
+        "supportsReturningGeometryProperties": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsCurrentUserQueries": true,
+        "supportsHavingClause": true,
+        "supportsOutFieldSQLExpression": true,
+        "supportsMaxRecordCountFactor": true,
+        "supportsTopFeaturesQuery": true,
+        "supportsDisjointSpatialRel": true,
+        "supportsQueryWithCacheHint": true,
+        "supportedOperationsWithCacheHint": [
+          "query",
+          "queryTopFilter",
+          "queryAnalytics",
+          "queryAttachments",
+          "queryRelated",
+          "queryBins",
+          "queryPivot"
+        ],
+        "supportsQueryAnalytic": true,
+        "supportsQueryPivot": true,
+        "supportsQueryBins": true,
+        "supportsDefaultSR": true,
+        "supportsTranslations": false,
+        "supportsAggIds": true,
+        "supportsQueryWithCollation": true,
+        "supportsISODOW": true,
+        "supportsISOWeek": true,
+        "supportsFullTextSearch": true,
+        "fullTextSearchCapabilities": {
+          "supportsAccentSensitivity": true,
+          "supportsStopWords": true,
+          "supportsSearchOperator": true,
+          "supportsOperator": true
+        }
+      },
+      "namespaceProbe": {
+        "httpStatus": 200,
+        "records": [
+          {
+            "GISID": "1-102-001",
+            "UniqueGISID": "38015-1-102-001",
+            "CountyName": "Burleigh",
+            "CountyFIPS": "38015"
+          }
+        ]
+      }
+    },
+    {
+      "city": "columbus",
+      "httpStatus": 200,
+      "name": "Tax Parcel",
+      "description": "",
+      "geometryType": "esriGeometryPolygon",
+      "maxRecordCount": 3000,
+      "spatialReference": {
+        "wkid": 102723,
+        "latestWkid": 3735,
+        "xyTolerance": 0.003280833333333333,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -119670700,
+        "falseY": -95612900,
+        "xyUnits": 3048.0060960121928,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      },
+      "fields": [
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeOID",
+          "alias": "OBJECTID"
+        },
+        {
+          "name": "PARCELID",
+          "type": "esriFieldTypeString",
+          "alias": "PARCELID"
+        },
+        {
+          "name": "LOWPARCELID",
+          "type": "esriFieldTypeString",
+          "alias": "Map Rt Number"
+        },
+        {
+          "name": "BUILDING",
+          "type": "esriFieldTypeString",
+          "alias": "Building Number"
+        },
+        {
+          "name": "UNIT",
+          "type": "esriFieldTypeString",
+          "alias": "Unit Number"
+        },
+        {
+          "name": "STATEDAREA",
+          "type": "esriFieldTypeDouble",
+          "alias": "Legal Acres"
+        },
+        {
+          "name": "ACRES",
+          "type": "esriFieldTypeDouble",
+          "alias": "GIS Acres"
+        },
+        {
+          "name": "LGLSTARTDT",
+          "type": "esriFieldTypeString",
+          "alias": "Legal Start Data"
+        },
+        {
+          "name": "CVTTXCD",
+          "type": "esriFieldTypeString",
+          "alias": "Tax District Code"
+        },
+        {
+          "name": "CVTTXDSCRP",
+          "type": "esriFieldTypeString",
+          "alias": "Tax District Description"
+        },
+        {
+          "name": "SCHLTXCD",
+          "type": "esriFieldTypeString",
+          "alias": "School District Code"
+        },
+        {
+          "name": "SCHLDSCRP",
+          "type": "esriFieldTypeString",
+          "alias": "School District Description"
+        },
+        {
+          "name": "NBHDCD",
+          "type": "esriFieldTypeString",
+          "alias": "Appr. Neigh Code"
+        },
+        {
+          "name": "AUDMAP",
+          "type": "esriFieldTypeString",
+          "alias": "Auditor Map"
+        },
+        {
+          "name": "AUDRTG",
+          "type": "esriFieldTypeString",
+          "alias": "Auditor Routing"
+        },
+        {
+          "name": "CLASSCD",
+          "type": "esriFieldTypeString",
+          "alias": "Property Class Code"
+        },
+        {
+          "name": "CLASSDSCRP",
+          "type": "esriFieldTypeString",
+          "alias": "Property Class Description"
+        },
+        {
+          "name": "SITEADDRESS",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address"
+        },
+        {
+          "name": "ZIPCD",
+          "type": "esriFieldTypeString",
+          "alias": "Zip Code"
+        },
+        {
+          "name": "PRPRTYDSCRP",
+          "type": "esriFieldTypeString",
+          "alias": "Legal Desc. 1"
+        },
+        {
+          "name": "PRPRTYDSCRP2",
+          "type": "esriFieldTypeString",
+          "alias": "Legal Desc. 2"
+        },
+        {
+          "name": "PRPRTYDSCRP3",
+          "type": "esriFieldTypeString",
+          "alias": "Legal Desc. 3"
+        },
+        {
+          "name": "CNVYNAME",
+          "type": "esriFieldTypeString",
+          "alias": "Sub\\Condo Name"
+        },
+        {
+          "name": "OWNERNME1",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Name 1"
+        },
+        {
+          "name": "OWNERNME2",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Name 2"
+        },
+        {
+          "name": "OWNERNME3",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Name 3"
+        },
+        {
+          "name": "MAILNME1",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Address 1"
+        },
+        {
+          "name": "MAILNME2",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Address 2"
+        },
+        {
+          "name": "SALEDATE",
+          "type": "esriFieldTypeDate",
+          "alias": "Sale Date"
+        },
+        {
+          "name": "SALEPRICE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Sale Price"
+        },
+        {
+          "name": "PSTLNME1",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Mailing Name 1"
+        },
+        {
+          "name": "PSTLNME2",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Mailing Name 2"
+        },
+        {
+          "name": "PSTLADDRES",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Mailing Address"
+        },
+        {
+          "name": "PSTLCITYSTZIP",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Mailing City ST Zip"
+        },
+        {
+          "name": "CAUV",
+          "type": "esriFieldTypeString",
+          "alias": "CAUV"
+        },
+        {
+          "name": "OWNEROCCUPIED",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Occupied"
+        },
+        {
+          "name": "HOMSTD",
+          "type": "esriFieldTypeString",
+          "alias": "Homestead"
+        },
+        {
+          "name": "RENTAL",
+          "type": "esriFieldTypeString",
+          "alias": "Rental"
+        },
+        {
+          "name": "FLOOD",
+          "type": "esriFieldTypeString",
+          "alias": "Flood"
+        },
+        {
+          "name": "PCLASS",
+          "type": "esriFieldTypeString",
+          "alias": "Parcel Class"
+        },
+        {
+          "name": "USECD",
+          "type": "esriFieldTypeString",
+          "alias": "Use Code"
+        },
+        {
+          "name": "PCLASSDSCRP",
+          "type": "esriFieldTypeString",
+          "alias": "Parcel Use Code Desc."
+        },
+        {
+          "name": "FLOORCOUNT",
+          "type": "esriFieldTypeString",
+          "alias": "Floor Count"
+        },
+        {
+          "name": "RESFLRAREA_AG",
+          "type": "esriFieldTypeInteger",
+          "alias": "Res Floor Area Above Grade"
+        },
+        {
+          "name": "RESFLRAREA_BG",
+          "type": "esriFieldTypeInteger",
+          "alias": "Res Floor Area Below Grade"
+        },
+        {
+          "name": "RESFLRAREA",
+          "type": "esriFieldTypeInteger",
+          "alias": "Res Floor Area Total"
+        },
+        {
+          "name": "RESYRBLT",
+          "type": "esriFieldTypeInteger",
+          "alias": "Res. Year Built"
+        },
+        {
+          "name": "RESYRBLTEFF",
+          "type": "esriFieldTypeInteger",
+          "alias": "Res Effective Year Built"
+        },
+        {
+          "name": "RESSTRTYP",
+          "type": "esriFieldTypeString",
+          "alias": "Res Structure Type"
+        },
+        {
+          "name": "CLASSMOD",
+          "type": "esriFieldTypeString",
+          "alias": "Class Mod"
+        },
+        {
+          "name": "NOCARDS",
+          "type": "esriFieldTypeInteger",
+          "alias": "Number of Cards"
+        },
+        {
+          "name": "ATTIC",
+          "type": "esriFieldTypeString",
+          "alias": "Attic"
+        },
+        {
+          "name": "BASEMENT",
+          "type": "esriFieldTypeString",
+          "alias": "Basement"
+        },
+        {
+          "name": "ROOMS",
+          "type": "esriFieldTypeInteger",
+          "alias": "Rooms"
+        },
+        {
+          "name": "BATHS",
+          "type": "esriFieldTypeInteger",
+          "alias": "Baths"
+        },
+        {
+          "name": "HBATHS",
+          "type": "esriFieldTypeInteger",
+          "alias": "Half Baths"
+        },
+        {
+          "name": "BEDRMS",
+          "type": "esriFieldTypeInteger",
+          "alias": "Bed Rooms"
+        },
+        {
+          "name": "FIREPLC",
+          "type": "esriFieldTypeInteger",
+          "alias": "Fire Places"
+        },
+        {
+          "name": "AIRCOND",
+          "type": "esriFieldTypeString",
+          "alias": "Heat\\AC"
+        },
+        {
+          "name": "WALL",
+          "type": "esriFieldTypeString",
+          "alias": "Wall"
+        },
+        {
+          "name": "COND",
+          "type": "esriFieldTypeString",
+          "alias": "Condition"
+        },
+        {
+          "name": "GRADE",
+          "type": "esriFieldTypeString",
+          "alias": "Grade"
+        },
+        {
+          "name": "HEIGHT",
+          "type": "esriFieldTypeString",
+          "alias": "Height"
+        },
+        {
+          "name": "BLDTYP",
+          "type": "esriFieldTypeString",
+          "alias": "Building Type"
+        },
+        {
+          "name": "BLDGAREA",
+          "type": "esriFieldTypeInteger",
+          "alias": "Building Area"
+        },
+        {
+          "name": "STRCLASS",
+          "type": "esriFieldTypeString",
+          "alias": "Structure Class"
+        },
+        {
+          "name": "PROPTYP",
+          "type": "esriFieldTypeString",
+          "alias": "Base Property Type"
+        },
+        {
+          "name": "LNDVALUEBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Base Land Value"
+        },
+        {
+          "name": "BLDVALUEBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Base Building Value"
+        },
+        {
+          "name": "TOTVALUEBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Base Total Value"
+        },
+        {
+          "name": "CAUVLNDBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "CAUV Land Value"
+        },
+        {
+          "name": "TIFLUC",
+          "type": "esriFieldTypeString",
+          "alias": "TIF Property Type"
+        },
+        {
+          "name": "LNDVALUETIF",
+          "type": "esriFieldTypeDouble",
+          "alias": "TIF Land Value"
+        },
+        {
+          "name": "BLDVALUETIF",
+          "type": "esriFieldTypeDouble",
+          "alias": "TIF Building Value"
+        },
+        {
+          "name": "TOTVALUETIF",
+          "type": "esriFieldTypeDouble",
+          "alias": "TIF Total Value"
+        },
+        {
+          "name": "EXPLUC",
+          "type": "esriFieldTypeString",
+          "alias": "Exp Property Type"
+        },
+        {
+          "name": "LNDVALUEEXP",
+          "type": "esriFieldTypeDouble",
+          "alias": "Exp Land Value"
+        },
+        {
+          "name": "BLDVALUEEXP",
+          "type": "esriFieldTypeDouble",
+          "alias": "Exp Building Value"
+        },
+        {
+          "name": "TOTVALUEEXP",
+          "type": "esriFieldTypeDouble",
+          "alias": "Exp Total Value"
+        },
+        {
+          "name": "PR_CLASSCD",
+          "type": "esriFieldTypeString",
+          "alias": "Prior Property Type"
+        },
+        {
+          "name": "PR_LNDVALUEBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior Base Land Value"
+        },
+        {
+          "name": "PR_BLDVALUEBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior Base Building Value"
+        },
+        {
+          "name": "PR_TOTVALUEBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior Base Total Value"
+        },
+        {
+          "name": "PR_CAUVLNDBASE",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior CAUV Land Value"
+        },
+        {
+          "name": "PR_TIFLUC",
+          "type": "esriFieldTypeString",
+          "alias": "Prior TIF Property Type"
+        },
+        {
+          "name": "PR_LNDVALUETIF",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior TIF Land Value"
+        },
+        {
+          "name": "PR_BLDVALUETIF",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior TIF Building Value"
+        },
+        {
+          "name": "PR_TOTVALUETIF",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior TIF Total Value"
+        },
+        {
+          "name": "PR_EXPLUC",
+          "type": "esriFieldTypeString",
+          "alias": "Prior Exp Property Type"
+        },
+        {
+          "name": "PR_LNDVALUEEXP",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior Exp Land Value"
+        },
+        {
+          "name": "PR_BLDVALUEEXP",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior Exp Building Value"
+        },
+        {
+          "name": "PR_TOTVALUEEXP",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior Exp Total Value"
+        },
+        {
+          "name": "CNTTXBLVAL",
+          "type": "esriFieldTypeDouble",
+          "alias": "County Taxable Value"
+        },
+        {
+          "name": "PRVTXBLVAL",
+          "type": "esriFieldTypeDouble",
+          "alias": "Prior County Taxabkle Value"
+        },
+        {
+          "name": "ASSDVALYRCG",
+          "type": "esriFieldTypeDouble",
+          "alias": "Assessed Value Change"
+        },
+        {
+          "name": "ASSDPCNTCG",
+          "type": "esriFieldTypeDouble",
+          "alias": "Assessed Value Percent Change"
+        },
+        {
+          "name": "TXBLVALYRCHG",
+          "type": "esriFieldTypeDouble",
+          "alias": "Taxable Value Change"
+        },
+        {
+          "name": "TXBLPCNTCHG",
+          "type": "esriFieldTypeDouble",
+          "alias": "Taxable Value Percent Change"
+        },
+        {
+          "name": "PRVWNTTXOD",
+          "type": "esriFieldTypeString",
+          "alias": "Prior Year First Half Tax"
+        },
+        {
+          "name": "PRVSMRTXOD",
+          "type": "esriFieldTypeString",
+          "alias": "Prior Year Second Half Tax"
+        },
+        {
+          "name": "TOTPRVTXTOD",
+          "type": "esriFieldTypeString",
+          "alias": "Prior Year Total Tax"
+        },
+        {
+          "name": "CNTWNTTXOD",
+          "type": "esriFieldTypeString",
+          "alias": "Current Year  First Half Tax"
+        },
+        {
+          "name": "CNTSMRTXOD",
+          "type": "esriFieldTypeString",
+          "alias": "Current Year Second Half Tax"
+        },
+        {
+          "name": "TOTCNTTXOD",
+          "type": "esriFieldTypeDouble",
+          "alias": "Current Year Total Tax"
+        },
+        {
+          "name": "TXODYRCHG",
+          "type": "esriFieldTypeString",
+          "alias": "Total Tax Change"
+        },
+        {
+          "name": "TXODPCNTCHG",
+          "type": "esriFieldTypeString",
+          "alias": "Total Tax Percent Change"
+        },
+        {
+          "name": "WATERSERV",
+          "type": "esriFieldTypeString",
+          "alias": "Water Service"
+        },
+        {
+          "name": "SEWERSERV",
+          "type": "esriFieldTypeString",
+          "alias": "Sewer Service"
+        },
+        {
+          "name": "X_COORD",
+          "type": "esriFieldTypeDouble",
+          "alias": "X Coord"
+        },
+        {
+          "name": "Y_COORD",
+          "type": "esriFieldTypeDouble",
+          "alias": "Y Coord"
+        },
+        {
+          "name": "LASTUPDATE",
+          "type": "esriFieldTypeDate",
+          "alias": "LASTUPDATE"
+        },
+        {
+          "name": "VALID",
+          "type": "esriFieldTypeString",
+          "alias": "VALID"
+        },
+        {
+          "name": "Shape",
+          "type": "esriFieldTypeGeometry",
+          "alias": "Shape"
+        },
+        {
+          "name": "Shape.STArea()",
+          "type": "esriFieldTypeDouble",
+          "alias": "Shape.STArea()"
+        },
+        {
+          "name": "Shape.STLength()",
+          "type": "esriFieldTypeDouble",
+          "alias": "Shape.STLength()"
+        },
+        {
+          "name": "LEASE",
+          "type": "esriFieldTypeString",
+          "alias": "LEASE"
+        },
+        {
+          "name": "GUID",
+          "type": "esriFieldTypeGUID",
+          "alias": "GUID"
+        }
+      ],
+      "capabilities": {
+        "useStandardizedQueries": true,
+        "supportsStatistics": true,
+        "supportsPercentileStatistics": true,
+        "supportsHavingClause": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsCountDistinct": true,
+        "supportsAdvancedQueryRelated": true,
+        "supportsQueryRelatedPagination": true,
+        "supportsPagination": true,
+        "supportsLod": false,
+        "supportsQueryWithLodSR": false,
+        "supportsTrueCurve": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsReturningQueryExtent": true,
+        "supportsQueryWithDistance": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsSqlFormat": false,
+        "supportsQueryAnalytic": true,
+        "supportsCurrentUserQueries": true
+      }
+    },
+    {
+      "city": "oklahoma-city",
+      "httpStatus": 200,
+      "name": "OK County Assessor Parcels",
+      "description": "",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "OBJECTID",
+      "maxRecordCount": 2000,
+      "spatialReference": {
+        "wkid": 102039,
+        "latestWkid": 102039
+      },
+      "fields": [
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeOID",
+          "alias": "OBJECTID"
+        },
+        {
+          "name": "AcctNum",
+          "type": "esriFieldTypeString",
+          "alias": "AcctNum"
+        },
+        {
+          "name": "OwnName",
+          "type": "esriFieldTypeString",
+          "alias": "OwnName"
+        },
+        {
+          "name": "AssrLink",
+          "type": "esriFieldTypeString",
+          "alias": "AssrLink"
+        },
+        {
+          "name": "DateUpdt",
+          "type": "esriFieldTypeDate",
+          "alias": "DateUpdt"
+        },
+        {
+          "name": "Shape__Area",
+          "type": "esriFieldTypeDouble",
+          "alias": "Shape__Area"
+        },
+        {
+          "name": "Shape__Length",
+          "type": "esriFieldTypeDouble",
+          "alias": "Shape__Length"
+        }
+      ],
+      "capabilities": {
+        "supportsPagination": true,
+        "supportsPaginationOnAggregatedQueries": true,
+        "supportsQueryRelatedPagination": true,
+        "supportsQueryWithDistance": true,
+        "supportsOutDistance": true,
+        "supportsReturningQueryExtent": true,
+        "supportsStatistics": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsQueryWithResultType": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsAdvancedQueryRelated": true,
+        "supportsCountDistinct": true,
+        "supportsPercentileStatistics": true,
+        "supportsApproxPercentileStatistics": true,
+        "supportsSpatialAggregationStatistics": true,
+        "supportsTrueCurve": true,
+        "supportedSpatialAggregationStatistics": [
+          "EnvelopeAggregate",
+          "CentroidAggregate",
+          "ConvexHullAggregate"
+        ],
+        "supportsLod": true,
+        "supportsQueryWithLodSR": false,
+        "supportedLodTypes": [
+          "geohash"
+        ],
+        "supportsReturningGeometryCentroid": true,
+        "supportsReturningGeometryEnvelope": true,
+        "supportsReturningGeometryProperties": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsCurrentUserQueries": true,
+        "supportsHavingClause": true,
+        "supportsOutFieldSQLExpression": true,
+        "supportsMaxRecordCountFactor": true,
+        "supportsTopFeaturesQuery": true,
+        "supportsDisjointSpatialRel": true,
+        "supportsQueryWithCacheHint": true,
+        "supportedOperationsWithCacheHint": [
+          "query",
+          "queryTopFilter",
+          "queryAnalytics",
+          "queryAttachments",
+          "queryRelated",
+          "queryBins",
+          "queryPivot"
+        ],
+        "supportsQueryAnalytic": true,
+        "supportsQueryPivot": true,
+        "supportsQueryBins": true,
+        "supportsDefaultSR": true,
+        "supportsTranslations": false,
+        "supportsAggIds": true,
+        "supportsQueryWithCollation": true,
+        "supportsISODOW": true,
+        "supportsISOWeek": true,
+        "supportsFullTextSearch": true,
+        "fullTextSearchCapabilities": {
+          "supportsAccentSensitivity": true,
+          "supportsStopWords": true,
+          "supportsSearchOperator": true,
+          "supportsOperator": true
+        }
+      }
+    },
+    {
+      "city": "salem",
+      "httpStatus": 200,
+      "name": "Parcels",
+      "description": "Marion County tax assessors parcels with associated property data. ",
+      "geometryType": "esriGeometryPolygon",
+      "maxRecordCount": 1000,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeOID",
+          "alias": "OBJECTID"
+        },
+        {
+          "name": "SHAPE",
+          "type": "esriFieldTypeGeometry",
+          "alias": "SHAPE"
+        },
+        {
+          "name": "TAXLOT",
+          "type": "esriFieldTypeString",
+          "alias": "Taxlot Number"
+        },
+        {
+          "name": "TAXACCT",
+          "type": "esriFieldTypeString",
+          "alias": "Property ID"
+        },
+        {
+          "name": "OTHERACCTS",
+          "type": "esriFieldTypeString",
+          "alias": "Other Accounts"
+        },
+        {
+          "name": "ALT_TAXLOT",
+          "type": "esriFieldTypeString",
+          "alias": "Alt Taxlot Number"
+        },
+        {
+          "name": "ALT_TAXACCT",
+          "type": "esriFieldTypeString",
+          "alias": "Alt Account Number"
+        },
+        {
+          "name": "STREETNUM",
+          "type": "esriFieldTypeString",
+          "alias": "Street Number"
+        },
+        {
+          "name": "PRE_DIR",
+          "type": "esriFieldTypeString",
+          "alias": "Street Directional Prefix"
+        },
+        {
+          "name": "STREETNAME",
+          "type": "esriFieldTypeString",
+          "alias": "Street Name"
+        },
+        {
+          "name": "STREETTYPE",
+          "type": "esriFieldTypeString",
+          "alias": "Street Type"
+        },
+        {
+          "name": "POST_DIR",
+          "type": "esriFieldTypeString",
+          "alias": "Street Directional Suffix"
+        },
+        {
+          "name": "UNITNUM",
+          "type": "esriFieldTypeString",
+          "alias": "Unit Number"
+        },
+        {
+          "name": "SITUS",
+          "type": "esriFieldTypeString",
+          "alias": "Site Address"
+        },
+        {
+          "name": "SITUSCSZ",
+          "type": "esriFieldTypeString",
+          "alias": "Site CSZ"
+        },
+        {
+          "name": "PLATNAME",
+          "type": "esriFieldTypeString",
+          "alias": "Plat Name"
+        },
+        {
+          "name": "BLOCK",
+          "type": "esriFieldTypeString",
+          "alias": "Block"
+        },
+        {
+          "name": "LOT",
+          "type": "esriFieldTypeString",
+          "alias": "Lot"
+        },
+        {
+          "name": "ACRES",
+          "type": "esriFieldTypeDouble",
+          "alias": "Acres"
+        },
+        {
+          "name": "LASTUPDATE",
+          "type": "esriFieldTypeDate",
+          "alias": "Last Update"
+        },
+        {
+          "name": "INSTNUM",
+          "type": "esriFieldTypeString",
+          "alias": "Instrument Num"
+        },
+        {
+          "name": "INSTTYPE",
+          "type": "esriFieldTypeString",
+          "alias": "Instrument Type"
+        },
+        {
+          "name": "INSTDATE",
+          "type": "esriFieldTypeDate",
+          "alias": "Instrument Date"
+        },
+        {
+          "name": "SALEPRICE",
+          "type": "esriFieldTypeInteger",
+          "alias": "Sale Price"
+        },
+        {
+          "name": "OWNERNAME",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Name"
+        },
+        {
+          "name": "OWNERADDR",
+          "type": "esriFieldTypeString",
+          "alias": "Owner Address"
+        },
+        {
+          "name": "OWNERCSZ",
+          "type": "esriFieldTypeString",
+          "alias": "Owner CSZ"
+        },
+        {
+          "name": "ZONECODE",
+          "type": "esriFieldTypeString",
+          "alias": "Zoning Code"
+        },
+        {
+          "name": "ZONEAUTH",
+          "type": "esriFieldTypeString",
+          "alias": "Zoning Authority"
+        },
+        {
+          "name": "ZONEWEB",
+          "type": "esriFieldTypeString",
+          "alias": "Zoning Website"
+        },
+        {
+          "name": "YEARBUILT",
+          "type": "esriFieldTypeInteger",
+          "alias": "Year Built"
+        },
+        {
+          "name": "BLDGAREA",
+          "type": "esriFieldTypeInteger",
+          "alias": "Building Area"
+        },
+        {
+          "name": "LIVINGAREA",
+          "type": "esriFieldTypeInteger",
+          "alias": "Living Area SF"
+        },
+        {
+          "name": "PROPCLASS",
+          "type": "esriFieldTypeString",
+          "alias": "Property Class"
+        },
+        {
+          "name": "PRPCLSDESC",
+          "type": "esriFieldTypeString",
+          "alias": "Prop Class Description"
+        },
+        {
+          "name": "RMVLND",
+          "type": "esriFieldTypeInteger",
+          "alias": "RMV Land"
+        },
+        {
+          "name": "RMVIMP",
+          "type": "esriFieldTypeInteger",
+          "alias": "RMV Imprvmnt"
+        },
+        {
+          "name": "RMVTOTAL",
+          "type": "esriFieldTypeInteger",
+          "alias": "RMV Total"
+        },
+        {
+          "name": "ASSDVAL",
+          "type": "esriFieldTypeInteger",
+          "alias": "Assessed Value"
+        },
+        {
+          "name": "TAXCODE",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Codes"
+        },
+        {
+          "name": "CITY",
+          "type": "esriFieldTypeString",
+          "alias": "City"
+        },
+        {
+          "name": "SCHLDIST",
+          "type": "esriFieldTypeString",
+          "alias": "School District"
+        },
+        {
+          "name": "FIREDIST",
+          "type": "esriFieldTypeString",
+          "alias": "Fire District"
+        },
+        {
+          "name": "REFLINK",
+          "type": "esriFieldTypeString",
+          "alias": "Property Info"
+        },
+        {
+          "name": "MAPLINK",
+          "type": "esriFieldTypeString",
+          "alias": "Tax Map Image"
+        },
+        {
+          "name": "TAXLOTNS",
+          "type": "esriFieldTypeString",
+          "alias": "Taxlot Number NS"
+        }
+      ],
+      "capabilities": {
+        "useStandardizedQueries": true,
+        "supportsStatistics": true,
+        "supportsHavingClause": true,
+        "supportsCountDistinct": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsPagination": true,
+        "supportsTrueCurve": true,
+        "supportsReturningQueryExtent": true,
+        "supportsQueryWithDistance": true,
+        "supportsSqlExpression": true
+      }
+    }
+  ]
+}

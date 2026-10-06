@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "WV",
+  "state": "West Virginia",
+  "capital": "Charleston",
+  "centerLatLon": [
+    38.3498,
+    -81.6326
+  ],
+  "query": {
+    "language": "English",
+    "text": "West Virginia parcel map Charleston Kanawha County parcels GIS official parcel layer"
+  },
+  "references": [
+    {
+      "url": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "observation": "Official source found by the recorded English web query."
+    },
+    {
+      "url": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "observation": "Official parcel layer endpoint tested with an ID-and-geometry-only spatial sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "ArcGIS layer metadata retrieved; schema inspected without requesting personal parcel fields."
+    },
+    {
+      "url": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0/query?f=geojson&where=1%3D1&geometry=-81.63369999999999%2C38.3487%2C-81.6315%2C38.3509&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=CleanParcelID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Tiny capital-centered bbox; requested only CleanParcelID and geometry; count=3, geometry valid=True, null IDs=0, duplicate IDs=False."
+    },
+    {
+      "url": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0/query?f=geojson&where=CleanParcelID%3D%2720110008005000000000%27&outFields=CleanParcelID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Exact ID round trip for 20110008005000000000: exact count 1, geometry valid=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+    "adapter": "arcgis",
+    "name": "WV Parcels",
+    "operator": "WV GIS Technical Center / county assessors",
+    "scope": "Statewide parcels but source update declared Tax Year 2023",
+    "idField": "CleanParcelID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "CleanParcelID"
+    ],
+    "parcelNumberField": "CleanParcelID",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -81.63369999999999,
+      38.3487,
+      -81.6315,
+      38.3509
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "20110008005000000000",
+      "20110008005100000000",
+      "20110008005300000000"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "This verifies a small parcel sample at the capital only; completeness across the city/county is untested."
+}

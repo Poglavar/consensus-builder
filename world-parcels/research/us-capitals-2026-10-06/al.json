@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "AL",
+  "state": "Alabama",
+  "capital": "Montgomery",
+  "centerLatLon": [
+    32.3668,
+    -86.3
+  ],
+  "query": {
+    "language": "English",
+    "text": "site:montgomeryal.gov GIS parcel map parcels ArcGIS Montgomery"
+  },
+  "references": [
+    {
+      "url": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0?f=pjson",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    },
+    {
+      "url": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/layers",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=site%3Amontgomeryal.gov%20GIS%20parcel%20map%20parcels%20ArcGIS%20Montgomery",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=site%3Amountgomeryal.gov+GIS+parcel+map+parcels+ArcGIS+Montgomery",
+      "observation": "English search result linked official Montgomery ArcGIS service."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Polygon layer DBO.Parcels; native PID string and display ParcelNo string. Owner attributes excluded."
+    },
+    {
+      "url": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-86.3006%2C32.3662%2C-86.29939999999999%2C32.367399999999996&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=4&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "4 capital-area polygons; unique native PID values; closed finite rings."
+    },
+    {
+      "url": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0/query?where=PID%3D%271004181031004000%27&outFields=PID&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Exact PID returned one matching polygon."
+    },
+    {
+      "url": "https://jccgis.jccal.org/server/rest/services/Basemap/Parcels/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": null,
+      "assessment": "Prior Jefferson County (Birmingham) endpoint denied this request; does not cover Montgomery."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "City of Montgomery DBO.Parcels",
+    "operator": "City of Montgomery GIS",
+    "idField": "PID",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[0-9]+$",
+    "outFields": [
+      "OBJECTID",
+      "PID",
+      "ParcelNo"
+    ],
+    "parcelNumberField": "ParcelNo",
+    "metricSrid": 32616,
+    "proposedIdPrefix": "US-AL-MONTGOMERY-",
+    "displayParcelNumberField": "ParcelNo",
+    "boundsQueryMode": "object-ids"
+  },
+  "verification": {
+    "stage": "runtime_acceptance",
+    "bbox": [
+      -86.3025,
+      32.362500000000004,
+      -86.3,
+      32.365
+    ],
+    "viewportCells": 18,
+    "uniqueCanonicalIds": 375,
+    "nativeIDs": [
+      "1004183001008000",
+      "1004183010005000",
+      "1004183010013000"
+    ],
+    "exactResolved": 375,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json"
+  },
+  "status": "verified_sample_capital_scope",
+  "limitations": "Unpadded PID is canonical identity; padded ParcelNo is a display label. A repeated terminal offset page failed the first runtime check; complete count/OID manifests passed the retry. Municipal source is not Alabama-wide coverage.",
+  "priorResearchFile": "research/subnational/US/AL.json",
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "discoveryStatus": "verified_sample_capital_scope",
+  "dataFound": true,
+  "nativeIDVerified": true,
+  "adapterReady": true,
+  "runtimeEvidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+  "discoveryVerification": {
+    "bbox": [
+      -86.3006,
+      32.3662,
+      -86.29939999999999,
+      32.367399999999996
+    ],
+    "count": 4,
+    "nativeIDs": [
+      "1004181031004000",
+      "1004181031005000",
+      "1004181031006000"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  }
+}

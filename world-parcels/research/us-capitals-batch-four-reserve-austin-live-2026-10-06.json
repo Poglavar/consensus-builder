@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "austin",
+      "stateCode": "TX",
+      "sourceId": "us-tx-austin-parcels",
+      "endpoint": "https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.7475,
+            30.2625,
+            -97.745,
+            30.265
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.745,
+            30.2625,
+            -97.7425,
+            30.265
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.7425,
+            30.2625,
+            -97.74000000000001,
+            30.265
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.7475,
+            30.265,
+            -97.745,
+            30.267500000000002
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.745,
+            30.265,
+            -97.7425,
+            30.267500000000002
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.7425,
+            30.265,
+            -97.74000000000001,
+            30.267500000000002
+          ],
+          "count": 49,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.7475,
+            30.267500000000002,
+            -97.745,
+            30.27
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.745,
+            30.267500000000002,
+            -97.7425,
+            30.27
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.7425,
+            30.267500000000002,
+            -97.74000000000001,
+            30.27
+          ],
+          "count": 49,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.74000000000001,
+            30.2625,
+            -97.73750000000001,
+            30.265
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.73750000000001,
+            30.2625,
+            -97.735,
+            30.265
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.735,
+            30.2625,
+            -97.7325,
+            30.265
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.74000000000001,
+            30.265,
+            -97.73750000000001,
+            30.267500000000002
+          ],
+          "count": 76,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.73750000000001,
+            30.265,
+            -97.735,
+            30.267500000000002
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.735,
+            30.265,
+            -97.7325,
+            30.267500000000002
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.74000000000001,
+            30.267500000000002,
+            -97.73750000000001,
+            30.27
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.73750000000001,
+            30.267500000000002,
+            -97.735,
+            30.27
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.735,
+            30.267500000000002,
+            -97.7325,
+            30.27
+          ],
+          "count": 17,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -97.7475,
+          30.2625,
+          -97.745,
+          30.265
+        ],
+        "forcedPageSize": 3,
+        "count": 9,
+        "returned": 9,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 444,
+      "exactResolved": 444,
+      "nativeIds": [
+        "0205011101",
+        "0205010901",
+        "0205010801"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-tx-austin-parcels",
+        "parcels": 1,
+        "siteM2": 4125.32
+      },
+      "requests": 31
+    }
+  ]
+}

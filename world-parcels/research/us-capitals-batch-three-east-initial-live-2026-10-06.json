@@ -1,0 +1,861 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "concord",
+      "sourceId": "us-concord-parcels",
+      "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.5425,
+            43.205000000000005,
+            -71.54,
+            43.2075
+          ],
+          "count": 73,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.54,
+            43.205000000000005,
+            -71.53750000000001,
+            43.2075
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53750000000001,
+            43.205000000000005,
+            -71.53500000000001,
+            43.2075
+          ],
+          "count": 52,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "AssertionError",
+        "message": "Strict geometry equality assertion failed; raw coordinate diff removed under research retention policy.",
+        "code": "ERR_ASSERTION"
+      },
+      "requests": 4,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 293,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      },
+      "proposedDescriptor": {
+        "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "NH Parcels",
+        "operator": "New Hampshire GRANIT / NH Department of Environmental Services",
+        "idField": "nh_gis_id",
+        "objectIdField": "objectid",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "objectid",
+          "nh_gis_id",
+          "town"
+        ],
+        "metricSrid": 32619,
+        "attributeFilters": {
+          "town": "Concord"
+        },
+        "id": "us-concord-parcels",
+        "idPrefix": "us-concord:",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "gridSize": 0.0025,
+        "maxConcurrent": 2
+      }
+    },
+    {
+      "city": "trenton",
+      "sourceId": "us-trenton-parcels",
+      "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.212500000000006,
+            -74.745,
+            40.215
+          ],
+          "count": 135,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.212500000000006,
+            -74.7425,
+            40.215
+          ],
+          "count": 208,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.212500000000006,
+            -74.74000000000001,
+            40.215
+          ],
+          "count": 252,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.215,
+            -74.745,
+            40.2175
+          ],
+          "count": 133,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.215,
+            -74.7425,
+            40.2175
+          ],
+          "count": 206,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.215,
+            -74.74000000000001,
+            40.2175
+          ],
+          "count": 115,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.2175,
+            -74.745,
+            40.220000000000006
+          ],
+          "count": 130,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.2175,
+            -74.7425,
+            40.220000000000006
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.2175,
+            -74.74000000000001,
+            40.220000000000006
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.212500000000006,
+            -74.73750000000001,
+            40.215
+          ],
+          "count": 271,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.212500000000006,
+            -74.735,
+            40.215
+          ],
+          "count": 260,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.212500000000006,
+            -74.7325,
+            40.215
+          ],
+          "count": 219,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.215,
+            -74.73750000000001,
+            40.2175
+          ],
+          "count": 257,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.215,
+            -74.735,
+            40.2175
+          ],
+          "count": 246,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.215,
+            -74.7325,
+            40.2175
+          ],
+          "count": 227,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.2175,
+            -74.73750000000001,
+            40.220000000000006
+          ],
+          "count": 119,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.2175,
+            -74.735,
+            40.220000000000006
+          ],
+          "count": 173,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.2175,
+            -74.7325,
+            40.220000000000006
+          ],
+          "count": 187,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -74.7425,
+          40.2175,
+          -74.74000000000001,
+          40.220000000000006
+        ],
+        "forcedPageSize": 3,
+        "count": 15,
+        "returned": 15,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 2716,
+      "exactResolved": 2716,
+      "nativeIds": [
+        "1111_15001_1",
+        "1111_15101_8",
+        "1111_15101_7"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-trenton-parcels",
+        "parcels": 1,
+        "siteM2": 28344.04
+      },
+      "requests": 61,
+      "proposedDescriptor": {
+        "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Cad_parcel_mod4 (Parcels_Composite_NJ_WM)",
+        "operator": "New Jersey Office of Information Technology, Office of GIS (NJOGIS)",
+        "idField": "PAMS_PIN",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "PAMS_PIN"
+        ],
+        "metricSrid": 32618,
+        "id": "us-trenton-parcels",
+        "idPrefix": "us-trenton:",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "gridSize": 0.0025,
+        "maxConcurrent": 2
+      }
+    },
+    {
+      "city": "santa_fe",
+      "sourceId": "us-santa_fe-parcels",
+      "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.682500000000005,
+            -105.94,
+            35.685
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.682500000000005,
+            -105.9375,
+            35.685
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.682500000000005,
+            -105.935,
+            35.685
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.685,
+            -105.94,
+            35.6875
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.685,
+            -105.9375,
+            35.6875
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.685,
+            -105.935,
+            35.6875
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.6875,
+            -105.94,
+            35.690000000000005
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.6875,
+            -105.9375,
+            35.690000000000005
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.6875,
+            -105.935,
+            35.690000000000005
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.682500000000005,
+            -105.9325,
+            35.685
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.682500000000005,
+            -105.92999999999999,
+            35.685
+          ],
+          "count": 91,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.682500000000005,
+            -105.9275,
+            35.685
+          ],
+          "count": 117,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.685,
+            -105.9325,
+            35.6875
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.685,
+            -105.92999999999999,
+            35.6875
+          ],
+          "count": 99,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.685,
+            -105.9275,
+            35.6875
+          ],
+          "count": 73,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.6875,
+            -105.9325,
+            35.690000000000005
+          ],
+          "count": 70,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.6875,
+            -105.92999999999999,
+            35.690000000000005
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.6875,
+            -105.9275,
+            35.690000000000005
+          ],
+          "count": 24,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -105.9425,
+          35.682500000000005,
+          -105.94,
+          35.685
+        ],
+        "forcedPageSize": 3,
+        "count": 14,
+        "returned": 14,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 776,
+      "exactResolved": 776,
+      "nativeIds": [
+        "99306489",
+        "12048768",
+        "11488896"
+      ],
+      "footprintCount": 6,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-santa_fe-parcels",
+        "parcels": 1,
+        "siteM2": 5983.09
+      },
+      "requests": 36,
+      "proposedDescriptor": {
+        "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+        "adapter": "arcgis",
+        "name": "Santa Fe County Parcels",
+        "operator": "Santa Fe County GIS Division",
+        "idField": "parcel_number",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "parcel_number"
+        ],
+        "parcelNumberField": "parcel_number",
+        "metricSrid": 32613,
+        "id": "us-santa_fe-parcels",
+        "idPrefix": "us-santa_fe:",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "gridSize": 0.0025,
+        "maxConcurrent": 2
+      }
+    },
+    {
+      "city": "albany",
+      "sourceId": "us-albany-parcels",
+      "endpoint": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.76,
+            42.650000000000006,
+            -73.75750000000001,
+            42.6525
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75750000000001,
+            42.650000000000006,
+            -73.75500000000001,
+            42.6525
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75500000000001,
+            42.650000000000006,
+            -73.75250000000001,
+            42.6525
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.76,
+            42.6525,
+            -73.75750000000001,
+            42.655
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75750000000001,
+            42.6525,
+            -73.75500000000001,
+            42.655
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75500000000001,
+            42.6525,
+            -73.75250000000001,
+            42.655
+          ],
+          "count": 85,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.76,
+            42.655,
+            -73.75750000000001,
+            42.657500000000006
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75750000000001,
+            42.655,
+            -73.75500000000001,
+            42.657500000000006
+          ],
+          "count": 135,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75500000000001,
+            42.655,
+            -73.75250000000001,
+            42.657500000000006
+          ],
+          "count": 157,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75250000000001,
+            42.650000000000006,
+            -73.75000000000001,
+            42.6525
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75000000000001,
+            42.650000000000006,
+            -73.7475,
+            42.6525
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.7475,
+            42.650000000000006,
+            -73.745,
+            42.6525
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75250000000001,
+            42.6525,
+            -73.75000000000001,
+            42.655
+          ],
+          "count": 94,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75000000000001,
+            42.6525,
+            -73.7475,
+            42.655
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.7475,
+            42.6525,
+            -73.745,
+            42.655
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75250000000001,
+            42.655,
+            -73.75000000000001,
+            42.657500000000006
+          ],
+          "count": 145,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.75000000000001,
+            42.655,
+            -73.7475,
+            42.657500000000006
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -73.7475,
+            42.655,
+            -73.745,
+            42.657500000000006
+          ],
+          "count": 19,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -73.76,
+          42.650000000000006,
+          -73.75750000000001,
+          42.6525
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 767,
+      "exactResolved": 767,
+      "nativeIds": [
+        "01010007600700010010000000",
+        "01010007600700010020020000",
+        "01010007600700010020010000"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-albany-parcels",
+        "parcels": 1,
+        "siteM2": 41202.43
+      },
+      "requests": 33,
+      "proposedDescriptor": {
+        "endpoint": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1",
+        "adapter": "arcgis",
+        "name": "NYS Tax Parcels Public",
+        "operator": "New York State Office of Information Technology Services, Geospatial Services; contributing counties",
+        "idField": "SWIS_SBL_ID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "SWIS_SBL_ID",
+          "COUNTY_NAME"
+        ],
+        "parcelNumberField": "SWIS_SBL_ID",
+        "metricSrid": 32618,
+        "attributeFilters": {
+          "COUNTY_NAME": "Albany"
+        },
+        "id": "us-albany-parcels",
+        "idPrefix": "us-albany:",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "gridSize": 0.0025,
+        "maxConcurrent": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "MN",
+  "state": "Minnesota",
+  "capital": "Saint Paul",
+  "centerLatLon": [
+    44.9537,
+    -93.09
+  ],
+  "query": {
+    "language": "English",
+    "text": "Saint Paul Minnesota official GIS parcel boundaries FeatureServer city tax parcels"
+  },
+  "references": [
+    "https://www.stpaul.gov/departments/planning-and-economic-development/maps-and-data",
+    "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4"
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live polygon layer metadata and native parcel-key fields."
+    },
+    {
+      "url": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4/query?where=1%3D1&geometry=-93.0910%2C44.9530%2C-93.0890%2C44.9544&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=ParcelID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Capital bbox sample, maximum 3 features, parcel key and geometry only."
+    },
+    {
+      "url": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4/query?where=ParcelID%3D%27312922420018%27&outFields=ParcelID&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-key round trip returned one polygon with the requested ID only."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4",
+    "adapter": "arcgis",
+    "name": "Tax Parcels (MapRamseyOperational_AttributedParcel)",
+    "operator": "Ramsey County GIS",
+    "idField": "ParcelID",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "12-digit county parcel ID string; retained as text",
+    "outFields": "ParcelID"
+  },
+  "verification": {
+    "bbox": [
+      -93.091,
+      44.953,
+      -93.089,
+      44.9544
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "312922420018",
+      "312922410024",
+      "312922410182"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

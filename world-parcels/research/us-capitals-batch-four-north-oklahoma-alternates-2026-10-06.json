@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "endpoint": "https://gis.okc.gov/arcgis/rest/services/Public/EncodeOKCWebMap/MapServer/8",
+      "error": "JSON parse failed: provider returned HTML rather than ArcGIS metadata; response body omitted."
+    },
+    {
+      "endpoint": "https://gis.okc.gov/arcgis/rest/services/Public/EncodeOKCWebMap2/MapServer/8",
+      "error": "JSON parse failed: provider returned HTML rather than ArcGIS metadata; response body omitted."
+    }
+  ]
+}

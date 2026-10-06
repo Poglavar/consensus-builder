@@ -1,0 +1,15 @@
+{
+  "serviceDescription": "",
+  "description": "",
+  "copyrightText": "GIS Division, Richland County, Lexington County",
+  "layers": [
+    {
+      "name": "City of Columbia Parcel",
+      "id": 8,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "serviceItemId": "9806fc781405495c9d54734dd0ff480f"
+    }
+  ],
+  "serviceItemId": "9806fc781405495c9d54734dd0ff480f"
+}

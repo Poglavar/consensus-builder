@@ -1588,6 +1588,1156 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        montgomery: {
+            id: 'montgomery',
+            label: translateCityText('city.labels.montgomery', 'Montgomery, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [32.3668, -86.3], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [32.3668, -86.3], fallbackDataset: [-86.3, 32.3668]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-al-montgomery-city-parcels', idPrefix: 'US-AL-MONTGOMERY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 5,
+                attribution: '<a href="https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0">City of Montgomery GIS · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        juneau: {
+            id: 'juneau',
+            label: translateCityText('city.labels.juneau', 'Juneau, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [58.3016, -134.4202], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32608',
+                metricDefinition: '+proj=utm +zone=8 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [58.3016, -134.4202], fallbackDataset: [-134.4202, 58.3016]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ak-cbj-parcels', idPrefix: 'US-AK-CBJ-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://juneau.org/finance/assessor-office">City and Borough of Juneau GIS · publisher &amp; conditions</a> · identified parcels; unassigned records excluded · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        phoenix: {
+            id: 'phoenix',
+            label: translateCityText('city.labels.phoenix', 'Phoenix, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.4484, -112.074], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32612',
+                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [33.4484, -112.074], fallbackDataset: [-112.074, 33.4484]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-az-maricopa-assessor-parcels', idPrefix: 'US-AZ-MARICOPA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 10,
+                attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&apos;s Office · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        little_rock: {
+            id: 'little_rock',
+            label: translateCityText('city.labels.little_rock', 'Little Rock, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [34.7465, -92.2896], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32615',
+                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [34.7465, -92.2896], fallbackDataset: [-92.2896, 34.7465]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ar-ago-parcels-pulaski', idPrefix: 'US-AR-PULASKI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://gis.arkansas.gov/">Arkansas GIS Office · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sacramento: {
+            id: 'sacramento',
+            label: translateCityText('city.labels.sacramento', 'Sacramento, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.5816, -121.4944], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32610',
+                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [38.5816, -121.4944], fallbackDataset: [-121.4944, 38.5816]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ca-sacramento-active-parcels', idPrefix: 'US-CA-SACRAMENTO-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://data.saccounty.gov/">Sacramento County GIS · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hartford: {
+            id: 'hartford',
+            label: translateCityText('city.labels.hartford', 'Hartford, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [41.7658, -72.6734], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [41.7658, -72.6734], fallbackDataset: [-72.6734, 41.7658]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ct-hartford-parcels', idPrefix: 'US-CT-HARTFORD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 4,
+                attribution: '<a href="https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0">Connecticut GIS Office · publisher &amp; conditions</a> · identified assessment parcel groups · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dover: {
+            id: 'dover',
+            label: translateCityText('city.labels.dover', 'Dover, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.1582, -75.5244], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [39.1582, -75.5244], fallbackDataset: [-75.5244, 39.1582]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-de-kent-dover-parcels', idPrefix: 'US-DE-KENT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 4,
+                attribution: '<a href="https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0">State of Delaware FirstMap (Delaware Geospatial Data Exchange) · publisher &amp; conditions</a> · Kent County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        atlanta: {
+            id: 'atlanta',
+            label: translateCityText('city.labels.atlanta', 'Atlanta, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.749, -84.388], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [33.749, -84.388], fallbackDataset: [-84.388, 33.749]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ga-fulton-atlanta-parcels', idPrefix: 'US-GA-FULTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11">Fulton County GIS · publisher &amp; conditions</a> · Fulton County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        honolulu: {
+            id: 'honolulu',
+            label: translateCityText('city.labels.honolulu', 'Honolulu, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [21.3099, -157.8581], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32604',
+                metricDefinition: '+proj=utm +zone=4 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [21.3099, -157.8581], fallbackDataset: [-157.8581, 21.3099]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-hi-honolulu-parcels', idPrefix: 'US-HI-HONOLULU-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25">Hawaii Statewide GIS Program · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        boise: {
+            id: 'boise',
+            label: translateCityText('city.labels.boise', 'Boise, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.615, -116.2023], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.615, -116.2023], fallbackDataset: [-116.2023, 43.615]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-id-ada-boise-parcels', idPrefix: 'US-ID-ADA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7">Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County · publisher &amp; conditions</a> · Ada County assessment parcel groups · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        springfield: {
+            id: 'springfield',
+            label: translateCityText('city.labels.springfield', 'Springfield, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.7817, -89.6501], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [39.7817, -89.6501], fallbackDataset: [-89.6501, 39.7817]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-il-springfield-parcels', idPrefix: 'US-IL-SPRINGFIELD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2">City of Springfield GIS · publisher &amp; conditions</a> · city assessment parcel groups · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        baton_rouge: {
+            id: 'baton_rouge',
+            label: translateCityText('city.labels.baton_rouge', 'Baton Rouge, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [30.4515, -91.1871], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32615',
+                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [30.4515, -91.1871], fallbackDataset: [-91.1871, 30.4515]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-la-ebr-baton-rouge-parcels', idPrefix: 'US-LA-EBR-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://catalog.data.gov/dataset/tax-parcel">EBRGIS; East Baton Rouge Parish Assessor&#x27;s Office; Department of Information Services · publisher &amp; conditions</a> · tax-account parcel groups · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        augusta: {
+            id: 'augusta',
+            label: translateCityText('city.labels.augusta', 'Augusta, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.3106, -69.7795], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32619',
+                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [44.3106, -69.7795], fallbackDataset: [-69.7795, 44.3106]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-me-augusta-parcels', idPrefix: 'US-ME-AUGUSTA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://mainegeolibrary-maine.hub.arcgis.com/maps/maine::maine-parcels-organized-towns-feature/about">Maine GeoLibrary with voluntarily submitted municipality-maintained parcel data · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        annapolis: {
+            id: 'annapolis',
+            label: translateCityText('city.labels.annapolis', 'Annapolis, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.9784, -76.4922], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [38.9784, -76.4922], fallbackDataset: [-76.4922, 38.9784]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-md-annapolis-parcels', idPrefix: 'US-MD-ANNAPOLIS-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 4,
+                attribution: '<a href="https://annapolis.gov/2324/GIS-and-Maps">City of Annapolis GIS · publisher &amp; conditions</a> · city development layer · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        boston: {
+            id: 'boston',
+            label: translateCityText('city.labels.boston', 'Boston, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [42.3601, -71.0589], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32619',
+                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [42.3601, -71.0589], fallbackDataset: [-71.0589, 42.3601]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ma-boston-current-parcels', idPrefix: 'US-MA-BOSTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0?f=pjson">City of Boston GIS / Assessing · publisher &amp; conditions</a> · fee parcel polygons only · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        indianapolis: {
+            id: 'indianapolis',
+            label: translateCityText('city.labels.indianapolis', 'Indianapolis, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.7684, -86.1581], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [39.7684, -86.1581], fallbackDataset: [-86.1581, 39.7684]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-in-marion-indianapolis-parcels', idPrefix: 'US-IN-MARION-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://www.in.gov/gis/geoinsights/posts/data-harvest/">Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap · publisher &amp; conditions</a> · Marion County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        des_moines: {
+            id: 'des_moines',
+            label: translateCityText('city.labels.des_moines', 'Des Moines, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [41.5868, -93.625], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32615',
+                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [41.5868, -93.625], fallbackDataset: [-93.625, 41.5868]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ia-des-moines-parcels', idPrefix: 'US-IA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0">Iowa Department of Homeland Security &amp; Emergency Management; University of Iowa public mirror · publisher &amp; conditions</a> · 2017 snapshot · assessment parcel groups · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lansing: {
+            id: 'lansing',
+            label: translateCityText('city.labels.lansing', 'Lansing, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [42.7325, -84.5555], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [42.7325, -84.5555], fallbackDataset: [-84.5555, 42.7325]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-mi-lansing-parcels', idPrefix: 'US-MI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1">Ingham County Equalization parcel data; public publisher Ingham County Drain Office · publisher &amp; conditions</a> · Ingham County · 2025 data · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        saint_paul: {
+            id: 'saint_paul',
+            label: translateCityText('city.labels.saint_paul', 'Saint Paul, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.9537, -93.09], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32615',
+                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [44.9537, -93.09], fallbackDataset: [-93.09, 44.9537]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-mn-ramsey-saint-paul-parcels', idPrefix: 'US-MN-RAMSEY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: '<a href="https://www.stpaul.gov/departments/planning-and-economic-development/maps-and-data">Ramsey County GIS · publisher &amp; conditions</a> · Ramsey County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jefferson_city: {
+            id: 'jefferson_city',
+            label: translateCityText('city.labels.jefferson_city', 'Jefferson City, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.5767, -92.1735], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32615',
+                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [38.5767, -92.1735], fallbackDataset: [-92.1735, 38.5767]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-mo-jefferson_city-parcels', idPrefix: 'US-MO-JEFFERSON_CITY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 4,
+                attribution: '<a href="https://www.colecounty.org/424/GISMapping">Cole County GIS / Jefferson City (JCMO_ADMIN) · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        helena: {
+            id: 'helena',
+            label: translateCityText('city.labels.helena', 'Helena, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.5891, -112.0391], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32612',
+                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [46.5891, -112.0391], fallbackDataset: [-112.0391, 46.5891]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-mt-helena-parcels', idPrefix: 'US-MT-HELENA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 4,
+                attribution: '<a href="https://www.msl.mt.gov/geoinfo/msdi/cadastral/">Montana Department of Revenue and county GIS offices; integrated by Montana State Library · publisher &amp; conditions</a> · Identified parcels; rows without a native ID omitted · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lincoln: {
+            id: 'lincoln',
+            label: translateCityText('city.labels.lincoln', 'Lincoln, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.8136, -96.7026], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [40.8136, -96.7026], fallbackDataset: [-96.7026, 40.8136]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ne-lincoln-parcels', idPrefix: 'US-NE-LINCOLN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 4,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=1da5644990874ff2857daffa043b3617">City of Lincoln / Lancaster County (CountyCityPub) · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        concord: {
+            id: 'concord',
+            label: translateCityText('city.labels.concord', 'Concord, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.2081, -71.5376], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32619',
+                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.2081, -71.5376], fallbackDataset: [-71.5376, 43.2081]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-nh-concord-parcels', idPrefix: 'US-NH-CONCORD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.granit.unh.edu/">New Hampshire GRANIT / NH Department of Environmental Services · publisher &amp; conditions</a> · Identified parcels; ambiguous native key omitted · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        trenton: {
+            id: 'trenton',
+            label: translateCityText('city.labels.trenton', 'Trenton, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.2171, -74.7429], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [40.2171, -74.7429], fallbackDataset: [-74.7429, 40.2171]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-nj-trenton-parcels', idPrefix: 'US-NJ-TRENTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://nj.gov/njgin/edata/parcels/">New Jersey Office of Information Technology, Office of GIS (NJOGIS) · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        santa_fe: {
+            id: 'santa_fe',
+            label: translateCityText('city.labels.santa_fe', 'Santa Fe, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.687, -105.9378], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32613',
+                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [35.687, -105.9378], fallbackDataset: [-105.9378, 35.687]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-nm-santa-fe-parcels', idPrefix: 'US-NM-SANTA-FE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.santafecountynm.gov/growth-management/gis">Santa Fe County GIS Division · publisher &amp; conditions</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        albany: {
+            id: 'albany',
+            label: translateCityText('city.labels.albany', 'Albany, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [42.6526, -73.7562], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [42.6526, -73.7562], fallbackDataset: [-73.7562, 42.6526]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ny-albany-parcels', idPrefix: 'US-NY-ALBANY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://gis.ny.gov/parcel-polygon-metadata">New York State Office of Information Technology Services, Geospatial Services; contributing counties · publisher &amp; conditions</a> · Albany County · 2024 data, published May 2026 · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        raleigh: {
+            id: 'raleigh',
+            label: translateCityText('city.labels.raleigh', 'Raleigh, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.7796, -78.6382], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [35.7796, -78.6382], fallbackDataset: [-78.6382, 35.7796]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-nc-wake-raleigh-parcels', idPrefix: 'US-NC-WAKE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.nconemap.gov/pages/parcels">North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors · publisher &amp; conditions</a> · Wake County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bismarck: {
+            id: 'bismarck',
+            label: translateCityText('city.labels.bismarck', 'Bismarck, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.8083, -100.7837], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [46.8083, -100.7837], fallbackDataset: [-100.7837, 46.8083]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-nd-burleigh-bismarck-parcels', idPrefix: 'US-ND-BURLEIGH-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.gis.nd.gov/parcel-program">North Dakota Information Technology / ND GIS Hub · publisher &amp; conditions</a> · Burleigh County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        columbus: {
+            id: 'columbus',
+            label: translateCityText('city.labels.columbus', 'Columbus, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.9612, -82.9988], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [39.9612, -82.9988], fallbackDataset: [-82.9988, 39.9612]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-oh-franklin-columbus-parcels', idPrefix: 'US-OH-FRANKLIN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS">Franklin County Auditor, GIS · publisher &amp; conditions</a> · Franklin County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        salem: {
+            id: 'salem',
+            label: translateCityText('city.labels.salem', 'Salem, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.9429, -123.0351], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32610',
+                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [44.9429, -123.0351], fallbackDataset: [-123.0351, 44.9429]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-or-marion-salem-parcels', idPrefix: 'US-OR-MARION-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.co.marion.or.us/AO">Marion County Assessor and GIS · publisher &amp; conditions</a> · Marion County coverage; West Salem excluded · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        nashville: {
+            id: 'nashville',
+            label: translateCityText('city.labels.nashville', 'Nashville, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [36.1627, -86.7816], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [36.1627, -86.7816], fallbackDataset: [-86.7816, 36.1627]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-tn-nashville-parcels', idPrefix: 'US-TN-NASHVILLE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.nashville.gov/departments/planning/mapping-and-gis">Metro Nashville GIS · publisher &amp; conditions</a> · Davidson County; Bounded capital-area acceptance does not establish full county coverage or currency. · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        austin: {
+            id: 'austin',
+            label: translateCityText('city.labels.austin', 'Austin, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [30.2672, -97.7431], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [30.2672, -97.7431], fallbackDataset: [-97.7431, 30.2672]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-tx-austin-parcels', idPrefix: 'US-TX-TRAVIS-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0">City of Austin / Travis Central Appraisal District · publisher &amp; conditions</a> · City of Austin official TCAD parcel layer; Travis County capital-area scope. · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        salt_lake_city: {
+            id: 'salt_lake_city',
+            label: translateCityText('city.labels.salt_lake_city', 'Salt Lake City, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.7608, -111.891], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32612',
+                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [40.7608, -111.891], fallbackDataset: [-111.891, 40.7608]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ut-salt-lake-city-parcels', idPrefix: 'US-UT-SALTLAKE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://gis.utah.gov/products/sgid/cadastre/parcels/">Utah Geospatial Resource Center and local government · publisher &amp; conditions</a> · Official source; bounded capital-area checks do not establish full jurisdictional coverage. · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        montpelier: {
+            id: 'montpelier',
+            label: translateCityText('city.labels.montpelier', 'Montpelier, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.2601, -72.5754], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [44.2601, -72.5754], fallbackDataset: [-72.5754, 44.2601]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-vt-montpelier-parcels', idPrefix: 'US-VT-MONTPELIER-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.montpelier-vt.org/528/Maps-GIS">Vermont Center for Geographic Information / local municipalities · publisher &amp; conditions</a> · 2025 assessment accounts · may include multiple lots; unidentified shapes excluded · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        richmond: {
+            id: 'richmond',
+            label: translateCityText('city.labels.richmond', 'Richmond, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [37.5407, -77.436], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [37.5407, -77.436], fallbackDataset: [-77.436, 37.5407]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-va-richmond-parcels', idPrefix: 'US-VA-RICHMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management · publisher &amp; conditions</a> · Official source; bounded capital-area checks do not establish full jurisdictional coverage. · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        carson_city: {
+            id: 'carson_city',
+            label: translateCityText('city.labels.carson_city', 'Carson City, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.1638, -119.7674], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [39.1638, -119.7674], fallbackDataset: [-119.7674, 39.1638]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-nv-carson_city-parcels', idPrefix: 'US-NV-CARSON_CITY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 4,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=7816480981d44f8fbc30a326144d32e1">Nevada Division of Water Resources / State Demographer · publisher &amp; conditions</a> · State compilation · source date January 2026 · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        charleston: {
+            id: 'charleston',
+            label: translateCityText('city.labels.charleston', 'Charleston, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.3498, -81.6326], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [38.3498, -81.6326], fallbackDataset: [-81.6326, 38.3498]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-wv-charleston-parcels', idPrefix: 'US-WV-CHARLESTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0">West Virginia GIS Technical Center / county assessors · publisher &amp; conditions</a> · Tax Year 2023 · assessment mapping · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cheyenne: {
+            id: 'cheyenne',
+            label: translateCityText('city.labels.cheyenne', 'Cheyenne, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [41.14, -104.8202], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32613',
+                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [41.14, -104.8202], fallbackDataset: [-104.8202, 41.14]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-wy-cheyenne-parcels', idPrefix: 'US-WY-CHEYENNE-LARAMIE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2">Laramie County · publisher &amp; conditions</a> · Laramie County assessment parcels · unidentified shapes excluded · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        columbia: {
+            id: 'columbia',
+            label: translateCityText('city.labels.columbia', 'Columbia, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [34.0007, -81.0348], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [34.0007, -81.0348], fallbackDataset: [-81.0348, 34.0007]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-sc-columbia-parcels', idPrefix: 'US-SC-COLUMBIA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/info/iteminfo">Woolpert / Richland and Lexington County tax-parcel data · publisher &amp; conditions</a> · Partial source: 456 polygons · update year not established · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        harrisburg: {
+            id: 'harrisburg',
+            label: translateCityText('city.labels.harrisburg', 'Harrisburg, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.2732, -76.8867], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [40.2732, -76.8867], fallbackDataset: [-76.8867, 40.2732]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-pa-harrisburg-parcels', idPrefix: 'US-PA-HARRISBURG-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0">City of Harrisburg GIS / Dauphin County Tax Assessment · publisher &amp; conditions</a> · September 2026 · complete native PID parcel groups · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jackson: {
+            id: 'jackson',
+            label: translateCityText('city.labels.jackson', 'Jackson, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [32.2988, -90.1848], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32615',
+                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [32.2988, -90.1848], fallbackDataset: [-90.1848, 32.2988]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ms-jackson-parcels', idPrefix: 'US-MS-JACKSON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer">Mississippi Department of Environmental Quality / Hinds County Tax Assessor / Tristate Consulting · publisher &amp; conditions</a> · MDEQ Hinds County compilation · update year not established · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        madison: {
+            id: 'madison',
+            label: translateCityText('city.labels.madison', 'Madison, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.0731, -89.4012], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.0731, -89.4012], fallbackDataset: [-89.4012, 43.0731]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-wi-madison-parcels', idPrefix: 'US-WI-MADISON-DANE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0">Wisconsin State Cartographer’s Office / Dane County · publisher &amp; conditions</a> · V12 2026 compilation · Dane County · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        olympia: {
+            id: 'olympia',
+            label: translateCityText('city.labels.olympia', 'Olympia, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.0379, -122.9007], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32610',
+                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [47.0379, -122.9007], fallbackDataset: [-122.9007, 47.0379]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-wa-olympia-parcels', idPrefix: 'US-WA-OLYMPIA-THURSTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4">Thurston County · publisher &amp; conditions</a> · Active assessor-property footprints · may include multiple lots · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        providence: {
+            id: 'providence',
+            label: translateCityText('city.labels.providence', 'Providence, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [41.824, -71.4128], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32619',
+                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [41.824, -71.4128], fallbackDataset: [-71.4128, 41.824]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ri-providence-parcels', idPrefix: 'US-RI-PROVIDENCE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=bab934a85fe94f1d885dcaa6b3f16229">City of Providence GIS · publisher &amp; conditions</a> · 2011–2018 canopy-study mirror · identified CAMA-link groups · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tallahassee: {
+            id: 'tallahassee',
+            label: translateCityText('city.labels.tallahassee', 'Tallahassee, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [30.4383, -84.2807], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [30.4383, -84.2807], fallbackDataset: [-84.2807, 30.4383]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-fl-tallahassee-parcels', idPrefix: 'US-FL-TALLAHASSEE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=0647430cc90e435093e9d064cb22481f">Tallahassee-Leon County Planning Department / TLCGIS · publisher &amp; conditions</a> · November 2025 parcel-based mirror · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        topeka: {
+            id: 'topeka',
+            label: translateCityText('city.labels.topeka', 'Topeka, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.0473, -95.6752], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [39.0473, -95.6752], fallbackDataset: [-95.6752, 39.0473]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-ks-topeka-parcels', idPrefix: 'US-KS-TOPEKA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://snco.gov/ap/mapping.php">Shawnee County Appraiser GIS and Mapping Division · publisher &amp; conditions</a> · Shawnee County assessment parcels · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

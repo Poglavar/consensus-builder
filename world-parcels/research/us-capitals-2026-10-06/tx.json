@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "TX",
+  "state": "Texas",
+  "capital": "Austin",
+  "centerLatLon": [
+    30.2672,
+    -97.7431
+  ],
+  "query": {
+    "language": "English",
+    "text": "Austin Travis County parcel GIS official parcel boundaries ArcGIS"
+  },
+  "references": [
+    {
+      "url": "https://taxmaps.traviscountytx.gov/arcgis/rest/services/Parcels/FeatureServer",
+      "observation": "Official county GIS/parcel source found by the recorded English web query."
+    },
+    {
+      "url": "https://taxmaps.traviscountytx.gov/arcgis/rest/services/Parcels/FeatureServer/0",
+      "observation": "Candidate parcel source/official viewer."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://taxmaps.traviscountytx.gov/arcgis/rest/services/Parcels/FeatureServer/0?f=pjson",
+      "status": "timeout (20 s)",
+      "contentType": "unknown",
+      "assessment": "Direct request with browser-like User-Agent, Accept, Accept-Language timed out at 20 seconds; endpoint was retried once."
+    },
+    {
+      "url": "https://taxmaps.traviscountytx.gov/arcgis/rest/services/Parcels/FeatureServer/0?f=pjson",
+      "status": "timeout (20 s)",
+      "contentType": "unknown",
+      "assessment": "Second request using curl with the same browser-like headers timed out at 20 seconds."
+    }
+  ],
+  "source": {
+    "endpoint": "https://taxmaps.traviscountytx.gov/arcgis/rest/services/Parcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Travis County Parcels",
+    "operator": "Travis Central Appraisal District / Travis County tax maps",
+    "scope": "Travis County",
+    "idField": null,
+    "objectIdField": null,
+    "idType": null,
+    "idPattern": null,
+    "outFields": [],
+    "parcelNumberField": null,
+    "metricSrid": null,
+    "idPrefix": null
+  },
+  "verification": {
+    "bbox": null,
+    "count": null,
+    "nativeIDs": [],
+    "nullIDs": null,
+    "duplicateIDs": null,
+    "exactCount": null,
+    "geometryvalid": null,
+    "capitalLocation": false,
+    "dataFound": false,
+    "nativeIDVerified": false,
+    "adapterReady": false,
+    "dataFormat": "ArcGIS FeatureServer candidate; not reached due timeouts."
+  },
+  "status": "temporarily_unavailable",
+  "remainingUncertainty": "The attempted Travis County service timed out on two metadata requests. Treat this as temporary request/service unavailability, not absence of parcel data."
+}

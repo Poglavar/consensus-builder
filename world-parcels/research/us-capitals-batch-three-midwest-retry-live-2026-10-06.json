@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "jackson",
+      "stateCode": "MS",
+      "sourceId": "us-ms-jackson-parcels",
+      "endpoint": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider is unavailable.",
+        "code": "parcel-source-unavailable",
+        "cause": "fetch failed"
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 271
+      }
+    },
+    {
+      "city": "helena",
+      "stateCode": "MT",
+      "sourceId": "us-mt-helena-parcels",
+      "endpoint": "https://gisservice.mt.gov/ArcGIS/rest/services/msdi_cadastral_map_v1/MapServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0425,
+            46.585,
+            -112.04,
+            46.5875
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.04,
+            46.585,
+            -112.03750000000001,
+            46.5875
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03750000000001,
+            46.585,
+            -112.03500000000001,
+            46.5875
+          ],
+          "count": 75,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0425,
+            46.5875,
+            -112.04,
+            46.589999999999996
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.04,
+            46.5875,
+            -112.03750000000001,
+            46.589999999999996
+          ],
+          "count": 49,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03750000000001,
+            46.5875,
+            -112.03500000000001,
+            46.589999999999996
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0425,
+            46.589999999999996,
+            -112.04,
+            46.5925
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.04,
+            46.589999999999996,
+            -112.03750000000001,
+            46.5925
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03750000000001,
+            46.589999999999996,
+            -112.03500000000001,
+            46.5925
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03500000000001,
+            46.585,
+            -112.03250000000001,
+            46.5875
+          ],
+          "count": 85,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03250000000001,
+            46.585,
+            -112.03,
+            46.5875
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03,
+            46.585,
+            -112.0275,
+            46.5875
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03500000000001,
+            46.5875,
+            -112.03250000000001,
+            46.589999999999996
+          ],
+          "count": 63,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03250000000001,
+            46.5875,
+            -112.03,
+            46.589999999999996
+          ],
+          "count": 74,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03,
+            46.5875,
+            -112.0275,
+            46.589999999999996
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03500000000001,
+            46.589999999999996,
+            -112.03250000000001,
+            46.5925
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03250000000001,
+            46.589999999999996,
+            -112.03,
+            46.5925
+          ],
+          "count": 62,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03,
+            46.589999999999996,
+            -112.0275,
+            46.5925
+          ],
+          "count": 76,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -112.04,
+          46.589999999999996,
+          -112.03750000000001,
+          46.5925
+        ],
+        "forcedPageSize": 3,
+        "count": 32,
+        "returned": 32,
+        "complete": true
+      },
+      "status": "passed-nonpromotable-legacy-filter",
+      "viewportCells": 18,
+      "uniqueNativeIds": 839,
+      "exactResolved": 839,
+      "nativeIds": [
+        "05188831233037000",
+        "05188831234210000",
+        "05188831234090000"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mt-helena-parcels",
+        "parcels": 1,
+        "siteM2": 992.61
+      },
+      "requests": 43,
+      "note": "Superseded by fresh explicit attributeNotNull acceptance in Helena final proof."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Local sandbox network probe only: not provider failure evidence; public gate was rerun with escalation.",
+  "sources": [
+    {
+      "city": "lansing",
+      "stateCode": "MI",
+      "sourceId": "us-mi-lansing-parcels",
+      "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+      "attempts": [],
+      "status": "sandbox_network_failure_not_provider_failure",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider is unavailable.",
+        "code": "parcel-source-unavailable",
+        "cause": "fetch failed"
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "count",
+        "parameterLength": 177
+      }
+    }
+  ]
+}

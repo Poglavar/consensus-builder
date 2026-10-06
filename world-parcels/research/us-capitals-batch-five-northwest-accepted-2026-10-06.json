@@ -1,0 +1,1289 @@
+{
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "city": "charleston",
+      "stateCode": "WV",
+      "sourceId": "us-wv-charleston-parcels",
+      "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.345000000000006,
+            -81.635,
+            38.347500000000004
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.345000000000006,
+            -81.63250000000001,
+            38.347500000000004
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.345000000000006,
+            -81.63000000000001,
+            38.347500000000004
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.347500000000004,
+            -81.635,
+            38.35
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.347500000000004,
+            -81.63250000000001,
+            38.35
+          ],
+          "count": 84,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.347500000000004,
+            -81.63000000000001,
+            38.35
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.35,
+            -81.635,
+            38.352500000000006
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.35,
+            -81.63250000000001,
+            38.352500000000006
+          ],
+          "count": 78,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.35,
+            -81.63000000000001,
+            38.352500000000006
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.345000000000006,
+            -81.62750000000001,
+            38.347500000000004
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.345000000000006,
+            -81.625,
+            38.347500000000004
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.345000000000006,
+            -81.6225,
+            38.347500000000004
+          ],
+          "count": 82,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.347500000000004,
+            -81.62750000000001,
+            38.35
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.347500000000004,
+            -81.625,
+            38.35
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.347500000000004,
+            -81.6225,
+            38.35
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.35,
+            -81.62750000000001,
+            38.352500000000006
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.35,
+            -81.625,
+            38.352500000000006
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.35,
+            -81.6225,
+            38.352500000000006
+          ],
+          "count": 20,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -81.6375,
+          38.345000000000006,
+          -81.635,
+          38.347500000000004
+        ],
+        "forcedPageSize": 3,
+        "count": 8,
+        "returned": 8,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 766,
+      "exactResolved": 766,
+      "nativeIds": [
+        "20110013000100000000",
+        "20110013000500000000",
+        "20110013000800000000"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wv-charleston-parcels",
+        "parcels": 1,
+        "siteM2": 3944.3
+      },
+      "requests": 34,
+      "case": {
+        "city": "charleston",
+        "center": [
+          38.3498,
+          -81.6326
+        ],
+        "liveRadiusKm": 6,
+        "descriptor": {
+          "id": "us-wv-charleston-parcels",
+          "name": "West Virginia statewide parcels — Charleston",
+          "adapter": "arcgis",
+          "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+          "idField": "CleanParcelID",
+          "objectIdField": "OBJECTID",
+          "idType": "string",
+          "idPattern": "^[0-9]{20}$",
+          "idPrefix": "US-WV-CHARLESTON-",
+          "outFields": [
+            "OBJECTID",
+            "CleanParcelID"
+          ],
+          "parcelNumberField": "CleanParcelID",
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "metricSrid": 32617,
+          "countryCode": "US",
+          "stateCode": "WV",
+          "cityIds": [
+            "charleston"
+          ],
+          "operator": "West Virginia GIS Technical Center / county assessors",
+          "scope": "West Virginia assessment compilation with county-qualified CleanParcelID; configured for Charleston only, no statewide completeness claim.",
+          "catalogueUrl": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+          "caveats": [
+            "Assessment mapping; coverage and update dates vary.",
+            "Live service declares Tax Year 2023."
+          ],
+          "maxConcurrentQueries": 2
+        },
+        "sourceNote": "Tax Year 2023 · assessment mapping"
+      },
+      "proposedDescriptor": {
+        "id": "us-wv-charleston-parcels",
+        "name": "West Virginia statewide parcels — Charleston",
+        "adapter": "arcgis",
+        "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+        "idField": "CleanParcelID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": "^[0-9]{20}$",
+        "idPrefix": "US-WV-CHARLESTON-",
+        "outFields": [
+          "OBJECTID",
+          "CleanParcelID"
+        ],
+        "parcelNumberField": "CleanParcelID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 32617,
+        "countryCode": "US",
+        "stateCode": "WV",
+        "cityIds": [
+          "charleston"
+        ],
+        "operator": "West Virginia GIS Technical Center / county assessors",
+        "scope": "West Virginia assessment compilation with county-qualified CleanParcelID; configured for Charleston only, no statewide completeness claim.",
+        "catalogueUrl": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+        "caveats": [
+          "Assessment mapping; coverage and update dates vary.",
+          "Live service declares Tax Year 2023."
+        ],
+        "maxConcurrentQueries": 2
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-five-northwest-scoped-live-2026-10-06.json",
+      "runtimeReadiness": "live-acceptance-passed-pending-configuration",
+      "sourceNote": "Tax Year 2023 · assessment mapping"
+    },
+    {
+      "city": "olympia",
+      "stateCode": "WA",
+      "sourceId": "us-wa-olympia-parcels",
+      "endpoint": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.905,
+            47.035000000000004,
+            -122.9025,
+            47.0375
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.9025,
+            47.035000000000004,
+            -122.9,
+            47.0375
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.9,
+            47.035000000000004,
+            -122.89750000000001,
+            47.0375
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.905,
+            47.0375,
+            -122.9025,
+            47.04
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.9025,
+            47.0375,
+            -122.9,
+            47.04
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.9,
+            47.0375,
+            -122.89750000000001,
+            47.04
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.905,
+            47.04,
+            -122.9025,
+            47.042500000000004
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.9025,
+            47.04,
+            -122.9,
+            47.042500000000004
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.9,
+            47.04,
+            -122.89750000000001,
+            47.042500000000004
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.89750000000001,
+            47.035000000000004,
+            -122.89500000000001,
+            47.0375
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.89500000000001,
+            47.035000000000004,
+            -122.8925,
+            47.0375
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.8925,
+            47.035000000000004,
+            -122.89,
+            47.0375
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.89750000000001,
+            47.0375,
+            -122.89500000000001,
+            47.04
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.89500000000001,
+            47.0375,
+            -122.8925,
+            47.04
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.8925,
+            47.0375,
+            -122.89,
+            47.04
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.89750000000001,
+            47.04,
+            -122.89500000000001,
+            47.042500000000004
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.89500000000001,
+            47.04,
+            -122.8925,
+            47.042500000000004
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -122.8925,
+            47.04,
+            -122.89,
+            47.042500000000004
+          ],
+          "count": 12,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -122.9,
+          47.035000000000004,
+          -122.89750000000001,
+          47.0375
+        ],
+        "forcedPageSize": 3,
+        "count": 7,
+        "returned": 6,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 342,
+      "exactResolved": 342,
+      "nativeIds": [
+        "09850005000",
+        "31300100100",
+        "31300300100"
+      ],
+      "footprintCount": 8,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wa-olympia-parcels",
+        "parcels": 1,
+        "siteM2": 160784.93
+      },
+      "requests": 146,
+      "case": {
+        "city": "olympia",
+        "center": [
+          47.0379,
+          -122.9007
+        ],
+        "liveRadiusKm": 6,
+        "descriptor": {
+          "id": "us-wa-olympia-parcels",
+          "name": "Thurston County parcels — olympia",
+          "adapter": "arcgis",
+          "endpoint": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+          "idField": "PARCEL_NO",
+          "objectIdField": "OBJECTID",
+          "idType": "string",
+          "idPrefix": "US-WA-OLYMPIA-THURSTON-",
+          "outFields": [
+            "OBJECTID",
+            "PARCEL_NO",
+            "STATUS_IND"
+          ],
+          "parcelNumberField": "PARCEL_NO",
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "maxConcurrentQueries": 2,
+          "metricSrid": 32610,
+          "countryCode": "US",
+          "stateCode": "WA",
+          "cityIds": [
+            "olympia"
+          ],
+          "operator": "Thurston County",
+          "scope": "Thurston County assessment parcel mapping configured for olympia. Native identifier namespace is county-scoped.",
+          "catalogueUrl": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+          "caveats": [
+            "Assessment mapping; not a boundary survey.",
+            "Native PARCEL_NO is the county’s 11-digit assessor property identifier. The complete set of source polygons with this property identifier is treated as one assessment-property footprint, without asserting it is one legal lot.",
+            "Only active assessment-property records STATUS_IND=A are configured. Fabric-only records without assessment lifecycle attributes include short internal numbers, RR and UNKNOWN and are outside this scope."
+          ],
+          "idPattern": "^[0-9]{11}$",
+          "nativeGeometryMode": "parts",
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids",
+          "partsCoordinatePrecision": 9,
+          "attributeFilters": {
+            "STATUS_IND": "A"
+          }
+        },
+        "sourceNote": "Active Thurston County assessor property footprints · multiple mapped components fully enumerated"
+      },
+      "proposedDescriptor": {
+        "id": "us-wa-olympia-parcels",
+        "name": "Thurston County parcels — olympia",
+        "adapter": "arcgis",
+        "endpoint": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+        "idField": "PARCEL_NO",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPrefix": "US-WA-OLYMPIA-THURSTON-",
+        "outFields": [
+          "OBJECTID",
+          "PARCEL_NO",
+          "STATUS_IND"
+        ],
+        "parcelNumberField": "PARCEL_NO",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "metricSrid": 32610,
+        "countryCode": "US",
+        "stateCode": "WA",
+        "cityIds": [
+          "olympia"
+        ],
+        "operator": "Thurston County",
+        "scope": "Thurston County assessment parcel mapping configured for olympia. Native identifier namespace is county-scoped.",
+        "catalogueUrl": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+        "caveats": [
+          "Assessment mapping; not a boundary survey.",
+          "Native PARCEL_NO is the county’s 11-digit assessor property identifier. The complete set of source polygons with this property identifier is treated as one assessment-property footprint, without asserting it is one legal lot.",
+          "Only active assessment-property records STATUS_IND=A are configured. Fabric-only records without assessment lifecycle attributes include short internal numbers, RR and UNKNOWN and are outside this scope."
+        ],
+        "idPattern": "^[0-9]{11}$",
+        "nativeGeometryMode": "parts",
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "partsCoordinatePrecision": 9,
+        "attributeFilters": {
+          "STATUS_IND": "A"
+        }
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-five-northwest-scoped-live-2026-10-06.json",
+      "runtimeReadiness": "live-acceptance-passed-pending-configuration",
+      "sourceNote": "Active Thurston County assessor property footprints · multiple mapped components fully enumerated"
+    },
+    {
+      "city": "madison",
+      "stateCode": "WI",
+      "sourceId": "us-wi-madison-parcels",
+      "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.405,
+            43.07,
+            -89.4025,
+            43.0725
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4025,
+            43.07,
+            -89.4,
+            43.0725
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4,
+            43.07,
+            -89.39750000000001,
+            43.0725
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.405,
+            43.0725,
+            -89.4025,
+            43.074999999999996
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4025,
+            43.0725,
+            -89.4,
+            43.074999999999996
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4,
+            43.0725,
+            -89.39750000000001,
+            43.074999999999996
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.405,
+            43.074999999999996,
+            -89.4025,
+            43.0775
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4025,
+            43.074999999999996,
+            -89.4,
+            43.0775
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.4,
+            43.074999999999996,
+            -89.39750000000001,
+            43.0775
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39750000000001,
+            43.07,
+            -89.39500000000001,
+            43.0725
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39500000000001,
+            43.07,
+            -89.3925,
+            43.0725
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.3925,
+            43.07,
+            -89.39,
+            43.0725
+          ],
+          "count": 95,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39750000000001,
+            43.0725,
+            -89.39500000000001,
+            43.074999999999996
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39500000000001,
+            43.0725,
+            -89.3925,
+            43.074999999999996
+          ],
+          "count": 57,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.3925,
+            43.0725,
+            -89.39,
+            43.074999999999996
+          ],
+          "count": 57,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39750000000001,
+            43.074999999999996,
+            -89.39500000000001,
+            43.0775
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.39500000000001,
+            43.074999999999996,
+            -89.3925,
+            43.0775
+          ],
+          "count": 78,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -89.3925,
+            43.074999999999996,
+            -89.39,
+            43.0775
+          ],
+          "count": 97,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -89.4025,
+          43.0725,
+          -89.4,
+          43.074999999999996
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 546,
+      "exactResolved": 546,
+      "nativeIds": [
+        "070922101020",
+        "070922108018",
+        "070922108076"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wi-madison-parcels",
+        "parcels": 1,
+        "siteM2": 10533.24
+      },
+      "requests": 30,
+      "case": {
+        "city": "madison",
+        "center": [
+          43.0731,
+          -89.4012
+        ],
+        "liveRadiusKm": 6,
+        "descriptor": {
+          "id": "us-wi-madison-parcels",
+          "name": "Dane County parcels — madison",
+          "adapter": "arcgis",
+          "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+          "idField": "PARCELID",
+          "objectIdField": "OBJECTID",
+          "idType": "string",
+          "idPrefix": "US-WI-MADISON-DANE-",
+          "outFields": [
+            "OBJECTID",
+            "PARCELID",
+            "CONAME"
+          ],
+          "parcelNumberField": "PARCELID",
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "maxConcurrentQueries": 2,
+          "metricSrid": 32616,
+          "countryCode": "US",
+          "stateCode": "WI",
+          "cityIds": [
+            "madison"
+          ],
+          "operator": "Wisconsin State Cartographer’s Office / Dane County",
+          "scope": "Dane County assessment parcel mapping configured for madison. Native identifier namespace is county-scoped.",
+          "catalogueUrl": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+          "caveats": [
+            "Assessment mapping; not a boundary survey."
+          ],
+          "attributeFilters": {
+            "CONAME": "DANE"
+          }
+        },
+        "sourceNote": "V12 2026 statewide compilation · Dane County assessment mapping"
+      },
+      "proposedDescriptor": {
+        "id": "us-wi-madison-parcels",
+        "name": "Dane County parcels — madison",
+        "adapter": "arcgis",
+        "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+        "idField": "PARCELID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPrefix": "US-WI-MADISON-DANE-",
+        "outFields": [
+          "OBJECTID",
+          "PARCELID",
+          "CONAME"
+        ],
+        "parcelNumberField": "PARCELID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "metricSrid": 32616,
+        "countryCode": "US",
+        "stateCode": "WI",
+        "cityIds": [
+          "madison"
+        ],
+        "operator": "Wisconsin State Cartographer’s Office / Dane County",
+        "scope": "Dane County assessment parcel mapping configured for madison. Native identifier namespace is county-scoped.",
+        "catalogueUrl": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+        "caveats": [
+          "Assessment mapping; not a boundary survey."
+        ],
+        "attributeFilters": {
+          "CONAME": "DANE"
+        }
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-five-northwest-scoped-live-2026-10-06.json",
+      "runtimeReadiness": "live-acceptance-passed-pending-configuration",
+      "sourceNote": "V12 2026 statewide compilation · Dane County assessment mapping"
+    },
+    {
+      "city": "cheyenne",
+      "stateCode": "WY",
+      "sourceId": "us-wy-cheyenne-parcels",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.1375,
+            -104.8225,
+            41.14
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.1375,
+            -104.82000000000001,
+            41.14
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.1375,
+            -104.81750000000001,
+            41.14
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.14,
+            -104.8225,
+            41.1425
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.14,
+            -104.82000000000001,
+            41.1425
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.14,
+            -104.81750000000001,
+            41.1425
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.1425,
+            -104.8225,
+            41.145
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.1425,
+            -104.82000000000001,
+            41.145
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.1425,
+            -104.81750000000001,
+            41.145
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.1375,
+            -104.81500000000001,
+            41.14
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.1375,
+            -104.8125,
+            41.14
+          ],
+          "count": 70,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.1375,
+            -104.81,
+            41.14
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.14,
+            -104.81500000000001,
+            41.1425
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.14,
+            -104.8125,
+            41.1425
+          ],
+          "count": 71,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.14,
+            -104.81,
+            41.1425
+          ],
+          "count": 80,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.1425,
+            -104.81500000000001,
+            41.145
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.1425,
+            -104.8125,
+            41.145
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.1425,
+            -104.81,
+            41.145
+          ],
+          "count": 9,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -104.8125,
+          41.1425,
+          -104.81,
+          41.145
+        ],
+        "forcedPageSize": 3,
+        "count": 9,
+        "returned": 9,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 733,
+      "exactResolved": 733,
+      "nativeIds": [
+        "14663125900400",
+        "14663125900500",
+        "14663126000400"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wy-cheyenne-parcels",
+        "parcels": 1,
+        "siteM2": 812.92
+      },
+      "requests": 96,
+      "case": {
+        "city": "cheyenne",
+        "center": [
+          41.14,
+          -104.8202
+        ],
+        "liveRadiusKm": 6,
+        "descriptor": {
+          "id": "us-wy-cheyenne-parcels",
+          "name": "Laramie County parcels — cheyenne",
+          "adapter": "arcgis",
+          "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+          "idField": "statepidn",
+          "objectIdField": "objectid",
+          "idType": "string",
+          "idPrefix": "US-WY-CHEYENNE-LARAMIE-",
+          "outFields": [
+            "objectid",
+            "statepidn",
+            "accountno"
+          ],
+          "parcelNumberField": "statepidn",
+          "pageSize": 500,
+          "maxFeatures": 10000,
+          "maxBboxKm2": 25,
+          "maxConcurrentQueries": 2,
+          "metricSrid": 32613,
+          "countryCode": "US",
+          "stateCode": "WY",
+          "cityIds": [
+            "cheyenne"
+          ],
+          "operator": "Laramie County",
+          "scope": "Laramie County assessment parcel mapping configured for cheyenne. Native identifier namespace is county-scoped.",
+          "catalogueUrl": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+          "caveats": [
+            "Assessment mapping; not a boundary survey.",
+            "Assessment parcels with accountno present only; RAILROAD placeholder with null assessment account and lifecycle fields is excluded."
+          ],
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids",
+          "attributeNotNull": [
+            "accountno"
+          ]
+        },
+        "sourceNote": "Laramie County account-identified assessment parcel mapping"
+      },
+      "proposedDescriptor": {
+        "id": "us-wy-cheyenne-parcels",
+        "name": "Laramie County parcels — cheyenne",
+        "adapter": "arcgis",
+        "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+        "idField": "statepidn",
+        "objectIdField": "objectid",
+        "idType": "string",
+        "idPrefix": "US-WY-CHEYENNE-LARAMIE-",
+        "outFields": [
+          "objectid",
+          "statepidn",
+          "accountno"
+        ],
+        "parcelNumberField": "statepidn",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "metricSrid": 32613,
+        "countryCode": "US",
+        "stateCode": "WY",
+        "cityIds": [
+          "cheyenne"
+        ],
+        "operator": "Laramie County",
+        "scope": "Laramie County assessment parcel mapping configured for cheyenne. Native identifier namespace is county-scoped.",
+        "catalogueUrl": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+        "caveats": [
+          "Assessment mapping; not a boundary survey.",
+          "Assessment parcels with accountno present only; RAILROAD placeholder with null assessment account and lifecycle fields is excluded."
+        ],
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "attributeNotNull": [
+          "accountno"
+        ]
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-five-northwest-cheyenne-featureserver-live-2026-10-06.json",
+      "runtimeReadiness": "live-acceptance-passed-pending-configuration",
+      "sourceNote": "Laramie County account-identified assessment parcel mapping"
+    }
+  ]
+}

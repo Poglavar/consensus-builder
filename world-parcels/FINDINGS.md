@@ -183,3 +183,130 @@ Belo Horizonte, Kyiv, additional Chinese cadastral lookups and several South Asi
 state/province services. These are not additional verified parcel feeds yet: some are
 catalogs, map renderers, scanned products or authenticated systems, and their vector
 geometry, stable IDs, complete bounded reads and coverage still need testing.
+
+## All U.S. capitals and next five integrations (2026-10-06)
+
+The fresh research cohort is the 50 state capitals plus Washington, D.C. (51
+jurisdictions). Its queue, executed searches, publisher URLs, attempted requests and
+assessments are saved under `research/us-capitals-2026-10-06/`; `index.json` separates
+parcel-data discovery from adapter readiness. Forty capital areas yielded polygon
+samples, including two with unresolved native identity; 11 retain published leads
+without an obtained capital polygon sample. Access failures, incompatible formats,
+zero windows and erroneous projection results do not establish data absence. The
+Jefferson City record also retains Cole County's official parcel ZIP download lead.
+
+Montgomery, Juneau, Phoenix, Little Rock and Sacramento are now configured through
+live adapters, bringing the app to 49 cities. Before this batch, configured U.S. city
+sources represented four states plus D.C.; now they represent eight states plus D.C.
+These counts describe city providers, not complete state parcel inventories. There
+are seven configured capitals and 44 remaining: 31 with initial native sample proof,
+two with sampled polygons needing identity work, and 11 needing access/format checks.
+
+All five new cities passed 18 bounded cells, complete paging or OID manifests, exact
+reads of every retained canonical identity with matching geometry and authoritative
+binding. Juneau's older server requires full native geometry-group assembly and a
+shared provider query limit; the default adapter still rejects ambiguous duplicate
+identity elsewhere. Sacramento uses full subparcel identifiers rather than shortened
+APN10. Scope exclusions, upstream outages and corrected initial failures remain saved
+in `research/us-capitals-live-batch-2026-10-06.json` and linked attempt records. Source
+conditions remain informational, and no parcel geometry was imported into the database.
+
+## U.S. capitals: second live batch (2026-10-06)
+
+Ten more capitals are configured: Hartford, Dover, Atlanta, Honolulu, Boise,
+Springfield, Baton Rouge, Augusta, Annapolis and Boston. All passed bounded viewport,
+paging, exact-native geometry and authoritative binding acceptance: 180 cells and
+5,997 exact-resolved identities. Source scopes, group semantics and failed attempts
+are linked from `research/us-capitals-batch-two-live-2026-10-06.json` and registry history.
+Boston uses the current official FeatureServer, whose count/OID manifests agree.
+
+Now 17/51 capitals are configured, leaving 34; 18 states plus D.C. have configured city
+providers. Overall: 59 app cities and 49 executable providers. The original 200-city
+cohort remains 32 configured of 63 verified candidates. Indianapolis and Saint Paul
+also passed live acceptance, with proposed descriptors saved for the next batch.
+Technical access/identity work stays separate from whether data exists. Formats and
+source conditions do not block integration. Lansing's old source was Kansas data;
+actual Ingham leads still need provenance/access and capital acceptance. Des Moines'
+2017 university-mirror sample remains a dated lead requiring full acceptance.
+
+Validation: 259 focused headless tests passed. Headed Boston loading, pointer selection
+and streaming into new cells passed without source warnings or page errors. Scope and
+validation details are in `LIVE-SOURCES.md` and the batch acceptance file.
+
+
+## U.S. capitals: third live batch (2026-10-06)
+
+Indianapolis, Des Moines, Lansing, Saint Paul, Jefferson City, Helena, Lincoln,
+Concord, Trenton and Santa Fe are now configured live. Complete acceptance covered
+180 cells and 8,604 exact native identities, plus authoritative binding. Des Moines
+uses a clearly dated 2017 HSEM university mirror with complete assessment groups;
+Lansing uses verified Ingham County 2025 data. Helena explicitly excludes rows with
+NULL native identity; Concord excludes one diagnosed ambiguous key without guessing
+multipart semantics. Publisher references, failed attempts and aggregate proof are
+saved in `research/us-capitals-batch-three-live-2026-10-06.json` and registry history.
+No parcel geometry was imported into local parcel tables.
+
+Totals: 27/51 capitals configured, 24 remaining; 28 states plus D.C. represented by
+city providers; 69 app cities and 59 executable descriptors. Research has polygon
+samples for 45 capital areas, native sample proof for 42, and six published leads
+without an obtained polygon sample. Albany passed acceptance and is reserved for the
+next batch; its feed is 2024 data published May 2026. Technical holds for Tallahassee,
+Topeka, Frankfort, Jackson and Carson City remain source-linked, with failures distinct
+from data absence. Terms are informational. Original-cohort counts remain unchanged.
+
+Validation: 382 focused headless tests passed across 20 files. Headed Des Moines
+loading, pointer selection and streaming into new cells passed with no source warnings
+or page errors; the 2017 notice was visible. Details are in `LIVE-SOURCES.md`.
+
+
+## U.S. capitals: fourth live batch (2026-10-06)
+
+Albany, Raleigh, Bismarck, Columbus, Salem, Nashville, Austin, Salt Lake City,
+Montpelier and Richmond are now configured live. Strict acceptance covered 180 cells
+and 8,805 exact native identities with matching viewport geometry and authoritative
+binding. Columbus uses complete OID manifests on the official WebMercator FeatureServer
+after offset pagination failed. Montpelier uses documented VCGI SPAN assessment-account
+groups; complete parts/manifests and explicit unidentified-shape exclusions preserve
+that scope. County limits, service dates, corrected local descriptors and failures are
+saved in `research/us-capitals-batch-four-live-2026-10-06.json` and registry history.
+No parcel-table import was required.
+
+Totals: 37/51 capital jurisdictions integrated, 14 remaining; 37 states plus D.C.
+represented by city providers; 79 app cities and 69 executable providers. The research
+cohort has 47 capital polygon samples, 43 with native sample proof and four leads without
+an obtained polygon sample. Original-cohort counts remain unchanged. Charleston passed
+and is reserved for the next batch, with its Tax Year 2023 service date stated.
+Oklahoma City, Harrisburg, Providence, Columbia and Pierre retain specific technical
+or source-scope work; older holds remain recorded. Terms are informational.
+
+All 402 focused headless tests passed. Headed Montpelier loading, pointer selection and
+streaming passed with a visible assessment-source notice and no source warning/page
+error. See `LIVE-SOURCES.md` and the acceptance file for scopes and validation evidence.
+
+
+## U.S. capitals: final remaining batch (2026-10-06)
+
+All 14 remaining jurisdictions were processed; eleven passed and are configured:
+Carson City, Charleston, Cheyenne, Columbia, Harrisburg, Jackson, Madison, Olympia,
+Providence, Tallahassee and Topeka. Strict live acceptance covered 198 viewport cells
+and all 6,067 retained native identities, plus complete footprint binding. Native
+projection fixes Carson City provider count disagreement; FeatureServer manifests
+resolve Cheyenne pagination. Documented complete native groups, active/county scopes
+and unidentified-record exclusions retain source identity. Dated mirrors and Columbia's
+partial 456-polygon coverage are explicit in source notices.
+
+Totals: 48/51 capitals integrated, three technical holds (Frankfort identity; Oklahoma
+City access/coverage; Pierre unavailable feed/access/lineage). All 51 jurisdictions
+have been investigated. There are 47 represented states plus D.C., 52 U.S. app cities,
+90 app cities overall and 80 executable providers. Research has 49 capital polygon
+samples/native sample proof and two leads without an obtained sample. Original cohort
+counts are unchanged. Terms are informational; no parcel-table import occurred.
+
+Final proof and linked failures are in `research/us-capitals-batch-five-live-2026-10-06.json`
+and registry integration history. All 446 focused headless checks passed. Source dates,
+identity decisions, exclusions and technical limitations are detailed in `LIVE-SOURCES.md`.
+
+Headed Jackson parcel loading, pointer selection and streaming into new cells passed.
+Carson City loaded 302 parcels across nine cells through its native-projection adapter;
+rendered outlines and source notice were checked. No source alerts or page errors
+were observed, and the browser was closed after inspection.

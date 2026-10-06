@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "boston",
+      "stateCode": "MA",
+      "sourceId": "us-ma-boston-current-parcels",
+      "endpoint": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/MapServer/0",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 2,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "manifest",
+        "parameterLength": 180,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=UTF-8"
+      }
+    }
+  ]
+}

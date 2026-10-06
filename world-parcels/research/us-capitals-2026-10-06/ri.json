@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "RI",
+  "state": "Rhode Island",
+  "capital": "Providence",
+  "centerLatLon": [
+    41.824,
+    -71.4128
+  ],
+  "query": {
+    "language": "English",
+    "text": "Rhode Island Providence tax parcels GIS official parcel data RIGIS"
+  },
+  "references": [
+    {
+      "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer",
+      "observation": "Official government GIS/parcel portal found by the recorded English web search."
+    },
+    {
+      "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+      "observation": "Candidate official ArcGIS layer endpoint tested at the capital location."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "ArcGIS layer metadata fetched."
+    },
+    {
+      "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0/query?f=geojson&where=1%3D1&geometry=-71.4139%2C41.8229%2C-71.41170000000001%2C41.8251&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PlatLot&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Capital-centered bounded query requested PlatLot plus geometry only; count=3; geometry valid=True; duplicate sampled IDs=False; null IDs=0."
+    },
+    {
+      "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0/query?f=geojson&where=PlatLot%3D%27PR+020-0364-0000%27&outFields=PlatLot&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Exact native-key round trip for sample ID PR 020-0364-0000: 1 matches; valid geometry=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+    "adapter": "arcgis",
+    "name": "RIDEM Assessors Tax Parcels",
+    "operator": "Rhode Island Department of Environmental Management via RIGIS",
+    "scope": "Statewide layer limited to 37 towns per layer copyright",
+    "idField": "PlatLot",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "PlatLot"
+    ],
+    "parcelNumberField": "PlatLot",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -71.4139,
+      41.8229,
+      -71.41170000000001,
+      41.8251
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "PR 020-0364-0000",
+      "PR 020-0364-WKWY",
+      "PR 020-0031-0000"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "Capital-point sample only; municipal/county completeness is untested."
+}

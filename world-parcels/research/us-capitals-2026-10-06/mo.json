@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "MO",
+  "state": "Missouri",
+  "capital": "Jefferson City",
+  "centerLatLon": [
+    38.5767,
+    -92.1735
+  ],
+  "query": {
+    "language": "English",
+    "text": "Jefferson City Missouri Cole County parcel GIS official map service parcels ArcGIS"
+  },
+  "references": [
+    "https://www.colecounty.org/424/GISMapping",
+    "https://midmogis-jeffcitymogis.hub.arcgis.com/",
+    "https://www.midmogis.org/GIS_Hyperlinks/Downloadables/CC_Parcels.zip",
+    "https://www.midmogis.org/server/rest/services/ColeCO/Assessor/MapServer/18"
+  ],
+  "attempts": [
+    {
+      "url": "https://www.midmogis.org/server/rest/services/ColeCO/Assessor/MapServer/18?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "20-second timeout on official Cole County/MidMoGIS parcel MapServer; live metadata and capital sample unverified."
+    },
+    {
+      "url": "https://www.midmogis.org/GIS_Hyperlinks/Downloadables/CC_Parcels.zip",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official Cole County hub search identifies downloadable parcel ZIP; not fetched; likely vector archive lead."
+    }
+  ],
+  "source": {
+    "endpoint": "https://www.midmogis.org/server/rest/services/ColeCO/Assessor/MapServer/18",
+    "adapter": "arcgis",
+    "name": "Parcels - MO - Cole County (MapServer layer 18)",
+    "operator": "Cole County GIS Department / MidMoGIS",
+    "idField": null,
+    "objectIdField": null,
+    "idType": null,
+    "idPattern": null,
+    "outFields": ""
+  },
+  "verification": {
+    "bbox": [
+      -92.1745,
+      38.5757,
+      -92.1725,
+      38.5777
+    ],
+    "count": null,
+    "nativeIDs": [],
+    "exactCount": null,
+    "geometryvalid": null,
+    "capitalLocation": false
+  },
+  "status": "temporarily_unavailable",
+  "nextStep": "Retry the service host or inspect the linked CC_Parcels.zip locally for Cole County parcel geometry and native IDs; use a tiny Jefferson City bbox, then exact-ID roundtrip."
+}

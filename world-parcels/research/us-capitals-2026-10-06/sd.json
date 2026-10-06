@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "SD",
+  "state": "South Dakota",
+  "capital": "Pierre",
+  "centerLatLon": [
+    44.3683,
+    -100.351
+  ],
+  "query": {
+    "language": "English",
+    "text": "Pierre South Dakota parcel GIS Hughes County assessor parcel map official"
+  },
+  "references": [
+    {
+      "url": "https://hughescounty.org/realestate",
+      "observation": "Official county GIS/parcel source found by the recorded English web query."
+    },
+    {
+      "url": "https://beacon.schneidercorp.com/Application.aspx?AppID=940&LayerID=18376&PageID=8187&PageTypeID=2",
+      "observation": "Candidate parcel source/official viewer."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://beacon.schneidercorp.com/Application.aspx?AppID=940&LayerID=18376&PageID=8187&PageTypeID=2",
+      "status": 402,
+      "contentType": "unknown",
+      "assessment": "Official Hughes County page links this Beacon GIS property viewer; browser fetch returned HTTP 402 Payment Required. County portal says map layers are informational, with some detail subscription-gated. No parcel geometry or native ID fetched."
+    }
+  ],
+  "source": {
+    "endpoint": "https://beacon.schneidercorp.com/Application.aspx?AppID=940&LayerID=18376&PageID=8187&PageTypeID=2",
+    "adapter": "beacon-viewer",
+    "name": "Hughes County Real Estate Information (Beacon GIS viewer)",
+    "operator": "Hughes County Equalization Department / Beacon Software",
+    "scope": "Hughes County",
+    "idField": null,
+    "objectIdField": null,
+    "idType": null,
+    "idPattern": null,
+    "outFields": [],
+    "parcelNumberField": null,
+    "metricSrid": null,
+    "idPrefix": null
+  },
+  "verification": {
+    "bbox": null,
+    "count": null,
+    "nativeIDs": [],
+    "nullIDs": null,
+    "duplicateIDs": null,
+    "exactCount": null,
+    "geometryvalid": null,
+    "capitalLocation": false,
+    "dataFound": false,
+    "nativeIDVerified": false,
+    "adapterReady": false,
+    "dataFormat": "Interactive parcel GIS map is documented by the county; service format and open read path unverified."
+  },
+  "status": "lead",
+  "remainingUncertainty": "Official Hughes County Beacon portal advertises GIS information on a map, with subscription access for some data. No public parcel polygon query or exact native-ID read was verified; this does not mean parcel data is absent."
+}

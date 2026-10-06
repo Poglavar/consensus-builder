@@ -1,0 +1,341 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "frankfort",
+      "stateCode": "KY",
+      "sourceId": "us-ky-franklin-frankfort-parcels",
+      "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.197500000000005,
+            -84.875,
+            38.2
+          ],
+          "count": 92,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.875,
+            38.197500000000005,
+            -84.8725,
+            38.2
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8725,
+            38.197500000000005,
+            -84.87,
+            38.2
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.2,
+            -84.875,
+            38.2025
+          ],
+          "count": 35,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 5,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 268,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    },
+    {
+      "city": "baton_rouge",
+      "stateCode": "LA",
+      "sourceId": "us-la-ebr-baton-rouge-parcels",
+      "endpoint": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.19,
+            30.447499999999998,
+            -91.1875,
+            30.45
+          ],
+          "count": 87,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 2,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 273,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    },
+    {
+      "city": "augusta",
+      "stateCode": "ME",
+      "sourceId": "us-me-augusta-parcels",
+      "endpoint": "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Parcels_Organized_Towns/FeatureServer/10",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.7825,
+            44.307500000000005,
+            -69.78,
+            44.31
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.78,
+            44.307500000000005,
+            -69.7775,
+            44.31
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.7775,
+            44.307500000000005,
+            -69.775,
+            44.31
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.7825,
+            44.31,
+            -69.78,
+            44.3125
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.78,
+            44.31,
+            -69.7775,
+            44.3125
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.7775,
+            44.31,
+            -69.775,
+            44.3125
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.7825,
+            44.3125,
+            -69.78,
+            44.315000000000005
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.78,
+            44.3125,
+            -69.7775,
+            44.315000000000005
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.7775,
+            44.3125,
+            -69.775,
+            44.315000000000005
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.775,
+            44.307500000000005,
+            -69.77250000000001,
+            44.31
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.77250000000001,
+            44.307500000000005,
+            -69.77,
+            44.31
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.77,
+            44.307500000000005,
+            -69.7675,
+            44.31
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.775,
+            44.31,
+            -69.77250000000001,
+            44.3125
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.77250000000001,
+            44.31,
+            -69.77,
+            44.3125
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.77,
+            44.31,
+            -69.7675,
+            44.3125
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.775,
+            44.3125,
+            -69.77250000000001,
+            44.315000000000005
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.77250000000001,
+            44.3125,
+            -69.77,
+            44.315000000000005
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -69.77,
+            44.3125,
+            -69.7675,
+            44.315000000000005
+          ],
+          "count": 28,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -69.775,
+          44.307500000000005,
+          -69.77250000000001,
+          44.31
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 432,
+      "exactResolved": 432,
+      "nativeIds": [
+        "00026 00001 00000",
+        "00027 00107 00000",
+        "00027 00112 00000"
+      ],
+      "footprintCount": 8,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-me-augusta-parcels",
+        "parcels": 1,
+        "siteM2": 28587.09
+      },
+      "requests": 29
+    }
+  ]
+}

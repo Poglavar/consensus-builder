@@ -1,0 +1,30 @@
+{
+  "stateCode": "MS",
+  "city": "jackson",
+  "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+  "status": "failed_metadata_query",
+  "assessment": "Supplementary ID/date query returned ArcGIS error400 Failed to execute query with returnGeometry=false; no snapshot TAXYEAR values observed. Full real ID-plus-geometry adapter gate passed independently.",
+  "rows": 0,
+  "keys": {
+    "PARNO": {
+      "unique": 0,
+      "missing": 0,
+      "samples": []
+    },
+    "ALTPARNO": {
+      "unique": 0,
+      "missing": 0,
+      "samples": []
+    },
+    "PPIN": {
+      "unique": 0,
+      "missing": 0,
+      "samples": []
+    }
+  },
+  "taxYears": {},
+  "error": {
+    "code": 400,
+    "message": "Failed to execute query."
+  }
+}

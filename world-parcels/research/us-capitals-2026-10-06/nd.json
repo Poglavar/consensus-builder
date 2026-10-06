@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "ND",
+  "state": "North Dakota",
+  "capital": "Bismarck",
+  "centerLatLon": [
+    46.8083,
+    -100.7837
+  ],
+  "query": {
+    "language": "English",
+    "text": "North Dakota state parcel dataset Bismarck parcel boundaries GIS"
+  },
+  "references": [
+    {
+      "url": "https://www.gis.nd.gov/parcel-program",
+      "observation": "Official state/county GIS and parcel programme source."
+    },
+    {
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+      "observation": "Official ArcGIS REST layer metadata, HTTP 200."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "ArcGIS layer metadata retrieved; used only to identify genuine parcel key and object ID field."
+    },
+    {
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-100.78479999999999%2C46.8072%2C-100.7826%2C46.809400000000004&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=GISID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Capital-centered bbox query; requested ID and geometry only; max 3 records. Polygon closure, finite coordinates, sampled key values, and duplicate-key flag checked."
+    },
+    {
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?f=geojson&where=GISID%3D%271-102-001%27&outFields=GISID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact key round trip for 1-102-001: 1 matching record(s), geometry valid=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "NDGISHUB Parcels (State Parcel Program)",
+    "operator": "North Dakota Information Technology / ND GIS Hub",
+    "scope": "statewide",
+    "idField": "GISID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "GISID"
+    ],
+    "parcelNumberField": "GISID",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -100.78479999999999,
+      46.8072,
+      -100.7826,
+      46.809400000000004
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "1-102-001",
+      "20-025-010",
+      "1-104-001"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "The record is a bounded capital-location sample only; it does not assert complete municipal or county coverage."
+}

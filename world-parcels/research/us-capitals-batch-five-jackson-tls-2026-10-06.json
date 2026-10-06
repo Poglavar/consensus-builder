@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "MS",
+  "city": "jackson",
+  "endpoint": "https://gis.cmpdd.org/arcgis/rest/services/Hosted/City_of_Jackson_Feature_Layer/FeatureServer/11",
+  "status": "transport-verified-alternate-selected",
+  "assessment": "Provider sends only its leaf certificate. Tested the verified Go Daddy intermediate with existing source-scoped HTTPS transport; normal root trust and hostname verification retained. Live reads then revealed conflicting dpin geometry. Final Jackson integration instead uses the verified MDEQ state source with normal HTTPS trust; no additional runtime CA required.",
+  "certificateSource": "https://certs.godaddy.com/repository/gdig2.crt.pem",
+  "certificateSubject": "Go Daddy Secure Certificate Authority - G2",
+  "certificateIssuer": "Go Daddy Root Certificate Authority - G2",
+  "validThrough": "2031-05-03",
+  "sha256": "973A41276FFD01E027A2AAD49E34C37846D3E976FF6A620B6712E33832041AA6",
+  "verification": {
+    "against": "Node standard root certificate bundle",
+    "hostname": "gis.cmpdd.org",
+    "result": "OK",
+    "rejectUnauthorized": true
+  },
+  "transportChange": "Existing provider-scoped HTTPS transport now forwards POST method and form body for long native-ID queries and exposes Retry-After headers."
+}

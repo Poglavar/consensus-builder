@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "UT",
+  "state": "Utah",
+  "capital": "Salt Lake City",
+  "centerLatLon": [
+    40.7608,
+    -111.891
+  ],
+  "query": {
+    "language": "English",
+    "text": "Salt Lake City parcel GIS official Utah state parcels UGRC"
+  },
+  "references": [
+    {
+      "url": "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+      "observation": "Official source found by the recorded English web query."
+    },
+    {
+      "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+      "observation": "Official parcel layer endpoint tested with an ID-and-geometry-only spatial sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "ArcGIS layer metadata retrieved; schema inspected without requesting personal parcel fields."
+    },
+    {
+      "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-111.8921%2C40.7597%2C-111.88990000000001%2C40.761900000000004&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PARCEL_ID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Tiny capital-centered bbox; requested only PARCEL_ID and geometry; count=3, geometry valid=True, null IDs=0, duplicate IDs=False."
+    },
+    {
+      "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0/query?f=geojson&where=PARCEL_ID%3D%2715014300180000%27&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact ID round trip for 15014300180000: exact count 1, geometry valid=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Utah State Parcels",
+    "operator": "Utah Geospatial Resource Center and local government",
+    "scope": "Statewide, with uneven county completeness",
+    "idField": "PARCEL_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "PARCEL_ID"
+    ],
+    "parcelNumberField": "PARCEL_ID",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -111.8921,
+      40.7597,
+      -111.88990000000001,
+      40.761900000000004
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "15014300180000",
+      "15014300190000",
+      "15014310050000"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "This verifies a small parcel sample at the capital only; completeness across the city/county is untested."
+}

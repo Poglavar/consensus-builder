@@ -1,0 +1,19 @@
+{
+  "city": "montpelier",
+  "forcedPagingBbox": [
+    -72.58,
+    44.262499999999996,
+    -72.5775,
+    44.265
+  ],
+  "sourceRows": 13,
+  "uniqueNativeIds": 11,
+  "duplicateGroups": 1,
+  "maxMultiplicity": 3,
+  "nativeIds": [
+    "405-126-11178",
+    "405-126-11477",
+    "405-126-10026"
+  ],
+  "held": "Forced-page adapter count disagrees with provider source-row count; no documented assessment parts semantics or union applied."
+}

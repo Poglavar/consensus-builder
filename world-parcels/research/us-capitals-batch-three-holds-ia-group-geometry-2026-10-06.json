@@ -1,0 +1,65 @@
+{
+  "assessment": "Complete explicit source parcel-code groups: same STATEPARID, UNPARCELID, PARCELNUMB. All rows retained; duplicates deduplicated and distinct components unioned, no invented identity.",
+  "groups": [
+    {
+      "nativeId": "77-02001268002000",
+      "exactSourceRows": 4,
+      "uniqueGeometry": 2,
+      "componentAreasM2": [
+        370.64,
+        389.24
+      ],
+      "relations": [
+        {
+          "intersects": false,
+          "intersectionM2": 0
+        }
+      ],
+      "sameUNPARCELID": true,
+      "samePARCELNUMB": true
+    },
+    {
+      "nativeId": "77-03005078000000",
+      "exactSourceRows": 4,
+      "uniqueGeometry": 2,
+      "componentAreasM2": [
+        760.37,
+        760.38
+      ],
+      "relations": [
+        {
+          "intersects": false,
+          "intersectionM2": 0
+        }
+      ],
+      "sameUNPARCELID": true,
+      "samePARCELNUMB": true
+    },
+    {
+      "nativeId": "77-02001354002000",
+      "exactSourceRows": 3,
+      "uniqueGeometry": 3,
+      "componentAreasM2": [
+        98.99,
+        99.03,
+        98.98
+      ],
+      "relations": [
+        {
+          "intersects": false,
+          "intersectionM2": 0
+        },
+        {
+          "intersects": false,
+          "intersectionM2": 0
+        },
+        {
+          "intersects": false,
+          "intersectionM2": 0
+        }
+      ],
+      "sameUNPARCELID": true,
+      "samePARCELNUMB": true
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+[
+  {
+    "stateCode": "IA",
+    "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+    "name": "Parcels_20171102",
+    "geometryType": "esriGeometryPolygon",
+    "objectIdField": "OBJECTID",
+    "serviceItemId": "d653c8836f344d17af8ee45d2176760f",
+    "extent": {
+      "xmin": -10757871.8697,
+      "ymin": 4920677.301700003,
+      "xmax": -10034656.8637,
+      "ymax": 5388559.171700001,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      }
+    },
+    "maxRecordCount": 2000,
+    "capabilities": "Query",
+    "nativeFields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "sqlType": "sqlTypeOther",
+        "nullable": false,
+        "editable": false,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "STATEPARID",
+        "type": "esriFieldTypeString",
+        "alias": "State Parcel ID",
+        "sqlType": "sqlTypeOther",
+        "length": 50,
+        "nullable": true,
+        "editable": true,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "UNPARCELID",
+        "type": "esriFieldTypeString",
+        "alias": "Unique Parcel Identifier",
+        "sqlType": "sqlTypeOther",
+        "length": 50,
+        "nullable": true,
+        "editable": true,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "PARCELNUMB",
+        "type": "esriFieldTypeString",
+        "alias": "Parcel Number",
+        "sqlType": "sqlTypeOther",
+        "length": 50,
+        "nullable": true,
+        "editable": true,
+        "domain": null,
+        "defaultValue": null
+      }
+    ],
+    "advancedQueryCapabilities": {
+      "supportsPagination": true,
+      "supportsPaginationOnAggregatedQueries": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsQueryWithDistance": true,
+      "supportsOutDistance": true,
+      "supportsReturningQueryExtent": true,
+      "supportsStatistics": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsQueryWithResultType": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsCountDistinct": true,
+      "supportsPercentileStatistics": true,
+      "supportsApproxPercentileStatistics": true,
+      "supportsSpatialAggregationStatistics": true,
+      "supportsTrueCurve": true,
+      "supportedSpatialAggregationStatistics": [
+        "EnvelopeAggregate",
+        "CentroidAggregate",
+        "ConvexHullAggregate"
+      ],
+      "supportsLod": true,
+      "supportsQueryWithLodSR": false,
+      "supportedLodTypes": [
+        "geohash"
+      ],
+      "supportsReturningGeometryCentroid": true,
+      "supportsReturningGeometryEnvelope": true,
+      "supportsReturningGeometryProperties": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsCurrentUserQueries": true,
+      "supportsHavingClause": true,
+      "supportsOutFieldSQLExpression": true,
+      "supportsMaxRecordCountFactor": true,
+      "supportsTopFeaturesQuery": true,
+      "supportsDisjointSpatialRel": true,
+      "supportsQueryWithCacheHint": true,
+      "supportedOperationsWithCacheHint": [
+        "query",
+        "queryTopFilter",
+        "queryAnalytics",
+        "queryAttachments",
+        "queryRelated",
+        "queryBins",
+        "queryPivot"
+      ],
+      "supportsQueryAnalytic": true,
+      "supportsQueryPivot": true,
+      "supportsQueryBins": true,
+      "supportsDefaultSR": true,
+      "supportsTranslations": false,
+      "supportsAggIds": true,
+      "supportsQueryWithCollation": true,
+      "supportsISODOW": true,
+      "supportsISOWeek": true,
+      "supportsFullTextSearch": true,
+      "fullTextSearchCapabilities": {
+        "supportsAccentSensitivity": true,
+        "supportsStopWords": true,
+        "supportsSearchOperator": true,
+        "supportsOperator": true
+      }
+    }
+  },
+  {
+    "stateCode": "MI",
+    "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+    "name": "Parcels - 2025",
+    "geometryType": "esriGeometryPolygon",
+    "objectIdField": "OBJECTID",
+    "serviceItemId": "03a35351f22e4962a33569eb1c3eace7",
+    "extent": {
+      "xmin": 13059782.530777441,
+      "ymin": 336013.8761996856,
+      "xmax": 13184372.057638587,
+      "ymax": 465312.5247786101,
+      "spatialReference": {
+        "wkid": 2253,
+        "latestWkid": 2253
+      }
+    },
+    "maxRecordCount": 2000,
+    "capabilities": "Query,Extract",
+    "nativeFields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "sqlType": "sqlTypeOther",
+        "nullable": false,
+        "editable": false,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "PARCELNUM",
+        "type": "esriFieldTypeString",
+        "alias": "PARCELNUM",
+        "sqlType": "sqlTypeOther",
+        "length": 254,
+        "nullable": true,
+        "editable": true,
+        "domain": null,
+        "defaultValue": null
+      }
+    ],
+    "advancedQueryCapabilities": {
+      "supportsPagination": true,
+      "supportsPaginationOnAggregatedQueries": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsQueryWithDistance": true,
+      "supportsOutDistance": true,
+      "supportsReturningQueryExtent": true,
+      "supportsStatistics": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsQueryWithResultType": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsCountDistinct": true,
+      "supportsPercentileStatistics": true,
+      "supportsApproxPercentileStatistics": true,
+      "supportsSpatialAggregationStatistics": true,
+      "supportsTrueCurve": true,
+      "supportedSpatialAggregationStatistics": [
+        "EnvelopeAggregate",
+        "CentroidAggregate",
+        "ConvexHullAggregate"
+      ],
+      "supportsLod": true,
+      "supportsQueryWithLodSR": false,
+      "supportedLodTypes": [
+        "geohash"
+      ],
+      "supportsReturningGeometryCentroid": true,
+      "supportsReturningGeometryEnvelope": true,
+      "supportsReturningGeometryProperties": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsCurrentUserQueries": true,
+      "supportsHavingClause": true,
+      "supportsOutFieldSQLExpression": true,
+      "supportsMaxRecordCountFactor": true,
+      "supportsTopFeaturesQuery": true,
+      "supportsDisjointSpatialRel": true,
+      "supportsQueryWithCacheHint": true,
+      "supportedOperationsWithCacheHint": [
+        "query",
+        "queryTopFilter",
+        "queryAnalytics",
+        "queryAttachments",
+        "queryRelated",
+        "queryBins",
+        "queryPivot"
+      ],
+      "supportsQueryAnalytic": true,
+      "supportsQueryPivot": true,
+      "supportsQueryBins": true,
+      "supportsDefaultSR": true,
+      "supportsTranslations": false,
+      "supportsAggIds": true,
+      "supportsQueryWithCollation": true,
+      "supportsISODOW": true,
+      "supportsISOWeek": true,
+      "supportsFullTextSearch": true,
+      "fullTextSearchCapabilities": {
+        "supportsAccentSensitivity": true,
+        "supportsStopWords": true,
+        "supportsSearchOperator": true,
+        "supportsOperator": true
+      },
+      "fullTextSearchableFields": [
+        "PARCELNUM",
+        "OWNERNAME"
+      ]
+    }
+  }
+]

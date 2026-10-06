@@ -1,0 +1,401 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Bounded pre-integration provider discovery for US capital adapter batch two; no parcel geometry retained.",
+  "sourceDiscovery": {
+    "ct": {
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "name": "Connecticut_CAMA_and_Parcel_Layer",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "OBJECTID",
+      "maxRecordCount": 2000,
+      "advancedQueryCapabilities": {
+        "supportsPagination": true,
+        "supportsPaginationOnAggregatedQueries": true,
+        "supportsQueryRelatedPagination": true,
+        "supportsQueryWithDistance": true,
+        "supportsOutDistance": true,
+        "supportsReturningQueryExtent": true,
+        "supportsStatistics": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsQueryWithResultType": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsAdvancedQueryRelated": true,
+        "supportsCountDistinct": true,
+        "supportsPercentileStatistics": true,
+        "supportsApproxPercentileStatistics": true,
+        "supportsSpatialAggregationStatistics": true,
+        "supportsTrueCurve": true,
+        "supportedSpatialAggregationStatistics": [
+          "EnvelopeAggregate",
+          "CentroidAggregate",
+          "ConvexHullAggregate"
+        ],
+        "supportsLod": true,
+        "supportsQueryWithLodSR": false,
+        "supportedLodTypes": [
+          "geohash"
+        ],
+        "supportsReturningGeometryCentroid": true,
+        "supportsReturningGeometryEnvelope": true,
+        "supportsReturningGeometryProperties": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsCurrentUserQueries": true,
+        "supportsHavingClause": true,
+        "supportsOutFieldSQLExpression": true,
+        "supportsMaxRecordCountFactor": true,
+        "supportsTopFeaturesQuery": true,
+        "supportsDisjointSpatialRel": true,
+        "supportsQueryWithCacheHint": true,
+        "supportedOperationsWithCacheHint": [
+          "query",
+          "queryTopFilter",
+          "queryAnalytics",
+          "queryAttachments",
+          "queryRelated",
+          "queryBins",
+          "queryPivot"
+        ],
+        "supportsQueryAnalytic": true,
+        "supportsQueryPivot": true,
+        "supportsQueryBins": true,
+        "supportsDefaultSR": true,
+        "supportsTranslations": false,
+        "supportsAggIds": true,
+        "supportsQueryWithCollation": true,
+        "supportsISODOW": true,
+        "supportsISOWeek": true,
+        "supportsFullTextSearch": true,
+        "fullTextSearchCapabilities": {
+          "supportsAccentSensitivity": true,
+          "supportsStopWords": true,
+          "supportsSearchOperator": true,
+          "supportsOperator": true
+        }
+      },
+      "supportedQueryFormats": "JSON, geoJSON, PBF",
+      "copyrightText": "",
+      "description": "",
+      "fieldTypes": {
+        "OBJECTID": "esriFieldTypeOID",
+        "Parcel_ID": "esriFieldTypeString",
+        "FIPS": "esriFieldTypeString"
+      }
+    },
+    "de": {
+      "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "name": "State Parcels",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "OBJECTID",
+      "maxRecordCount": 2000,
+      "advancedQueryCapabilities": {
+        "supportsPagination": true,
+        "supportsTrueCurve": true,
+        "supportsQueryWithDistance": true,
+        "supportsReturningQueryExtent": true,
+        "supportsStatistics": true,
+        "supportsPercentileStatistics": true,
+        "supportsHavingClause": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsCountDistinct": true,
+        "supportsAdvancedQueryRelated": true,
+        "supportsQueryRelatedPagination": true,
+        "supportsCurrentUserQueries": true,
+        "supportsQueryWithResultType": true,
+        "supportsReturningGeometryCentroid": true,
+        "supportsSqlExpression": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsLod": false,
+        "supportsQueryWithLodSR": false,
+        "supportsQueryAnalytic": true
+      },
+      "supportedQueryFormats": "JSON, geoJSON, PBF",
+      "copyrightText": "",
+      "description": "",
+      "fieldTypes": {
+        "OBJECTID": "esriFieldTypeOID",
+        "PIN": "esriFieldTypeString",
+        "COUNTY": "esriFieldTypeString"
+      }
+    },
+    "ga": {
+      "endpoint": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+      "name": "Tax Parcel",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": null,
+      "maxRecordCount": 2000,
+      "advancedQueryCapabilities": {
+        "useStandardizedQueries": true,
+        "supportsStatistics": true,
+        "supportsPercentileStatistics": true,
+        "supportsHavingClause": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsCountDistinct": true,
+        "supportsPagination": true,
+        "supportsLod": false,
+        "supportsQueryWithLodSR": false,
+        "supportsTrueCurve": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsReturningQueryExtent": true,
+        "supportsQueryWithDistance": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsSqlFormat": false,
+        "supportsQueryAnalytic": true
+      },
+      "supportedQueryFormats": "JSON, geoJSON, PBF",
+      "copyrightText": "",
+      "description": "",
+      "fieldTypes": {
+        "OBJECTID": "esriFieldTypeOID",
+        "ParcelID": "esriFieldTypeString"
+      }
+    },
+    "hi": {
+      "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "name": "Statewide TMKs",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": null,
+      "maxRecordCount": 1000,
+      "advancedQueryCapabilities": {
+        "useStandardizedQueries": true,
+        "supportsStatistics": true,
+        "supportsPercentileStatistics": true,
+        "supportsHavingClause": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsCountDistinct": true,
+        "supportsAdvancedQueryRelated": true,
+        "supportsQueryRelatedPagination": true,
+        "supportsPagination": true,
+        "supportsLod": false,
+        "supportsQueryWithLodSR": false,
+        "supportsTrueCurve": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsReturningQueryExtent": true,
+        "supportsQueryWithDistance": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsSqlFormat": false,
+        "supportsQueryAnalytic": true,
+        "supportsCurrentUserQueries": true
+      },
+      "supportedQueryFormats": "JSON, geoJSON, PBF",
+      "copyrightText": "Counties of Hawaii, Honolulu, Kauai and Maui; Hawaii Statewide GIS Program",
+      "description": "TMK Parcels for the State of Hawaii as of May 2026. Sources: County of Hawaii: 4/27/26; County of Maui: 4/15/26; County of Kauai: 5/11/26; City and County of Honolulu: 4/30/26.     Hawaii Statewide GIS Program projected to a common projection/datum (UTM Zone 4, NAD 83 HARN) and merged all counties' parcel data into one layer. Where necessary, the State standardized field names or added fields to the county layers such as creating text fields for corresponding numeric tmk fields, etc., and / or calculated values for fields such as links to qpublic websites showing additional information for each parcel.    For most current parcel information, please visit the county GIS websites:  Hawaii County:  https://www.hawaiicounty.gov/departments/information-technology/gis-maps   Honolulu County: https://honolulu-cchnl.opendata.arcgis.com/  Kauai County:  https://kauai-open-data-kauaigis.hub.arcgis.com/  Maui County:  https://mauicounty.maps.arcgis.com/home/index.html  The parcel boundaries are intended to provide a visual reference only and do not represent legal or survey level accuracy. Attributes are for assessment purposes only and are subject to change at any time.  For more information, please refer to metadata at https://files.hawaii.gov/dbedt/op/gis/data/tmk_state.pdf or contact Hawaii Statewide GIS Program, Office of Planning and Sustainable Development, State of Hawaii; PO Box 2359, Honolulu, Hi. 96804; (808) 587-2846; email: gis@hawaii.gov; Website: https://planning.hawaii.gov/gis.",
+      "fieldTypes": {
+        "objectid": "esriFieldTypeOID",
+        "tmk": "esriFieldTypeInteger",
+        "county": "esriFieldTypeString"
+      }
+    },
+    "id": {
+      "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "name": "Parcels Public",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "OBJECTID",
+      "maxRecordCount": 2000,
+      "advancedQueryCapabilities": {
+        "supportsPagination": true,
+        "supportsPaginationOnAggregatedQueries": true,
+        "supportsQueryRelatedPagination": true,
+        "supportsQueryWithDistance": true,
+        "supportsOutDistance": true,
+        "supportsReturningQueryExtent": true,
+        "supportsStatistics": true,
+        "supportsOrderBy": true,
+        "supportsDistinct": true,
+        "supportsQueryWithResultType": true,
+        "supportsSqlExpression": true,
+        "supportsTimeRelation": true,
+        "supportsAdvancedQueryRelated": true,
+        "supportsCountDistinct": true,
+        "supportsPercentileStatistics": true,
+        "supportsApproxPercentileStatistics": true,
+        "supportsSpatialAggregationStatistics": true,
+        "supportsTrueCurve": true,
+        "supportedSpatialAggregationStatistics": [
+          "EnvelopeAggregate",
+          "CentroidAggregate",
+          "ConvexHullAggregate"
+        ],
+        "supportsLod": true,
+        "supportsQueryWithLodSR": false,
+        "supportedLodTypes": [
+          "geohash"
+        ],
+        "supportsReturningGeometryCentroid": true,
+        "supportsReturningGeometryEnvelope": true,
+        "supportsReturningGeometryProperties": true,
+        "supportsQueryWithDatumTransformation": true,
+        "supportsCurrentUserQueries": true,
+        "supportsHavingClause": true,
+        "supportsOutFieldSQLExpression": true,
+        "supportsMaxRecordCountFactor": true,
+        "supportsTopFeaturesQuery": true,
+        "supportsDisjointSpatialRel": true,
+        "supportsQueryWithCacheHint": true,
+        "supportedOperationsWithCacheHint": [
+          "query",
+          "queryTopFilter",
+          "queryAnalytics",
+          "queryAttachments",
+          "queryRelated",
+          "queryBins",
+          "queryPivot"
+        ],
+        "supportsQueryAnalytic": true,
+        "supportsQueryPivot": true,
+        "supportsQueryBins": true,
+        "supportsDefaultSR": true,
+        "supportsTranslations": false,
+        "supportsAggIds": true,
+        "supportsQueryWithCollation": true,
+        "supportsISODOW": true,
+        "supportsISOWeek": true,
+        "supportsFullTextSearch": true,
+        "fullTextSearchCapabilities": {
+          "supportsAccentSensitivity": true,
+          "supportsStopWords": true,
+          "supportsSearchOperator": true,
+          "supportsOperator": true
+        }
+      },
+      "supportedQueryFormats": "JSON, geoJSON, PBF",
+      "copyrightText": "",
+      "description": "",
+      "fieldTypes": {
+        "OBJECTID": "esriFieldTypeOID",
+        "PARCEL_ID": "esriFieldTypeString",
+        "County": "esriFieldTypeString",
+        "FIPS": "esriFieldTypeString"
+      }
+    }
+  },
+  "attributeOnlySamples": {
+    "CT Hartford": {
+      "fields": [
+        "OBJECTID",
+        "Parcel_ID",
+        "Town_Name"
+      ],
+      "verified": [
+        {
+          "Parcel_ID": "269353004",
+          "Town_Name": "Hartford"
+        },
+        {
+          "Parcel_ID": "269353006",
+          "Town_Name": "Hartford"
+        },
+        {
+          "Parcel_ID": "269353003",
+          "Town_Name": "Hartford"
+        }
+      ],
+      "proposedFilter": "Town_Name='Hartford'"
+    },
+    "DE Dover": {
+      "fields": [
+        "OBJECTID",
+        "PIN",
+        "COUNTY"
+      ],
+      "verified": [
+        {
+          "PIN": "2-05-07709-02-5800-00001",
+          "COUNTY": "Kent"
+        },
+        {
+          "PIN": "2-05-07709-04-2001-00001",
+          "COUNTY": "Kent"
+        },
+        {
+          "PIN": "2-05-07709-05-0400-00001",
+          "COUNTY": "Kent"
+        }
+      ],
+      "proposedFilter": "COUNTY='Kent'"
+    },
+    "GA Atlanta": {
+      "fields": [
+        "OBJECTID",
+        "ParcelID"
+      ],
+      "verified": [
+        {
+          "ParcelID": "14 007700110279"
+        },
+        {
+          "ParcelID": "14 005200080273"
+        },
+        {
+          "ParcelID": "14 007700110014"
+        }
+      ],
+      "publisherEndpoint": "Fulton County GIS Tax Parcel layer 11; only native key + transport object ID requested."
+    },
+    "HI Honolulu": {
+      "fields": [
+        "objectid",
+        "tmk",
+        "county"
+      ],
+      "verified": [
+        {
+          "tmk": 121010052,
+          "county": "Honolulu"
+        },
+        {
+          "tmk": 121010053,
+          "county": "Honolulu"
+        },
+        {
+          "tmk": 121009011,
+          "county": "Honolulu"
+        }
+      ],
+      "proposedFilter": "county='Honolulu'"
+    },
+    "ID Boise": {
+      "fields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "County"
+      ],
+      "verified": [
+        {
+          "PARCEL_ID": "R1013000202",
+          "County": "Ada"
+        },
+        {
+          "PARCEL_ID": "R1013000280",
+          "County": "Ada"
+        },
+        {
+          "PARCEL_ID": "R1013000542",
+          "County": "Ada"
+        }
+      ],
+      "proposedFilter": "County='Ada'"
+    }
+  },
+  "provenanceNotes": {
+    "CT": "ArcGIS item query returned \u201cConnecticut CAMA and Parcel Layer 2025\u201d, owner leah.hodges, publisher description says source municipal parcel/CAMA submissions collected by regional COGs and submitted to CT OPM; Data Owner CTGISO; CC0; dataset source-coordinate text says EPSG:6434 though layer metadata currently declares source SRID 3857. Use official publisher name CT OPM/CTGISO, not account owner as publisher.",
+    "DE": "Official FirstMap Delaware Enterprise service; state parcel source and tested county field Kent.",
+    "GA": "Fulton County GIS host and PropertyMapViewer Tax Parcel layer; schema contains owner and owner-address columns, excluded; use only OBJECTID and ParcelID.",
+    "HI": "Layer metadata identifies Hawaii Statewide GIS Program and county contributors; May 2026 compilation; service states parcel boundaries are visual reference and not legal/survey accuracy. County/island and TMK prefix verified for Honolulu sample.",
+    "ID": "Idaho Geospatial Office / The Idaho Map public parcels service; tested Ada County steward. Prior research states county-contributed partial snapshot, not statewide completeness."
+  },
+  "limitations": [
+    "No 18-cell acceptance gate was run in this discovery subtask; root agent assumed gate ownership.",
+    "No geometry was requested by the provider sample calls in this discovery pass.",
+    "A local initial research record reports geometry samples and exact native-key roundtrips, but this discovery output does not independently repeat them.",
+    "CT has a Hartford Town_Name filter verified in sample; because Parcel_ID dataset covers the whole state, native-key uniqueness outside Hartford was not measured.",
+    "Hawaii TMK is integer and sampled values are prefixed by county digits; only Honolulu records are exposed by county filter."
+  ]
+}

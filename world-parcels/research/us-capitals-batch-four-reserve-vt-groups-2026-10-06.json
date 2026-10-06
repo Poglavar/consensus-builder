@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "groups": [
+    {
+      "nativeId": "405-126-13234",
+      "sourceRows": 3,
+      "uniqueGeometries": 1,
+      "nonPersonalAttributes": [
+        {
+          "SPAN": "405-126-13234",
+          "OBJECTID": 184121,
+          "YEAR": 2025,
+          "GLYEAR": 2025,
+          "PROPTYPE": "PARCEL",
+          "MATCHSTAT": "MATCH",
+          "SOURCEDATE": "UNKNOWN",
+          "EDITDATE": "UNKNOWN",
+          "SOURCETYPE": "UNKNOWN"
+        },
+        {
+          "SPAN": "405-126-13234",
+          "OBJECTID": 184138,
+          "YEAR": 2025,
+          "GLYEAR": 2025,
+          "PROPTYPE": "PARCEL",
+          "MATCHSTAT": "MATCH",
+          "SOURCEDATE": "UNKNOWN",
+          "EDITDATE": "UNKNOWN",
+          "SOURCETYPE": "UNKNOWN"
+        },
+        {
+          "SPAN": "405-126-13234",
+          "OBJECTID": 184426,
+          "YEAR": 2025,
+          "GLYEAR": 2025,
+          "PROPTYPE": "PARCEL",
+          "MATCHSTAT": "MATCH",
+          "SOURCEDATE": "UNKNOWN",
+          "EDITDATE": "UNKNOWN",
+          "SOURCETYPE": "UNKNOWN"
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "url": "https://github.com/VCGI/publications/blob/main/Act68_2024/Act68-2024-Parcels-VCGI_As_Submitted_20241212.md",
+      "observation": "Official VCGI report defines SPAN as unique statewide property identity; multipart parcel represents one Grand List record; active parcels may consolidate associated lots."
+    },
+    {
+      "url": "https://vcgi.vermont.gov/data-and-programs/parcel-program",
+      "observation": "Official Parcel Program joins municipal GIS layer to annual Grand List through unique School Property Account Number."
+    }
+  ],
+  "decision": "Explicit assessment-account grouping with complete OID manifests in both viewport and exact paths; repeated sampled geometry is identical and has matching 2025 parcel/Grand List attributes.",
+  "sampleScopeAggregate": {
+    "sampleSourceRows": 643,
+    "uniqueNativeIds": 581,
+    "transferLimitExceeded": false,
+    "parcelYears": {
+      "2025": 643
+    },
+    "grandListYears": {
+      "2025": 643
+    },
+    "types": {
+      "PARCEL": 643
+    },
+    "matchStatus": {
+      "MATCH": 643
+    },
+    "repeatedGroups": 21,
+    "repeatedGroupsWithMixedYears": 0
+  }
+}

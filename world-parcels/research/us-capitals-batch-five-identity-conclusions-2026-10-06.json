@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Final identity/scope investigation for five remaining US capitals; metadata and aggregates only.",
+  "sources": [
+    {
+      "stateCode": "PA",
+      "city": "harrisburg",
+      "endpoint": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+      "proposedDescriptor": {
+        "endpoint": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Harrisburg Property Tax Parcels September 2026 snapshot",
+        "operator": "City of Harrisburg Treasury / Dauphin County IT and Tax Assessment",
+        "scope": "City of Harrisburg property tax parcel snapshot September 18 2026",
+        "idField": "PID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "OBJECTID",
+          "PID"
+        ],
+        "parcelNumberField": "PID",
+        "metricSrid": 32618,
+        "idPrefix": "US-PA-HARRISBURG-",
+        "attributeFilters": {},
+        "id": "us-pa-harrisburg-parcels",
+        "stateCode": "PA",
+        "cityIds": [
+          "harrisburg"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "catalogueUrl": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+        "countryCode": "US",
+        "maxBboxKm2": 25,
+        "caveats": [
+          "Official municipal snapshot September 18 2026.",
+          "Geometry represents the publisher-defined unique native PID parcel group, retaining every component; subdivision cause is not inferred."
+        ],
+        "maxConcurrentQueries": 2,
+        "nativeGeometryMode": "parts",
+        "partsCoordinatePrecision": 9,
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids"
+      },
+      "sourceNote": "City of Harrisburg property tax parcel snapshot September 18 2026",
+      "status": "passed",
+      "assessment": "Publisher explicitly defines PID as unique parcel identification number. Native PID groups retain all source components; no arbitrary label merge or subdivision cause asserted.",
+      "primarySources": [
+        {
+          "url": "https://www.pasda.psu.edu/uci/FullMetadataDisplay.aspx?file=DauphinCountyParcels202205.xml",
+          "quote": "Unique Parcel Identifcation Number",
+          "field": "PID"
+        },
+        {
+          "url": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+          "assessment": "Official municipal September 18 2026 snapshot credited Dauphin County IT and Tax Assessment."
+        }
+      ],
+      "evidenceFiles": [
+        "us-capitals-batch-five-identity-pa-parts-live-2026-10-06.json",
+        "us-capitals-batch-five-identity-pa-groups-2026-10-06.json",
+        "us-capitals-batch-five-identity-current-live-2026-10-06.json"
+      ]
+    },
+    {
+      "stateCode": "RI",
+      "city": "providence",
+      "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0",
+      "proposedDescriptor": {
+        "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Providence city parcel tree canopy mirror published 2025",
+        "operator": "City of Providence GIS",
+        "scope": "Identified municipal native CAMA-link parcel groups in official dated 2011\u20132018 canopy-analysis mirror modified February 2025; excludes null/blank CAMA_LINK rows",
+        "idField": "CAMA_LINK",
+        "objectIdField": "FID",
+        "idType": "string",
+        "outFields": [
+          "FID",
+          "CAMA_LINK"
+        ],
+        "parcelNumberField": "CAMA_LINK",
+        "metricSrid": 32619,
+        "idPrefix": "US-RI-PROVIDENCE-",
+        "attributeFilters": {},
+        "id": "us-ri-providence-parcels",
+        "stateCode": "RI",
+        "cityIds": [
+          "providence"
+        ],
+        "pageSize": 100,
+        "maxFeatures": 10000,
+        "catalogueUrl": "https://www.arcgis.com/home/item.html?id=bab934a85fe94f1d885dcaa6b3f16229",
+        "countryCode": "US",
+        "maxBboxKm2": 25,
+        "caveats": [
+          "Dated official parcel mirror; canopy analysis years do not establish parcel currency.",
+          "Native CAMA_LINK follows the RIGIS unique parcel-to-CAMA linkage semantics; geometry retains all components of each identified native link group.",
+          "Null/blank CAMA_LINK rows excluded explicitly; municipal numeric PropertyID catalogue identity is not asserted."
+        ],
+        "maxConcurrentQueries": 1,
+        "nativeGeometryMode": "parts",
+        "partsCoordinatePrecision": 9,
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "attributeNotNull": [
+          "CAMA_LINK"
+        ],
+        "attributeExclusions": {
+          "CAMA_LINK": " "
+        }
+      },
+      "sourceNote": "Identified municipal native CAMA-link parcel groups in official dated 2011\u20132018 canopy-analysis mirror modified February 2025; excludes null/blank CAMA_LINK rows",
+      "status": "passed",
+      "assessment": "Official municipal mirror exposes CAMA_LINK. RIGIS2016 parcel standard defines CAMALink as unique parcel polygon identifier linking CAMA, often cadastral component combination. Complete native-link groups pass every gate after excluding null/blank link rows. Native key is not proven equivalent to numeric PropertyID catalogue; no such claim made.",
+      "primarySources": [
+        {
+          "url": "https://data.rigis.org/assets/docs/2016/RI_Standards_for_Digital_Parcels_v2.pdf",
+          "page": 8,
+          "field": "CAMALink",
+          "quote": "Parcel polygon record\u2019s unique Identifier",
+          "assessment": "Usually cadastral component combination; null acceptable only where no valid identifier, including ROW/water/unknown parcels."
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/portals/wv9mHoqblhTsnqdG?f=json",
+          "assessment": "Official publisher organization is City of Providence."
+        }
+      ],
+      "evidenceFiles": [
+        "us-capitals-batch-five-identity-ri-cama-live-2026-10-06.json",
+        "us-capitals-batch-five-identity-ri-first-2026-10-06.json",
+        "us-capitals-batch-five-identity-ri-link-2026-10-06.json",
+        "us-capitals-batch-five-identity-ri-cama-catalogue-match-2026-10-06.json",
+        "us-capitals-batch-five-identity-provenance-2026-10-06.json"
+      ]
+    },
+    {
+      "stateCode": "SC",
+      "city": "columbia",
+      "endpoint": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/8",
+      "proposedDescriptor": {
+        "id": "us-sc-columbia-parcels",
+        "name": "City of Columbia Parcel",
+        "adapter": "arcgis",
+        "endpoint": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/8",
+        "idField": "tms",
+        "idType": "string",
+        "objectIdField": "objectid",
+        "idPrefix": "US-SC-COLUMBIA-",
+        "outFields": [
+          "objectid",
+          "tms"
+        ],
+        "parcelNumberField": "tms",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "countryCode": "US",
+        "stateCode": "SC",
+        "cityIds": [
+          "columbia"
+        ],
+        "metricSrid": 32617,
+        "operator": "City of Columbia GIS / Woolpert enterprise service",
+        "catalogueUrl": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/info/iteminfo",
+        "scope": "Partial municipal tax-assessment parcel layer in Richland and Lexington Counties; service currently contains 456 polygons, not citywide coverage",
+        "caveats": [
+          "Partial source: only the 456 source polygons are represented; broader municipal coverage is not asserted.",
+          "Publisher describes tax-assessment parcels created before April 2010 and maintained with address/street updates; parcel currency not established."
+        ],
+        "maxConcurrentQueries": 2
+      },
+      "sourceNote": "Partial municipal tax-assessment parcel layer in Richland and Lexington Counties; service currently contains 456 polygons, not citywide coverage",
+      "status": "passed",
+      "assessment": "Service item metadata establishes tax-assessment cadastral lineage. The 456 source polygons form an explicitly partial source; citywide or municipal asset completeness is not asserted.",
+      "primarySources": [
+        {
+          "url": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/info/iteminfo",
+          "assessment": "Publisher describes tax-assessment parcels in Richland and Lexington Counties, created before April 2010, maintained with address/street updates."
+        }
+      ],
+      "evidenceFiles": [
+        "us-capitals-batch-five-identity-final-live-2026-10-06.json",
+        "us-capitals-batch-five-identity-provenance-2026-10-06.json"
+      ]
+    },
+    {
+      "stateCode": "KY",
+      "city": "frankfort",
+      "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+      "status": "hold-native-identity-unresolved",
+      "assessment": "Live refetch confirms shared MAPNUM/PARCEL_ID on distinct PARCEL components 103 and 103.18 and different source types. Official PVA map-number identity definition does not explain this contradiction or lifecycle. County key is unsafe; no arbitrary union applied. City official zoning map supplies no cadastral alternate; same-name public hosted parcel layer is Illinois and rejected.",
+      "primarySources": [
+        "https://franklincountypva.com/tax-lingo/",
+        "https://www.frankfort.ky.gov/187/City-Maps"
+      ],
+      "evidenceFiles": [
+        "us-capitals-batch-five-identity-diagnosis-2026-10-06.json",
+        "us-capitals-batch-five-identity-ky-city-2026-10-06.json",
+        "us-capitals-batch-five-identity-ky-mirror-2026-10-06.json"
+      ]
+    },
+    {
+      "stateCode": "NV",
+      "city": "carson_city",
+      "endpoint": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0",
+      "status": "passed",
+      "assessment": "Native NAD83 UTM 11 four-corner envelope queries reconcile count and OID manifests. Complete adapter acceptance passed 18 cells, all 837 native IDs, exact geometry, paging and authoritative binding.",
+      "primarySources": [
+        "https://portal.carsoncity.gov/server/rest/services/CarsonCity/CarsonCityNV_OpenData/MapServer/36"
+      ],
+      "evidenceFiles": [
+        "us-capitals-batch-five-identity-nv-count-2026-10-06.json",
+        "us-capitals-batch-five-identity-current-live-2026-10-06.json",
+        "us-capitals-batch-five-identity-metadata-2026-10-06.json",
+        "us-capitals-batch-five-identity-nv-projection-2026-10-06.json",
+        "us-capitals-batch-five-identity-nv-four-corners-2026-10-06.json",
+        "us-capitals-batch-five-identity-nv-four-corners-2026-10-06.json",
+        "us-capitals-batch-five-carson-native-projection-live-2026-10-06.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "stateCode": "RI",
+  "city": "providence",
+  "endpoint": "https://data.providenceri.gov/resource/k6gu-363f.json",
+  "status": 200,
+  "query": {
+    "$select": "propertyid,platlotunit",
+    "$where": "propertyid in (1100487,1150630)",
+    "$limit": 3
+  },
+  "rows": [],
+  "assessment": "Two sampled mirror CAMA_LINK values did not resolve in the dated November 2020 official PropertyID catalogue; identity match not established. No ownership or addresses requested."
+}

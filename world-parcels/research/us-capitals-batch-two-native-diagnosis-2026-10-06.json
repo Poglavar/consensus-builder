@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "city": "hartford",
+      "stateCode": "CT",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "status": "identity-diagnosis",
+      "attempts": [
+        {
+          "url": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0/query?where=Town_Name+%3D+%27Hartford%27&geometry=-72.6725%2C41.765%2C-72.67%2C41.7675&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&returnGeometry=true&outFields=OBJECTID%2CParcel_ID%2CTown_Name%2CParcel_Type%2CUnit_Type%2CCollection_year&f=geojson",
+          "httpStatus": 200,
+          "operation": "Duplicate native-key component diagnosis",
+          "assessment": "Public parcel identifiers and mapping attributes only. Aggregates below retain no geometry."
+        }
+      ],
+      "duplicates": [
+        {
+          "native": "268355025",
+          "rows": [
+            {
+              "objectId": 380266,
+              "fields": {
+                "Parcel_Type": null,
+                "Unit_Type": null,
+                "Collection_year": "2025"
+              },
+              "areaM2": 10564.729077082158,
+              "bbox": [
+                -72.6713561298405,
+                41.7658220313809,
+                -72.6696126497615,
+                41.766888467926
+              ]
+            },
+            {
+              "objectId": 380271,
+              "fields": {
+                "Parcel_Type": null,
+                "Unit_Type": null,
+                "Collection_year": "2025"
+              },
+              "areaM2": 14239.562170135321,
+              "bbox": [
+                -72.6711252370605,
+                41.7668648753298,
+                -72.6694647374878,
+                41.7683742428138
+              ]
+            }
+          ]
+        },
+        {
+          "native": "268355026",
+          "rows": [
+            {
+              "objectId": 380267,
+              "fields": {
+                "Parcel_Type": null,
+                "Unit_Type": null,
+                "Collection_year": "2025"
+              },
+              "areaM2": 621.4773991083529,
+              "bbox": [
+                -72.6700378969975,
+                41.7666803007646,
+                -72.6696304480871,
+                41.7669122160674
+              ]
+            },
+            {
+              "objectId": 380265,
+              "fields": {
+                "Parcel_Type": null,
+                "Unit_Type": null,
+                "Collection_year": "2025"
+              },
+              "areaM2": 1317.9924146899623,
+              "bbox": [
+                -72.6701400169028,
+                41.7663011657417,
+                -72.6696785860547,
+                41.7667317856439
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "city": "boise",
+      "stateCode": "ID",
+      "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "status": "identity-diagnosis",
+      "attempts": [
+        {
+          "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7/query?where=County+%3D+%27Ada%27&geometry=-116.1975%2C43.615%2C-116.19500000000001%2C43.6175&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&returnGeometry=true&outFields=OBJECTID%2CPARCEL_ID%2CCounty%2CUPDATED%2CPUBLIC_STD&f=geojson",
+          "httpStatus": 200,
+          "operation": "Duplicate native-key component diagnosis",
+          "assessment": "Public parcel identifiers and mapping attributes only. Aggregates below retain no geometry."
+        }
+      ],
+      "duplicates": [
+        {
+          "native": "R1013004235",
+          "rows": [
+            {
+              "objectId": 118277,
+              "fields": {
+                "UPDATED": 1744761600000,
+                "PUBLIC_STD": null
+              },
+              "areaM2": 3400.358840471866,
+              "bbox": [
+                -116.19637384319,
+                43.6150968785174,
+                -116.195181223676,
+                43.6158422838123
+              ]
+            },
+            {
+              "objectId": 118278,
+              "fields": {
+                "UPDATED": 1744761600000,
+                "PUBLIC_STD": null
+              },
+              "areaM2": 3396.837548292775,
+              "bbox": [
+                -116.19607504215,
+                43.6154073209576,
+                -116.194883362764,
+                43.6161527233203
+              ]
+            }
+          ]
+        },
+        {
+          "native": "R1013006875",
+          "rows": [
+            {
+              "objectId": 118483,
+              "fields": {
+                "UPDATED": 1744761600000,
+                "PUBLIC_STD": null
+              },
+              "areaM2": 3400.923779549774,
+              "bbox": [
+                -116.196517411759,
+                43.6167685534625,
+                -116.19532475982,
+                43.6175141246262
+              ]
+            },
+            {
+              "objectId": 118482,
+              "fields": {
+                "UPDATED": 1744761600000,
+                "PUBLIC_STD": null
+              },
+              "areaM2": 3400.3494652357326,
+              "bbox": [
+                -116.196815272768,
+                43.6164582818127,
+                -116.195622624857,
+                43.6172036830417
+              ]
+            }
+          ]
+        },
+        {
+          "native": "R1013007095",
+          "rows": [
+            {
+              "objectId": 118493,
+              "fields": {
+                "UPDATED": 1744761600000,
+                "PUBLIC_STD": null
+              },
+              "areaM2": 3396.8411295128235,
+              "bbox": [
+                -116.195638551469,
+                43.6158616227432,
+                -116.194446863016,
+                43.6166070276248
+              ]
+            },
+            {
+              "objectId": 118494,
+              "fields": {
+                "UPDATED": 1744761600000,
+                "PUBLIC_STD": null
+              },
+              "areaM2": 3401.7837943804584,
+              "bbox": [
+                -116.195340688375,
+                43.6161718886077,
+                -116.194148051699,
+                43.6169174708717
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

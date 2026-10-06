@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "hartford",
+      "stateCode": "CT",
+      "sourceId": "us-ct-hartford-parcels",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider timed out.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 6,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "manifest",
+        "parameterLength": 374
+      }
+    }
+  ]
+}

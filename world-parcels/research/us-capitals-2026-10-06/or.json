@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "OR",
+  "state": "Oregon",
+  "capital": "Salem",
+  "centerLatLon": [
+    44.9429,
+    -123.0351
+  ],
+  "query": {
+    "language": "English",
+    "text": "Oregon Salem parcel map GIS taxlots official Marion County parcels"
+  },
+  "references": [
+    {
+      "url": "https://www.co.marion.or.us/AO",
+      "observation": "Official county GIS/parcel source found by the recorded English web query."
+    },
+    {
+      "url": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0",
+      "observation": "Candidate parcel source/official viewer."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "Official ArcGIS layer metadata retrieved; schema inspected without reading personal values."
+    },
+    {
+      "url": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0/query?f=geojson&where=1%3D1&geometry=-123.0362%2C44.9418%2C-123.034%2C44.944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=TAXLOT&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Tiny capital-centered spatial query requested only TAXLOT and geometry: 3 features; polygon geometry valid=True; null IDs=0; duplicate IDs=False."
+    },
+    {
+      "url": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0/query?f=geojson&where=TAXLOT%3D%27073W22DC00100%27&outFields=TAXLOT&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Exact native-key round trip 073W22DC00100 returned 1 feature(s), geometry valid=True."
+    },
+    {
+      "url": "https://services1.arcgis.com/sYGZnQPdJ0azuLyn/ArcGIS/rest/services/CDES_Marion/FeatureServer/2?f=pjson",
+      "status": 200,
+      "contentType": "application/json",
+      "assessment": "Oregon GeoPortal CDES Marion taxlot layer metadata returned successfully. The generic Taxlot field was not a unique parcel key in the downtown sample."
+    },
+    {
+      "url": "https://services1.arcgis.com/sYGZnQPdJ0azuLyn/ArcGIS/rest/services/CDES_Marion/FeatureServer/2/query?f=geojson&where=1%3D1&geometry=-123.0362%2C44.9418%2C-123.034%2C44.944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=Taxlot&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json",
+      "assessment": "Earlier candidate returned 3 valid polygons but all sampled generic Taxlot values were ROADS (duplicate exact read 3); retained as a failed identity candidate, not parcel absence."
+    },
+    {
+      "url": "https://services1.arcgis.com/sYGZnQPdJ0azuLyn/ArcGIS/rest/services/CDES_Marion/FeatureServer/2/query?f=geojson&where=Taxlot%3D%27ROADS%27&outFields=Taxlot&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json",
+      "assessment": "Exact generic Taxlot value ROADS returned 3 features; not a unique native parcel key."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0",
+    "adapter": "arcgis",
+    "name": "Marion County Public Parcels",
+    "operator": "Marion County Assessor and GIS",
+    "scope": "Marion County",
+    "idField": "TAXLOT",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "TAXLOT"
+    ],
+    "parcelNumberField": "TAXLOT",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -123.0362,
+      44.9418,
+      -123.034,
+      44.944
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "073W22DC00100",
+      "073W22DC00101",
+      "073W22DC00600"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS county parcel polygon layer"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "The official Marion County Public Parcels endpoint is verified. A separate GeoPortal CDES layer also yielded duplicate generic Taxlot=ROADS features and is not used."
+}
