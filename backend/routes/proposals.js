@@ -16,6 +16,7 @@ import {
 import { isInvalidRecordError } from '../proposals/serializer.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
+import { attachProposalFloorModels } from '../buildings/floor-models.js';
 
 // Rendering a thumbnail means fetching ~10-40 basemap tiles. That is normally under a second, but it
 // is a third party on the request path, so it gets a hard deadline: an upload must never hang on it.
@@ -1024,6 +1025,7 @@ export function setupProposalsRoute(app, pool) {
                     return { id, proposal: null, error: err.message, code: err.code };
                 }
             });
+            await attachProposalFloorModels(pool, items.map(item => item.proposal).filter(Boolean));
             res.json({ items, count: items.filter(item => item.proposal).length });
         } catch (err) {
             console.error('Error in POST /proposals/batch:', err);
@@ -1049,7 +1051,8 @@ export function setupProposalsRoute(app, pool) {
                 return res.status(404).json({ error: 'Proposal not found' });
             }
 
-            res.json(serializeProposalRow(result.rows[0]));
+            const [proposal] = await attachProposalFloorModels(pool, [serializeProposalRow(result.rows[0])]);
+            res.json(proposal);
         } catch (err) {
             if (isInvalidRecordError(err)) {
                 console.warn(`GET /proposals/${req.params.id}: ${err.message}`);
@@ -1118,6 +1121,7 @@ export function setupProposalsRoute(app, pool) {
             }).filter(Boolean);
             if (invalid.length) console.warn(`GET /proposals?parcel_id: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => entry.id));
 
+            await attachProposalFloorModels(pool, proposals);
             res.json({ proposals, count: proposals.length, limit, offset, parcelId, ...(invalid.length ? { invalid } : {}) });
         } catch (err) {
             console.error('Error in GET /proposals?parcel_id:', err);

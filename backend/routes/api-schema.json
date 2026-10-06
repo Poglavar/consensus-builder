@@ -1101,6 +1101,61 @@
                 }
             }
         },
+        "/buildings/floor-model": {
+            "get": {
+                "summary": "Get an optional versioned architectural floor model",
+                "description": "Source-neutral parametric floor geometry. Most buildings have no model and return model: null. Proposal buildings also require ownerId.",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "City key"
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "floorModelSource returned by /buildings/near, or proposal"
+                    },
+                    {
+                        "name": "buildingId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Native object_id or proposal building sourceFeatureId"
+                    },
+                    {
+                        "name": "ownerId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Public proposal id; required only when source is proposal"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Object containing model (identity, version, updatedAt, floorPlans), or null when absent"
+                    },
+                    "400": {
+                        "description": "Invalid or missing building identity"
+                    },
+                    "500": {
+                        "description": "Registry lookup failed"
+                    }
+                }
+            }
+        },
         "/buildings": {
             "get": {
                 "summary": "Get buildings by bounding box or parcel ID",

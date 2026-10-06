@@ -37,6 +37,21 @@
         return;
     }
     const facadeState = buildingFacades.createState(THREE);
+    const floorPlanGeometry = window.__buildingFloorPlans;
+    const floorPlanRenderer = window.__threeFloorPlans;
+    if (!floorPlanGeometry || !floorPlanRenderer) {
+        console.error('[3D] Floor-plan renderer is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
+    let xrayEnabled = new URLSearchParams(window.location.search).get('xray') === '1';
+    let xrayButton = null;
+    let xrayNote = null;
+    let floorCutawayControl = null;
+    let floorCutawaySelect = null;
+    let floorCutawayLevel = null;
+    let floorPlanGroup = null;
+    let floorPlanErrors = 0;
+    const renderedFloorPlanKeys = new Set();
     const FACADE_PREF_KEY = 'cb_3d_facades';
     const FACADE_STYLE_KEY = 'cb_3d_facade_style';
     let facadesEnabled = false;
@@ -794,7 +809,7 @@
         // buildingGroup holds proposed slices (tagged with their parcelId) and existing context
         // buildings (untagged). Show proposed slices on member parcels, plus existing buildings
         // whose footprint centre falls inside any member parcel polygon.
-        if (buildingGroup) buildingGroup.children.forEach(c => {
+        [buildingGroup, floorPlanGroup].filter(Boolean).forEach(group => group.children.forEach(c => {
             const ud = c.userData || {};
             if (ud.parcelId != null) { c.visible = parcelIdSet.has(String(ud.parcelId)); return; }
             if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeatures.length) {
@@ -809,7 +824,8 @@
                 return;
             }
             c.visible = false;
-        });
+        }));
+        updateXrayControls();
         // Planned decorations aren't parcel-specific; hide them while isolated.
         [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup, existingTransitAlignmentGroup].forEach(g => { if (g) g.visible = false; });
     }
@@ -927,6 +943,7 @@
         collapseToggle.type = 'button';
         collapseToggle.className = 'three-mode-ui-collapse';
         collapseToggle.setAttribute('aria-label', threeI18n('threeMode.controls.togglePanel', 'Toggle controls'));
+        collapseToggle.title = collapseToggle.getAttribute('aria-label');
         collapseToggle.innerHTML = '<span aria-hidden="true">⚙</span>';
         collapseToggle.addEventListener('click', () => buildingModeControlsEl.classList.toggle('collapsed'));
         buildingModeControlsEl.appendChild(collapseToggle);
@@ -959,6 +976,8 @@
         radiusSlider.max = String(BUILDING_RADIUS_MAX_M);
         radiusSlider.step = '50';
         radiusSlider.value = String(buildingLoadRadiusM);
+        radiusSlider.title = threeI18n('threeMode.controls.radiusTooltip', 'Radius — how wide a band of surrounding real buildings is loaded and shown as context');
+        radiusSlider.setAttribute('aria-label', radiusSlider.title);
         // Live label while dragging; only refetch on release ('change') to avoid spamming the backend.
         radiusSlider.addEventListener('input', () => { radiusValue.textContent = `${radiusSlider.value} m`; });
         radiusSlider.addEventListener('change', () => { setBuildingLoadRadius(Number(radiusSlider.value)); });
@@ -999,6 +1018,7 @@
             const select = document.createElement('select');
             select.id = `three-mode-${kind}-display`;
             select.className = 'three-mode-display-select';
+            select.setAttribute('aria-label', labelText);
             states.forEach(([state, stateLabel]) => {
                 const option = document.createElement('option');
                 option.value = state;
@@ -1078,6 +1098,7 @@
         facadeStyleSelect.id = 'three-mode-facade-style';
         facadeStyleSelect.className = 'three-mode-display-select';
         facadeStyleSelect.setAttribute('aria-label', threeI18n('threeMode.controls.facadeStyle', 'Facade style'));
+        facadeStyleSelect.title = threeI18n('threeMode.controls.facadeStyleTooltip', 'Choose the illustrative material palette used on proposed building facades');
         ['mixed', ...buildingFacades.STYLES.map(style => style.id)].forEach(id => {
             const option = document.createElement('option');
             option.value = id;
@@ -1092,6 +1113,41 @@
         facadeNote.textContent = threeI18n('threeMode.controls.facadesNote', 'Illustrative designs for proposed buildings.');
         buildingModeControlsEl.appendChild(facadeNote);
         setFacadeAppearance(facadesEnabled, facadeStyle, false);
+
+        const xrayRow = document.createElement('div');
+        xrayRow.className = 'three-mode-xray-row';
+        xrayRow.setAttribute('aria-label', threeI18n('threeMode.controls.xraySection', 'X-ray floor plans'));
+        xrayButton = document.createElement('button');
+        xrayButton.type = 'button';
+        xrayButton.id = 'three-mode-xray';
+        xrayButton.className = 'three-mode-xray-button';
+        xrayButton.textContent = threeI18n('threeMode.controls.xray', 'X-ray');
+        xrayButton.title = threeI18n('threeMode.controls.xrayTooltip',
+            'Show modelled floors, walls, doors and windows.');
+        xrayButton.addEventListener('click', () => setXrayEnabled(!xrayEnabled));
+        xrayRow.appendChild(xrayButton);
+        floorCutawayControl = document.createElement('label');
+        floorCutawayControl.className = 'three-mode-floor-cutaway';
+        const cutawayLabel = document.createElement('span');
+        cutawayLabel.textContent = threeI18n('threeMode.controls.floorCutaway', 'Cut above');
+        floorCutawaySelect = document.createElement('select');
+        floorCutawaySelect.id = 'three-mode-floor-cutaway';
+        floorCutawaySelect.className = 'three-mode-display-select';
+        floorCutawaySelect.setAttribute('aria-label', threeI18n('threeMode.controls.floorCutawayTooltip', 'Choose which floors remain visible in X-ray view'));
+        floorCutawaySelect.title = floorCutawaySelect.getAttribute('aria-label');
+        floorCutawayControl.title = floorCutawaySelect.title;
+        floorCutawaySelect.addEventListener('change', () => {
+            setFloorCutaway(floorCutawaySelect.value === 'all' ? null : Number(floorCutawaySelect.value));
+        });
+        floorCutawayControl.append(cutawayLabel, floorCutawaySelect);
+        xrayRow.appendChild(floorCutawayControl);
+        xrayNote = document.createElement('div');
+        xrayNote.id = 'three-mode-xray-note';
+        xrayNote.className = 'three-mode-xray-note';
+        xrayNote.setAttribute('role', 'status');
+        xrayButton.setAttribute('aria-describedby', xrayNote.id);
+        xrayRow.appendChild(xrayNote);
+        updateXrayControls();
 
         // Scenery toggles — populated dynamically from GET /decor/layers (see refreshDecorToggles),
         // so a checkbox appears only for layers the current city has actually ingested (e.g. Trees for
@@ -1118,6 +1174,8 @@
         const ineligibleText = document.createElement('span');
         ineligibleText.className = 'three-mode-emphasis-label';
         ineligibleText.textContent = threeI18n('threeMode.controls.ineligibleParcels', 'Non-buildable plots');
+        ineligibleLabel.title = threeI18n('threeMode.controls.ineligibleParcelsTooltip', 'Show transparent volumes where the current applied rule leaves no buildable plot; this does not mean the land is universally unbuildable.');
+        ineligibleLabel.setAttribute('aria-label', ineligibleLabel.title);
         ineligibleLabel.appendChild(ineligibleBox);
         ineligibleLabel.appendChild(ineligibleText);
         ineligibleRow.appendChild(ineligibleLabel);
@@ -1130,10 +1188,14 @@
         showAllBtn.type = 'button';
         showAllBtn.className = 'three-mode-reset-btn';
         showAllBtn.textContent = threeI18n('threeMode.controls.showAllParcels', 'Show all parcels');
+        showAllBtn.title = threeI18n('threeMode.controls.showAllParcelsTooltip', 'Clear the parcel isolation and show the whole scene again');
+        showAllBtn.setAttribute('aria-label', showAllBtn.title);
         showAllBtn.addEventListener('click', () => clearIsolation());
         isolationResetEl.appendChild(showAllBtn);
         buildingModeControlsEl.appendChild(isolationResetEl);
 
+        // Keep X-ray below the scenery and plot controls.
+        buildingModeControlsEl.appendChild(xrayRow);
         threeContainer.appendChild(buildingModeControlsEl);
         updateDisplayStateControls();
         updateIsolationButton();
@@ -3978,8 +4040,13 @@
                         const renderParts = buildingDisplayPolicy.resolveBuildingRenderParts(carve, visibility);
                         if (!carve) {
                             if (!renderParts.detailed) return;
+                            if (appendBuildingFloorPlans({ type: 'Feature', geometry: bld.floorModel?.footprint, properties: {
+                                ...bld.properties, floorPlans: bld.floorPlans || bld.properties?.floorPlans
+                            } }, buildingMaterial, building3DHeightMeters(bld))) return;
                             const mesh = buildMeshFromBuilding3D(bld, buildingMaterial, meshDedupeState);
-                            if (mesh) targetGroup.add(mesh);
+                            if (mesh) {
+                                targetGroup.add(mesh);
+                            }
                             return;
                         }
                         if (carve.remainder) {
@@ -4556,6 +4623,8 @@
             text.className = 'three-mode-emphasis-label';
             // Resolve at render time (after i18n loads); falls back to the DECOR_LAYERS label.
             text.textContent = threeI18n('threeMode.controls.' + key, spec.label);
+            label.title = threeI18n('threeMode.controls.' + key + 'Tooltip', spec.label);
+            label.setAttribute('aria-label', label.title);
             label.appendChild(cb);
             label.appendChild(text);
             row.appendChild(label);
@@ -4584,6 +4653,9 @@
         for (let i = 0; i < arr.length; i++) {
             const feat = arr[i];
             if (!feat || !feat.geometry) continue;
+            // The architectural model owns this building's surfaces in Xray mode.
+            // Its old solid proxy would otherwise hide the rooms in the depth buffer.
+            if (appendBuildingFloorPlans(feat, buildingMaterial, estimateBuildingHeightMeters(feat))) continue;
             try {
                 // Uploaded buildings carry a glTF model URL — render the real mesh instead of an extruded box.
                 if (feat.properties && feat.properties.modelUrl) {
@@ -5284,9 +5356,106 @@
         return result;
     }
 
+    function disposeFloorPlans() {
+        if (floorPlanGroup) {
+            [...floorPlanGroup.children].forEach(group => {
+                floorPlanRenderer.disposeGroup(group);
+                floorPlanGroup.remove(group);
+            });
+        }
+        renderedFloorPlanKeys.clear();
+        floorPlanErrors = 0;
+    }
+
+    function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM) {
+        const plans = feature?.properties?.floorPlans;
+        if (!xrayEnabled || !floorPlanGroup || !plans) return false;
+        // A building can have several parcel slices or appear in both data families. Its
+        // registered drawing is owned once, independent of how many exterior meshes it has.
+        try {
+            const key = JSON.stringify([plans.registration, plans.floors?.map(floor => floor.id)]);
+            if (renderedFloorPlanKeys.has(key)) return true;
+            const group = floorPlanRenderer.createBuildingGroup(THREE, feature,
+                (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry, { proxyMaterial, proxyHeightM });
+            if (group) {
+                floorPlanRenderer.setCutaway(group, floorCutawayLevel);
+                floorPlanGroup.add(group);
+                renderedFloorPlanKeys.add(key);
+                return true;
+            }
+        } catch (error) {
+            floorPlanErrors++;
+            console.error('[3D] Invalid floor plans for building', feature.properties?.name, error);
+        }
+        return false;
+    }
+
+    function renderScene() {
+        floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
+            xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
+    }
+
+    function setFloorCutaway(level) {
+        if (level !== null && !Number.isInteger(level)) return;
+        floorCutawayLevel = level;
+        (floorPlanGroup?.children || []).forEach(group => floorPlanRenderer.setCutaway(group, level));
+        updateXrayControls();
+    }
+
+    function updateXrayControls() {
+        if (xrayButton) xrayButton.setAttribute('aria-pressed', String(xrayEnabled));
+        if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
+        if (xrayEnabled && floorCutawaySelect) {
+            const levels = [...new Set((floorPlanGroup?.children || []).filter(group => group.visible !== false)
+                .flatMap(group => group.userData.availableLevels || []))].sort((a,b) => a-b);
+            const signature = levels.join(',');
+            if (floorCutawaySelect.dataset.levels !== signature) {
+                floorCutawaySelect.replaceChildren();
+                [null, ...levels].forEach(level => {
+                    const option = document.createElement('option');
+                    option.value = level === null ? 'all' : String(level);
+                    option.textContent = level === null ? threeI18n('threeMode.controls.floorAll', 'All floors')
+                        : level < 0 ? threeI18n('threeMode.controls.floorBasement', `Basement ${-level}`, { level: -level })
+                        : level === 0 ? threeI18n('threeMode.controls.floorGround', 'Ground floor')
+                        : threeI18n('threeMode.controls.floorLevel', `Floor ${level}`, { level });
+                    floorCutawaySelect.appendChild(option);
+                });
+                floorCutawaySelect.dataset.levels = signature;
+            }
+            floorCutawaySelect.disabled = levels.length === 0;
+            floorCutawaySelect.value = floorCutawayLevel === null ? 'all' : String(floorCutawayLevel);
+        }
+        if (!xrayNote) return;
+        xrayNote.hidden = !xrayEnabled;
+        if (!xrayEnabled) return;
+        const totals = (floorPlanGroup?.children || []).reduce((total, group) => {
+            const counts = floorPlanRenderer.summarize(group);
+            Object.keys(total).forEach(key => { total[key] += counts[key]; });
+            return total;
+        }, { floors: 0, buildings: 0, estimatedFloors: 0, apartments: 0 });
+        const lines = [totals.floors
+            ? threeI18n('threeMode.controls.xrayCount', `Floors: ${totals.floors} · Buildings: ${totals.buildings}`, totals)
+            : threeI18n('threeMode.controls.xrayEmpty', 'No floor plans available for the visible buildings.')];
+        if (totals.estimatedFloors) lines.push(threeI18n('threeMode.controls.xrayEstimated',
+            'Heights and opening types are inferred.'));
+        if (floorPlanGroup?.children.some(group => group.visible && group.userData.registrationAccuracy === 'approximate')) {
+            lines.push(threeI18n('threeMode.controls.xrayAlignment', 'Plan alignment is approximate.'));
+        }
+        if (floorPlanErrors) lines.push(threeI18n('threeMode.controls.xrayError',
+            'Some floor plans could not be displayed.'));
+        xrayNote.textContent = lines.join(' ');
+    }
+
+    function setXrayEnabled(enabled) {
+        xrayEnabled = enabled === true;
+        rebuild3DBuildingsOnly();
+        updateXrayControls();
+    }
+
     function rebuild3DBuildingsOnly() {
         if (!isActive || !buildingGroup) return;
         clearGroupChildren(buildingGroup);
+        disposeFloorPlans();
         // Bump the generation so in-flight async model loads from a prior rebuild don't
         // attach their meshes to the freshly cleared group.
         buildingsRenderGeneration++;
@@ -5326,6 +5495,7 @@
         // Freshly rebuilt buildings default to visible; re-apply isolation if active.
         if (isolatedParcelId !== null) isolateParcel(isolatedParcelId);
         else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
+        updateXrayControls();
     }
 
     function computeContentBoundsXY() {
@@ -5413,6 +5583,8 @@
         corridorGroup = new THREE.Group();
         plannedFlatGroup = new THREE.Group();
         buildingGroup = new THREE.Group();
+        floorPlanGroup = new THREE.Group();
+        floorPlanGroup.name = 'FloorPlans';
         parkGroup = new THREE.Group();
         squareGroup = new THREE.Group();
         lakeGroup = new THREE.Group();
@@ -5431,6 +5603,7 @@
         scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
+        scene.add(floorPlanGroup);
         scene.add(parkGroup);
         scene.add(squareGroup);
         scene.add(lakeGroup);
@@ -5536,7 +5709,7 @@
             const pitch = finalPitchRad * ease;
             currentPitchRad = pitch;
             placeCameraForPitch(pitch);
-            renderer.render(scene, camera);
+            renderScene();
             if (t < 1) {
                 frameId = requestAnimationFrame(tiltStep);
             } else {
@@ -5546,7 +5719,7 @@
         // A shared render restores its exact camera pose (no intro tilt); everything else tilts in.
         if (pendingRestoreView && applyGeoCameraView(pendingRestoreView)) {
             pendingRestoreView = null;
-            renderer.render(scene, camera);
+            renderScene();
             startLoop();
         } else {
             pendingRestoreView = null;
@@ -5785,7 +5958,7 @@
             for (let i = 0; i < frameHooks.length; i++) {
                 try { frameHooks[i](now); } catch (err) { console.error('[3D] frame hook failed', err); }
             }
-            renderer.render(scene, camera);
+            renderScene();
             frameId = requestAnimationFrame(loop);
         };
         frameId = requestAnimationFrame(loop);
@@ -5827,6 +6000,7 @@
 
     function disposeScene() {
         cancelLoop();
+        disposeFloorPlans();
         buildingFacades.disposeGroup(buildingGroup);
         stopIntroAutoRotate();
         corridorTerrainSampler = null;
@@ -5860,6 +6034,10 @@
         facadeCheckbox = null;
         facadeStyleSelect = null;
         facadeNote = null;
+        xrayButton = null;
+        xrayNote = null;
+        floorCutawayControl = null;
+        floorCutawaySelect = null;
         rerollBtn = null;
         rerollBusy = false;
         if (renderer) {
@@ -5879,6 +6057,7 @@
         corridorTerrainProfiles = [];
         plannedFlatGroup = null;
         buildingGroup = null;
+        floorPlanGroup = null;
         parkGroup = null;
         squareGroup = null;
         lakeGroup = null;
@@ -6572,7 +6751,7 @@
     function captureSceneDataURL() {
         if (!isActive || !renderer || !scene || !camera) return null;
         try {
-            renderer.render(scene, camera);
+            renderScene();
             // JPEG for the colour view — it is photographic, so this is ~10x smaller than PNG with
             // no difference the model can act on.
             return captureDownscaledDataURL('image/jpeg', 0.92);
@@ -6615,13 +6794,13 @@
             const prevBg = scene.background;
             scene.overrideMaterial = makeHeightMaterial(minZ, maxZ);
             scene.background = new THREE.Color(0x000000);            // empty space = 0 m = black
-            renderer.render(scene, camera);
+            renderScene();
             // PNG, not JPEG: this image encodes heights as grey levels, so lossy artifacts would
             // literally change the building heights the model reads off it. Still downscaled.
             const url = captureDownscaledDataURL('image/png');
             scene.overrideMaterial = prevOverride;
             scene.background = prevBg;
-            renderer.render(scene, camera);                         // restore the normal view in the buffer
+            renderScene();                         // restore the normal view in the buffer
             return { image: url, maxHeightM: Math.round(maxZ) };
         } catch (_) { return null; }
     }
@@ -6755,6 +6934,8 @@
     window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };
     window.getThree3DGeoView = getGeoCameraView;
+    window.setThreeXrayEnabled = setXrayEnabled;
+    window.setThreeFloorCutaway = setFloorCutaway;
 
     // Window capture runs before every document-level shortcut, including the few legacy handlers
     // that also use capture. This is the keyboard-context boundary between the 3D and 2D apps.

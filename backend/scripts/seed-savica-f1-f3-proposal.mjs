@@ -1,6 +1,7 @@
 // Reconstructs Savica F1–F3 from the current DGU built footprints, with labels and
 // programme cross-checked against archived public eDozvola geometry and Pionir documents.
 
+import { attachBuildingFloorPlans } from '../proposals/building-floor-plans.js';
 import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -360,7 +361,12 @@ async function upsertProposal(pool, proposal) {
 }
 
 async function exportArtifacts(proposal, parcelFeature, contextRows) {
-    const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(proposal);
+    // Keep authored interiors when exterior metadata is regenerated; changed footprints
+    // require explicit registration review instead of silently discarding the models.
+    const archive = JSON.parse(await readFile(PROPOSAL_PATH, 'utf8'));
+    const withFloors = { ...proposal, geometry: { ...proposal.geometry,
+        buildings: attachBuildingFloorPlans(proposal.geometry.buildings, archive.features).buildings } };
+    const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(withFloors);
     await mkdir(dirname(PROPOSAL_PATH), { recursive: true });
     await writeFile(PROPOSAL_PATH, `${JSON.stringify(collection, null, 2)}\n`, 'utf8');
     const context = {

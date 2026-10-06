@@ -20,6 +20,7 @@ import { setupParcelLjRoute } from './routes/parcel-lj.js';
 import { setupParcelCoRoute } from './routes/parcel-co.js';
 import { setupParcelNycRoute } from './routes/parcel-nyc.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
+import { setupBuildingFloorModelsRoute } from './routes/building-floor-models.js';
 import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
@@ -375,6 +376,7 @@ export function createApp({
     setupParcelCoRoute(app, activePool);
     setupParcelNycRoute(app, activePool);
     setupBuildingsRoute(app, activePool);
+    setupBuildingFloorModelsRoute(app, activePool);
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);

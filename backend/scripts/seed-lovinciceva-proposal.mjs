@@ -1,9 +1,10 @@
 // Reconstructs Lovinčićeva's 12 approved above-ground volumes as one editable local proposal.
 // The script is local-only, validates every footprint against k.č. 4090/1, and upserts only with --apply.
 
+import { attachBuildingFloorPlans } from '../proposals/building-floor-plans.js';
 import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import pg from 'pg';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -321,7 +322,12 @@ export async function constructLovincicevaProposal(pool) {
 }
 
 async function exportProposal(proposal) {
-    const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(proposal);
+    // Keep authored interiors when exterior metadata is regenerated; changed footprints
+    // require explicit registration review instead of silently discarding the models.
+    const archive = JSON.parse(await readFile(GEOJSON_PATH, 'utf8'));
+    const withFloors = { ...proposal, geometry: { ...proposal.geometry,
+        buildings: attachBuildingFloorPlans(proposal.geometry.buildings, archive.features).buildings } };
+    const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(withFloors);
     await mkdir(dirname(GEOJSON_PATH), { recursive: true });
     await writeFile(GEOJSON_PATH, `${JSON.stringify(collection, null, 2)}\n`, 'utf8');
     console.log(`Exported ${buildingCount} buildings to ${GEOJSON_PATH}; round trip passed.`);

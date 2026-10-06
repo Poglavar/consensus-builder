@@ -36,6 +36,18 @@ git pull --ff-only
 echo "Installing dependencies (npm ci)..."
 npm ci
 
+# Install the optional floor registry before code that reads it is restarted.
+# The schema is qualified and idempotent; an error leaves the old API running.
+echo "Applying building floor-model schema..."
+(
+    set -a
+    # shellcheck disable=SC1091
+    . ./.env
+    set +a
+    psql -X -q -v ON_ERROR_STOP=1 --single-transaction \
+        -c 'SET ROLE geo_user' -f db/building-floor-model.sql
+)
+
 echo "Restarting PM2 process..."
 mkdir -p logs
 # Restart FROM THE ECOSYSTEM FILE, not by process name. `pm2 restart <name>` reuses the config PM2

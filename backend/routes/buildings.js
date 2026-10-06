@@ -2,6 +2,7 @@
 import { createBuildingProviders } from '../buildings/index.js';
 import { fetchOsmBuildings } from '../buildings/osm-reference.js';
 import { fetchStagedOsmBuildings } from '../buildings/osm-staged.js';
+import { attachNearbyFloorModels } from '../buildings/floor-models.js';
 import {
     fetchProposalsForCarve,
     carveRecordsFor,
@@ -212,14 +213,24 @@ export function setupBuildingsRoute(app, pool) {
             }
 
             const result = await provider.near(geometry, bufferMeters);
+            const floorModelSource = result.source;
+            const extra = { floorModelSource };
             if (!proposalIds.length) {
-                return res.json({ buildings: result.buildings, count: result.count, source: result.source });
+                const buildings = await attachNearbyFloorModels(pool, city || 'zagreb', floorModelSource, result.buildings);
+                return res.json({ buildings, count: result.count, source: result.source, ...extra });
             }
 
             const proposals = await fetchProposalsForCarve(pool, proposalIds);
             const carveContext = carveRecordsFor(proposals);
             const buildings = carveBuildings(result.buildings, carveContext);
-            res.json({ buildings, count: buildings.length, source: result.source });
+            // A cut proxy no longer has the authored floor shape. Enrich only untouched
+            // objects (carveBuildings deliberately preserves those object references).
+            const originals = new Set(result.buildings);
+            const modeled = await attachNearbyFloorModels(pool, city || 'zagreb', floorModelSource,
+                buildings.filter(building => originals.has(building)));
+            const byId = new Map(modeled.map(building => [building.object_id, building]));
+            const enriched = buildings.map(building => originals.has(building) ? byId.get(building.object_id) : building);
+            res.json({ buildings: enriched, count: enriched.length, source: result.source, ...extra });
         } catch (err) {
             console.error('Error in POST /buildings/near:', err);
             res.status(500).json({ error: 'Internal server error' });

@@ -113,7 +113,8 @@ describe('POST /buildings/near with `proposals`', () => {
         // The meshes come back exactly as the provider gave them — no re-extrusion.
         expect(res.body.buildings[1]).toEqual(BUILDINGS[1]);
         // And no proposal lookup was made at all.
-        expect(pool.getCalls()).toHaveLength(1);
+        expect(pool.getCalls()).toHaveLength(2);
+        expect(pool.getCalls()[1].sql).toContain("consensus.building_floor_model");
     });
 
     it('returns the tunnelled building INTACT, the cut one REDUCED, and the demolished one ABSENT', async () => {
@@ -148,13 +149,14 @@ describe('POST /buildings/near with `proposals`', () => {
         expect(cut.faces).not.toEqual(BUILDINGS[1].faces);
     });
 
-    it('makes exactly two queries — the meshes and the proposals, and nothing to resolve ids with', async () => {
+    it('fetches meshes, proposals and optional floor models without cross-survey id resolution', async () => {
         primePool();
 
         await request(app).post('/buildings/near').send({ ...NEAR_BODY, proposals: ['p-carve-test'] });
 
         const calls = pool.getCalls();
-        expect(calls).toHaveLength(2);
+        expect(calls).toHaveLength(3);
+        expect(calls[2].sql).toContain("consensus.building_floor_model");
         expect(calls.some(call => /dgu_gdi_building_match|building_3d_match/.test(call.sql))).toBe(false);
     });
 

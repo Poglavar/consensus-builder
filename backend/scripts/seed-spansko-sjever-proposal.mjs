@@ -1,6 +1,7 @@
 // Reconstructs the six-volume Špansko-Sjever A–F scheme from the official 2022
 // location-permit polygons, matched to the six current DGU buildings on the parcel.
 
+import { attachBuildingFloorPlans } from '../proposals/building-floor-plans.js';
 import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -377,7 +378,12 @@ async function upsertProposal(pool, proposal) {
 }
 
 async function exportProposal(proposal) {
-    const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(proposal);
+    // Keep authored interiors when exterior metadata is regenerated; changed footprints
+    // require explicit registration review instead of silently discarding the models.
+    const archive = JSON.parse(await readFile(PROPOSAL_PATH, 'utf8'));
+    const withFloors = { ...proposal, geometry: { ...proposal.geometry,
+        buildings: attachBuildingFloorPlans(proposal.geometry.buildings, archive.features).buildings } };
+    const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(withFloors);
     await mkdir(dirname(PROPOSAL_PATH), { recursive: true });
     await writeFile(PROPOSAL_PATH, `${JSON.stringify(collection, null, 2)}\n`, 'utf8');
     console.log(`Exported ${buildingCount} planned buildings to ${PROPOSAL_PATH}; round trip passed.`);

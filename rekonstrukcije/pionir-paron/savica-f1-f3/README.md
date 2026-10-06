@@ -2,6 +2,20 @@
 
 # Savica F1–F3
 
+Floor-model coverage is authored once under F3: levels −1 and 0–7, including the shared basement. Raster traces were reviewed against the source drawing and remain approximate visualization evidence, not survey geometry. Ramps retain flat plan footprints because their vertical profile is unknown; elevations remain estimated.
+
+Author with PyMuPDF and Shapely installed, then review the local database import (dry run by default):
+
+```sh
+python3 backend/scripts/reconstruct-savica-floors.py \
+  --sources rekonstrukcije/pionir-paron/savica-f1-f3/floor-plan-sources.json \
+  --proposal rekonstrukcije/pionir-paron/savica-f1-f3/proposal.geojson \
+  --cache-dir /tmp/savica-floor-cache --fetch --write
+PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
+  --archive rekonstrukcije/pionir-paron/savica-f1-f3/proposal.geojson
+```
+
+
 Savica F1–F3 is a completed mixed residential-office complex on k.č. 2716/8, MB 335649, k.o. Trnje. It consists of two residential above-ground volumes, F1 and F2, an office volume F3, a shared underground garage G and a transformer. The app proposal contains only the three principal above-ground buildings; garage and transformer geometry is retained in [`observed-context.geojson`](observed-context.geojson).
 
 The company roles changed through the record and must not be collapsed into a generic “Pionir investor” label. PARON is named as investor in the F1 design/energy documentation, TEHNIKAGRADNJA is named as investor in later permits and use permits, and GIP PIONIR markets the project and publishes the documents.
