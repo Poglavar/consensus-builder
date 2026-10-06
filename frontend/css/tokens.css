@@ -61,6 +61,7 @@
     --cb-text-base: 14px;           /* controls, body in chrome */
     --cb-text-lg: 16px;             /* panel body, dialog body */
     --cb-text-xl: 18px;             /* dialog and sheet titles */
+    --cb-text-display: clamp(26px, 3.4vw, 40px); /* feature tour headings */
     --cb-text-2xl: 22px;            /* page-level titles */
     --cb-weight-normal: 400;
     --cb-weight-medium: 500;
@@ -102,6 +103,7 @@
     --cb-z-notice: 1700;            /* source warnings: over map, panels and sheets, under dialogs */
     --cb-z-dialog: 12000;           /* dialogs */
     --cb-z-dialog-top: 13000;       /* a dialog opened from a dialog */
+    --cb-z-intro: 14500;           /* introduction above recovery dialogs */
     --cb-z-confirm: 30000;          /* confirm / alert over everything */
     --cb-z-banner: 100000;          /* multi-tab and explore banners */
     --cb-z-toast: 100001;

@@ -1481,20 +1481,48 @@
             "nextButton": "Dalje"
         },
         "siteIntro": {
-            "open": "Kako funkcionira Consensus Builder",
+            "open": "Kako funkcionira",
             "close": "Zatvori uvod",
             "before": "Postojeće čestice",
             "after": "Predloženi blok",
-            "eyebrow": "Consensus Builder · Grad se mijenja česticu po česticu",
-            "title": "Oblikujte grad o kojem se ljudi mogu dogovoriti",
-            "lead": "Consensus Builder besplatan je alat za urbanističko planiranje na karti: istražite stvarne zemljišne čestice i izradite prijedloge razvoja i zoniranja u zajednici. Usporedite ideje, podijelite plan i gradite podršku ljudi na koje promjene utječu. Hyperstition je njegov hackathon projekt za otvoreno planiranje grada.",
-            "groundTitle": "Počnite od stvarnog prostora",
-            "groundBody": "Istražite katastarske čestice, zgrade, ulice i vlasništvo.",
-            "proposeTitle": "Učinite promjenu vidljivom",
-            "proposeBody": "Predložite, primjerice, gradski blok na tim česticama — ili dodajte zgrade, ceste, parkove ili nove granice čestica.",
-            "consentTitle": "Izgradite suglasnost",
-            "consentBody": "Podijelite prijedlog, dodajte podršku ili sredstva i prepustite odluku vlasnicima.",
-            "cta": "Otvorite kartu"
+            "cta": "Otvorite kartu",
+            "tour": {
+                "next": "Sljedeća značajka",
+                "back": "Prethodna značajka",
+                "skip": "Preskočite uvod",
+                "pages": "Uvodne značajke",
+                "progress": "{{current}} / {{total}}",
+                "explore": {
+                    "eyebrow": "Mjesto za početak",
+                    "title": "Oblikujte grad o kojem se ljudi mogu dogovoriti",
+                    "body": "Odaberite grad na globusu ili istražite bilo koje područje. Pregledajte čestice i zgrade u 2D, 3D ili foto prikazu, gdje su dostupni.",
+                    "hint": "Otvorite birač gradova za putovanje. U slojevima odaberite što želite vidjeti."
+                },
+                "propose": {
+                    "eyebrow": "Od ideje do prijedloga",
+                    "title": "Učinite promjenu vidljivom",
+                    "body": "Pretvorite ideju u prijedlog: preoblikujte čestice, skicirajte ulice i parkove ili dodajte zgrade. Primijenite nacrt da vidite kako mijenja kartu.",
+                    "hint": "Počnite u Alatima, a zatim usporedite prijedloge na karti."
+                },
+                "consent": {
+                    "eyebrow": "Ljudi čine razliku",
+                    "title": "Prijedlog je početak razgovora",
+                    "body": "Podijelite plan, prikupite glasove i financijsku podršku te zatražite prihvaćanje od vlasnika čije je vlasništvo potvrđeno. Za radnje na lancu vrijede zahtjevi za novčanik i identitet.",
+                    "hint": "Otvorite prijedlog da pregledate podršku i prihvaćanje."
+                },
+                "activity": {
+                    "eyebrow": "Grad u pokretu",
+                    "title": "Pratite kako se odluke razvijaju",
+                    "body": "Pratite prijedloge i aktivnost agenata diljem svijeta. Ondje gdje je simulacija dostupna, pokrenite ili pauzirajte poteze i istražite kako se prijedlozi i podrška razvijaju.",
+                    "hint": "Otvorite Aktivnost za prijenos uživo i kontrole simulacije."
+                },
+                "sources": {
+                    "eyebrow": "Više od jednog polazišta",
+                    "title": "Nastavite istraživati i bez registra",
+                    "body": "Ponovno pokušajte dohvat nedostupnog izvora čestica ili dodajte vlastitu poveznicu. Možete zatražiti i okvirne procjene granica iz snimaka ili izraditi ponovljiv Schellingov plan.",
+                    "hint": "Procjene i generirani planovi mogu biti pogrešni. Ne utvrđuju pravne granice."
+                }
+            }
         },
         "welcome": {
             "kicker": "Consensus Builder · Urban Game Theory",
@@ -4542,7 +4570,6 @@
             "farAway": "Odgovor ima {count} poligona, ali nijedan nije blizu ovog prikaza karte."
         },
         "ocr": {
-            "heading": "Procjena granica čestica iz satelitskih snimaka",
             "help": "Procijenite vjerojatne granice čestica iz satelitskih snimaka ovog područja. Obrada se izvodi u pozadini. Rezultati mogu biti nepotpuni ili pogrešni i treba ih provjeriti; snimke ne utvrđuju pravne granice čestica.",
             "start": "Pokreni prepoznavanje granica",
             "unavailable": "Prepoznavanje granica čestica iz satelitskih snimaka još nije dostupno na ovom zaslonu. Procjene će biti ograničene pouzdanosti i trebat će ih provjeriti; snimke ne utvrđuju pravne granice čestica."

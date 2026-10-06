@@ -1524,20 +1524,48 @@
             "nextButton": "Siguiente"
         },
         "siteIntro": {
-            "open": "Cómo funciona Consensus Builder",
+            "open": "Cómo funciona",
             "close": "Cerrar introducción",
             "before": "Parcelas existentes",
             "after": "Manzana propuesta",
-            "eyebrow": "Consensus Builder · Las ciudades cambian parcela a parcela",
-            "title": "Da forma a una ciudad en la que podamos ponernos de acuerdo",
-            "lead": "Consensus Builder es software gratuito de planificación urbana para explorar parcelas reales y crear propuestas comunitarias de zonificación y desarrollo. Compara ideas en el mapa, comparte un plan y suma apoyo de las personas afectadas. Hyperstition es su proyecto de hackathon para una planificación urbana abierta.",
-            "groundTitle": "Empieza por el territorio real",
-            "groundBody": "Explora parcelas catastrales, edificios, calles y propiedad.",
-            "proposeTitle": "Haz visible el cambio",
-            "proposeBody": "Propón, por ejemplo, una manzana urbana sobre esas parcelas, o añade edificios, calles, parques o nuevos límites parcelarios.",
-            "consentTitle": "Construye consenso",
-            "consentBody": "Comparte la propuesta, suma apoyo o financiación y deja que decidan los propietarios.",
-            "cta": "Explorar el mapa"
+            "cta": "Explorar el mapa",
+            "tour": {
+                "next": "Siguiente función",
+                "back": "Función anterior",
+                "skip": "Saltar la introducción",
+                "pages": "Funciones que presenta la introducción",
+                "progress": "{{current}} / {{total}}",
+                "explore": {
+                    "eyebrow": "Un lugar para empezar",
+                    "title": "Da forma a una ciudad en la que podamos ponernos de acuerdo",
+                    "body": "Elige una ciudad en el globo o explora cualquier lugar. Consulta parcelas y edificios en vista 2D, 3D o fotográfica cuando estén disponibles.",
+                    "hint": "Abre el selector de ciudades para viajar. Usa Capas para elegir qué quieres ver."
+                },
+                "propose": {
+                    "eyebrow": "De la idea a la propuesta",
+                    "title": "Haz visible el cambio",
+                    "body": "Convierte una idea en una propuesta: rediseña parcelas, traza calles y parques o añade edificios. Aplica un borrador para ver cómo cambia el mapa.",
+                    "hint": "Empieza en Herramientas y después compara tus propuestas en el mapa."
+                },
+                "consent": {
+                    "eyebrow": "Las personas marcan la diferencia",
+                    "title": "Una propuesta inicia una conversación",
+                    "body": "Comparte un plan, reúne votos y apoyo financiero, y busca la aceptación de propietarios acreditados. Para las acciones en cadena se aplican requisitos de cartera e identidad.",
+                    "hint": "Abre una propuesta para consultar su apoyo y aceptación."
+                },
+                "activity": {
+                    "eyebrow": "Una ciudad en movimiento",
+                    "title": "Sigue cómo avanzan las decisiones",
+                    "body": "Sigue las propuestas y la actividad de agentes de todo el mundo. Cuando haya una simulación disponible, reproduce o pausa los turnos para ver cómo evolucionan las propuestas y el apoyo.",
+                    "hint": "Abre Actividad para ver el flujo en directo y los controles de simulación."
+                },
+                "sources": {
+                    "eyebrow": "Más de un punto de partida",
+                    "title": "Sigue explorando aunque falte un registro",
+                    "body": "Vuelve a intentar cargar una fuente de parcelas que no esté disponible o añade tu propio enlace. También puedes solicitar estimaciones aproximadas de límites a partir de imágenes o generar un plan reproducible de Schelling.",
+                    "hint": "Las estimaciones y los planes generados pueden ser incorrectos. No establecen límites legales."
+                }
+            }
         },
         "welcome": {
             "kicker": "Consensus Builder · Urban Game Theory",
@@ -4554,7 +4582,6 @@
             "farAway": "La respuesta tiene {count} polígono(s), pero ninguno está cerca de esta vista del mapa."
         },
         "ocr": {
-            "heading": "Estimar límites de parcelas a partir de imágenes satelitales",
             "help": "Estimar los límites probables de las parcelas a partir de imágenes satelitales de esta zona. El trabajo se ejecuta en segundo plano. Los resultados pueden ser incompletos o erróneos y deben revisarse; las imágenes no establecen límites legales.",
             "start": "Iniciar el reconocimiento de límites",
             "unavailable": "El reconocimiento de límites de parcelas a partir de imágenes satelitales aún no está disponible en esta pantalla. Las estimaciones tendrán una precisión limitada y deberán revisarse; las imágenes no establecen límites legales."

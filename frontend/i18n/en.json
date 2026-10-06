@@ -1475,20 +1475,48 @@
             "nextButton": "Next"
         },
         "siteIntro": {
-            "open": "How Consensus Builder works",
+            "open": "How it works",
             "close": "Close introduction",
             "before": "Existing parcels",
             "after": "Proposed block",
-            "eyebrow": "Consensus Builder · Cities change parcel by parcel",
-            "title": "Shape a city people can agree on",
-            "lead": "Consensus Builder is free urban planning software for exploring real parcels and sketching community zoning and development proposals. Compare ideas on the map, share a plan, and build support with the people affected. Hyperstition is its hackathon project for open city planning.",
-            "groundTitle": "Start with the real ground",
-            "groundBody": "Explore cadastral parcels, buildings, streets, and ownership.",
-            "proposeTitle": "Make change visible",
-            "proposeBody": "Propose, for example, a city block over those parcels—or add buildings, roads, parks, or new parcel boundaries.",
-            "consentTitle": "Build consent",
-            "consentBody": "Share the proposal, add support or funding, and let owners decide.",
-            "cta": "Explore the map"
+            "cta": "Explore the map",
+            "tour": {
+                "next": "Next feature",
+                "back": "Previous feature",
+                "skip": "Skip introduction",
+                "pages": "Introduction features",
+                "progress": "{{current}} / {{total}}",
+                "explore": {
+                    "eyebrow": "A place to begin",
+                    "title": "Shape a city people can agree on",
+                    "body": "Choose a city on the globe, or explore anywhere. Inspect parcels and buildings in 2D, 3D, or Photo view where available.",
+                    "hint": "Open the city picker to travel. Use Layers to choose what you see."
+                },
+                "propose": {
+                    "eyebrow": "From idea to proposal",
+                    "title": "Make change visible",
+                    "body": "Turn an idea into a proposal: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.",
+                    "hint": "Start in Tools, then compare your proposals on the map."
+                },
+                "consent": {
+                    "eyebrow": "People make the difference",
+                    "title": "A proposal starts a conversation",
+                    "body": "Share a plan, gather votes and financial support, and seek acceptance from attested owners. Wallet and identity requirements apply to on-chain actions.",
+                    "hint": "Open a proposal to inspect its support and acceptance."
+                },
+                "activity": {
+                    "eyebrow": "A city in motion",
+                    "title": "See how decisions unfold",
+                    "body": "Follow proposals and agent activity around the world. Where Simulation is available, play or pause turns to explore how proposals and support evolve.",
+                    "hint": "Open Activity for the live feed and Simulation controls."
+                },
+                "sources": {
+                    "eyebrow": "More than one starting point",
+                    "title": "Keep exploring without a register",
+                    "body": "Retry an unavailable parcel source or bring your own link. You can also request best-effort boundary estimates from imagery, or generate a reproducible Schelling plan.",
+                    "hint": "Estimates and generated plans can be wrong. They do not establish legal boundaries."
+                }
+            }
         },
         "welcome": {
             "kicker": "Consensus Builder · Urban Game Theory",
@@ -4503,7 +4531,6 @@
             "farAway": "The reply has {count} polygon(s) but none of them is near this map view."
         },
         "ocr": {
-            "heading": "Estimate parcel boundaries from satellite imagery",
             "help": "Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.",
             "start": "Start boundary recognition",
             "unavailable": "Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries."

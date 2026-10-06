@@ -702,7 +702,7 @@
         function renderOcr() {
             body.replaceChildren();
             const section = el('div', 'ground-fallback-section');
-            section.appendChild(el('h4', null, t('groundFallback.ocr.heading', 'Estimate parcel boundaries from satellite imagery')));
+            section.appendChild(el('h4', null, t('groundFallback.options.ocr.title', 'Estimate parcel boundaries from satellite imagery')));
             const jobs = global.ParcelOcrJobs;
             if (jobs && typeof jobs.start === 'function') {
                 section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.help', 'Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.')));

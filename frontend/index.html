@@ -1178,7 +1178,7 @@
                             </p>
                             <button type="button" class="btn btn-secondary site-intro-reopen" data-site-intro-open>
                                 <i class="fas fa-map" aria-hidden="true"></i>
-                                <span data-i18n-key="modal.siteIntro.open">How Consensus Builder works</span>
+                                <span data-i18n-key="modal.siteIntro.open">How it works</span>
                             </button>
                             <button type="button" id="parcel-source-notice-button" class="btn btn-secondary" onclick="openParcelSourceNotice()">
                                 <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
@@ -2150,60 +2150,107 @@
     <!-- Vertex-click toolbar for government plan area monitor creation -->
 
 
-    <!-- First-visit explanation of the site's proposal and consent model. -->
-    <div id="site-intro-modal" class="site-intro-overlay" hidden>
-        <section class="site-intro-card" role="dialog" aria-modal="true" aria-labelledby="site-intro-title"
-            aria-describedby="site-intro-lead">
-            <button type="button" class="site-intro-close close-circle-btn close-circle-btn--lg"
-                data-site-intro-close aria-label="Close introduction" title="Close introduction"
-                data-i18n-key="modal.siteIntro.close" data-i18n-attr="aria-label,title">&times;</button>
-
-            <div class="site-intro-visual" aria-hidden="true">
-                <img src="images/site-intro-parcels.webp" alt="" width="1400" height="700">
-                <div class="site-intro-visual-labels">
-                    <span data-i18n-key="modal.siteIntro.before">Existing parcels</span>
-                    <span data-i18n-key="modal.siteIntro.after">Proposed block</span>
+    <!-- First-visit feature tour; can also be reopened from Settings. -->
+    <div id="site-intro-modal" class="cb-dialog-overlay site-intro-overlay" hidden>
+        <section class="cb-dialog site-intro-card" role="dialog" aria-modal="true" aria-labelledby="site-intro-title-explore"
+            aria-describedby="site-intro-lead-explore">
+            <header class="cb-dialog__header site-intro-header">
+                <span class="site-intro-brand">Consensus Builder</span>
+                <button type="button" class="site-intro-close close-circle-btn close-circle-btn--lg"
+                    data-site-intro-close aria-label="Close introduction" title="Close introduction"
+                    data-i18n-key="modal.siteIntro.close" data-i18n-attr="aria-label,title">&times;</button>
+            </header>
+            <div class="site-intro-slides">
+            <article class="site-intro-slide" data-site-intro-slide="explore">
+                <div class="site-intro-visual" aria-hidden="true"><svg viewBox="0 0 440 340" class="site-intro-art" aria-hidden="true">
+ <circle class="intro-art-soft" cx="220" cy="170" r="132"/>
+ <g class="intro-art-line" fill="none"><circle cx="220" cy="170" r="116"/><ellipse cx="220" cy="170" rx="60" ry="116"/><ellipse cx="220" cy="170" rx="116" ry="44"/><path d="M104 170h232M220 54v232"/></g>
+ <path class="intro-art-land" d="m143 101 45-20 28 31-15 22 24 27-35 36-10 52-30-24 9-46-37-20zm128 41 48 8 12 36-33 18-9 35-31-17 7-34-23-20z"/>
+ <g class="intro-art-pin"><path d="M220 104c-22 0-38 16-38 37 0 27 38 58 38 58s38-31 38-58c0-21-16-37-38-37z"/><circle class="intro-art-paper" cx="220" cy="140" r="12"/></g>
+ <g class="intro-art-building"><path d="M72 245h36v42H72zm45-25h32v67h-32zm183 35h31v32h-31zm39-25h31v57h-31z"/></g>
+</svg></div>
+                <div class="site-intro-copy">
+                    <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.explore.eyebrow">A place to begin</p>
+                    <h2 id="site-intro-title-explore" data-i18n-key="modal.siteIntro.tour.explore.title">Shape a city people can agree on</h2>
+                    <p id="site-intro-lead-explore" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.explore.body">Choose a city on the globe, or explore anywhere. Inspect parcels and buildings in 2D, 3D, or Photo view where available.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.explore.hint">Open the city picker to travel. Use Layers to choose what you see.</p>
                 </div>
+            </article>
+            <article class="site-intro-slide" data-site-intro-slide="propose" hidden>
+                <div class="site-intro-visual" aria-hidden="true"><img src="images/site-intro-parcels.webp" alt="" width="1400" height="700"><div class="site-intro-visual-labels"><span data-i18n-key="modal.siteIntro.before">Existing parcels</span><span data-i18n-key="modal.siteIntro.after">Proposed block</span></div></div>
+                <div class="site-intro-copy">
+                    <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.propose.eyebrow">From idea to proposal</p>
+                    <h2 id="site-intro-title-propose" data-i18n-key="modal.siteIntro.tour.propose.title">Make change visible</h2>
+                    <p id="site-intro-lead-propose" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.propose.body">Turn an idea into a proposal: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.propose.hint">Start in Tools, then compare your proposals on the map.</p>
+                </div>
+            </article>
+            <article class="site-intro-slide" data-site-intro-slide="consent" hidden>
+                <div class="site-intro-visual" aria-hidden="true"><svg viewBox="0 0 440 340" class="site-intro-art" aria-hidden="true">
+ <circle class="intro-art-soft" cx="220" cy="170" r="130"/>
+ <g class="intro-art-line" fill="none"><path d="M109 105 220 170l109-65M220 170v109M106 258l114-88 116 88"/></g>
+ <rect class="intro-art-paper" x="168" y="121" width="104" height="99" rx="16"/>
+ <path class="intro-art-check" fill="none" d="m191 168 20 20 39-42"/>
+ <g class="intro-art-building"><circle cx="108" cy="82" r="22"/><path d="M72 131v-10a36 36 0 0 1 72 0v10z"/><circle cx="331" cy="82" r="22"/><path d="M295 131v-10a36 36 0 0 1 72 0v10z"/></g>
+ <g class="intro-art-land"><circle cx="105" cy="240" r="20"/><path d="M71 286v-9a34 34 0 0 1 68 0v9z"/><circle cx="334" cy="240" r="20"/><path d="M300 286v-9a34 34 0 0 1 68 0v9z"/></g>
+</svg></div>
+                <div class="site-intro-copy">
+                    <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.consent.eyebrow">People make the difference</p>
+                    <h2 id="site-intro-title-consent" data-i18n-key="modal.siteIntro.tour.consent.title">A proposal starts a conversation</h2>
+                    <p id="site-intro-lead-consent" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.consent.body">Share a plan, gather votes and financial support, and seek acceptance from attested owners. Wallet and identity requirements apply to on-chain actions.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.consent.hint">Open a proposal to inspect its support and acceptance.</p>
+                </div>
+            </article>
+            <article class="site-intro-slide" data-site-intro-slide="activity" hidden>
+                <div class="site-intro-visual" aria-hidden="true"><svg viewBox="0 0 440 340" class="site-intro-art" aria-hidden="true">
+ <circle class="intro-art-soft" cx="220" cy="170" r="132"/>
+ <rect class="intro-art-paper" x="64" y="69" width="312" height="201" rx="18"/>
+ <g class="intro-art-line" fill="none"><path d="M94 220h250M94 112v108M95 175h249M95 132h249"/></g>
+ <path class="intro-art-chart" fill="none" d="m95 206 51-28 51 8 48-60 48 13 49-42"/>
+ <g class="intro-art-pin"><circle cx="146" cy="178" r="7"/><circle cx="245" cy="126" r="7"/><circle cx="342" cy="97" r="7"/></g>
+ <circle class="intro-art-pin" cx="220" cy="269" r="30"/><path class="intro-art-paper" d="m213 255 21 14-21 14z"/>
+</svg></div>
+                <div class="site-intro-copy">
+                    <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.activity.eyebrow">A city in motion</p>
+                    <h2 id="site-intro-title-activity" data-i18n-key="modal.siteIntro.tour.activity.title">See how decisions unfold</h2>
+                    <p id="site-intro-lead-activity" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.activity.body">Follow proposals and agent activity around the world. Where Simulation is available, play or pause turns to explore how proposals and support evolve.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.activity.hint">Open Activity for the live feed and Simulation controls.</p>
+                </div>
+            </article>
+            <article class="site-intro-slide" data-site-intro-slide="sources" hidden>
+                <div class="site-intro-visual" aria-hidden="true"><svg viewBox="0 0 440 340" class="site-intro-art" aria-hidden="true">
+ <rect class="intro-art-soft" x="75" y="55" width="290" height="230" rx="20"/>
+ <g class="intro-art-line" fill="none"><path d="M75 113h290M75 170h290M75 227h290M133 55v230M191 55v230M249 55v230M307 55v230"/></g>
+ <path class="intro-art-road" fill="none" d="m75 258 74-42 44-80 73-14 99-49"/>
+ <g class="intro-art-building"><path d="M144 66h35v35h-35zm60 118h32v32h-32zm57 58h34v34h-34z"/></g>
+ <path class="intro-art-land" d="M263 137h30v76h-30zM90 127h31v83H90z"/>
+ <circle class="intro-art-paper" cx="325" cy="259" r="38"/><path class="intro-art-check" fill="none" d="m309 259 11 11 22-25"/>
+</svg></div>
+                <div class="site-intro-copy">
+                    <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.sources.eyebrow">More than one starting point</p>
+                    <h2 id="site-intro-title-sources" data-i18n-key="modal.siteIntro.tour.sources.title">Keep exploring without a register</h2>
+                    <p id="site-intro-lead-sources" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.sources.body">Retry an unavailable parcel source or bring your own link. You can also request best-effort boundary estimates from imagery, or generate a reproducible Schelling plan.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.sources.hint">Estimates and generated plans can be wrong. They do not establish legal boundaries.</p>
+                </div>
+            </article>
             </div>
-
-            <div class="site-intro-copy">
-                <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.eyebrow">Cities change parcel by parcel</p>
-                <h1 id="site-intro-title" data-i18n-key="modal.siteIntro.title">Shape a city people can agree on</h1>
-                <p id="site-intro-lead" class="site-intro-lead" data-i18n-key="modal.siteIntro.lead">
-                    Consensus Builder turns land and development ideas into proposals that the people they affect can
-                    see, compare, support, and accept.
-                </p>
-
-                <ol class="site-intro-steps">
-                    <li>
-                        <span class="site-intro-step-number">1</span>
-                        <span>
-                            <strong data-i18n-key="modal.siteIntro.groundTitle">Start with the real ground</strong>
-                            <small data-i18n-key="modal.siteIntro.groundBody">Explore cadastral parcels, buildings,
-                                streets, and ownership.</small>
-                        </span>
-                    </li>
-                    <li>
-                        <span class="site-intro-step-number">2</span>
-                        <span>
-                            <strong data-i18n-key="modal.siteIntro.proposeTitle">Make change visible</strong>
-                            <small data-i18n-key="modal.siteIntro.proposeBody">Propose, for example, a city block over
-                                those parcels—or add buildings, roads, parks, or new parcel boundaries.</small>
-                        </span>
-                    </li>
-                    <li>
-                        <span class="site-intro-step-number">3</span>
-                        <span>
-                            <strong data-i18n-key="modal.siteIntro.consentTitle">Build consent</strong>
-                            <small data-i18n-key="modal.siteIntro.consentBody">Share the proposal, add support or
-                                funding, and let owners decide.</small>
-                        </span>
-                    </li>
-                </ol>
-
-                <button type="button" class="btn btn-action site-intro-cta" data-site-intro-close
-                    data-i18n-key="modal.siteIntro.cta">Explore the map</button>
-            </div>
+            <footer class="site-intro-footer">
+                <div class="site-intro-progress-row">
+                    <nav class="site-intro-pages" aria-label="Introduction features" data-i18n-key="modal.siteIntro.tour.pages" data-i18n-attr="aria-label">
+                    <button type="button" class="site-intro-dot" data-site-intro-page="0" aria-label="Shape a city people can agree on" data-i18n-key="modal.siteIntro.tour.explore.title" data-i18n-attr="aria-label" aria-current="step"><span aria-hidden="true"></span></button>
+                    <button type="button" class="site-intro-dot" data-site-intro-page="1" aria-label="Make change visible" data-i18n-key="modal.siteIntro.tour.propose.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
+                    <button type="button" class="site-intro-dot" data-site-intro-page="2" aria-label="A proposal starts a conversation" data-i18n-key="modal.siteIntro.tour.consent.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
+                    <button type="button" class="site-intro-dot" data-site-intro-page="3" aria-label="See how decisions unfold" data-i18n-key="modal.siteIntro.tour.activity.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
+                    <button type="button" class="site-intro-dot" data-site-intro-page="4" aria-label="Keep exploring without a register" data-i18n-key="modal.siteIntro.tour.sources.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
+                    </nav>
+                    <span class="site-intro-progress" data-site-intro-progress aria-live="polite" aria-atomic="true">1 / 5</span>
+                </div>
+                <div class="site-intro-actions">
+                    <button type="button" class="btn btn-quiet site-intro-skip" data-site-intro-close data-i18n-key="modal.siteIntro.tour.skip">Skip introduction</button>
+                    <button type="button" class="btn site-intro-back" data-site-intro-back disabled aria-label="Previous feature" title="Previous feature" data-i18n-key="modal.siteIntro.tour.back" data-i18n-attr="aria-label,title"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+                    <button type="button" class="btn btn-primary site-intro-next" data-site-intro-next data-i18n-key="modal.siteIntro.tour.next">Next feature</button>
+                </div>
+            </footer>
         </section>
     </div>
 
