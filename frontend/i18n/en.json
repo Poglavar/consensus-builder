@@ -4369,7 +4369,9 @@
         "blocked": "The provider denied access (HTTP {{status}}). It may restrict IP addresses or require authentication. Choose another source or try again later.",
         "timeout": "This parcel source timed out. Try again shortly.",
         "unavailable": "This parcel source is temporarily unavailable.",
-        "loadedRemain": "Already loaded parcels remain visible. Retry or choose another source."
+        "loadedRemain": "Already loaded parcels remain visible. Retry or choose another source.",
+        "loadedNone": "No parcels are loaded yet. Retry or choose another source.",
+        "loadedCounts": "{{inMemory}} parcels are loaded in memory, {{inView}} of them in this view; they stay on the map. Retry or choose another source."
     },
     "dataSources": {
         "title": "Data sources"

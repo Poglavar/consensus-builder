@@ -20,14 +20,20 @@ async function sceneBuildings(page: Page) {
 
 test.describe('3D rendering and controls @features', () => {
   test('mode buttons stay lower left and parcel clicks preserve the camera while dimming context', async ({ mockApi: page }) => {
-    await mockBuildingScene(page); await openCity(page); await enter3D(page);
+    await mockBuildingScene(page); await openCity(page);
+    // The strip sits in the same lower-left place in 2D and 3D; nothing moves when the view changes.
+    const modeIds = ['cadastre-view-toggle', 'mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle'];
+    const modeBoxes = () => Promise.all(modeIds.map(async id => await page.locator('#' + id).boundingBox()));
+    const flat = await modeBoxes();
+    await enter3D(page);
     await page.locator('#three-mode-built-display').selectOption('solid');
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
     const originalBuildings = await sceneBuildings(page);
-    for (const id of ['mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle']) {
-      const box = await page.locator('#' + id).boundingBox();
+    const perspective = await modeBoxes();
+    perspective.forEach((box, i) => {
       expect(box!.x).toBeLessThan(30); expect(box!.y).toBeGreaterThan(page.viewportSize()!.height / 2);
-    }
+      expect(box!.x).toBe(flat[i]!.x); expect(box!.y).toBe(flat[i]!.y);
+    });
     const camera = () => page.evaluate(() => {
       const { camera, controls } = (window as any).getThreeModeInternals();
       return { position: camera.position.toArray(), target: controls.target.toArray(), zoom: camera.zoom };

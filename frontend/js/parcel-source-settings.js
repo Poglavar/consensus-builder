@@ -231,10 +231,12 @@
         global.document.body.append(dialog); dialog.showModal(); input.focus();
         return dialog;
     }
-    // The failure banners, one per kind, stacked in one corner so a parcel and a building warning never
-    // cover each other. Each says what failed and offers Retry, a source of the person's own, and Dismiss.
+    // The failure banners, one per kind. The building one waits in a corner stack; the parcel one is
+    // `centred` — mounted on the body, outside the stack's banner layer, so css/parcel-sources.css can
+    // put it mid-screen yet under dialogs. Each says what failed and offers Retry, a source of the
+    // person's own, and Dismiss.
     const BANNERS = {
-        parcel: { id: 'parcel-source-status', retry: ['parcelSources.retry', 'Retry parcel source'], choose: ['parcelSources.title', 'Choose a parcel source'],
+        parcel: { id: 'parcel-source-status', centred: true, retry: ['parcelSources.retry', 'Retry parcel source'], choose: ['parcelSources.title', 'Choose a parcel source'],
             defaultRetry: global => global.fetchParcelDataReported?.(undefined, 'source status retry') },
         building: { id: 'building-source-status', retry: ['buildingSources.retry', 'Retry buildings'], choose: ['buildingSources.title', 'Choose a building source'],
             defaultRetry: () => {} }
@@ -245,7 +247,7 @@
         const spec = BANNERS[kind] || BANNERS.parcel;
         let banner = doc.getElementById(spec.id);
         if (!banner) {
-            let stack = doc.getElementById('source-status-stack');
+            let stack = spec.centred ? doc.body : doc.getElementById('source-status-stack');
             if (!stack) { stack = doc.createElement('div'); stack.id = 'source-status-stack'; stack.className = 'source-status-stack'; doc.body.append(stack); }
             banner = doc.createElement('aside'); banner.id = spec.id;
             banner.className = 'source-status'; banner.setAttribute('role', 'status');

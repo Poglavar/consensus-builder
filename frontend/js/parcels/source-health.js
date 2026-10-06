@@ -201,7 +201,20 @@
         };
     }
 
-    function describeFailure(error, { offline = false, translate } = {}) {
+    // `loaded` — { inView, inMemory } parcel counts at the moment of failure — says what the person
+    // still has; without it (callers outside the map fetch) the generic sentence stands in.
+    function loadedSentence(loaded, t) {
+        const count = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? Math.floor(value) : null);
+        const inView = count(loaded?.inView);
+        const inMemory = count(loaded?.inMemory);
+        if (inView === null || inMemory === null) {
+            return t('loadedRemain', 'Already loaded parcels remain visible. Retry or choose another source.');
+        }
+        if (inMemory === 0) return t('loadedNone', 'No parcels are loaded yet. Retry or choose another source.');
+        return t('loadedCounts', `${inMemory} parcels are loaded in memory, ${inView} of them in this view; they stay on the map. Retry or choose another source.`, { inMemory, inView });
+    }
+
+    function describeFailure(error, { offline = false, translate, loaded = null } = {}) {
         const t = (key, fallback, values = {}) => {
             try {
                 const translated = typeof translate === 'function'
@@ -226,7 +239,7 @@
         } else {
             message = t('unavailable', 'This parcel source is temporarily unavailable.');
         }
-        return `${message} ${t('loadedRemain', 'Already loaded parcels remain visible. Retry or choose another source.')}`;
+        return `${message} ${loadedSentence(loaded, t)}`;
     }
 
     return Object.freeze({ createRequester, errorFromResponse, describeFailure });

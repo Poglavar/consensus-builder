@@ -10,17 +10,24 @@ test.describe('Search and command palette @features', () => {
     });
     await openCity(page);
     const search = page.getByRole('combobox', { name: 'Search the map' });
+    // Folded to the city chip and magnifier until used; the magnifier unfolds it.
+    await expect(search).toBeHidden();
+    await page.locator('.map-search__icon-button').click();
     await search.fill('Test library');
     await page.locator('.map-search__results [role="option"]').filter({ hasText: 'Test library' }).first().click();
     await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.81))).toBeLessThan(0.0001);
     await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lng - 15.975))).toBeLessThan(0.0001);
     expect(queries).toContain('Test library');
-    await expect(search).toHaveAttribute('aria-expanded', 'false');
+    // Running a result closes the list and folds the box again (hidden, so out of the role tree).
+    const input = page.locator('#map-search-input');
+    await expect(input).toHaveAttribute('aria-expanded', 'false');
+    await expect(input).toBeHidden();
   });
 
   test('parcel search locates the actual cadastral geometry', async ({ mockApi: page }) => {
     await openCity(page);
     const search = page.getByRole('combobox', { name: 'Search the map' });
+    await page.locator('.map-search__icon-button').click();
     await search.fill(PARCEL_ID);
     await page.locator('.map-search__results [role="option"]').filter({ hasText: PARCEL_ID }).first().click();
     await expect.poll(() => page.evaluate(() => (window as any).selectedParcelId)).toBe(PARCEL_ID);

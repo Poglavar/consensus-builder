@@ -186,4 +186,18 @@ describe('parcel source health requester', () => {
         expect(health.describeFailure({ code: 'parcel-source-blocked' }, { translate })).toContain('parcelSourceHealth.blocked:{"status":403}');
         expect(translate).toHaveBeenCalledWith('parcelSourceHealth.blocked', { status: 403 });
     });
+
+    it('says how many parcels are still loaded, in memory and in view, when the counts are known', () => {
+        const failure = { code: 'parcel-source-unavailable' };
+        expect(health.describeFailure(failure, { loaded: { inMemory: 181, inView: 42 } }))
+            .toBe('This parcel source is temporarily unavailable. 181 parcels are loaded in memory, 42 of them in this view; they stay on the map. Retry or choose another source.');
+        expect(health.describeFailure(failure, { loaded: { inMemory: 0, inView: 0 } }))
+            .toBe('This parcel source is temporarily unavailable. No parcels are loaded yet. Retry or choose another source.');
+        // A missing count is not a zero: it falls back to the sentence that claims no number.
+        expect(health.describeFailure(failure, { loaded: { inMemory: null, inView: 3 } }))
+            .toContain('Already loaded parcels remain visible.');
+        const translate = vi.fn((key, values) => `${key}:${JSON.stringify(values)}`);
+        expect(health.describeFailure(failure, { translate, loaded: { inMemory: 5, inView: 2 } }))
+            .toContain('parcelSourceHealth.loadedCounts:{"inMemory":5,"inView":2}');
+    });
 });

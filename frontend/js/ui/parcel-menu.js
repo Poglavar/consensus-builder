@@ -318,6 +318,9 @@
         if (parcelId === undefined || parcelId === null) throw new Error('ParcelMenu.open: parcelId is required');
         wireMap();
         wireObservers();
+        // One map menu at a time: a parcel click while the ground menu is open used to leave both
+        // drawn. (The other way round is already covered — a bare-ground click deselects the parcel.)
+        if (win.GroundMenu) win.GroundMenu.close();
         const el = ensureElement();
         state.parcelId = String(parcelId);
         state.latlng = anchorFor(latlng, feature);

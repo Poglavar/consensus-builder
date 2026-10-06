@@ -1,4 +1,4 @@
-// Guards the map mode strip down the left edge (under the top-left search slot): every button owns
+// Guards the map mode strip in the lower-left corner: every button owns
 // one declared slot, and no two buttons share one. They are all absolutely positioned at the same `left`, so a shared slot is not a
 // visible layout squeeze — the button later in index.html paints over the other and the covered
 // one becomes unreachable. That has happened twice (walk over the AI wand at 192, then the
@@ -26,7 +26,7 @@ const STACK = [
 ];
 
 // Every `selector { body }` pair that declares a top offset for the given button id. Slots are top
-// offsets since the strip moved under the search box (the bottom-left corner is the scale bar's).
+// offsets counted up from the bottom row (the lower-left corner is the strip's in every view).
 function topDeclarationsFor(id) {
     const found = [];
     for (const [file, css] of Object.entries(SOURCES)) {
@@ -40,22 +40,28 @@ function topDeclarationsFor(id) {
 }
 
 describe('left-edge map mode strip', () => {
-    it('anchors the perspective mode ladder above the lower-left safe area', () => {
-        const block = SOURCES['map.css'].match(/body\.three-mode-active\s*\{([\s\S]*?)\}/)[1];
-        const offsets = STACK.map(({ slot }) => {
-            const value = block.match(new RegExp(`--map-mode-slot-${slot}:\\s*calc\\(100dvh - var\\(--app-safe-area-bottom, 0px\\) - (\\d+)px\\)`));
-            expect(value).toBeTruthy(); return Number(value[1]);
-        });
-        offsets.slice(1).forEach((offset, i) => expect(offsets[i] - offset).toBe(48));
-        expect(offsets.at(-1)).toBeGreaterThanOrEqual(36);
-    });
-    it('declares one slot ladder, evenly spaced, with no repeated offset', () => {
-        const root = SOURCES['map.css'].match(/:root\s*\{([\s\S]*?)\}/);
-        expect(root, ':root block with the slot ladder').toBeTruthy();
+    // The ladder's own declaration block (body, see css/map.css for why not :root).
+    const ladder = () => {
+        const block = SOURCES['map.css'].match(/body\s*\{([^{}]*--map-mode-slot-1[^{}]*)\}/);
+        expect(block, 'body block with the slot ladder').toBeTruthy();
+        return block[1];
+    };
 
+    it('anchors one ladder above the bottom row, the same in every view', () => {
+        const block = ladder();
+        expect(block).toMatch(/--map-mode-stack-bottom:\s*calc\(100dvh - var\(--app-safe-area-bottom, 0px\) - var\(--map-shell-bottom-clearance\)\);/);
+        // The buttons never move between 2D, model and photo: no view redeclares a slot.
+        for (const [file, css] of Object.entries(SOURCES)) {
+            const declarations = css.match(/--map-mode-slot-\d+:/g) || [];
+            expect(declarations.length, `${file} declares mode slots`).toBe(file === 'map.css' ? STACK.length : 0);
+        }
+    });
+
+    it('declares one slot ladder, evenly spaced, with no repeated offset, ending on the bottom row', () => {
+        const block = ladder();
         const offsets = STACK.map(({ slot }) => {
-            const declared = root[1].match(new RegExp(`--map-mode-slot-${slot}:\\s*(\\d+)px`));
-            expect(declared, `--map-mode-slot-${slot} is defined in :root`).toBeTruthy();
+            const declared = block.match(new RegExp(`--map-mode-slot-${slot}:\\s*calc\\(var\\(--map-mode-stack-bottom\\) - (\\d+)px\\)`));
+            expect(declared, `--map-mode-slot-${slot} is counted up from --map-mode-stack-bottom`).toBeTruthy();
             return Number(declared[1]);
         });
 
@@ -63,8 +69,10 @@ describe('left-edge map mode strip', () => {
         offsets.forEach((offset, i) => {
             if (i === 0) return;
             // 36px button + 12px gap. Anything tighter overlaps the neighbour's box.
-            expect(offset - offsets[i - 1], `gap between slot ${i} and ${i + 1}`).toBe(48);
+            expect(offsets[i - 1] - offset, `gap between slot ${i} and ${i + 1}`).toBe(48);
         });
+        // The last 36px button ends on the bottom row's line, not inside it.
+        expect(offsets.at(-1)).toBe(36);
     });
 
     it('gives every button its own slot, and none a hand-picked offset', () => {

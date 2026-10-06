@@ -106,9 +106,9 @@ body:has(#selection-tray) .floating-status {
 }
 
 /* The scale bar stays above the toast, which the tray may have lifted a row (css/map.css places it
-   for the toast in row 1); on phones it otherwise sat on the tray's left end. */
-body:has(#selection-tray) .leaflet-bottom.leaflet-left .leaflet-control-scale {
-    margin-bottom: calc(var(--map-shell-bottom) + (var(--selection-tray-row) + 1) * (var(--map-shell-button-size) + var(--map-shell-gap)) + var(--map-shell-gap) + 24px);
+   for the toast in row 1). */
+body:has(#selection-tray) .leaflet-bottom.leaflet-right .leaflet-control-scale {
+    bottom: calc(var(--map-shell-bottom) + (var(--selection-tray-row) + 1) * (var(--map-shell-button-size) + var(--map-shell-gap)) + var(--map-shell-gap) + 24px);
 }
 
 /* A panel docked on the right (the parcel panel after Propose) takes the right column; the tray
@@ -135,8 +135,13 @@ body:has(#selection-tray) .leaflet-bottom.leaflet-left .leaflet-control-scale {
         bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
     }
 
-    body:has(#selection-tray) .leaflet-bottom.leaflet-left .leaflet-control-scale {
-        margin-bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + 2 * var(--map-shell-gap) + 24px);
+    body:has(#selection-tray) .leaflet-bottom.leaflet-right .leaflet-control-scale {
+        bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + 2 * var(--map-shell-gap) + 24px);
+    }
+
+    /* The tray spans the row the mode strip ends on (css/map.css); the strip steps up over it. */
+    body:has(#selection-tray) {
+        --map-mode-stack-bottom: calc(100dvh - var(--app-safe-area-bottom, 0px) - var(--map-shell-bottom-clearance) - var(--map-shell-button-size) - var(--map-shell-gap));
     }
 
     .selection-tray {

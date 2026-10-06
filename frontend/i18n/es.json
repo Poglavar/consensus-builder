@@ -4420,7 +4420,9 @@
         "blocked": "El proveedor ha denegado el acceso (HTTP {{status}}). Puede restringir direcciones IP o exigir autenticación. Elige otra fuente o inténtalo más tarde.",
         "timeout": "Esta fuente no respondió a tiempo. Inténtalo de nuevo en unos momentos.",
         "unavailable": "Esta fuente de parcelas no está disponible temporalmente.",
-        "loadedRemain": "Las parcelas ya cargadas siguen visibles. Reintenta o elige otra fuente."
+        "loadedRemain": "Las parcelas ya cargadas siguen visibles. Reintenta o elige otra fuente.",
+        "loadedNone": "Todavía no hay parcelas cargadas. Reintenta o elige otra fuente.",
+        "loadedCounts": "Hay {{inMemory}} parcelas cargadas en memoria, {{inView}} de ellas en esta vista; siguen en el mapa. Reintenta o elige otra fuente."
     },
     "dataSources": {
         "title": "Fuentes de datos"

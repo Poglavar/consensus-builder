@@ -74,6 +74,9 @@ test.describe('Smoke tests @smoke', () => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
 
+    // Folded to the chip and magnifier until used; the magnifier unfolds the input.
+    await expect(page.locator(`${selectors.searchSlot} ${selectors.searchInput}`)).toBeHidden();
+    await page.locator(`${selectors.searchSlot} .map-search__icon-button`).click();
     await expect(page.locator(`${selectors.searchSlot} ${selectors.searchInput}`)).toBeVisible();
     await expect(page.locator(selectors.searchCityChip)).toContainText('Zagreb');
   });

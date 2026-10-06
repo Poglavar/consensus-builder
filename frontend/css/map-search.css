@@ -1,8 +1,8 @@
 /* ========== Map search box ==========
    The omnibox top-left with the city chip (js/ui/map-search.js), mounted in #map-search-slot
-   (css/map-shell.css places the slot). Desktop: a 44px pill with the results dropping below it.
-   Phones (≤767px): compact — city chip + magnifier — until focused, then full width along the top
-   with the results as a full-height sheet under it. */
+   (css/map-shell.css places the slot). Compact — city chip + magnifier — until focused. Desktop then
+   unfolds into a 44px pill with the results dropping below it; phones (≤767px) take the full width
+   along the top with the results as a full-height sheet under it. */
 
 :root {
     --map-search-height: 44px;
@@ -128,17 +128,38 @@ body.app-loading .map-search {
     display: none;
 }
 
-.map-search__input {
+/* Two classes: the base `input[type="text"]` look (css/primitives.css) outranks one class, and its
+   border and padding pushed the field into the pill's rounded end. The pill draws the frame here. */
+.map-search .map-search__input,
+.map-search .map-search__input:focus-visible {
     flex: 1 1 auto;
     min-width: 0;
     height: 100%;
     padding: 0 4px;
     border: none;
+    border-radius: 0;
     background: transparent;
     color: #111827;
     font: inherit;
     font-size: 15px;
     outline: none;
+}
+
+/* Folded until used, at every width: the city chip and the magnifier. Focusing the field (the
+   magnifier, `/`, the chip's city list) unfolds it; a press elsewhere folds it again
+   (js/ui/map-search.js). */
+.map-search:not(.is-expanded) {
+    width: auto;
+    min-width: 0;
+}
+
+.map-search:not(.is-expanded) .map-search__input,
+.map-search:not(.is-expanded) .map-search__clear {
+    display: none;
+}
+
+.map-search:not(.is-expanded) .map-search__field {
+    flex: 0 0 auto;
 }
 
 /* ---- Results ---- */
@@ -315,15 +336,6 @@ body.app-loading .map-search {
 
     .map-search__chip.is-explore .map-search__chip-label--short {
         display: inline;
-    }
-
-    .map-search:not(.is-expanded) .map-search__input,
-    .map-search:not(.is-expanded) .map-search__clear {
-        display: none;
-    }
-
-    .map-search:not(.is-expanded) .map-search__field {
-        flex: 0 0 auto;
     }
 
     /* Expanded: the whole top edge, results as a full-height sheet under it. */

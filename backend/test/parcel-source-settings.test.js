@@ -215,15 +215,17 @@ describe('building failure banner', () => {
         expect(settings.buildingFailureMessage(global, { origin: 'other' })).toMatch(/^Building data could not be loaded right now\. Try again later/);
     });
 
-    it('keeps one building banner beside the parcel one, updates it in place, and retries with the latest callback', () => {
+    it('keeps one building banner in the corner stack, updates it in place, and retries with the latest callback', () => {
         const document = fakeDocument();
         const global = { document };
         settings.reportFailure(global, 'parcels failed');
         const firstRetry = vi.fn(), latestRetry = vi.fn();
         settings.reportFailure(global, 'buildings failed', 'building', firstRetry);
         settings.reportFailure(global, 'buildings still failing', 'building', latestRetry);
+        // The parcel banner is centred, so it lives on the body outside the stack's banner layer.
+        expect(document.getElementById('parcel-source-status').parent).toBe(document.body);
         const stack = document.getElementById('source-status-stack');
-        expect(stack.children.map(node => node.id)).toEqual(['parcel-source-status', 'building-source-status']);
+        expect(stack.children.map(node => node.id)).toEqual(['building-source-status']);
         const banner = document.getElementById('building-source-status');
         expect(banner.querySelector('p').textContent).toBe('buildings still failing');
         const [retry, choose] = banner.children.filter(node => node.tag === 'button');
@@ -233,6 +235,7 @@ describe('building failure banner', () => {
         expect(firstRetry).not.toHaveBeenCalled();
         expect(document.getElementById('building-source-status')).toBeNull();
         settings.clearFailure(global);
+        expect(document.getElementById('parcel-source-status')).toBeNull();
         expect(stack.children).toEqual([]);
     });
 

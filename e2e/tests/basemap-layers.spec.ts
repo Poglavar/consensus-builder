@@ -133,6 +133,7 @@ test.describe('Basemap and layer controls @features', () => {
     await waitForMapReady(page);
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('new_york');
 
+    await page.locator('.map-search__icon-button').click();
     await page.locator(selectors.searchInput).fill('Belgrade');
     const result = page.locator(selectors.searchCityResult).filter({ hasText: 'Belgrade' });
     await expect(result).toHaveCount(1);

@@ -165,7 +165,7 @@ body.realistic-mode-active #mode-walk-toggle {
 
 /* Google Photorealistic 3D Tiles attribution (Map Tiles API policy): the Google logo plus the
    per-tile data copyrights, bottom-right just above the Leaflet attribution line (the lower-left
-   holds the mode buttons, scale bar and status line). Text wraps rather than truncates — every
+   holds the mode buttons and the status line; the 2D scale bar is hidden here). Text wraps rather than truncates — every
    credit must stay readable. */
 #three-container .photoreal-attribution {
     position: absolute;

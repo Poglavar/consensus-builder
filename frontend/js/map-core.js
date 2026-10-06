@@ -150,12 +150,12 @@ if (BasemapManager) {
     baseTileLayer = BasemapManager.applyBasemap(map, BasemapManager.getStoredBasemapKey());
 }
 
-// Add scale control. Bottom-LEFT: the parcel, proposal and multiparcel panels are all anchored
-// bottom-right and buried it there. CSS slides it along the same rail as the 2D/3D mode stack.
+// Add scale control. Bottom-RIGHT, above the shell's bottom button row (css/map.css places it); the
+// lower left belongs to the 2D/3D mode strip. It hides while a docked panel covers that corner.
 L.control.scale({
     metric: true,
     imperial: false,
-    position: 'bottomleft'
+    position: 'bottomright'
 }).addTo(map);
 
 function isZoomWithinParcelRange() {

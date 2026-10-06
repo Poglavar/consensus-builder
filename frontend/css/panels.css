@@ -35,6 +35,12 @@
     box-sizing: border-box;
 }
 
+/* The sheet's drag handle (js/mobile-dock-sheet.js) is a phone control; on desktop the dock has a
+   fixed height and the bare button showed as a blank strip above the panel. */
+.mobile-dock-sheet-handle {
+    display: none;
+}
+
 @media (max-width: 767.98px) {
     /* Width comes from the insets (see the .info-panel bottom-sheet rule in utilities.css): the
        sheet runs from the mode-button strip on the left to the right edge. */
@@ -174,14 +180,10 @@ from .right-dock-panel — do not re-declare one here.
     background: #fff;
 }
 
-/* The opaque panel now covers the bottom-right Leaflet attribution, so lift the attribution
-   above the panel while it is open (the OSM credit must stay visible). */
-#map-container:has(#parcel-info-panel.visible) .leaflet-bottom.leaflet-right {
-    bottom: calc(50vh + 10px);
-}
-#map-container:has(#parcel-info-panel.visible.is-minimized) .leaflet-bottom.leaflet-right {
-    bottom: var(--parcel-panel-minimized-clearance, 64px);
-}
+/* The Leaflet attribution needs no lift while this panel is open: the dock ends above the bottom
+   button row (--map-shell-bottom-clearance) on desktop and phones alike, and the credit sits under
+   that row. Lifting it (to 50vh, from when the panel reached the window's bottom edge) put it
+   BEHIND the opaque panel instead. */
 
 /* Collapsed to ONE line: the header, which reads "Parcel <number>". The panel is the SECONDARY
    surface when a proposal selection opened its own parcel underneath the proposal card.
@@ -1892,9 +1894,6 @@ above the scroll fold.
         padding: 6px 4px; /* Reduced padding for mobile */
     }
     
-    #map-container:has(#parcel-info-panel.visible) .leaflet-bottom.leaflet-right {
-        bottom: calc(min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px) + 10px);
-    }
 
     #area-monitor-detail-panel {
         max-height: 50vh;

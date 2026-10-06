@@ -418,6 +418,16 @@
         }
     }
 
+    // What the person still has when a fetch fails: every parcel held in the live fabric, and how
+    // many of those lie in the current view. Null when the fabric or the map is not up yet.
+    function loadedParcelCounts() {
+        const fabric = global.LiveParcelFabric;
+        const bounds = global.map && typeof global.map.getBounds === 'function' ? global.map.getBounds() : null;
+        if (!fabric || typeof fabric.queryBounds !== 'function' || !bounds) return null;
+        // Both through queryBounds, so both leave out road and track corridors the same way.
+        return { inMemory: fabric.queryBounds([-180, -90, 180, 90]).length, inView: fabric.queryBounds(bounds).length };
+    }
+
     // A failed ground fetch must be visible, never an unhandled rejection. Callers that do not
     // await the fetch (boot, visibility toggles, data-source switch) go through
     // fetchParcelDataReported, which reports and resolves null; awaiting callers may reuse the
@@ -426,7 +436,8 @@
         const message = error && error.message ? error.message : String(error || 'unknown error');
         console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
         const userMessage = global.ParcelSourceHealth?.describeFailure?.(error, {
-            offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n)
+            offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n),
+            loaded: loadedParcelCounts()
         }) || `Cadastral ground failed to load: ${message}`;
         global.updateStatus?.(userMessage);
         global.ParcelSourceSettings?.reportFailure?.(global, userMessage);

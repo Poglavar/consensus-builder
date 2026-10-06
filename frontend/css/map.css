@@ -5,11 +5,11 @@
    (the globe is styled in photoreal-mode.css), then the mode-scoped tools. The active view's
    button gets the .active "pressed" look (see the end of this file).
 
-   They live on the LEFT edge, under the top-left search slot (#map-search-slot, see
-   css/map-shell.css): the bottom-left corner is kept clear for the scale bar, and the right edge to the
-   docked panels and the shell's buttons. There is no sidebar to clear, so the strip sits at a fixed
-   offset from the window edge. One variable so all the buttons move together. */
-:root {
+   They live in the LOWER-LEFT corner in every view — 2D, model and photo — so they never move when
+   the view changes (they used to sit under the search box in 2D and drop to the corner in 3D). The
+   scale bar went to the lower right to make room (below). The right edge belongs to the docked
+   panels and the shell's buttons. One variable so all the buttons move together. */
+body {
     --map-mode-stack-left: 10px;
 
     /* ONE SLOT PER BUTTON, and a button never changes slot. Two rules follow from that:
@@ -33,33 +33,25 @@
          slot 5  #mode-ai-toggle          AI wand         3D only, inert in model view [ai-scene.css]
          slot 6  #mode-walk-toggle        walk-through    model view, walk-configured cities
 
-       Each slot is a TOP offset: slot 1 starts under the search slot (10px edge + 44px box +
-       10px gap = 64px). 48px apart: 36px min-height + 12px gap. Adding a button means adding a
-       slot here, not picking an offset by eye — backend/test/map-mode-stack.test.js fails on a
-       duplicate. */
-    --map-mode-slot-1: 64px;
-    --map-mode-slot-2: 112px;
-    --map-mode-slot-3: 160px;
-    --map-mode-slot-4: 208px;
-    --map-mode-slot-5: 256px;
-    --map-mode-slot-6: 304px;
-}
+       Each slot is a TOP offset counted up from the bottom row the shell keeps clear
+       (--map-shell-bottom-clearance, css/map-shell.css: the desktop button row, the phone bar), so
+       the last slot's 36px button ends on that line. 48px apart: 36px min-height + 12px gap.
+       Adding a button means adding a slot here, not picking an offset by eye —
+       backend/test/map-mode-stack.test.js fails on a duplicate.
 
-/* The perspective view owns the lower-left corner (its flat-map scale is hidden). Keep the
-   same button order and spacing, anchored above the bottom edge instead of under search. */
-body.three-mode-active {
-    --map-mode-slot-1: calc(100dvh - var(--app-safe-area-bottom, 0px) - 324px);
-    --map-mode-slot-2: calc(100dvh - var(--app-safe-area-bottom, 0px) - 276px);
-    --map-mode-slot-3: calc(100dvh - var(--app-safe-area-bottom, 0px) - 228px);
-    --map-mode-slot-4: calc(100dvh - var(--app-safe-area-bottom, 0px) - 180px);
-    --map-mode-slot-5: calc(100dvh - var(--app-safe-area-bottom, 0px) - 132px);
-    --map-mode-slot-6: calc(100dvh - var(--app-safe-area-bottom, 0px) - 84px);
-}
+       Declared on body, not :root: a custom property is resolved where it is declared, so the
+       phone selection tray (css/selection-tray.css) can lift the whole ladder by overriding
+       --map-mode-stack-bottom on body only if the slots are computed there too. */
+    --map-mode-stack-bottom: calc(100dvh - var(--app-safe-area-bottom, 0px) - var(--map-shell-bottom-clearance));
+    --map-mode-slot-1: calc(var(--map-mode-stack-bottom) - 276px);
+    --map-mode-slot-2: calc(var(--map-mode-stack-bottom) - 228px);
+    --map-mode-slot-3: calc(var(--map-mode-stack-bottom) - 180px);
+    --map-mode-slot-4: calc(var(--map-mode-stack-bottom) - 132px);
+    --map-mode-slot-5: calc(var(--map-mode-stack-bottom) - 84px);
+    --map-mode-slot-6: calc(var(--map-mode-stack-bottom) - 36px);
 
-/* The left edge the stack owns: its offset, a 40px button and a 10px gap. On phones every bottom
-   sheet starts right of this, so no panel is ever drawn over (or under) the buttons. Declared on
-   body, where the offset it reads is in scope. */
-body {
+    /* The left edge the stack owns: its offset, a 40px button and a 10px gap. On phones every
+       bottom sheet starts right of this, so no panel is ever drawn over (or under) the buttons. */
     --map-mode-strip: calc(var(--map-mode-stack-left) + 50px);
 }
 
@@ -89,11 +81,15 @@ body {
 #mode-2d-toggle.map-mode-toggle { top: var(--map-mode-slot-2); }
 #mode-3d-toggle.map-mode-toggle { top: var(--map-mode-slot-3); }
 
-/* The scale bar sits at the left edge, one button row up from the bottom-left corner, and
-   above the row the status toast takes (--map-shell-* are declared in css/map-shell.css). */
-.leaflet-bottom.leaflet-left .leaflet-control-scale {
-    margin-left: var(--map-mode-stack-left);
-    margin-bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-gap) + 24px);
+/* The scale bar sits in the lower right, above the bottom row of shell buttons and the status
+   toast's row over it (a long toast on a phone spans the width; --map-shell-* in css/map-shell.css).
+   The mode strip owns the lower left. Placed against the corner rather than stacked over the
+   attribution, so a two-line attribution on a phone cannot push it into the buttons. */
+.leaflet-bottom.leaflet-right .leaflet-control-scale {
+    position: absolute;
+    right: var(--map-shell-edge);
+    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-gap) + 24px);
+    margin: 0;
 }
 
 /* The scale bar measures the flat 2D map. Over the perspective model/photo views it is simply
@@ -102,11 +98,9 @@ body.three-mode-active .leaflet-control-scale {
     display: none;
 }
 
-/* Phones: a bottom sheet runs under the scale bar's spot; the sheet wins the corner. */
-@media (max-width: 767.98px) {
-    body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
-        display: none;
-    }
+/* A docked panel (desktop) or bottom sheet (phone) covers the scale bar's corner; the panel wins. */
+body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
+    display: none;
 }
 /* Slot 1 — the head of the mode strip (see the ladder at the top of this file). It used to share
    a slot with the walk button and drew over it; the official cadastre is the frame the other

@@ -13,7 +13,6 @@
     const PHOTON_URL = 'https://photon.komoot.io/api/';
     const PLACE_DEBOUNCE_MS = 350;
     const PROPOSAL_DEBOUNCE_MS = 250;
-    const MOBILE_QUERY = '(max-width: 767.98px)';
 
     const state = {
         initialized: false,
@@ -50,7 +49,6 @@
     };
 
     const log = (...args) => console.info(`[${new Date().toISOString()}] [map-search]`, ...args);
-    const isMobile = () => !!(win.matchMedia && win.matchMedia(MOBILE_QUERY).matches);
     const isMac = () => /Mac|iPhone|iPad/.test((win.navigator && (win.navigator.platform || win.navigator.userAgent)) || '');
     const paletteShortcut = () => (isMac() ? '⌘K' : 'Ctrl K');
 
@@ -812,10 +810,10 @@
         focus();
     }
 
+    // A press anywhere else folds the box back to the chip and magnifier, at every width.
     function onDocumentPointerDown(event) {
         if (!state.root || state.root.contains(event.target)) return;
-        if (state.open) close({ blur: isMobile() });
-        else if (state.root.classList.contains('is-expanded') && doc.activeElement !== state.input) close({ blur: true });
+        if (state.open || state.root.classList.contains('is-expanded')) close({ blur: true });
     }
 
     function syncChip() {

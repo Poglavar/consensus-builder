@@ -7,7 +7,7 @@ test.describe('World navigation and open ground @features', () => {
     await page.route('**/proposals/count?*', route => route.fulfill({ json: { count: 7 } }));
     await page.goto('/?city=zg&lang=en'); await waitForMapReady(page);
     const count = page.locator('#proposals-button-count');
-    await expect(count).toHaveText('(7)'); await expect(count).toBeVisible();
+    await expect(count).toHaveText('7'); await expect(count).toBeVisible();
     await expect(count).toHaveClass(/is-unopened/);
     await expect(page.locator('#proposals-button')).toHaveAttribute('aria-label', 'Proposals (7)');
     await page.locator('#proposals-button').click();
@@ -26,7 +26,7 @@ test.describe('World navigation and open ground @features', () => {
       listQueries.push(route.request().url()); return route.fulfill({ json: { proposals: [], count: 7 } });
     });
     await page.goto('/?city=explore&at=45.8,16,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
-    await expect(page.locator('#proposals-button-count')).toHaveText('(7)');
+    await expect(page.locator('#proposals-button-count')).toHaveText('7');
     expect(new URL(countQueries.at(-1)!).searchParams.has('bbox')).toBe(true);
     expect(new URL(countQueries.at(-1)!).searchParams.has('city')).toBe(false);
     await page.locator('#proposals-button').click(); await page.locator('#showProposalsButton').click();

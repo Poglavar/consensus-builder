@@ -55,6 +55,38 @@ test.describe('Map context actions @features', () => {
     await expect(page.locator('#site-panel')).toBeHidden();
   });
 
+  test('the parcel menu and the ground menu are never open together', async ({ mockApi: page }) => {
+    await openCity(page);
+    await ensureSecondParcel(page);
+    const parcelMenu = page.locator('#parcel-menu');
+    const groundMenu = page.locator('#ground-menu');
+    await clickMapPoint(page, 15.9829, 45.80025);
+    await expect(parcelMenu).toBeVisible();
+    // Bare ground next to it: the ground menu replaces the parcel menu, which deselects as on Esc.
+    await clickMapPoint(page, 15.98255, 45.80025);
+    await expect(groundMenu).toBeVisible();
+    await expect(parcelMenu).toBeHidden();
+    // And back: a parcel click replaces the ground menu. The menu opens over the first parcel, so
+    // click the centre of a loaded parcel it leaves uncovered.
+    const free = await page.evaluate(() => {
+      const w = window as any;
+      const menu = document.getElementById('ground-menu')!.getBoundingClientRect();
+      const box = w.map.getContainer().getBoundingClientRect();
+      for (const feature of w.LiveParcelFabric.queryBounds(w.map.getBounds())) {
+        const centre = w.turf.centerOfMass(feature).geometry.coordinates;
+        const p = w.map.latLngToContainerPoint([centre[1], centre[0]]);
+        const x = box.left + p.x, y = box.top + p.y;
+        const covered = x >= menu.left - 8 && x <= menu.right + 8 && y >= menu.top - 8 && y <= menu.bottom + 8;
+        if (!covered && x > 80 && y > 80 && x < innerWidth - 80 && y < innerHeight - 120) return { x, y };
+      }
+      return null;
+    });
+    expect(free, 'a loaded parcel outside the ground menu').toBeTruthy();
+    await page.mouse.click(free!.x, free!.y);
+    await expect(parcelMenu).toBeVisible();
+    await expect(groundMenu).toBeHidden();
+  });
+
   test('bare-ground menu exposes transport actions and real Tools station placement can be cancelled', async ({ mockApi: page }) => {
     await openCity(page);
     await ensureSecondParcel(page);

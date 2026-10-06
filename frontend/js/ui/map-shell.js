@@ -247,7 +247,7 @@
             const params = JSON.parse(source.getAttribute('data-i18n-params') || '{}');
             count = Number.isFinite(Number(params.count)) ? Number(params.count) : 0;
         } catch (_) { count = 0; }
-        badge.textContent = `(${count})`;
+        badge.textContent = String(count);
         const ready = source.getAttribute('data-proposal-count-ready') !== '0';
         const opened = source.getAttribute('data-proposal-list-opened') === '1';
         badge.hidden = !ready;

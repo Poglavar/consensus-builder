@@ -4408,7 +4408,9 @@
         "blocked": "Pružalac je odbio pristup (HTTP {{status}}). Možda ograničava IP adrese ili zahteva prijavu. Izaberi drugi izvor ili pokušaj kasnije.",
         "timeout": "Ovaj izvor nije odgovorio na vreme. Pokušaj uskoro ponovo.",
         "unavailable": "Ovaj izvor parcela trenutno nije dostupan.",
-        "loadedRemain": "Već učitane parcele ostaju vidljive. Pokušaj ponovo ili izaberi drugi izvor."
+        "loadedRemain": "Već učitane parcele ostaju vidljive. Pokušaj ponovo ili izaberi drugi izvor.",
+        "loadedNone": "Još nema učitanih parcela. Pokušaj ponovo ili izaberi drugi izvor.",
+        "loadedCounts": "U memoriji je učitano {{inMemory}} parcela, od toga {{inView}} u ovom prikazu; ostaju na karti. Pokušaj ponovo ili izaberi drugi izvor."
     },
     "dataSources": {
         "title": "Izvori podataka"
