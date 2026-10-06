@@ -914,7 +914,8 @@ function initializeMapCore() {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
         }
         if (within) {
-            fetchParcelData();
+            Promise.resolve(fetchParcelData())
+                .catch(error => console.error('[initializeMapCore] cadastral ground unavailable', error));
         } else if (typeof updateStatus === 'function') {
             updateStatus('Parcels disabled at this zoom');
         }

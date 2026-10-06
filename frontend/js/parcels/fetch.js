@@ -53,6 +53,30 @@
         try { return String(global.getCurrentDataSource?.() || ''); } catch (_) { return ''; }
     }
 
+    // A session-level ground source the visitor chose when the register could not be loaded (a
+    // register link of their own, or a Schelling plan). It stands in for the network for that city
+    // and nothing else: see parcels/ground-fallback.js.
+    function groundOverride(city) {
+        try {
+            const fallback = global.ParcelGroundFallback;
+            return fallback && typeof fallback.activeSource === 'function' ? fallback.activeSource(city) : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    // A city whose config says there is no register on record. Distinct from a failed request on
+    // purpose: the fallback screen must never call an outage "no register", or the reverse.
+    function noRegisterError(city) {
+        const settings = cityConfig(city)?.parcels || null;
+        const strategy = String(settings?.strategy || '').toLowerCase();
+        const source = String(settings?.source || '').toLowerCase();
+        if (strategy !== 'none' && source !== 'none') return null;
+        const error = new Error(`No parcel register is on record for ${city}.`);
+        error.code = 'no-register';
+        return error;
+    }
+
     function cityConfig(city) {
         try {
             const manager = global.CityConfigManager;
@@ -168,7 +192,11 @@
         const source = currentSource();
         let features;
         let returnsWGS84 = true;
-        if (city === 'buenos_aires') features = await requestOneByOne(ids, 'parcel-ba', 'smp');
+        const override = groundOverride(city);
+        if (override) {
+            const answer = await override.fetchByIds(ids);
+            features = Array.isArray(answer?.features) ? answer.features : [];
+        } else if (city === 'buenos_aires') features = await requestOneByOne(ids, 'parcel-ba', 'smp');
         else if (city === 'belgrade') features = await requestOneByOne(ids, 'parcel-bg', 'parcel_id');
         else if (city === 'colorado') features = await requestOneByOne(ids, 'parcel-co', 'parcel_id');
         else if (city === 'ljubljana') features = await requestOneByOne(ids, 'parcel-lj', 'parcel_id');
@@ -220,6 +248,14 @@
         const sw = datasetToLatLng(swE, swN, context.city);
         const ne = datasetToLatLng(neE, neN, context.city);
         const latLonBbox = `${Math.min(sw[1], ne[1])},${Math.min(sw[0], ne[0])},${Math.max(sw[1], ne[1])},${Math.max(sw[0], ne[0])}`;
+        const override = groundOverride(context.city);
+        if (override) {
+            const answer = await override.fetchCell({ cell: String(cell), bbox, latLonBbox, city: context.city });
+            const features = Array.isArray(answer?.features) ? answer.features : [];
+            return { features, returnsWGS84: answer?.returnsWGS84 !== false };
+        }
+        const absent = noRegisterError(context.city);
+        if (absent) throw absent;
         const builder = context.builder;
         const count = 2000;
         let startIndex = 0;
@@ -258,6 +294,10 @@
         const city = String(options.city || currentCity());
         const keys = Array.from(new Set(Array.from(options.keys || []).map(String).filter(Boolean)));
         if (!keys.length) throw new Error('Cadastral bounds transport requires repository grid keys.');
+        if (!groundOverride(city)) {
+            const absent = noRegisterError(city);
+            if (absent) throw absent;
+        }
         const gridSize = Number(cityConfig(city)?.parcels?.gridSize
             ?? global.ParcelsState?.getParcelGridSize?.()
             ?? global.CityConfigManager?.getParcelGridSize?.()
@@ -367,10 +407,27 @@
                     if (detail && detail.total) global.updateStatus?.(`Loading cadastral ground ${detail.done || 0}/${detail.total}…`);
                 }
             });
+            const source = groundOverride(currentCity());
             global.updateStatus?.(result.cached
                 ? 'Cadastral ground already loaded.'
-                : `Loaded ${result.features.length} cadastral parcels.`);
+                : (source
+                    ? `Loaded ${result.features.length} parcels from ${source.label || source.kind}.`
+                    : `Loaded ${result.features.length} cadastral parcels.`));
             return result;
+        } catch (error) {
+            // The visitor sees the register attempted first; only when that fails are they offered
+            // a way on (retry, their own link, an OCR job, a Schelling plan). The error still
+            // propagates: callers decide what a failed viewport fetch means for them.
+            try {
+                global.ParcelGroundFallback?.onGroundUnavailable?.({
+                    error,
+                    bounds: requestedBounds,
+                    city: currentCity()
+                });
+            } catch (offerError) {
+                console.error('[fetchParcelData] could not offer ground fallback', offerError);
+            }
+            throw error;
         } finally {
             global._fetchParcelDataInProgress = false;
             global.ParcelsState?.setIsFetchingParcels?.(false);
@@ -379,6 +436,9 @@
 
     async function refreshParcelDataWithBusyState(customBounds) {
         const button = typeof document !== 'undefined' ? document.getElementById('refreshParcelDataButton') : null;
+        // An explicit refresh is the visitor asking again, so a fallback screen they closed earlier
+        // may be shown again if the register still fails.
+        try { global.ParcelGroundFallback?.resetDismissal?.(currentCity()); } catch (_) { }
         const task = () => fetchParcelData(customBounds);
         return button && typeof global.runWithButtonBusyState === 'function'
             ? global.runWithButtonBusyState(button, 'Refreshing...', task)

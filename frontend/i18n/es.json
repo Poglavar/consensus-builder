@@ -3302,5 +3302,93 @@
     "claims": {
         "onParcels": "En las parcelas:",
         "cadastreViewToggle": "Vista catastral: solo parcelas originales"
+    },
+    "groundFallback": {
+        "title": "No se pudo cargar ningún registro de parcelas aquí",
+        "back": "← Volver a las opciones",
+        "status": {
+            "noRegister": "No hay registro de parcelas conocido para {city}.",
+            "temporary": "No se pudo contactar el registro de parcelas de {city} ({detail}). Parece temporal.",
+            "refused": "El registro de parcelas de {city} rechazó la solicitud ({detail}).",
+            "broken": "El registro de parcelas de {city} respondió, pero no con datos de parcelas ({detail}).",
+            "unknown": "No se pudo cargar el registro de parcelas de {city} ({detail}).",
+            "dismissed": "Registro de parcelas no disponible. Usa el botón de actualizar para ver las opciones de nuevo.",
+            "retrying": "Reintentando el registro de parcelas…",
+            "urlInstalled": "Cargando parcelas desde tu enlace al registro durante esta sesión.",
+            "schellingInstalled": "Dibujando el plan de Schelling {code} en memoria durante esta sesión."
+        },
+        "options": {
+            "later": "Ahora no",
+            "retry": {
+                "title": "Reintentar el registro oficial",
+                "desc": "Volver a consultar el registro. Adecuado para un corte de red o un servidor caído por poco tiempo."
+            },
+            "url": {
+                "title": "Introducir tu propio enlace a un registro",
+                "desc": "Un archivo GeoJSON, una colección OGC API Features o una capa ArcGIS FeatureServer con polígonos de parcelas."
+            },
+            "ocr": {
+                "title": "Iniciar un trabajo de OCR",
+                "desc": "Leer las parcelas de un plano catastral escaneado."
+            },
+            "schelling": {
+                "title": "Aplicar un algoritmo de punto de Schelling",
+                "desc": "Un plan de parcelas que cualquiera puede derivar por su cuenta, de modo que todos llegan al mismo. Se dibuja en memoria y nunca se guarda como registro."
+            }
+        },
+        "url": {
+            "heading": "Tu enlace a un registro de parcelas",
+            "help": "Pega una URL que devuelva polígonos de parcelas como GeoJSON. Formas aceptadas: una FeatureCollection GeoJSON (opcionalmente con el marcador {bbox} para oeste,sur,este,norte), una URL OGC API Features …/collections/{id}/items o una capa ArcGIS …/FeatureServer/{n}. Antes de dibujar se descarga y comprueba una muestra acotada de la vista actual.",
+            "check": "Comprobar y usar este enlace",
+            "checking": "Descargando una muestra de esta vista…",
+            "accepted": "Aceptado: {overlapping} de {total} polígonos de la muestra se superponen con esta vista{rejected}.",
+            "rejectedSuffix": "; {count} elemento(s) no eran polígonos cerrados y se omitieron",
+            "sourceLabel": "Tu enlace al registro ({host})",
+            "invalid": "Eso no es una URL completa.",
+            "unreachable": "No se pudo descargar el enlace desde este navegador ({detail}). El servidor puede bloquear solicitudes de otros orígenes.",
+            "httpError": "El enlace respondió HTTP {status}.",
+            "notJson": "El enlace no devolvió JSON.",
+            "notCollection": "La respuesta no es una FeatureCollection GeoJSON.",
+            "unstableIds": "Dos parcelas distintas comparten el identificador {id}; los identificadores del registro no sirven.",
+            "noPolygons": "La respuesta contiene {count} elemento(s), pero ninguno es un polígono cerrado en longitud/latitud.",
+            "empty": "La respuesta no contiene elementos para esta zona.",
+            "farAway": "La respuesta tiene {count} polígono(s), pero ninguno está cerca de esta vista del mapa."
+        },
+        "ocr": {
+            "heading": "Leer parcelas de un plano escaneado",
+            "help": "Sube o indica un plano catastral escaneado de esta zona. El trabajo se ejecuta en segundo plano y sus parcelas aparecen aquí cuando termina.",
+            "start": "Iniciar el trabajo de OCR",
+            "unavailable": "El proceso de OCR para planos catastrales escaneados aún está en construcción. Todavía no hay nada que iniciar desde esta pantalla; cuando esté listo se registrará aquí por sí mismo."
+        },
+        "schelling": {
+            "heading": "Un plan en el que todos pueden coincidir",
+            "intro": "Un punto de Schelling es una elección que las personas hacen de forma independiente y aun así coinciden, porque cada dato de entrada ya es de conocimiento común. El plan siguiente solo necesita una posición GPS y aritmética; dos desconocidos obtienen parcelas idénticas.",
+            "sourceLabel": "Plan de Schelling: meridianos y paralelos ({code})",
+            "meridians": {
+                "title": "Meridianos y paralelos",
+                "desc": "Vías arteriales sobre la retícula geográfica a unos 1 km, manzanas por división entera."
+            },
+            "contours": {
+                "title": "Curvas de nivel (isohipsas)",
+                "desc": "Calles a lo largo de las curvas de nivel, manzanas entre ellas. Previsto; necesita una fuente de terreno."
+            },
+            "explain": {
+                "angel": "Shlomo Angel y colegas (Making Room for a Planet of Cities, 2011) sostienen que una ciudad en crecimiento debe fijar sus vías arteriales antes de que el suelo se edifique: de unos {arterialWidth} m de ancho y a unos {arterialSpacing} m de distancia, para que cada punto quede a diez minutos a pie de una vía capaz de llevar transporte público. Las calles menores quedan para rellenar los cuadrados kilométricos entre ellas.",
+                "graticule": "Aquí las arteriales siguen la retícula geográfica, contada desde el Ecuador y Greenwich. En el paralelo {refLat} un segundo de latitud mide {mLat} m y un segundo de longitud {mLon} m, así que los pasos redondos más cercanos son cada {stepLat}″ de latitud ({spacingLat} m) y cada {stepLon}″ de longitud ({spacingLon} m).",
+                "blocks": "Cada supermanzana se divide {nLon} × {nLat} con calles locales de {streetWidth} m de ancho, lo que da celdas de {cellLon} × {cellLat} m y una manzana óptima de {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} manzanas por supermanzana.",
+                "nearest": "Las arteriales más cercanas al centro de este mapa están en el paralelo {latLine} (a {latDistance} m) y el meridiano {lonLine} (a {lonDistance} m). Código del plan {code}."
+            },
+            "adjust": "Ajustar los supuestos",
+            "params": {
+                "arterialSpacing": "Separación de arteriales (m)",
+                "arterialWidth": "Ancho de arterial (m)",
+                "streetWidth": "Ancho de calle local (m)",
+                "targetBlock": "Frente de manzana objetivo (m)"
+            },
+            "previewAlt": "Una supermanzana del plan, a escala",
+            "previewCaption": "Una supermanzana, {width} × {height} m, a escala. Oscuro: calles. Claro: manzanas.",
+            "apply": "Dibujar este plan aquí",
+            "caveat": "Esto es una estimación para planificar, no un catastro: las parcelas viven en este navegador durante esta sesión y llevan la procedencia “schelling-point”. La propiedad y la publicación necesitan un registro real."
+        }
     }
 }

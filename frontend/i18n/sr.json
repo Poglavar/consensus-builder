@@ -3288,5 +3288,93 @@
     "claims": {
         "onParcels": "Na parcelama:",
         "cadastreViewToggle": "Katastarski prikaz: samo izvorne parcele"
+    },
+    "groundFallback": {
+        "title": "Ovde nije mogao da se učita nijedan registar parcela",
+        "back": "← Nazad na opcije",
+        "status": {
+            "noRegister": "Za {city} nema evidentiranog registra parcela.",
+            "temporary": "Registar parcela za {city} nije dostupan ({detail}). Izgleda privremeno.",
+            "refused": "Registar parcela za {city} odbio je zahtev ({detail}).",
+            "broken": "Registar parcela za {city} je odgovorio, ali ne podacima o parcelama ({detail}).",
+            "unknown": "Registar parcela za {city} nije mogao da se učita ({detail}).",
+            "dismissed": "Registar parcela nije dostupan. Dugmetom za osvežavanje ponovo otvorite opcije.",
+            "retrying": "Ponovni pokušaj preuzimanja registra parcela…",
+            "urlInstalled": "Parcele se za ovu sesiju učitavaju sa vašeg linka ka registru.",
+            "schellingInstalled": "Šelingov plan {code} crta se u memoriji za ovu sesiju."
+        },
+        "options": {
+            "later": "Ne sada",
+            "retry": {
+                "title": "Ponovo pokušaj zvanični registar",
+                "desc": "Ponovo upitajte registar. Pravi izbor za mrežni prekid ili server koji je kratko bio nedostupan."
+            },
+            "url": {
+                "title": "Unesite sopstveni link ka registru",
+                "desc": "GeoJSON fajl, OGC API Features kolekcija ili ArcGIS FeatureServer sloj sa poligonima parcela."
+            },
+            "ocr": {
+                "title": "Pokreni OCR posao",
+                "desc": "Pročitajte parcele sa skeniranog katastarskog plana."
+            },
+            "schelling": {
+                "title": "Primeni algoritam Šelingove tačke",
+                "desc": "Plan parcela koji svako može sam da izvede, pa svi dođu do istog. Crta se u memoriji, nikad se ne čuva kao registar."
+            }
+        },
+        "url": {
+            "heading": "Vaš link ka registru parcela",
+            "help": "Nalepite URL koji vraća poligone parcela kao GeoJSON. Prihvaćeni oblici: GeoJSON FeatureCollection (po želji sa rezervisanim mestom {bbox} za zapad,jug,istok,sever), OGC API Features URL …/collections/{id}/items ili ArcGIS sloj …/FeatureServer/{n}. Pre crtanja preuzima se i proverava ograničeni uzorak za trenutni prikaz.",
+            "check": "Proveri i koristi ovaj link",
+            "checking": "Preuzimanje uzorka za ovaj prikaz…",
+            "accepted": "Prihvaćeno: {overlapping} od {total} poligona u uzorku preklapa se sa ovim prikazom{rejected}.",
+            "rejectedSuffix": "; {count} objekata nisu zatvoreni poligoni i preskočeni su",
+            "sourceLabel": "Vaš link ka registru ({host})",
+            "invalid": "To nije potpun URL.",
+            "unreachable": "Link nije mogao da se preuzme iz ovog pregledača ({detail}). Server možda blokira zahteve sa drugih domena.",
+            "httpError": "Link je odgovorio HTTP {status}.",
+            "notJson": "Link nije vratio JSON.",
+            "notCollection": "Odgovor nije GeoJSON FeatureCollection.",
+            "unstableIds": "Dve različite parcele dele oznaku {id}; oznake registra nisu upotrebljive.",
+            "noPolygons": "Odgovor sadrži {count} objekata, ali nijedan nije zatvoren poligon u geografskoj dužini/širini.",
+            "empty": "Odgovor ne sadrži objekte za ovo područje.",
+            "farAway": "Odgovor ima {count} poligona, ali nijedan nije blizu ovog prikaza mape."
+        },
+        "ocr": {
+            "heading": "Čitanje parcela sa skeniranog plana",
+            "help": "Otpremite ili pokažite na skenirani katastarski plan ovog područja. Posao se izvršava u pozadini, a parcele se pojavljuju ovde kad završi.",
+            "start": "Pokreni OCR posao",
+            "unavailable": "OCR obrada skeniranih katastarskih planova još se gradi. Sa ovog ekrana još nema šta da se pokrene; kad bude gotova, sama će se ovde prijaviti."
+        },
+        "schelling": {
+            "heading": "Plan sa kojim svi mogu da se slože",
+            "intro": "Šelingova tačka je izbor koji ljudi donose nezavisno, a ipak se slože, jer je svaki ulaz već opšte poznat. Plan u nastavku traži samo GPS položaj i aritmetiku; dva neznanca dobijaju identične parcele.",
+            "sourceLabel": "Šelingov plan: meridijani i paralele ({code})",
+            "meridians": {
+                "title": "Meridijani i paralele",
+                "desc": "Glavne saobraćajnice na mreži meridijana i paralela na oko 1 km razmaka, blokovi celobrojnom podelom."
+            },
+            "contours": {
+                "title": "Izohipse",
+                "desc": "Ulice duž izohipsi, blokovi između njih. Planirano; traži izvor terena."
+            },
+            "explain": {
+                "angel": "Šlomo Angel i saradnici (Making Room for a Planet of Cities, 2011) tvrde da rastući grad treba da odredi glavne saobraćajnice pre nego što se zemljište izgradi: široke oko {arterialWidth} m i razmaknute oko {arterialSpacing} m, tako da je svaka tačka unutar deset minuta hoda od puta koji može da nosi javni prevoz. Manje ulice ostaju da popune kilometarske kvadrate između njih.",
+                "graticule": "Ovde glavne saobraćajnice prate mrežu meridijana i paralela, brojanu od ekvatora i Griniča. Na {refLat}. paraleli jedna sekunda geografske širine iznosi {mLat} m, a jedna sekunda dužine {mLon} m, pa su najbliži okrugli koraci svakih {stepLat}″ širine ({spacingLat} m) i svakih {stepLon}″ dužine ({spacingLon} m).",
+                "blocks": "Svaki superblok deli se {nLon} × {nLat} lokalnim ulicama širine {streetWidth} m, što daje ćelije od {cellLon} × {cellLat} m i optimalan blok od {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} blokova po superbloku.",
+                "nearest": "Glavne saobraćajnice najbliže središtu ove mape leže na paraleli {latLine} (udaljenost {latDistance} m) i meridijanu {lonLine} (udaljenost {lonDistance} m). Oznaka plana {code}."
+            },
+            "adjust": "Prilagodi pretpostavke",
+            "params": {
+                "arterialSpacing": "Razmak glavnih saobraćajnica (m)",
+                "arterialWidth": "Širina glavne saobraćajnice (m)",
+                "streetWidth": "Širina lokalne ulice (m)",
+                "targetBlock": "Ciljana stranica bloka (m)"
+            },
+            "previewAlt": "Jedan superblok plana, u razmeri",
+            "previewCaption": "Jedan superblok, {width} × {height} m, u razmeri. Tamno: ulice. Svetlo: blokovi.",
+            "apply": "Nacrtaj ovaj plan ovde",
+            "caveat": "Ovo je procena za planiranje, a ne katastar: parcele žive u ovom pregledaču za ovu sesiju i nose poreklo „schelling-point”. Vlasništvo i objavljivanje traže pravi registar."
+        }
     }
 }
