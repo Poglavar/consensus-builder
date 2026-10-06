@@ -326,8 +326,9 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(rail.locator('.corridor-lane-width')).not.toHaveValue(String(widthBefore));
     await editor.locator('.corridor-editor-save').click();
     await page.locator('#finishRoadButton').click();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.roadProposal))).toBe(true);
 
-    const track = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.roadProposal)?.roadProposal.definition);
+    const track = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.roadProposal).roadProposal.definition);
     expect(track.profile.strips.some((lane: any) => lane.type === 'rail' && Number(lane.gauge) === 1000)).toBe(true);
     expect(track.metadata.trackSpeed).toBeGreaterThan(0);
   });

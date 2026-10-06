@@ -518,8 +518,7 @@
             detachProvidersListener,
             detachConnectListener,
             detachSolanaConnect,
-            detachStateListener,
-            handleKeydown
+            detachStateListener
         };
 
         return connectorModal;

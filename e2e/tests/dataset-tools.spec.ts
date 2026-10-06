@@ -4,6 +4,12 @@ import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
 
+// The status bar shows only the latest line, and a background parcel load can replace a tool's
+// result before the assertion reads it. The status log keeps every line, so assert against that.
+async function expectStatusLogged(page: any, text: string) {
+  await expect.poll(() => page.evaluate(t => (window as any).statusLogEntries().some((e: any) => e.message.includes(t)), text)).toBe(true);
+}
+
 async function openDatasetTools(page: any) {
   await installLayerDatasets(page);
   await openCity(page);
@@ -37,7 +43,7 @@ test.describe('Dataset road tools @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).gupRoadLayer))).toBe(true);
 
     await page.locator('button[onclick="drawWFSRoadParcels()"]').click();
-    await expect(page.locator('#status')).toContainText('Drew 1 DGU road-usage polygons');
+    await expectStatusLogged(page, 'Drew 1 DGU road-usage polygons');
     const dguGeometryVisible = await page.evaluate(() => {
       const panes = Array.from(document.querySelectorAll('.leaflet-pane'));
       return panes.some(pane => pane.querySelectorAll('path').length > 0);
@@ -56,9 +62,9 @@ test.describe('Dataset road tools @features', () => {
     await page.locator('button[onclick="drawGUPRoads()"]').click();
     await expect.poll(() => page.evaluate(() => (window as any).gupRoadGeoJSON?.features?.length || 0)).toBeGreaterThan(0);
     await page.locator('button[onclick="detectRoadsFromGUP()"]').click();
-    await expect(page.locator('#status')).toContainText('GUP detection complete');
+    await expectStatusLogged(page, 'GUP detection complete');
     await page.locator('button[onclick="detectRoadsFromWFS()"]').click();
-    await expect(page.locator('#status')).toContainText('DGU detection complete');
+    await expectStatusLogged(page, 'DGU detection complete');
 
     await page.locator('#analyzeAllRoadsButton').click();
     await expect(page.locator('#osm-road-segment-list-popup')).toBeVisible();
@@ -76,7 +82,7 @@ test.describe('Dataset road tools @features', () => {
     await page.locator('#tools-button').click();
     await expect(page.locator('#tools-sheet')).toBeVisible();
     await page.locator('#detectExistingRoadsButton').click();
-    await expect(page.locator('#status')).toContainText('Existing roads loaded');
+    await expectStatusLogged(page, 'Existing roads loaded');
     await expect.poll(() => page.evaluate(id => (window as any).isRoadParcel(id), PARCEL_ID)).toBe(true);
   });
 
@@ -94,7 +100,7 @@ test.describe('Dataset road tools @features', () => {
 
     await page.locator('#tools-button').click();
     await page.locator('button[onclick="countBlocks()"]').click();
-    await expect(page.locator('#status')).toContainText('Finished count.');
+    await expectStatusLogged(page, 'Finished count.');
     const blocks = page.locator('#blocks-content .block-item');
     await page.locator('#showBlockListButton').click();
     await expect(blocks.first()).toBeVisible();
