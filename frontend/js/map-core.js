@@ -918,8 +918,10 @@ function setupMapEventHandlers() {
 
     // Add event listener for zoom
     map.on('zoomend', () => {
-        // No cadastre in the explore city: there are no parcel layers to show or hide.
-        if (MapCityConfigManager && typeof MapCityConfigManager.hasParcelData === 'function' && !MapCityConfigManager.hasParcelData()) return;
+        // No cadastre in the explore city: only a chosen session plan has parcel layers to show or hide.
+        if (MapCityConfigManager && typeof MapCityConfigManager.hasParcelData === 'function'
+            && !MapCityConfigManager.hasParcelData()
+            && !window.ParcelGroundFallback?.activeSource?.(MapCityConfigManager.getCurrentCityId())) return;
         const within = isZoomWithinParcelRange();
         if (typeof updateParcelsCheckboxByZoom === 'function') {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
@@ -1021,10 +1023,9 @@ function initializeMapCore() {
     parcelFetchZoomMin = Number.isFinite(zoomRange?.min) ? zoomRange.min : GLOBAL_PARCEL_ZOOM_RANGE.min;
     parcelFetchZoomMax = Number.isFinite(zoomRange?.max) ? zoomRange.max : GLOBAL_PARCEL_ZOOM_RANGE.max;
 
-    // Initial load only if within zoom range and not in proposal deep-link mode (nor in the explore
-    // city, which has no cadastre at all)
-    const cityHasNoParcels = !!(MapCityConfigManager && typeof MapCityConfigManager.hasParcelData === 'function' && !MapCityConfigManager.hasParcelData());
-    const shouldSkipInitialFetch = cityHasNoParcels || (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded);
+    // Initial load only if within zoom range and not in proposal deep-link mode. A place with no
+    // cadastre offers the fallback choices without making a register request.
+    const shouldSkipInitialFetch = typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded;
     if (!shouldSkipInitialFetch && typeof fetchParcelDataReported === 'function') {
         const within = isZoomWithinParcelRange();
         if (typeof updateParcelsCheckboxByZoom === 'function') {

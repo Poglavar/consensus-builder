@@ -1,0 +1,261 @@
+/* The "no parcel register could be loaded" screen (js/parcels/ground-fallback.js).
+   Built on the cb-confirm overlay/dialog so it stacks and dims like every other prompt. */
+
+.ground-fallback-dialog {
+    width: min(640px, calc(100% - 40px));
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 22px 26px 20px;
+}
+
+.ground-fallback-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ground-fallback-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.3;
+}
+
+.ground-fallback-close {
+    flex: 0 0 auto;
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* The one sentence that says what actually happened. Its colour says whether retrying is sane. */
+.ground-fallback-status {
+    margin: 10px 0 16px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+    background: #f3f4f6;
+    color: #1f2937;
+    border-left: 4px solid #9ca3af;
+}
+
+.ground-fallback-status--temporary { background: #fffbeb; border-left-color: #f59e0b; }
+.ground-fallback-status--no-register { background: #eff6ff; border-left-color: #3b82f6; }
+.ground-fallback-status--refused,
+.ground-fallback-status--broken { background: #fef2f2; border-left-color: #ef4444; }
+
+.ground-fallback-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.ground-fallback-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #111827;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.ground-fallback-option:hover,
+.ground-fallback-option:focus-visible {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+    background: #f8fafc;
+}
+
+.ground-fallback-option.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.ground-fallback-option-title {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.ground-fallback-option-desc {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.ground-fallback-foot,
+.ground-fallback-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.ground-fallback-actions .btn,
+.ground-fallback-foot .btn {
+    width: auto;
+}
+
+.ground-fallback-section h4 {
+    margin: 4px 0 8px;
+    font-size: 16px;
+    color: #111827;
+}
+
+.ground-fallback-help {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+}
+
+.ground-fallback-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 14px;
+}
+
+.ground-fallback-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.ground-fallback-result {
+    min-height: 1.2em;
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #374151;
+}
+
+.ground-fallback-result.is-ok { color: #047857; }
+.ground-fallback-result.is-error { color: #b91c1c; }
+
+/* Schelling view */
+.ground-fallback-algorithms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.ground-fallback-algorithm {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.ground-fallback-algorithm input { margin-top: 3px; }
+.ground-fallback-algorithm strong { display: block; font-size: 14px; color: #111827; }
+.ground-fallback-algorithm small { display: block; color: #4b5563; margin-top: 2px; }
+.ground-fallback-algorithm.is-selected { border-color: #2563eb; background: #eff6ff; }
+.ground-fallback-algorithm.is-disabled { opacity: 0.6; cursor: not-allowed; }
+
+.ground-fallback-schelling-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: start;
+}
+
+.ground-fallback-explainer p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1f2937;
+}
+
+.ground-fallback-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    max-width: 240px;
+}
+
+.ground-fallback-preview svg {
+    display: block;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.ground-fallback-preview small {
+    font-size: 12px;
+    color: #4b5563;
+    text-align: center;
+    line-height: 1.35;
+}
+
+.ground-fallback-preview-street { fill: #6b7280; }
+.ground-fallback-preview-block { fill: #fde68a; stroke: #b45309; stroke-width: 0.6; }
+
+.ground-fallback-params {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.ground-fallback-params summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.ground-fallback-param {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.ground-fallback-param input {
+    width: 96px;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font: inherit;
+}
+
+.ground-fallback-caveat {
+    margin: 12px 0 0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: #fffbeb;
+    color: #78350f;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+    .ground-fallback-dialog { padding: 18px 16px; }
+    .ground-fallback-algorithms,
+    .ground-fallback-schelling-grid { grid-template-columns: 1fr; }
+    .ground-fallback-preview { max-width: 100%; }
+    .ground-fallback-actions,
+    .ground-fallback-foot { flex-wrap: wrap; }
+}

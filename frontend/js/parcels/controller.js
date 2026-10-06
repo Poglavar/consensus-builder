@@ -30,9 +30,10 @@
             }
         } catch (_) { /* ignore */ }
 
-        // No cadastre here (the explore city): nothing to fetch or hide.
+        // No cadastre here (the explore city): only a chosen session plan needs viewport updates.
         if (global.CityConfigManager && typeof global.CityConfigManager.hasParcelData === 'function'
-            && !global.CityConfigManager.hasParcelData()) {
+            && !global.CityConfigManager.hasParcelData()
+            && !global.ParcelGroundFallback?.activeSource?.(global.CityConfigManager.getCurrentCityId())) {
             return;
         }
 

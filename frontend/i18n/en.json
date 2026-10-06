@@ -3311,6 +3311,7 @@
                 "other": "Loaded {{count}} cadastral parcels."
             },
             "cadastral_ground_already_loaded": "Cadastral ground already loaded.",
+            "loaded_parcels_from_source": "Loaded {{count}} parcels from {{source}}.",
             "checking_cadastral_ground": "Checking cadastral ground…",
             "loading_cadastral_ground": "Loading cadastral ground {{done}}/{{total}}…",
             "waiting_for_proposal_before_parcels": "Waiting for proposal to load before fetching parcels…",
@@ -4448,5 +4449,93 @@
         "unavailable": "Building data could not be loaded right now.",
         "tryAgainIn": "Try again in about {{minutes}} min, or plug in your own mirror or source.",
         "tryAgainLater": "Try again later, or plug in your own mirror or source."
+    },
+    "groundFallback": {
+        "title": "No parcel register could be loaded here",
+        "back": "← Back to the options",
+        "status": {
+            "noRegister": "There is no parcel register on record for {city}.",
+            "temporary": "The parcel register for {city} could not be reached ({detail}). This looks temporary.",
+            "refused": "The parcel register for {city} refused the request ({detail}).",
+            "broken": "The parcel register for {city} answered, but not with parcel data ({detail}).",
+            "unknown": "The parcel register for {city} could not be loaded ({detail}).",
+            "dismissed": "Parcel register unavailable. Use the refresh button to see the options again.",
+            "retrying": "Retrying the parcel register…",
+            "urlInstalled": "Loading parcels from your register link for this session.",
+            "schellingInstalled": "Drawing the Schelling plan {code} in memory for this session."
+        },
+        "options": {
+            "later": "Not now",
+            "retry": {
+                "title": "Retry the official register",
+                "desc": "Ask the register again. Right for a network hiccup or a server that was briefly down."
+            },
+            "url": {
+                "title": "Enter your own link to a register",
+                "desc": "A GeoJSON file, an OGC API Features collection, or an ArcGIS FeatureServer layer with parcel polygons."
+            },
+            "ocr": {
+                "title": "Estimate parcel boundaries from satellite imagery",
+                "desc": "Infer likely boundaries from visible features. Best effort: results may be incomplete or wrong and do not establish legal boundaries."
+            },
+            "schelling": {
+                "title": "Apply a Schelling point algorithm",
+                "desc": "A parcel plan anyone can derive on their own, so everyone arrives at the same one."
+            }
+        },
+        "url": {
+            "heading": "Your link to a parcel register",
+            "help": "Paste a URL that returns parcel polygons as GeoJSON. Accepted shapes: a GeoJSON FeatureCollection (optionally with a {bbox} placeholder for west,south,east,north), an OGC API Features …/collections/{id}/items URL, or an ArcGIS …/FeatureServer/{n} layer. A bounded sample for the current view is fetched and checked before anything is drawn.",
+            "check": "Check and use this link",
+            "checking": "Fetching a sample for this view…",
+            "accepted": "Accepted: {overlapping} of {total} polygons in the sample overlap this view{rejected}.",
+            "rejectedSuffix": "; {count} feature(s) were not closed polygons and were skipped",
+            "sourceLabel": "Your register link ({host})",
+            "invalid": "That is not a complete URL.",
+            "unreachable": "The link could not be fetched from this browser ({detail}). The server may block cross-origin requests.",
+            "httpError": "The link answered HTTP {status}.",
+            "notJson": "The link did not return JSON.",
+            "notCollection": "The reply is not a GeoJSON FeatureCollection.",
+            "unstableIds": "Two different parcels share the id {id}; the register’s ids are not usable.",
+            "noPolygons": "The reply holds {count} feature(s) but none is a closed polygon in longitude/latitude.",
+            "empty": "The reply holds no features for this area.",
+            "farAway": "The reply has {count} polygon(s) but none of them is near this map view."
+        },
+        "ocr": {
+            "heading": "Estimate parcel boundaries from satellite imagery",
+            "help": "Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.",
+            "start": "Start boundary recognition",
+            "unavailable": "Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries."
+        },
+        "schelling": {
+            "heading": "A plan everyone can agree on",
+            "intro": "A Schelling point is a choice people make independently and still agree on, because every input is already common knowledge. The plan below needs only a GPS fix and arithmetic; two strangers get identical parcels.",
+            "sourceLabel": "Schelling plan: meridians and parallels ({code})",
+            "meridians": {
+                "title": "Meridians and parallels",
+                "desc": "Arterial roads on the graticule about 1 km apart, blocks by integer division."
+            },
+            "contours": {
+                "title": "Elevation contours (isohypses)",
+                "desc": "Streets along contour lines, blocks between them. Planned; needs a terrain source."
+            },
+            "explain": {
+                "angel": "Shlomo Angel and colleagues (Making Room for a Planet of Cities, 2011) argue that a growing city should fix its arterial roads before the land is built on: about {arterialWidth} m wide and about {arterialSpacing} m apart, so that every point is within a ten-minute walk of a road that can carry public transport. Smaller streets are left to fill in the kilometre squares between them.",
+                "graticule": "Here the arterials follow the graticule, counted from the Equator and Greenwich. At the {refLat}th parallel one second of latitude is {mLat} m and one second of longitude is {mLon} m, so the closest round steps are every {stepLat}″ of latitude ({spacingLat} m) and every {stepLon}″ of longitude ({spacingLon} m).",
+                "blocks": "Each superblock is divided {nLon} × {nLat} by local streets {streetWidth} m wide, which gives cells of {cellLon} × {cellLat} m and an optimal block of {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} blocks to the superblock.",
+                "nearest": "The arterials nearest the centre of this map lie on the parallel {latLine} ({latDistance} m away) and the meridian {lonLine} ({lonDistance} m away). Plan code {code}."
+            },
+            "adjust": "Adjust the assumptions",
+            "params": {
+                "arterialSpacing": "Arterial spacing (m)",
+                "arterialWidth": "Arterial width (m)",
+                "streetWidth": "Local street width (m)",
+                "targetBlock": "Target block face (m)"
+            },
+            "previewAlt": "One superblock of the plan, to scale",
+            "previewCaption": "One superblock, {width} × {height} m, to scale. Dark: streets. Light: blocks.",
+            "apply": "Draw this plan here",
+            "caveat": "This is an estimate for planning, not a cadastre: the parcels live in this browser for this session and carry provenance “schelling-point”. Ownership and publishing need a real register."
+        }
     }
 }

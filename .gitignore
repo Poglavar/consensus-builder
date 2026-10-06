@@ -20,3 +20,5 @@ backend/logs/
 
 # Stray screenshots in the repo root (debug captures belong in a scratch directory)
 /*.png
+.env
+frontend/carto-config.js

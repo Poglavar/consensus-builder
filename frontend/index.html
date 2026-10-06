@@ -132,7 +132,8 @@
                 'css/selection-tray.css',
                 'css/map-search.css',
                 'css/command-palette.css',
-                'css/world.css'
+                'css/world.css',
+                'css/ground-fallback.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -148,6 +149,7 @@
     </script>
 
     <!-- Leaflet JavaScript -->
+    <script src="carto-config.js?v=20261003"></script>
     <script src="vendor/leaflet-1.9.4/leaflet.js"></script>
 
     <!-- Reduced-motion support: must run after Leaflet, before any map is constructed -->
@@ -1708,6 +1710,8 @@
             'js/parcels/presenter.js',
             'js/parcels/storage.js',
             'js/parcels/source-health.js',
+            'js/parcels/schelling-grid.js',
+            'js/parcels/ground-fallback.js',
             'js/parcels/fetch.js',
             'js/parcels/ground-service.js',
             'js/parcels/blocks.js',

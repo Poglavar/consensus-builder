@@ -3348,6 +3348,7 @@
                 "other": "Učitano {{count}} katastarskih čestica."
             },
             "cadastral_ground_already_loaded": "Katastarska podloga je već učitana.",
+            "loaded_parcels_from_source": "Učitano {{count}} čestica iz izvora {{source}}.",
             "checking_cadastral_ground": "Provjera katastarske podloge…",
             "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",
             "waiting_for_proposal_before_parcels": "Čeka se učitavanje prijedloga prije dohvaćanja čestica…",
@@ -4487,5 +4488,93 @@
         "unavailable": "Podaci o zgradama trenutno se ne mogu učitati.",
         "tryAgainIn": "Pokušaj ponovno za otprilike {{minutes}} min ili dodaj vlastito zrcalo ili izvor.",
         "tryAgainLater": "Pokušaj ponovno kasnije ili dodaj vlastito zrcalo ili izvor."
+    },
+    "groundFallback": {
+        "title": "Ovdje se nije mogao učitati nijedan registar čestica",
+        "back": "← Natrag na mogućnosti",
+        "status": {
+            "noRegister": "Za {city} nema evidentiranog registra čestica.",
+            "temporary": "Registar čestica za {city} nije dostupan ({detail}). Izgleda privremeno.",
+            "refused": "Registar čestica za {city} odbio je zahtjev ({detail}).",
+            "broken": "Registar čestica za {city} odgovorio je, ali ne podacima o česticama ({detail}).",
+            "unknown": "Registar čestica za {city} nije se mogao učitati ({detail}).",
+            "dismissed": "Registar čestica nije dostupan. Gumbom za osvježavanje ponovno otvorite mogućnosti.",
+            "retrying": "Ponovni pokušaj dohvata registra čestica…",
+            "urlInstalled": "Čestice se za ovu sesiju učitavaju s vaše poveznice na registar.",
+            "schellingInstalled": "Schellingov plan {code} crta se u memoriji za ovu sesiju."
+        },
+        "options": {
+            "later": "Ne sada",
+            "retry": {
+                "title": "Ponovno pokušaj službeni registar",
+                "desc": "Ponovno upitajte registar. Pravi izbor za mrežni prekid ili poslužitelj koji je kratko bio nedostupan."
+            },
+            "url": {
+                "title": "Unesite vlastitu poveznicu na registar",
+                "desc": "GeoJSON datoteka, OGC API Features zbirka ili ArcGIS FeatureServer sloj s poligonima čestica."
+            },
+            "ocr": {
+                "title": "Procijenite granice čestica iz satelitskih snimaka",
+                "desc": "Procjena vjerojatnih granica prema vidljivim obilježjima, uz ograničenu pouzdanost. Rezultati mogu biti nepotpuni ili pogrešni i ne utvrđuju pravne granice čestica."
+            },
+            "schelling": {
+                "title": "Primijeni algoritam Schellingove točke",
+                "desc": "Plan čestica koji svatko može izvesti sam, pa svi dođu do istoga."
+            }
+        },
+        "url": {
+            "heading": "Vaša poveznica na registar čestica",
+            "help": "Zalijepite URL koji vraća poligone čestica kao GeoJSON. Prihvaćeni oblici: GeoJSON FeatureCollection (po želji s rezerviranim mjestom {bbox} za zapad,jug,istok,sjever), OGC API Features URL …/collections/{id}/items ili ArcGIS sloj …/FeatureServer/{n}. Prije crtanja dohvaća se i provjerava ograničeni uzorak za trenutačni prikaz.",
+            "check": "Provjeri i koristi ovu poveznicu",
+            "checking": "Dohvaćanje uzorka za ovaj prikaz…",
+            "accepted": "Prihvaćeno: {overlapping} od {total} poligona u uzorku preklapa se s ovim prikazom{rejected}.",
+            "rejectedSuffix": "; {count} objekata nisu zatvoreni poligoni i preskočeni su",
+            "sourceLabel": "Vaša poveznica na registar ({host})",
+            "invalid": "To nije potpun URL.",
+            "unreachable": "Poveznica se nije mogla dohvatiti iz ovog preglednika ({detail}). Poslužitelj možda blokira zahtjeve s drugih domena.",
+            "httpError": "Poveznica je odgovorila HTTP {status}.",
+            "notJson": "Poveznica nije vratila JSON.",
+            "notCollection": "Odgovor nije GeoJSON FeatureCollection.",
+            "unstableIds": "Dvije različite čestice dijele oznaku {id}; oznake registra nisu upotrebljive.",
+            "noPolygons": "Odgovor sadrži {count} objekata, ali nijedan nije zatvoreni poligon u zemljopisnoj dužini/širini.",
+            "empty": "Odgovor ne sadrži objekte za ovo područje.",
+            "farAway": "Odgovor ima {count} poligona, ali nijedan nije blizu ovog prikaza karte."
+        },
+        "ocr": {
+            "heading": "Procjena granica čestica iz satelitskih snimaka",
+            "help": "Procijenite vjerojatne granice čestica iz satelitskih snimaka ovog područja. Obrada se izvodi u pozadini. Rezultati mogu biti nepotpuni ili pogrešni i treba ih provjeriti; snimke ne utvrđuju pravne granice čestica.",
+            "start": "Pokreni prepoznavanje granica",
+            "unavailable": "Prepoznavanje granica čestica iz satelitskih snimaka još nije dostupno na ovom zaslonu. Procjene će biti ograničene pouzdanosti i trebat će ih provjeriti; snimke ne utvrđuju pravne granice čestica."
+        },
+        "schelling": {
+            "heading": "Plan s kojim se svi mogu složiti",
+            "intro": "Schellingova točka je izbor koji ljudi donose neovisno, a ipak se slože, jer je svaki ulaz već opće poznat. Plan u nastavku traži samo GPS položaj i aritmetiku; dva neznanca dobivaju identične čestice.",
+            "sourceLabel": "Schellingov plan: meridijani i paralele ({code})",
+            "meridians": {
+                "title": "Meridijani i paralele",
+                "desc": "Glavne prometnice na mreži meridijana i paralela na oko 1 km razmaka, blokovi cjelobrojnom podjelom."
+            },
+            "contours": {
+                "title": "Izohipse (slojnice)",
+                "desc": "Ulice duž slojnica, blokovi između njih. Planirano; traži izvor terena."
+            },
+            "explain": {
+                "angel": "Shlomo Angel i suradnici (Making Room for a Planet of Cities, 2011) tvrde da rastući grad treba odrediti glavne prometnice prije nego što se zemljište izgradi: široke oko {arterialWidth} m i razmaknute oko {arterialSpacing} m, tako da je svaka točka unutar deset minuta hoda od ceste koja može nositi javni prijevoz. Manje ulice ostaju popuniti kilometarske kvadrate između njih.",
+                "graticule": "Ovdje glavne prometnice slijede mrežu meridijana i paralela, brojenu od ekvatora i Greenwicha. Na {refLat}. paraleli jedna sekunda zemljopisne širine iznosi {mLat} m, a jedna sekunda dužine {mLon} m, pa su najbliži okrugli koraci svakih {stepLat}″ širine ({spacingLat} m) i svakih {stepLon}″ dužine ({spacingLon} m).",
+                "blocks": "Svaki superblok dijeli se {nLon} × {nLat} lokalnim ulicama širine {streetWidth} m, što daje ćelije od {cellLon} × {cellLat} m i optimalni blok od {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} blokova po superbloku.",
+                "nearest": "Glavne prometnice najbliže središtu ove karte leže na paraleli {latLine} (udaljenost {latDistance} m) i meridijanu {lonLine} (udaljenost {lonDistance} m). Oznaka plana {code}."
+            },
+            "adjust": "Prilagodi pretpostavke",
+            "params": {
+                "arterialSpacing": "Razmak glavnih prometnica (m)",
+                "arterialWidth": "Širina glavne prometnice (m)",
+                "streetWidth": "Širina lokalne ulice (m)",
+                "targetBlock": "Ciljana stranica bloka (m)"
+            },
+            "previewAlt": "Jedan superblok plana, u mjerilu",
+            "previewCaption": "Jedan superblok, {width} × {height} m, u mjerilu. Tamno: ulice. Svijetlo: blokovi.",
+            "apply": "Nacrtaj ovaj plan ovdje",
+            "caveat": "Ovo je procjena za planiranje, a ne katastar: čestice žive u ovom pregledniku za ovu sesiju i nose podrijetlo „schelling-point”. Vlasništvo i objava traže pravi registar."
+        }
     }
 }

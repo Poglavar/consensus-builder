@@ -64,6 +64,30 @@
         return !manager || typeof manager.hasParcelData !== 'function' || manager.hasParcelData();
     }
 
+    // A session-level ground source the visitor chose when the register could not be loaded (a
+    // register link of their own, or a Schelling plan). It stands in for the network for that city
+    // and nothing else: see parcels/ground-fallback.js.
+    function groundOverride(city) {
+        try {
+            const fallback = global.ParcelGroundFallback;
+            return fallback && typeof fallback.activeSource === 'function' ? fallback.activeSource(city) : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    // A city whose config says there is no register on record. Distinct from a failed request on
+    // purpose: the fallback screen must never call an outage "no register", or the reverse.
+    function noRegisterError(city) {
+        const settings = cityConfig(city)?.parcels || null;
+        const strategy = String(settings?.strategy || '').toLowerCase();
+        const source = String(settings?.source || '').toLowerCase();
+        if (strategy !== 'none' && source !== 'none') return null;
+        const error = new Error(`No parcel register is on record for ${city}.`);
+        error.code = 'no-register';
+        return error;
+    }
+
     function cityConfig(city) {
         try {
             const manager = global.CityConfigManager;
@@ -177,13 +201,17 @@
     async function fetchByIds(parcelIds, options = {}) {
         const ids = Array.from(new Set(Array.from(parcelIds || []).map(String).filter(Boolean)));
         const city = String(options.city || currentCity());
-        if (!ids.length || !cityHasParcels(city)) return { status: 'ready', complete: true, features: [], absentIds: ids, returnsWGS84: true };
+        const override = groundOverride(city);
+        if (!ids.length || (!override && !cityHasParcels(city))) return { status: 'ready', complete: true, features: [], absentIds: ids, returnsWGS84: true };
         const source = currentSource();
         const provider = cityConfig(city)?.parcels;
         let features;
         let returnsWGS84 = true;
         const importedIdParameters = { 'parcel-ba': 'smp', 'parcel-bg': 'parcel_id', 'parcel-co': 'parcel_id', 'parcel-lj': 'parcel_id', 'parcel-nyc': 'parcel_id' };
-        if (provider?.source === 'parcel-source') {
+        if (override) {
+            const answer = await override.fetchByIds(ids);
+            features = Array.isArray(answer?.features) ? answer.features : [];
+        } else if (provider?.source === 'parcel-source') {
             features = [];
             for (const batch of chunks(ids)) {
                 const payload = await responseJson(`${backendBase()}/parcel-sources/${encodeURIComponent(provider.sourceId)}?${new URLSearchParams({ ids: batch.join(',') })}`, {
@@ -198,8 +226,7 @@
             }
         } else if (importedIdParameters[provider?.source]) {
             features = await requestOneByOne(ids, provider.source, importedIdParameters[provider.source]);
-        }
-        else if (source === 'oss.uredjenazemlja.hr') {
+        } else if (source === 'oss.uredjenazemlja.hr') {
             features = await requestOssIds(ids);
             returnsWGS84 = false;
         } else features = await requestBackendIds(ids);
@@ -246,6 +273,14 @@
         const sw = datasetToLatLng(swE, swN, context.city);
         const ne = datasetToLatLng(neE, neN, context.city);
         const latLonBbox = `${Math.min(sw[1], ne[1])},${Math.min(sw[0], ne[0])},${Math.max(sw[1], ne[1])},${Math.max(sw[0], ne[0])}`;
+        const override = groundOverride(context.city);
+        if (override) {
+            const answer = await override.fetchCell({ cell: String(cell), bbox, latLonBbox, city: context.city });
+            const features = Array.isArray(answer?.features) ? answer.features : [];
+            return { features, returnsWGS84: answer?.returnsWGS84 !== false };
+        }
+        const absent = noRegisterError(context.city);
+        if (absent) throw absent;
         const builder = context.builder;
         const count = 2000;
         let startIndex = 0;
@@ -286,9 +321,13 @@
 
     async function fetchBounds(_bounds, options = {}) {
         const city = String(options.city || currentCity());
-        if (!cityHasParcels(city)) return { status: 'ready', features: [], absentIds: [], returnsWGS84: true };
+        if (!cityHasParcels(city) && !groundOverride(city)) return { status: 'ready', features: [], absentIds: [], returnsWGS84: true };
         const keys = Array.from(new Set(Array.from(options.keys || []).map(String).filter(Boolean)));
         if (!keys.length) throw new Error('Cadastral bounds transport requires repository grid keys.');
+        if (!groundOverride(city)) {
+            const absent = noRegisterError(city);
+            if (absent) throw absent;
+        }
         const gridSize = Number(cityConfig(city)?.parcels?.gridSize
             ?? global.ParcelsState?.getParcelGridSize?.()
             ?? global.CityConfigManager?.getParcelGridSize?.()
@@ -381,7 +420,14 @@
     }
 
     async function fetchParcelData(customBounds) {
-        if (!cityHasParcels()) return null;
+        if (!cityHasParcels() && !groundOverride(currentCity())) {
+            global.ParcelGroundFallback?.onGroundUnavailable?.({
+                error: noRegisterError(currentCity()),
+                bounds: customBounds || global.map?.getBounds(),
+                city: currentCity()
+            });
+            return null;
+        }
         if (global.skipParcelFetchUntilProposalLoaded && !customBounds) {
             global.updateStatus?.(statusText('waiting_for_proposal_before_parcels', 'Waiting for proposal to load before fetching parcels…'));
             return null;
@@ -407,11 +453,28 @@
                 }
             });
             const count = result.features.length;
+            const source = groundOverride(currentCity());
             global.updateStatus?.(result.cached
                 ? statusText('cadastral_ground_already_loaded', 'Cadastral ground already loaded.')
-                : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count }));
+                : (source
+                    ? statusText('loaded_parcels_from_source', `Loaded ${count} parcels from ${source.label || source.kind}.`, { count, source: source.label || source.kind })
+                    : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count })));
             global.ParcelSourceSettings?.clearFailure?.(global);
             return result;
+        } catch (error) {
+            // The visitor sees the register attempted first; only when that fails are they offered
+            // a way on (retry, their own link, satellite boundary recognition, a Schelling plan). The error still
+            // propagates: callers decide what a failed viewport fetch means for them.
+            try {
+                global.ParcelGroundFallback?.onGroundUnavailable?.({
+                    error,
+                    bounds: requestedBounds,
+                    city: currentCity()
+                });
+            } catch (offerError) {
+                console.error('[fetchParcelData] could not offer ground fallback', offerError);
+            }
+            throw error;
         } finally {
             global._fetchParcelDataInProgress = false;
             global.ParcelsState?.setIsFetchingParcels?.(false);
@@ -454,6 +517,9 @@
 
     async function refreshParcelDataWithBusyState(customBounds) {
         const button = typeof document !== 'undefined' ? document.getElementById('refreshParcelDataButton') : null;
+        // An explicit refresh is the visitor asking again, so a fallback screen they closed earlier
+        // may be shown again if the register still fails.
+        try { global.ParcelGroundFallback?.resetDismissal?.(currentCity()); } catch (_) { }
         const task = () => fetchParcelData(customBounds);
         return button && typeof global.runWithButtonBusyState === 'function'
             ? global.runWithButtonBusyState(button, { key: 'common.busy.refreshing', fallback: 'Refreshing...' }, task)
