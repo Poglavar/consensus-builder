@@ -3279,12 +3279,12 @@
                 "desc": "A GeoJSON file, an OGC API Features collection, or an ArcGIS FeatureServer layer with parcel polygons."
             },
             "ocr": {
-                "title": "Start an OCR job",
-                "desc": "Read the parcels off a scanned cadastral plan."
+                "title": "Estimate parcel boundaries from satellite imagery",
+                "desc": "Infer likely boundaries from visible features. Best effort: results may be incomplete or wrong and do not establish legal boundaries."
             },
             "schelling": {
                 "title": "Apply a Schelling point algorithm",
-                "desc": "A parcel plan anyone can derive on their own, so everyone arrives at the same one. Drawn in memory, never saved as a register."
+                "desc": "A parcel plan anyone can derive on their own, so everyone arrives at the same one."
             }
         },
         "url": {
@@ -3306,10 +3306,10 @@
             "farAway": "The reply has {count} polygon(s) but none of them is near this map view."
         },
         "ocr": {
-            "heading": "Read parcels off a scanned plan",
-            "help": "Upload or point to a scanned cadastral plan of this area. The job runs in the background and its parcels appear here when it finishes.",
-            "start": "Start the OCR job",
-            "unavailable": "The OCR pipeline for scanned cadastral plans is still being built. There is nothing to start from this screen yet; when it lands it will register itself here."
+            "heading": "Estimate parcel boundaries from satellite imagery",
+            "help": "Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.",
+            "start": "Start boundary recognition",
+            "unavailable": "Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries."
         },
         "schelling": {
             "heading": "A plan everyone can agree on",

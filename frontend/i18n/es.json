@@ -3328,12 +3328,12 @@
                 "desc": "Un archivo GeoJSON, una colección OGC API Features o una capa ArcGIS FeatureServer con polígonos de parcelas."
             },
             "ocr": {
-                "title": "Iniciar un trabajo de OCR",
-                "desc": "Leer las parcelas de un plano catastral escaneado."
+                "title": "Estimar límites de parcelas a partir de imágenes satelitales",
+                "desc": "Inferir límites probables a partir de elementos visibles. Es una estimación con precisión limitada: los resultados pueden ser incompletos o erróneos y no establecen límites legales."
             },
             "schelling": {
                 "title": "Aplicar un algoritmo de punto de Schelling",
-                "desc": "Un plan de parcelas que cualquiera puede derivar por su cuenta, de modo que todos llegan al mismo. Se dibuja en memoria y nunca se guarda como registro."
+                "desc": "Un plan de parcelas que cualquiera puede derivar por su cuenta, de modo que todos llegan al mismo."
             }
         },
         "url": {
@@ -3355,10 +3355,10 @@
             "farAway": "La respuesta tiene {count} polígono(s), pero ninguno está cerca de esta vista del mapa."
         },
         "ocr": {
-            "heading": "Leer parcelas de un plano escaneado",
-            "help": "Sube o indica un plano catastral escaneado de esta zona. El trabajo se ejecuta en segundo plano y sus parcelas aparecen aquí cuando termina.",
-            "start": "Iniciar el trabajo de OCR",
-            "unavailable": "El proceso de OCR para planos catastrales escaneados aún está en construcción. Todavía no hay nada que iniciar desde esta pantalla; cuando esté listo se registrará aquí por sí mismo."
+            "heading": "Estimar límites de parcelas a partir de imágenes satelitales",
+            "help": "Estimar los límites probables de las parcelas a partir de imágenes satelitales de esta zona. El trabajo se ejecuta en segundo plano. Los resultados pueden ser incompletos o erróneos y deben revisarse; las imágenes no establecen límites legales.",
+            "start": "Iniciar el reconocimiento de límites",
+            "unavailable": "El reconocimiento de límites de parcelas a partir de imágenes satelitales aún no está disponible en esta pantalla. Las estimaciones tendrán una precisión limitada y deberán revisarse; las imágenes no establecen límites legales."
         },
         "schelling": {
             "heading": "Un plan en el que todos pueden coincidir",

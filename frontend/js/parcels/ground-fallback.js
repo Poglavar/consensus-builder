@@ -6,8 +6,9 @@
 //   1. Retry        — only for a failure that reads as temporary (network, 5xx, timeout).
 //   2. Own link     — a GeoJSON / OGC API Features / ArcGIS FeatureServer URL the visitor knows,
 //                     validated on a bounded sample before it is trusted for the viewport.
-//   3. OCR job      — reading the parcels off a scanned plan. The pipeline is being built
-//                     elsewhere; this is its entry point and says so when nothing is registered.
+//   3. Imagery      — best-effort inference of parcel boundaries from satellite imagery. The
+//                     pipeline is being built elsewhere; this entry point reports availability.
+//                     OCR is only the working name retained in the integration contract.
 //   4. Schelling    — a parcel plan everyone can derive independently. One algorithm today,
 //                     "Meridians and parallels" (schelling-grid.js); elevation contours planned.
 //
@@ -601,12 +602,12 @@
                 t('groundFallback.options.url.desc', 'A GeoJSON file, an OGC API Features collection, or an ArcGIS FeatureServer layer with parcel polygons.'),
                 renderUrl));
             list.appendChild(option('ocr',
-                t('groundFallback.options.ocr.title', 'Start an OCR job'),
-                t('groundFallback.options.ocr.desc', 'Read the parcels off a scanned cadastral plan.'),
+                t('groundFallback.options.ocr.title', 'Estimate parcel boundaries from satellite imagery'),
+                t('groundFallback.options.ocr.desc', 'Infer likely boundaries from visible features. Best effort: results may be incomplete or wrong and do not establish legal boundaries.'),
                 renderOcr));
             list.appendChild(option('schelling',
                 t('groundFallback.options.schelling.title', 'Apply a Schelling point algorithm'),
-                t('groundFallback.options.schelling.desc', 'A parcel plan anyone can derive on their own, so everyone arrives at the same one. Drawn in memory, never saved as a register.'),
+                t('groundFallback.options.schelling.desc', 'A parcel plan anyone can derive on their own, so everyone arrives at the same one.'),
                 renderSchelling));
             body.appendChild(list);
             const foot = el('div', 'ground-fallback-foot');
@@ -676,16 +677,16 @@
             requestAnimationFrame(() => input.focus({ preventScroll: true }));
         }
 
-        // -- option 3: OCR --
+        // -- option 3: satellite boundary recognition (OCR working name) --
         function renderOcr() {
             body.replaceChildren();
             const section = el('div', 'ground-fallback-section');
-            section.appendChild(el('h4', null, t('groundFallback.ocr.heading', 'Read parcels off a scanned plan')));
+            section.appendChild(el('h4', null, t('groundFallback.ocr.heading', 'Estimate parcel boundaries from satellite imagery')));
             const jobs = global.ParcelOcrJobs;
             if (jobs && typeof jobs.start === 'function') {
-                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.help', 'Upload or point to a scanned cadastral plan of this area. The job runs in the background and its parcels appear here when it finishes.')));
+                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.help', 'Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.')));
                 const actions = el('div', 'ground-fallback-actions');
-                const start = el('button', 'btn btn-action', t('groundFallback.ocr.start', 'Start the OCR job'));
+                const start = el('button', 'btn btn-action', t('groundFallback.ocr.start', 'Start boundary recognition'));
                 start.type = 'button';
                 start.addEventListener('click', async () => {
                     start.disabled = true;
@@ -701,7 +702,7 @@
                 actions.appendChild(start);
                 section.appendChild(actions);
             } else {
-                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.unavailable', 'The OCR pipeline for scanned cadastral plans is still being built. There is nothing to start from this screen yet; when it lands it will register itself here.')));
+                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.unavailable', 'Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries.')));
                 const actions = el('div', 'ground-fallback-actions');
                 actions.appendChild(backButton());
                 section.appendChild(actions);

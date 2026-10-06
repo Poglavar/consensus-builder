@@ -1,9 +1,9 @@
 # Schelling-point parcel plans
 
 Where no parcel register can be loaded, a visitor is offered a third kind of ground besides a
-register link and an OCR job: a parcel plan that everybody derives on their own and still agrees on.
-A Schelling point is exactly that, a choice people make independently because every input to it is
-already common knowledge. For a parcel plan the inputs have to be things nobody owns and anyone can
+register link and best-effort boundary recognition from satellite imagery: a parcel plan that
+everybody derives on their own and still agrees on. A Schelling point is exactly that, a choice
+people make independently because every input to it is already common knowledge. For a parcel plan the inputs have to be things nobody owns and anyone can
 check: the graticule, a published rule of thumb, and arithmetic.
 
 The screen that offers it is `frontend/js/parcels/ground-fallback.js`; the geometry is

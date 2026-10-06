@@ -3314,12 +3314,12 @@
                 "desc": "GeoJSON fajl, OGC API Features kolekcija ili ArcGIS FeatureServer sloj sa poligonima parcela."
             },
             "ocr": {
-                "title": "Pokreni OCR posao",
-                "desc": "Pročitajte parcele sa skeniranog katastarskog plana."
+                "title": "Procenite granice parcela iz satelitskih snimaka",
+                "desc": "Procena verovatnih granica prema vidljivim obeležjima, uz ograničenu pouzdanost. Rezultati mogu biti nepotpuni ili pogrešni i ne utvrđuju pravne granice parcela."
             },
             "schelling": {
                 "title": "Primeni algoritam Šelingove tačke",
-                "desc": "Plan parcela koji svako može sam da izvede, pa svi dođu do istog. Crta se u memoriji, nikad se ne čuva kao registar."
+                "desc": "Plan parcela koji svako može sam da izvede, pa svi dođu do istog."
             }
         },
         "url": {
@@ -3341,10 +3341,10 @@
             "farAway": "Odgovor ima {count} poligona, ali nijedan nije blizu ovog prikaza mape."
         },
         "ocr": {
-            "heading": "Čitanje parcela sa skeniranog plana",
-            "help": "Otpremite ili pokažite na skenirani katastarski plan ovog područja. Posao se izvršava u pozadini, a parcele se pojavljuju ovde kad završi.",
-            "start": "Pokreni OCR posao",
-            "unavailable": "OCR obrada skeniranih katastarskih planova još se gradi. Sa ovog ekrana još nema šta da se pokrene; kad bude gotova, sama će se ovde prijaviti."
+            "heading": "Procena granica parcela iz satelitskih snimaka",
+            "help": "Procenite verovatne granice parcela iz satelitskih snimaka ovog područja. Obrada se izvršava u pozadini. Rezultati mogu biti nepotpuni ili pogrešni i treba ih proveriti; snimci ne utvrđuju pravne granice parcela.",
+            "start": "Pokreni prepoznavanje granica",
+            "unavailable": "Prepoznavanje granica parcela iz satelitskih snimaka još nije dostupno na ovom ekranu. Procene će biti ograničene pouzdanosti i trebaće ih proveriti; snimci ne utvrđuju pravne granice parcela."
         },
         "schelling": {
             "heading": "Plan sa kojim svi mogu da se slože",

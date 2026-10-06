@@ -3314,12 +3314,12 @@
                 "desc": "GeoJSON datoteka, OGC API Features zbirka ili ArcGIS FeatureServer sloj s poligonima čestica."
             },
             "ocr": {
-                "title": "Pokreni OCR posao",
-                "desc": "Očitajte čestice sa skeniranog katastarskog plana."
+                "title": "Procijenite granice čestica iz satelitskih snimaka",
+                "desc": "Procjena vjerojatnih granica prema vidljivim obilježjima, uz ograničenu pouzdanost. Rezultati mogu biti nepotpuni ili pogrešni i ne utvrđuju pravne granice čestica."
             },
             "schelling": {
                 "title": "Primijeni algoritam Schellingove točke",
-                "desc": "Plan čestica koji svatko može izvesti sam, pa svi dođu do istoga. Crta se u memoriji, nikad se ne sprema kao registar."
+                "desc": "Plan čestica koji svatko može izvesti sam, pa svi dođu do istoga."
             }
         },
         "url": {
@@ -3341,10 +3341,10 @@
             "farAway": "Odgovor ima {count} poligona, ali nijedan nije blizu ovog prikaza karte."
         },
         "ocr": {
-            "heading": "Očitavanje čestica sa skeniranog plana",
-            "help": "Prenesite ili pokažite na skenirani katastarski plan ovog područja. Posao se izvodi u pozadini, a čestice se pojavljuju ovdje kad završi.",
-            "start": "Pokreni OCR posao",
-            "unavailable": "OCR obrada skeniranih katastarskih planova još se gradi. S ovog zaslona još nema što pokrenuti; kad bude gotova, sama će se ovdje prijaviti."
+            "heading": "Procjena granica čestica iz satelitskih snimaka",
+            "help": "Procijenite vjerojatne granice čestica iz satelitskih snimaka ovog područja. Obrada se izvodi u pozadini. Rezultati mogu biti nepotpuni ili pogrešni i treba ih provjeriti; snimke ne utvrđuju pravne granice čestica.",
+            "start": "Pokreni prepoznavanje granica",
+            "unavailable": "Prepoznavanje granica čestica iz satelitskih snimaka još nije dostupno na ovom zaslonu. Procjene će biti ograničene pouzdanosti i trebat će ih provjeriti; snimke ne utvrđuju pravne granice čestica."
         },
         "schelling": {
             "heading": "Plan s kojim se svi mogu složiti",
