@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11771,
+  "cityId": "wup2025:11771",
+  "name": "Khanakul",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    22.7368763853826,
+    87.904533316888
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 93,
+  "stateOrUT": "West Bengal",
+  "administrativeIdentity": {
+    "district": "Hooghly",
+    "tehsilOrTaluk": "Khanakul - I",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Bengali",
+        "query": "খানাকুল হুগলি মৌজা মানচিত্র খতিয়ান দাগ ভূমি",
+        "scope": "WUP 11771 Khanakul cohort label; search explored corresponding city/locality names and West Bengal cadastral terms.",
+        "result": "The actual native-script search did not return an official city-specific parcel sample. Shared official state/civic portals found in the same query batch are recorded separately below.",
+        "checkedAt": "2026-10-08",
+        "script": "Bengali",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://settlement.gov.bd/Khatian/",
+          "https://dlrms-stg.land.gov.bd/",
+          "https://settlement.gov.bd/Khatian/Search?query=items+in+an+application+form+to+fill+out",
+          "https://settlement.gov.bd/Home/",
+          "https://www.wblandsrecords.space/tools/kyp/",
+          "https://www.wblandsrecords.space/",
+          "https://settlement.gov.bd/home/",
+          "https://bhumi.uttoradhikar.org/khatian/",
+          "https://bhumi.uttoradhikar.org/",
+          "https://www.bangladeshcountry.com/bn/gaid/mouza-map/",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/1724471821.pdf",
+          "https://eporcha.bd/",
+          "https://file-khulna.portal.gov.bd/files/khulnadiv.gov.bd/notices/119a83a9_344a_4857_aaa4_c38b569d431d/8acf2b82f11a6d2ac447f218362bf5fa.pdf",
+          "https://file-khulna.portal.gov.bd/files/khulnadiv.gov.bd/notices/41a3f5bf_23f7_40c9_94e7_b03ce9e717d5/ee5425c8f289c905d1eba1f53ceccdac.pdf",
+          "https://file-dhaka.portal.gov.bd/files/dae.mirzapur.tangail.gov.bd/notices/49eb6526_c237_49c7_8426_2e0f5fe6b6e5/2e8b1379fdd447ae8801af1db39248ac.pdf",
+          "https://file.portal.gov.bd/files/www.habiganj.gov.bd/notices/bcb64cd5_3045_4f9c_8735_0703ded895e5/7313fd8984279c23aaef9fab0670c5b8.pdf",
+          "https://www.reddit.com/r/bengalilanguage/comments/1w23xyr/can_anyone_help_me_readdecipher_this_old_bengali/",
+          "https://www.reddit.com/r/bangladesh/comments/1duj19t",
+          "https://arxiv.org/abs/2410.15961",
+          "https://arxiv.org/abs/1712.01434",
+          "https://arxiv.org/abs/1703.10661",
+          "https://www.reddit.com/r/westbengal/comments/1u4j7q5/%E0%A6%B0%E0%A6%A4%E0%A6%A8%E0%A6%AC%E0%A6%B2_%E0%A6%B6%E0%A6%95%E0%A6%A4%E0%A6%AA%E0%A6%A0%E0%A6%96%E0%A6%A8%E0%A6%95%E0%A6%B2%E0%A6%B9%E0%A6%97%E0%A6%B2/",
+          "https://arxiv.org/abs/1308.4862",
+          "https://www.reddit.com/r/Dhakacity/comments/1wy0ffq/%E0%A6%96%E0%A6%A4%E0%A7%9F%E0%A6%A8_%E0%A6%B0%E0%A6%95%E0%A6%B0%E0%A6%A1_%E0%A6%B8%E0%A6%B6%E0%A6%A7%E0%A6%A8_%E0%A6%B8%E0%A6%AE%E0%A6%AA%E0%A6%B0%E0%A6%95/",
+          "https://www.reddit.com/r/u_Proper_Unit5448/comments/pmrp5k",
+          "https://www.reddit.com/r/Dhaka/comments/1pvfyo7/%E0%A6%9C%E0%A6%AE%E0%A6%B0_%E0%A6%AE%E0%A6%9C_%E0%A6%AE%E0%A6%AF%E0%A6%AA_%E0%A6%95%E0%A6%A5%E0%A7%9F_%E0%A6%AA%E0%A6%AC/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Banglarbhumi / West Bengal L&LR portal",
+        "operator": "Government of West Bengal, Land & Land Reforms and Refugee Relief & Rehabilitation Department",
+        "homeUrl": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+        "observation": "This is a shared state entry point surfaced for West Bengal searches; city-specific mouza availability was not confirmed by the search result."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=22.7368763853826&lon=87.904533316888&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Gopalnagar, Khanakul - I, Hooghly, West Bengal, 712418, India",
+        "osmType": "way",
+        "osmId": 686091603,
+        "address": {
+          "village": "Gopalnagar",
+          "county": "Khanakul - I",
+          "state_district": "Hooghly",
+          "state": "West Bengal",
+          "ISO3166-2-lvl4": "IN-WB",
+          "postcode": "712418",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+        "httpStatus": 400,
+        "contentType": "",
+        "assessment": "Direct official portal open timed out in web fetch; prior search output surfaced the official URL with an Invalid Operation/HTTP Header Method Change page. This is a host/protocol access result, not evidence about parcel coverage."
+      },
+      {
+        "method": "GET",
+        "url": "https://wburbanservices.org/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Government of West Bengal Department of Urban Development & Municipal Affairs home rendered district list and Know Your Property service link; shared urban service, not city-specific parcel geometry."
+      },
+      {
+        "method": "GET",
+        "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official procedure describes OTP-based registration and selection of district, block, mouza then search by khatian or plot; no public geometry sample established."
+      }
+    ]
+  },
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry."
+}

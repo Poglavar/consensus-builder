@@ -4086,11 +4086,14 @@
       "registryCityIds": [
         "wup2025:3664"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "johannesburg"
+      ],
       "wupCityCode": 3664,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 5425198,
       "population2025": 7077175,
@@ -5742,11 +5745,14 @@
       "registryCityIds": [
         "wup2025:3336"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "accra"
+      ],
       "wupCityCode": 3336,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 4598412,
       "population2025": 5592780,
@@ -17467,11 +17473,17 @@
       "countryCode": "ZA",
       "latitude": -26.0359639124127,
       "longitude": 27.9203632448749,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3990"
+      ],
+      "appCityIds": [
+        "cosmo_city"
+      ],
       "wupCityCode": 3990,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "registry",
+        "app"
       ],
       "population2015": 52029,
       "population2025": 120401,
@@ -21209,11 +21221,17 @@
       "countryCode": "ZA",
       "latitude": -26.4062859886009,
       "longitude": 27.8459423386999,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3809"
+      ],
+      "appCityIds": [
+        "ennerdale"
+      ],
       "wupCityCode": 3809,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "registry",
+        "app"
       ],
       "population2015": 117181,
       "population2025": 210428,

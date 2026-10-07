@@ -38,6 +38,9 @@ export function filterCities(rows, { query = '', checked = 'all', registry = 'al
         && (registry === 'all' || (registry === 'unknown' ? row.registryFound === null : row.registryFound === (registry === 'yes')))
         && (cohort === 'all' || (cohort === 'largest200' && row.cohorts?.includes('largest200'))
             || (cohort === 'growth200' && row.cohorts?.includes('growth200'))
+            || (cohort === 'india-africa' && ['India', 'Africa'].includes(row.researchFocusRegion))
+            || (cohort === 'india' && row.researchFocusRegion === 'India')
+            || (cohort === 'africa' && row.researchFocusRegion === 'Africa')
             || (cohort === 'growth-top20' && Number.isInteger(row.growthRank) && row.growthRank >= 1 && row.growthRank <= 20)));
 }
 

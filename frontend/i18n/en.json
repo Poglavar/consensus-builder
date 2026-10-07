@@ -3587,6 +3587,10 @@
             "curitiba": "Curitiba, Brazil",
             "recife": "Recife, Brazil",
             "durban": "Durban, South Africa",
+            "johannesburg": "Johannesburg, South Africa",
+            "ennerdale": "Ennerdale, South Africa",
+            "cosmo_city": "Cosmo City, South Africa",
+            "accra": "Accra, Ghana",
             "venjaramoodu": "Venjaramoodu, India"
         },
         "detect": {

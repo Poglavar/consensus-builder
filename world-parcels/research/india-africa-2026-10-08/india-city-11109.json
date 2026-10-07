@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11109,
+  "cityId": "wup2025:11109",
+  "name": "Khirz Sarai",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    24.9669021893364,
+    85.0901889548943
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 86,
+  "stateOrUT": "Bihar",
+  "administrativeIdentity": {
+    "district": "गया",
+    "tehsilOrTaluk": "Khizirsarai",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "खिजरसराय गया बिहार भूमि नक्शा खेसरा भू नक्शा",
+        "scope": "WUP 11109 Khirz Sarai cohort label retained; exact native-script search used to identify Bihar official revenue/cadastral map entry points.",
+        "result": "Search outputs pointed to the shared official Bihar BhuNaksha/Bihar Bhumi entry points; no city-specific parcel polygon or exact WUP revenue village was returned by this search.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://biharbhumii.com/",
+          "https://www.egovtschemes.com/bhu-naksha-bihar/",
+          "https://biharbhumionline.com/",
+          "https://bhulekh-bihar.org/",
+          "https://biharbhumibihar.com/",
+          "https://biharbhumilrc.com/",
+          "https://www.biharbhumiportal.com/",
+          "https://www.knowbihar.in/hi/block/khizirsarai/",
+          "https://bhumibihar.org/",
+          "https://bhulekhbihar.com/",
+          "https://biharbhumijankari.in/",
+          "https://akhairkar.github.io/BhumiRecord/districts/bihar/begusarai.html",
+          "https://cdnbbsr.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2025/07/202507301204050224.pdf",
+          "https://dlrs.bihar.gov.in/attachments/Letter/185.pdf",
+          "https://cdnbbsr.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2025/05/20250522342628172.pdf",
+          "https://www.lsg.urban.rajasthan.gov.in/content/dam/raj/udh/ulbs/jodhpur%20division/jalore/pdf/634876781235936309PSKS-2012_Nirdeshika%20%282%29.pdf",
+          "https://rera.rajasthan.gov.in/Content/uploads/4ada78e6-e6da-424b-abdf-7a8e00846393.pdf",
+          "https://dlrs.bihar.gov.in/attachments/Letter/241.pdf",
+          "https://www.reddit.com/r/bihar/comments/1tovakh/%E0%A4%AC%E0%A4%B9%E0%A4%B0_%E0%A4%AE_%E0%A4%9C%E0%A4%AE%E0%A4%A8_%E0%A4%96%E0%A4%B0%E0%A4%A6%E0%A4%A8_%E0%A4%B8_%E0%A4%AA%E0%A4%B9%E0%A4%B2_%E0%A4%B8%E0%A4%B0%E0%A4%AB_%E0%A4%96%E0%A4%A4%E0%A4%96%E0%A4%B8%E0%A4%B0_%E0%A4%A8%E0%A4%B9_bhu_naksha_%E0%A4%AD/",
+          "https://www.reddit.com/r/u_HindiApna/comments/1rzv575/bihar_bhumi_jankari_bhulekh_bihar_2026_%E0%A4%9C%E0%A4%AE%E0%A4%AC%E0%A4%A6_%E0%A4%96%E0%A4%A4/",
+          "https://www.reddit.com/r/u_Rohit7855/comments/fvyqwz",
+          "https://www.reddit.com/r/u_HindiApna/comments/1o31p67"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bihar BhuNaksha and Bihar Bhumi",
+        "operator": "Government of Bihar, Directorate of Land Records & Survey / Revenue and Land Reforms Department",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "mapUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "observation": "Shared official state entry points returned by native Hindi searches. Prior selector evidence is recorded in inherited research; this city-specific pass did not verify a target parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=24.9669021893364&lon=85.0901889548943&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Khirz Sarai, Khizirsarai, गया, Bihar, 824233, India",
+        "osmType": "way",
+        "osmId": 985700645,
+        "address": {
+          "village": "Khirz Sarai",
+          "county": "Khizirsarai",
+          "state_district": "गया",
+          "state": "Bihar",
+          "ISO3166-2-lvl4": "IN-BR",
+          "postcode": "824233",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://dlrs.bihar.gov.in/services.html"
+        ],
+        "scope": "Official state URLs observed in Bihar query outputs; shared across the Bihar city batch, not evidence of a city-specific sample."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
+}

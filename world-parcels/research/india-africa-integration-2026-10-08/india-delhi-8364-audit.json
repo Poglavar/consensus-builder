@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_blocker_audit",
+  "cityId": "wup2025:8364",
+  "wupCityCode": 8364,
+  "name": "New Delhi",
+  "country": "India",
+  "countryCode": "IN",
+  "checkedAt": "2026-10-08",
+  "auditAtUtc": "2026-10-07T21:43Z",
+  "scope": "Bounded follow-up to find a publisher-supported identity fix or an alternate public Delhi geometry source. No queue/catalog/runtime edits.",
+  "priorSourceId": "in-ldo-edharti-geojson",
+  "priorEvidenceFile": "../india-africa-2026-10-08/root-city-8364.json",
+  "identityFinding": {
+    "viewer": "Official e-Dharti Geo Portal labels both Property No and Unique Property ID and offers a layer/attribute/value filter. The full-snapshot audit already documented repeated conflicting geometries for propertyid, unique_propert_id, and their pair; this viewer UI does not introduce another publisher-defined key or cure those collisions.",
+    "alternateIdentity": "No publisher-supported alternate/composite key found in the bounded official-source inspection."
+  },
+  "nativeLanguageSearch": {
+    "query": "दिल्ली राजस्व विभाग खसरा नक्शा GIS भूमि नक्शा साइट revenue.delhi.gov.in",
+    "language": "Hindi",
+    "script": "Devanagari",
+    "executedAtUtc": "2026-10-07T21:43Z",
+    "actualResultUrls": [
+      "https://revenue.delhi.gov.in/revenue/revenue-maps",
+      "https://revenue.delhi.gov.in/revenue/land-records",
+      "https://dlrc.delhi.gov.in/Index.aspx"
+    ],
+    "assessment": "Official Revenue Department result offers district revenue-map downloads; its land-records page describes digitized records and a GIS pilot, not a current parcel feature service. The DLRC home page explicitly links a GIS viewer at gsdl.org.in."
+  },
+  "requests": [
+    {
+      "url": "https://revenue.delhi.gov.in/revenue/revenue-maps",
+      "method": "web open",
+      "outcome": "Official page opened; lists city and district Revenue Map PDFs. These are static map documents, not a machine-readable parcel-feature endpoint; no PDF downloaded."
+    },
+    {
+      "url": "https://revenue.delhi.gov.in/revenue/land-records",
+      "method": "web search result/open",
+      "outcome": "Official Department of Revenue description says spatial database/georeferenced digital maps were being taken up and mentions a pilot in two villages. No public parcel feature route established."
+    },
+    {
+      "url": "https://dlrc.delhi.gov.in/Index.aspx",
+      "method": "web open; click official “GIS Map See GIS map” link",
+      "outcome": "DLRC home page opened and links to https://gsdl.org.in/revenue/. Web fetch of the linked GIS URL returned tool error “400 Timeout fetching”; no viewer content or parcel geometry obtained."
+    },
+    {
+      "url": "https://ldo.mohua.gov.in/edharti/map",
+      "method": "web open",
+      "outcome": "Official L&DO viewer page opened and exposes Property No / Unique Property ID search and layer filter UI; this is the previously audited source whose full 25,999-feature snapshot has conflicting duplicate native IDs."
+    }
+  ],
+  "verifiedGeometryCount": 0,
+  "alternatePublicGeometrySourceFound": false,
+  "resultCategory": "no_alternate_identity_or_geometry_verified",
+  "technicalBlocker": "Delhi Revenue’s official GIS viewer is linked from DLRC but its gsdl.org.in/revenue/ route timed out on web fetch. Official Revenue Map links are PDFs rather than parcel geometries. L&DO e-Dharti remains a real partial geometry source, but its publisher-visible native ID fields collide with conflicting geometries at full-snapshot scale; no durable identity was found in this bounded follow-up.",
+  "nextStep": "Keep the existing L&DO source partial and blocked for stable parcel identity. Revisit the official GSDL GIS viewer only if its public route becomes reachable or a publisher documents a disambiguating key."
+}

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:6469",
+  "queueRank": 66,
+  "wupCityCode": 6469,
+  "name": "Shufune",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "centerLatLon": [
+    9.15445307641953,
+    38.7500765870952
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 66,
+  "population2025": 158225,
+  "annualGrowthPct2015To2025": 6.652327,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-ET.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Amharic and English",
+    "exactQuery": "ሸፉኔ ኢትዮጵያ መሬት ካዳስተር የመሬት ካርታ GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.ffic.gov.et/Portals/0/1381-2017.pdf",
+      "https://nsis.moa.gov.et/",
+      "https://www.metaappz.com/pdf/ethiopian_laws/federal/2025/pr_1381_2025.pdf",
+      "https://lschub.eiar.gov.et/",
+      "https://fjli.gov.et/Tedocs/amfile/am252.pdf",
+      "https://eland.addiscadaster.gov.et/",
+      "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8A%93%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8A%90%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%8C%88%E1%89%A3%2B%E1%88%A8%E1%89%82%E1%89%85%2B%E1%8A%A0%E1%8B%8B%E1%8C%85%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true",
+      "https://ess.gov.et/population-housing/"
+    ],
+    "summary": "Amharic searches surfaced national/municipal land-administration references; public NRLAIS parcel geometry not found.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.ffic.gov.et/Portals/0/1381-2017.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://nsis.moa.gov.et/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.metaappz.com/pdf/ethiopian_laws/federal/2025/pr_1381_2025.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://lschub.eiar.gov.et/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://fjli.gov.et/Tedocs/amfile/am252.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://eland.addiscadaster.gov.et/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8A%93%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8A%90%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%8C%88%E1%89%A3%2B%E1%88%A8%E1%89%82%E1%89%85%2B%E1%8A%A0%E1%8B%8B%E1%8C%85%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ess.gov.et/population-housing/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Shufune\" Ethiopia (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Shufune%22+Ethiopia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Shufune parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Ask the Ethiopian land-system operator or Shufune city office whether a public parcel layer or anonymous bounded extract exists, then test geometry and IDs.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Shufune%22+Ethiopia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

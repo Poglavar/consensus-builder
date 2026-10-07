@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1603",
+  "queueRank": 182,
+  "wupCityCode": 1603,
+  "name": "Sengerema",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "centerLatLon": [
+    -2.65009347019973,
+    32.6440981389303
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 182,
+  "population2025": 132916,
+  "annualGrowthPct2015To2025": 4.874838,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-TZ.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Swahili",
+    "exactQuery": "Sengerema Tanzania viwanja ramani ya ardhi vipande cadastral GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+      "https://sengeremadc.go.tz/",
+      "https://avenix.co.tz/projects",
+      "https://www.parliament.go.tz/uploads/documents/sw-1738925127-1716536478-Hotuba_ya_Bajeti_ya_Wizara_ya_Ardhi%2C_Nyumba_na_Maendeleo_ya_Makazi_kwa_Mwaka_wa_.pdf",
+      "https://www.sengeremadc.go.tz/",
+      "https://commons.wikimedia.org/wiki/File%3ATanzania_Sengerema_location_map.svg",
+      "https://play.google.com/store/apps/details?hl=en_GB&id=tz.go.lands.ilmis_mobile",
+      "https://www.lands.go.tz/uploads/notices/sw1681981554-1675147638-RAMANI%20YA%20TANZANIA_A4_1.pdf"
+    ],
+    "summary": "Swahili searches surfaced e-Ardhi and Ministry surveying services; requests use accounts and some paid steps, no public feature endpoint.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://sengeremadc.go.tz/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://avenix.co.tz/projects",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.parliament.go.tz/uploads/documents/sw-1738925127-1716536478-Hotuba_ya_Bajeti_ya_Wizara_ya_Ardhi%2C_Nyumba_na_Maendeleo_ya_Makazi_kwa_Mwaka_wa_.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.sengeremadc.go.tz/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File%3ATanzania_Sengerema_location_map.svg",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://play.google.com/store/apps/details?hl=en_GB&id=tz.go.lands.ilmis_mobile",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.lands.go.tz/uploads/notices/sw1681981554-1675147638-RAMANI%20YA%20TANZANIA_A4_1.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Sengerema\" United Republic of Tanzania (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Sengerema%22+United+Republic+of+Tanzania+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Sengerema parcel polygons or stable IDs were verified; e-Ardhi is an account-oriented land-service workflow, not evidence of a public city feature endpoint.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Sengerema land office or e-Ardhi operator for an open map/API or anonymous bounded parcel extract and verify IDs.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Sengerema%22+United+Republic+of+Tanzania+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

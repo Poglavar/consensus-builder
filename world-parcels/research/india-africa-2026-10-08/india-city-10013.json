@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10013,
+  "cityId": "wup2025:10013",
+  "name": "Thiruvananthapuram",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    8.50983231508796,
+    76.9676364538033
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 158,
+  "stateOrUT": "Kerala",
+  "administrativeIdentity": {
+    "district": "Thiruvananthapuram",
+    "tehsilOrTaluk": "Thiruvananthapuram",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "temporarily_unavailable"
+    ],
+    "previousEvidenceFiles": [
+      "research/thiruvananthapuram.json",
+      "research/retry/cities/thiruvananthapuram.json"
+    ],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/thiruvananthapuram.json",
+        "checkedAt": "2026-09-29",
+        "status": "temporarily_unavailable",
+        "scope": "Kerala Digital Re-survey / e-Bhoomi (unverified)",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://kerala.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "state landing only"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+          },
+          {
+            "method": "GET",
+            "url": "https://erekha.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+          },
+          {
+            "method": "GET",
+            "url": "https://ecadastre.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.surveykerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+          },
+          {
+            "method": "GET",
+            "url": "https://resurvey.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+          },
+          {
+            "method": "GET",
+            "url": "https://dilrmp.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search?q=cadastral+parcels+Kerala+%28Feature+Service%29",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "zero results"
+          }
+        ],
+        "conclusion": "All Kerala land-records and re-survey hosts tried were unreachable from this client (proxy refusals, resets, one TLS issuer error), which does not prove absence. State scope would not imply India-wide coverage.",
+        "nextStep": "Retry from a different network path; look for the Digital Survey / Kerala Land Information Map service and test a bounded query."
+      },
+      {
+        "path": "research/retry/cities/thiruvananthapuram.json",
+        "checkedAt": "2026-09-30",
+        "status": "temporarily_unavailable",
+        "scope": null,
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://erekha.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://ilrms.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://webgis.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://dilrmp.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://svamitva.nic.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhuvan.nrsc.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=utf-8",
+            "assessment": "ISRO Bhuvan front page reachable; not a parcel service, none identified"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search?q=Kerala+cadastral+OR+survey+type%3AFeature+Service",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "only census/admin/LSG boundary layers; no parcels"
+          }
+        ],
+        "conclusion": "No IN country retry file exists. Kerala land-record hosts still 502/reset; no new source.",
+        "nextStep": "Retry Kerala land-record/Bhunaksha hosts from an India-region network."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Malayalam",
+        "query": "കേരളം തിരുവനന്തപുരം റവന്യൂ വില്ലേജ് സർവേ ഭൂപടം എൻ്റെ ഭൂമി",
+        "scope": "WUP 10013 Thiruvananthapuram cohort label retained. This actual query led to shared Government of Kerala Ente Bhoomi portal; locality and revenue-village identity checked via official selector, not inferred from label.",
+        "result": "Search surfaced the official Ente Bhoomi viewer as the state entry point; no city-specific parcel geometry result was returned by search.",
+        "checkedAt": "2026-10-08",
+        "script": "Malayalam",
+        "actualResultUrls": [
+          "https://dslr.kerala.gov.in/%E0%B4%87-%E0%B4%B0%E0%B5%87%E0%B4%96-%E0%B4%AA%E0%B4%A6%E0%B5%8D%E0%B4%A7%E0%B4%A4%E0%B4%BF/",
+          "https://kerala.gov.in/navakeralam_page/articleinnerpage/MTAwODYyNDQ2LjA4",
+          "https://vision2031.kerala.gov.in/uploads/documents/TAfdANjLulxvqCtGCZartdnLXSS4LssHWsGuUSuP.pdf",
+          "https://www.clr.kerala.gov.in/index.php/thiruvananthapuram",
+          "https://trivandrumcorporation.web.lsgkerala.gov.in/ml/node/160",
+          "https://trivandrum.nic.in/%E0%B4%B1%E0%B4%B5%E0%B4%A8%E0%B5%8D%E0%B4%AF%E0%B5%82/",
+          "https://cmd.kerala.gov.in/wp-content/uploads/2024/02/SIA-Trivandrum-Coastal-Highway-Reach-4-Malayalam-Draft-report.pdf",
+          "https://cmd.kerala.gov.in/wp-content/uploads/2023/04/SIA-Construction-of-Areekad-Flyover-Final-Report-Malayalam.pdf",
+          "https://trivandrum.nic.in/",
+          "https://keralalivechannel.com/%E0%B4%95%E0%B5%87%E0%B4%B0%E0%B4%B3%E0%B4%82-%E0%B4%B2%E0%B5%8B%E0%B4%95%E0%B4%A4%E0%B5%8D%E0%B4%A4%E0%B4%BF%E0%B4%A8%E0%B5%81-%E0%B4%AE%E0%B5%81%E0%B4%AE%E0%B5%8D%E0%B4%AA%E0%B4%BF%E0%B5%BD/",
+          "https://prd.kerala.gov.in/sites/default/files/inline-files/10%20years_PV%20Govt%20%283%29_2.pdf",
+          "https://keralaagriculture.gov.in/wp-content/uploads/2021/04/data-bank0001.pdf",
+          "https://www.ceo.kerala.gov.in/pdf/afidavitgen/wnd/k_muraleedharan.pdf",
+          "https://trivandrum.nic.in/%E0%B4%B5%E0%B4%BF%E0%B4%B2%E0%B5%8D%E0%B4%B2%E0%B5%87%E0%B4%9C%E0%B5%81%E0%B4%95%E0%B4%B3%E0%B5%8D%E2%80%8D/",
+          "https://clr.kerala.gov.in/index.php/thiruvananthapuram",
+          "https://yojana.newsgama.in/kerala-land-records/",
+          "https://trivandrum.nic.in/%E0%B4%A4%E0%B4%BE%E0%B4%B2%E0%B5%82%E0%B4%95%E0%B5%8D%E0%B4%95%E0%B5%8D/%E0%B4%A4%E0%B4%BF%E0%B4%B0%E0%B5%81%E0%B4%B5%E0%B4%A8%E0%B4%A8%E0%B5%8D%E0%B4%A4%E0%B4%AA%E0%B5%81%E0%B4%B0%E0%B4%82/",
+          "https://www.magicbricks.com/blog/ml/e-rekha-kerala-land-records/117488.html",
+          "https://www.reddit.com/r/Kerala/comments/1g8n38y",
+          "https://www.reddit.com/r/Kerala/comments/ubccwj",
+          "https://www.reddit.com/r/Kerala/comments/1wnigfa/%E0%B4%B8%E0%B4%9C%E0%B4%A8%E0%B4%AF%E0%B4%AE%E0%B4%AF_%E0%B4%B5%E0%B4%AE%E0%B4%A8_%E0%B4%B8%E0%B5%BC%E0%B4%B5%E0%B4%B8_%E0%B4%B8%E0%B4%B5%E0%B4%95%E0%B4%B0%E0%B4%95%E0%B4%95%E0%B5%BB_%E0%B4%AE%E0%B4%96%E0%B4%AF%E0%B4%AE%E0%B4%A8%E0%B4%A4%E0%B4%B0%E0%B4%95%E0%B4%95_%E0%B4%AE%E0%B4%A8%E0%B4%A4%E0%B4%B0%E0%B4%AE%E0%B5%BC%E0%B4%95%E0%B4%95_%E0%B4%85%E0%B4%A7%E0%B4%95%E0%B4%B0%E0%B4%AE%E0%B4%B2%E0%B4%B2/",
+          "https://www.reddit.com/r/Kerala/comments/rnb8g3",
+          "https://www.reddit.com/r/Kerala/comments/rgqc8d"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Ente Bhoomi ILMS public map",
+        "operator": "Government of Kerala, Survey and Land Records Department / NIC Kerala portal attribution",
+        "homeUrl": "https://entebhoomi.kerala.gov.in/web/home",
+        "mapUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "observation": "Official district/taluk/village selectors checked. In Thiruvananthapuram all-village list returned 31 entries; published-village list returned 10. The official Thiruvananthapuram taluk all-village list contains Sasthamangalam (candidate GID shown); its published subset excludes it. Candidate name presence is not point-in-polygon proof.",
+        "selectorCalls": [
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+            "status": 200,
+            "contentType": "text/html",
+            "assessment": "Official viewer and Malayalam district selector."
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid",
+            "queryParameter": "districtId from selected Malayalam district",
+            "status": 200,
+            "contentType": "application/json"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+            "queryParameters": {
+              "talukId": "selected from official taluk selector",
+              "loadAllVillage": "true",
+              "loadPublishedVillage": "false|true"
+            },
+            "status": 200,
+            "contentType": "application/json",
+            "assessment": "Observed all-village and published-village lists; exact opaque GID omitted from this record."
+          }
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=8.50983231508796&lon=76.9676364538033&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Judge Lane, CSM Nagar, Sasthamangalam, Thiruvananthapuram, Kerala, 695001, India",
+        "osmType": "way",
+        "osmId": 337047119,
+        "address": {
+          "road": "Judge Lane",
+          "neighbourhood": "CSM Nagar",
+          "suburb": "Sasthamangalam",
+          "city": "Thiruvananthapuram",
+          "county": "Thiruvananthapuram",
+          "state_district": "Thiruvananthapuram",
+          "state": "Kerala",
+          "ISO3166-2-lvl4": "IN-KL",
+          "postcode": "695001",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official selector/viewer shell; district names available in Malayalam."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official all-village selector result; Thiruvananthapuram taluk contained 31 villages.",
+        "queryParameters": {
+          "talukId": "selected from live official district/taluk selector (exact opaque GID not retained in this research record)",
+          "loadAllVillage": "true",
+          "loadPublishedVillage": "false"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official published-village selector result; Thiruvananthapuram taluk contained 10 villages; target named candidate not included.",
+        "queryParameters": {
+          "talukId": "selected from live official district/taluk selector (exact opaque GID not retained in this research record)",
+          "loadAllVillage": "true",
+          "loadPublishedVillage": "true"
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Selected candidate Sasthamangalam using district/taluk/village GIDs; page config location_code 010121."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/010121",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "responseBytes": 28794,
+        "assessment": "POST form layer_code=LAND_PARCEL, crs=32643, x/y=716595.01, 941211.83; returned generic 28,794-byte HTML viewer shell, not JSON/GeoJSON or parcel geometry."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Public Ente Bhoomi viewer/selector loaded successfully; endpoint-only evidence."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "District selector was used to retrieve taluk list; exact districtId GID was not preserved, so this request record is non-reproducible."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "All-village and published-village lists were queried; opaque talukId GID was not preserved, so this request record is non-reproducible."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "A candidate village was selected; opaque GIDs were not preserved, so this exact request cannot be replayed."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/010121",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "responseBytes": 28794,
+        "assessment": "Successful identify-endpoint request returned the generic HTML viewer shell only, not parcel feature geometry; request is endpoint-only/non-reproducible because selector GIDs were not preserved."
+      }
+    ],
+    "viewerRequestRecordQuality": "endpoint_only_non_reproducible",
+    "viewerRequestReproducibilityNote": "The public Ente Bhoomi viewer and selector were successfully queried and returned HTTP 200. The three opaque district/taluk/village GIDs used in selector calls were not preserved in this record, so those exact requests cannot be replayed from the saved URL data. Only the endpoint paths and method/filter semantics remain; this is not a reproducible exact request log. No parcel geometry was returned."
+  },
+  "status": "partial_coverage",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient."
+}

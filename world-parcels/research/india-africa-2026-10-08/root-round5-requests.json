@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "requests": [
+    {
+      "name": "pune-linked-map",
+      "url": "http://103.224.247.79:8181/demo/geo_tag_leaflet.html",
+      "method": "GET",
+      "parameters": null,
+      "checkedAt": "2026-10-07T21:20:23.143779+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://autodcr.pmc.gov.in/AutoDCR.DashBoard/PMC/GIS.aspx"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35043
+    }
+  ]
+}

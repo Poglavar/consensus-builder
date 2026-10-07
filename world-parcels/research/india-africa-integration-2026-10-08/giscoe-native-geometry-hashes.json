@@ -1,0 +1,1723 @@
+{
+  "checkedAt": "2026-10-07T22:05:54.243435Z",
+  "sourceId": "za-giscoe-erven",
+  "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+  "hashAlgorithm": "SHA-256 of compact JSON geometry coordinates returned as WGS84 by the adapter; no geometry is altered for exact reads. Parts reads use the configured 9-decimal assembly before hashing.",
+  "defaultExactAdapterRuns": [
+    {
+      "city": "Mboloko",
+      "viewportObservedFeatures": 330,
+      "uniqueObservedNativeIds": 330,
+      "verifiedIds": 100,
+      "matchedNativeIdGeometrySha256": [
+        {
+          "nativeId": "T0JQ00540000053400000",
+          "geometrySha256": "2a3c6855fc668fa456d43c31fd026ea68e29e8d3e873c2c3c85933efa2347265"
+        },
+        {
+          "nativeId": "T0JQ00540000055000000",
+          "geometrySha256": "7dade489e9d74ef76c87a7cae574cc4d556c77b742893ab43c1aa827c8b0638f"
+        },
+        {
+          "nativeId": "T0JQ00540000101900000",
+          "geometrySha256": "59515e895eaa6084c4174f02e447b3d746a7e1de42bc0954871ebc7e640db523"
+        },
+        {
+          "nativeId": "T0JQ00540000082900000",
+          "geometrySha256": "f109785427217ffcb1f26eed13451c1ffefc0005998c25d1992809fdb05a819c"
+        },
+        {
+          "nativeId": "T0JQ00540000080800000",
+          "geometrySha256": "4d77578cdce59effefb5cf52d8c1d2b0e603b66eb295d1ebb84172b592596a0b"
+        },
+        {
+          "nativeId": "T0JQ00540000048700000",
+          "geometrySha256": "c2fc101b162864b59356c7cb64b9b7b292caa2539c0884e5f2d484601899849e"
+        },
+        {
+          "nativeId": "T0JQ00540000016000000",
+          "geometrySha256": "86a987292df12b40792166f73038d67fa46c9923ddf15d6725b0c9f992a6f8d7"
+        },
+        {
+          "nativeId": "T0JQ00540000054800000",
+          "geometrySha256": "25d61b663b7316510beb4fcdf327720eee633ec0416120695909e0f53f0d30c2"
+        },
+        {
+          "nativeId": "T0JQ00540000082800000",
+          "geometrySha256": "0e44546df6adb2210598a4d1db352cd31e7f070c8a2481c06ee9a51d6ca39458"
+        },
+        {
+          "nativeId": "T0JQ00540000053300000",
+          "geometrySha256": "de944366ca65f7ff68cc14a313fd4cb6a446eb8acff916d74dcfe94d904fa200"
+        },
+        {
+          "nativeId": "T0JQ00540000054900000",
+          "geometrySha256": "ee7dc8c19f11b815b0ee46a001d9575ef51af5f196d742d52c2b5931c9274fbe"
+        },
+        {
+          "nativeId": "T0JQ00540000082600000",
+          "geometrySha256": "804e5886a035bbdec058d94b8ba2901f689ecfd9ae8af498dc236bb61eb88ccd"
+        },
+        {
+          "nativeId": "T0JQ00540000054700000",
+          "geometrySha256": "2e3c6df8701844eea3afb7b73ce90aa29d342ed93b91b9f1e97d58901a30284a"
+        },
+        {
+          "nativeId": "T0JQ00540000055100000",
+          "geometrySha256": "d76a0891327d5a297964e55f48bfc3b3ae93e0dc5ce74756f6adddb4c8891256"
+        },
+        {
+          "nativeId": "T0JQ00540000082500000",
+          "geometrySha256": "8faa4d887c313d7c51b29c673d0e69a39ecd664462a3ab4629e882b52c11fb21"
+        },
+        {
+          "nativeId": "T0JQ00540000053500000",
+          "geometrySha256": "6067d264bc6bab216df846a3f1a83edf3248357f82ec344b3a8842c205ff0b81"
+        },
+        {
+          "nativeId": "T0JQ00540000055200000",
+          "geometrySha256": "13499b7b7e8824fee8e0772963baa0487d00b24a0062f584add0e18991f32ee8"
+        },
+        {
+          "nativeId": "T0JQ00540000083000000",
+          "geometrySha256": "b0df0db7599476bf3f367dca2d9802389b20e630fa8fe99d966b5b4398210885"
+        },
+        {
+          "nativeId": "T0JQ00540000054600000",
+          "geometrySha256": "ab2396bf2a225b8f5d4c2f611afac6f4e5413208e9207a71e5ccf593c2e9736e"
+        },
+        {
+          "nativeId": "T0JQ00540000055300000",
+          "geometrySha256": "9382e6ba9d0160502ffd4988fba583345612bd5ed6b97049386527c702fcf8fa"
+        },
+        {
+          "nativeId": "T0JQ00540000053600000",
+          "geometrySha256": "8d05d7a374494bd3c15e2111b31cc3dfca93b3be90a44c4d6f67aaa518b5a5a4"
+        },
+        {
+          "nativeId": "T0JQ00540000081500000",
+          "geometrySha256": "4659cebd17959b89c072c3427ed225420f81d2af9efc631ae9ea7006be043826"
+        },
+        {
+          "nativeId": "T0JQ00540000055400000",
+          "geometrySha256": "16ed0feb20ddb111c38e21c272646297d57bc915fe0a3919f75baf3ec4145065"
+        },
+        {
+          "nativeId": "T0JQ00540000083100000",
+          "geometrySha256": "428efd04463f9df6e9b48073b4f1680f12f77801e4d92978cd1262af2452844a"
+        },
+        {
+          "nativeId": "T0JQ00540000054500000",
+          "geometrySha256": "86958d12acb59ff0732d85f6cba4e9d09e56904dee936309a31649c96a750dd2"
+        },
+        {
+          "nativeId": "T0JQ00540000081600000",
+          "geometrySha256": "ba6e4d85883db266b2557e2f3bcb9b539aff65b26129a2b834dbc3c99b71b912"
+        },
+        {
+          "nativeId": "T0JQ00540000053700000",
+          "geometrySha256": "6ad1b95e490cdb0629c6553f20e0dfb5f62061edbcc02a0b0bcab4193ed1165f"
+        },
+        {
+          "nativeId": "T0JQ00540000081400000",
+          "geometrySha256": "f12141ea6c549a25a795451be6eb67db1ba181a9f8db2f80d8e6fba24eae9d4e"
+        },
+        {
+          "nativeId": "T0JQ00540000055500000",
+          "geometrySha256": "7ea41796b70a454cefa474ffddd6d9acf51d2aa67e9f72c3abeb21e4cc641290"
+        },
+        {
+          "nativeId": "T0JQ00540000015400000",
+          "geometrySha256": "b30d79edc7c07e66bed59ddd48941cad0a0ebb26c8e50f4895c664589d3478e2"
+        },
+        {
+          "nativeId": "T0JQ00540000054400000",
+          "geometrySha256": "956bf8ae587584793be1771aaea04e754bba829ae5b8aa448ab099598c279615"
+        },
+        {
+          "nativeId": "T0JQ00540000015500000",
+          "geometrySha256": "cd11828720fe590accb4a7d260f52acecd8311d6b6f0765eef614c5c06571408"
+        },
+        {
+          "nativeId": "T0JQ00540000081700000",
+          "geometrySha256": "f94ea6fa5827be65e4efe9d70892723757619c6a0e1a4a78e5de5df3ab2b2acd"
+        },
+        {
+          "nativeId": "T0JQ00540000083200000",
+          "geometrySha256": "a50bd26599c6e0bdf7b0aa7fb41fef85d59bd80d09a09acc0d24ed030c06649d"
+        },
+        {
+          "nativeId": "T0JQ00540000015300000",
+          "geometrySha256": "f8ae83ca3ab4deec20b05f2649ecd8600f8e42a4d3eb2be7d046211324885cf3"
+        },
+        {
+          "nativeId": "T0JQ00540000053800000",
+          "geometrySha256": "40b3b04d43520d1edcf440bef3866196473e517aa8f671167a5dd368539fcfb5"
+        },
+        {
+          "nativeId": "T0JQ00540000081300000",
+          "geometrySha256": "03a9ef4ac305a6cb812c2f13e9dc0b4945b00e7c2f1676e8a616bb2b78837e34"
+        },
+        {
+          "nativeId": "T0JQ00540000055600000",
+          "geometrySha256": "e2301bb86df87123fdafb3c3bda2f51e2436d17321300fd6375ef885cc2b98aa"
+        },
+        {
+          "nativeId": "T0JQ00540000015600000",
+          "geometrySha256": "e5bb7c728bb97ca4d4198ef326deba056220a2a6e3440b38f00e3f828b00afe3"
+        },
+        {
+          "nativeId": "T0JQ00540000054300000",
+          "geometrySha256": "363e77cf12921abd483136cb563014d43a2df0651496f0a7b259704a78fb0648"
+        },
+        {
+          "nativeId": "T0JQ00540000081800000",
+          "geometrySha256": "7625eea631c6c8eeaaf57bfca901b16929227a8b4c427133e64297f25cc6ab36"
+        },
+        {
+          "nativeId": "T0JQ00540000053900000",
+          "geometrySha256": "9b92ceee5f8a9d55625a3b27ca2e7f058e5bf62ebc50d7666db6dabd74d40303"
+        },
+        {
+          "nativeId": "T0JQ00540000055700000",
+          "geometrySha256": "415a38ada7b7050b9fef79ad32a7994f4d0546c7257db366fce2dc347cedf1eb"
+        },
+        {
+          "nativeId": "T0JQ00540000081200000",
+          "geometrySha256": "1e29d59bfe0284b0dcffeac1f514c3cb15fd04fc135018f2cd4bbe65855a25d6"
+        },
+        {
+          "nativeId": "T0JQ00540000015700000",
+          "geometrySha256": "a0fa0441db0075ffc9180a239e4c2290575bb4817e854654ea93140ffe7c0e0b"
+        },
+        {
+          "nativeId": "T0JQ00540000054200000",
+          "geometrySha256": "4e45069e6708477b9fb48ac0ee660e1ddf0eb9bd3548425416cd0b652dc7be82"
+        },
+        {
+          "nativeId": "T0JQ00540000081900000",
+          "geometrySha256": "fc616c510c6a13e572a2bd1495bbcf4e57053e69574ea4ad6bbff021e1b89c45"
+        },
+        {
+          "nativeId": "T0JQ00540000055800000",
+          "geometrySha256": "10540cf83a03f8aa7916146a7ee701203ea5453053e24ee471e315d96f7eaf71"
+        },
+        {
+          "nativeId": "T0JQ00540000054000000",
+          "geometrySha256": "832f64379534f869548365c18ab0150f335c1adc84c2befa4facab53341a24e4"
+        },
+        {
+          "nativeId": "T0JQ00540000081100000",
+          "geometrySha256": "2a89109797a805940c29a50cf9f008b6def011da2fcda2c2a1077fdcbdb6bb99"
+        },
+        {
+          "nativeId": "T0JQ00540000048900000",
+          "geometrySha256": "310949c4057b9daa0db78f997ef5d69cbfd1350e05e3f8064b909d733e7ee512"
+        },
+        {
+          "nativeId": "T0JQ00540000015800000",
+          "geometrySha256": "c0a184bf6ca4191edaf0294f5204a29a38476370cf13d22f6adcdd4395c16c3d"
+        },
+        {
+          "nativeId": "T0JQ00540000054100000",
+          "geometrySha256": "1cb1862c474fcbf36d924c4be74601e9f103266f4bce9bd94cf2b1b92fd4cb63"
+        },
+        {
+          "nativeId": "T0JQ00540000082000000",
+          "geometrySha256": "5838a1c3bd4b5551ceb1589596658ef99aedb07fbe91caeddc85ad5a2d785b69"
+        },
+        {
+          "nativeId": "T0JQ00540000055900000",
+          "geometrySha256": "f6e5d8881dce375562ad0b2a5ecb91ebccf7e2da52e483c17b8458af3aecb9b5"
+        },
+        {
+          "nativeId": "T0JQ00540000081000000",
+          "geometrySha256": "e98a699c9a6ed7c6cc2330549fa6b6706fc7b33ba1d86b6ef190ce39a2e80399"
+        },
+        {
+          "nativeId": "T0JQ00540000015900000",
+          "geometrySha256": "1aab7ed6fedf513c8c8872ae98568d7ab443e867ac3bc9a1d50af781ce2c4582"
+        },
+        {
+          "nativeId": "T0JQ00540000048800000",
+          "geometrySha256": "c55d2d4544f05707293284d48daa38471671cf965287521c1a49876dc7a7c6a0"
+        },
+        {
+          "nativeId": "T0JQ00540000080900000",
+          "geometrySha256": "01bbbcbacec961122ec72c521f4af46d8768fdb1aaae6b3c3a89a6f062e89825"
+        },
+        {
+          "nativeId": "T0JQ00540000056000000",
+          "geometrySha256": "951d21894b04588a8d15d6a0434dca351b15e5cace4f39a73d67af981aecbe7c"
+        },
+        {
+          "nativeId": "T0JQ00540000076600000",
+          "geometrySha256": "96cdfcb145fdc2118cd9d424b1da242fe8403f1b081d4ff8f6523664e62c0ca1"
+        },
+        {
+          "nativeId": "T0JQ00540000076700000",
+          "geometrySha256": "1cb8970dc09ffcc8192576994cb0be424201868ac5ddf5607b4e789fb10da951"
+        },
+        {
+          "nativeId": "T0JQ00540000056100000",
+          "geometrySha256": "792190483eabb3aa79049dc3aa53a479d3d67267d0683f79da2670d876eb2ec2"
+        },
+        {
+          "nativeId": "T0JQ00540000076800000",
+          "geometrySha256": "dc1ae1350c58ea147f5aea291970de7b85ac3be9a17b25c96a230323d85c9ee1"
+        },
+        {
+          "nativeId": "T0JQ00540000016100000",
+          "geometrySha256": "4cf70b50d6f0b5f8891ed34e0fee97d834d6262bda89e8264d56569377910395"
+        },
+        {
+          "nativeId": "T0JQ00540000048000000",
+          "geometrySha256": "8ed3bb86c9c79df4dd4e84f5e0d027fb0774f5c6acb34b0163d58f7517ae3710"
+        },
+        {
+          "nativeId": "T0JQ00540000076900000",
+          "geometrySha256": "81aaeb0d4c05c065b1dbf056c9d53eb63122ae360190817e36b2261e28e4586b"
+        },
+        {
+          "nativeId": "T0JQ00540000056200000",
+          "geometrySha256": "3e607a7514e520e1ccc040c5bc65ae32d31e863360f061cd9e276eae6674856a"
+        },
+        {
+          "nativeId": "T0JQ00540000077400000",
+          "geometrySha256": "3d98f92240004c05a2c9a73341894768ba8ea231c03358023b86d304334d0535"
+        },
+        {
+          "nativeId": "T0JQ00540000048100000",
+          "geometrySha256": "b9674d8d1f7213b2aa84711aecbf54480d318c826d24de16680e91a52c92adc5"
+        },
+        {
+          "nativeId": "T0JQ00540000074000000",
+          "geometrySha256": "37b900de28492a49828205490b89c30fa12c62545f2c3455d37c35432c78bf14"
+        },
+        {
+          "nativeId": "T0JQ00540000077000000",
+          "geometrySha256": "329704bcd7e73548731698e8f9b1d86dd6b2bdfc582803b2d5a1777c0f6fd495"
+        },
+        {
+          "nativeId": "T0JQ00540000016200000",
+          "geometrySha256": "956721a39492545b331bcbafa9746d2126087858e993a8a3f292a3b72365ddae"
+        },
+        {
+          "nativeId": "T0JQ00540000077300000",
+          "geometrySha256": "3100c8e83e51a1d44dd5f6dd146d4231e9c0273aa0b8e7cbc8ccdda44e92b75f"
+        },
+        {
+          "nativeId": "T0JQ00540000056300000",
+          "geometrySha256": "8290ead6ed12020c63acd256bfb102c465c991c69fd981db8055683f14043343"
+        },
+        {
+          "nativeId": "T0JQ00540000048200000",
+          "geometrySha256": "d812c15e7fd07acd3e4fff263907f5553689ab79ff64e604f4fe76dc58179966"
+        },
+        {
+          "nativeId": "T0JQ00540000047900000",
+          "geometrySha256": "31a26e624e3c8519701de2fdbed663735e78b646bfee9fe69f445c1a28de5c26"
+        },
+        {
+          "nativeId": "T0JQ00540000077200000",
+          "geometrySha256": "d98cdf558bec40f62a90edcc1646153046ef0438a9328447d6ec863b487d15bb"
+        },
+        {
+          "nativeId": "T0JQ00540000056400000",
+          "geometrySha256": "ddc9395664668e64a69d8bf0bca2b8288780c719ca3ae44e8d98a7f4d11ed498"
+        },
+        {
+          "nativeId": "T0JQ00540000077500000",
+          "geometrySha256": "f3486299df94c1553674d92fb7ed5474f59f3daca8c2f5482691b295892d8c77"
+        },
+        {
+          "nativeId": "T0JQ00540000077100000",
+          "geometrySha256": "5b014504f5c352d6ca3f22e8d92e8e0d6cd2a17423799b45c8cad868086356f8"
+        },
+        {
+          "nativeId": "T0JQ00540000047800000",
+          "geometrySha256": "587ecff2064c698e6d7e43c03ee6bfa5eaf86aed0a2bc19b07b5f750239a9407"
+        },
+        {
+          "nativeId": "T0JQ00540000016300000",
+          "geometrySha256": "4fb638d9f40c9e3a40a279ffa34acd96315822fa01e90e470189c2ce8153d264"
+        },
+        {
+          "nativeId": "T0JQ00540000016400000",
+          "geometrySha256": "f3ca99c65c0bfa834180c4c984d934ef233e21ee37043b0c33c655f4ca66aa20"
+        },
+        {
+          "nativeId": "T0JQ00540000047700000",
+          "geometrySha256": "46bd6b9916e5f6015d79bfd690ad51936352073c50626e420b30c6f82f9e5fbd"
+        },
+        {
+          "nativeId": "T0JQ00540000056500000",
+          "geometrySha256": "25a27e7a4f030c073667222b3ef76e19c616532220f20acfe44bfc6726932ed8"
+        },
+        {
+          "nativeId": "T0JQ00540000101800000",
+          "geometrySha256": "8e1b31e447ca4a39dd24284c739a8f3a646fa7bc32cd05853e60482a5c347830"
+        },
+        {
+          "nativeId": "T0JQ00540000072500000",
+          "geometrySha256": "567bdc1b83b9d25789c3e1d246b8d097205d609cc6976c6ddbaa15dee39acddd"
+        },
+        {
+          "nativeId": "T0JQ00540000016500000",
+          "geometrySha256": "07412d06c33d575fb2f52fda6db5de39c174b21e51328b5554088f98c3bb525c"
+        },
+        {
+          "nativeId": "T0JQ00540000056600000",
+          "geometrySha256": "0ae5ad4b5ff98a296b98aaec410ec795ec75ebc521110b59ff25a14c780592f4"
+        },
+        {
+          "nativeId": "T0JQ00540000016600000",
+          "geometrySha256": "71ce14188eea5b03e9936890172b86b11b646422586693782716b9de5eaff6c0"
+        },
+        {
+          "nativeId": "T0JQ00540000072600000",
+          "geometrySha256": "53e4e287082388425da841d88e6e5def2ace65862e7db2b3381718036c938522"
+        },
+        {
+          "nativeId": "T0JQ00540000072400000",
+          "geometrySha256": "e66b3ecb5da483a905b31456df7c5b2f9aac83d0caf461d11a08bc77d35a45f1"
+        },
+        {
+          "nativeId": "T0JQ00540000016700000",
+          "geometrySha256": "8899eb7cb19655bd9a50ffa8f47f5bc631fa052bdd91289e07f00e042e93ea2b"
+        },
+        {
+          "nativeId": "T0JQ00540000077600000",
+          "geometrySha256": "48d8e57b0b98baf2dcfe647395ebaeb3c68b0e00675929e0c67bbf19b5dce16a"
+        },
+        {
+          "nativeId": "T0JQ00540000056700000",
+          "geometrySha256": "5573a9efffe88be511d78d8bb402911572ce74e7a6b6b2398151e80dedd03eb8"
+        },
+        {
+          "nativeId": "T0JQ00540000072700000",
+          "geometrySha256": "10143a27e9b570a48b63b924c17016fb85e788a29e923b555824740486ec37b2"
+        },
+        {
+          "nativeId": "T0JQ00540000016800000",
+          "geometrySha256": "fb764924846a116ce31fa275ed5320e919b08c37d40532b40997c0470a793f10"
+        },
+        {
+          "nativeId": "T0JQ00540000072300000",
+          "geometrySha256": "03b29cda90f6a74c0ab87f9695ccae1f763999e306c5790b26f154f4ae84214e"
+        },
+        {
+          "nativeId": "T0JQ00540000056800000",
+          "geometrySha256": "b80f5b5ac94443598af461e2560d081b875372ad0eb87ac6fa81c89990e024ed"
+        }
+      ],
+      "failedRequests": [
+        {
+          "batchStart": 100,
+          "ids": [
+            "T0JQ00540000072800000",
+            "T0JQ00540000072200000",
+            "T0JQ00540000056900000",
+            "T0JQ00540000072900000",
+            "T0JQ00540000057000000",
+            "T0JQ00540000072100000",
+            "T0JQ00540000029900000",
+            "T0JQ00540000101700000",
+            "T0JQ00000000024200029",
+            "T0JQ00540000051400000"
+          ],
+          "message": "Parcel provider returned conflicting geometry for one parcel ID."
+        }
+      ]
+    },
+    {
+      "city": "Cosmo City",
+      "viewportObservedFeatures": 532,
+      "uniqueObservedNativeIds": 532,
+      "verifiedIds": 200,
+      "matchedNativeIdGeometrySha256": [
+        {
+          "nativeId": "T0IQ07240000815100000",
+          "geometrySha256": "23af3da5341c09ae4ca298c57952fb3d69e1bdedee7576947af23b982ea56503"
+        },
+        {
+          "nativeId": "T0IQ07240000815200000",
+          "geometrySha256": "131f81d35dbec2a83664a7b7b225320dc31095e8f78d76a65f0966209845d1d9"
+        },
+        {
+          "nativeId": "T0IQ07240001080100000",
+          "geometrySha256": "cd5f2127341d8172b594ad22c869434e8f441bfc2a214341075505396e32280d"
+        },
+        {
+          "nativeId": "T0IQ07240000899700000",
+          "geometrySha256": "163621cc350d416104485cdcdae7c8126c253d0bf34a5906ef3bbe9ef72cd610"
+        },
+        {
+          "nativeId": "T0IQ07240000942200000",
+          "geometrySha256": "766f241c582422c059228ababcf1cd3d7ccb0b5f15c42085d0938ec51adbb0b3"
+        },
+        {
+          "nativeId": "T0IQ07240000945100000",
+          "geometrySha256": "4a8340dfc341a1db88a48fc29d5548e6d0d02965ba68a8149578316d34c40f45"
+        },
+        {
+          "nativeId": "T0IQ07240000944400000",
+          "geometrySha256": "2a529338890520918e8afda271d986f360cb5a428289d7838d17704f6f686e90"
+        },
+        {
+          "nativeId": "T0IQ07240000944300000",
+          "geometrySha256": "d81fab97f2974d587198be84f8cf84faba3532ebc073a481ee678e7e922b3b5b"
+        },
+        {
+          "nativeId": "T0IQ07240000947600000",
+          "geometrySha256": "1ba20e761be9541b915c8eafe4146e09f7d1fbc469240d9ce024e35702fed42b"
+        },
+        {
+          "nativeId": "T0IQ07240001079800085",
+          "geometrySha256": "6e7bc7effad72272b6693cf5c51b26837e9927c5a6d7b54f7552380015bbca1b"
+        },
+        {
+          "nativeId": "T0IQ07240000942100000",
+          "geometrySha256": "f112ae16aa3d2ade829f6f45a4ad4c68f29b1388e420286d889f3aa701b6d570"
+        },
+        {
+          "nativeId": "T0IQ07240000942000000",
+          "geometrySha256": "8b0a55108625495f1e2d0f6f88685afb4356223d5551b9183b794e6481af6e72"
+        },
+        {
+          "nativeId": "T0IQ07240000941900000",
+          "geometrySha256": "4a1cbfe1be7751fbbb584c5e00cfd3a1d1df7c40c27ec5258b0d05b833545032"
+        },
+        {
+          "nativeId": "T0IQ07240000944100000",
+          "geometrySha256": "d062863999163d98cb56e06a52ba76f5bb50243e32f6db40da6b14a54089caeb"
+        },
+        {
+          "nativeId": "T0IQ07240000944000000",
+          "geometrySha256": "09093ffaa667e9b96f3e4d23c9eef2b48bbb978a70049e9022c8a2e751f278e5"
+        },
+        {
+          "nativeId": "T0IQ07240000943900000",
+          "geometrySha256": "4e8b92029655f92424ad71d00367cb857a12b2c2af0931ee592b28e9dd5a07d1"
+        },
+        {
+          "nativeId": "T0IQ07240000943800000",
+          "geometrySha256": "c5d7f2f967e5d92f70fb441bd75c240315e62af35d163cf38d52c13f8f9ffd0d"
+        },
+        {
+          "nativeId": "T0IQ07240000943700000",
+          "geometrySha256": "aa61f28d56ed6c24b1262d34d433f56049301ade863ac425b659a0bc2bcf209f"
+        },
+        {
+          "nativeId": "T0IQ07240000943600000",
+          "geometrySha256": "26a0cdc88d1080696d4ed2b4e409183fddf6d15dae8445ac8263526759baee1c"
+        },
+        {
+          "nativeId": "T0IQ07240000943500000",
+          "geometrySha256": "82a2690f6bea6bf133ff812b7aff081ceb1f874c3ab77640f4e3f10a210f3b48"
+        },
+        {
+          "nativeId": "T0IQ07240000943400000",
+          "geometrySha256": "d22ab782f0c302f99a7f2387178d5cfcc8ba0c9da13f08f245665a1e8d9a9622"
+        },
+        {
+          "nativeId": "T0IQ07240000943300000",
+          "geometrySha256": "f7ee6e19dbe10732da04f217e7674aa6342c0488b3515125209176a56b49fef7"
+        },
+        {
+          "nativeId": "T0IQ07240000943200000",
+          "geometrySha256": "e1ff83a39ed792a1f7b4035c71240ddedb1b3cfd306ed27c75550a20dd52c09e"
+        },
+        {
+          "nativeId": "T0IQ07240000943100000",
+          "geometrySha256": "398fdce63d0ac2c60d117ca235544867d3eba0aa2d0972900f51406572f43bb0"
+        },
+        {
+          "nativeId": "T0IQ07240000943000000",
+          "geometrySha256": "67d13c7ed7e39d2b5d52ee7adbe5e88470d1ff85527ea56920cc555dfe62a8fd"
+        },
+        {
+          "nativeId": "T0IQ07240000942900000",
+          "geometrySha256": "51ea45b48b109b6addfc0087fcba9b724794065d6bc1323930ea430bbbaa7ac9"
+        },
+        {
+          "nativeId": "T0IQ07240000942800000",
+          "geometrySha256": "4c650208c16c60c922c75356bd2a481a8076a3728a9d80097da5f5c42abc6e43"
+        },
+        {
+          "nativeId": "T0IQ07240000942700000",
+          "geometrySha256": "abc2d002b0bf92a8a8096b1bc77b7131f06e48d0105258f7311e5631efceeff4"
+        },
+        {
+          "nativeId": "T0IQ07240000942600000",
+          "geometrySha256": "4e17b4a9d785e7d124fd1bee8063c9ca5d2718711fd416016b2e9899ff713959"
+        },
+        {
+          "nativeId": "T0IQ07240000942500000",
+          "geometrySha256": "5ced73efca61a1c8d9dd62501af89c5f880d0ea91b21e144066ffed87bc280d1"
+        },
+        {
+          "nativeId": "T0IQ07240000942400000",
+          "geometrySha256": "7812a40f0e2bcabc4ba7e9449a73240d9e0f9f69bcabda64a7b2ad6cc04a4d65"
+        },
+        {
+          "nativeId": "T0IQ07240000942300000",
+          "geometrySha256": "38581be87f206f1e672d0722cf1835c34b2c21108fc2961cfed18630cf8b77cc"
+        },
+        {
+          "nativeId": "T0IQ07240000946000000",
+          "geometrySha256": "78a21046dbef98616c1888d505704bbb96f203117bf36c5186f9331162f3f396"
+        },
+        {
+          "nativeId": "T0IQ07240000945900000",
+          "geometrySha256": "475931aa46fb93f903f22977ef2df1dedcbee507781ed02bb7b6dc43fae3de63"
+        },
+        {
+          "nativeId": "T0IQ07240000945800000",
+          "geometrySha256": "7f3d83fcb7cb20755476bfe5222b1a11c56166c4ca6dd08198af61967185e669"
+        },
+        {
+          "nativeId": "T0IQ07240000945700000",
+          "geometrySha256": "c6c5a61f5d699d785c7f6c6fd643d82beca8abd24d0cdad3ff38dc0daed47cfe"
+        },
+        {
+          "nativeId": "T0IQ07240000945600000",
+          "geometrySha256": "56cc45162a67e2a56502b816cbd4e40ecf1ada60b4a632b9c73201af7e3dd06f"
+        },
+        {
+          "nativeId": "T0IQ07240000945500000",
+          "geometrySha256": "f12fedbda188c3dc14c35e664f528dcf64955934c13f5734a3dfb936e7d7c6c5"
+        },
+        {
+          "nativeId": "T0IQ07240000945400000",
+          "geometrySha256": "94eca5406cbf3012db5d8c313064624ba8b26d403bd2445d0249168697d55ccb"
+        },
+        {
+          "nativeId": "T0IQ07240000945300000",
+          "geometrySha256": "ba8ff255c826cd1cf8758abc8693adb82b488ca72291a9e17bdd4a2369289f82"
+        },
+        {
+          "nativeId": "T0IQ07240000945200000",
+          "geometrySha256": "55deccb091c0da92a773f259f71733a1436e4d14a5226e9b576a220bd3463c27"
+        },
+        {
+          "nativeId": "T0IQ07240000944700000",
+          "geometrySha256": "a4707ba0a32ed49dd25071dddd8414f3d13b81a6f06577eb66c294676f40691e"
+        },
+        {
+          "nativeId": "T0IQ07240000944600000",
+          "geometrySha256": "af5ad43b651cdb44ecf719c2bb2e8281dac7a9cd90d34950746bc33b270ac9b6"
+        },
+        {
+          "nativeId": "T0IQ07240000944500000",
+          "geometrySha256": "3456d0e2eb3f31ceaf6db251b0e0f44e764f08eb37865f535c368166c27c74ca"
+        },
+        {
+          "nativeId": "T0IQ07240000948100000",
+          "geometrySha256": "c18bab92e7f4bc4af284aa6697bbf86fe3954d5557b469ae267068b717934040"
+        },
+        {
+          "nativeId": "T0IQ07240000948000000",
+          "geometrySha256": "462ad5c197ddff0deac6f92c46a5070d20797c62aaf3efb8abe66f7c584c03c7"
+        },
+        {
+          "nativeId": "T0IQ07240000947900000",
+          "geometrySha256": "a0dbcc76207571e028da4a3bf88ac0fed9d9b7d4acbc272ac51a9c2f428e183f"
+        },
+        {
+          "nativeId": "T0IQ07240000947500000",
+          "geometrySha256": "00892b8170e1cb0065dac212c026417b732b0f8bb24d15f93a9419f62b12c5f5"
+        },
+        {
+          "nativeId": "T0IQ07240000947400000",
+          "geometrySha256": "7367d577989736a2c8dee9a1064f060ebd281be4c3aa7658812236746bdd0e6d"
+        },
+        {
+          "nativeId": "T0IQ07240000947300000",
+          "geometrySha256": "758780c7c713d02b4a321365cbd6bb4e4b43c52a45503a2ed83b420d6d9417db"
+        },
+        {
+          "nativeId": "T0IQ07240000947200000",
+          "geometrySha256": "704447c2a47375e32325043a2ba8c849f24d1c57dc5df5efeb623ac1e5daae8c"
+        },
+        {
+          "nativeId": "T0IQ07240000947100000",
+          "geometrySha256": "f437d986539b23632c3721ccd5d8254c322dfb5d51cdbeb266d71560d1b1eaca"
+        },
+        {
+          "nativeId": "T0IQ07240000947000000",
+          "geometrySha256": "42baf838ef1c83018a0498d434636fcd2e6e8883c2b79cd5c9b46ce72dcd286a"
+        },
+        {
+          "nativeId": "T0IQ07240000946900000",
+          "geometrySha256": "3aa46aa9e6ad49d6890122298e7f97b6279870b3d824023f7f556d8d6c0f1a11"
+        },
+        {
+          "nativeId": "T0IQ07240000946800000",
+          "geometrySha256": "c3f449a5987d11507f8dfaecd6ffc3d9a90abe011bed38f62f98fdef02c329f7"
+        },
+        {
+          "nativeId": "T0IQ07240000946700000",
+          "geometrySha256": "1c15b338fca44d006b38f16cd740c1de4f84b073b06d017c17aed1655e10a373"
+        },
+        {
+          "nativeId": "T0IQ07240000946600000",
+          "geometrySha256": "717cf3d4e3cdbb339b0e18dd7c28b85471207c33662d2da0a8728d43e74b8591"
+        },
+        {
+          "nativeId": "T0IQ07240000946500000",
+          "geometrySha256": "4f9fec1d6a1205e8c018f6e080ceb4d907f88f0849bb99b244e12fe4b7b6a14a"
+        },
+        {
+          "nativeId": "T0IQ07240000946400000",
+          "geometrySha256": "f4c0ed443b8bcc2ec8b6699834d5b4975be44d5ead3edebc7cd2862705f31d88"
+        },
+        {
+          "nativeId": "T0IQ07240000946300000",
+          "geometrySha256": "fac3b6f6556087806a8e47db973db48fd467329faa892d42863cfd5e275cf783"
+        },
+        {
+          "nativeId": "T0IQ07240000945000000",
+          "geometrySha256": "63395ed7f4ba4e1175e391240d486d0d0185fd4fabfd4cafc56398ffe86d5665"
+        },
+        {
+          "nativeId": "T0IQ07240000944900000",
+          "geometrySha256": "4c2c49093783e59e4c7468099b02b9999fe7f6b90b85fca223d0a96d9198de49"
+        },
+        {
+          "nativeId": "T0IQ07240000944800000",
+          "geometrySha256": "9b76dd02aa0b7bf37a4deb4a6ad69ee4396e4fb45ebb7a8819e1fa2fe106764c"
+        },
+        {
+          "nativeId": "T0IQ07240000946200000",
+          "geometrySha256": "1aee17de1a90c395ec6ef22c47b9933b91ac2eff5cfb90f68d14b0b17f3b1a7e"
+        },
+        {
+          "nativeId": "T0IQ07240000946100000",
+          "geometrySha256": "5a50f35728644c2044d745a851507b7f5a5405312fcbaee00e6cc95696568c88"
+        },
+        {
+          "nativeId": "T0IQ07240000950100000",
+          "geometrySha256": "1570397bbfde5004d2a828318d6e589e6dd36c3c7d6f4879322c9f46fbb4cb7e"
+        },
+        {
+          "nativeId": "T0IQ07240000948900000",
+          "geometrySha256": "eb1ca39da35bc36b691830dab282cea70335a741c04ae7eba37244fabae42a06"
+        },
+        {
+          "nativeId": "T0IQ07240000948800000",
+          "geometrySha256": "c4bd5d95ac7197e836d1bb94e079933198a470fdcb0344a09f62b7ecf2a82d40"
+        },
+        {
+          "nativeId": "T0IQ07240000948300000",
+          "geometrySha256": "a2359e5d3ce09edd0fe0b0f800bf104e5c0220ea2b95bd0ec9471c0dffed777e"
+        },
+        {
+          "nativeId": "T0IQ07240000948200000",
+          "geometrySha256": "cf9361421be7336ec51def425c3d2b38e5ef486faaebc7b9fc6eaf59e30c1c54"
+        },
+        {
+          "nativeId": "T0IQ07240000948700000",
+          "geometrySha256": "17ceb631d746958a16a59dd1915c179a84d0d544e6b4bd83bdb1667d6d553a8e"
+        },
+        {
+          "nativeId": "T0IQ07240000948600000",
+          "geometrySha256": "91a6edaeccf1bded311b1abd7170ebc2d335f2c06d40c544bf25820ff071ef24"
+        },
+        {
+          "nativeId": "T0IQ07240000948500000",
+          "geometrySha256": "182e1bdac1de10278cd602f801aee7554aa2358728b008b2eeaf6967774384db"
+        },
+        {
+          "nativeId": "T0IQ07240000948400000",
+          "geometrySha256": "a0ad04cddebb2d5bd90f611d9fc21c235ae0b2b9a509635ba344862be8465e92"
+        },
+        {
+          "nativeId": "T0IQ07240000951500000",
+          "geometrySha256": "3a76cba330680cb1fe4ff490d9398674f12c21c13c1d5fbc7760077edacd8045"
+        },
+        {
+          "nativeId": "T0IQ07240000951400000",
+          "geometrySha256": "53c1db34db61d053232346f0c66aa80c020197795297b20f1e174df19b10811a"
+        },
+        {
+          "nativeId": "T0IQ07240000951300000",
+          "geometrySha256": "6939a4db6ebf44482f315d32ce63065ab5e6c74894c6ab76ee800d03af2eeec2"
+        },
+        {
+          "nativeId": "T0IQ07240000951200000",
+          "geometrySha256": "b77d4b6a55cdaeae2a1c45adb8b05e48d6abd9d798a1f198ffa50e02ff33dbf0"
+        },
+        {
+          "nativeId": "T0IQ07240000951100000",
+          "geometrySha256": "951c990138d0231e6dcb7b0ff767a84dfbdd5b6eca3453eb2181e38be3acb998"
+        },
+        {
+          "nativeId": "T0IQ07240000951000000",
+          "geometrySha256": "c189c17b3a93d16f94c9950113054bc0092b3be761127ad6ce0f95a47de7b1ef"
+        },
+        {
+          "nativeId": "T0IQ07240000950900000",
+          "geometrySha256": "39157dedb4a5aa165e7eba4b98eb863f08e0effb0dbcc199eeb761c1badf0412"
+        },
+        {
+          "nativeId": "T0IQ07240000950800000",
+          "geometrySha256": "bc9fec8c7901b169bc2d29e855a19ec1f07e121222491518cf5b1adc2b0aae27"
+        },
+        {
+          "nativeId": "T0IQ07240000950700000",
+          "geometrySha256": "12ac07c6163a8c5151acb34420ab877162e124a253f35311069e461a4e4b822c"
+        },
+        {
+          "nativeId": "T0IQ07240000950600000",
+          "geometrySha256": "2022498fe0d0086a4f12d0a465dd19d86d65d31147427f4eeb9edb98948b84c4"
+        },
+        {
+          "nativeId": "T0IQ07240000950500000",
+          "geometrySha256": "7e484bd7ab066f3a9116132b758fed4c92d7e718ecb5ccf1e24fab595f012a75"
+        },
+        {
+          "nativeId": "T0IQ07240000950400000",
+          "geometrySha256": "c0ca46264921fdf5ca40e531ce6fbc452123c2800425bdeb9ce9e9097758ab64"
+        },
+        {
+          "nativeId": "T0IQ07240000950300000",
+          "geometrySha256": "43827ecb85d4023bfb2c7af987f7338b4432293c9f10b00d66d948ac5f6f8798"
+        },
+        {
+          "nativeId": "T0IQ07240000950200000",
+          "geometrySha256": "5b390b0cae6c2589e90558b957fad41bdad2ff73b8b5161cd499628fa3174129"
+        },
+        {
+          "nativeId": "T0IQ07240000954000000",
+          "geometrySha256": "482bc82e3e5a1fe177c6d05fdf57a675865dfaa2b91d2886af74cbc92b06139a"
+        },
+        {
+          "nativeId": "T0IQ07240000953900000",
+          "geometrySha256": "d7c43a7c6c2e7e58d5f8801862a32602e235772ab9577d22c066625cc7d53c2a"
+        },
+        {
+          "nativeId": "T0IQ07240000955600000",
+          "geometrySha256": "61d527e266bc45a700d6b7ab74ea568d3adfe7d69d1bfb586c2858fcdd53ce89"
+        },
+        {
+          "nativeId": "T0IQ07240000955500000",
+          "geometrySha256": "bd20388e7db454e3ce21872234214fbb6f11def83f7bf9ee23c7491a73ca9907"
+        },
+        {
+          "nativeId": "T0IQ07240000955400000",
+          "geometrySha256": "d7bb1aee1d683e2ab0765eaad7a620134566c70504515c61b2faaa91276817e8"
+        },
+        {
+          "nativeId": "T0IQ07240000955300000",
+          "geometrySha256": "b7eb6651e1b70e3413cd4967875f61a75b6937fd5862bb9ae866075c0ef4c205"
+        },
+        {
+          "nativeId": "T0IQ07240000955200000",
+          "geometrySha256": "15cf74fecf5ec7784d2a6d19290181a186e6cbfc964850bd6af2a97c3d643e43"
+        },
+        {
+          "nativeId": "T0IQ07240000955100000",
+          "geometrySha256": "5ac7a7c283cea0ad5d3128f93651ffa0f2d97b139c90b5ba8faf8ae789b0ae56"
+        },
+        {
+          "nativeId": "T0IQ07240000955000000",
+          "geometrySha256": "88e37821aff17155fd074d86b461b2715dede29c488aab08828543505cc19b9a"
+        },
+        {
+          "nativeId": "T0IQ07240000954900000",
+          "geometrySha256": "af348420283589e02c788b91fcf7d4e0b9fe7d13757aa14a80f3a614d5c2c494"
+        },
+        {
+          "nativeId": "T0IQ07240000954800000",
+          "geometrySha256": "3ed7af8de78ab5259a437409195a6c16bfc8eecdb6697c25d439a0d64267d346"
+        },
+        {
+          "nativeId": "T0IQ07240000954700000",
+          "geometrySha256": "fa91c15aacec9e5d2be9d3fa54028e943c21e891c63d4b507bce76dc28f58bcf"
+        },
+        {
+          "nativeId": "T0IQ07240000954600000",
+          "geometrySha256": "6a3fcdd15b5571ad97664f39e30de7f4b00f41144b442c3f9bd1db463b8c7693"
+        },
+        {
+          "nativeId": "T0IQ07240000954500000",
+          "geometrySha256": "dda3ebd81d1c2420c709cb17a56919c0cd754e4b99938f8d410401d02b2f398f"
+        },
+        {
+          "nativeId": "T0IQ07240000954400000",
+          "geometrySha256": "14163d8dc6e01b25f1cb968bf0f9ee06222f09c689829c958cb03a8a2c6690e0"
+        },
+        {
+          "nativeId": "T0IQ07240000954300000",
+          "geometrySha256": "2bed209aaee6f21c37e95c7898aa41431f24f2b2e99e46fb6d5218279a5a9b89"
+        },
+        {
+          "nativeId": "T0IQ07240000954200000",
+          "geometrySha256": "746134a7a9984e10e472bbaa2a2da25da250725e05dce9601c9aa010a2c64e03"
+        },
+        {
+          "nativeId": "T0IQ07240000954100000",
+          "geometrySha256": "e058a716d3957cb22765b60f9ff49360e310a6c453919c8c6aeb9292ca69d400"
+        },
+        {
+          "nativeId": "T0IQ07240000958100000",
+          "geometrySha256": "b8b379eb1895866adc0f6cb46f4d8617477d50bb282c067bb9d1a5c04c22aa69"
+        },
+        {
+          "nativeId": "T0IQ07240000958000000",
+          "geometrySha256": "e93a0ce368d75360bc76ced0a6a8c5ce0f0287f2f1e304bd4004fa49faab9c09"
+        },
+        {
+          "nativeId": "T0IQ07240000957900000",
+          "geometrySha256": "20789ee92753a27649985235df0121e52f71f2558dacba42af4c5c348ad760b8"
+        },
+        {
+          "nativeId": "T0IQ07240000957800000",
+          "geometrySha256": "2697e288663f9784907dd381c2457caa444a8e7f021b81106aae034ddd2fe2d1"
+        },
+        {
+          "nativeId": "T0IQ07240000957700000",
+          "geometrySha256": "1049854cfb4fa8550034b957400b7aea6dbbbc7ed6f9660aa5798fb20f404987"
+        },
+        {
+          "nativeId": "T0IQ07240000959800000",
+          "geometrySha256": "4af1d07bcb082da29d222b0e59de40ec621453a9525aa2d09fa1e3091005e30c"
+        },
+        {
+          "nativeId": "T0IQ07240000959700000",
+          "geometrySha256": "f0c7a70ca077c769c9420e4fb5145994895aa12e21b5da6a5ce152e84183fc24"
+        },
+        {
+          "nativeId": "T0IQ07240000959500000",
+          "geometrySha256": "85ec3c4bf5d40bbaf72b41c104e5d42e65bc8737352afcb9709d7bdaaea1e58f"
+        },
+        {
+          "nativeId": "T0IQ07240000959300000",
+          "geometrySha256": "0415a9d4f514f4b27f8410345ecd8f070936caa41e0de390fe91c7950511e835"
+        },
+        {
+          "nativeId": "T0IQ07240000959200000",
+          "geometrySha256": "b974eebea4fdf49ad8f0711aa83d75cb3f01296d8e1610c9355e5ae901497bd6"
+        },
+        {
+          "nativeId": "T0IQ07240000982800000",
+          "geometrySha256": "8b9c984f4e8c3987ba95607b18a2ba4e2e8219d8df54710ccce5a7378b109102"
+        },
+        {
+          "nativeId": "T0IQ07240000981400000",
+          "geometrySha256": "eef57f6df3ae55818d6827b843dcce64c08a736541bb426ac6b5054759ac0364"
+        },
+        {
+          "nativeId": "T0IQ07240000981300000",
+          "geometrySha256": "152d123625e2ab8c0df5604bf264cf7d6290f8757007b8594bf84b1664789efb"
+        },
+        {
+          "nativeId": "T0IQ07240000984700000",
+          "geometrySha256": "8934a5954c4213a3371fcfac45093a4bba34d9cf738c357abc4edd991ccc4cf5"
+        },
+        {
+          "nativeId": "T0IQ07240001114300000",
+          "geometrySha256": "8405d2db262718010e760bb90c99d1c946c0e5fbe203baf816f5de4157bb5a65"
+        },
+        {
+          "nativeId": "T0IQ07240001114400000",
+          "geometrySha256": "d90b15e863a60cea1d94a9cdff463a0819aa0c6c4a99dae8709a723f68e97500"
+        },
+        {
+          "nativeId": "T0IQ07240001114500000",
+          "geometrySha256": "064c758e3786801d4df76d591738d5c8a5553041c3a23cafad462d83351c2a9c"
+        },
+        {
+          "nativeId": "T0IQ07240000984600000",
+          "geometrySha256": "84ec200999c3b71b0ca10ce3475584ea601148138dddc35a4488950d6f72d832"
+        },
+        {
+          "nativeId": "T0IQ07240000985300000",
+          "geometrySha256": "4bd8c038e164a8a647d1e68b3331c1706a2f28aab7567732b28b2c0cb5c5ccda"
+        },
+        {
+          "nativeId": "T0IQ07240000985200000",
+          "geometrySha256": "9f977defc1174695e65e43a186354427997350412f9609d7946443c1401387cd"
+        },
+        {
+          "nativeId": "T0IQ07240000985100000",
+          "geometrySha256": "576d827db4cad73b34462aa98fa7c4f2eaf6358274dd6a6ced198372fe2aab84"
+        },
+        {
+          "nativeId": "T0IQ07240000985000000",
+          "geometrySha256": "a4368c262753e14bcd44e091c735fc095ae612afce9caf625e8ca3aa1d42e3f1"
+        },
+        {
+          "nativeId": "T0IQ07240000984900000",
+          "geometrySha256": "5681260ffea144098079bb0807c47cdd1e041a300ee350a83407a496bd1385f7"
+        },
+        {
+          "nativeId": "T0IQ07240000984800000",
+          "geometrySha256": "cbad26946f2b8d1a853a8859b8bb098cafcefec316c83d27e8846c0c7cc621c1"
+        },
+        {
+          "nativeId": "T0IQ07240001114600000",
+          "geometrySha256": "57a07e9966e10e06fe1e917df224a1a32a5a3f4cced38438dad2e9825759ba04"
+        },
+        {
+          "nativeId": "T0IQ07240001114700000",
+          "geometrySha256": "575f0690d229d9b8cfa388062266da82b2e93b217060dc46726aa8d9958bce4b"
+        },
+        {
+          "nativeId": "T0IQ07240001114800000",
+          "geometrySha256": "749c85e4a3adb5e4eddb0d437d7b901468488e3ad99191ed45be724691b92e77"
+        },
+        {
+          "nativeId": "T0IQ07240001114900000",
+          "geometrySha256": "47d9a221c6cc3deb27d2a97f9e64bcf18e071ea2efc9662a847bc8fd583c209d"
+        },
+        {
+          "nativeId": "T0IQ07240001115000000",
+          "geometrySha256": "c35191d93b7335a9a52a8539cc013b1243cbeb8e184c06b2064f22dede88cdf0"
+        },
+        {
+          "nativeId": "T0IQ07240001115100000",
+          "geometrySha256": "fb1814e90eaa46a176cfd6b40162d631106250a74abd62192f379580d048e417"
+        },
+        {
+          "nativeId": "T0IQ07240001132800000",
+          "geometrySha256": "7b9108e38089b6c25ae2b1ab71d9291f917cdddf8481990526f020a6062d3d16"
+        },
+        {
+          "nativeId": "T0IQ07240001132900000",
+          "geometrySha256": "409c54aed407863917f8a21803fdfb5fddb95add52de3e907684e7a28f2be815"
+        },
+        {
+          "nativeId": "T0IQ07240001133000000",
+          "geometrySha256": "942ba6fa3aa10501b565da26c190cc3093c5d2ff20ed960e72f7a8eda9bc49b3"
+        },
+        {
+          "nativeId": "T0IQ07240001133100000",
+          "geometrySha256": "ac1484e8d2af112c3ec9e7b8ad8d33f4c36252108e007873df1b6851b9c9ece5"
+        },
+        {
+          "nativeId": "T0IQ07240001133200000",
+          "geometrySha256": "76e2f37f0eecb2311a15b472ebcd88732d0dbff4eda974894ab50d11a508b0a5"
+        },
+        {
+          "nativeId": "T0IQ07240001133300000",
+          "geometrySha256": "331545ef3fa9868ace50e10c3b5c8c981f06add7bfa82d9e301cd63a6f955f02"
+        },
+        {
+          "nativeId": "T0IQ07240001133400000",
+          "geometrySha256": "7cf3acac716488c651dd9930cbf43730b96fde1e289aacd60d051d08f2c61367"
+        },
+        {
+          "nativeId": "T0IQ07240001133500000",
+          "geometrySha256": "5867b911c02c523b2fa906bf0be3f2e0f460a142e66c5e402fe6a69ff449212b"
+        },
+        {
+          "nativeId": "T0IQ07240001133600000",
+          "geometrySha256": "b905f4c0a372381e7815f00b9202768de7e273835a143de4b0324e8416126f31"
+        },
+        {
+          "nativeId": "T0IQ07240001133700000",
+          "geometrySha256": "b0615658e760760b119a2bd6764941e6a86070adb5d717216002baad9f7861c0"
+        },
+        {
+          "nativeId": "T0IQ07240001133800000",
+          "geometrySha256": "f08792fd5a31019f3213abc3647fc76212d7abc0195d353ce7fe31f350932e26"
+        },
+        {
+          "nativeId": "T0IQ07240001133900000",
+          "geometrySha256": "a5ed4f41452b55332accac5f4e3e0213983c4e898d6a993b1db02d978c3e7e77"
+        },
+        {
+          "nativeId": "T0IQ07240001134000000",
+          "geometrySha256": "3c3d1f8b4487c6bc083f47c31471f74614c7fd318bb1d78ccd09006023e2ec99"
+        },
+        {
+          "nativeId": "T0IQ07240001145600000",
+          "geometrySha256": "573bcf1bb3b3a2070974b6ed9a488b872c5a0f58be7820de71040294d039c46d"
+        },
+        {
+          "nativeId": "T0IQ07240001145700000",
+          "geometrySha256": "92dac34afc673960b7891f71ba1ad97fea20f8e251034481b2d06baad9d8dba9"
+        },
+        {
+          "nativeId": "T0IQ07240000900300000",
+          "geometrySha256": "4c0904707f85df6d91cf226fc0c7b6ef3d0d3c42bcc887ba8cd4b922a9dade67"
+        },
+        {
+          "nativeId": "T0IQ07240000900200000",
+          "geometrySha256": "3b6266f49dd372037d8d73a4380bb68f94245fd4a2e21c546bb8a9bcb9c0b98f"
+        },
+        {
+          "nativeId": "T0IQ07240000900100000",
+          "geometrySha256": "76b4ea047be5f0d09e86b57f76edfda2eeb69f50581a724edb5e966c3216d3a1"
+        },
+        {
+          "nativeId": "T0IQ07240000900000000",
+          "geometrySha256": "0b9c2a6c9ad425f9704793e2999fe1a806c1531a5ae3878b77c904dcef3d2b53"
+        },
+        {
+          "nativeId": "T0IQ07240000899900000",
+          "geometrySha256": "78c2ef297189afae27044b712ca24601eb659328aaa0018d4f51be27f0006903"
+        },
+        {
+          "nativeId": "T0IQ07240000899800000",
+          "geometrySha256": "cec907f5942d95ec496b1875664f22e18c8a24af1bdd8e89162d3e3ef4a4c8b6"
+        },
+        {
+          "nativeId": "T0IQ07240000900900000",
+          "geometrySha256": "48780cc18dcb0fdb547442dfb6deef5e67c5071b8ab5bc2cb70e6b401ca59f4c"
+        },
+        {
+          "nativeId": "T0IQ07240000900800000",
+          "geometrySha256": "da71bada0f84ecd2530fb772950e79f5ab005ddeece85b6f477e2d8f52cab4fc"
+        },
+        {
+          "nativeId": "T0IQ07240000900400000",
+          "geometrySha256": "14bcf70fdfb80d83ba0e77508135d72bb01c26a8a04c6d867e43a05d8dc20da0"
+        },
+        {
+          "nativeId": "T0IQ07240000900700000",
+          "geometrySha256": "82f2e475af6a27dae14a790e6ee817c84486b0e2135a88feace640ea5439cb2d"
+        },
+        {
+          "nativeId": "T0IQ07240000900600000",
+          "geometrySha256": "2a55bcf67d7501a716507aadf51ba06d81caa0cc1f4c32ebe7350b26a2436a49"
+        },
+        {
+          "nativeId": "T0IQ07240000900500000",
+          "geometrySha256": "5876919dce94a2fb39545fb573407270f3b0ad60f6d6150e4710e9aacd939d31"
+        },
+        {
+          "nativeId": "T0IQ07240000902900000",
+          "geometrySha256": "5e86fe59651a48a6757cc16f4e64d5a0eb96e225f23c60572c9354bf007306b3"
+        },
+        {
+          "nativeId": "T0IQ07240000902800000",
+          "geometrySha256": "05ebc558ac904583d4cd2afb2f6854cc23db760efa11a9f3feccfbf62f07d4f5"
+        },
+        {
+          "nativeId": "T0IQ07240000902700000",
+          "geometrySha256": "5868a3ddb42812b3e888b08ff28314b707aecd7e1672feb14b6b6f191d1c690d"
+        },
+        {
+          "nativeId": "T0IQ07240000902600000",
+          "geometrySha256": "b6fa440b4a303d4c5e59931955e60d70b62d6755fe142a7a76463fd8bc7766b1"
+        },
+        {
+          "nativeId": "T0IQ07240000902500000",
+          "geometrySha256": "6ffb1a4d8ec2c0d03c1caa8e5d9183cd4f74a86cd877c830249f8aa25594bb27"
+        },
+        {
+          "nativeId": "T0IQ07240000902400000",
+          "geometrySha256": "ea733557d41def8dda3cd5fffac68ab18812b8b9ecd73b47665cbdb84d781618"
+        },
+        {
+          "nativeId": "T0IQ07240000906000000",
+          "geometrySha256": "b5d5daa9799800c01aaa6c27a8ba017fff4dc719be6a1666450913a2e9057787"
+        },
+        {
+          "nativeId": "T0IQ07240000905900000",
+          "geometrySha256": "3a96521a4b9487591cb65e3604615aaf8ef0b80dfbe6729e27a7dbfbd1cb4f46"
+        },
+        {
+          "nativeId": "T0IQ07240000905800000",
+          "geometrySha256": "2398bbbae923ff06a8157e7abbe61fcef54322663b363258f549f699c1a938d0"
+        },
+        {
+          "nativeId": "T0IQ07240000905700000",
+          "geometrySha256": "9b3cd6c9d9b4173b0e381809a0302874aa693692677bce749e198afaa474641d"
+        },
+        {
+          "nativeId": "T0IQ07240000905600000",
+          "geometrySha256": "e0a3e85b043e5f4a7e8a44fa6b50a17006415635754bf25d1bcdda79fdc64456"
+        },
+        {
+          "nativeId": "T0IQ07240000905500000",
+          "geometrySha256": "d0e2c4c2b7786f72791b137158cc4264b15d490c26e8cfe6533a3a3890f6de7d"
+        },
+        {
+          "nativeId": "T0IQ07240000905400000",
+          "geometrySha256": "ee612009ba74be8515931227dfa6a4313af44542cd5321ed16608cf3fa93a758"
+        },
+        {
+          "nativeId": "T0IQ07240000905300000",
+          "geometrySha256": "633c16cad630437bf60c93fdc5a642301a8532a2a134bd84f622ab2ec8d94bb5"
+        },
+        {
+          "nativeId": "T0IQ07240000905200000",
+          "geometrySha256": "e26a9df2059f5ad49e77692cb98743778c0cc26c73cb05433e1c0bb4524bf51e"
+        },
+        {
+          "nativeId": "T0IQ07240000907700000",
+          "geometrySha256": "78e504b332b2fcbd5f3333dccda69d8ecf89889a4be4011710fda9e230fdbef6"
+        },
+        {
+          "nativeId": "T0IQ07240000907600000",
+          "geometrySha256": "c9b57cdb872c5d0ecd270cc8bcb7c7e55f081300f0faa4094f2dce01e6a74190"
+        },
+        {
+          "nativeId": "T0IQ07240000907500000",
+          "geometrySha256": "f6ff3a487c95689105ef6226503f706394f2f682661a25f359e6615c54e48506"
+        },
+        {
+          "nativeId": "T0IQ07240000907400000",
+          "geometrySha256": "ac448c8ccfa6dc75a70c1013e307d2e51b72a0add85bf271c32eb31ffe35fb7c"
+        },
+        {
+          "nativeId": "T0IQ07240000907300000",
+          "geometrySha256": "652840faed6219bab302d92f6ea8d51439964d9d5a7b6108c3cb32d841b2da6e"
+        },
+        {
+          "nativeId": "T0IQ07240000907200000",
+          "geometrySha256": "97fce8d094a4a231c5d6e94a6d8ac32209b5b747ee5f2a97c435fae91e9276d9"
+        },
+        {
+          "nativeId": "T0IQ07240000907100000",
+          "geometrySha256": "625cb78516c502a84ebb8aa35186bdf38035c57240d046224ae056bdb3380c32"
+        },
+        {
+          "nativeId": "T0IQ07240000907000000",
+          "geometrySha256": "b90df13da0b7a99e96330c2021fe103fcb3ad251bd1a66b34db96f039015caf1"
+        },
+        {
+          "nativeId": "T0IQ07240000906900000",
+          "geometrySha256": "57530f7aa53624c5438afa74e1b0e1ed11089a41e5919ffdb5c7666893686632"
+        },
+        {
+          "nativeId": "T0IQ07240000906800000",
+          "geometrySha256": "0190a08677c236508841cd67c75e5a8a9c7ef925161c7a60a36641a494dc507e"
+        },
+        {
+          "nativeId": "T0IQ07240000906700000",
+          "geometrySha256": "82b5ef0e4e08004d4f32795d11b23234d671b0133f03112e392e7230a901b54d"
+        },
+        {
+          "nativeId": "T0IQ07240000906600000",
+          "geometrySha256": "2fd88ca58ee8cb5315771def4f0b740e8d398b41e8c71f46621cdfc5a805d664"
+        },
+        {
+          "nativeId": "T0IQ07240000901900000",
+          "geometrySha256": "6ba5511cd2185c3a78c0010bbd53e437dbfc1dd35aebca88a45b52184f1ebfd1"
+        },
+        {
+          "nativeId": "T0IQ07240000901800000",
+          "geometrySha256": "41a23df04ed45f908f82483aacec71c88144cad949726ebe33f5af1765036c78"
+        },
+        {
+          "nativeId": "T0IQ07240000901700000",
+          "geometrySha256": "40cc2b86244d0e609e676822c0c902091710de8d27c9c982b6701312b37cc070"
+        },
+        {
+          "nativeId": "T0IQ07240000901600000",
+          "geometrySha256": "16460824dd87ed78e0ac0e941bf253586abb236b98e9577bf0ef17b75e430c69"
+        },
+        {
+          "nativeId": "T0IQ07240000901500000",
+          "geometrySha256": "08c756790c20599c688111e576439d8299fb26b9aa814c736663fdd236d0ed5b"
+        },
+        {
+          "nativeId": "T0IQ07240000901400000",
+          "geometrySha256": "c3a0134e2cf472a1461b2e8225da7edf99b2f94e23e9e038a9e1806803cb27b0"
+        },
+        {
+          "nativeId": "T0IQ07240000901300000",
+          "geometrySha256": "2acf4b84a0e03dbc84f10b877885a51804d088c8db848dd0fa60eaa01041f986"
+        },
+        {
+          "nativeId": "T0IQ07240000901200000",
+          "geometrySha256": "0f5ce0e661a0b696533d1fb18c6c94e96e29c763f1cd19e07bb3f96bc992a36a"
+        },
+        {
+          "nativeId": "T0IQ07240000901100000",
+          "geometrySha256": "756a754cd7db8a51d679b28db38e3653af200529b92edfe1f8adf1462f46b362"
+        },
+        {
+          "nativeId": "T0IQ07240000901000000",
+          "geometrySha256": "3125e68e5fb7342dfe527581e5d2ea68a641b57cc9e7c6de5cfa025b502acfc1"
+        }
+      ],
+      "failedRequests": [
+        {
+          "batchStart": 200,
+          "ids": [
+            "T0IQ07240000904300000",
+            "T0IQ07240000906400000",
+            "T0IQ07240000906300000",
+            "T0IQ07240000906200000",
+            "T0IQ07240000906100000",
+            "T0IQ07240000905100000",
+            "T0IQ07240000905000000",
+            "T0IQ07240000904900000",
+            "T0IQ07240000904800000",
+            "T0IQ07240000904700000"
+          ],
+          "message": "Parcel provider timed out."
+        },
+        {
+          "batchStart": 200,
+          "ids": [
+            "T0IQ07240000904300000",
+            "T0IQ07240000906400000",
+            "T0IQ07240000906300000"
+          ],
+          "message": "Parcel provider timed out."
+        }
+      ]
+    }
+  ],
+  "partsAdapterRun": {
+    "mode": "nativeGeometryMode=parts, disjointParts=true, partMatchFields=[SGSUBKEY,ParcelGuid], partsCoordinatePrecision=9, idsQueryMode=boundsQueryMode=object-ids, pageSize=20, idBatchSize=10 initial / 3 retry",
+    "completedNativeIds": [
+      "T0JQ00540000053400000",
+      "T0JQ00540000055000000",
+      "T0JQ00540000101900000",
+      "T0JQ00540000082900000",
+      "T0JQ00540000080800000",
+      "T0JQ00540000048700000",
+      "T0JQ00540000016000000",
+      "T0JQ00540000054800000",
+      "T0JQ00540000082800000",
+      "T0JQ00540000053300000",
+      "T0JQ00540000054900000",
+      "T0JQ00540000082600000",
+      "T0JQ00540000054700000",
+      "T0JQ00540000055100000",
+      "T0JQ00540000082500000",
+      "T0JQ00540000053500000",
+      "T0JQ00540000055200000",
+      "T0JQ00540000083000000",
+      "T0JQ00540000054600000",
+      "T0JQ00540000055300000",
+      "T0JQ00540000053600000",
+      "T0JQ00540000081500000",
+      "T0JQ00540000055400000",
+      "T0JQ00540000083100000",
+      "T0JQ00540000054500000",
+      "T0JQ00540000081600000",
+      "T0JQ00540000053700000",
+      "T0JQ00540000081400000",
+      "T0JQ00540000055500000",
+      "T0JQ00540000015400000"
+    ],
+    "features": [
+      {
+        "nativeId": "T0JQ00540000053400000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787392,
+          "SG21KEY": "T0JQ00540000053400000",
+          "SGSUBKEY": "T0JQ005400000534",
+          "ParcelGuid": null,
+          "GlobalID": "{9F83F9AC-2CF6-4E21-A104-697DEC0A4362}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000055000000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787396,
+          "SG21KEY": "T0JQ00540000055000000",
+          "SGSUBKEY": "T0JQ005400000550",
+          "ParcelGuid": null,
+          "GlobalID": "{CF80C75D-E3AA-4EAD-BA6C-C7C64FE865DB}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000101900000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787402,
+          "SG21KEY": "T0JQ00540000101900000",
+          "SGSUBKEY": "T0JQ005400001019",
+          "ParcelGuid": null,
+          "GlobalID": "{EE5DF705-A125-47C4-8EC8-0E967695D2A0}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000082900000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787403,
+          "SG21KEY": "T0JQ00540000082900000",
+          "SGSUBKEY": "T0JQ005400000829",
+          "ParcelGuid": null,
+          "GlobalID": "{CBA25F4F-F6AE-40A3-A649-F90AC7B26D9F}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000080800000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787410,
+          "SG21KEY": "T0JQ00540000080800000",
+          "SGSUBKEY": "T0JQ005400000808",
+          "ParcelGuid": null,
+          "GlobalID": "{2CD3D7AA-7ED2-4D42-96BC-ADFFB499949D}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000048700000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787413,
+          "SG21KEY": "T0JQ00540000048700000",
+          "SGSUBKEY": "T0JQ005400000487",
+          "ParcelGuid": null,
+          "GlobalID": "{44AA61AC-3557-44C6-BF27-48B7983577CC}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000016000000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787420,
+          "SG21KEY": "T0JQ00540000016000000",
+          "SGSUBKEY": "T0JQ005400000160",
+          "ParcelGuid": null,
+          "GlobalID": "{F800E3D9-D704-4B80-AEDA-2FDD9B973B00}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000054800000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787569,
+          "SG21KEY": "T0JQ00540000054800000",
+          "SGSUBKEY": "T0JQ005400000548",
+          "ParcelGuid": null,
+          "GlobalID": "{F524EE64-1E5D-4A2F-B064-25BC2B7E840B}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000082800000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787571,
+          "SG21KEY": "T0JQ00540000082800000",
+          "SGSUBKEY": "T0JQ005400000828",
+          "ParcelGuid": null,
+          "GlobalID": "{2737E8C4-70F0-48B2-905C-C4ED12769894}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000053300000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787573,
+          "SG21KEY": "T0JQ00540000053300000",
+          "SGSUBKEY": "T0JQ005400000533",
+          "ParcelGuid": null,
+          "GlobalID": "{BC176A9C-5143-4AE3-9D58-04B149BA80C3}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000054900000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787576,
+          "SG21KEY": "T0JQ00540000054900000",
+          "SGSUBKEY": "T0JQ005400000549",
+          "ParcelGuid": null,
+          "GlobalID": "{484BD331-18C5-4C62-9CE0-0B9025E5C37C}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000082600000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787578,
+          "SG21KEY": "T0JQ00540000082600000",
+          "SGSUBKEY": "T0JQ005400000826",
+          "ParcelGuid": null,
+          "GlobalID": "{A3970682-61B2-4BC5-97B0-157912370543}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000054700000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787582,
+          "SG21KEY": "T0JQ00540000054700000",
+          "SGSUBKEY": "T0JQ005400000547",
+          "ParcelGuid": null,
+          "GlobalID": "{DD38269B-0DE4-4975-B0D6-E4E9DE006CFA}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000055100000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787583,
+          "SG21KEY": "T0JQ00540000055100000",
+          "SGSUBKEY": "T0JQ005400000551",
+          "ParcelGuid": null,
+          "GlobalID": "{F0587DA8-6236-4BA0-9C8A-EBBD3F32E55F}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000082500000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787585,
+          "SG21KEY": "T0JQ00540000082500000",
+          "SGSUBKEY": "T0JQ005400000825",
+          "ParcelGuid": null,
+          "GlobalID": "{ED47E4AB-9F5B-44DB-84FA-F98B7A45DE19}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000053500000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787592,
+          "SG21KEY": "T0JQ00540000053500000",
+          "SGSUBKEY": "T0JQ005400000535",
+          "ParcelGuid": null,
+          "GlobalID": "{968035C0-60A1-48BF-BF81-AE5BFDDF1202}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000055200000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787594,
+          "SG21KEY": "T0JQ00540000055200000",
+          "SGSUBKEY": "T0JQ005400000552",
+          "ParcelGuid": null,
+          "GlobalID": "{64A859D5-CF62-4F02-AE46-CBC0FBBEF81B}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000083000000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787599,
+          "SG21KEY": "T0JQ00540000083000000",
+          "SGSUBKEY": "T0JQ005400000830",
+          "ParcelGuid": null,
+          "GlobalID": "{3F82804D-5F5C-4BD2-9487-FA49E2604E78}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000054600000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787602,
+          "SG21KEY": "T0JQ00540000054600000",
+          "SGSUBKEY": "T0JQ005400000546",
+          "ParcelGuid": null,
+          "GlobalID": "{08047867-68B1-4AB4-A56A-B49F8CA9B062}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000055300000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787610,
+          "SG21KEY": "T0JQ00540000055300000",
+          "SGSUBKEY": "T0JQ005400000553",
+          "ParcelGuid": null,
+          "GlobalID": "{D4224B50-4A95-4312-83F7-43AF0F9B6D46}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000053600000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787611,
+          "SG21KEY": "T0JQ00540000053600000",
+          "SGSUBKEY": "T0JQ005400000536",
+          "ParcelGuid": null,
+          "GlobalID": "{4F230E0C-7968-4BD9-9862-73BAB7D27D57}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000081500000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787613,
+          "SG21KEY": "T0JQ00540000081500000",
+          "SGSUBKEY": "T0JQ005400000815",
+          "ParcelGuid": null,
+          "GlobalID": "{E8216A76-4B96-4E7E-AD72-A77769EE8B7A}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000055400000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787616,
+          "SG21KEY": "T0JQ00540000055400000",
+          "SGSUBKEY": "T0JQ005400000554",
+          "ParcelGuid": null,
+          "GlobalID": "{EBA84C7A-6ECD-489F-9E86-7F000F3BAB24}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000083100000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787620,
+          "SG21KEY": "T0JQ00540000083100000",
+          "SGSUBKEY": "T0JQ005400000831",
+          "ParcelGuid": null,
+          "GlobalID": "{5E54115F-17F3-4201-8CC4-2702DA572531}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000054500000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787621,
+          "SG21KEY": "T0JQ00540000054500000",
+          "SGSUBKEY": "T0JQ005400000545",
+          "ParcelGuid": null,
+          "GlobalID": "{FB708D9C-D4F3-47E4-9DB4-1AC2C7699CA2}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000081600000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787622,
+          "SG21KEY": "T0JQ00540000081600000",
+          "SGSUBKEY": "T0JQ005400000816",
+          "ParcelGuid": null,
+          "GlobalID": "{ED1ADA26-AC5A-4534-A389-6209D25DD5D1}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000053700000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787628,
+          "SG21KEY": "T0JQ00540000053700000",
+          "SGSUBKEY": "T0JQ005400000537",
+          "ParcelGuid": null,
+          "GlobalID": "{3940796F-5CB6-42A1-B9BE-966B8683CAD3}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000081400000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787629,
+          "SG21KEY": "T0JQ00540000081400000",
+          "SGSUBKEY": "T0JQ005400000814",
+          "ParcelGuid": null,
+          "GlobalID": "{645ADDEA-E9AA-43BA-8299-D2CFC0A4B106}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000055500000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787631,
+          "SG21KEY": "T0JQ00540000055500000",
+          "SGSUBKEY": "T0JQ005400000555",
+          "ParcelGuid": null,
+          "GlobalID": "{BA7C6339-B228-4094-AC75-562EBE6FCD55}"
+        }
+      },
+      {
+        "nativeId": "T0JQ00540000015400000",
+        "sourcePartCount": 1,
+        "assembledGeometrySha256": null,
+        "observedViewportGeometrySha256": null,
+        "sourceReference": {
+          "OBJECTID": 6787640,
+          "SG21KEY": "T0JQ00540000015400000",
+          "SGSUBKEY": "T0JQ005400000154",
+          "ParcelGuid": null,
+          "GlobalID": "{F11D416E-D0F3-4532-898B-E543E3140153}"
+        }
+      }
+    ],
+    "attemptErrors": [
+      {
+        "batchStart": 30,
+        "ids": [
+          "T0JQ00540000054400000",
+          "T0JQ00540000015500000",
+          "T0JQ00540000081700000",
+          "T0JQ00540000083200000",
+          "T0JQ00540000015300000",
+          "T0JQ00540000053800000",
+          "T0JQ00540000081300000",
+          "T0JQ00540000055600000",
+          "T0JQ00540000015600000",
+          "T0JQ00540000054300000"
+        ],
+        "message": "Parcel provider timed out."
+      },
+      {
+        "batchStart": 30,
+        "ids": [
+          "T0JQ00540000054400000",
+          "T0JQ00540000015500000",
+          "T0JQ00540000081700000"
+        ],
+        "message": "Parcel provider timed out."
+      }
+    ]
+  }
+}

@@ -1,10 +1,10 @@
 // Renders the research snapshot; every table shares numeric-aware, reversible header sorting.
-import { nextSort, sortRows, filterCities, filterCountries } from './parcel-coverage-report-model.mjs?v=2';
-import { reportMessages } from './parcel-coverage-report-i18n.mjs?v=2';
+import { nextSort, sortRows, filterCities, filterCountries } from './parcel-coverage-report-model.mjs?v=3';
+import { reportMessages } from './parcel-coverage-report-i18n.mjs?v=3';
 
 const params = new URLSearchParams(location.search);
 let language = Object.hasOwn(reportMessages, params.get('lang')) ? params.get('lang') : 'en';
-const validCohorts = new Set(['all', 'largest200', 'growth200', 'growth-top20']);
+const validCohorts = new Set(['all', 'largest200', 'growth200', 'growth-top20', 'india-africa', 'india', 'africa']);
 const initialCohort = validCohorts.has(params.get('cohort')) ? params.get('cohort') : 'all';
 const isGrowthCohort = cohort => cohort === 'growth200' || cohort === 'growth-top20';
 let report;

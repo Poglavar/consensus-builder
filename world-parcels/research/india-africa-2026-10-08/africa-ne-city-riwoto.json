@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2109",
+  "queueRank": 10,
+  "wupCityCode": 2109,
+  "name": "Riwoto",
+  "country": "South Sudan",
+  "countryCode": "SS",
+  "centerLatLon": [
+    4.87591907165739,
+    33.5152380082506
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 10,
+  "population2025": 330053,
+  "annualGrowthPct2015To2025": 9.892827,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [
+    {
+      "path": "research/growth-top20-2026-10-07/city-2109.json",
+      "status": "temporarily_unavailable"
+    }
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-SS.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic and English",
+    "exactQuery": "ريوتو جنوب السودان قطع الأراضي كادستر سجل الأراضي land parcels cadastral GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "https://aqari.nctr.sd/ar",
+      "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+      "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+      "https://www.esri.com/ar-sa/industries/land-administration/overview",
+      "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+      "https://www.amazon.com/GIS-2020-",
+      "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer/2"
+    ],
+    "summary": "No official public city parcel map identified in this local-language search; ministry and land office evidence remains unavailable.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aqari.nctr.sd/ar",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esri.com/ar-sa/industries/land-administration/overview",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.amazon.com/GIS-2020-",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer/2",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Riwoto\" South Sudan (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Riwoto%22+South+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No public parcel service or verified parcel sample for Riwoto was found in the city search; the returned land-policy and settlement references do not establish parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Seek a public cadastral map or anonymous bounded extract from the Riwoto municipal survey office or South Sudan land authority, then verify parcel IDs and polygons.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Riwoto%22+South+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-17",
+      "sourceUrl": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+      "classification": "locality_boundary_polygons_not_parcels",
+      "auditSummary": "Layer 2 is LOCALITIES with locality codes, region/state and population attributes, not a cadastre. Its Sudan bounding box overlaps several Sudan target centers; no feature sample was needed.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-10",
+      "sourceUrl": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+      "classification": "africa_admin_boundaries_not_parcels",
+      "auditSummary": "Although the item title/description mentions ownership and land parcels, its 84 listed sublayers are Africa/GADM/DIVA administrative boundaries at country and subnational scales (plus a world-cities point layer); no parcel feature layer is listed. Pan-African extent is not city-level evidence.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-11",
+      "sourceUrl": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer/2",
+      "classification": "south_sudan_peacekeeping_and_admin_layers_not_parcels",
+      "auditSummary": "Layers are PKO/conflict points, peacekeeping buffers, Admin_1 and Country polygons. Bounds overlap South Sudan target centers, but this is conflict/administrative mapping, not parcel geometry.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Although the item title/description mentions ownership and land parcels, its 84 listed sublayers are Africa/GADM/DIVA administrative boundaries at country and subnational scales (plus a world-cities point layer); no parcel feature layer is listed. Pan-African extent is not city-level evidence.; Layer 2 is LOCALITIES with locality codes, region/state and population attributes, not a cadastre. Its Sudan bounding box overlaps several Sudan target centers; no feature sample was needed.; Layers are PKO/conflict points, peacekeeping buffers, Admin_1 and Country polygons. Bounds overlap South Sudan target centers, but this is conflict/administrative mapping, not parcel geometry."
+}

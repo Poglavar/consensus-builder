@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "CD",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "ANAT official geospatial data portal / Geoportal lead",
+    "operator": "Agence Nationale de l’Aménagement du Territoire (ANAT), DRC",
+    "scope": "National geospatial portal is described but target parcels not surfaced",
+    "endpoint": "https://www.anat.gouv.cd/services",
+    "geometry": "No parcel layer or query endpoint located on services page or linked code",
+    "access": "Official page loaded with fr-CD browser headers and cookie jar; target searches found documentation/administrative or mining-cadastre sources, not real-estate parcel polygons.",
+    "assessment": "Official portal discovery lead only; no target polygons or IDs verified."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "French (Latin)",
+      "exactQueries": [
+        "\"Kinshasa\" cadastre parcelles SIG géoportail République démocratique du Congo",
+        "\"Kolwezi\" cadastre parcelles GIS parcellaire République démocratique Congo",
+        "\"Kasumbalesa\" cadastre parcelles SIG RDC",
+        "\"Likasi\" cadastre parcelles GIS ville RDC",
+        "\"Kilwa\" RDC \"parcelles cadastrales\" SIG cadastre",
+        "\"Mukubu\" RDC parcelles cadastrales GIS",
+        "\"Kasaï-Oriental\" cadastre parcelles geoportail GIS",
+        "\"Lubumbashi\" cadastre parcelles géoportail SIG RDC",
+        "site:anat.gouv.cd Geoportail ANAT RDC portail de données territoriales parcelles",
+        "ANAT RDC portail open data geoportail cadastre parcelle webgis",
+        "site:anat.gouv.cd \"Parcelles\" SIG"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

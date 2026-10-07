@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:7397",
+  "queueRank": 104,
+  "wupCityCode": 7397,
+  "name": "Luxor",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    25.6736044952306,
+    32.5858136344761
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 104,
+  "growthRank": null,
+  "population2025": 4188023,
+  "annualGrowthPct2015To2025": 7.64502,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/luxor.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-EG.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic",
+    "exactQuery": "الأقصر مصر قطع الأراضي المسح العقاري كادستر خريطة",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.esa.gov.eg/egy_his_maps.aspx",
+      "https://www.esa.gov.eg/services.aspx",
+      "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%A7%D9%82%D8%B5%D8%B1/",
+      "https://gopp.gov.eg/luxor-strategic-plan/",
+      "https://www.esa.gov.eg/paper_maps_search.aspx",
+      "https://www.esa.gov.eg/main.aspx",
+      "https://www.shorouknews.com/news/view.aspx?cdate=05062026&id=74e4eefd-8695-45ec-8924-6321e74e4b86",
+      "https://www.almasryalyoum.com/news/details/4240799"
+    ],
+    "summary": "Official ESA map products and NUCA land-offering viewer found; NUCA data are offered lots in separate new cities, not target-city cadastral coverage. No parcel geometry verified.",
+    "additionalOfficialLead": "NUCA normal viewer navigation lists 27 planned new cities. New Cairo and Borg El Arab New are distinct land-offering cities; Cairo/Alexandria city target is not covered by those pages.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.esa.gov.eg/egy_his_maps.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esa.gov.eg/services.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%A7%D9%82%D8%B5%D8%B1/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://gopp.gov.eg/luxor-strategic-plan/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esa.gov.eg/paper_maps_search.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.shorouknews.com/news/view.aspx?cdate=05062026&id=74e4eefd-8695-45ec-8924-6321e74e4b86",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.almasryalyoum.com/news/details/4240799",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Luxor\" Egypt (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Luxor%22+Egypt+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The public city-specific search found no verified parcel polygons for Luxor; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check ESA or the Luxor local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Luxor%22+Egypt+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "landOfferingLead": {
+    "portal": "https://lands.nuca.gov.eg/ar/ViewZone.aspx?ID=4797",
+    "zoneIdDiscoveredVia": "Cities.aspx/GetSiteCities -> ViewCity.aspx?ID=1 -> ViewProject.aspx?ID=2284",
+    "zoneRequestStatus": 200,
+    "rasterTileSource": "../Images/DataImages/Aug26/NCairo/NCairo/GeneratedImages/dzc_output.xml",
+    "assessment": "Public New Cairo offered plots with availability/price table; not general cadastral geometry and not target Cairo city scope."
+  },
+  "followupServiceAuditRefs": []
+}

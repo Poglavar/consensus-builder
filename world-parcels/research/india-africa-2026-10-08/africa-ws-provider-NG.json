@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "NG",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "Lagos ArcGIS FeatureServer candidate",
+    "operator": "ArcGIS Online publisher not tied to a public land authority",
+    "scope": "Advertised layer polygon extent resolves far from Nigeria (around longitude -74, latitude 5); Lagos bbox sample returned zero features",
+    "endpoint": "https://services9.arcgis.com/z7uN32HNuvhxN87i/arcgis/rest/services/Lagos/FeatureServer/0",
+    "geometry": "polygon candidate; irrelevant/mislocated service coverage",
+    "access": "Metadata HTTP 200 and bounded Lagos query HTTP 200 zero records with ID/geometry-only fields, en-NG headers and Lagos portal Referer.",
+    "assessment": "Rejected for Lagos because advertised extent and query output do not cover Lagos; no target sample."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "English (Latin) plus separately identified Yoruba, Igbo, and Hausa Latin-script queries; city-specific application is listed per city.",
+      "exactQueries": [
+        "\"Ekeremor\" cadastral parcel GIS Bayelsa State land registry",
+        "\"Ogu\" cadastral parcel GIS Rivers State land registry",
+        "\"Ikot Ekpene\" cadastral parcels GIS Akwa Ibom land registry",
+        "\"Lokoja\" cadastral parcels GIS Kogi land registry Nigeria",
+        "\"Lagos\" cadastral parcel GIS open data official parcel polygons Nigeria land registry",
+        "\"Onitsha\" cadastral parcels GIS Anambra State land registry",
+        "\"Kano\" cadastral parcel GIS official land registry Nigeria",
+        "\"Owerri\" cadastral parcels GIS Imo State official land registry",
+        "\"Ibadan\" Yoruba \"ìwé ilẹ̀\" parcel GIS cadastre",
+        "\"Ijebu-Ode\" Yoruba \"ìforúkọsílẹ̀ ilẹ̀\" parcel GIS",
+        "\"Onitsha\" Igbo ala cadastral parcels GIS land registry",
+        "\"Kano\" Hausa \"rajistar filaye\" GIS cadastral parcels",
+        "\"Ogu\" \"cadastral\" GIS property parcel",
+        "\"Ekeremor\" cadastral \"Bayelsa\" land registry GIS",
+        "\"Ikot Ekpene\" \"cadastral\" \"GIS\" land parcels",
+        "\"Lokoja\" \"cadastral\" \"GIS\" Kogi land registry"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services9.arcgis.com/z7uN32HNuvhxN87i/arcgis/rest/services/Lagos/FeatureServer/0/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "assessment": "Bounded Lagos bbox returned zero features; metadata extent is geographically misplaced."
+    }
+  ],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

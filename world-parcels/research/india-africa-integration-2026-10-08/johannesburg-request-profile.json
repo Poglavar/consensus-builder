@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-07T21:57:08.149Z",
+  "purpose": "Find a complete bounded request profile within the existing 15-second browser deadline; no timeout changes.",
+  "tests": [],
+  "requests": [
+    {
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.12%2C27.8625%2C-26.1175&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "error": "The operation was aborted due to timeout",
+      "elapsedMs": 15025
+    }
+  ],
+  "descriptor": {
+    "id": "za-joburg-registered-stands",
+    "name": "Johannesburg registered cadastral stands",
+    "adapter": "arcgis",
+    "cityIds": [
+      "johannesburg"
+    ],
+    "countryCode": "ZA",
+    "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+    "idField": "SG_ID",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "ZA-JOBURG-",
+    "outFields": [
+      "OBJECTID",
+      "SG_ID",
+      "PROPERTY_ID",
+      "STAND_NO",
+      "STATUS_DESC",
+      "LAND_TYPE_NAME"
+    ],
+    "attributeNotNull": [
+      "SG_ID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "nativeGeometryMode": "parts",
+    "disjointParts": true,
+    "partsCoordinatePrecision": 9,
+    "partMatchFields": [
+      "PROPERTY_ID",
+      "STAND_NO",
+      "STATUS_DESC"
+    ],
+    "pageSize": 25,
+    "maxFeatures": 1500,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 6,
+    "metricSrid": 32735,
+    "idBatchSize": 80,
+    "parcelNumberField": "STAND_NO"
+  },
+  "result": "failed",
+  "error": "Parcel provider timed out."
+}

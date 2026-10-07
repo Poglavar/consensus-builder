@@ -1,0 +1,1482 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "queueFile": "world-parcels/queue-india-africa.json",
+  "assignedCount": 61,
+  "assignedResearchCount": 60,
+  "excludedParentOwnedCount": 2,
+  "retainedBaselineCount": 1,
+  "rows": [
+    {
+      "cityId": "wup2025:3027",
+      "wupCityCode": 3027,
+      "name": "Lanckhul",
+      "countryCode": "IN",
+      "centerLatLon": [
+        33.574648740408,
+        74.9436957142741
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-3027.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-3027.json",
+      "resultCategory": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "nextStep": "Identify a reachable official public cadastral-map route and resolve the WUP point to its revenue village; test only public unauthenticated access for parcel geometry and stable khasra identity.",
+      "stateOrUTLead": "Jammu and Kashmir"
+    },
+    {
+      "cityId": "wup2025:6408",
+      "wupCityCode": 6408,
+      "name": "Ahmedabad",
+      "countryCode": "IN",
+      "centerLatLon": [
+        23.0208369805955,
+        72.5971679403649
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/ahmedabad.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-6408.json",
+      "resultCategory": "no_verified_open_endpoint_after_attempts",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "temporarily_unavailable",
+      "technicalBlocker": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
+      "nextStep": "Reach AnyRoR through a functioning official browser route, resolve the WUP coordinate to the official village/survey hierarchy, and test whether a public response yields parcel polygon geometry and a stable survey ID.",
+      "stateOrUTLead": "Gujarat"
+    },
+    {
+      "cityId": "wup2025:7233",
+      "wupCityCode": 7233,
+      "name": "Surat",
+      "countryCode": "IN",
+      "centerLatLon": [
+        21.1776194957192,
+        72.7789187685758
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/surat.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-7233.json",
+      "resultCategory": "no_verified_open_endpoint_after_attempts",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "temporarily_unavailable",
+      "technicalBlocker": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
+      "nextStep": "Reach AnyRoR through a functioning official browser route, resolve the WUP coordinate to the official village/survey hierarchy, and test whether a public response yields parcel polygon geometry and a stable survey ID.",
+      "stateOrUTLead": "Gujarat"
+    },
+    {
+      "cityId": "wup2025:7945",
+      "wupCityCode": 7945,
+      "name": "Mumbai",
+      "countryCode": "IN",
+      "centerLatLon": [
+        19.12248075999,
+        72.8833426320986
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/mumbai.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-7945.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+      "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity.",
+      "stateOrUTLead": "Maharashtra"
+    },
+    {
+      "cityId": "wup2025:8064",
+      "wupCityCode": 8064,
+      "name": "Jaipur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.9128723533915,
+        75.7865606043523
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/jaipur.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-8064.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "nextStep": "Use the official Bhu-Naksha location selector to resolve the WUP point to the exact Jaipur village, then verify its target plot geometry and stable plot number.",
+      "stateOrUTLead": "Rajasthan"
+    },
+    {
+      "cityId": "wup2025:8120",
+      "wupCityCode": 8120,
+      "name": "Kalyan-Dombivli",
+      "countryCode": "IN",
+      "centerLatLon": [
+        19.2079660812588,
+        73.1699593951258
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/kalyan-dombivli.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-8120.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+      "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity.",
+      "stateOrUTLead": "Maharashtra"
+    },
+    {
+      "cityId": "wup2025:8364",
+      "wupCityCode": 8364,
+      "name": "New Delhi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        28.6257327699734,
+        77.2078130770808
+      ],
+      "assignedTo": "root",
+      "assigned": false,
+      "previousEvidenceFiles": [
+        "research/retry/cities/new-delhi.json"
+      ],
+      "inheritedStatus": "verified_sample_partial_coverage",
+      "assessmentFile": null,
+      "resultCategory": "parent_owned_root_pass",
+      "registryFound": true,
+      "verifiedSample": true,
+      "parcelStatus": null,
+      "technicalBlocker": null,
+      "nextStep": "Root-owned city assessment is maintained in the parent pass; this India subpass excludes the city."
+    },
+    {
+      "cityId": "wup2025:8616",
+      "wupCityCode": 8616,
+      "name": "Pune",
+      "countryCode": "IN",
+      "centerLatLon": [
+        18.5350448991254,
+        73.8602640542245
+      ],
+      "assignedTo": "root",
+      "assigned": false,
+      "previousEvidenceFiles": [
+        "research/retry/cities/pune.json"
+      ],
+      "inheritedStatus": "verified_sample_partial_coverage",
+      "assessmentFile": null,
+      "resultCategory": "parent_owned_root_pass",
+      "registryFound": true,
+      "verifiedSample": true,
+      "parcelStatus": null,
+      "technicalBlocker": null,
+      "nextStep": "Root-owned city assessment is maintained in the parent pass; this India subpass excludes the city."
+    },
+    {
+      "cityId": "wup2025:8886",
+      "wupCityCode": 8886,
+      "name": "Indore",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.6991756014844,
+        75.8556700061169
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/indore.json",
+        "research/retry/cities/indore.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-8886.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "nextStep": "Open the official WebGIS in a live browser session, resolve the WUP point to district/tehsil/village, and verify the parcel feature geometry and stable khasra identifier.",
+      "stateOrUTLead": "Madhya Pradesh"
+    },
+    {
+      "cityId": "wup2025:8971",
+      "wupCityCode": 8971,
+      "name": "Agra",
+      "countryCode": "IN",
+      "centerLatLon": [
+        27.1881643913104,
+        78.0013166778967
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/agra.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-8971.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "State revenue portals are discoverable, but this bounded search did not resolve the exact WUP-point revenue village or return a nonempty parcel geometry.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:9213",
+      "wupCityCode": 9213,
+      "name": "Bhopal",
+      "countryCode": "IN",
+      "centerLatLon": [
+        23.2399095144358,
+        77.4239121630525
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/bhopal.json",
+        "research/retry/cities/bhopal.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-9213.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "nextStep": "Open the official WebGIS in a live browser session, resolve the WUP point to district/tehsil/village, and verify the parcel feature geometry and stable khasra identifier.",
+      "stateOrUTLead": "Madhya Pradesh"
+    },
+    {
+      "cityId": "wup2025:9587",
+      "wupCityCode": 9587,
+      "name": "Kozhikode",
+      "countryCode": "IN",
+      "centerLatLon": [
+        11.2059147426276,
+        75.8583486485998
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/kozhikode.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-9587.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "partial_coverage",
+      "technicalBlocker": "Official Ente Bhoomi selector confirms an unpublished/alternate candidate but does not verify its boundary at the WUP point; point-identify returned only the generic HTML viewer shell, not parcel geometry.",
+      "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient.",
+      "stateOrUTLead": "Kerala"
+    },
+    {
+      "cityId": "wup2025:9603",
+      "wupCityCode": 9603,
+      "name": "Kanpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.460949782044,
+        80.3406195423691
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/kanpur.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-9603.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:9717",
+      "wupCityCode": 9717,
+      "name": "Lucknow",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.8615244724503,
+        80.9654352206033
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/lucknow.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-9717.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:9765",
+      "wupCityCode": 9765,
+      "name": "Kochi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        10.0612792171801,
+        76.3088105504372
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/kochi.json",
+        "research/retry/cities/kochi.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-9765.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "partial_coverage",
+      "technicalBlocker": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
+      "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient.",
+      "stateOrUTLead": "Kerala"
+    },
+    {
+      "cityId": "wup2025:9793",
+      "wupCityCode": 9793,
+      "name": "Nagpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        21.1403108339582,
+        79.0798475250127
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/nagpur.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-9793.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+      "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity.",
+      "stateOrUTLead": "Maharashtra"
+    },
+    {
+      "cityId": "wup2025:9847",
+      "wupCityCode": 9847,
+      "name": "Kollam",
+      "countryCode": "IN",
+      "centerLatLon": [
+        9.29818038422683,
+        76.4275496736682
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/kollam.json",
+        "research/retry/cities/kollam.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-9847.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "partial_coverage",
+      "technicalBlocker": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
+      "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient.",
+      "stateOrUTLead": "Kerala"
+    },
+    {
+      "cityId": "wup2025:9913",
+      "wupCityCode": 9913,
+      "name": "Hyderabad",
+      "countryCode": "IN",
+      "centerLatLon": [
+        17.4138906547212,
+        78.475689046214
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/hyderabad.json",
+        "research/retry/cities/hyderabad.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-9913.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+      "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier.",
+      "stateOrUTLead": "Telangana"
+    },
+    {
+      "cityId": "wup2025:9949",
+      "wupCityCode": 9949,
+      "name": "Bengaluru",
+      "countryCode": "IN",
+      "centerLatLon": [
+        13.0062665301097,
+        77.5626340229947
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/bengaluru.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-9949.json",
+      "resultCategory": "no_verified_open_endpoint_after_attempts",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "temporarily_unavailable",
+      "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "nextStep": "Find a reachable official cadastral-map service beyond BBMP e-Aasthi, resolve the WUP point to its survey/revenue-village location, and verify a parcel polygon with stable survey ID.",
+      "stateOrUTLead": "Karnataka"
+    },
+    {
+      "cityId": "wup2025:10013",
+      "wupCityCode": 10013,
+      "name": "Thiruvananthapuram",
+      "countryCode": "IN",
+      "centerLatLon": [
+        8.50983231508796,
+        76.9676364538033
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/thiruvananthapuram.json",
+        "research/retry/cities/thiruvananthapuram.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-10013.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "partial_coverage",
+      "technicalBlocker": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
+      "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient.",
+      "stateOrUTLead": "Kerala"
+    },
+    {
+      "cityId": "wup2025:10023",
+      "wupCityCode": 10023,
+      "name": "Venjaramoodu",
+      "countryCode": "IN",
+      "centerLatLon": [
+        8.65276906631116,
+        76.9124484846266
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/kerala-runtime.json",
+        "research/growth-top20-2026-10-07/city-10023.json"
+      ],
+      "inheritedStatus": "verified_sample_partial_coverage",
+      "assessmentFile": null,
+      "resultCategory": "retained_baseline",
+      "registryFound": true,
+      "verifiedSample": true,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "technicalBlocker": null,
+      "nextStep": "Retain prior Kerala Ente Bhoomi Manikkal evidence; no repeat probe."
+    },
+    {
+      "cityId": "wup2025:10035",
+      "wupCityCode": 10035,
+      "name": "Ghatkesar",
+      "countryCode": "IN",
+      "centerLatLon": [
+        17.4300271469809,
+        78.6542279686069
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10035.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+      "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier.",
+      "stateOrUTLead": "Telangana"
+    },
+    {
+      "cityId": "wup2025:10311",
+      "wupCityCode": 10311,
+      "name": "Mehdawal",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.9698676974383,
+        83.1020910232192
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10311.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:10427",
+      "wupCityCode": 10427,
+      "name": "Jianpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.1773245235037,
+        83.2544849970165
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10427.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:10447",
+      "wupCityCode": 10447,
+      "name": "Varanasi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.3130953149596,
+        83.0050363443188
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/varanasi.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-10447.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "State revenue portals are discoverable, but this bounded search did not resolve the exact WUP-point revenue village or return a nonempty parcel geometry.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:10479",
+      "wupCityCode": 10479,
+      "name": "Chauri Chaura",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.6385539599308,
+        83.5777764120099
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10479.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:10481",
+      "wupCityCode": 10481,
+      "name": "Dohrighat",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2938353304261,
+        83.499615518729
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10481.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:10501",
+      "wupCityCode": 10501,
+      "name": "Saidpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.5408792686721,
+        83.2168947059018
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10501.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:10605",
+      "wupCityCode": 10605,
+      "name": "Shankarpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.8134713841866,
+        84.1157517852504
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-10605.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-10605.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+      "stateOrUTLead": "Uttar Pradesh"
+    },
+    {
+      "cityId": "wup2025:10737",
+      "wupCityCode": 10737,
+      "name": "Darauli",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.1350913588765,
+        84.1658019427551
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-10737.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-10737.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": true,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10747",
+      "wupCityCode": 10747,
+      "name": "Chennai",
+      "countryCode": "IN",
+      "centerLatLon": [
+        13.0444628101411,
+        80.2033736591079
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/chennai.json",
+        "research/retry/cities/chennai.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-10747.json",
+      "resultCategory": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "temporarily_unavailable",
+      "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "nextStep": "Reach official eServices from its landing page, resolve the WUP point to the applicable FMB or urban TSLR hierarchy, and verify a map boundary with a stable survey identifier.",
+      "stateOrUTLead": "Tamil Nadu"
+    },
+    {
+      "cityId": "wup2025:10791",
+      "wupCityCode": 10791,
+      "name": "Raghunathpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.9929452167679,
+        84.2915701031615
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-10791.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-10791.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": true,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10829",
+      "wupCityCode": 10829,
+      "name": "Areraj",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.5532969746,
+        84.6696100512271
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10829.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10835",
+      "wupCityCode": 10835,
+      "name": "Harsidhi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.6872456566718,
+        84.7644732569845
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10835.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10893",
+      "wupCityCode": 10893,
+      "name": "Kalyanpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.4466696212949,
+        84.8669945860888
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10893.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10911",
+      "wupCityCode": 10911,
+      "name": "Masrakh",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.1211707275585,
+        84.7950953210667
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10911.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10927",
+      "wupCityCode": 10927,
+      "name": "Dhaka",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.6630429867703,
+        85.1567394385869
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10927.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10933",
+      "wupCityCode": 10933,
+      "name": "Chakia",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.4025743820036,
+        85.0420780355781
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10933.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10957",
+      "wupCityCode": 10957,
+      "name": "Bairgania",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.7265024228444,
+        85.258964919446
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10957.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:10969",
+      "wupCityCode": 10969,
+      "name": "Chirand",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.7489853409713,
+        84.887639805399
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-10969.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11027",
+      "wupCityCode": 11027,
+      "name": "Hajipur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.9809989936602,
+        85.4509953679278
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/hajipur.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-11027.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11029",
+      "wupCityCode": 11029,
+      "name": "Naubatpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.4909770292272,
+        84.9507260772197
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11029.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11039",
+      "wupCityCode": 11039,
+      "name": "Patna",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.5970203089431,
+        85.1397184130161
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/patna.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-11039.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11109",
+      "wupCityCode": 11109,
+      "name": "Khirz Sarai",
+      "countryCode": "IN",
+      "centerLatLon": [
+        24.9669021893364,
+        85.0901889548943
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11109.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11117",
+      "wupCityCode": 11117,
+      "name": "Ekangar Sarai",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.2213089855198,
+        85.2355683904544
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11117.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11201",
+      "wupCityCode": 11201,
+      "name": "Muriya",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2319164670468,
+        86.0833220365614
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11201.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11285",
+      "wupCityCode": 11285,
+      "name": "Nawada",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2001645571738,
+        86.4343948922223
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11285.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11305",
+      "wupCityCode": 11305,
+      "name": "Bakhri",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.6035865271048,
+        86.2567977340494
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11305.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11337",
+      "wupCityCode": 11337,
+      "name": "Bhaptiyahi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2835746201486,
+        86.7336945187684
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11337.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11347",
+      "wupCityCode": 11347,
+      "name": "Gamharia",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.0693392469207,
+        86.7301918567993
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11347.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11415",
+      "wupCityCode": 11415,
+      "name": "Asarganj",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.095462687706,
+        86.6697214561759
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11415.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11447",
+      "wupCityCode": 11447,
+      "name": "Amarpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.0857858011865,
+        86.8839490491015
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11447.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11511",
+      "wupCityCode": 11511,
+      "name": "Semapur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.4980899560268,
+        87.4841083291156
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-11511.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-11511.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": true,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID.",
+      "stateOrUTLead": "Bihar"
+    },
+    {
+      "cityId": "wup2025:11531",
+      "wupCityCode": 11531,
+      "name": "Asansol",
+      "countryCode": "IN",
+      "centerLatLon": [
+        23.6979457782642,
+        86.9114092684189
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/asansol.json",
+        "research/retry/cities/asansol.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-11531.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11581",
+      "wupCityCode": 11581,
+      "name": "Choudwar",
+      "countryCode": "IN",
+      "centerLatLon": [
+        20.4996698735025,
+        85.9330728323426
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11581.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+      "nextStep": "Select the WUP location in the official district/tahsil/village/RI-circle map viewer, then verify a plot response with nonempty geometry and stable plot identifier.",
+      "stateOrUTLead": "Odisha"
+    },
+    {
+      "cityId": "wup2025:11607",
+      "wupCityCode": 11607,
+      "name": "Taranagar",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.2758044504155,
+        87.998852750059
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11607.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11755",
+      "wupCityCode": 11755,
+      "name": "Tamluk",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.3857912198346,
+        87.872341961915
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/tamluk.json",
+        "research/retry/cities/tamluk.json"
+      ],
+      "inheritedStatus": "temporarily_unavailable",
+      "assessmentFile": "india-city-11755.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11771",
+      "wupCityCode": 11771,
+      "name": "Khanakul",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.7368763853826,
+        87.904533316888
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11771.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11779",
+      "wupCityCode": 11779,
+      "name": "Parhati",
+      "countryCode": "IN",
+      "centerLatLon": [
+        23.2588217842522,
+        88.1507406243375
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11779.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11785",
+      "wupCityCode": 11785,
+      "name": "Tarkeshwar",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.8794231977507,
+        88.0129425076242
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11785.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11821",
+      "wupCityCode": 11821,
+      "name": "Kolkata",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.5859710859864,
+        88.3536574635294
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [
+        "research/kolkata.json"
+      ],
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "assessmentFile": "india-city-11821.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11877",
+      "wupCityCode": 11877,
+      "name": "Deganga",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.6877673121963,
+        88.6954794716905
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11877.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+      "stateOrUTLead": "West Bengal"
+    },
+    {
+      "cityId": "wup2025:11959",
+      "wupCityCode": 11959,
+      "name": "Moirabari",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.4453578533466,
+        92.3955537457384
+      ],
+      "assignedTo": "india-pass",
+      "assigned": true,
+      "previousEvidenceFiles": [],
+      "inheritedStatus": null,
+      "assessmentFile": "india-city-11959.json",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+      "nextStep": "Resolve the WUP point to the official district, circle and village in Dharitree; determine whether a public cadastral map response supplies plot geometry and stable dag/plot identity.",
+      "stateOrUTLead": "Assam"
+    }
+  ],
+  "researchSummary": {
+    "cityEntriesWithExecutedNativeLanguageSearch": 60,
+    "freshParcelGeometriesVerified": 0,
+    "sharedStateOrUTProbeCount": 14,
+    "sharedStatePortalEntryUrlCount": 15,
+    "note": "Sixty assigned city records have actual native-script search-result URLs. Fifty-six saved queries were rerun individually and four retained query-linked URLs from the original batch output. Fourteen shared state/UT service families were probed; 15 distinct portal-entry URLs are recorded (including two UP Bhulekh URL variants).",
+    "queryRecordsWithActualResultUrls": 60,
+    "individualExactQueryReruns": 56,
+    "originalBatchResultAttributions": 4,
+    "actualSearchResultUrlCount": 996
+  }
+}

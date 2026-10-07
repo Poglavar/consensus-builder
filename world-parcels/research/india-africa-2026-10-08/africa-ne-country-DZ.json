@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "DZ",
+  "country": "Algeria",
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "accessModel": "unknown",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Arabic and French",
+      "exactQuery": "الجزائر خريطة الكادستر قطع الأراضي cadastre parcelles Fadaeldjazair",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://ae.linkedin.com/posts/hanane-eurouaou-003014237_%D9%82%D8%B1%D9%8A%D8%A8%D8%A7-%D9%8A%D9%85%D9%83%D9%86%D9%83%D9%85-%D8%A7%D8%B3%D8%AA%D8%AE%D8%B1%D8%A7%D8%AC-%D8%B4%D9%87%D8%A7%D8%AF%D8%A9-%D8%A7%D9%84%D8%B3%D9%84%D8%A8%D9%8A%D8%A9-%D9%88%D8%A7%D9%84%D8%B9%D9%82%D9%88%D8%AF-activity-7199290343282950144-pu97",
+        "https://fadaeldjazair.mf.gov.dz/fr/",
+        "https://www.zarkachat.com/fadaeldjazair-mf-gov-dz/",
+        "https://bndg.asga.dz/bndg/CARTO2M/Default_BNDG.aspx",
+        "https://fr.scribd.com/document/1057800936/Fadaeldjazair-%D8%A7%D9%84%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9-%D9%81%D8%B6%D8%A7%D8%A1-%D8%A7%D9%84%D8%AC%D8%B2%D8%A7%D9%8A%D9%94%D8%B1",
+        "https://www.bndg.asga.dz/bndg/CARTO_500K/Default.aspx",
+        "https://jazairhope.org/fr/fada-el-jazair-loutil-indispensable-pour-eviter-les-pieges-immobiliers/",
+        "https://fr.scribd.com/document/853393328/Fadaeldjazair-%D8%A7%D9%84%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9-%D9%81%D8%B6%D8%A7%D8%A1-%D8%A7%D9%84%D8%AC%D8%B2%D8%A7%D8%A6%D8%B1"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+      "observation": "Finance Ministry geospatial portal / official service lead; still reset/tunnel-failed in carried country and city probes; viewer code could not be inspected."
+    },
+    {
+      "url": "https://www.dgdn.gov.dz/",
+      "observation": "Directorate General of National Domain site was under maintenance (503) in previous pass."
+    },
+    {
+      "url": "https://data.gov.dz/",
+      "observation": "Official data portal unreachable in previous pass."
+    },
+    {
+      "url": "https://www.bndg.asga.dz/bndg/CARTO_500K/Default.aspx",
+      "observation": "National geographic information catalog result exposes an ESRI map application, scale 1:500k; no parcel layer evidence."
+    }
+  ],
+  "requests": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Retry Fadaeldjazair from another network; inspect the actual viewer and test a bounded parcel request only if it becomes accessible."
+}

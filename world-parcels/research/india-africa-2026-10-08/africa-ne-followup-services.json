@@ -1,0 +1,3109 @@
+{
+  "schemaVersion": 1,
+  "kind": "deduplicated_city_search_service_followup",
+  "checkedAt": "2026-10-08",
+  "scope": "Audit of unique service-like URLs surfaced by the 54 executed city searches; metadata and capabilities only. No further general city searches and no feature records were fetched.",
+  "requestProfile": {
+    "method": "GET",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "accept": "application/json,text/plain,text/xml,application/xml,*/*",
+    "acceptLanguage": "en-US,en;q=0.9,ar;q=0.7 (city-specific Arabic language preference was used for Arabic service checks)",
+    "cookieJar": "Ephemeral standard CookieJar; no credentials or tokens supplied",
+    "referer": "ArcGIS Map Viewer for ArcGIS REST; service origin for ICPAC/GeoMolg; no authorization bypass."
+  },
+  "counts": {
+    "uniqueServiceLikeSearchResultUrls": 21,
+    "uniqueServiceRootsAudited": 19,
+    "targetCityParcelFeatureLayersWithMatchingExtent": 0,
+    "featureSampleRequests": 0
+  },
+  "extentCheckCaveat": "WGS84 extents are transformed from the service bounding-box corners where necessary; city-center-in-envelope tests are only coarse extent checks. They do not prove feature coverage. No sample query was made because the only discovered explicit parcel-polygon layers have out-of-scope extents; all target-overlapping polygon layers are documented admin/locality/plan districts, and point/line layers are nonparcel.",
+  "services": [
+    {
+      "auditId": "AFS-01",
+      "serviceRoot": "https://geoportal.icpac.net/layers/geonode%3Assd_adm2",
+      "sourceURLsReturnedByCitySearch": [
+        "https://geoportal.icpac.net/layers/geonode%3Assd_adm2"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://geoportal.icpac.net/layers/geonode%3Assd_adm2",
+        "https://geoportal.icpac.net/capabilities/layer/260/",
+        "https://geoportal.icpac.net/geoserver/ows?service=WMS&request=GetCapabilities&version=1.3.0",
+        "https://geoportal.icpac.net/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://geoportal.icpac.net/layers/geonode%3Assd_adm2",
+          "httpStatus": 200,
+          "responseType": "public GeoNode/WMS/WFS metadata"
+        },
+        {
+          "url": "https://geoportal.icpac.net/capabilities/layer/260/",
+          "httpStatus": 200,
+          "responseType": "public GeoNode/WMS/WFS metadata"
+        },
+        {
+          "url": "https://geoportal.icpac.net/geoserver/ows?service=WMS&request=GetCapabilities&version=1.3.0",
+          "httpStatus": 200,
+          "responseType": "unsuccessful GeoNode API metadata route"
+        },
+        {
+          "url": "https://geoportal.icpac.net/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+          "httpStatus": 200,
+          "responseType": "unsuccessful GeoNode API metadata route"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "serviceItemId": null,
+      "serviceTitle": "South Sudan - Admin Level 2",
+      "access": null,
+      "serviceDescription": null,
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": null,
+      "nativeFullExtent": null,
+      "extentWgs84Approx": {
+        "west": 24.151929855346737,
+        "south": 3.48064303398138,
+        "east": 35.86994934082033,
+        "north": 12.218999862670948,
+        "source": "WMS layer capabilities EX_GeographicBoundingBox"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [],
+      "layerCount": 0,
+      "assessment": "ICPAC GeoNode title is South Sudan - Admin Level 2; public WMS capabilities identifies geonode:ssd_adm2 with geographic bounds 24.1519–35.8699E, 3.4806–12.2190N. It is an admin layer, not parcels. WFS/WMS capabilities were read; no feature query.",
+      "classification": "south_sudan_admin_boundary_layer",
+      "layerMetadata": [
+        {
+          "name": "geonode:ssd_adm2",
+          "title": "ssd_adm2",
+          "type": "WMS/WFS layer"
+        }
+      ],
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-02",
+      "serviceRoot": "https://miningcadastre.minerals.go.ug/arcgis/rest/services",
+      "sourceURLsReturnedByCitySearch": [
+        "https://miningcadastre.minerals.go.ug/arcgis/rest/services"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2633",
+          "name": "Bukalasi",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:2565",
+          "name": "Mbale City",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:716",
+          "name": "Mbarara",
+          "countryCode": "UG"
+        }
+      ],
+      "metadataRequests": [
+        "https://miningcadastre.minerals.go.ug/arcgis/rest/services?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://miningcadastre.minerals.go.ug/arcgis/rest/services?f=pjson",
+          "httpStatus": 200,
+          "contentType": "text/plain;charset=UTF-8",
+          "responseType": "public service metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "serviceItemId": null,
+      "serviceTitle": "Uganda Ministry of Energy and Mineral Development ArcGIS services directory",
+      "access": null,
+      "serviceDescription": null,
+      "serviceDirectoryContents": [
+        {
+          "name": "ExportWebMap",
+          "type": "GPServer"
+        },
+        {
+          "name": "LandfolioGPServicev3_0_0",
+          "type": "GPServer"
+        },
+        {
+          "name": "LandfolioGPServicev4_0_0",
+          "type": "GPServer"
+        },
+        {
+          "name": "SampleWorldCities",
+          "type": "MapServer"
+        }
+      ],
+      "metadataError": null,
+      "spatialReference": null,
+      "nativeFullExtent": null,
+      "extentWgs84Approx": null,
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [],
+      "layerCount": 0,
+      "assessment": "Anonymous directory request returned currentVersion 10.6 and a service list (ExportWebMap, LandfolioGPService v3/v4, SampleWorldCities). The separate LandfolioSOEv2_0_0 MapServer returned ArcGIS error 499 Token Required. No token requested or guessed; no parcel geometry or extent available.",
+      "classification": "government_mining_cadastre_catalog_not_land_parcel_service",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-03",
+      "serviceRoot": "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer/export?bbox=-387802.4162353526%2C145973.19681135291%2C1232588.2512353524%2C601157.1231829457"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2633",
+          "name": "Bukalasi",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:716",
+          "name": "Mbarara",
+          "countryCode": "UG"
+        }
+      ],
+      "metadataRequests": [
+        "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "text/plain;charset=UTF-8",
+          "responseType": "public service metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "serviceItemId": null,
+      "serviceTitle": "LandfolioSOEv2_0_0 (MapServer)",
+      "access": null,
+      "serviceDescription": null,
+      "serviceDirectoryContents": null,
+      "metadataError": {
+        "code": 499,
+        "message": "Token Required",
+        "details": []
+      },
+      "spatialReference": null,
+      "nativeFullExtent": null,
+      "extentWgs84Approx": null,
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [],
+      "layerCount": 0,
+      "assessment": "Direct MapServer metadata responded with ArcGIS error code 499 Token Required. This is a mining-cadastre service under the minerals ministry host, not evidence of a public land-ownership parcel layer. No credential flow attempted; no extent or features obtained.",
+      "classification": "authentication_required_mining_service",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-04",
+      "serviceRoot": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_Registered_HardCopies/MapServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_Registered_HardCopies/MapServer"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_Registered_HardCopies/MapServer?f=json"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_Registered_HardCopies/MapServer",
+          "httpStatus": 200,
+          "contentType": "text/html;charset=utf-8",
+          "responseType": "public REST directory HTML"
+        },
+        {
+          "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_Registered_HardCopies/MapServer?f=json",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "responseType": "MapServer metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "text/html;charset=utf-8",
+      "serviceItemId": null,
+      "serviceTitle": "Parcels_Registered_HardCopies (MapServer)",
+      "access": null,
+      "serviceDescription": null,
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 28191
+      },
+      "nativeFullExtent": {
+        "xmin": 148197.3126,
+        "ymin": 100261.7986,
+        "xmax": 204255.1855,
+        "ymax": 216244.375,
+        "spatialReference": {
+          "wkid": 28191
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 34.980694,
+        "south": 31.494279,
+        "east": 35.574898,
+        "north": 32.539865,
+        "method": "cs2cs EPSG:28191 to EPSG:4326; extent corners"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [],
+      "layerCount": 0,
+      "assessment": "Hard-copy MapServer metadata extent transforms to 34.9807–35.5749E, 31.4943–32.5399N (Palestine/West Bank), outside all assigned targets. It is a mosaic/raster with Boundary and Footprint polygon sublayers, not an open parcel polygon feed; owner is not exposed. No features queried.",
+      "classification": "registered_parcel_raster_layer_outside_assigned_countries",
+      "layerMetadata": [
+        {
+          "id": 0,
+          "name": "Parcels-Registered-Hard Copy | قطع الأراضي-النسخة الورقية",
+          "type": "Mosaic Layer"
+        },
+        {
+          "id": 1,
+          "name": "Boundary",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 2,
+          "name": "Footprint",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 3,
+          "name": "Parcels-Registered-Hard Copy | قطع الأراضي-النسخة الورقية",
+          "type": "Raster Layer"
+        }
+      ],
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-05",
+      "serviceRoot": "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer?f=json"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer",
+          "httpStatus": 200,
+          "contentType": "text/html;charset=utf-8",
+          "responseType": "public REST directory HTML"
+        },
+        {
+          "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer?f=json",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "responseType": "MapServer metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "text/html;charset=utf-8",
+      "serviceItemId": null,
+      "serviceTitle": "ParcelsRegistered_Withdomain (MapServer)",
+      "access": null,
+      "serviceDescription": null,
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 28191
+      },
+      "nativeFullExtent": {
+        "xmin": 141162.3035,
+        "ymin": 90962.8681,
+        "xmax": 204255.1561,
+        "ymax": 217508.0923,
+        "spatialReference": {
+          "wkid": 28191
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 34.906915,
+        "south": 31.410263,
+        "east": 35.574944,
+        "north": 32.55126,
+        "method": "cs2cs EPSG:28191 to EPSG:4326; extent corners"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [],
+      "layerCount": 0,
+      "assessment": "Registered-parcel MapServer public metadata lists a polygon feature layer, but its EPSG:28191 extent transforms to 34.9069–35.5749E, 31.4103–32.5513N (Palestine/West Bank), outside all assigned target cities. The REST page exposes Login/Get Token links; owner is not exposed in public metadata. No features queried.",
+      "classification": "registered_parcel_layer_outside_assigned_countries",
+      "layerMetadata": [
+        {
+          "id": 0,
+          "name": "Parcels-Registered | قطع اراضي التسوية",
+          "geometryType": "esriGeometryPolygon",
+          "extentNative": {
+            "xmin": 141162.3035,
+            "ymin": 90962.8681,
+            "xmax": 204255.1561,
+            "ymax": 217508.0923,
+            "wkid": 28191
+          },
+          "authenticationNote": "REST directory links to Login and Get Token; no token or feature request used."
+        }
+      ],
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-06",
+      "serviceRoot": "https://services.arcgis.com/CmINIEzurW7Tagtl/ArcGIS/rest/services/Ethiopia_Administrative_Boundaries/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services.arcgis.com/CmINIEzurW7Tagtl/ArcGIS/rest/services/Ethiopia_Administrative_Boundaries/FeatureServer"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:6097",
+          "name": "Dilla",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:6154",
+          "name": "Holeta Genet",
+          "countryCode": "ET"
+        }
+      ],
+      "metadataRequests": [
+        "https://services.arcgis.com/CmINIEzurW7Tagtl/ArcGIS/rest/services/Ethiopia_Administrative_Boundaries/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services.arcgis.com/CmINIEzurW7Tagtl/ArcGIS/rest/services/Ethiopia_Administrative_Boundaries/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/f13d35dfce2f485fa0f2b32ee30356dc?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "f13d35dfce2f485fa0f2b32ee30356dc",
+      "serviceTitle": "Ethiopia_Administrative_Boundaries",
+      "access": "public",
+      "serviceDescription": "A Feature Layer containing the Administrative Boundaries of Ethiopia. It includes four levels of the Administrative boundaries namely National boundary, Regional States&Chartered Cities,Zones and Districts(Woreda)",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "nativeFullExtent": {
+        "xmin": 32.99993800027309,
+        "ymin": 3.322099000196445,
+        "xmax": 47.9861780002211,
+        "ymax": 14.899957999933362,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 32.99993800027309,
+        "south": 3.322099000196445,
+        "east": 47.9861780002211,
+        "north": 14.899957999933362,
+        "method": "native EPSG:4326 extent"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:6469",
+          "name": "Shufune",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:6154",
+          "name": "Holeta Genet",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:2573",
+          "name": "Berbera",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:6097",
+          "name": "Dilla",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:3626",
+          "name": "El Afweyn",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:6353",
+          "name": "Ādīs Ᾱbeba (Addis Ababa)",
+          "countryCode": "ET"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "Ethiopia Districts(Woreda)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 1,
+          "name": "Ethiopia Zones",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 2,
+          "name": "Ethiopia Regional States&Chartered Cities",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 3,
+          "name": "Ethiopia National Boundary",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 4,
+      "assessment": "Four polygon layers are national, regional, zone and woreda administrative boundaries of Ethiopia; not parcels.",
+      "classification": "ethiopia_administrative_boundaries_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-07",
+      "serviceRoot": "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Darfur_Action_plan/FeatureServer/0",
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer/0"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        }
+      ],
+      "metadataRequests": [
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/eca752e522b84ed98ea3146986f7fbca?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "eca752e522b84ed98ea3146986f7fbca",
+      "serviceTitle": "Darfur_Action_plan",
+      "access": "public",
+      "serviceDescription": "Darfur Action Plan",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "nativeFullExtent": {
+        "xmin": 21.8136800154204,
+        "ymin": 8.64132883026133,
+        "xmax": 27.58313779597256,
+        "ymax": 20.02053599613936,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 21.8136800154204,
+        "south": 8.64132883026133,
+        "east": 27.58313779597256,
+        "north": 20.02053599613936,
+        "method": "native EPSG:4326 extent"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:1068",
+          "name": "El Sireaf",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "SDN_action_plan_darfur",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 1,
+      "assessment": "Single polygon layer is SDN_action_plan_darfur, an action-plan region layer. Its Darfur extent overlaps some target centers, but it is not a cadastral parcel layer.",
+      "classification": "regional_action_plan_polygon_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-08",
+      "serviceRoot": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Ethiopia_data_integration_WFL1/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Ethiopia_data_integration_WFL1/FeatureServer/2"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:6154",
+          "name": "Holeta Genet",
+          "countryCode": "ET"
+        }
+      ],
+      "metadataRequests": [
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Ethiopia_data_integration_WFL1/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Ethiopia_data_integration_WFL1/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/030a744e16344bcbb57096dd0f7d19d5?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "030a744e16344bcbb57096dd0f7d19d5",
+      "serviceTitle": "Ethiopia data integration_WFL1",
+      "access": "public",
+      "serviceDescription": "",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": 3672261.7641340694,
+        "ymin": 374839.7263951274,
+        "xmax": 5354921.234311566,
+        "ymax": 1677032.3203676832,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 32.9884887,
+        "south": 3.3653059,
+        "east": 48.1040759,
+        "north": 14.8943931,
+        "method": "approximate transform of extent corners EPSG:3857 to EPSG:4326"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:6469",
+          "name": "Shufune",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:6154",
+          "name": "Holeta Genet",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:2573",
+          "name": "Berbera",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:6097",
+          "name": "Dilla",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:3626",
+          "name": "El Afweyn",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:6353",
+          "name": "Ādīs Ᾱbeba (Addis Ababa)",
+          "countryCode": "ET"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "eth_adm1_earthquakes",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "Ethiopia - Market Centers",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 2,
+          "name": "Ethiopian Health Facilities",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 3,
+          "name": "Ethiopia Populated places",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 4,
+          "name": "eth_water_lines_dcw",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 5,
+          "name": "Ethiopia Roads",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        }
+      ],
+      "layerCount": 6,
+      "assessment": "Layer list is populated-place/market/health points, roads and water lines; not parcel geometry.",
+      "classification": "ethiopia_places_roads_and_facilities_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-09",
+      "serviceRoot": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer/0"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:4325",
+          "name": "Al-Kharṭūm (Khartoum)",
+          "countryCode": "SD"
+        }
+      ],
+      "metadataRequests": [
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/8c5deff4d029414ebd19c19a902a8be8?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "8c5deff4d029414ebd19c19a902a8be8",
+      "serviceTitle": "Khartoum offices and GH_WFL1",
+      "access": "public",
+      "serviceDescription": "",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": 3621683.898148246,
+        "ymin": 1747194.2238453706,
+        "xmax": 3633394.708621972,
+        "ymax": 1760173.2370654256,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 32.53414,
+        "south": 15.50262,
+        "east": 32.63934,
+        "north": 15.61494,
+        "method": "approximate transform of extent corners EPSG:3857 to EPSG:4326"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "khartoum_office",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "Itinéraire de NILE PALM HOTEL  à WFP",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 2,
+          "name": "Itinéraire de WFP à UNITAMS",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 3,
+          "name": "Itinéraire de WFP à UNITAMS",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 4,
+          "name": "Itinéraire de Golden Arrow  à WFP",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 5,
+          "name": "Itinéraire de AK COMPOUND à WFP",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 6,
+          "name": "Itinéraire de Golden Arrow  à RC_UNDP",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 7,
+          "name": "Itinéraire de NILE PALM HOTEL  à RC_UNDP",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 8,
+          "name": "Itinéraire de MUZAMIL REAL ESTATE  à RC_UNDP",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 9,
+          "name": "Itinéraire de AK COMPOUND à RC_UNDP",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 10,
+          "name": "15 16",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 11,
+          "name": "14",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 12,
+          "name": "8",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 13,
+          "name": "1",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        }
+      ],
+      "layerCount": 14,
+      "assessment": "Owner item is Khartoum offices and GH_WFL1; layer list contains an office point and itinerary polylines. Geographic extent is around Khartoum, but this is a facilities/routes map, not cadastral polygons.",
+      "classification": "urban_facility_and_route_layers_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-10",
+      "serviceRoot": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/9ee27cb94ca14cce8e0400fc734516d8?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "9ee27cb94ca14cce8e0400fc734516d8",
+      "serviceTitle": "Land Ownership",
+      "access": "public",
+      "serviceDescription": "Service contains information about the ownership and control of land parcels of a given area.",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "nativeFullExtent": {
+        "xmin": 5.59819600000003,
+        "ymin": -46.98249799999997,
+        "xmax": 51.41569600000008,
+        "ymax": 23.450371000000075,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 5.59819600000003,
+        "south": -46.98249799999997,
+        "east": 51.41569600000008,
+        "north": 23.450371000000075,
+        "method": "native EPSG:4326 extent"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:5371",
+          "name": "Hayya",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:2637",
+          "name": "Embu",
+          "countryCode": "KE"
+        },
+        {
+          "cityId": "wup2025:1871",
+          "name": "Naivasha",
+          "countryCode": "KE"
+        },
+        {
+          "cityId": "wup2025:1068",
+          "name": "El Sireaf",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:3252",
+          "name": "Balcad",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:6469",
+          "name": "Shufune",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:5752",
+          "name": "Karora",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5479",
+          "name": "Timerein",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:6154",
+          "name": "Holeta Genet",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:2775",
+          "name": "Merca",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:2962",
+          "name": "Wanlaweyn",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:5680",
+          "name": "Sawakin",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:716",
+          "name": "Mbarara",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:5631",
+          "name": "Tlecoq",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:3135",
+          "name": "Garissa",
+          "countryCode": "KE"
+        },
+        {
+          "cityId": "wup2025:2573",
+          "name": "Berbera",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:6097",
+          "name": "Dilla",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:282",
+          "name": "Kasulu",
+          "countryCode": "TZ"
+        },
+        {
+          "cityId": "wup2025:1603",
+          "name": "Sengerema",
+          "countryCode": "TZ"
+        },
+        {
+          "cityId": "wup2025:3626",
+          "name": "El Afweyn",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2896",
+          "name": "Mutuati",
+          "countryCode": "KE"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2633",
+          "name": "Bukalasi",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:2565",
+          "name": "Mbale City",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:2198",
+          "name": "Antsiramandroso",
+          "countryCode": "MG"
+        },
+        {
+          "cityId": "wup2025:3566",
+          "name": "Dar es Salaam",
+          "countryCode": "TZ"
+        },
+        {
+          "cityId": "wup2025:4325",
+          "name": "Al-Kharṭūm (Khartoum)",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:6353",
+          "name": "Ādīs Ᾱbeba (Addis Ababa)",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:2033",
+          "name": "Nairobi",
+          "countryCode": "KE"
+        },
+        {
+          "cityId": "wup2025:1866",
+          "name": "Kampala",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:3197",
+          "name": "Muqdisho (Mogadishu)",
+          "countryCode": "SO"
+        },
+        {
+          "cityId": "wup2025:1961",
+          "name": "Antananarivo",
+          "countryCode": "MG"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "Africa ESRI World Cities (1:25,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "Africa GADM Adminstrative Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 3,
+          "name": "Burundi DIVA GIS State L4 Admin Boundaries (1:1,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 4,
+          "name": "Kenya DIVA GIS State L4 Admin Boundaries (1:1,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 5,
+          "name": "Uganda DIVA GIS State L4 Admin Boundaries (1:1,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 7,
+          "name": "Angola DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 8,
+          "name": "Burundi DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 9,
+          "name": "Democratic Republic of the Congo DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 10,
+          "name": "Ethiopia DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 11,
+          "name": "Kenya DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 12,
+          "name": "Mozambique DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 13,
+          "name": "Malawi DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 14,
+          "name": "Chad DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 15,
+          "name": "Tanzania DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 16,
+          "name": "Uganda DIVA GIS State L3 Admin Boundaries (1:5,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 18,
+          "name": "Angola DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 19,
+          "name": "Burundi DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 20,
+          "name": "Botswana DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 21,
+          "name": "Central African Republic DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 22,
+          "name": "Cameroon DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 23,
+          "name": "Chad DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 24,
+          "name": "Democratic Republic of Congo DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 25,
+          "name": "Congo DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 26,
+          "name": "Ethiopia DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 27,
+          "name": "Gabon DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 28,
+          "name": "Kenya DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 29,
+          "name": "Mozambique DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 30,
+          "name": "Malawi DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 31,
+          "name": "Namibia DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 32,
+          "name": "Rwanda DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 33,
+          "name": "Somalia DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 34,
+          "name": "South Africa DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 35,
+          "name": "Tanzania DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 36,
+          "name": "Uganda DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 37,
+          "name": "Zambia DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 38,
+          "name": "Zimbabwe DIVA GIS State L2 Admin Boundaries (1:7,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 40,
+          "name": "Angola DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 41,
+          "name": "Burundi DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 42,
+          "name": "Botswana DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 43,
+          "name": "Central African Republic DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 44,
+          "name": "Cameroon DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 45,
+          "name": "Democratic Republic of the Congo DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 46,
+          "name": "Republic of the Congo DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 47,
+          "name": "Ethiopia DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 48,
+          "name": "Gabon DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 49,
+          "name": "Equatorial Guinea DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 50,
+          "name": "Kenya DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 51,
+          "name": "Lesotho DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 52,
+          "name": "Mozambique DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 53,
+          "name": "Malawi DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 54,
+          "name": "Namibia DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 55,
+          "name": "Rwanda DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 56,
+          "name": "Somalia DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 57,
+          "name": "Swaziland DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 58,
+          "name": "Chad DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 59,
+          "name": "Tanzania DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 60,
+          "name": "Uganda DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 61,
+          "name": "South Africa DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 62,
+          "name": "Zambia DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 63,
+          "name": "Zimbabwe DIVA GIS State L1 Admin Boundaries (1:10,000,000)",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 65,
+          "name": "Angola DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 66,
+          "name": "Burundi DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 67,
+          "name": "Botswana DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 68,
+          "name": "Central African Republic DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 69,
+          "name": "Cameroon DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 70,
+          "name": "Democratic Republic of the Congo DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 71,
+          "name": "Republic of the Congo DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 72,
+          "name": "Ethiopia DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 73,
+          "name": "Mozambique DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 74,
+          "name": "Gabon DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 75,
+          "name": "Equatorial Guinea DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 76,
+          "name": "Kenya DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 77,
+          "name": "Lesotho DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 78,
+          "name": "Malawi DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 79,
+          "name": "Namibia DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 80,
+          "name": "Rwanda DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 81,
+          "name": "Somalia DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 82,
+          "name": "Swaziland DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 83,
+          "name": "Chad DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 84,
+          "name": "Tanzania DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 85,
+          "name": "Uganda DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 86,
+          "name": "South Africa DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 87,
+          "name": "Zambia DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 88,
+          "name": "Zimbabwe DIVA GIS State L0 Admin Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 84,
+      "assessment": "Although the item title/description mentions ownership and land parcels, its 84 listed sublayers are Africa/GADM/DIVA administrative boundaries at country and subnational scales (plus a world-cities point layer); no parcel feature layer is listed. Pan-African extent is not city-level evidence.",
+      "classification": "africa_admin_boundaries_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-11",
+      "serviceRoot": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer/2"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/843f2b5d69084f7abbaaca4016380b60?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "843f2b5d69084f7abbaaca4016380b60",
+      "serviceTitle": "2013_SS_PKO_Buffers_Updated_WFL1",
+      "access": "public",
+      "serviceDescription": "Updated SS PKO w buffers",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": 2688446.360595962,
+        "ymin": 388504.6009035349,
+        "xmax": 4002149.8360655126,
+        "ymax": 1372618.648783124,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 24.15072456,
+        "south": 3.48784008,
+        "east": 35.95192367,
+        "north": 12.23635188,
+        "method": "approximate transform of extent corners EPSG:3857 to EPSG:4326"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "PKO_2013",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "PKO_Buffer_2013",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 2,
+          "name": "Admin_1",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 3,
+          "name": "Conflict_2013",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 4,
+          "name": "Country",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 5,
+      "assessment": "Layers are PKO/conflict points, peacekeeping buffers, Admin_1 and Country polygons. Bounds overlap South Sudan target centers, but this is conflict/administrative mapping, not parcel geometry.",
+      "classification": "south_sudan_peacekeeping_and_admin_layers_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-12",
+      "serviceRoot": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/arcgis/rest/services/RU_Africa_Footprint_WFL1/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/arcgis/rest/services/RU_Africa_Footprint_WFL1/FeatureServer/19"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:5752",
+          "name": "Karora",
+          "countryCode": "SD"
+        }
+      ],
+      "metadataRequests": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/arcgis/rest/services/RU_Africa_Footprint_WFL1/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/arcgis/rest/services/RU_Africa_Footprint_WFL1/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/f6cbbd4495e34fa993dff39b676261c6?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "f6cbbd4495e34fa993dff39b676261c6",
+      "serviceTitle": "RU_Africa_Footprint_WFL1",
+      "access": "public",
+      "serviceDescription": "",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": -20037507.067179184,
+        "ymin": -30240971.95838582,
+        "xmax": 20037507.06717921,
+        "ymax": 30240971.95838655,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": null,
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "USGSIndustrialGoldMine_Initial",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "USGSIndustrialGoldMine_2024",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 2,
+          "name": "RU_Naval_Bases_2025",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 3,
+          "name": "RU_Naval_Bases_Initial",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 4,
+          "name": "RU_Africa_Corps_Bases_Initial",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 5,
+          "name": "RU_Africa_Corps_Bases_2025",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 6,
+          "name": "RU_Africa_Corps_Bases_2024",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 19,
+          "name": "Sudan_pre2024",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 20,
+          "name": "Niger",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 21,
+          "name": "Mali",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 22,
+          "name": "Sudan",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 23,
+          "name": "Libya",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 24,
+          "name": "Central African Republic",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 25,
+          "name": "Burkina Faso",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 26,
+          "name": "World_Country_Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 15,
+      "assessment": "Layer list contains conflict/mine points and country/admin boundary polygons (including Sudan_pre2024/Sudan), not parcel polygons. The world-like Web Mercator fullExtent is not a useful city coverage claim.",
+      "classification": "global_conflict_and_country_boundary_layers_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-13",
+      "serviceRoot": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer/19"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:4325",
+          "name": "Al-Kharṭūm (Khartoum)",
+          "countryCode": "SD"
+        }
+      ],
+      "metadataRequests": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/dba981102a954e8c8fba19559ce7925c?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "dba981102a954e8c8fba19559ce7925c",
+      "serviceTitle": "RU_Sahel_Final_WFL1",
+      "access": "public",
+      "serviceDescription": "",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": -20037507.067179184,
+        "ymin": -30240971.95838582,
+        "xmax": 20037507.06717921,
+        "ymax": 30240971.95838655,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": null,
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "USGSIndustrialGoldMine_Initial",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "USGSIndustrialGoldMine_2024",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 2,
+          "name": "RU_Naval_Bases_2025",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 3,
+          "name": "RU_Naval_Bases_Initial",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 4,
+          "name": "RU_Africa_Corps_Bases_Initial",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 5,
+          "name": "RU_Africa_Corps_Bases_2025",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 6,
+          "name": "RU_Africa_Corps_Bases_2024",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 19,
+          "name": "Sudan_pre2024",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 20,
+          "name": "Niger",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 21,
+          "name": "Mali",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 22,
+          "name": "Sudan",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 23,
+          "name": "Libya",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 24,
+          "name": "Central African Republic",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 25,
+          "name": "Burkina Faso",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 26,
+          "name": "World_Country_Boundaries",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 15,
+      "assessment": "Layer list contains conflict/mine points and country/admin boundary polygons (including Sudan_pre2024/Sudan), not parcel polygons. The world-like Web Mercator fullExtent is not a useful city coverage claim.",
+      "classification": "global_conflict_and_country_boundary_layers_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-14",
+      "serviceRoot": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/3",
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/5"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:716",
+          "name": "Mbarara",
+          "countryCode": "UG"
+        }
+      ],
+      "metadataRequests": [
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/e1fb2e1a5f1c406aa43d9cae3e114c4d?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        },
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/3?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public layer metadata"
+        },
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/4?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public layer metadata"
+        },
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/5?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public layer metadata"
+        },
+        {
+          "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/6?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public layer metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "e1fb2e1a5f1c406aa43d9cae3e114c4d",
+      "serviceTitle": "Uganda All Layers",
+      "access": "public",
+      "serviceDescription": "",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "nativeFullExtent": {
+        "xmin": 29.55958459974954,
+        "ymin": -1.6290306996070285,
+        "xmax": 35.03587390006051,
+        "ymax": 4.433080800038938,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 29.55958459974954,
+        "south": -1.6290306996070285,
+        "east": 35.03587390006051,
+        "north": 4.433080800038938,
+        "method": "native EPSG:4326 extent"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:716",
+          "name": "Mbarara",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2633",
+          "name": "Bukalasi",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:2565",
+          "name": "Mbale City",
+          "countryCode": "UG"
+        },
+        {
+          "cityId": "wup2025:1866",
+          "name": "Kampala",
+          "countryCode": "UG"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "AllCombined_Dest",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 1,
+          "name": "Admin2_BaseTable",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 2,
+          "name": "AllCombined_Origin",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 3,
+          "name": "OriginDistrict_Mbarara",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 4,
+          "name": "OriginDistrict_Mbale",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 5,
+          "name": "DestDistrict_Mbarara",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 6,
+          "name": "DestDistrict_Mbale",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 7,
+          "name": "Roads",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 8,
+          "name": "Admin3_County",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 9,
+          "name": "Admin2_District",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 10,
+          "name": "Admin1_Region",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 11,
+          "name": "Admin0_Country",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 12,
+      "assessment": "Layer metadata for the four Mbarara/Mbale district layers explicitly describes Ugandan districts and has ADM2_EN/Admin2New attributes; these are district polygons, not parcels. Root bbox overlaps Uganda city centers but does not verify parcel fabric.",
+      "classification": "district_boundary_polygons_not_parcels",
+      "layerMetadata": [
+        {
+          "id": 3,
+          "name": "OriginDistrict_Mbarara",
+          "geometryType": "esriGeometryPolygon",
+          "description": "The dataset represents the districts of Uganda.",
+          "fields": [
+            "ADM2_EN",
+            "Admin2New",
+            "Origin_District or Destination_District",
+            "household counts"
+          ],
+          "metadataRequest": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/3?f=pjson"
+        },
+        {
+          "id": 4,
+          "name": "OriginDistrict_Mbale",
+          "geometryType": "esriGeometryPolygon",
+          "description": "The dataset represents the districts of Uganda.",
+          "fields": [
+            "ADM2_EN",
+            "Admin2New",
+            "Origin_District or Destination_District",
+            "household counts"
+          ],
+          "metadataRequest": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/4?f=pjson"
+        },
+        {
+          "id": 5,
+          "name": "DestDistrict_Mbarara",
+          "geometryType": "esriGeometryPolygon",
+          "description": "The dataset represents the districts of Uganda.",
+          "fields": [
+            "ADM2_EN",
+            "Admin2New",
+            "Origin_District or Destination_District",
+            "household counts"
+          ],
+          "metadataRequest": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/5?f=pjson"
+        },
+        {
+          "id": 6,
+          "name": "DestDistrict_Mbale",
+          "geometryType": "esriGeometryPolygon",
+          "description": "The dataset represents the districts of Uganda.",
+          "fields": [
+            "ADM2_EN",
+            "Admin2New",
+            "Origin_District or Destination_District",
+            "household counts"
+          ],
+          "metadataRequest": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/6?f=pjson"
+        }
+      ],
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-15",
+      "serviceRoot": "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:4325",
+          "name": "Al-Kharṭūm (Khartoum)",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5371",
+          "name": "Hayya",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5752",
+          "name": "Karora",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer?f=pjson",
+        "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer/0?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/9da2a48e237741098a0dcebc65b49145?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        },
+        {
+          "url": "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer/0?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public parcel-layer metadata; no feature request"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "9da2a48e237741098a0dcebc65b49145",
+      "serviceTitle": "قطع الاراضي view",
+      "access": "public",
+      "serviceDescription": null,
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 28191,
+        "latestWkid": 28191
+      },
+      "nativeFullExtent": {
+        "xmin": 161762.81199999992,
+        "ymin": 142339.29020000063,
+        "xmax": 169974.214813309,
+        "ymax": 156018.6509000007,
+        "spatialReference": {
+          "wkid": 28191,
+          "latestWkid": 28191
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 35.12314354,
+        "south": 31.87392476,
+        "east": 35.20993001,
+        "north": 31.99731339,
+        "method": "cs2cs EPSG:28191 to EPSG:4326; extent corners"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "قطع الاراضي",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 1,
+      "assessment": "Public polygon FeatureServer; item owner is ArcGIS user `husam_fw`; public item metadata does not identify a government publisher. Metadata extent in EPSG:28191 transforms to about 35.1231–35.2099E, 31.8739–31.9973N (Ramallah/Palestine), far from every assigned Africa target. Layer 0 is قطع الاراضي with parcel number/area fields; CITY has default Ramallah. This is a real parcel candidate outside scope; no features queried.",
+      "classification": "parcel_polygon_layer_outside_assigned_countries",
+      "layerMetadata": [
+        {
+          "id": 0,
+          "name": "قطع الاراضي",
+          "geometryType": "esriGeometryPolygon",
+          "displayField": "BLOCKNONAME",
+          "extentNative": {
+            "xmin": 161762.812,
+            "ymin": 142339.2902,
+            "xmax": 169974.2148,
+            "ymax": 156018.6509,
+            "wkid": 28191
+          },
+          "schemaEvidence": [
+            "PARCEL_NO",
+            "PARCEL_AREA_RE",
+            "CITY (default Ramallah)",
+            "BLOCKNONAME",
+            "QUARTERNONAME",
+            "GLOBALID"
+          ]
+        }
+      ],
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-16",
+      "serviceRoot": "https://services5.arcgis.com/QYf5PkPqzJKVzrmF/arcgis/rest/services/Sudan%20Admin2%2020200831/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services5.arcgis.com/QYf5PkPqzJKVzrmF/arcgis/rest/services/Sudan%20Admin2%2020200831/FeatureServer/0"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:5752",
+          "name": "Karora",
+          "countryCode": "SD"
+        }
+      ],
+      "metadataRequests": [
+        "https://services5.arcgis.com/QYf5PkPqzJKVzrmF/arcgis/rest/services/Sudan%20Admin2%2020200831/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services5.arcgis.com/QYf5PkPqzJKVzrmF/arcgis/rest/services/Sudan%20Admin2%2020200831/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/f7fe72d3e98741ddb821b50677f7c549?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "f7fe72d3e98741ddb821b50677f7c549",
+      "serviceTitle": "Sudan Admin2 20200831 (DTM StoryMap style)",
+      "access": "public",
+      "serviceDescription": "<p><span style='background-color:rgb(255,255,255); color:rgb(74,74,74); font-family:&quot;Avenir Next&quot;, Avenir, &quot;Helvetica Neue&quot;, sans-serif; font-size:16px;'><span style='display:inline !important; float:none; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>This is a layer view based on the item: </span></span><a target='_blank' href='https://iom.maps.arcgis.com/home/item.html?id=2030cc78599f48f28770576e67410631' rel='nofollow ugc noopener noreferrer'>https://iom.maps.arcgis.com/home/item.html?id=2030cc78599f48f28770576e67410631</a></p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>Data Source: <a target='_blank' href='https://data.humdata.org/dataset/cod-ab-sdn' rel='nofollow ugc noopener noreferrer'>https://data.humdata.org/dataset/cod-ab-sdn</a></p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>&nbsp;</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>\"Sudan administrative level 0-2 boundaries (COD-AB) dataset.</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>These administrative boundaries were established in: 2013</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>NOTE: This COD-AB includes an administrative level 1 feature for the COD-PS has no record for disputed Abyei Area.</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>This COD-AB was most recently reviewed for accuracy and necessary changes in August 2024. The COD-AB does not require any update.</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>Sourced from Information Management Working Group (IMWG), OCHA</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>Vetting by Information Technology Outreach Services (ITOS) with funding from USAID.</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>This COD-AB is suitable for database or GIS linkage to the Sudan <a style='box-sizing:border-box; color:rgb(0, 124, 224); text-decoration:none;' target='_blank' href='https://data.humdata.org/dataset/cod-ps-sdn' rel='nofollow ugc noopener noreferrer'>COD-PS</a>.</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>No edge-matched (COD-EM) version of this COD-AB has yet been prepared.</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>Please see the <a style='box-sizing:border-box; color:rgb(0, 124, 224); text-decoration:none;' target='_blank' href='https://cod.unocha.org/' rel='nofollow ugc noopener noreferrer'>COD Portal</a>.</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>Administrative level 1 contains 19 feature(s). The normal administrative level 1 feature type is \"\"State\"\".</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>Administrative level 2 contains 189 feature(s). The normal administrative level 2 feature type is \"\"Locality\"\".</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>Recommended cartographic projection: Asia South Albers Equal Area Conic</p><p style='background-color:rgb(255, 255, 255); box-sizing:border-box; color:rgb(136, 136, 136); font-family:&quot;Source Sans Pro&quot;, sans-serif; font-size:14px; font-style:normal; font-variant-caps:normal; font-variant-ligatures:normal; font-weight:400; letter-spacing:normal; margin-bottom:1rem; margin-top:0px; text-align:start; text-decoration-color:initial; text-decoration-style:initial; text-indent:0px; text-transform:none; word-spacing:0px;'>This metadata was last updated on January 9, 2025.\"</p>",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": 2428287.75159721,
+        "ymin": 965616.0378824589,
+        "xmax": 4294969.166289579,
+        "ymax": 2649305.73351558,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 21.81368002,
+        "south": 8.64132883,
+        "east": 38.58236447,
+        "north": 23.1428718,
+        "method": "approximate transform of extent corners EPSG:3857 to EPSG:4326"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:5371",
+          "name": "Hayya",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1068",
+          "name": "El Sireaf",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5752",
+          "name": "Karora",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5479",
+          "name": "Timerein",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:6154",
+          "name": "Holeta Genet",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:5680",
+          "name": "Sawakin",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5631",
+          "name": "Tlecoq",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:4325",
+          "name": "Al-Kharṭūm (Khartoum)",
+          "countryCode": "SD"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "sdn_admbndp_admALL_cbs_nic_ssa_itos_20200831",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "sdn_admbndl_admALL_cbs_nic_ssa_itos_20200831",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 2,
+          "name": "sdn_admbnda_adm0_cbs_nic_ssa_20200831",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 3,
+          "name": "sdn_admbnda_adm1_cbs_nic_ssa_20200831",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 4,
+          "name": "sdn_admbnda_adm2_cbs_nic_ssa_20200831",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 5,
+      "assessment": "Layer list contains admin0/admin1/admin2 administrative boundary polygons plus boundary lines/points. Country envelope overlaps Sudan target centers but no parcel layer is listed.",
+      "classification": "sudan_administrative_boundaries_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-17",
+      "serviceRoot": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:5680",
+          "name": "Sawakin",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5479",
+          "name": "Timerein",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/4b1c65d2b771413fa7e64de9a432bcc8?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        },
+        {
+          "url": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/2?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public layer metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "4b1c65d2b771413fa7e64de9a432bcc8",
+      "serviceTitle": "SudanMap",
+      "access": "public",
+      "serviceDescription": "Sudan Map",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "nativeFullExtent": {
+        "xmin": 21.813157147000027,
+        "ymin": 8.071420669000076,
+        "xmax": 38.593696142000056,
+        "ymax": 23.14286283800004,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 21.813157147000027,
+        "south": 8.071420669000076,
+        "east": 38.593696142000056,
+        "north": 23.14286283800004,
+        "method": "native EPSG:4326 extent"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:5371",
+          "name": "Hayya",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1068",
+          "name": "El Sireaf",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5752",
+          "name": "Karora",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5479",
+          "name": "Timerein",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:6154",
+          "name": "Holeta Genet",
+          "countryCode": "ET"
+        },
+        {
+          "cityId": "wup2025:5680",
+          "name": "Sawakin",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5631",
+          "name": "Tlecoq",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:4325",
+          "name": "Al-Kharṭūm (Khartoum)",
+          "countryCode": "SD"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "SETTLEMENTS",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        },
+        {
+          "id": 1,
+          "name": "RIVERS",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 2,
+          "name": "LOCALITIES",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 3,
+      "assessment": "Layer 2 is LOCALITIES with locality codes, region/state and population attributes, not a cadastre. Its Sudan bounding box overlaps several Sudan target centers; no feature sample was needed.",
+      "classification": "locality_boundary_polygons_not_parcels",
+      "layerMetadata": [
+        {
+          "id": 2,
+          "name": "LOCALITIES",
+          "geometryType": "esriGeometryPolygon",
+          "displayField": "St_code",
+          "extent": {
+            "xmin": 21.813157147,
+            "ymin": 8.612121582,
+            "xmax": 38.593696142,
+            "ymax": 23.142862838,
+            "wkid": 4326
+          },
+          "fields": [
+            "St_code",
+            "Loc_code",
+            "GeoCode",
+            "Loc_Eng",
+            "Region",
+            "State",
+            "population-count fields"
+          ],
+          "metadataRequest": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/2?f=pjson"
+        }
+      ],
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-18",
+      "serviceRoot": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/ArcGIS/rest/services/Al_jmail_Cadastral_Plans_WFL1/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services8.arcgis.com/oTalEaSXAuyNT7xf/ArcGIS/rest/services/Al_jmail_Cadastral_Plans_WFL1/FeatureServer/3"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:5631",
+          "name": "Tlecoq",
+          "countryCode": "SD"
+        }
+      ],
+      "metadataRequests": [
+        "https://services8.arcgis.com/oTalEaSXAuyNT7xf/ArcGIS/rest/services/Al_jmail_Cadastral_Plans_WFL1/FeatureServer?f=pjson",
+        "https://services8.arcgis.com/oTalEaSXAuyNT7xf/ArcGIS/rest/services/Al_jmail_Cadastral_Plans_WFL1/FeatureServer/3?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/ArcGIS/rest/services/Al_jmail_Cadastral_Plans_WFL1/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/8efb725e6d45438789466e5f792cb14f?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        },
+        {
+          "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/ArcGIS/rest/services/Al_jmail_Cadastral_Plans_WFL1/FeatureServer/3?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public parcel-layer metadata; no feature request"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "8efb725e6d45438789466e5f792cb14f",
+      "serviceTitle": "Al Jmail Cadastral Plans",
+      "access": "public",
+      "serviceDescription": "<b>Overview</b>\n<p>This feature service contains cadastral mapping information for the Al Jmail area, supporting land administration and parcel reference workflows. It combines parcel geometry with associated ownership and registration attributes, along with supporting index and boundary-related layers.</p>\n\n<b>Feature Layers</b>\n<ul>\n  <li><b>GRId_INDEX</b> provides indexed reference information for the cadastral framework, including reference names and associated text labels used to organize map content.</li>\n  <li><b>SIDEWALK</b> represents linear sidewalk features and includes editable GIS management fields.</li>\n  <li><b>PARCEL_BLOCKS</b> represents block-scale parcel boundary geometry and includes editable GIS management fields.</li>\n  <li><b>PARCEL</b> contains parcel polygons with cadastral attributes such as parcel number, map sheet number, owner name, classification, deed and document references, ownership date, file number, and parcel area details. It also includes editing task fields used for assignment, status, priority, due dates, notes, and descriptions.</li>\n</ul>\n\n<b>Geographic Coverage</b>\n<p>The service covers the Al Jmail cadastral area and supports local parcel and planning records within that jurisdiction.</p>\n\n<b>Use Cases</b>\n<ul>\n  <li>Parcel and cadastral map maintenance</li>\n  <li>Land ownership and document reference management</li>\n  <li>Boundary and block reference mapping</li>\n  <li>Operational editing and task tracking for GIS workflows</li>\n</ul>",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": 1340022.1462000012,
+        "ymin": 3874505.1787,
+        "xmax": 1344342.2320000008,
+        "ymax": 3877411.037900001,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 12.03762375,
+        "south": 32.84316488,
+        "east": 12.07643174,
+        "north": 32.86509347,
+        "method": "cs2cs EPSG:3857 to EPSG:4326; extent corners"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "GRId_INDEX",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 1,
+          "name": "SIDEWALK",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 2,
+          "name": "PARCEL_BLOCKS",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 3,
+          "name": "PARCEL",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "layerCount": 4,
+      "assessment": "Public polygon layer named PARCEL in Al Jmail Cadastral Plans. EPSG:3857 extent transforms to about 12.0376–12.0764E, 32.8432–32.8651N, near Al Jmail in Libya; no assigned African target center is inside. No feature rows were queried.",
+      "classification": "parcel_polygon_layer_outside_assigned_countries",
+      "layerMetadata": [
+        {
+          "id": 3,
+          "name": "PARCEL",
+          "geometryType": "esriGeometryPolygon",
+          "displayField": "رقم_القطعة",
+          "extentNative": {
+            "xmin": 1340219.4607,
+            "ymin": 3874626.2764,
+            "xmax": 1344081.5456,
+            "ymax": 3877083.004,
+            "wkid": 3857
+          },
+          "schemaEvidence": [
+            "رقم_القطعة",
+            "رقم_اللوحة",
+            "المساحة_م2"
+          ]
+        }
+      ],
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    },
+    {
+      "auditId": "AFS-19",
+      "serviceRoot": "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer",
+      "sourceURLsReturnedByCitySearch": [
+        "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0"
+      ],
+      "returnedInCityQueries": [
+        {
+          "cityId": "wup2025:1068",
+          "name": "El Sireaf",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:5752",
+          "name": "Karora",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:5680",
+          "name": "Sawakin",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        }
+      ],
+      "metadataRequests": [
+        "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer?f=pjson"
+      ],
+      "metadataRequestResults": [
+        {
+          "url": "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json; charset=utf-8",
+          "responseType": "public service metadata"
+        },
+        {
+          "url": "https://www.arcgis.com/sharing/rest/content/items/a4f0e4e80d5847919f111c0b22cb272f?f=pjson",
+          "httpStatus": 200,
+          "contentType": "application/json",
+          "responseType": "ArcGIS public item metadata"
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "serviceItemId": "a4f0e4e80d5847919f111c0b22cb272f",
+      "serviceTitle": "Soudan Sud",
+      "access": "public",
+      "serviceDescription": "",
+      "serviceDirectoryContents": null,
+      "metadataError": null,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "nativeFullExtent": {
+        "xmin": 2718089.119894269,
+        "ymin": 401014.1104400268,
+        "xmax": 3833877.7719624876,
+        "ymax": 1349976.446892502,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "extentWgs84Approx": {
+        "west": 24.41701,
+        "south": 3.6,
+        "east": 34.44031,
+        "north": 12.0375,
+        "method": "approximate transform of extent corners EPSG:3857 to EPSG:4326"
+      },
+      "assignedCityCentersInsideExtentEnvelope": [
+        {
+          "cityId": "wup2025:2257",
+          "name": "Umm Danga",
+          "countryCode": "SD"
+        },
+        {
+          "cityId": "wup2025:1780",
+          "name": "Torit",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2340",
+          "name": "Kapoeta",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2564",
+          "name": "Narus",
+          "countryCode": "SS"
+        },
+        {
+          "cityId": "wup2025:2109",
+          "name": "Riwoto",
+          "countryCode": "SS"
+        }
+      ],
+      "extentInterpretation": "Extent-envelope/center check only; this does not prove any service feature exists inside a city or that coverage matches city boundaries.",
+      "layers": [
+        {
+          "id": 0,
+          "name": "Soudan_Sud",
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPoint"
+        }
+      ],
+      "layerCount": 1,
+      "assessment": "Soudan Sud is a single esriGeometryPoint layer. Its regional envelope overlaps some South Sudan city centers, but point geometry is not parcel geometry.",
+      "classification": "regional_point_layer_not_parcels",
+      "layerMetadata": null,
+      "featureSampleCount": 0,
+      "featureRequestPerformed": false
+    }
+  ]
+}

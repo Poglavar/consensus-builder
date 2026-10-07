@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10035,
+  "cityId": "wup2025:10035",
+  "name": "Ghatkesar",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    17.4300271469809,
+    78.6542279686069
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 43,
+  "stateOrUT": "Telangana",
+  "administrativeIdentity": {
+    "district": "Medchal–Malkajgiri",
+    "tehsilOrTaluk": null,
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Telugu",
+        "query": "ఘట్‌కేసర్ భూసర్వే గ్రామ పటం పట్టాదారు భూభారతి తెలంగాణ",
+        "scope": "WUP 10035 Ghatkesar cohort label retained; search for official Telangana parcel/map entry point.",
+        "result": "Actual native-script query surfaced the official state land-record entry point listed below; it did not return a city-specific parcel feature.",
+        "checkedAt": "2026-10-08",
+        "script": "Telugu",
+        "actualResultUrls": [
+          "https://bhulandrecords.in/land-details",
+          "https://bhulandrecords.in/",
+          "https://bhubharatitelangana.com/check-land-by-survey-number/",
+          "https://www.bhubharatiportal.com/",
+          "https://bhubharati.telangana.gov.in/RegDocumentDetails",
+          "https://medchal-malkajgiri.telangana.gov.in/te/%E0%B0%AD%E0%B1%82%E0%B0%97%E0%B0%B0%E0%B1%8D%E0%B0%AD-%E0%B0%9C%E0%B0%B2%E0%B0%B6%E0%B0%BE%E0%B0%96/",
+          "https://bhulandrecords.in/market-value",
+          "https://tg.verified.realestate/tool/village-map",
+          "https://bhubharati.dhethi.com/pattadar",
+          "https://tg.verified.realestate/tool/pahani-land-records",
+          "https://www.bhubharatitelangana.net/services.html",
+          "https://pahani.online/telangana-pahani/",
+          "https://tandurmunicipality.telangana.gov.in/assets/100/2019/12/mediafiles/18.pdf",
+          "https://tandurmunicipality.telangana.gov.in/assets/100/2019/12/mediafiles/2.pdf",
+          "https://epaper.bharathasakthi.com/media-webp/2025-12/22.12.2025-hyderabad.pdf",
+          "https://www.telanganavaradhi.com/media/2025-11/18-11-2025.pdf",
+          "https://arxiv.org/abs/1103.5104"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Government of Telangana, Bhu Bharati",
+        "operator": "Government of Telangana, Bhu Bharati",
+        "homeUrl": "https://bhubharati.telangana.gov.in/gis/",
+        "mapUrl": "https://bhubharati.telangana.gov.in/gis/",
+        "observation": "HTTP 200 public GIS page displayed Telugu/Urdu/Hindi naming, District/Division/Mandal/Village selectors, survey-number search, map layers, and parcel-info-on-click; search and viewer shell only, no target city polygon retrieved."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=17.4300271469809&lon=78.6542279686069&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Rajeev Gruha Kalpa, Annoji Guda, Ghatkesar mandal, Medchal–Malkajgiri, Telangana, 501301, India",
+        "osmType": "way",
+        "osmId": 420682709,
+        "address": {
+          "suburb": "Rajeev Gruha Kalpa",
+          "village": "Annoji Guda",
+          "town": "Ghatkesar mandal",
+          "state_district": "Medchal–Malkajgiri",
+          "state": "Telangana",
+          "ISO3166-2-lvl4": "IN-TS",
+          "postcode": "501301",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://bhubharati.telangana.gov.in/gis/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "HTTP 200 public GIS page displayed Telugu/Urdu/Hindi naming, District/Division/Mandal/Village selectors, survey-number search, map layers, and parcel-info-on-click; search and viewer shell only, no target city polygon retrieved."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier."
+}

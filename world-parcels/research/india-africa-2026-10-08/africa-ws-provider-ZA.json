@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "ZA",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "GISCOE South Africa Cadastre / Erven layer",
+    "operator": "Esri South Africa (GISCOE) public ArcGIS REST service",
+    "scope": "South Africa service; target coverage demonstrated only at Cosmo City, Mboloko and Ennerdale",
+    "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+    "geometry": "polygon; layer 1 metadata labels records Erven and native SG21KEY; maxRecordCount 1000",
+    "access": "Anonymous read returned HTTP 200 with browser-like UA, Accept and en-ZA Accept-Language, session cookie jar and viewer Referer. Requests used small target bboxes and count 3; headers were used on successful calls.",
+    "assessment": "Verified city samples in three target cities. This does not establish nationwide completeness, legal authority, or full service coverage."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "English (South African official-source searches; additional official South African languages not searched)",
+      "exactQueries": [
+        "site:gov.za cadastral parcels Johannesburg GIS erven ArcGIS City of Johannesburg",
+        "site:ags.joburg.org.za/server/rest/services registered stands parcel"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Executed target-language searches; no search result itself verified parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+      "method": "GET query",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "assessment": "Three target bboxes each returned three parcel polygons; see per-city response samples."
+    }
+  ],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage.",
+  "targetCityQueries": [
+    {
+      "wupCityCode": 3990,
+      "name": "Cosmo City",
+      "centerLatLon": [
+        -26.0359639124127,
+        27.9203632448749
+      ],
+      "requestUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query (bounded target bbox; see this record request)",
+      "requestParameters": {
+        "where": "1=1",
+        "geometry": "27.919363244874898,-26.036963912412702,27.9213632448749,-26.0349639124127",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,SG21KEY",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "returnedFeatureCount": 3,
+      "savedResponse": "africa-ws-city-3990-parcel-response.json"
+    },
+    {
+      "wupCityCode": 4033,
+      "name": "Mboloko",
+      "centerLatLon": [
+        -25.4662366387406,
+        27.8447650141456
+      ],
+      "requestUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query (bounded target bbox; see this record request)",
+      "requestParameters": {
+        "where": "1=1",
+        "geometry": "27.8437650141456,-25.4672366387406,27.845765014145602,-25.4652366387406",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,SG21KEY",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "returnedFeatureCount": 3,
+      "savedResponse": "africa-ws-city-4033-parcel-response.json"
+    },
+    {
+      "wupCityCode": 3809,
+      "name": "Ennerdale",
+      "centerLatLon": [
+        -26.4062859886009,
+        27.8459423386999
+      ],
+      "requestUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query (bounded target bbox; see this record request)",
+      "requestParameters": {
+        "where": "1=1",
+        "geometry": "27.844942338699898,-26.4072859886009,27.8469423386999,-26.405285988600898",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,SG21KEY",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "returnedFeatureCount": 3,
+      "savedResponse": "africa-ws-city-3809-parcel-response.json"
+    }
+  ]
+}

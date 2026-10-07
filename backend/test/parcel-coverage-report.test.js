@@ -52,6 +52,34 @@ describe('parcel coverage report', () => {
         expect(() => summarizeJurisdictions([...countries, { ...countries[0], code: 'duplicate' }], world)).toThrow(/exceed world/);
     });
 
+    it('filters the saved India and Africa cohort membership independently of free-text country names', () => {
+        const cities = [
+            { name: 'Indian target', researchFocusRegion: 'India', checked: false },
+            { name: 'African target', researchFocusRegion: 'Africa', checked: true },
+            { name: 'Outside the two saved cohorts', countryCode: 'IN', researchFocusRegion: null, checked: true }
+        ];
+        expect(filterCities(cities, { cohort: 'india-africa' }).map(row => row.name)).toEqual(['Indian target', 'African target']);
+        expect(filterCities(cities, { cohort: 'india' }).map(row => row.name)).toEqual(['Indian target']);
+        expect(filterCities(cities, { cohort: 'africa' }).map(row => row.name)).toEqual(['African target']);
+        expect(filterCities(cities, { cohort: 'india-africa', checked: 'yes' }).map(row => row.name)).toEqual(['African target']);
+    });
+
+    it('attaches fresh WUP research to an existing demographic city without duplicating or mutating it', () => {
+        const original = { id: 'demographic:123', wupCityCode: 123, name: 'Target', countryCode: 'AA', registryCityIds: [], appCityIds: [], cohorts: ['growth200'], latitude: 1, longitude: 2, population2025: 50000 };
+        const report = buildParcelReport({
+            registry: { cities: [{ cityId: 'wup2025:123', name: 'Target', countryCode: 'AA' }], sources: [] },
+            sourceCatalog: { sources: [] }, coverage: { liveCities: [] },
+            evidence: { cities: [{ cityId: 'wup2025:123', checked: true, registryFound: null, verifiedSample: false, sourceIds: [], evidenceUrls: [], evidenceFiles: ['research/fresh.json'], checkedDateEvidence: { date: '2026-10-08', path: 'research/fresh.json' } }], countries: [], warnings: [] },
+            enrichment: { cities: [original] }, growthQueue: [{ cityCode: 123, rank: 12 }], focusQueue: [{ wupCityCode: 123, region: 'Africa', priority: 4 }],
+            countryData: { countries: [{ code: 'AA', name: 'Country', stats: { landAreaKm2: 10, builtUpAreaKm2: 1, population: 100000 } }], world: { landAreaKm2: 10, builtUpAreaKm2: 1, population: 100000 }, sources: [] }
+        });
+        expect(report.cities).toHaveLength(1);
+        expect(report.cities[0]).toMatchObject({ id: 'demographic:123', population2025: 50000, registryCityIds: ['wup2025:123'], checked: true, checkedDate: '2026-10-08', registryFound: null, growthRank: 12, researchFocusRegion: 'Africa', researchPriority: 4 });
+        expect(report.cities[0].cohorts).toEqual(['growth200', 'registry']);
+        expect(original.registryCityIds).toEqual([]);
+        expect(original.cohorts).toEqual(['growth200']);
+    });
+
     it('keeps discovery categories separate from territorial completeness', () => {
         expect(countryCategory({ nationalCadastreFound: true, probeStatus: 'national_cadastre_viewer_only' })).toBe('national');
         expect(countryCategory({ nationalCadastreFound: null, citiesWithRegistry: 1 })).toBe('local');

@@ -3613,6 +3613,96 @@
         "The provider returns an empty HTTP 200 body for some unserved bounds. These are treated as unavailable, never confirmed empty coverage.",
         "Map polygons are adapted to WGS84 from EPSG:32643. Only parcel ID, survey number and block number are retained."
       ]
+    },
+    {
+      "id": "za-joburg-registered-stands",
+      "name": "City of Johannesburg registered stand groups",
+      "adapter": "arcgis",
+      "cityIds": [
+        "johannesburg",
+        "cosmo_city",
+        "ennerdale"
+      ],
+      "countryCode": "ZA",
+      "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "idField": "SG_ID",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ZA-JOBURG-",
+      "outFields": [
+        "OBJECTID",
+        "SG_ID",
+        "PROPERTY_ID",
+        "STAND_NO",
+        "STATUS_DESC",
+        "LAND_TYPE_NAME"
+      ],
+      "attributeNotNull": [
+        "SG_ID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true,
+      "partsCoordinatePrecision": 9,
+      "partMatchFields": [
+        "PROPERTY_ID",
+        "STAND_NO",
+        "STATUS_DESC"
+      ],
+      "pageSize": 25,
+      "maxFeatures": 1500,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 6,
+      "metricSrid": 32735,
+      "idBatchSize": 80,
+      "parcelNumberField": "STAND_NO",
+      "scope": "Municipal registered stands; complete disjoint components of each native SG_ID. Western Johannesburg, Cosmo City and Ennerdale entry areas verified. Source update year and citywide completeness unestablished.",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/index.json",
+      "attribution": "City of Johannesburg · registered stand groups. Entry areas verified in western Johannesburg, Cosmo City and Ennerdale; source update year unestablished.",
+      "catalogueUrl": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "licenceUrl": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "licenceNote": "Source terms are informational. Public municipal GIS; no reuse terms inferred from public access."
+    },
+    {
+      "id": "gh-ama-public-property-app",
+      "name": "Accra Metro app property footprints",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "requestForm": {
+        "tbl": "parcel",
+        "flds": "parcelid,parcelcode"
+      },
+      "idFields": [
+        "parcelid"
+      ],
+      "idPrefix": "GH-AMA-",
+      "outFields": [
+        "parcelid",
+        "parcelcode"
+      ],
+      "parcelNumberField": "parcelcode",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true,
+      "partMatchFields": [
+        "parcelcode"
+      ],
+      "maxSnapshotBytes": 8388608,
+      "maxSnapshotFeatures": 20000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 10,
+      "metricSrid": 32630,
+      "countryCode": "GH",
+      "cityIds": [
+        "accra"
+      ],
+      "maxConcurrentQueries": 6,
+      "scope": "Partial Accra Metro publisher app dataset; source extent [-0.25521,5.52345,-0.2015,5.59943], WUP center outside by approximately 470m. Publisher app PID groups may comprise separate pieces; legal cadastral identity and official authority unconfirmed.",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/accra-3336-acceptance.json",
+      "attribution": "Accra Metro property identification app · Berry ICT host. Partial app-PID property footprints; may comprise separate pieces. Official authority and legal cadastral meaning unconfirmed.",
+      "catalogueUrl": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+      "licenceUrl": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+      "licenceNote": "Reuse terms are unestablished and informational. Berry ICT hosts this publicly accessible Accra Metro-branded app; no official authority is inferred from the branding."
     }
   ]
 }

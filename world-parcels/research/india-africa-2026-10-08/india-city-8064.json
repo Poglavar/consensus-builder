@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 8064,
+  "cityId": "wup2025:8064",
+  "name": "Jaipur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.9128723533915,
+    75.7865606043523
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 142,
+  "stateOrUT": "Rajasthan",
+  "administrativeIdentity": {
+    "district": "जयपुर",
+    "tehsilOrTaluk": "Jaipur Tehsil",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/jaipur.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/jaipur.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Rajasthan state Bhu-Naksha (viewer; urban coverage unknown)",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.rajasthan.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "assessment": "viewer landing page (2.9 KB); later retries gave no response"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.rajasthan.gov.in/bhunaksha/08/index.html",
+            "httpStatus": 404,
+            "contentType": "text/html;charset=ISO-8859-1",
+            "assessment": "guessed path does not exist"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.rajasthan.gov.in/bhunaksha/08/ScalarDatahandler?OP=5&state=08",
+            "httpStatus": 404,
+            "contentType": "text/html;charset=ISO-8859-1",
+            "assessment": "guessed path does not exist"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.nic.in/",
+            "httpStatus": 302,
+            "contentType": "text/html; charset=UTF-8",
+            "assessment": "redirect only"
+          },
+          {
+            "method": "GET",
+            "url": "https://jaipurmc.org/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=utf-8",
+            "assessment": "municipal homepage"
+          },
+          {
+            "method": "GET",
+            "url": "https://opendata.arcgis.com/api/v3/search?q=jaipur+cadastral",
+            "httpStatus": 200,
+            "contentType": "application/json; charset=utf-8",
+            "assessment": "only unofficial student/survey maps"
+          },
+          {
+            "method": "GET",
+            "url": "https://apnakhata.raj.nic.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no response"
+          },
+          {
+            "method": "GET",
+            "url": "https://landrecords.rajasthan.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no response"
+          }
+        ],
+        "conclusion": "Bhu-Naksha is mostly rural revenue-village plots; urban Jaipur coverage, an anonymous bbox query, and reuse terms are unverified. Some hosts were intermittently unreachable.",
+        "nextStep": "Inspect the viewer's network calls for a village-plot geometry endpoint and test one village; check Jaipur Development Authority GIS."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "जयपुर राजस्थान भू नक्शा जमाबंदी खसरा सरकारी राजस्व ग्राम",
+        "scope": "WUP 8064 Jaipur cohort label retained; native-script query searched for official local/state cadastral records.",
+        "result": "Government of Rajasthan Bhu-Naksha viewer opened (HTTP 200) with Location/Layers/Plot Info controls. Search returned official Jaipur-district plot report examples at other villages; these are not the WUP-point parcel. No coordinate-to-revenue-village match or target feature geometry was checked.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://rera.rajasthan.gov.in/Content/uploads/4ada78e6-e6da-424b-abdf-7a8e00846393.pdf",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/jcr%20in%20223-2024.pdf",
+          "https://landrevenue.rajasthan.gov.in/content/dam/landrevenue/boardofrevenue/dilrmp/digi14.pdf",
+          "https://img.staticmb.com/mbimages/reradoc/2025/04/11/5430009Copyofthelegaltitlereportforprojectland_compressed_2_1.pdf",
+          "https://jdaservice.rajasthan.gov.in/PDF/ObjectionandSuggestion/71aea040-0781-4180-ad0c-0c260878857f.pdf",
+          "https://akhairkar.github.io/BhumiRecord/districts/rajasthan/jaipur.html",
+          "https://akhairkar.github.io/BhumiRecord/districts/rajasthan/jaipur-rural.html",
+          "https://apnakhata.rajasthan.gov.in/",
+          "https://phonemap.in/bhu-naksha/jaipur/",
+          "https://phonemap.in/",
+          "https://www.rajasthan365.com/jamabandi/jaipur",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/rajasthan-revenue-department/documents/notification.html",
+          "https://apnakhata.rajasthan.gov.in/?form=MT00MG",
+          "https://bhulekhrajasthan.in/",
+          "https://bhulekhrajasthan.in/bhu-naksha-jaipur/",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/rajasthan-revenue-department/documents/circular.html",
+          "https://rojgardunia.com/bhu-naksha-rajasthan/",
+          "https://en.wikipedia.org/wiki/Bagru",
+          "https://en.wikipedia.org/wiki/Jaipur",
+          "https://en.wikipedia.org/wiki/Jaipur_district",
+          "https://www.reddit.com/r/u_pmmodischemeinfo/comments/njozy4"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Rajasthan land records/map entry point",
+        "operator": "State government source as identified on portal/search result; see observation",
+        "homeUrl": "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+        "mapUrl": "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx",
+        "observation": "Government of Rajasthan Bhu-Naksha viewer opened (HTTP 200) with Location/Layers/Plot Info controls. Search returned official Jaipur-district plot report examples at other villages; these are not the WUP-point parcel. No coordinate-to-revenue-village match or target feature geometry was checked."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=26.9128723533915&lon=75.7865606043523&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Jacob Road, Hasanpura-C, Bais Godam, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, जयपुर, Rajasthan, 302001, India",
+        "osmType": "way",
+        "osmId": 932871381,
+        "address": {
+          "road": "Jacob Road",
+          "neighbourhood": "Hasanpura-C",
+          "suburb": "Bais Godam",
+          "city": "Jaipur",
+          "county": "Jaipur Tehsil",
+          "state_district": "जयपुर",
+          "state": "Rajasthan",
+          "ISO3166-2-lvl4": "IN-RJ",
+          "postcode": "302001",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Government of Rajasthan Bhu-Naksha viewer opened (HTTP 200) with Location/Layers/Plot Info controls. Search returned official Jaipur-district plot report examples at other villages; these are not the WUP-point parcel. No coordinate-to-revenue-village match or target feature geometry was checked."
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx"
+        ],
+        "scope": "Exact official endpoint/result URLs checked or surfaced during the city query; the state service is a lead, not confirmation of WUP-point parcel coverage."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Use the official Bhu-Naksha location selector to resolve the WUP point to the exact Jaipur village, then verify its target plot geometry and stable plot number."
+}

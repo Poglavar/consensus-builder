@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:5371",
+  "queueRank": 21,
+  "wupCityCode": 5371,
+  "name": "Hayya",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "centerLatLon": [
+    18.3342976831698,
+    36.3835682362063
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 21,
+  "population2025": 163304,
+  "annualGrowthPct2015To2025": 8.480473,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-SD.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic",
+    "exactQuery": "هيا السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://ayah1122.github.io/Sudan_GIS/",
+      "https://giscience.github.io/gis-training-resource-center/en/GIS_AA/en_qgis_historical_impact_assessment_sudan_ex1.html",
+      "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "https://aqari.nctr.sd/ar",
+      "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+      "https://ur.gov.iq/index/show-eservice/51472/1/org",
+      "https://aqari.nctr.sd/ar/about",
+      "https://mapcarta.com/13093474"
+    ],
+    "summary": "Official NIC describes a national OGC WMS/WFS portal and Judiciary land-services platform; linked geoportal currently cannot be reached. No city-specific polygon sample.",
+    "additionalOfficialLead": "NIC project page identifies the Sudan Spatial Portal WMS/WFS; linked host unavailable from this network.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://ayah1122.github.io/Sudan_GIS/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://giscience.github.io/gis-training-resource-center/en/GIS_AA/en_qgis_historical_impact_assessment_sudan_ex1.html",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aqari.nctr.sd/ar",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ur.gov.iq/index/show-eservice/51472/1/org",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aqari.nctr.sd/ar/about",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mapcarta.com/13093474",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Hayya\" Sudan (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Hayya%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No Hayya parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Hayya extent; check whether a public parcel layer is exposed without partner authentication.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Hayya%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "officialPortalLead": {
+    "portal": "https://www.geoportal.gov.sd/",
+    "discoveredVia": "https://nic.gov.sd/public/projectDetails/3",
+    "claimedServices": [
+      "WMS",
+      "WFS"
+    ],
+    "directProbeStatus": "DNS resolution failure in this environment",
+    "assessment": "Promising national map portal, but no viewer/layer/capabilities inspection or city polygon test possible."
+  },
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-15",
+      "sourceUrl": "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+      "classification": "parcel_polygon_layer_outside_assigned_countries",
+      "auditSummary": "Public polygon FeatureServer; item owner is ArcGIS user `husam_fw`; public item metadata does not identify a government publisher. Metadata extent in EPSG:28191 transforms to about 35.1231–35.2099E, 31.8739–31.9973N (Ramallah/Palestine), far from every assigned Africa target. Layer 0 is قطع الاراضي with parcel number/area fields; CITY has default Ramallah. This is a real parcel candidate outside scope; no features queried.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Public polygon FeatureServer; item owner is ArcGIS user `husam_fw`; public item metadata does not identify a government publisher. Metadata extent in EPSG:28191 transforms to about 35.1231–35.2099E, 31.8739–31.9973N (Ramallah/Palestine), far from every assigned Africa target. Layer 0 is قطع الاراضي with parcel number/area fields; CITY has default Ramallah. This is a real parcel candidate outside scope; no features queried."
+}

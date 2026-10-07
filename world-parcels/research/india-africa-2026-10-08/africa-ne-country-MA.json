@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "MA",
+  "country": "Morocco",
+  "checkedAt": "2026-10-08",
+  "status": "national_cadastre_credentialed_or_paid",
+  "accessModel": "request with identity, title, captcha, SMS, payment",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Arabic and French",
+      "exactQuery": "المغرب الخريطة العقارية القطع ANCFCC cadastre parcelles",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "https://www.ancfcc.gov.ma/ProduitsCartographieAr/",
+        "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+        "https://www.ancfcc.gov.ma/produits-et-formalit%C3%A9s/produits/cartographie/",
+        "https://ancfcc.gov.ma/ar",
+        "https://ancfcc.gov.ma/cartographieThematiqueAr/",
+        "https://ancfcc.gov.ma/Home/",
+        "https://ancfcc.gov.ma/cadastreAr/"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "observation": "Official online cadastral-plan order form requests identity, cadastral title number, captcha, phone/SMS verification and payment; not an anonymous polygon API."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+      "observation": "Official Arabic product page explains cadastral plans, boundaries and map sheets."
+    },
+    {
+      "url": "https://cadastre.ancfcc.gov.ma/",
+      "observation": "Previous host connection reset; no conclusion on the service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "method": "official search/open",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official request workflow requires identity/title number/captcha/SMS/payment, not open polygons."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Look for public ANCFCC map/service; plan-order workflow alone does not expose spatial polygons."
+}

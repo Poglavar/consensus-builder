@@ -1,0 +1,1109 @@
+{
+  "checkedAt": "2026-10-08",
+  "sourceId": "za-giscoe-erven",
+  "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+  "queryShape": "3x3 grid of nine 0.002\u00b0 x 0.002\u00b0 WGS84 envelope cells, centers spaced 0.002\u00b0",
+  "fieldsRequested": [
+    "OBJECTID",
+    "SG21KEY",
+    "SGSUBKEY",
+    "ParcelGuid",
+    "GlobalID"
+  ],
+  "cities": [
+    {
+      "city": "Cosmo City",
+      "wupCityCode": 3990,
+      "centerLatLon": [
+        -26.0359639124127,
+        27.9203632448749
+      ],
+      "cells": [
+        {
+          "ix": -1,
+          "iy": -1,
+          "bboxLonLat": [
+            27.9173632448749,
+            -26.0389639124127,
+            27.9193632448749,
+            -26.0369639124127
+          ],
+          "count": 9,
+          "manifestCount": 9,
+          "featuresFetched": 9,
+          "objectIdBatches": [
+            {
+              "requestedCount": 9,
+              "http": 200,
+              "elapsedSeconds": 0.284,
+              "ok": true,
+              "returnedCount": 9,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": -1,
+          "bboxLonLat": [
+            27.919363244874898,
+            -26.0389639124127,
+            27.9213632448749,
+            -26.0369639124127
+          ],
+          "count": 61,
+          "manifestCount": 61,
+          "featuresFetched": 61,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.29,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.302,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.346,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 1,
+              "http": 200,
+              "elapsedSeconds": 0.289,
+              "ok": true,
+              "returnedCount": 1,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": -1,
+          "bboxLonLat": [
+            27.921363244874897,
+            -26.0389639124127,
+            27.9233632448749,
+            -26.0369639124127
+          ],
+          "count": 72,
+          "manifestCount": 72,
+          "featuresFetched": 72,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.291,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.305,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.336,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 12,
+              "http": 200,
+              "elapsedSeconds": 0.267,
+              "ok": true,
+              "returnedCount": 12,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": -1,
+          "iy": 0,
+          "bboxLonLat": [
+            27.9173632448749,
+            -26.036963912412702,
+            27.9193632448749,
+            -26.0349639124127
+          ],
+          "count": 34,
+          "manifestCount": 34,
+          "featuresFetched": 34,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.499,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 14,
+              "http": 200,
+              "elapsedSeconds": 0.326,
+              "ok": true,
+              "returnedCount": 14,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": 0,
+          "bboxLonLat": [
+            27.919363244874898,
+            -26.036963912412702,
+            27.9213632448749,
+            -26.0349639124127
+          ],
+          "count": 42,
+          "manifestCount": 42,
+          "featuresFetched": 42,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.295,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.283,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 2,
+              "http": 200,
+              "elapsedSeconds": 0.296,
+              "ok": true,
+              "returnedCount": 2,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": 0,
+          "bboxLonLat": [
+            27.921363244874897,
+            -26.036963912412702,
+            27.9233632448749,
+            -26.0349639124127
+          ],
+          "count": 73,
+          "manifestCount": 73,
+          "featuresFetched": 73,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.292,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.3,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.296,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 13,
+              "http": 200,
+              "elapsedSeconds": 0.273,
+              "ok": true,
+              "returnedCount": 13,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": -1,
+          "iy": 1,
+          "bboxLonLat": [
+            27.9173632448749,
+            -26.034963912412703,
+            27.9193632448749,
+            -26.0329639124127
+          ],
+          "count": 107,
+          "manifestCount": 107,
+          "featuresFetched": 107,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.27,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.283,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.32,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.306,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.282,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 7,
+              "http": 200,
+              "elapsedSeconds": 0.279,
+              "ok": true,
+              "returnedCount": 7,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": 1,
+          "bboxLonLat": [
+            27.919363244874898,
+            -26.034963912412703,
+            27.9213632448749,
+            -26.0329639124127
+          ],
+          "count": 67,
+          "manifestCount": 67,
+          "featuresFetched": 67,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.266,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.272,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.278,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 7,
+              "http": 200,
+              "elapsedSeconds": 0.272,
+              "ok": true,
+              "returnedCount": 7,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": 1,
+          "bboxLonLat": [
+            27.921363244874897,
+            -26.034963912412703,
+            27.9233632448749,
+            -26.0329639124127
+          ],
+          "count": 154,
+          "manifestCount": 154,
+          "featuresFetched": 154,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.274,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.287,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.292,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.296,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.304,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.3,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.291,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 14,
+              "http": 200,
+              "elapsedSeconds": 0.266,
+              "ok": true,
+              "returnedCount": 14,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        }
+      ],
+      "summary": {
+        "cells": 9,
+        "completeCells": 9,
+        "features": 619,
+        "uniqueObservedSG21KEYs": 532
+      }
+    },
+    {
+      "city": "Ennerdale",
+      "wupCityCode": 3809,
+      "centerLatLon": [
+        -26.4062859886009,
+        27.8459423386999
+      ],
+      "cells": [
+        {
+          "ix": -1,
+          "iy": -1,
+          "bboxLonLat": [
+            27.8429423386999,
+            -26.4092859886009,
+            27.8449423386999,
+            -26.407285988600897
+          ],
+          "count": 45,
+          "manifestCount": 45,
+          "featuresFetched": 45,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.28,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.285,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 5,
+              "http": 200,
+              "elapsedSeconds": 0.265,
+              "ok": true,
+              "returnedCount": 5,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": -1,
+          "bboxLonLat": [
+            27.844942338699898,
+            -26.4092859886009,
+            27.8469423386999,
+            -26.407285988600897
+          ],
+          "count": 28,
+          "manifestCount": 28,
+          "featuresFetched": 28,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.27,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 8,
+              "http": 200,
+              "elapsedSeconds": 0.267,
+              "ok": true,
+              "returnedCount": 8,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": -1,
+          "bboxLonLat": [
+            27.846942338699897,
+            -26.4092859886009,
+            27.8489423386999,
+            -26.407285988600897
+          ],
+          "count": 54,
+          "manifestCount": 54,
+          "featuresFetched": 54,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.278,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.268,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 14,
+              "http": 200,
+              "elapsedSeconds": 0.269,
+              "ok": true,
+              "returnedCount": 14,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": -1,
+          "iy": 0,
+          "bboxLonLat": [
+            27.8429423386999,
+            -26.4072859886009,
+            27.8449423386999,
+            -26.405285988600898
+          ],
+          "count": 41,
+          "manifestCount": 41,
+          "featuresFetched": 41,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.268,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.275,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 1,
+              "http": 200,
+              "elapsedSeconds": 0.284,
+              "ok": true,
+              "returnedCount": 1,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": 0,
+          "bboxLonLat": [
+            27.844942338699898,
+            -26.4072859886009,
+            27.8469423386999,
+            -26.405285988600898
+          ],
+          "count": 5,
+          "manifestCount": 5,
+          "featuresFetched": 5,
+          "objectIdBatches": [
+            {
+              "requestedCount": 5,
+              "http": 200,
+              "elapsedSeconds": 0.289,
+              "ok": true,
+              "returnedCount": 5,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": 0,
+          "bboxLonLat": [
+            27.846942338699897,
+            -26.4072859886009,
+            27.8489423386999,
+            -26.405285988600898
+          ],
+          "count": 4,
+          "manifestCount": 4,
+          "featuresFetched": 4,
+          "objectIdBatches": [
+            {
+              "requestedCount": 4,
+              "http": 200,
+              "elapsedSeconds": 0.271,
+              "ok": true,
+              "returnedCount": 4,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": -1,
+          "iy": 1,
+          "bboxLonLat": [
+            27.8429423386999,
+            -26.4052859886009,
+            27.8449423386999,
+            -26.4032859886009
+          ],
+          "count": 77,
+          "manifestCount": 77,
+          "featuresFetched": 77,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.269,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.272,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.289,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 17,
+              "http": 200,
+              "elapsedSeconds": 0.268,
+              "ok": true,
+              "returnedCount": 17,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": 1,
+          "bboxLonLat": [
+            27.844942338699898,
+            -26.4052859886009,
+            27.8469423386999,
+            -26.4032859886009
+          ],
+          "count": 7,
+          "manifestCount": 7,
+          "featuresFetched": 7,
+          "objectIdBatches": [
+            {
+              "requestedCount": 7,
+              "http": 200,
+              "elapsedSeconds": 0.295,
+              "ok": true,
+              "returnedCount": 7,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": 1,
+          "bboxLonLat": [
+            27.846942338699897,
+            -26.4052859886009,
+            27.8489423386999,
+            -26.4032859886009
+          ],
+          "count": 2,
+          "manifestCount": 2,
+          "featuresFetched": 2,
+          "objectIdBatches": [
+            {
+              "requestedCount": 2,
+              "http": 200,
+              "elapsedSeconds": 0.269,
+              "ok": true,
+              "returnedCount": 2,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        }
+      ],
+      "summary": {
+        "cells": 9,
+        "completeCells": 9,
+        "features": 263,
+        "uniqueObservedSG21KEYs": 147
+      }
+    },
+    {
+      "city": "Mboloko",
+      "wupCityCode": 4033,
+      "centerLatLon": [
+        -25.4662366387406,
+        27.8447650141456
+      ],
+      "cells": [
+        {
+          "ix": -1,
+          "iy": -1,
+          "bboxLonLat": [
+            27.8417650141456,
+            -25.4692366387406,
+            27.843765014145603,
+            -25.467236638740598
+          ],
+          "count": 109,
+          "manifestCount": 109,
+          "featuresFetched": 109,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.273,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.273,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.273,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.281,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.304,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 9,
+              "http": 200,
+              "elapsedSeconds": 0.335,
+              "ok": true,
+              "returnedCount": 9,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": -1,
+          "bboxLonLat": [
+            27.8437650141456,
+            -25.4692366387406,
+            27.845765014145602,
+            -25.467236638740598
+          ],
+          "count": 118,
+          "manifestCount": 118,
+          "featuresFetched": 118,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.278,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.269,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.278,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.287,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.269,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 18,
+              "http": 200,
+              "elapsedSeconds": 0.314,
+              "ok": true,
+              "returnedCount": 18,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": -1,
+          "bboxLonLat": [
+            27.8457650141456,
+            -25.4692366387406,
+            27.8477650141456,
+            -25.467236638740598
+          ],
+          "count": 75,
+          "manifestCount": 75,
+          "featuresFetched": 75,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.268,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.277,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.282,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 15,
+              "http": 200,
+              "elapsedSeconds": 0.323,
+              "ok": true,
+              "returnedCount": 15,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": -1,
+          "iy": 0,
+          "bboxLonLat": [
+            27.8417650141456,
+            -25.4672366387406,
+            27.843765014145603,
+            -25.4652366387406
+          ],
+          "count": 15,
+          "manifestCount": 15,
+          "featuresFetched": 15,
+          "objectIdBatches": [
+            {
+              "requestedCount": 15,
+              "http": 200,
+              "elapsedSeconds": 0.358,
+              "ok": true,
+              "returnedCount": 15,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": 0,
+          "bboxLonLat": [
+            27.8437650141456,
+            -25.4672366387406,
+            27.845765014145602,
+            -25.4652366387406
+          ],
+          "count": 32,
+          "manifestCount": 32,
+          "featuresFetched": 32,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.27,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 12,
+              "http": 200,
+              "elapsedSeconds": 0.308,
+              "ok": true,
+              "returnedCount": 12,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": 0,
+          "bboxLonLat": [
+            27.8457650141456,
+            -25.4672366387406,
+            27.8477650141456,
+            -25.4652366387406
+          ],
+          "count": 15,
+          "manifestCount": 15,
+          "featuresFetched": 15,
+          "objectIdBatches": [
+            {
+              "requestedCount": 15,
+              "http": 200,
+              "elapsedSeconds": 0.326,
+              "ok": true,
+              "returnedCount": 15,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": -1,
+          "iy": 1,
+          "bboxLonLat": [
+            27.8417650141456,
+            -25.465236638740603,
+            27.843765014145603,
+            -25.4632366387406
+          ],
+          "count": 39,
+          "manifestCount": 39,
+          "featuresFetched": 39,
+          "objectIdBatches": [
+            {
+              "requestedCount": 20,
+              "http": 200,
+              "elapsedSeconds": 0.298,
+              "ok": true,
+              "returnedCount": 20,
+              "exceededTransferLimit": null
+            },
+            {
+              "requestedCount": 19,
+              "http": 200,
+              "elapsedSeconds": 0.315,
+              "ok": true,
+              "returnedCount": 19,
+              "exceededTransferLimit": null
+            }
+          ],
+          "complete": true
+        },
+        {
+          "ix": 0,
+          "iy": 1,
+          "bboxLonLat": [
+            27.8437650141456,
+            -25.465236638740603,
+            27.845765014145602,
+            -25.4632366387406
+          ],
+          "count": 0,
+          "manifestCount": 0,
+          "featuresFetched": 0,
+          "objectIdBatches": [],
+          "complete": true
+        },
+        {
+          "ix": 1,
+          "iy": 1,
+          "bboxLonLat": [
+            27.8457650141456,
+            -25.465236638740603,
+            27.8477650141456,
+            -25.4632366387406
+          ],
+          "count": 0,
+          "manifestCount": 0,
+          "featuresFetched": 0,
+          "objectIdBatches": [],
+          "complete": true
+        }
+      ],
+      "summary": {
+        "cells": 9,
+        "completeCells": 9,
+        "features": 403,
+        "uniqueObservedSG21KEYs": 330
+      }
+    }
+  ]
+}

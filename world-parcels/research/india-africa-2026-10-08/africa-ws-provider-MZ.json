@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "MZ",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "mozGIS CMCM Plan Cadastro Layers Visualizacao FeatureServer layer 0",
+    "operator": "Mozambique national/city GIS portal attribution points to CMCM / Maputo municipal plan-cadastro visualization",
+    "scope": "A public Matola cadastral map layer was identified; Maputo municipal map investigation showed point-only records for georeferenced processes, and Tete/Moatize were not covered by Matola extent.",
+    "endpoint": "https://services.arcgis.com/8A4uU9qM0p0UQd1f/arcgis/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0",
+    "geometry": "polygon/cadastral map layer candidate; no target-city sample",
+    "access": "Public service inspection; no assigned target Tete/Moatize coverage demonstrated.",
+    "assessment": "Matola polygon layer is a nearby municipal lead but does not cover Tete/Moatize; Maputo process map points are not parcel polygons. Tete cadastral plans reported as digitized in 2016 do not provide an anonymous endpoint."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "Portuguese (Latin)",
+      "exactQueries": [
+        "\"Tete\" \"cadastro predial\" parcelas GIS Moçambique",
+        "\"Moatize\" \"cadastro predial\" parcelas SIG Moçambique",
+        "\"Maputo\" \"cadastro municipal\" parcelas cadastro geográfico municipal GIS",
+        "\"Tete\" geoserviços parcelas ArcGIS Moçambique"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Executed target-language searches; no search result itself verified parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services.arcgis.com/8A4uU9qM0p0UQd1f/arcgis/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0",
+      "method": "GET metadata",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Advertised extent corresponds to Matola; not target Tete/Moatize."
+    }
+  ],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

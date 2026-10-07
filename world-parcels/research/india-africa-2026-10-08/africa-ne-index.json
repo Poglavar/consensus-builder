@@ -1,0 +1,2157 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_research_index",
+  "checkedAt": "2026-10-08",
+  "branch": "colosseum-worlds-fair",
+  "scope": "All 54 assigned cities in country codes DZ, EG, SD, SS, SO, ET, KE, UG, TZ, MG, MA from combined largest/growth cohorts.",
+  "method": "Each city has an exact city-specific local-language/script cadastral query and result summary, plus an independent capped ArcGIS Online catalog search. Country-shared source inspection is separate. A country portal/administrative map/land-offering viewer does not prove target-city parcel coverage.",
+  "cityCount": 54,
+  "countsByResultCategory": {
+    "promising_unavailable": 10,
+    "public_service_no_geometry": 34,
+    "unresolved": 10
+  },
+  "verifiedParcelGeometrySamples": 0,
+  "countryAssessments": [
+    "africa-ne-country-DZ.json",
+    "africa-ne-country-EG.json",
+    "africa-ne-country-ET.json",
+    "africa-ne-country-KE.json",
+    "africa-ne-country-MA.json",
+    "africa-ne-country-MG.json",
+    "africa-ne-country-SD.json",
+    "africa-ne-country-SO.json",
+    "africa-ne-country-SS.json",
+    "africa-ne-country-TZ.json",
+    "africa-ne-country-UG.json"
+  ],
+  "cities": [
+    {
+      "cityId": "wup2025:5371",
+      "name": "Hayya",
+      "countryCode": "SD",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 21,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "هيا السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://giscience.github.io/gis-training-resource-center/en/GIS_AA/en_qgis_historical_impact_assessment_sudan_ex1.html",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://aqari.nctr.sd/ar",
+          "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+          "https://ur.gov.iq/index/show-eservice/51472/1/org",
+          "https://aqari.nctr.sd/ar/about",
+          "https://mapcarta.com/13093474"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-hayya.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No Hayya parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Hayya extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-15"
+      ]
+    },
+    {
+      "cityId": "wup2025:2637",
+      "name": "Embu",
+      "countryCode": "KE",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 25,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili and English",
+        "exactQuery": "Embu Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.ramani.co.ke/pages/ramani-online",
+          "https://ramani.co.ke/pages/ramani-online",
+          "https://lands.go.ke/land-registries",
+          "https://www.scribd.com/document/858923926/EMBU-CIDP-2023-2027",
+          "https://embu.go.ke/sites/default/files/2025-01/REQUEST%20FOR%20PROPOSAL.pdf",
+          "https://www.embu.go.ke/sites/default/files/2026-02/APPROVED%20ANNUAL%20DEVELOPMENT%20PLAN%202026-2027.pdf",
+          "https://www.embu.go.ke/sites/default/files/2025-10/ANNUAL%20DEVELOPMENT%20PLAN%202025-26.pdf",
+          "https://ardhisasa.lands.go.ke/home"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-embu.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Embu parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+      "nextStep": "Check the Embu land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:1871",
+      "name": "Naivasha",
+      "countryCode": "KE",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 26,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili and English",
+        "exactQuery": "Naivasha Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.ramani.co.ke/pages/ramani-online",
+          "https://ramani.co.ke/pages/ramani-online",
+          "https://www.ramani.co.ke/pages/ramani-land-services",
+          "https://www.lands.go.ke/land-registries",
+          "https://www.ramani.co.ke/pages/gis-mapping",
+          "https://www.ramani.co.ke/solutions",
+          "https://www.lands.go.ke/sites/default/files/2025-04/SDLPP%20Kiswahili%20Service%20Charter.pdf",
+          "https://www.ramani.co.ke/pages/products"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-naivasha.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Naivasha parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+      "nextStep": "Check the Naivasha land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:6151",
+      "name": "Kafr Ibrash",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 34,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "كفر إبرياش قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.gov.il/ar/service/submission-of-cadastre-maps-for-review",
+          "https://www.esa.gov.eg/egy_his_maps.aspx",
+          "https://www.landmaplb.com/?lang=ar",
+          "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/",
+          "https://www.slrb.gov.bh/ar/cadastralsurveys",
+          "https://mapcarta.com/13055378",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://lands.nuca.gov.eg/ar/ViewZone.aspx"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-kafr-ibrash.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Kafr Ibrash; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Kafr Ibrash local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:5772",
+      "name": "Jamasa",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 42,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "جمصة الدقهلية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://gate.ahram.org.eg/media/News/2023/2/15/2023-638120653046004691-600.pdf",
+          "https://gate.ahram.org.eg/media/News/2025/1/16/2025-638726200391221944-122.pdf",
+          "https://alamiria.com/Sec/TashTxt?id=7tduzeh4Tg4%3D",
+          "https://www.youm7.com/story/2024/10/8/%D8%B7%D8%B1%D8%AD-%D9%82%D8%B7%D8%B9-%D8%A3%D8%B1%D8%A7%D8%B6-%D9%84%D9%84%D8%A7%D8%B3%D8%AA%D8%AB%D9%85%D8%A7%D8%B1-%D8%A7%D9%84%D8%B3%D9%83%D9%86%D9%89-%D9%88%D8%A7%D9%84%D8%AA%D8%AC%D8%A7%D8%B1%D9%89-%D9%88%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D9%89-%D9%81%D9%89-%D8%AC%D9%85%D8%B5%D8%A9-%D8%A7%D8%B9%D8%B1%D9%81/6734937",
+          "https://www.ida.gov.eg/ar/news/162",
+          "https://www.aldawlanews.com/article/1197654",
+          "https://www.khadamatmisr.gov.eg/ar/node/197",
+          "https://itda.gov.eg/CRM/881/CRA109.pdf"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-jamasa.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Jamasa; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Jamasa local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:6609",
+      "name": "Kafr Saqr",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 46,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "كفر صقر الشرقية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.youm7.com/story/2025/11/24/%D8%AA%D8%B9%D8%B1%D9%81-%D8%B9%D9%84%D9%89-%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D9%85%D9%86%D8%A7%D8%B7%D9%82-%D8%A7%D9%84%D8%A5%D9%8A%D8%AC%D8%A7%D8%B1-%D8%A7%D9%84%D8%B3%D9%83%D9%86%D9%89-%D8%A8%D9%85%D8%B1%D9%83%D8%B2%D9%8A-%D9%83%D9%81%D8%B1-%D8%B5%D9%82%D8%B1-%D9%88%D8%A3%D9%88%D9%84%D8%A7%D8%AF/7203518",
+          "https://www.marefa.org/%D9%83%D9%81%D8%B1_%D8%B5%D9%82%D8%B1",
+          "https://mapcarta.com/13053888",
+          "https://www.now-time.com/Googlemap/City783-Kafr-Saqr.html",
+          "https://www.laweg.net/framePlain.aspx?NID=139381&action=viewactivepages&itemid=112618&type=6",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.marefa.org/%D9%85%D8%B1%D9%83%D8%B2_%D8%B4%D8%B1%D8%B7%D8%A9_%D9%83%D9%81%D8%B1_%D8%B5%D9%82%D8%B1_%28%D8%AF%D8%A7%D8%A6%D8%B1%D8%A9_%D8%A7%D9%86%D8%AA%D8%AE%D8%A7%D8%A8%D9%8A%D8%A9_%D9%85%D8%B5%D8%B1%D9%8A%D8%A9%29",
+          "https://ar.chped.com/wiki/%D9%83%D9%81%D8%B1_%D8%B5%D9%82%D8%B1"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-kafr-saqr.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Kafr Saqr; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Kafr Saqr local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:4036",
+      "name": "Baqlula",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 47,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "بقلولة الغربية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.gov.il/ar/service/submission-of-cadastre-maps-for-review",
+          "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/",
+          "https://raghdan.sa/ar/help/interactive-map/overview/",
+          "https://lebcad.com/",
+          "https://rega.gov.sa/%D8%A7%D9%84%D9%87%D9%8A%D8%A6%D8%A9/%D8%A7%D9%84%D9%85%D8%B5%D8%B7%D9%84%D8%AD%D8%A7%D8%AA-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9/%D8%A7%D9%84%D8%AE%D8%A7%D8%B1%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9/",
+          "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+          "https://www.slrb.gov.bh/ar/cadastralsurveys",
+          "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-baqlula.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Baqlula; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Baqlula local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:1068",
+      "name": "El Sireaf",
+      "countryCode": "SD",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 50,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "السريف السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://aqari.nctr.sd/ar",
+          "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+          "https://www.slrb.gov.bh/ar/cadastralsurveys",
+          "https://www.esri.com/ar-sa/industries/land-administration/overview",
+          "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+          "https://www.amazon.com/GIS-2020-"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-el-sireaf.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No El Sireaf parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small El Sireaf extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-19"
+      ]
+    },
+    {
+      "cityId": "wup2025:2697",
+      "name": "Birma",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 57,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "بيرما الغربية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.gov.il/ar/service/submission-of-cadastre-maps-for-review",
+          "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+          "https://www.slrb.gov.bh/ar/cadastralsurveys",
+          "https://raghdan.sa/ar/help/interactive-map/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://rustaveliproperties.com/ar/marifa/qamus/cadastral-plan",
+          "https://ancfcc.gov.ma/ar"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-birma.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Birma; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Birma local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2257",
+      "name": "Umm Danga",
+      "countryCode": "SD",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 60,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "أم دنقا السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://mapcarta.com/26397994",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://mapcarta.com/13106022",
+          "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer/0",
+          "https://aqari.nctr.sd/ar/about",
+          "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Darfur_Action_plan/FeatureServer/0",
+          "https://kadgis.kdsg.gov.ng/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-umm-danga.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No Umm Danga parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Umm Danga extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-07",
+        "AFS-07"
+      ]
+    },
+    {
+      "cityId": "wup2025:3252",
+      "name": "Balcad",
+      "countryCode": "SO",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 65,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Somali and Arabic",
+        "exactQuery": "Balcad Soomaaliya xogta dhulka khariidad cadastral parcels",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://geographic.org/geographic_names/name.php?c=somalia&fid=5775&uni=-4555494",
+          "https://mapcarta.com/12476082",
+          "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+          "https://faoswalim.org/resources/river_atlas/River_Atlas_Documents/atlas/River_Atlas_Som_Part1_land.pdf",
+          "https://mapcarta.com/12475554",
+          "https://moa.gov.so/guddoomiye-ku-xigeenka-2-aad-ee-arrimaha-bulshada-degmada-balcad-mudane-axmed-maxamed-wadaad-ayaa-si-diiran-ugu-soo-dhaweeyay-wafdi-ka-socda-wasaaradda-beeraha-iyo-waraabka-jfs/",
+          "https://3rabica.org/%D9%85%D9%82%D8%A7%D8%B7%D8%B9%D8%A9_%D8%A8%D9%84%D8%B9%D8%AF",
+          "https://www.maysaragroup.com/en/holdings/land-registry"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-balcad.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous parcel polygon feed for Balcad was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+      "nextStep": "Check the Balcad municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:6469",
+      "name": "Shufune",
+      "countryCode": "ET",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 66,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Amharic and English",
+        "exactQuery": "ሸፉኔ ኢትዮጵያ መሬት ካዳስተር የመሬት ካርታ GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.ffic.gov.et/Portals/0/1381-2017.pdf",
+          "https://nsis.moa.gov.et/",
+          "https://www.metaappz.com/pdf/ethiopian_laws/federal/2025/pr_1381_2025.pdf",
+          "https://lschub.eiar.gov.et/",
+          "https://fjli.gov.et/Tedocs/amfile/am252.pdf",
+          "https://eland.addiscadaster.gov.et/",
+          "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8A%93%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8A%90%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%8C%88%E1%89%A3%2B%E1%88%A8%E1%89%82%E1%89%85%2B%E1%8A%A0%E1%8B%8B%E1%8C%85%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true",
+          "https://ess.gov.et/population-housing/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-shufune.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Shufune parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+      "nextStep": "Ask the Ethiopian land-system operator or Shufune city office whether a public parcel layer or anonymous bounded extract exists, then test geometry and IDs.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:3617",
+      "name": "Garawan",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 69,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "غروان مصر قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/",
+          "https://www.esa.gov.eg/",
+          "https://www.gov.il/ar/service/submission-of-cadastre-maps-for-review",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/paper_maps_search.aspx",
+          "https://www.esa.gov.eg/sellingMapRoom.aspx"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-garawan.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Garawan; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Garawan local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:6113",
+      "name": "Diyarb Nigm",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 73,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "ديرب نجم الشرقية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://uqn.gov.sa/wp-content/uploads/2025/3/%D8%A7%D9%84%D8%B9%D8%AF%D8%AF%205077.pdf%D8%A7%D9%84%D8%B9%D8%AF%D8%AF%205077.pdf",
+          "https://www.vetogate.com/Upload/libfiles/493/5/566.pdf",
+          "https://map.ibnmasr.com/egypt/dyarb-negm/",
+          "https://addarea.com/addarea/page/255022/%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9-%D8%A7%D9%84%D9%85%D8%AD%D9%84%D9%8A%D8%A9---%D8%AF%D9%8A%D8%B1%D8%A8-%D9%86%D8%AC%D9%85/",
+          "https://www.scribd.com/document/932879920/%D8%A7%D9%84%D9%85%D9%86%D8%B8%D9%88%D8%B1-%D8%A7%D9%84%D8%AA%D9%86%D9%85%D9%88%D9%89-%D9%84%D8%AF%D9%8A%D8%B1%D8%A8-%D9%86%D8%AC%D9%85",
+          "https://elmamlaka.cloud/",
+          "https://healtheg.com/ar/AreaMap/%D8%AF%D9%8A%D8%B1%D8%A8-%D9%86%D8%AC%D9%85/%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9",
+          "https://www.sharkia.gov.eg/Division/dearb/default.aspx"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-diyarb-nigm.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Diyarb Nigm; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Diyarb Nigm local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:5752",
+      "name": "Karora",
+      "countryCode": "SD",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 74,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "كارورة السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://gogis.io/ar/",
+          "https://aqari.nctr.sd/ar/about",
+          "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+          "https://services5.arcgis.com/QYf5PkPqzJKVzrmF/arcgis/rest/services/Sudan%20Admin2%2020200831/FeatureServer/0",
+          "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/arcgis/rest/services/RU_Africa_Footprint_WFL1/FeatureServer/19",
+          "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-karora.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No Karora parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Karora extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-15",
+        "AFS-16",
+        "AFS-12",
+        "AFS-19"
+      ]
+    },
+    {
+      "cityId": "wup2025:5578",
+      "name": "شبلنجة",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 85,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "شبلنجة القليوبية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://mapcarta.com/N10665080956",
+          "https://www.slrb.gov.bh/ar/cadastralsurveys",
+          "https://eg.shewaya.com/listing/%D8%A7%D9%84%D8%B3%D8%AC%D9%84-%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%89---%D8%B4%D8%A8%D9%84%D9%86%D8%AC%D8%A9-%D8%A8%D9%86%D9%87%D8%A7796",
+          "https://www.elwatannews.com/data/iframe/pdf/26975586.pdf",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/paper_maps_search.aspx",
+          "https://www.esa.gov.eg/",
+          "https://www.esa.gov.eg/NewsContent2.aspx?id=1505"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-city.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for شبلنجة; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the شبلنجة local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:5479",
+      "name": "Timerein",
+      "countryCode": "SD",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 97,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "تيمرين السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://aqari.nctr.sd/ar",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://gisapps.momra.gov.sa/LandFence/index.html",
+          "https://mapcarta.com/13077666",
+          "https://www.esri.com/ar-sa/industries/land-administration/overview",
+          "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+          "https://aqari.nctr.sd/ar/about"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-timerein.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No Timerein parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Timerein extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-17"
+      ]
+    },
+    {
+      "cityId": "wup2025:6154",
+      "name": "Holeta Genet",
+      "countryCode": "ET",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 99,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Amharic and English",
+        "exactQuery": "ሆለታ ገነት ኢትዮጵያ መሬት ካዳስተር የመሬት ካርታ GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.metaappz.com/pdf/ethiopian_laws/federal/2025/pr_1381_2025.pdf",
+          "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8A%93%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8A%90%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%8C%88%E1%89%A3%2B%E1%88%A8%E1%89%82%E1%89%85%2B%E1%8A%A0%E1%8B%8B%E1%8C%85%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true",
+          "https://ess.gov.et/population-housing/",
+          "https://vizhub.ephi.gov.et/pages/gis_viz_final/health_facility/hf_raw.php",
+          "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Ethiopia_data_integration_WFL1/FeatureServer/2",
+          "https://www.ethionsdi.gov.et/",
+          "https://services.arcgis.com/CmINIEzurW7Tagtl/ArcGIS/rest/services/Ethiopia_Administrative_Boundaries/FeatureServer",
+          "https://pbroker.net/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-holeta-genet.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Holeta Genet parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+      "nextStep": "Ask the Ethiopian land-system operator or Holeta Genet city office whether a public parcel layer or anonymous bounded extract exists, then test geometry and IDs.",
+      "followupServiceAuditRefs": [
+        "AFS-08",
+        "AFS-06"
+      ]
+    },
+    {
+      "cityId": "wup2025:2775",
+      "name": "Merca",
+      "countryCode": "SO",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 103,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Somali and Arabic",
+        "exactQuery": "Merca Soomaaliya xogta dhulka khariidad cadastral parcels",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1519",
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1551",
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1525",
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1558",
+          "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1573",
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1512",
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/F29/V1511?name=perc6__23"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-merca.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous parcel polygon feed for Merca was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+      "nextStep": "Check the Merca municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2962",
+      "name": "Wanlaweyn",
+      "countryCode": "SO",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 104,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Somali and Arabic",
+        "exactQuery": "Wanlaweyn Soomaaliya xogta dhulka khariidad cadastral parcels",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://commons.wikimedia.org/wiki/File%3AWanlaweyn_Sheet_NA_38-54%2C_1-100%2C000_%28PDF%29_-_PCL_Map_Collection_-_wanlaweyn-somalia-100k-1992.pdf",
+          "https://mapcarta.com/es/12447022",
+          "https://mapcarta.com/12447022",
+          "https://mapcarta.com/12447022/Map",
+          "https://mapcarta.com/30704948",
+          "https://osm2cdr.ru/map/soomaaliya/koonfur-galbeed/wanle-weyne-wnlwyn/",
+          "https://gadm.org/maps/SOM/shabeellahahoose/wanlaweyn.html",
+          "https://en.wikipedia.org/wiki/Wanlaweyn_District"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-wanlaweyn.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous parcel polygon feed for Wanlaweyn was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+      "nextStep": "Check the Wanlaweyn municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:5680",
+      "name": "Sawakin",
+      "countryCode": "SD",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 116,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "سواكن السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://aqari.nctr.sd/ar",
+          "https://aqari.nctr.sd/ar/about",
+          "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+          "https://www.esri.com/ar-sa/industries/land-administration/overview",
+          "https://sokuki.com/",
+          "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-sawakin.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No Sawakin parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Sawakin extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-19",
+        "AFS-17"
+      ]
+    },
+    {
+      "cityId": "wup2025:716",
+      "name": "Mbarara",
+      "countryCode": "UG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 129,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "English and Swahili",
+        "exactQuery": "Mbarara Uganda viwanja vya ardhi ramani ya cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://maps.nbrb.go.ug/",
+          "https://data.nextgis.com/en/region/UG-410/overture/",
+          "https://mbarara.go.ug/services/land-management-and-registration",
+          "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+          "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/5",
+          "https://miningcadastre.minerals.go.ug/arcgis/rest/services",
+          "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/Uganda_All_Layers/FeatureServer/3",
+          "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer/export?bbox=-387802.4162353526%2C145973.19681135291%2C1232588.2512353524%2C601157.1231829457"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-mbarara.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Mbarara parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
+      "nextStep": "Check the Mbarara survey office or NLIS operator for an anonymous parcel layer or bounded extract; confirm it covers this city rather than administrative/utility layers.",
+      "followupServiceAuditRefs": [
+        "AFS-14",
+        "AFS-02",
+        "AFS-14",
+        "AFS-03"
+      ]
+    },
+    {
+      "cityId": "wup2025:5631",
+      "name": "Tlecoq",
+      "countryCode": "SD",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 131,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "Tlecoq السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/",
+          "https://aqari.nctr.sd/ar/about",
+          "https://sokuki.com/",
+          "https://bayraktarattys.com/ar/tkgm-parcel-inquiry-guide",
+          "https://www.esri.com/ar-sa/industries/land-administration/overview",
+          "https://services8.arcgis.com/oTalEaSXAuyNT7xf/ArcGIS/rest/services/Al_jmail_Cadastral_Plans_WFL1/FeatureServer/3"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-tlecoq.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No Tlecoq parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Tlecoq extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-18"
+      ]
+    },
+    {
+      "cityId": "wup2025:3135",
+      "name": "Garissa",
+      "countryCode": "KE",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 142,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili and English",
+        "exactQuery": "Garissa Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.ramani.co.ke/pages/ramani-online",
+          "https://ramani.co.ke/pages/ramani-online",
+          "https://lands.go.ke/land-registries",
+          "https://garissa.go.ke/",
+          "https://garissaassembly.go.ke/wp-content/uploads/2024/10/Garissa-ADP-2025_2026_CP.pdf",
+          "https://ardhisasa.lands.go.ke/home",
+          "https://gis.garissa.go.ke/portal/sharing/rest/portals/self",
+          "https://gis.garissa.go.ke/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task\"}"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-garissa.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Garissa parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+      "nextStep": "Check the Garissa land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2573",
+      "name": "Berbera",
+      "countryCode": "SO",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 143,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Somali and Arabic",
+        "exactQuery": "Berbera Somaliland xogta dhulka khariidad cadastral parcels",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.berbera.govsomaliland.online/article/online-land-registration",
+          "https://som.slmof.org/dakhliga/",
+          "https://www.berbera.govsomaliland.online/article/online-property-registration",
+          "https://somalilandgov.com/wp-content/uploads/2013/07/somali-land-book.pdf",
+          "https://www.berbera.govsomaliland.online/article//land-tax",
+          "https://www.berbera.govsomaliland.online/article//tax-on-transfer-of-land",
+          "https://www.berbera.govsomaliland.online/article/taxes-for-land-and-residential-house",
+          "https://www.govsomaliland.online/berbera/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-berbera.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous parcel polygon feed for Berbera was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+      "nextStep": "Check the Berbera municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:6514",
+      "name": "Al-Zawamel",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 144,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "الزواميل الشرقية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/",
+          "https://raghdan.sa/ar/help/interactive-map/overview/",
+          "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+          "https://rmp.alriyadh.gov.sa/ar/gis-portal",
+          "https://rega.gov.sa/%D8%A7%D9%84%D9%87%D9%8A%D8%A6%D8%A9/%D8%A7%D9%84%D9%85%D8%B5%D8%B7%D9%84%D8%AD%D8%A7%D8%AA-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9/%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1-%D8%A7%D9%84%D8%AC%D9%8A%D9%88%D9%85%D9%83%D8%A7%D9%86%D9%8A%D8%A9/",
+          "https://rega.gov.sa/media-center/%D8%A7%D9%84%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1-%D9%88%D8%A7%D9%84%D8%A5%D8%B9%D9%84%D8%A7%D9%86%D8%A7%D8%AA/%D8%A8%D8%AF%D8%A1-%D8%A3%D8%B9%D9%85%D8%A7%D9%84-%D8%A7%D9%84%D8%B3%D8%AC%D9%84-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A-%D9%81%D9%8A-%D9%85%D9%86%D8%A7%D8%B7%D9%82-%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9-%D9%88%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6-%D9%88%D8%A7%D9%84%D9%82%D8%B5%D9%8A%D9%85-%D9%88%D9%85%D9%83%D8%A9-%D8%A7%D9%84%D9%85%D9%83%D8%B1%D9%85%D8%A9/",
+          "https://raghdan.sa/ar/help/interactive-map/",
+          "https://rega.gov.sa/%25D8%25A7%25D9%2584%25D9%2587%25D9%258A%25D8%25A6%25D8%25A9/%25D8%25A7%25D9%2584%25D9%2585%25D8%25B5%25D8%25B7%25D9%2584%25D8%25AD%25D8%25A7%25D8%25AA-%25D8%25A7%25D9%2584%25D8%25B9%25D9%2582%25D8%25A7%25D8%25B1%25D9%258A%25D8%25A9/%25D8%25A8%25D9%2588%25D8%25A7%25D8%25A8%25D8%25A9-%25D8%25A7%25D9%2584%25D8%25B9%25D9%2582%25D8%25A7%25D8%25B1-%25D8%25A7%25D9%2584%25D8%25AC%25D9%258A%25D9%2588%25D9%2585%25D9%2583%25D8%25A7%25D9%2586%25D9%258A%25D8%25A9/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-al-zawamel.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Al-Zawamel; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Al-Zawamel local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:1780",
+      "name": "Torit",
+      "countryCode": "SS",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 151,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic and English",
+        "exactQuery": "توريت جنوب السودان قطع الأراضي كادستر سجل الأراضي land parcels cadastral GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_Registered_HardCopies/MapServer",
+          "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+          "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+          "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+          "https://geomolg.ps/Geocortex/Essentials/REST/sites/A5_mm/map/mapservices",
+          "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-torit.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No public parcel service or verified parcel sample for Torit was found in the city search; the returned land-policy and settlement references do not establish parcel geometry.",
+      "nextStep": "Seek a public cadastral map or anonymous bounded extract from the Torit municipal survey office or South Sudan land authority, then verify parcel IDs and polygons.",
+      "followupServiceAuditRefs": [
+        "AFS-05",
+        "AFS-04",
+        "AFS-17",
+        "AFS-19",
+        "AFS-15",
+        "AFS-10"
+      ]
+    },
+    {
+      "cityId": "wup2025:3011",
+      "name": "Tala",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 157,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "تلا المنوفية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://commons.wikimedia.org/wiki/File%3A%D9%85%D8%B1%D9%83%D8%B2_%D8%AA%D9%84%D8%A7.png",
+          "https://addarea.com/addarea/page/247668/%D9%85%D9%83%D8%AA%D8%A8-%D8%AA%D9%88%D8%AB%D9%8A%D9%82-%D8%A7%D9%84%D8%B4%D9%87%D8%B1-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%89---%D8%AA%D9%84%D8%A7/",
+          "https://www.marefa.org/%D8%AA%D9%84%D8%A7",
+          "https://addarea.com/addarea/page/136571/%D9%85%D8%A3%D9%85%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B6%D8%B1%D8%A7%D8%A6%D8%A8-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9---%D8%AA%D9%84%D8%A7/",
+          "https://www.marefa.org/%D8%AA%D9%84%D8%A7_%28%D9%85%D8%B1%D9%83%D8%B2%29",
+          "https://addarea.com/addarea/page/255313/%D8%A7%D9%84%D8%B3%D8%AC%D9%84-%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%89---%D8%AA%D9%84%D8%A7/",
+          "https://www.smsarko.com/search/lands-for-sale/markaz-tala",
+          "https://www.elwatannews.com/iframe/pdf/18039428181551195324.pdf"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-tala.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Tala; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Tala local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:3187",
+      "name": "Samadon",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 159,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "سمادون المنوفية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://diwanalomran.com/cases/%D8%B3%D9%85%D8%A7%D8%AF%D9%88%D9%86/",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/117738/WQ1_20260101_1554.pdf?isAllowed=y&sequence=2",
+          "https://eg.shewaya.com/listing/%D9%85%D9%83%D8%AA%D8%A8-%D8%AA%D9%85%D9%88%D9%8A%D9%86---%D8%B3%D9%85%D8%A7%D8%AF%D9%88%D9%86-%D8%A7%D8%B4%D9%85%D9%88%D9%86172",
+          "https://www.elwatannews.com/iframe/pdf/18039428181551195324.pdf",
+          "https://www.eta.gov.eg/ar/node/999",
+          "https://diwanalomran.com/%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%AA%D8%B5%D9%86%D9%8A%D9%81-%D8%A7%D9%84%D9%85%D9%86%D8%A7%D8%B7%D9%82-%D8%A7%D9%84%D8%B3%D9%83%D9%86%D9%8A%D8%A9-%D8%A8%D9%8A%D9%86-%D9%85%D8%AA%D9%85%D9%8A%D8%B2-26/",
+          "https://www.esa.gov.eg/files/naze3_projects/2023/104.pdf",
+          "https://www.youm7.com/story/2026/4/14/%D8%A5%D8%B2%D8%A7%D9%84%D8%A7%D8%AA-%D9%81%D9%88%D8%B1%D9%8A%D8%A9-%D9%84%D8%B9%D8%AF%D8%AF-%D9%85%D9%86-%D8%AD%D8%A7%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%AA%D8%B9%D8%AF%D9%89-%D8%B9%D9%84%D9%89-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%89-%D8%A7%D9%84%D8%B2%D8%B1%D8%A7%D8%B9%D9%8A%D8%A9-%D9%81%D9%89/7376821"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-samadon.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Samadon; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Samadon local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:6097",
+      "name": "Dilla",
+      "countryCode": "ET",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 163,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Amharic and English",
+        "exactQuery": "ዲላ ኢትዮጵያ መሬት ካዳስተር የመሬት ካርታ GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.metaappz.com/pdf/ethiopian_laws/federal/2025/pr_1381_2025.pdf",
+          "https://nsis.moa.gov.et/",
+          "https://lschub.eiar.gov.et/",
+          "https://fjli.gov.et/Tedocs/amfile/am252.pdf",
+          "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8A%93%2B%E1%88%98%E1%88%AC%E1%89%B5%2B%E1%8A%90%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%8C%88%E1%89%A3%2B%E1%88%A8%E1%89%82%E1%89%85%2B%E1%8A%A0%E1%8B%8B%E1%8C%85%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true",
+          "https://ihp-wins.unesco.org/dataset/geological-map-ethiopia-1-1m",
+          "https://doi.org/10.63253/9q5t7750",
+          "https://services.arcgis.com/CmINIEzurW7Tagtl/ArcGIS/rest/services/Ethiopia_Administrative_Boundaries/FeatureServer"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-dilla.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Dilla parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+      "nextStep": "Ask the Ethiopian land-system operator or Dilla city office whether a public parcel layer or anonymous bounded extract exists, then test geometry and IDs.",
+      "followupServiceAuditRefs": [
+        "AFS-06"
+      ]
+    },
+    {
+      "cityId": "wup2025:5043",
+      "name": "Dirin",
+      "countryCode": "EG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 169,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "درين الدقهلية قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://sis.gov.eg/ar/%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2-%D8%A7%D9%84%D8%A5%D8%B9%D9%84%D8%A7%D9%85%D9%8A/%D8%A7%D9%84%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B1%D9%8A-%D9%8A%D8%B3%D8%AA%D8%B9%D8%B1%D8%B6-%D8%A7%D9%84%D9%85%D9%86%D8%B8%D9%88%D9%85%D8%A9-%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9-%D9%84%D8%AA%D9%88%D8%AB%D9%8A%D9%82-%D8%A3%D9%85%D9%84%D8%A7%D9%83-%D8%A7%D9%84%D8%AF%D9%88%D9%84%D8%A9-%D9%88%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-%D8%B7%D8%B1%D8%AD-%D8%A7%D9%84%D9%86%D9%87%D8%B1/",
+          "https://www.cairo24.com/Upload/libfiles/83/0/652.pdf",
+          "https://darelhilal.com/News/3271540.aspx",
+          "https://almalnews.com/2125492/%D8%B3%D9%88%D9%8A%D9%84%D9%85-%D9%8A%D8%B3%D8%AA%D8%B9%D8%B1%D8%B6-%D8%A7%D9%84%D9%85%D9%86%D8%B8%D9%88%D9%85%D8%A9-%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9-%D9%84%D8%AA%D9%88%D8%AB%D9%8A%D9%82-%D8%A7%D9%84%D8%A3%D9%85%D9%84%D8%A7%D9%83-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9/",
+          "https://www.slrb.gov.bh/ar/cadastralsurveys",
+          "https://www.elbalad.news/7044853",
+          "https://www.dostor.org/5640895",
+          "https://www.masrtimes.com/728544"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-dirin.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Dirin; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Dirin local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:282",
+      "name": "Kasulu",
+      "countryCode": "TZ",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 178,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili",
+        "exactQuery": "Kasulu Tanzania viwanja ramani ya ardhi vipande cadastral GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+          "https://avenix.co.tz/projects",
+          "https://polis.parliament.go.tz/index.php/questions/13594",
+          "https://eardhi.lands.go.tz/",
+          "https://avenix.co.tz/services/land-survey",
+          "https://kasulutc.go.tz/storage/app/media/uploaded-files/ILANI_CCM_2015.pdf",
+          "https://www.lands.go.tz/services/surveys-and-mapping-2",
+          "https://www.mkurabita.go.tz/uploads/documents/en-1629285126-KITABU%20CHA%20URASIMISHAJI%20MIJINI%20FINAL.pdf"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-kasulu.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Kasulu parcel polygons or stable IDs were verified; e-Ardhi is an account-oriented land-service workflow, not evidence of a public city feature endpoint.",
+      "nextStep": "Check the Kasulu land office or e-Ardhi operator for an open map/API or anonymous bounded parcel extract and verify IDs.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:1603",
+      "name": "Sengerema",
+      "countryCode": "TZ",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 182,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili",
+        "exactQuery": "Sengerema Tanzania viwanja ramani ya ardhi vipande cadastral GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+          "https://sengeremadc.go.tz/",
+          "https://avenix.co.tz/projects",
+          "https://www.parliament.go.tz/uploads/documents/sw-1738925127-1716536478-Hotuba_ya_Bajeti_ya_Wizara_ya_Ardhi%2C_Nyumba_na_Maendeleo_ya_Makazi_kwa_Mwaka_wa_.pdf",
+          "https://www.sengeremadc.go.tz/",
+          "https://commons.wikimedia.org/wiki/File%3ATanzania_Sengerema_location_map.svg",
+          "https://play.google.com/store/apps/details?hl=en_GB&id=tz.go.lands.ilmis_mobile",
+          "https://www.lands.go.tz/uploads/notices/sw1681981554-1675147638-RAMANI%20YA%20TANZANIA_A4_1.pdf"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-sengerema.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Sengerema parcel polygons or stable IDs were verified; e-Ardhi is an account-oriented land-service workflow, not evidence of a public city feature endpoint.",
+      "nextStep": "Check the Sengerema land office or e-Ardhi operator for an open map/API or anonymous bounded parcel extract and verify IDs.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:3626",
+      "name": "El Afweyn",
+      "countryCode": "SO",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 193,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Somali and Arabic",
+        "exactQuery": "Ceel Afweyn Somaliland xogta dhulka khariidad cadastral parcels",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://somalilandgov.com/wp-content/uploads/2013/07/somali-land-book.pdf",
+          "https://www.govsomaliland.org/uploads/files/2022/05/2022-05-26-06-58-21-7044-1653548301.pdf",
+          "https://www.somalilandparliament.net/storage/budjet/1745814036_document.pdf",
+          "https://govsomalilandmap.org/",
+          "https://www.ucl.ac.uk/bartlett/development/sites/bartlett_development/files/progressio_voter_registration_process_in_somaliland_final_170317.pdf",
+          "https://www.govsomaliland.org/uploads/files/2025/08/2025-08-30-03-58-54-5587-1756569534.pdf",
+          "https://mapcarta.com/N4261812789",
+          "https://mapcarta.com/30704942"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-el-afweyn.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous parcel polygon feed for El Afweyn was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+      "nextStep": "Check the El Afweyn municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2340",
+      "name": "Kapoeta",
+      "countryCode": "SS",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 194,
+      "previousEvidence": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic and English",
+        "exactQuery": "كابويتا جنوب السودان قطع الأراضي كادستر سجل الأراضي land parcels cadastral GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+          "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+          "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+          "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+          "https://www.amazon.com/GIS-2020-",
+          "https://geohub.data.undp.org/data/bfc7a2019b585d3b966ad8a2905c2070",
+          "https://geoportal.icpac.net/layers/geonode%3Assd_adm2",
+          "https://shambamap.org/Sheet/SheetSearch"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-kapoeta.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No public parcel service or verified parcel sample for Kapoeta was found in the city search; the returned land-policy and settlement references do not establish parcel geometry.",
+      "nextStep": "Seek a public cadastral map or anonymous bounded extract from the Kapoeta municipal survey office or South Sudan land authority, then verify parcel IDs and polygons.",
+      "followupServiceAuditRefs": [
+        "AFS-17",
+        "AFS-10",
+        "AFS-01"
+      ]
+    },
+    {
+      "cityId": "wup2025:2564",
+      "name": "Narus",
+      "countryCode": "SS",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 1,
+      "previousEvidence": [
+        {
+          "path": "research/growth-top20-2026-10-07/city-2564.json",
+          "status": "temporarily_unavailable"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic and English",
+        "exactQuery": "ناروس جنوب السودان قطع الأراضي كادستر سجل الأراضي land parcels cadastral GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer",
+          "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+          "https://gogis.io/ar/",
+          "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+          "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+          "https://gec-group.co.za/csg",
+          "https://www.esri.com/ar-sa/industries/land-administration/strategies/parcel-management"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-narus.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No public parcel service or verified parcel sample for Narus was found in the city search; the returned land-policy and settlement references do not establish parcel geometry.",
+      "nextStep": "Seek a public cadastral map or anonymous bounded extract from the Narus municipal survey office or South Sudan land authority, then verify parcel IDs and polygons.",
+      "followupServiceAuditRefs": [
+        "AFS-05",
+        "AFS-17",
+        "AFS-19",
+        "AFS-10"
+      ]
+    },
+    {
+      "cityId": "wup2025:2896",
+      "name": "Mutuati",
+      "countryCode": "KE",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 2,
+      "previousEvidence": [
+        {
+          "path": "research/growth-top20-2026-10-07/city-2896.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili and English",
+        "exactQuery": "Mutuati Meru Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.ramani.co.ke/pages/ramani-online",
+          "https://ramani.co.ke/pages/ramani-online",
+          "https://ardhi.meru.go.ke/",
+          "https://lands.go.ke/land-registries",
+          "https://ardhi.meru.go.ke/default",
+          "https://uprisesurveyorsltd.com/",
+          "https://www.lands.go.ke/sites/default/files/2025-04/SDLPP%20Kiswahili%20Service%20Charter.pdf",
+          "https://ardhi.meru.go.ke/signup"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-mutuati.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Mutuati parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+      "nextStep": "Check the Mutuati land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:4435",
+      "name": "Al-Qahirah (Cairo)",
+      "countryCode": "EG",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 7,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/cairo.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "القاهرة مصر قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://cairo.gov.eg/ar/Monthly%20Publication/june2024.pdf",
+          "https://www.cairo.gov.eg/ar/Monthly%20Publication/june2024.pdf",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.cairo.gov.eg/ar/governorate-entities/directorates/housing/tasks/",
+          "https://www.cairo.gov.eg/",
+          "https://www.cairo.gov.eg/ar/Monthly%20Publication/%D9%86%D8%B4%D8%B1%D8%A9%20%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9%20%D9%8A%D9%88%D9%86%D9%8A%D9%882022.pdf",
+          "https://www.cairo.gov.eg/ar/Monthly%20Publication/June2023.pdf",
+          "https://www.esa.gov.eg/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-al-qahirah-cairo.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Al-Qahirah (Cairo); ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Al-Qahirah (Cairo) local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2109",
+      "name": "Riwoto",
+      "countryCode": "SS",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 10,
+      "previousEvidence": [
+        {
+          "path": "research/growth-top20-2026-10-07/city-2109.json",
+          "status": "temporarily_unavailable"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic and English",
+        "exactQuery": "ريوتو جنوب السودان قطع الأراضي كادستر سجل الأراضي land parcels cadastral GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://aqari.nctr.sd/ar",
+          "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+          "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+          "https://www.esri.com/ar-sa/industries/land-administration/overview",
+          "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+          "https://www.amazon.com/GIS-2020-",
+          "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer/2"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-riwoto.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No public parcel service or verified parcel sample for Riwoto was found in the city search; the returned land-policy and settlement references do not establish parcel geometry.",
+      "nextStep": "Seek a public cadastral map or anonymous bounded extract from the Riwoto municipal survey office or South Sudan land authority, then verify parcel IDs and polygons.",
+      "followupServiceAuditRefs": [
+        "AFS-17",
+        "AFS-10",
+        "AFS-11"
+      ]
+    },
+    {
+      "cityId": "wup2025:2633",
+      "name": "Bukalasi",
+      "countryCode": "UG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 13,
+      "previousEvidence": [
+        {
+          "path": "research/growth-top20-2026-10-07/city-2633.json",
+          "status": "temporarily_unavailable"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "English and Swahili",
+        "exactQuery": "Bukalasi Uganda viwanja vya ardhi ramani ya cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+          "https://mlhud.go.ug/ugnlis/",
+          "https://development.finance.go.ug/knowledge-centre-reports/uganda-national-land-information-system-nlis-portal",
+          "https://miningcadastre.minerals.go.ug/arcgis/rest/services",
+          "https://mlhud.go.ug/lands-managment/department-of-surveys-and-mapping/",
+          "https://dgsmportal.minerals.go.ug/site/CustomHtml.aspx?PageID=57d36d0f-6d0d-473a-8c6a-b4a96cb0603b",
+          "https://www.kcca.go.ug/gis/gis",
+          "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer/export?bbox=-387802.4162353526%2C145973.19681135291%2C1232588.2512353524%2C601157.1231829457"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-bukalasi.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Bukalasi parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
+      "nextStep": "Check the Bukalasi survey office or NLIS operator for an anonymous parcel layer or bounded extract; confirm it covers this city rather than administrative/utility layers.",
+      "followupServiceAuditRefs": [
+        "AFS-02",
+        "AFS-03"
+      ]
+    },
+    {
+      "cityId": "wup2025:2565",
+      "name": "Mbale City",
+      "countryCode": "UG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 17,
+      "previousEvidence": [
+        {
+          "path": "research/growth-top20-integration-2026-10-07/mbale.json",
+          "status": "no_verified_public_parcel_geometry"
+        },
+        {
+          "path": "research/growth-top20-2026-10-07/city-2565.json",
+          "status": "temporarily_unavailable"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "English and Swahili",
+        "exactQuery": "Mbale City Uganda viwanja vya ardhi ramani ya cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://mbalecity.go.ug/department/physical-planning-and-housing",
+          "https://mbalecity.go.ug/downloads",
+          "https://mlhud.go.ug/mbale/",
+          "https://www.kcca.go.ug/gis/gis",
+          "https://data.nextgis.com/en/region/UG-209/overture/",
+          "https://ugandaradionetwork.net/story/ulc-launches-digital-inventory-of-govt-land-in-mbale",
+          "https://mbalecity.go.ug/",
+          "https://miningcadastre.minerals.go.ug/arcgis/rest/services"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-mbale-city.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Mbale City parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
+      "nextStep": "Check the Mbale City survey office or NLIS operator for an anonymous parcel layer or bounded extract; confirm it covers this city rather than administrative/utility layers.",
+      "followupServiceAuditRefs": [
+        "AFS-02"
+      ]
+    },
+    {
+      "cityId": "wup2025:3846",
+      "name": "Meftah",
+      "countryCode": "DZ",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 19,
+      "previousEvidence": [
+        {
+          "path": "research/growth-top20-2026-10-07/city-3846.json",
+          "status": "temporarily_unavailable"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic and French",
+        "exactQuery": "مفتاح البليدة الجزائر cadastre parcelles الأراضي المسح العقاري",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+          "https://www.dcwblida.dz/index.php?Itemid=54&id=122&option=com_content&view=article",
+          "https://cour-blida.mjustice.dz/%D9%82%D8%A7%D8%A6%D9%85%D8%A9_%D8%A7%D9%84%D8%AE%D8%A8%D8%B1%D8%A7%D8%A1_%D8%A7%D9%84%D9%85%D8%B9%D8%AA%D9%85%D8%AF%D9%8A%D9%86?page=3",
+          "https://www.ouedkniss.com/terrain-vente-blida-meftah-algerie-d49762319",
+          "https://publications.univ-blida2.dz/lire.php?f=pdf213.pdf",
+          "https://www.ouedkniss.dz/terrain-vente-blida-meftah-algerie-d51156676",
+          "https://mapcarta.com/fr/W451724988",
+          "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-meftah.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Meftah; Algeria’s Fadaeldjazair/DGDN portal was previously unavailable, so no target map layer or stable parcel ID was validated.",
+      "nextStep": "Retry Fadaeldjazair/DGDN from a working route; if its viewer loads, inspect layer names and test a small Meftah extent for parcel polygons and IDs.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2198",
+      "name": "Antsiramandroso",
+      "countryCode": "MG",
+      "cohorts": [
+        "growth200"
+      ],
+      "largestRank": null,
+      "growthRank": 20,
+      "previousEvidence": [
+        {
+          "path": "research/growth-top20-2026-10-07/city-2198.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Malagasy and French",
+        "exactQuery": "Antsiramandroso Madagasikara sarintany fananan-tany parcellaire PLOF",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.scribd.com/document/588334289/Torolalana-Fananan-tany",
+          "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf",
+          "https://cnlegis.gov.mg/uploads/L2022-013-VM.pdf",
+          "https://indriconnect.info/public/images/documents/pdf_1729006995.pdf",
+          "https://bianco-mg.org/wp-content/uploads/2020/06/Torolalana_Fananan-tany.pdf",
+          "https://www.studocu.com/row/document/universite-dantananarivo/universite-d-antananarivo/torolalana-fananan-tany-inona-no-tokony-ho-fantatra-bianco-2018/137959781",
+          "https://torolalana.gov.mg/mg/services/transformer-cadastre-en-titre/",
+          "https://www.govserv.org/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-antsiramandroso.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No verified parcel layer for Antsiramandroso was established. Antananarivo’s prior PLOF WFS candidate remains semantically unconfirmed and partial; it cannot establish parcel coverage for this city.",
+      "nextStep": "For Antsiramandroso, verify the relevant PLOF layer’s meaning, attributes, ID stability and city coverage; do not transfer Antananarivo’s partial lead to this city.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:3566",
+      "name": "Dar es Salaam",
+      "countryCode": "TZ",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 42,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/dar-es-salaam.json",
+          "status": "temporarily_unavailable"
+        },
+        {
+          "path": "research/retry/cities/dar-es-salaam.json",
+          "status": null
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili",
+        "exactQuery": "Dar es Salaam Tanzania viwanja ramani ya ardhi vipande cadastral GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+          "https://avenix.co.tz/projects",
+          "https://www.scribd.com/document/619554482/Land-Values-in-Tanzania",
+          "https://www.lands.go.tz/uploads/documents/sw-1693121278-1456588499-MRADI%20WA%20KUPIMA%20VIWANJA%2020_000%20JIJINI%20DAR%20ES%20SALAAM.pdf",
+          "https://www.pmo.go.tz/uploads/documents/sw-1665036750-Ilani%20ya%20Uchaguzi%20ya%20Chama%20cha%20Mapinduzi%202020%20-%202025.pdf",
+          "https://play.google.com/store/apps/details?hl=en&id=tz.go.lands.ilmis_mobile",
+          "https://avenix.co.tz/",
+          "https://avenix.co.tz/services/land-survey"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-dar-es-salaam.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Dar es Salaam parcel polygons or stable IDs were verified; e-Ardhi is an account-oriented land-service workflow, not evidence of a public city feature endpoint.",
+      "nextStep": "Check the Dar es Salaam land office or e-Ardhi operator for an open map/API or anonymous bounded parcel extract and verify IDs.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:275",
+      "name": "Alexandria",
+      "countryCode": "EG",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 48,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/alexandria.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "الإسكندرية مصر قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://ida.gov.eg/ar/investmap",
+          "https://geogiza.com/ar/locations/alexandria/cadastral-land-subdivision",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/paper_maps_search.aspx",
+          "https://www.alexandria.gov.eg/Government/districts/garb/Map.aspx"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-alexandria.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Alexandria; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Alexandria local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:4325",
+      "name": "Al-Kharṭūm (Khartoum)",
+      "countryCode": "SD",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 56,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/khartoum.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "الخرطوم السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://ayah1122.github.io/Sudan_GIS/",
+          "https://aqari.nctr.sd/ar",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://aqari.nctr.sd/ar/about",
+          "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer/0",
+          "https://sd.linkedin.com/company/ministry-of-physical-planning-general-directorate-of-survey",
+          "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+          "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer/19"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-al-khar-m-khartoum.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No Al-Kharṭūm (Khartoum) parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Al-Kharṭūm (Khartoum) extent; check whether a public parcel layer is exposed without partner authentication.",
+      "followupServiceAuditRefs": [
+        "AFS-09",
+        "AFS-15",
+        "AFS-13"
+      ]
+    },
+    {
+      "cityId": "wup2025:6353",
+      "name": "Ādīs Ᾱbeba (Addis Ababa)",
+      "countryCode": "ET",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 59,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/addis-ababa.json",
+          "status": "temporarily_unavailable"
+        },
+        {
+          "path": "research/retry/cities/addis-ababa.json",
+          "status": null
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Amharic and English",
+        "exactQuery": "አዲስ አበባ መሬት ካዳስተር የመሬት ካርታ GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.globgov.com/ET/Addis-Ababa/100327571879408/Addis-Ababa-City-Admin.-Landholding-Registration-and-Information-Agency",
+          "https://www.amn.gov.et/wp-content/uploads/2026/05/Addis-Lissan-Ginbot-22-2018-Final-9.pdf",
+          "https://aapdb.gov.et/uploads/Publication/-2024-05-29-66572bc2b95f0.pdf",
+          "https://fjli.gov.et/Tedocs/addisfile/a74.pdf",
+          "https://www.amn.gov.et/wp-content/uploads/2026/04/Addis-Lissan-Miyaziya-10-2018.pdf",
+          "https://www.amn.gov.et/wp-content/uploads/2025/11/Addis-Lissan-Hidati-6-2018.pdf",
+          "https://www.ulc.gov.et/uploads/Publication/regulation-no-292010-2025-11-02-6906ed02d739e.pdf",
+          "https://www.aapdb.gov.et/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-d-s-beba-addis-ababa.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Ādīs Ᾱbeba (Addis Ababa) parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+      "nextStep": "Ask the Ethiopian land-system operator or Ādīs Ᾱbeba (Addis Ababa) city office whether a public parcel layer or anonymous bounded extract exists, then test geometry and IDs.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2033",
+      "name": "Nairobi",
+      "countryCode": "KE",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 65,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/nairobi.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Swahili and English",
+        "exactQuery": "Nairobi Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.ramani.co.ke/pages/ramani-online",
+          "https://ramani.co.ke/pages/ramani-online",
+          "https://www.ramani.co.ke/pages/ramani-land-services",
+          "https://www.ramani.co.ke/pages/gis-mapping",
+          "https://www.ramani.co.ke/",
+          "https://ardhi.nairobiservices.go.ke/",
+          "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+          "https://ramani.co.ke/solutions"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-nairobi.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Nairobi parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+      "nextStep": "Check the Nairobi land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:1866",
+      "name": "Kampala",
+      "countryCode": "UG",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 85,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/kampala.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "English and Swahili",
+        "exactQuery": "Kampala Uganda viwanja vya ardhi ramani ya cadastral parcels GIS",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+          "https://kcca.go.ug/gis",
+          "https://maps.nbrb.go.ug/",
+          "https://kcca.go.ug/open-gov",
+          "https://www.kcca.go.ug/faqs-gis",
+          "https://www.kcca.go.ug/surveys-and-mapping",
+          "https://mlhud.go.ug/ugnlis/",
+          "https://mlhud.go.ug/documents/"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-kampala.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous Kampala parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
+      "nextStep": "Check the Kampala survey office or NLIS operator for an anonymous parcel layer or bounded extract; confirm it covers this city rather than administrative/utility layers.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:2076",
+      "name": "Casablanca",
+      "countryCode": "MA",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 94,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/casablanca.json",
+          "status": "temporarily_unavailable"
+        },
+        {
+          "path": "research/retry/cities/casablanca.json",
+          "status": null
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic and French",
+        "exactQuery": "الدار البيضاء المغرب المسح العقاري خريطة القطع parcelles cadastre",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.ancfcc.gov.ma/ProduitsCartographieAr/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+          "https://ancfcc.gov.ma/Home/",
+          "https://sidimoumen.casablancacity.ma/ar/casa-maps",
+          "https://www.africabizinfo.com/ar-MA/%D8%A7%D9%84%D9%88%D9%83%D8%A7%D9%84%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9-%D9%84%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9-%D9%88%D8%A7%D9%84%D9%85%D8%B3%D8%AD_6O-0688-900208",
+          "https://www.casablancacity.ma/ar/casa-maps"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-casablanca.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No open parcel polygons for Casablanca were verified. ANCFCC plan requests are tied to identity/title details and payment, so the service does not provide a public city-wide feed.",
+      "nextStep": "Check whether ANCFCC or Casablanca’s municipality publishes a public vector layer or bounded parcel extract; treat identity-gated cadastral plans as records access, not an open feed.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:3197",
+      "name": "Muqdisho (Mogadishu)",
+      "countryCode": "SO",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 95,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/mogadishu.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Somali and Arabic",
+        "exactQuery": "Muqdisho Soomaaliya xogta dhulka khariidad cadastral parcels",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.adal.so/civil-code",
+          "https://mof.gov.so/fiscal/EXPexplorerso.html",
+          "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+          "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202026.pdf",
+          "https://www.maysaragroup.com/so/holdings/land-registry",
+          "https://mof.gov.so/fiscal/indexso.html",
+          "https://faoswalim.org/resources/river_atlas/River_Atlas_Documents/atlas/River_Atlas_Som_Part1_land.pdf",
+          "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1525"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-muqdisho-mogadishu.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous parcel polygon feed for Muqdisho (Mogadishu) was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+      "nextStep": "Check the Muqdisho (Mogadishu) municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:7397",
+      "name": "Luxor",
+      "countryCode": "EG",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 104,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/luxor.json",
+          "status": "no_verified_open_endpoint_after_attempts"
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic",
+        "exactQuery": "الأقصر مصر قطع الأراضي المسح العقاري كادستر خريطة",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.esa.gov.eg/egy_his_maps.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%A7%D9%82%D8%B5%D8%B1/",
+          "https://gopp.gov.eg/luxor-strategic-plan/",
+          "https://www.esa.gov.eg/paper_maps_search.aspx",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.shorouknews.com/news/view.aspx?cdate=05062026&id=74e4eefd-8695-45ec-8924-6321e74e4b86",
+          "https://www.almasryalyoum.com/news/details/4240799"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-luxor.json",
+      "resultCategory": "public_service_no_geometry",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for Luxor; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "nextStep": "Check ESA or the Luxor local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:1961",
+      "name": "Antananarivo",
+      "countryCode": "MG",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 118,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/antananarivo.json",
+          "status": "temporarily_unavailable"
+        },
+        {
+          "path": "research/retry/cities/antananarivo.json",
+          "status": null
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Malagasy and French",
+        "exactQuery": "Antananarivo Madagasikara sarintany fananan-tany parcellaire PLOF",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://fr.scribd.com/document/470630659/boky-torolalana-momba-ny-fananan-tany",
+          "https://www.scribd.com/document/588334289/Torolalana-Fananan-tany",
+          "https://www.studocu.com/row/document/universite-dantananarivo/universite-d-antananarivo/torolalana-fananan-tany-inona-no-tokony-ho-fantatra-bianco-2018/137959781",
+          "https://fr.scribd.com/document/896477180/Fanamarihana-Fananana-Tany",
+          "https://www.ivotoro.mg/language/mg/procedure/kara-tany-terrain-en-requisition/",
+          "https://www.govserv.org/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany",
+          "https://fr.scribd.com/document/855772206/SIF-Guide-foncier",
+          "https://www.findglocal.com/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-antananarivo.json",
+      "resultCategory": "unresolved",
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No verified parcel layer for Antananarivo was established. Antananarivo’s prior PLOF WFS candidate remains semantically unconfirmed and partial; it cannot establish parcel coverage for this city.",
+      "nextStep": "For Antananarivo, verify the relevant PLOF layer’s meaning, attributes, ID stability and city coverage; do not transfer Antananarivo’s partial lead to this city.",
+      "followupServiceAuditRefs": []
+    },
+    {
+      "cityId": "wup2025:3444",
+      "name": "El Djazaïr (Algiers)",
+      "countryCode": "DZ",
+      "cohorts": [
+        "largest200"
+      ],
+      "largestRank": 148,
+      "growthRank": null,
+      "previousEvidence": [
+        {
+          "path": "research/el-djazair-algiers.json",
+          "status": "temporarily_unavailable"
+        },
+        {
+          "path": "research/retry/cities/el-djazair-algiers.json",
+          "status": null
+        }
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Arabic and French",
+        "exactQuery": "الجزائر العاصمة المغرب العربي cadastre parcelles Fadaeldjazair",
+        "date": "2026-10-08",
+        "executionMethod": "web.run search_query; response_length=short",
+        "resultUrls": [
+          "https://www.scribd.com/document/853393328/Fadaeldjazair-%D8%A7%D9%84%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9-%D9%81%D8%B6%D8%A7%D8%A1-%D8%A7%D9%84%D8%AC%D8%B2%D8%A7%D8%A6%D8%B1",
+          "https://www.ennaharonline.com/%D8%A8%D9%8A%D8%A7%D9%86-%D9%87%D8%A7%D9%85-%D9%85%D9%86-%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-%D9%84%D9%84%D8%A3%D9%85%D9%84%D8%A7%D9%83-%D8%A7%D9%84/",
+          "https://fadaeldjazair.mf.gov.dz",
+          "https://jazairhope.org/fr/fada-el-jazair-loutil-indispensable-pour-eviter-les-pieges-immobiliers/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.raqmanadz.com/categories/realEstate",
+          "https://www.zarkachat.com/fadaeldjazair-mf-gov-dz/",
+          "https://it.scribd.com/document/853393328/Fadaeldjazair-%D8%A7%D9%84%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9-%D9%81%D8%B6%D8%A7%D8%A1-%D8%A7%D9%84%D8%AC%D8%B2%D8%A7%D8%A6%D8%B1"
+        ],
+        "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment."
+      },
+      "newEvidencePath": "africa-ne-city-el-djaza-r-algiers.json",
+      "resultCategory": "promising_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The public city-specific search found no verified parcel polygons for El Djazaïr (Algiers); Algeria’s Fadaeldjazair/DGDN portal was previously unavailable, so no target map layer or stable parcel ID was validated.",
+      "nextStep": "Retry Fadaeldjazair/DGDN from a working route; if its viewer loads, inspect layer names and test a small El Djazaïr (Algiers) extent for parcel polygons and IDs.",
+      "followupServiceAuditRefs": []
+    }
+  ],
+  "actualCitySearchCount": 54,
+  "sharedCountryAssessmentCount": 11,
+  "sharedCountrySourceCheckedCount": 14,
+  "sharedCountrySourceCheckDefinition": "Number of discrete HTTP requests recorded across shared country assessment request arrays; this is separate from the number of country assessments.",
+  "sharedCountrySearchQueryCount": 12,
+  "followupServiceAuditFile": "africa-ne-followup-services.json"
+}

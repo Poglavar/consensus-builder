@@ -1,0 +1,1560 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_research_index",
+  "checkedAt": "2026-10-08",
+  "branch": "colosseum-worlds-fair",
+  "scope": "53 assigned African cities in country codes AO, BF, BJ, CD, CI, CG, CM, GH, GN, GQ, ML, MZ, NG, SN, TG, ZA, ZM; excludes DZ, EG, SD, SS, SO, ET, KE, UG, TZ, MG, MA, India, and separately handled Johannesburg city code 3664.",
+  "method": "New target probes, retries, inherited baseline rows, and shared country/provider leads are distinguished. City-specific native-language web searches are recorded where executed; bounded target polygon queries alone count as parcel verification. No open-data absence or countrywide coverage is inferred.",
+  "cityCount": 53,
+  "countsByWorkCategory": {
+    "new_city_research": 29,
+    "retry_existing_city": 18,
+    "already_live": 6
+  },
+  "countsByResultCategory": {
+    "fresh_verified_sample": 3,
+    "no_new_verified_target_sample": 30,
+    "fresh_target_probe_temporarily_unavailable": 8,
+    "candidate_service_temporarily_unavailable": 1,
+    "country_service_outside_target": 2,
+    "candidate_service_outside_target": 1,
+    "promising_service_unavailable": 1,
+    "fresh_verified_partial_city_sample": 1,
+    "inherited_live_baseline": 6
+  },
+  "verifiedParcelGeometrySamples": 4,
+  "providerEvidence": [
+    "africa-ws-provider-AO.json",
+    "africa-ws-provider-BF.json",
+    "africa-ws-provider-CD.json",
+    "africa-ws-provider-CI.json",
+    "africa-ws-provider-GH.json",
+    "africa-ws-provider-GN.json",
+    "africa-ws-provider-GQ.json",
+    "africa-ws-provider-MZ.json",
+    "africa-ws-provider-NG.json",
+    "africa-ws-provider-SN.json",
+    "africa-ws-provider-TG.json",
+    "africa-ws-provider-ZA.json",
+    "africa-ws-provider-ZM.json"
+  ],
+  "cities": [
+    {
+      "cityId": "wup2025:3990",
+      "wupCityCode": 3990,
+      "name": "Cosmo City",
+      "countryCode": "ZA",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-3990.json",
+      "resultCategory": "fresh_verified_sample",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": "City-level sample verified; citywide service completeness and source authority remain unestablished.",
+      "nextStep": "Confirm service completeness and source authority before making broader coverage claims.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true,
+      "sharedSourceDiscovery": {
+        "languageScript": "English (South African official-source search)",
+        "exactQueries": [
+          "site:gov.za cadastral parcels Johannesburg GIS erven ArcGIS City of Johannesburg",
+          "site:ags.joburg.org.za/server/rest/services registered stands parcel"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [
+          "https://www.giscoe.gov.za/",
+          "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+          "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/31"
+        ],
+        "summary": "Country/provider discovery for public South African cadastral services; queries did not name this target city. Target city evidence comes from the separate bounded bbox request recorded below."
+      }
+    },
+    {
+      "cityId": "wup2025:239",
+      "wupCityCode": 239,
+      "name": "Bata",
+      "countryCode": "GQ",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Spanish (Latin)",
+        "exactQueries": [
+          "\"Bata\" Guinea Ecuatorial catastro parcelas geoportal SIG"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-239.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:6366",
+      "wupCityCode": 6366,
+      "name": "Ekeremor",
+      "countryCode": "NG",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Latin script)",
+        "exactQueries": [
+          "\"Ekeremor\" cadastral parcel GIS Bayelsa State land registry",
+          "\"Ekeremor\" cadastral \"Bayelsa\" land registry GIS"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-6366.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1661",
+      "wupCityCode": 1661,
+      "name": "Akakopé",
+      "countryCode": "TG",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Akakopé\" Togo cadastre parcelles géoportail SIG"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1661.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:4033",
+      "wupCityCode": 4033,
+      "name": "Mboloko",
+      "countryCode": "ZA",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-4033.json",
+      "resultCategory": "fresh_verified_sample",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": "City-level sample verified; citywide service completeness and source authority remain unestablished.",
+      "nextStep": "Confirm service completeness and source authority before making broader coverage claims.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true,
+      "sharedSourceDiscovery": {
+        "languageScript": "English (South African official-source search)",
+        "exactQueries": [
+          "site:gov.za cadastral parcels Johannesburg GIS erven ArcGIS City of Johannesburg",
+          "site:ags.joburg.org.za/server/rest/services registered stands parcel"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [
+          "https://www.giscoe.gov.za/",
+          "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+          "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/31"
+        ],
+        "summary": "Country/provider discovery for public South African cadastral services; queries did not name this target city. Target city evidence comes from the separate bounded bbox request recorded below."
+      }
+    },
+    {
+      "cityId": "wup2025:4201",
+      "wupCityCode": 4201,
+      "name": "Luau",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Luau\" Angola cadastro predial parcelas SIG"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-4201.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:6878",
+      "wupCityCode": 6878,
+      "name": "Kilwa",
+      "countryCode": "CD",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Kilwa\" RDC \"parcelles cadastrales\" SIG cadastre"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-6878.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:3898",
+      "wupCityCode": 3898,
+      "name": "Luena",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Luena\" Angola cadastro predial parcelas Geoportal"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-3898.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:5724",
+      "wupCityCode": 5724,
+      "name": "Kolwezi",
+      "countryCode": "CD",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Kolwezi\" cadastre parcelles GIS parcellaire République démocratique Congo"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-5724.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:7666",
+      "wupCityCode": 7666,
+      "name": "Ogu",
+      "countryCode": "NG",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Latin script)",
+        "exactQueries": [
+          "\"Ogu\" cadastral parcel GIS Rivers State land registry",
+          "\"Ogu\" \"cadastral\" GIS property parcel"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-7666.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:3610",
+      "wupCityCode": 3610,
+      "name": "Malanje",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Malanje\" Angola cadastro predial parcelas geográfico"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-3610.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:8097",
+      "wupCityCode": 8097,
+      "name": "Ikot Ekpene",
+      "countryCode": "NG",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Latin script)",
+        "exactQueries": [
+          "\"Ikot Ekpene\" cadastral parcels GIS Akwa Ibom land registry",
+          "\"Ikot Ekpene\" \"cadastral\" \"GIS\" land parcels"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-8097.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:6743",
+      "wupCityCode": 6743,
+      "name": "Kasumbalesa",
+      "countryCode": "CD",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Kasumbalesa\" cadastre parcelles SIG RDC"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-6743.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:546",
+      "wupCityCode": 546,
+      "name": "Cabinda",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Cabinda\" Angola cadastro predial parcelas IGCA"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-546.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:3809",
+      "wupCityCode": 3809,
+      "name": "Ennerdale",
+      "countryCode": "ZA",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-3809.json",
+      "resultCategory": "fresh_verified_sample",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": "City-level sample verified; citywide service completeness and source authority remain unestablished.",
+      "nextStep": "Confirm service completeness and source authority before making broader coverage claims.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true,
+      "sharedSourceDiscovery": {
+        "languageScript": "English (South African official-source search)",
+        "exactQueries": [
+          "site:gov.za cadastral parcels Johannesburg GIS erven ArcGIS City of Johannesburg",
+          "site:ags.joburg.org.za/server/rest/services registered stands parcel"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [
+          "https://www.giscoe.gov.za/",
+          "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+          "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/31"
+        ],
+        "summary": "Country/provider discovery for public South African cadastral services; queries did not name this target city. Target city evidence comes from the separate bounded bbox request recorded below."
+      }
+    },
+    {
+      "cityId": "wup2025:2412",
+      "wupCityCode": 2412,
+      "name": "Mansa",
+      "countryCode": "ZM",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "English (official Zambia/Mansa municipal terminology; Latin script)",
+        "exactQueries": [
+          "Mansa Zambia parcels cadastre land plot GIS Ministry of Lands"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [
+          "https://www.mansacouncil.gov.zm/?page_id=2435",
+          "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer"
+        ],
+        "summary": "Search found Mansa Municipal Council Survey Section (boundary, survey diagram and GIS duties) and the national Zambia NSDI Lots/cadaster service with ZILMIS keyword, but no verified Mansa sample; bounded target reads timed out."
+      },
+      "newEvidencePath": "africa-ws-city-2412.json",
+      "resultCategory": "candidate_service_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Candidate metadata and bounded Mansa feature query timed out from this network (HTTP 000); target city coverage and stable parcel identifiers remain unverified.",
+      "nextStep": "Retry the bounded Mansa query when the official NSDI endpoint responds, then confirm the layer’s target coverage and native parcel identifier semantics.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:2154",
+      "wupCityCode": 2154,
+      "name": "Siguiri",
+      "countryCode": "GN",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Siguiri\" \"cadastre\" parcelles SIG Guinée portail géographique"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-2154.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:7161",
+      "wupCityCode": 7161,
+      "name": "Lokoja",
+      "countryCode": "NG",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Latin script)",
+        "exactQueries": [
+          "\"Lokoja\" cadastral parcels GIS Kogi land registry Nigeria",
+          "\"Lokoja\" \"cadastral\" \"GIS\" Kogi land registry"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-7161.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:2250",
+      "wupCityCode": 2250,
+      "name": "M'banza Congo",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"M'banza Congo\" \"cadastro predial\" parcelas Angola"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-2250.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:8756",
+      "wupCityCode": 8756,
+      "name": "Biliri",
+      "countryCode": "NG",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Hausa (Latin script)",
+        "exactQueries": [
+          "Biliri Gombe Nigeria \"rajistar filaye\" GIS cadastral parcels"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "This city-targeted Hausa query produced no relevant result in the search response. No Biliri cadastral endpoint surfaced."
+      },
+      "newEvidencePath": "africa-ws-city-8756.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "The city-targeted Hausa search returned no relevant cadastral data result; no target endpoint was located or queried.",
+      "nextStep": "Identify a Gombe/Biliri municipal or state land information service, then test a bounded geometry query.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:6187",
+      "wupCityCode": 6187,
+      "name": "Likasi",
+      "countryCode": "CD",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Likasi\" cadastre parcelles GIS ville RDC"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-6187.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:6497",
+      "wupCityCode": 6497,
+      "name": "Mukubu",
+      "countryCode": "CD",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Mukubu\" RDC parcelles cadastrales GIS"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-6497.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:686",
+      "wupCityCode": 686,
+      "name": "Soyo",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Soyo\" \"cadastro predial\" parcelas Angola"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-686.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:1195",
+      "wupCityCode": 1195,
+      "name": "Tete",
+      "countryCode": "MZ",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Tete\" \"cadastro predial\" parcelas GIS Moçambique",
+          "\"Tete\" geoserviços parcelas ArcGIS Moçambique"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native/official-language search as part of shared query batch; query results are source leads, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1195.json",
+      "resultCategory": "country_service_outside_target",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Only Matola/Maputo cadastral visualization service identified; its published extent does not cover Tete or Moatize.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1169",
+      "wupCityCode": 1169,
+      "name": "Lubango",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Lubango\" cadastro predial parcelas Angola"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1169.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:3172",
+      "wupCityCode": 3172,
+      "name": "Ijebu-Ode",
+      "countryCode": "NG",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Yoruba (Latin script)",
+        "exactQueries": [
+          "\"Ijebu-Ode\" Yoruba \"ìforúkọsílẹ̀ ilẹ̀\" parcel GIS"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-3172.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:3711",
+      "wupCityCode": 3711,
+      "name": "Cuito",
+      "countryCode": "AO",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Cuito\" cadastro predial parcelas Angola"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-3711.json",
+      "resultCategory": "fresh_target_probe_temporarily_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:1025",
+      "wupCityCode": 1025,
+      "name": "Saint-Louis",
+      "countryCode": "SN",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Saint-Louis\" Sénégal \"parcelles cadastrales\" cadastre SIG"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1025.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1301",
+      "wupCityCode": 1301,
+      "name": "Moatize",
+      "countryCode": "MZ",
+      "workCategory": "new_city_research",
+      "previousEvidence": [],
+      "previousStatuses": [],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "\"Moatize\" \"cadastro predial\" parcelas SIG Moçambique"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native/official-language search as part of shared query batch; query results are source leads, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1301.json",
+      "resultCategory": "country_service_outside_target",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Only Matola/Maputo cadastral visualization service identified; its published extent does not cover Tete or Moatize.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1265",
+      "wupCityCode": 1265,
+      "name": "Lagos",
+      "countryCode": "NG",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/lagos.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Latin script)",
+        "exactQueries": [
+          "\"Lagos\" cadastral parcel GIS open data official parcel polygons Nigeria land registry"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1265.json",
+      "resultCategory": "candidate_service_outside_target",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "Candidate layer extent is far outside Lagos and bounded target query returned zero features.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:1854",
+      "wupCityCode": 1854,
+      "name": "Kinshasa",
+      "countryCode": "CD",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/kinshasa.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Kinshasa\" cadastre parcelles SIG géoportail République démocratique du Congo"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1854.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:3439",
+      "wupCityCode": 3439,
+      "name": "Abidjan",
+      "countryCode": "CI",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/abidjan.json",
+        "research/retry/cities/abidjan.json"
+      ],
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Abidjan\" \"parcelles cadastrales\" géoportail SIG Côte d'Ivoire cadastre"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-3439.json",
+      "resultCategory": "promising_service_unavailable",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Official SIGFU portal and documented public data API were inspected; safe localities GET returned HTTP 502 and no parcel geometry was requested.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:7330",
+      "wupCityCode": 7330,
+      "name": "Onitsha",
+      "countryCode": "NG",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/onitsha.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Igbo (Latin script)",
+        "exactQueries": [
+          "\"Onitsha\" cadastral parcels GIS Anambra State land registry",
+          "\"Onitsha\" Igbo ala cadastral parcels GIS land registry"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-7330.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:3336",
+      "wupCityCode": 3336,
+      "name": "Accra",
+      "countryCode": "GH",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/accra.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Ghana; Latin script)",
+        "exactQueries": [
+          "\"Accra\" cadastral parcels GIS Land Commission Ghana geoserver"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-3336.json",
+      "resultCategory": "fresh_verified_partial_city_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": true,
+      "blocker": "Partial Accra Metro app geometry sample exists, but the request had no spatial filter and the sample lies about 8 km south of the WUP center. Citywide coverage, source completeness, stable parcel-ID semantics and snapshot adapter readiness remain unproven.",
+      "nextStep": "Find a safe spatially bounded endpoint or a filterable local-area query near Accra, then assess native identifier semantics, source completeness and adapter readiness.",
+      "evidenceType": "new_or_retry_target_service_probe",
+      "targetEndpointProbePerformed": true
+    },
+    {
+      "cityId": "wup2025:2324",
+      "wupCityCode": 2324,
+      "name": "Yaoundé",
+      "countryCode": "CM",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/yaounde.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Cameroon; Latin script)",
+        "exactQueries": [
+          "\"Yaoundé\" \"parcelles cadastrales\" SIG cadastre Cameroon"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-2324.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:8435",
+      "wupCityCode": 8435,
+      "name": "Kano",
+      "countryCode": "NG",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/kano.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Hausa (Latin script)",
+        "exactQueries": [
+          "\"Kano\" cadastral parcel GIS official land registry Nigeria",
+          "\"Kano\" Hausa \"rajistar filaye\" GIS cadastral parcels"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-8435.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1468",
+      "wupCityCode": 1468,
+      "name": "Kumasi",
+      "countryCode": "GH",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/kumasi.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Ghana; Latin script)",
+        "exactQueries": [
+          "\"Kumasi\" cadastral parcel GIS Ghana Lands Commission"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1468.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:813",
+      "wupCityCode": 813,
+      "name": "Douala",
+      "countryCode": "CM",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/douala.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Cameroon; Latin script)",
+        "exactQueries": [
+          "\"Douala\" \"parcelles cadastrales\" SIG cadastre Cameroun"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-813.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:33",
+      "wupCityCode": 33,
+      "name": "Dakar",
+      "countryCode": "SN",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/dakar.json",
+        "research/retry/cities/dakar.json"
+      ],
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Dakar\" Sénégal \"parcelles cadastrales\" géoportail cadastre"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-33.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:7369",
+      "wupCityCode": 7369,
+      "name": "Owerri",
+      "countryCode": "NG",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/owerri.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "English (Latin script)",
+        "exactQueries": [
+          "\"Owerri\" cadastral parcels GIS Imo State official land registry"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-7369.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:2996",
+      "wupCityCode": 2996,
+      "name": "Ibadan",
+      "countryCode": "NG",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/ibadan.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Yoruba (Latin script)",
+        "exactQueries": [
+          "\"Ibadan\" Yoruba \"ìwé ilẹ̀\" parcel GIS cadastre"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-2996.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:554",
+      "wupCityCode": 554,
+      "name": "Brazzaville",
+      "countryCode": "CG",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/brazzaville.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "Brazzaville République du Congo cadastre parcelles SIG géoportail foncier"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [
+          "https://documents1.worldbank.org/curated/en/822171468767675305/pdf/multi-page.pdf"
+        ],
+        "summary": "Search produced a historical World Bank document describing Congo cadastral records/regime, but no current Brazzaville feature service or viewer endpoint."
+      },
+      "newEvidencePath": "africa-ws-city-554.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "Search found only historical cadastral-regime material, not an anonymous queryable Brazzaville parcel endpoint.",
+      "nextStep": "Locate a current Republic of Congo or Brazzaville municipal GIS endpoint and test a bounded city query.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:5196",
+      "wupCityCode": 5196,
+      "name": "Kasaï-Oriental",
+      "countryCode": "CD",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/kasai-oriental.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Kasaï-Oriental\" cadastre parcelles geoportail GIS"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-5196.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1748",
+      "wupCityCode": 1748,
+      "name": "Ouagadougou",
+      "countryCode": "BF",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/ouagadougou.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Ouagadougou\" \"parcelles cadastrales\" géoportail SIG cadastre Burkina Faso"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-1748.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:116",
+      "wupCityCode": 116,
+      "name": "Maputo",
+      "countryCode": "MZ",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/maputo.json",
+        "research/retry/cities/maputo.json"
+      ],
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "Portuguese (Latin script)",
+        "exactQueries": [
+          "Maputo Moçambique cadastro municipal parcelas GIS geosserviços"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [
+          "https://cmmaputo.gov.mz/actualizacao-de-cadastros/",
+          "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0"
+        ],
+        "summary": "Search found the Maputo Municipality cadastral-update page (citizen registration workflow) and a mozGIS municipal cadastral visualization layer; the layer extent is Matola and does not cover Maputo city."
+      },
+      "newEvidencePath": "africa-ws-city-116.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "Official Maputo cadastral registration is an intake workflow; the identified mozGIS parcel layer extent is Matola and does not cover Maputo city.",
+      "nextStep": "Locate a Maputo city parcel feature service with documented coverage, then test a bounded target query.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:6577",
+      "wupCityCode": 6577,
+      "name": "Lubumbashi",
+      "countryCode": "CD",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/lubumbashi.json"
+      ],
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Lubumbashi\" cadastre parcelles géoportail SIG RDC"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-6577.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": false,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:655",
+      "wupCityCode": 655,
+      "name": "Coyah (Conacry)",
+      "countryCode": "GN",
+      "workCategory": "retry_existing_city",
+      "previousEvidence": [
+        "research/coyah-conakry.json",
+        "research/retry/cities/coyah-conakry.json"
+      ],
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "freshCityLocalSearch": {
+        "languageScript": "French (Latin script)",
+        "exactQueries": [
+          "\"Coyah\" \"cadastre\" parcelles SIG Guinée Conakry"
+        ],
+        "date": "2026-10-08",
+        "resultUrls": [],
+        "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+      },
+      "newEvidencePath": "africa-ws-city-655.json",
+      "resultCategory": "no_new_verified_target_sample",
+      "parcelStatus": null,
+      "registryFound": null,
+      "verifiedSample": false,
+      "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "new_or_retry_city_specific_discovery",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:939",
+      "wupCityCode": 939,
+      "name": "Luanda",
+      "countryCode": "AO",
+      "workCategory": "already_live",
+      "previousEvidence": [
+        "research/luanda.json"
+      ],
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-939.json",
+      "resultCategory": "inherited_live_baseline",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": null,
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "inherited_live_baseline",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:413",
+      "wupCityCode": 413,
+      "name": "Cape Town",
+      "countryCode": "ZA",
+      "workCategory": "already_live",
+      "previousEvidence": [
+        "research/cape-town.json"
+      ],
+      "previousStatuses": [
+        "verified_sample_city_scope"
+      ],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-413.json",
+      "resultCategory": "inherited_live_baseline",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": null,
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "inherited_live_baseline",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:374",
+      "wupCityCode": 374,
+      "name": "Bamako",
+      "countryCode": "ML",
+      "workCategory": "already_live",
+      "previousEvidence": [
+        "research/bamako.json"
+      ],
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-374.json",
+      "resultCategory": "inherited_live_baseline",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": null,
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "inherited_live_baseline",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1498",
+      "wupCityCode": 1498,
+      "name": "Lusaka",
+      "countryCode": "ZM",
+      "workCategory": "already_live",
+      "previousEvidence": [
+        "research/lusaka.json"
+      ],
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-1498.json",
+      "resultCategory": "inherited_live_baseline",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": null,
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "inherited_live_baseline",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:5227",
+      "wupCityCode": 5227,
+      "name": "Durban",
+      "countryCode": "ZA",
+      "workCategory": "already_live",
+      "previousEvidence": [
+        "research/same-country-expansion-2026-10-07/durban-tls-research.json",
+        "research/durban.json"
+      ],
+      "previousStatuses": [
+        "verified_sample_city_scope"
+      ],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-5227.json",
+      "resultCategory": "inherited_live_baseline",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": null,
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "inherited_live_baseline",
+      "targetEndpointProbePerformed": false
+    },
+    {
+      "cityId": "wup2025:1752",
+      "wupCityCode": 1752,
+      "name": "Cotonou",
+      "countryCode": "BJ",
+      "workCategory": "already_live",
+      "previousEvidence": [
+        "research/cotonou.json"
+      ],
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "freshCityLocalSearch": null,
+      "newEvidencePath": "africa-ws-city-1752.json",
+      "resultCategory": "inherited_live_baseline",
+      "parcelStatus": null,
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": null,
+      "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+      "evidenceType": "inherited_live_baseline",
+      "targetEndpointProbePerformed": false
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "SO",
+  "country": "Somalia",
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "accessModel": "unknown",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Somali",
+      "exactQuery": "Soomaaliya xogta dhulka khariidad cadastral parcels GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+        "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Somalia_Situation_WFL1/FeatureServer/8",
+        "https://govsomalilandmap.org/",
+        "https://geonode.igad.int/layers/geonode%3Asomalia",
+        "https://sodma-dev.okfn.org/dataset/grid3-som-settlement-extents-v3-0",
+        "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+        "https://geonode.igad.int/layers/geonode%3Asomalia/metadata_detail",
+        "https://services.arcgis.com/CmINIEzurW7Tagtl/arcgis/rest/services/Somalia_Adminstrative_Boundaries/FeatureServer"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    },
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Somali",
+      "exactQuery": "Somaliland xogta dhulka khariidad cadastral parcels GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://govsomalilandmap.org/",
+        "https://unhabitat.org/joint-programme-continues-to-see-real-results-in-second-phase",
+        "https://eastadvisory.org/projects/municipal-property-registration",
+        "https://services1.arcgis.com/mXcAeT0UDsfz3dM1/ArcGIS/rest/services/SomaliLand/FeatureServer/0",
+        "https://www.imcsomaliland.org/",
+        "https://www.researchgate.net/publication/233514387_Formulation_of_Land_Administration_Strategy_in_Post-Conflict_Somaliland",
+        "https://www.govsomaliland.org/uploads/files/2023/12/2023-12-27-08-42-54-3504-1703666574.pdf",
+        "https://www.scribd.com/document/1071148200/SSA-01-E1-Mapping-Exercise-1-Somali"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://mopic.gov.so/",
+      "observation": "Federal planning ministry host unreachable in prior country pass."
+    },
+    {
+      "url": "https://govsomalilandmap.org/",
+      "observation": "Somaliland official GIS/boundary portal describes administrative boundary downloads, not cadastral parcels."
+    },
+    {
+      "url": "https://www.berbera.govsomaliland.online/article/online-land-registration",
+      "observation": "Berbera district official online land-registration service lead; no polygon feed identified."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre%20Mogadishu",
+      "observation": "Prior Mogadishu catalog search had zero parcel services."
+    }
+  ],
+  "requests": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Check Somalia and Somaliland municipal land offices as separate jurisdictions for anonymous parcel layers; distinguish administrative boundary downloads from parcel fabric."
+}

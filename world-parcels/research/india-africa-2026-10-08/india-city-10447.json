@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10447,
+  "cityId": "wup2025:10447",
+  "name": "Varanasi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.3130953149596,
+    83.0050363443188
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 144,
+  "stateOrUT": "Uttar Pradesh",
+  "administrativeIdentity": {
+    "district": "वाराणसी",
+    "tehsilOrTaluk": "Sadar",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/varanasi.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/varanasi.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "UP Bhunaksha village cadastral maps (village-by-village; coverage of Varanasi villages unverified)",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "SPA shell only"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/Levels/stateCode",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "SPA fallback HTML, not JSON"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/rest/Levels/levelLabels",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "SPA fallback HTML"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/MapInfo/getPlotAtXY?gisCode=09%2C01%2C01&x=83.0&y=25.3",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "SPA fallback HTML; correct API prefix/method and Varanasi village gis codes not established"
+          },
+          {
+            "method": "GET",
+            "url": "https://vsk.up.gov.in",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "unreachable"
+          }
+        ],
+        "conclusion": "The Bhunaksha API needs correct method/prefix, a village gis code and possibly captcha; not confirmed anonymous or bulk-permitted. Result is a weak negative. Same platform serves other Indian states.",
+        "nextStep": "Capture the viewer's real network calls in a browser to get the API base, village listing for Varanasi tehsils, and a getPlotAtXY response."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "वाराणसी राजस्व ग्राम नक्शा गाटा भू नक्शा उत्तर प्रदेश तहसील",
+        "scope": "WUP 10447 Varanasi cohort label retained. Actual search targeted official UP revenue village map/gata services.",
+        "result": "Official Board of Revenue and Bhulekh state entries surfaced; search did not establish a parcel feature at the WUP point.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://bor.up.nic.in/?search_key=bhulekh+up",
+          "https://upbhulekh.gov.in/",
+          "https://akhairkar.github.io/BhumiRecord/districts/uttar-pradesh/varanasi.html",
+          "https://upbhulekh.gov.in/?form=MG0AV3",
+          "https://upbhulekh.gov.in/?trk=public_post-text",
+          "https://bhulekhnakshaup.com/documents",
+          "https://bor.up.nic.in/pdf/31e73c5e-b323-4789-b67d-8991b29ccd1b---290622051538PM.pdf",
+          "https://www.upbhulekhportals.com/",
+          "https://cdnbbsr.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2025/07/20250730559970924.pdf",
+          "https://upkijankari.com/up-bhu-naksha/",
+          "https://gharcore.com/bhulekh-up",
+          "https://5.imimg.com/data5/SELLER/Doc/2023/2/DN/SG/KD/95452604/commercial-ro-membranes.pdf",
+          "https://upbhulekhe.com/",
+          "https://svamitva.nic.in/DownloadPDF/SVAMITVA_English_1632367330563.pdf",
+          "https://static.pib.gov.in/WriteReadData/userfiles/SVAMITVAE22042022.pdf",
+          "https://bhulekh.up.in/",
+          "https://img.staticmb.com/mbimages/reradoc/2025/03/27/5428643ExtractofKhatauni_2_1.pdf",
+          "https://en.wikipedia.org/wiki/Varanasi_tehsil",
+          "https://en.wikipedia.org/wiki/Varanasi"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "UP Board of Revenue / Bhulekh",
+        "operator": "Government of Uttar Pradesh, Board of Revenue",
+        "homeUrl": "https://bor.up.nic.in/?search_key=HOMECENTER",
+        "mapUrl": "https://upbhulekh.gov.in/?form=MG0AV3",
+        "observation": "Official Board of Revenue Hindi page lists revenue village maps and gata boundaries; shared state service. No city-specific parcel geometry verified in this query."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=25.3130953149596&lon=83.0050363443188&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Banaras Ghats, Varanasi, Sadar, वाराणसी, Uttar Pradesh, 221001, India",
+        "osmType": "way",
+        "osmId": 1415578869,
+        "address": {
+          "residential": "Banaras Ghats",
+          "city": "Varanasi",
+          "county": "Sadar",
+          "state_district": "वाराणसी",
+          "state": "Uttar Pradesh",
+          "ISO3166-2-lvl4": "IN-UP",
+          "postcode": "221001",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://bor.up.nic.in/Department_login.aspx",
+          "https://upbhulekh.gov.in/?form=MG0AV3"
+        ],
+        "scope": "Actual official search-result URLs observed for the Hindi query; shared portal links, not a verified city sample."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "State revenue portals are discoverable, but this bounded search did not resolve the exact WUP-point revenue village or return a nonempty parcel geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+}

@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1961",
+  "queueRank": 118,
+  "wupCityCode": 1961,
+  "name": "Antananarivo",
+  "country": "Madagascar",
+  "countryCode": "MG",
+  "centerLatLon": [
+    -18.8651082509313,
+    47.5377709219744
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 118,
+  "growthRank": null,
+  "population2025": 3916219,
+  "annualGrowthPct2015To2025": 3.945163,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_sample_candidate_citywide",
+  "priorEvidence": [
+    {
+      "path": "research/antananarivo.json",
+      "status": "temporarily_unavailable"
+    },
+    {
+      "path": "research/retry/cities/antananarivo.json",
+      "status": null
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_sample_candidate_citywide"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-MG.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Malagasy and French",
+    "exactQuery": "Antananarivo Madagasikara sarintany fananan-tany parcellaire PLOF",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://fr.scribd.com/document/470630659/boky-torolalana-momba-ny-fananan-tany",
+      "https://www.scribd.com/document/588334289/Torolalana-Fananan-tany",
+      "https://www.studocu.com/row/document/universite-dantananarivo/universite-d-antananarivo/torolalana-fananan-tany-inona-no-tokony-ho-fantatra-bianco-2018/137959781",
+      "https://fr.scribd.com/document/896477180/Fanamarihana-Fananana-Tany",
+      "https://www.ivotoro.mg/language/mg/procedure/kara-tany-terrain-en-requisition/",
+      "https://www.govserv.org/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany",
+      "https://fr.scribd.com/document/855772206/SIF-Guide-foncier",
+      "https://www.findglocal.com/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany"
+    ],
+    "summary": "Malagasy/French search surfaced official OITF/SILOAT and local PLOF; Antananarivo polygons remain semantically/ID unconfirmed and partial.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://fr.scribd.com/document/470630659/boky-torolalana-momba-ny-fananan-tany",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.scribd.com/document/588334289/Torolalana-Fananan-tany",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.studocu.com/row/document/universite-dantananarivo/universite-d-antananarivo/torolalana-fananan-tany-inona-no-tokony-ho-fantatra-bianco-2018/137959781",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://fr.scribd.com/document/896477180/Fanamarihana-Fananana-Tany",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ivotoro.mg/language/mg/procedure/kara-tany-terrain-en-requisition/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.govserv.org/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://fr.scribd.com/document/855772206/SIF-Guide-foncier",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.findglocal.com/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Antananarivo\" Madagascar (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Antananarivo%22+Madagascar+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No verified parcel layer for Antananarivo was established. Antananarivo’s prior PLOF WFS candidate remains semantically unconfirmed and partial; it cannot establish parcel coverage for this city.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "For Antananarivo, verify the relevant PLOF layer’s meaning, attributes, ID stability and city coverage; do not transfer Antananarivo’s partial lead to this city.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Antananarivo%22+Madagascar+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

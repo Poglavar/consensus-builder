@@ -1,0 +1,5850 @@
+{
+  "schemaVersion": 1,
+  "scope": "india-africa",
+  "preparedAt": "2026-10-08",
+  "sources": [
+    "world-parcels/queue-top200.json",
+    "world-parcels/queue-growth-top200.json",
+    "world-parcels/countries.geojson",
+    "world-parcels/report/city-demographics.json",
+    "world-parcels/registry.json"
+  ],
+  "methodology": {
+    "identity": "Deduplicate by saved WUP 2025 city code, validating country and coordinates; preserve source names and centre points.",
+    "geography": "India (IN), or Africa in the saved Natural Earth CONTINENT classification, supplemented by small African island jurisdictions absent from the coarse outline dataset.",
+    "growth": "Saved 2015–2025 average annual exponential growth ranking, not a forecast; queue quality filters are unchanged.",
+    "priority": "Validate prior polygon samples first, then newly investigated cities, then retries. Already live cities remain listed. Within each category use the better saved cohort rank.",
+    "research": "A documented registry/map lead is distinct from a usable polygon feed. New outcomes are recorded separately from this baseline."
+  },
+  "counts": {
+    "total": 171,
+    "india": 63,
+    "africa": 108,
+    "largest200": 63,
+    "growth200": 108,
+    "bothQueues": 0,
+    "previouslyInvestigated": 76,
+    "newCityResearch": 95,
+    "alreadyLive": 7,
+    "previousSamplesNotLive": 3
+  },
+  "cities": [
+    {
+      "cityId": "wup2025:8364",
+      "wupCityCode": 8364,
+      "name": "New Delhi",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        28.6257327699734,
+        77.2078130770808
+      ],
+      "largestRank": 4,
+      "growthRank": null,
+      "population2025": 30222405,
+      "annualGrowthPct2015To2025": 1.457875,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:1261481"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "in-ldo-edharti-geojson"
+      ],
+      "previousEvidenceFiles": [
+        "research/retry/cities/new-delhi.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/New_Delhi",
+      "workCategory": "verify_existing_sample",
+      "bestCohortRank": 4,
+      "priority": 1
+    },
+    {
+      "cityId": "wup2025:3664",
+      "wupCityCode": 3664,
+      "name": "Johannesburg",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "region": "Africa",
+      "centerLatLon": [
+        -26.1204492874788,
+        27.8600917239307
+      ],
+      "largestRank": 50,
+      "growthRank": null,
+      "population2025": 7077175,
+      "annualGrowthPct2015To2025": 2.658204,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3664"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_city_scope"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "za-giscoe-erven"
+      ],
+      "previousEvidenceFiles": [
+        "research/same-country-expansion-2026-10-07/johannesburg-research.json",
+        "research/johannesburg.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Johannesburg",
+      "workCategory": "verify_existing_sample",
+      "bestCohortRank": 50,
+      "priority": 2
+    },
+    {
+      "cityId": "wup2025:8616",
+      "wupCityCode": 8616,
+      "name": "Pune",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        18.5350448991254,
+        73.8602640542245
+      ],
+      "largestRank": 55,
+      "growthRank": null,
+      "population2025": 6817951,
+      "annualGrowthPct2015To2025": 0.764958,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8616"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "in-mh-bhunaksha"
+      ],
+      "previousEvidenceFiles": [
+        "research/retry/cities/pune.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Pune",
+      "workCategory": "verify_existing_sample",
+      "bestCohortRank": 55,
+      "priority": 3
+    },
+    {
+      "cityId": "wup2025:5371",
+      "wupCityCode": 5371,
+      "name": "Hayya",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        18.3342976831698,
+        36.3835682362063
+      ],
+      "largestRank": null,
+      "growthRank": 21,
+      "population2025": 163304,
+      "annualGrowthPct2015To2025": 8.480473,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 21,
+      "priority": 4
+    },
+    {
+      "cityId": "wup2025:3990",
+      "wupCityCode": 3990,
+      "name": "Cosmo City",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "region": "Africa",
+      "centerLatLon": [
+        -26.0359639124127,
+        27.9203632448749
+      ],
+      "largestRank": null,
+      "growthRank": 23,
+      "population2025": 120401,
+      "annualGrowthPct2015To2025": 8.390266,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 23,
+      "priority": 5
+    },
+    {
+      "cityId": "wup2025:2637",
+      "wupCityCode": 2637,
+      "name": "Embu",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "region": "Africa",
+      "centerLatLon": [
+        -0.528752542256019,
+        37.4611579295667
+      ],
+      "largestRank": null,
+      "growthRank": 25,
+      "population2025": 164283,
+      "annualGrowthPct2015To2025": 8.204207,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 25,
+      "priority": 6
+    },
+    {
+      "cityId": "wup2025:1871",
+      "wupCityCode": 1871,
+      "name": "Naivasha",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "region": "Africa",
+      "centerLatLon": [
+        -0.717235941739218,
+        36.4424810814619
+      ],
+      "largestRank": null,
+      "growthRank": 26,
+      "population2025": 185944,
+      "annualGrowthPct2015To2025": 8.121625,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Naivasha",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 26,
+      "priority": 7
+    },
+    {
+      "cityId": "wup2025:239",
+      "wupCityCode": 239,
+      "name": "Bata",
+      "country": "Equatorial Guinea",
+      "countryCode": "GQ",
+      "region": "Africa",
+      "centerLatLon": [
+        1.84943127314719,
+        9.7840444250706
+      ],
+      "largestRank": null,
+      "growthRank": 30,
+      "population2025": 863383,
+      "annualGrowthPct2015To2025": 7.992527,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 30,
+      "priority": 8
+    },
+    {
+      "cityId": "wup2025:10893",
+      "wupCityCode": 10893,
+      "name": "Kalyanpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.4466696212949,
+        84.8669945860888
+      ],
+      "largestRank": null,
+      "growthRank": 33,
+      "population2025": 160328,
+      "annualGrowthPct2015To2025": 7.806304,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 33,
+      "priority": 9
+    },
+    {
+      "cityId": "wup2025:6151",
+      "wupCityCode": 6151,
+      "name": "Kafr Ibrash",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.3956329538119,
+        31.3519184847189
+      ],
+      "largestRank": null,
+      "growthRank": 34,
+      "population2025": 118945,
+      "annualGrowthPct2015To2025": 7.794152,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 34,
+      "priority": 10
+    },
+    {
+      "cityId": "wup2025:6366",
+      "wupCityCode": 6366,
+      "name": "Ekeremor",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        5.06262281739734,
+        5.77419548337538
+      ],
+      "largestRank": null,
+      "growthRank": 35,
+      "population2025": 109957,
+      "annualGrowthPct2015To2025": 7.719175,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Ekeremor",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 35,
+      "priority": 11
+    },
+    {
+      "cityId": "wup2025:10927",
+      "wupCityCode": 10927,
+      "name": "Dhaka",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.6630429867703,
+        85.1567394385869
+      ],
+      "largestRank": null,
+      "growthRank": 36,
+      "population2025": 237385,
+      "annualGrowthPct2015To2025": 7.532848,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 36,
+      "priority": 12
+    },
+    {
+      "cityId": "wup2025:10911",
+      "wupCityCode": 10911,
+      "name": "Masrakh",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.1211707275585,
+        84.7950953210667
+      ],
+      "largestRank": null,
+      "growthRank": 37,
+      "population2025": 228857,
+      "annualGrowthPct2015To2025": 7.41566,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 37,
+      "priority": 13
+    },
+    {
+      "cityId": "wup2025:10933",
+      "wupCityCode": 10933,
+      "name": "Chakia",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.4025743820036,
+        85.0420780355781
+      ],
+      "largestRank": null,
+      "growthRank": 39,
+      "population2025": 154876,
+      "annualGrowthPct2015To2025": 7.355507,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 39,
+      "priority": 14
+    },
+    {
+      "cityId": "wup2025:1661",
+      "wupCityCode": 1661,
+      "name": "Akakopé",
+      "country": "Togo",
+      "countryCode": "TG",
+      "region": "Africa",
+      "centerLatLon": [
+        6.25989314930988,
+        1.28039033815
+      ],
+      "largestRank": null,
+      "growthRank": 40,
+      "population2025": 116005,
+      "annualGrowthPct2015To2025": 7.334916,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 40,
+      "priority": 15
+    },
+    {
+      "cityId": "wup2025:5772",
+      "wupCityCode": 5772,
+      "name": "Jamasa",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        31.4416042397812,
+        31.5177987102688
+      ],
+      "largestRank": null,
+      "growthRank": 42,
+      "population2025": 151082,
+      "annualGrowthPct2015To2025": 7.219397,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 42,
+      "priority": 16
+    },
+    {
+      "cityId": "wup2025:11607",
+      "wupCityCode": 11607,
+      "name": "Taranagar",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.2758044504155,
+        87.998852750059
+      ],
+      "largestRank": null,
+      "growthRank": 45,
+      "population2025": 121538,
+      "annualGrowthPct2015To2025": 7.1123,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 45,
+      "priority": 17
+    },
+    {
+      "cityId": "wup2025:6609",
+      "wupCityCode": 6609,
+      "name": "Kafr Saqr",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.7931686854604,
+        31.6251744978363
+      ],
+      "largestRank": null,
+      "growthRank": 46,
+      "population2025": 156498,
+      "annualGrowthPct2015To2025": 7.092378,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 46,
+      "priority": 18
+    },
+    {
+      "cityId": "wup2025:4036",
+      "wupCityCode": 4036,
+      "name": "Baqlula",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.7894833516619,
+        31.1577323705344
+      ],
+      "largestRank": null,
+      "growthRank": 47,
+      "population2025": 109051,
+      "annualGrowthPct2015To2025": 7.086261,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 47,
+      "priority": 19
+    },
+    {
+      "cityId": "wup2025:1068",
+      "wupCityCode": 1068,
+      "name": "El Sireaf",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        13.7626261207517,
+        23.4454005080571
+      ],
+      "largestRank": null,
+      "growthRank": 50,
+      "population2025": 119375,
+      "annualGrowthPct2015To2025": 7.002003,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 50,
+      "priority": 20
+    },
+    {
+      "cityId": "wup2025:11347",
+      "wupCityCode": 11347,
+      "name": "Gamharia",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.0693392469207,
+        86.7301918567993
+      ],
+      "largestRank": null,
+      "growthRank": 51,
+      "population2025": 200505,
+      "annualGrowthPct2015To2025": 6.987337,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 51,
+      "priority": 21
+    },
+    {
+      "cityId": "wup2025:4033",
+      "wupCityCode": 4033,
+      "name": "Mboloko",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "region": "Africa",
+      "centerLatLon": [
+        -25.4662366387406,
+        27.8447650141456
+      ],
+      "largestRank": null,
+      "growthRank": 52,
+      "population2025": 102374,
+      "annualGrowthPct2015To2025": 6.959252,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 52,
+      "priority": 22
+    },
+    {
+      "cityId": "wup2025:2697",
+      "wupCityCode": 2697,
+      "name": "Birma",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.8458634406905,
+        30.8808311619137
+      ],
+      "largestRank": null,
+      "growthRank": 57,
+      "population2025": 100390,
+      "annualGrowthPct2015To2025": 6.880006,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 57,
+      "priority": 23
+    },
+    {
+      "cityId": "wup2025:4201",
+      "wupCityCode": 4201,
+      "name": "Luau",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -10.7078928499378,
+        22.2261150980932
+      ],
+      "largestRank": null,
+      "growthRank": 58,
+      "population2025": 172177,
+      "annualGrowthPct2015To2025": 6.879509,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 58,
+      "priority": 24
+    },
+    {
+      "cityId": "wup2025:2257",
+      "wupCityCode": 2257,
+      "name": "Umm Danga",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        10.9478732946973,
+        24.5773143460892
+      ],
+      "largestRank": null,
+      "growthRank": 60,
+      "population2025": 172622,
+      "annualGrowthPct2015To2025": 6.82682,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 60,
+      "priority": 25
+    },
+    {
+      "cityId": "wup2025:6878",
+      "wupCityCode": 6878,
+      "name": "Kilwa",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -9.28655842764912,
+        28.3299377531017
+      ],
+      "largestRank": null,
+      "growthRank": 64,
+      "population2025": 256165,
+      "annualGrowthPct2015To2025": 6.738893,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 64,
+      "priority": 26
+    },
+    {
+      "cityId": "wup2025:3252",
+      "wupCityCode": 3252,
+      "name": "Balcad",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "region": "Africa",
+      "centerLatLon": [
+        2.35719831710419,
+        45.3857270748061
+      ],
+      "largestRank": null,
+      "growthRank": 65,
+      "population2025": 186328,
+      "annualGrowthPct2015To2025": 6.661858,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 65,
+      "priority": 27
+    },
+    {
+      "cityId": "wup2025:6469",
+      "wupCityCode": 6469,
+      "name": "Shufune",
+      "country": "Ethiopia",
+      "countryCode": "ET",
+      "region": "Africa",
+      "centerLatLon": [
+        9.15445307641953,
+        38.7500765870952
+      ],
+      "largestRank": null,
+      "growthRank": 66,
+      "population2025": 158225,
+      "annualGrowthPct2015To2025": 6.652327,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 66,
+      "priority": 28
+    },
+    {
+      "cityId": "wup2025:10969",
+      "wupCityCode": 10969,
+      "name": "Chirand",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.7489853409713,
+        84.887639805399
+      ],
+      "largestRank": null,
+      "growthRank": 67,
+      "population2025": 169348,
+      "annualGrowthPct2015To2025": 6.632126,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Chirand",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 67,
+      "priority": 29
+    },
+    {
+      "cityId": "wup2025:3617",
+      "wupCityCode": 3617,
+      "name": "Garawan",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.4461093794959,
+        31.0289414948294
+      ],
+      "largestRank": null,
+      "growthRank": 69,
+      "population2025": 335801,
+      "annualGrowthPct2015To2025": 6.581878,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 69,
+      "priority": 30
+    },
+    {
+      "cityId": "wup2025:10957",
+      "wupCityCode": 10957,
+      "name": "Bairgania",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.7265024228444,
+        85.258964919446
+      ],
+      "largestRank": null,
+      "growthRank": 71,
+      "population2025": 151040,
+      "annualGrowthPct2015To2025": 6.535802,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Bairgania",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 71,
+      "priority": 31
+    },
+    {
+      "cityId": "wup2025:6113",
+      "wupCityCode": 6113,
+      "name": "Diyarb Nigm",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.7375888672378,
+        31.4513331541102
+      ],
+      "largestRank": null,
+      "growthRank": 73,
+      "population2025": 250476,
+      "annualGrowthPct2015To2025": 6.464802,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 73,
+      "priority": 32
+    },
+    {
+      "cityId": "wup2025:5752",
+      "wupCityCode": 5752,
+      "name": "Karora",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        17.7019138161727,
+        38.3639029313285
+      ],
+      "largestRank": null,
+      "growthRank": 74,
+      "population2025": 133847,
+      "annualGrowthPct2015To2025": 6.439682,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 74,
+      "priority": 33
+    },
+    {
+      "cityId": "wup2025:3898",
+      "wupCityCode": 3898,
+      "name": "Luena",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -11.7785281015056,
+        19.9086289389282
+      ],
+      "largestRank": null,
+      "growthRank": 76,
+      "population2025": 714289,
+      "annualGrowthPct2015To2025": 6.359623,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 76,
+      "priority": 34
+    },
+    {
+      "cityId": "wup2025:5724",
+      "wupCityCode": 5724,
+      "name": "Kolwezi",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -10.7176321404421,
+        25.4951647898359
+      ],
+      "largestRank": null,
+      "growthRank": 78,
+      "population2025": 446709,
+      "annualGrowthPct2015To2025": 6.273746,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kolwezi",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 78,
+      "priority": 35
+    },
+    {
+      "cityId": "wup2025:7666",
+      "wupCityCode": 7666,
+      "name": "Ogu",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        4.73995851836478,
+        7.22749403343711
+      ],
+      "largestRank": null,
+      "growthRank": 80,
+      "population2025": 256345,
+      "annualGrowthPct2015To2025": 6.218681,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 80,
+      "priority": 36
+    },
+    {
+      "cityId": "wup2025:3610",
+      "wupCityCode": 3610,
+      "name": "Malanje",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -9.54358315549037,
+        16.3510839676508
+      ],
+      "largestRank": null,
+      "growthRank": 82,
+      "population2025": 973086,
+      "annualGrowthPct2015To2025": 6.196833,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Malanje",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 82,
+      "priority": 37
+    },
+    {
+      "cityId": "wup2025:11305",
+      "wupCityCode": 11305,
+      "name": "Bakhri",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.6035865271048,
+        86.2567977340494
+      ],
+      "largestRank": null,
+      "growthRank": 84,
+      "population2025": 145874,
+      "annualGrowthPct2015To2025": 6.168333,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 84,
+      "priority": 38
+    },
+    {
+      "cityId": "wup2025:5578",
+      "wupCityCode": 5578,
+      "name": "شبلنجة",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.4350064796581,
+        31.2542898284323
+      ],
+      "largestRank": null,
+      "growthRank": 85,
+      "population2025": 328820,
+      "annualGrowthPct2015To2025": 6.087282,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 85,
+      "priority": 39
+    },
+    {
+      "cityId": "wup2025:11959",
+      "wupCityCode": 11959,
+      "name": "Moirabari",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.4453578533466,
+        92.3955537457384
+      ],
+      "largestRank": null,
+      "growthRank": 86,
+      "population2025": 261593,
+      "annualGrowthPct2015To2025": 6.060664,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 86,
+      "priority": 40
+    },
+    {
+      "cityId": "wup2025:11447",
+      "wupCityCode": 11447,
+      "name": "Amarpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.0857858011865,
+        86.8839490491015
+      ],
+      "largestRank": null,
+      "growthRank": 87,
+      "population2025": 236273,
+      "annualGrowthPct2015To2025": 6.041218,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 87,
+      "priority": 41
+    },
+    {
+      "cityId": "wup2025:8097",
+      "wupCityCode": 8097,
+      "name": "Ikot Ekpene",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        5.1641079302772,
+        7.72020693663383
+      ],
+      "largestRank": null,
+      "growthRank": 89,
+      "population2025": 418650,
+      "annualGrowthPct2015To2025": 6.010364,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 89,
+      "priority": 42
+    },
+    {
+      "cityId": "wup2025:10035",
+      "wupCityCode": 10035,
+      "name": "Ghatkesar",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        17.4300271469809,
+        78.6542279686069
+      ],
+      "largestRank": null,
+      "growthRank": 90,
+      "population2025": 167897,
+      "annualGrowthPct2015To2025": 6.008776,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Ghatkesar",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 90,
+      "priority": 43
+    },
+    {
+      "cityId": "wup2025:6743",
+      "wupCityCode": 6743,
+      "name": "Kasumbalesa",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -12.2412913786953,
+        27.7892387039214
+      ],
+      "largestRank": null,
+      "growthRank": 93,
+      "population2025": 294623,
+      "annualGrowthPct2015To2025": 5.986621,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 93,
+      "priority": 44
+    },
+    {
+      "cityId": "wup2025:546",
+      "wupCityCode": 546,
+      "name": "Cabinda",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -5.57829080007551,
+        12.2035678576447
+      ],
+      "largestRank": null,
+      "growthRank": 94,
+      "population2025": 1157345,
+      "annualGrowthPct2015To2025": 5.974125,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 94,
+      "priority": 45
+    },
+    {
+      "cityId": "wup2025:10427",
+      "wupCityCode": 10427,
+      "name": "Jianpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.1773245235037,
+        83.2544849970165
+      ],
+      "largestRank": null,
+      "growthRank": 95,
+      "population2025": 286148,
+      "annualGrowthPct2015To2025": 5.973059,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 95,
+      "priority": 46
+    },
+    {
+      "cityId": "wup2025:5479",
+      "wupCityCode": 5479,
+      "name": "Timerein",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        17.0256189200649,
+        36.453220882475
+      ],
+      "largestRank": null,
+      "growthRank": 97,
+      "population2025": 486586,
+      "annualGrowthPct2015To2025": 5.930369,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 97,
+      "priority": 47
+    },
+    {
+      "cityId": "wup2025:3809",
+      "wupCityCode": 3809,
+      "name": "Ennerdale",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "region": "Africa",
+      "centerLatLon": [
+        -26.4062859886009,
+        27.8459423386999
+      ],
+      "largestRank": null,
+      "growthRank": 98,
+      "population2025": 210428,
+      "annualGrowthPct2015To2025": 5.854238,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 98,
+      "priority": 48
+    },
+    {
+      "cityId": "wup2025:6154",
+      "wupCityCode": 6154,
+      "name": "Holeta Genet",
+      "country": "Ethiopia",
+      "countryCode": "ET",
+      "region": "Africa",
+      "centerLatLon": [
+        9.05945916264515,
+        38.4853070197496
+      ],
+      "largestRank": null,
+      "growthRank": 99,
+      "population2025": 96937,
+      "annualGrowthPct2015To2025": 5.844663,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 99,
+      "priority": 49
+    },
+    {
+      "cityId": "wup2025:2412",
+      "wupCityCode": 2412,
+      "name": "Mansa",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "region": "Africa",
+      "centerLatLon": [
+        -11.2027334066671,
+        28.8914856820841
+      ],
+      "largestRank": null,
+      "growthRank": 101,
+      "population2025": 335503,
+      "annualGrowthPct2015To2025": 5.839984,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 101,
+      "priority": 50
+    },
+    {
+      "cityId": "wup2025:2775",
+      "wupCityCode": 2775,
+      "name": "Merca",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "region": "Africa",
+      "centerLatLon": [
+        1.71651211139885,
+        44.766429396523
+      ],
+      "largestRank": null,
+      "growthRank": 103,
+      "population2025": 299906,
+      "annualGrowthPct2015To2025": 5.808572,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Merca",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 103,
+      "priority": 51
+    },
+    {
+      "cityId": "wup2025:2962",
+      "wupCityCode": 2962,
+      "name": "Wanlaweyn",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "region": "Africa",
+      "centerLatLon": [
+        2.61878055451222,
+        44.892589013271
+      ],
+      "largestRank": null,
+      "growthRank": 104,
+      "population2025": 314824,
+      "annualGrowthPct2015To2025": 5.79407,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Wanlaweyn",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 104,
+      "priority": 52
+    },
+    {
+      "cityId": "wup2025:10481",
+      "wupCityCode": 10481,
+      "name": "Dohrighat",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.2938353304261,
+        83.499615518729
+      ],
+      "largestRank": null,
+      "growthRank": 106,
+      "population2025": 239251,
+      "annualGrowthPct2015To2025": 5.789796,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Dohrighat",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 106,
+      "priority": 53
+    },
+    {
+      "cityId": "wup2025:10829",
+      "wupCityCode": 10829,
+      "name": "Areraj",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.5532969746,
+        84.6696100512271
+      ],
+      "largestRank": null,
+      "growthRank": 108,
+      "population2025": 261142,
+      "annualGrowthPct2015To2025": 5.753054,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Areraj",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 108,
+      "priority": 54
+    },
+    {
+      "cityId": "wup2025:11029",
+      "wupCityCode": 11029,
+      "name": "Naubatpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.4909770292272,
+        84.9507260772197
+      ],
+      "largestRank": null,
+      "growthRank": 109,
+      "population2025": 98828,
+      "annualGrowthPct2015To2025": 5.735085,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Naubatpur",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 109,
+      "priority": 55
+    },
+    {
+      "cityId": "wup2025:2154",
+      "wupCityCode": 2154,
+      "name": "Siguiri",
+      "country": "Guinea",
+      "countryCode": "GN",
+      "region": "Africa",
+      "centerLatLon": [
+        11.421218358123,
+        -9.17366702396954
+      ],
+      "largestRank": null,
+      "growthRank": 110,
+      "population2025": 297453,
+      "annualGrowthPct2015To2025": 5.731929,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Siguiri",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 110,
+      "priority": 56
+    },
+    {
+      "cityId": "wup2025:11785",
+      "wupCityCode": 11785,
+      "name": "Tarkeshwar",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.8794231977507,
+        88.0129425076242
+      ],
+      "largestRank": null,
+      "growthRank": 111,
+      "population2025": 190547,
+      "annualGrowthPct2015To2025": 5.687033,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 111,
+      "priority": 57
+    },
+    {
+      "cityId": "wup2025:5680",
+      "wupCityCode": 5680,
+      "name": "Sawakin",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        19.0974728850884,
+        37.3304627358742
+      ],
+      "largestRank": null,
+      "growthRank": 116,
+      "population2025": 158041,
+      "annualGrowthPct2015To2025": 5.647574,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Suakin",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 116,
+      "priority": 58
+    },
+    {
+      "cityId": "wup2025:7161",
+      "wupCityCode": 7161,
+      "name": "Lokoja",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        7.79991657063014,
+        6.72686335219522
+      ],
+      "largestRank": null,
+      "growthRank": 119,
+      "population2025": 629547,
+      "annualGrowthPct2015To2025": 5.602168,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Lokoja",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 119,
+      "priority": 59
+    },
+    {
+      "cityId": "wup2025:2250",
+      "wupCityCode": 2250,
+      "name": "M'banza Congo",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -6.26111194437744,
+        14.2330999524817
+      ],
+      "largestRank": null,
+      "growthRank": 123,
+      "population2025": 334203,
+      "annualGrowthPct2015To2025": 5.517979,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 123,
+      "priority": 60
+    },
+    {
+      "cityId": "wup2025:11581",
+      "wupCityCode": 11581,
+      "name": "Choudwar",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        20.4996698735025,
+        85.9330728323426
+      ],
+      "largestRank": null,
+      "growthRank": 126,
+      "population2025": 150970,
+      "annualGrowthPct2015To2025": 5.40961,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Choudwar",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 126,
+      "priority": 61
+    },
+    {
+      "cityId": "wup2025:11285",
+      "wupCityCode": 11285,
+      "name": "Nawada",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.2001645571738,
+        86.4343948922223
+      ],
+      "largestRank": null,
+      "growthRank": 128,
+      "population2025": 259262,
+      "annualGrowthPct2015To2025": 5.348801,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 128,
+      "priority": 62
+    },
+    {
+      "cityId": "wup2025:716",
+      "wupCityCode": 716,
+      "name": "Mbarara",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "region": "Africa",
+      "centerLatLon": [
+        -0.608452147791331,
+        30.6637751282384
+      ],
+      "largestRank": null,
+      "growthRank": 129,
+      "population2025": 231926,
+      "annualGrowthPct2015To2025": 5.346462,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Mbarara",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 129,
+      "priority": 63
+    },
+    {
+      "cityId": "wup2025:5631",
+      "wupCityCode": 5631,
+      "name": "Tlecoq",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        16.0925949784176,
+        36.6689401730947
+      ],
+      "largestRank": null,
+      "growthRank": 131,
+      "population2025": 90525,
+      "annualGrowthPct2015To2025": 5.319437,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 131,
+      "priority": 64
+    },
+    {
+      "cityId": "wup2025:8756",
+      "wupCityCode": 8756,
+      "name": "Biliri",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        9.88094861291868,
+        11.2133156087737
+      ],
+      "largestRank": null,
+      "growthRank": 135,
+      "population2025": 232398,
+      "annualGrowthPct2015To2025": 5.275804,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Billiri",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 135,
+      "priority": 65
+    },
+    {
+      "cityId": "wup2025:10835",
+      "wupCityCode": 10835,
+      "name": "Harsidhi",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.6872456566718,
+        84.7644732569845
+      ],
+      "largestRank": null,
+      "growthRank": 137,
+      "population2025": 132769,
+      "annualGrowthPct2015To2025": 5.263023,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Harsidhi,_Bihar",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 137,
+      "priority": 66
+    },
+    {
+      "cityId": "wup2025:11415",
+      "wupCityCode": 11415,
+      "name": "Asarganj",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.095462687706,
+        86.6697214561759
+      ],
+      "largestRank": null,
+      "growthRank": 138,
+      "population2025": 204072,
+      "annualGrowthPct2015To2025": 5.26035,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Asarganj",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 138,
+      "priority": 67
+    },
+    {
+      "cityId": "wup2025:6187",
+      "wupCityCode": 6187,
+      "name": "Likasi",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -10.98484186736,
+        26.737737499667
+      ],
+      "largestRank": null,
+      "growthRank": 139,
+      "population2025": 673034,
+      "annualGrowthPct2015To2025": 5.246104,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Likasi",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 139,
+      "priority": 68
+    },
+    {
+      "cityId": "wup2025:10501",
+      "wupCityCode": 10501,
+      "name": "Saidpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.5408792686721,
+        83.2168947059018
+      ],
+      "largestRank": null,
+      "growthRank": 140,
+      "population2025": 121560,
+      "annualGrowthPct2015To2025": 5.22895,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 140,
+      "priority": 69
+    },
+    {
+      "cityId": "wup2025:3135",
+      "wupCityCode": 3135,
+      "name": "Garissa",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "region": "Africa",
+      "centerLatLon": [
+        -0.449031813959942,
+        39.649453843993
+      ],
+      "largestRank": null,
+      "growthRank": 142,
+      "population2025": 333505,
+      "annualGrowthPct2015To2025": 5.219617,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Garissa",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 142,
+      "priority": 70
+    },
+    {
+      "cityId": "wup2025:2573",
+      "wupCityCode": 2573,
+      "name": "Berbera",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "region": "Africa",
+      "centerLatLon": [
+        10.4355521290927,
+        45.0117086819391
+      ],
+      "largestRank": null,
+      "growthRank": 143,
+      "population2025": 167119,
+      "annualGrowthPct2015To2025": 5.207821,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Berbera",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 143,
+      "priority": 71
+    },
+    {
+      "cityId": "wup2025:6514",
+      "wupCityCode": 6514,
+      "name": "Al-Zawamel",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.3730144470142,
+        31.4638793316236
+      ],
+      "largestRank": null,
+      "growthRank": 144,
+      "population2025": 127827,
+      "annualGrowthPct2015To2025": 5.206026,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 144,
+      "priority": 72
+    },
+    {
+      "cityId": "wup2025:10479",
+      "wupCityCode": 10479,
+      "name": "Chauri Chaura",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.6385539599308,
+        83.5777764120099
+      ],
+      "largestRank": null,
+      "growthRank": 145,
+      "population2025": 126176,
+      "annualGrowthPct2015To2025": 5.205097,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 145,
+      "priority": 73
+    },
+    {
+      "cityId": "wup2025:1780",
+      "wupCityCode": 1780,
+      "name": "Torit",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "region": "Africa",
+      "centerLatLon": [
+        4.4083892998397,
+        32.5742933884441
+      ],
+      "largestRank": null,
+      "growthRank": 151,
+      "population2025": 424731,
+      "annualGrowthPct2015To2025": 5.174027,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Torit",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 151,
+      "priority": 74
+    },
+    {
+      "cityId": "wup2025:11337",
+      "wupCityCode": 11337,
+      "name": "Bhaptiyahi",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.2835746201486,
+        86.7336945187684
+      ],
+      "largestRank": null,
+      "growthRank": 152,
+      "population2025": 132340,
+      "annualGrowthPct2015To2025": 5.171424,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 152,
+      "priority": 75
+    },
+    {
+      "cityId": "wup2025:3011",
+      "wupCityCode": 3011,
+      "name": "Tala",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.670050069128,
+        30.9356466255227
+      ],
+      "largestRank": null,
+      "growthRank": 157,
+      "population2025": 133029,
+      "annualGrowthPct2015To2025": 5.097663,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 157,
+      "priority": 76
+    },
+    {
+      "cityId": "wup2025:3187",
+      "wupCityCode": 3187,
+      "name": "Samadon",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.3243275200207,
+        30.9412955853373
+      ],
+      "largestRank": null,
+      "growthRank": 159,
+      "population2025": 428126,
+      "annualGrowthPct2015To2025": 5.08627,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 159,
+      "priority": 77
+    },
+    {
+      "cityId": "wup2025:11117",
+      "wupCityCode": 11117,
+      "name": "Ekangar Sarai",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.2213089855198,
+        85.2355683904544
+      ],
+      "largestRank": null,
+      "growthRank": 160,
+      "population2025": 94319,
+      "annualGrowthPct2015To2025": 5.049656,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 160,
+      "priority": 78
+    },
+    {
+      "cityId": "wup2025:6497",
+      "wupCityCode": 6497,
+      "name": "Mukubu",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -8.1091459710155,
+        27.0518638555624
+      ],
+      "largestRank": null,
+      "growthRank": 161,
+      "population2025": 168033,
+      "annualGrowthPct2015To2025": 5.03422,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 161,
+      "priority": 79
+    },
+    {
+      "cityId": "wup2025:11779",
+      "wupCityCode": 11779,
+      "name": "Parhati",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        23.2588217842522,
+        88.1507406243375
+      ],
+      "largestRank": null,
+      "growthRank": 162,
+      "population2025": 113542,
+      "annualGrowthPct2015To2025": 5.016088,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 162,
+      "priority": 80
+    },
+    {
+      "cityId": "wup2025:6097",
+      "wupCityCode": 6097,
+      "name": "Dilla",
+      "country": "Ethiopia",
+      "countryCode": "ET",
+      "region": "Africa",
+      "centerLatLon": [
+        6.411245914593,
+        38.3046690376766
+      ],
+      "largestRank": null,
+      "growthRank": 163,
+      "population2025": 360925,
+      "annualGrowthPct2015To2025": 5.008138,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 163,
+      "priority": 81
+    },
+    {
+      "cityId": "wup2025:686",
+      "wupCityCode": 686,
+      "name": "Soyo",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -6.16051964154324,
+        12.3668533360166
+      ],
+      "largestRank": null,
+      "growthRank": 165,
+      "population2025": 389945,
+      "annualGrowthPct2015To2025": 4.997911,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Soyo",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 165,
+      "priority": 82
+    },
+    {
+      "cityId": "wup2025:1195",
+      "wupCityCode": 1195,
+      "name": "Tete",
+      "country": "Mozambique",
+      "countryCode": "MZ",
+      "region": "Africa",
+      "centerLatLon": [
+        -16.1573070374133,
+        33.5930580914373
+      ],
+      "largestRank": null,
+      "growthRank": 166,
+      "population2025": 421174,
+      "annualGrowthPct2015To2025": 4.994519,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 166,
+      "priority": 83
+    },
+    {
+      "cityId": "wup2025:1169",
+      "wupCityCode": 1169,
+      "name": "Lubango",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -14.9071396924962,
+        13.5144246201527
+      ],
+      "largestRank": null,
+      "growthRank": 168,
+      "population2025": 1280986,
+      "annualGrowthPct2015To2025": 4.969598,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Lubango",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 168,
+      "priority": 84
+    },
+    {
+      "cityId": "wup2025:5043",
+      "wupCityCode": 5043,
+      "name": "Dirin",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        31.0934965125445,
+        31.2979399703423
+      ],
+      "largestRank": null,
+      "growthRank": 169,
+      "population2025": 129567,
+      "annualGrowthPct2015To2025": 4.934726,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 169,
+      "priority": 85
+    },
+    {
+      "cityId": "wup2025:11109",
+      "wupCityCode": 11109,
+      "name": "Khirz Sarai",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        24.9669021893364,
+        85.0901889548943
+      ],
+      "largestRank": null,
+      "growthRank": 170,
+      "population2025": 84215,
+      "annualGrowthPct2015To2025": 4.931125,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 170,
+      "priority": 86
+    },
+    {
+      "cityId": "wup2025:11201",
+      "wupCityCode": 11201,
+      "name": "Muriya",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.2319164670468,
+        86.0833220365614
+      ],
+      "largestRank": null,
+      "growthRank": 173,
+      "population2025": 269810,
+      "annualGrowthPct2015To2025": 4.91821,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 173,
+      "priority": 87
+    },
+    {
+      "cityId": "wup2025:3172",
+      "wupCityCode": 3172,
+      "name": "Ijebu-Ode",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        6.82167614479482,
+        3.92936584827927
+      ],
+      "largestRank": null,
+      "growthRank": 174,
+      "population2025": 500036,
+      "annualGrowthPct2015To2025": 4.915199,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 174,
+      "priority": 88
+    },
+    {
+      "cityId": "wup2025:282",
+      "wupCityCode": 282,
+      "name": "Kasulu",
+      "country": "United Republic of Tanzania",
+      "countryCode": "TZ",
+      "region": "Africa",
+      "centerLatLon": [
+        -4.57214734727369,
+        30.1096829556544
+      ],
+      "largestRank": null,
+      "growthRank": 178,
+      "population2025": 167833,
+      "annualGrowthPct2015To2025": 4.892312,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 178,
+      "priority": 89
+    },
+    {
+      "cityId": "wup2025:3711",
+      "wupCityCode": 3711,
+      "name": "Cuito",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -12.3876404410188,
+        16.9374515389056
+      ],
+      "largestRank": null,
+      "growthRank": 179,
+      "population2025": 689795,
+      "annualGrowthPct2015To2025": 4.880204,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Cu%C3%ADto",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 179,
+      "priority": 90
+    },
+    {
+      "cityId": "wup2025:1603",
+      "wupCityCode": 1603,
+      "name": "Sengerema",
+      "country": "United Republic of Tanzania",
+      "countryCode": "TZ",
+      "region": "Africa",
+      "centerLatLon": [
+        -2.65009347019973,
+        32.6440981389303
+      ],
+      "largestRank": null,
+      "growthRank": 182,
+      "population2025": 132916,
+      "annualGrowthPct2015To2025": 4.874838,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 182,
+      "priority": 91
+    },
+    {
+      "cityId": "wup2025:11877",
+      "wupCityCode": 11877,
+      "name": "Deganga",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.6877673121963,
+        88.6954794716905
+      ],
+      "largestRank": null,
+      "growthRank": 183,
+      "population2025": 134002,
+      "annualGrowthPct2015To2025": 4.872649,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Deganga",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 183,
+      "priority": 92
+    },
+    {
+      "cityId": "wup2025:11771",
+      "wupCityCode": 11771,
+      "name": "Khanakul",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.7368763853826,
+        87.904533316888
+      ],
+      "largestRank": null,
+      "growthRank": 188,
+      "population2025": 325882,
+      "annualGrowthPct2015To2025": 4.83743,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Khanakul",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 188,
+      "priority": 93
+    },
+    {
+      "cityId": "wup2025:1025",
+      "wupCityCode": 1025,
+      "name": "Saint-Louis",
+      "country": "Senegal",
+      "countryCode": "SN",
+      "region": "Africa",
+      "centerLatLon": [
+        16.0241013839072,
+        -16.4921522528523
+      ],
+      "largestRank": null,
+      "growthRank": 189,
+      "population2025": 270413,
+      "annualGrowthPct2015To2025": 4.825316,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 189,
+      "priority": 94
+    },
+    {
+      "cityId": "wup2025:1301",
+      "wupCityCode": 1301,
+      "name": "Moatize",
+      "country": "Mozambique",
+      "countryCode": "MZ",
+      "region": "Africa",
+      "centerLatLon": [
+        -16.1159198655094,
+        33.7260305389037
+      ],
+      "largestRank": null,
+      "growthRank": 191,
+      "population2025": 154135,
+      "annualGrowthPct2015To2025": 4.817859,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Moatize",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 191,
+      "priority": 95
+    },
+    {
+      "cityId": "wup2025:3626",
+      "wupCityCode": 3626,
+      "name": "El Afweyn",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "region": "Africa",
+      "centerLatLon": [
+        9.92796133759529,
+        47.2172157735376
+      ],
+      "largestRank": null,
+      "growthRank": 193,
+      "population2025": 128709,
+      "annualGrowthPct2015To2025": 4.816084,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": null,
+      "workCategory": "new_city_research",
+      "bestCohortRank": 193,
+      "priority": 96
+    },
+    {
+      "cityId": "wup2025:2340",
+      "wupCityCode": 2340,
+      "name": "Kapoeta",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "region": "Africa",
+      "centerLatLon": [
+        4.766216524227,
+        33.5936396125836
+      ],
+      "largestRank": null,
+      "growthRank": 194,
+      "population2025": 270167,
+      "annualGrowthPct2015To2025": 4.814777,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kapoeta",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 194,
+      "priority": 97
+    },
+    {
+      "cityId": "wup2025:10311",
+      "wupCityCode": 10311,
+      "name": "Mehdawal",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.9698676974383,
+        83.1020910232192
+      ],
+      "largestRank": null,
+      "growthRank": 200,
+      "population2025": 91178,
+      "annualGrowthPct2015To2025": 4.769637,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [],
+      "previouslyInvestigated": false,
+      "previousStatuses": [],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Menhdawal",
+      "workCategory": "new_city_research",
+      "bestCohortRank": 200,
+      "priority": 98
+    },
+    {
+      "cityId": "wup2025:2564",
+      "wupCityCode": 2564,
+      "name": "Narus",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "region": "Africa",
+      "centerLatLon": [
+        4.50390707903259,
+        34.1660430983317
+      ],
+      "largestRank": null,
+      "growthRank": 1,
+      "population2025": 212131,
+      "annualGrowthPct2015To2025": 13.096541,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2564"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-2564.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Narus,_South_Sudan",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 1,
+      "priority": 99
+    },
+    {
+      "cityId": "wup2025:2896",
+      "wupCityCode": 2896,
+      "name": "Mutuati",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "region": "Africa",
+      "centerLatLon": [
+        0.306228592288694,
+        37.9499417669457
+      ],
+      "largestRank": null,
+      "growthRank": 2,
+      "population2025": 232440,
+      "annualGrowthPct2015To2025": 13.021222,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2896"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-2896.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 2,
+      "priority": 100
+    },
+    {
+      "cityId": "wup2025:11511",
+      "wupCityCode": 11511,
+      "name": "Semapur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.4980899560268,
+        87.4841083291156
+      ],
+      "largestRank": null,
+      "growthRank": 4,
+      "population2025": 180033,
+      "annualGrowthPct2015To2025": 11.51634,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:11511"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-11511.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 4,
+      "priority": 101
+    },
+    {
+      "cityId": "wup2025:10605",
+      "wupCityCode": 10605,
+      "name": "Shankarpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.8134713841866,
+        84.1157517852504
+      ],
+      "largestRank": null,
+      "growthRank": 7,
+      "population2025": 280248,
+      "annualGrowthPct2015To2025": 10.646925,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:10605"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-10605.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 7,
+      "priority": 102
+    },
+    {
+      "cityId": "wup2025:4435",
+      "wupCityCode": 4435,
+      "name": "Al-Qahirah (Cairo)",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.0646095252452,
+        31.2607144569505
+      ],
+      "largestRank": 7,
+      "growthRank": null,
+      "population2025": 25566102,
+      "annualGrowthPct2015To2025": 1.708485,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:360630"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/cairo.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Cairo",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 7,
+      "priority": 103
+    },
+    {
+      "cityId": "wup2025:11821",
+      "wupCityCode": 11821,
+      "name": "Kolkata",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.5859710859864,
+        88.3536574635294
+      ],
+      "largestRank": 9,
+      "growthRank": null,
+      "population2025": 22549738,
+      "annualGrowthPct2015To2025": 0.572688,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:1275004"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kolkata.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kolkata",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 9,
+      "priority": 104
+    },
+    {
+      "cityId": "wup2025:2109",
+      "wupCityCode": 2109,
+      "name": "Riwoto",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "region": "Africa",
+      "centerLatLon": [
+        4.87591907165739,
+        33.5152380082506
+      ],
+      "largestRank": null,
+      "growthRank": 10,
+      "population2025": 330053,
+      "annualGrowthPct2015To2025": 9.892827,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2109"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-2109.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Riwoto",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 10,
+      "priority": 105
+    },
+    {
+      "cityId": "wup2025:3027",
+      "wupCityCode": 3027,
+      "name": "Lanckhul",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        33.574648740408,
+        74.9436957142741
+      ],
+      "largestRank": null,
+      "growthRank": 12,
+      "population2025": 181878,
+      "annualGrowthPct2015To2025": 9.58347,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3027"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-3027.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 12,
+      "priority": 106
+    },
+    {
+      "cityId": "wup2025:7945",
+      "wupCityCode": 7945,
+      "name": "Mumbai",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        19.12248075999,
+        72.8833426320986
+      ],
+      "largestRank": 12,
+      "growthRank": null,
+      "population2025": 20203056,
+      "annualGrowthPct2015To2025": 0.969251,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:1275339"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/mumbai.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Mumbai",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 12,
+      "priority": 107
+    },
+    {
+      "cityId": "wup2025:2633",
+      "wupCityCode": 2633,
+      "name": "Bukalasi",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "region": "Africa",
+      "centerLatLon": [
+        1.01864172628934,
+        34.3514980249162
+      ],
+      "largestRank": null,
+      "growthRank": 13,
+      "population2025": 345288,
+      "annualGrowthPct2015To2025": 9.570719,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2633"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-2633.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 13,
+      "priority": 108
+    },
+    {
+      "cityId": "wup2025:10737",
+      "wupCityCode": 10737,
+      "name": "Darauli",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.1350913588765,
+        84.1658019427551
+      ],
+      "largestRank": null,
+      "growthRank": 14,
+      "population2025": 211985,
+      "annualGrowthPct2015To2025": 9.44275,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:10737"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-10737.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Darauli",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 14,
+      "priority": 109
+    },
+    {
+      "cityId": "wup2025:2565",
+      "wupCityCode": 2565,
+      "name": "Mbale City",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "region": "Africa",
+      "centerLatLon": [
+        1.07878290451076,
+        34.1841997126949
+      ],
+      "largestRank": null,
+      "growthRank": 17,
+      "population2025": 380565,
+      "annualGrowthPct2015To2025": 8.726773,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2565"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/mbale.json",
+        "research/growth-top20-2026-10-07/city-2565.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Mbale",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 17,
+      "priority": 110
+    },
+    {
+      "cityId": "wup2025:10791",
+      "wupCityCode": 10791,
+      "name": "Raghunathpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.9929452167679,
+        84.2915701031615
+      ],
+      "largestRank": null,
+      "growthRank": 18,
+      "population2025": 147149,
+      "annualGrowthPct2015To2025": 8.637792,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:10791"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-10791.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Raghunathpur,_Siwan",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 18,
+      "priority": 111
+    },
+    {
+      "cityId": "wup2025:3846",
+      "wupCityCode": 3846,
+      "name": "Meftah",
+      "country": "Algeria",
+      "countryCode": "DZ",
+      "region": "Africa",
+      "centerLatLon": [
+        36.6354855393707,
+        3.2360931732742
+      ],
+      "largestRank": null,
+      "growthRank": 19,
+      "population2025": 118483,
+      "annualGrowthPct2015To2025": 8.583561,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3846"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-3846.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Meftah_(town)",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 19,
+      "priority": 112
+    },
+    {
+      "cityId": "wup2025:2198",
+      "wupCityCode": 2198,
+      "name": "Antsiramandroso",
+      "country": "Madagascar",
+      "countryCode": "MG",
+      "region": "Africa",
+      "centerLatLon": [
+        -18.0327220798438,
+        49.3376073680055
+      ],
+      "largestRank": null,
+      "growthRank": 20,
+      "population2025": 312434,
+      "annualGrowthPct2015To2025": 8.528493,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2198"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/growth-top20-2026-10-07/city-2198.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 20,
+      "priority": 113
+    },
+    {
+      "cityId": "wup2025:9949",
+      "wupCityCode": 9949,
+      "name": "Bengaluru",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        13.0062665301097,
+        77.5626340229947
+      ],
+      "largestRank": 24,
+      "growthRank": null,
+      "population2025": 13187098,
+      "annualGrowthPct2015To2025": 2.04404,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:1277333"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/bengaluru.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Bengaluru",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 24,
+      "priority": 114
+    },
+    {
+      "cityId": "wup2025:1265",
+      "wupCityCode": 1265,
+      "name": "Lagos",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        6.56844874683968,
+        3.31028078517139
+      ],
+      "largestRank": 26,
+      "growthRank": null,
+      "population2025": 12791699,
+      "annualGrowthPct2015To2025": 1.425783,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:2332459"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/lagos.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Lagos",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 26,
+      "priority": 115
+    },
+    {
+      "cityId": "wup2025:10747",
+      "wupCityCode": 10747,
+      "name": "Chennai",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        13.0444628101411,
+        80.2033736591079
+      ],
+      "largestRank": 29,
+      "growthRank": null,
+      "population2025": 11153205,
+      "annualGrowthPct2015To2025": 0.999491,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:1264527"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/chennai.json",
+        "research/retry/cities/chennai.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Chennai",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 29,
+      "priority": 116
+    },
+    {
+      "cityId": "wup2025:1854",
+      "wupCityCode": 1854,
+      "name": "Kinshasa",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -4.38339103982329,
+        15.3261049737162
+      ],
+      "largestRank": 30,
+      "growthRank": null,
+      "population2025": 10943641,
+      "annualGrowthPct2015To2025": 3.182582,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "geonames:2314302"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kinshasa.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kinshasa",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 30,
+      "priority": 117
+    },
+    {
+      "cityId": "wup2025:11027",
+      "wupCityCode": 11027,
+      "name": "Hajipur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.9809989936602,
+        85.4509953679278
+      ],
+      "largestRank": 34,
+      "growthRank": null,
+      "population2025": 9941510,
+      "annualGrowthPct2015To2025": 2.475822,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:11027"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/hajipur.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 34,
+      "priority": 118
+    },
+    {
+      "cityId": "wup2025:9913",
+      "wupCityCode": 9913,
+      "name": "Hyderabad",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        17.4138906547212,
+        78.475689046214
+      ],
+      "largestRank": 37,
+      "growthRank": null,
+      "population2025": 9190795,
+      "annualGrowthPct2015To2025": 1.014582,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9913"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/hyderabad.json",
+        "research/retry/cities/hyderabad.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Hyderabad",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 37,
+      "priority": 119
+    },
+    {
+      "cityId": "wup2025:3566",
+      "wupCityCode": 3566,
+      "name": "Dar es Salaam",
+      "country": "United Republic of Tanzania",
+      "countryCode": "TZ",
+      "region": "Africa",
+      "centerLatLon": [
+        -6.83352843774764,
+        39.2241417477354
+      ],
+      "largestRank": 42,
+      "growthRank": null,
+      "population2025": 7795114,
+      "annualGrowthPct2015To2025": 4.029294,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3566"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/dar-es-salaam.json",
+        "research/retry/cities/dar-es-salaam.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Dar_es_Salaam",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 42,
+      "priority": 120
+    },
+    {
+      "cityId": "wup2025:6408",
+      "wupCityCode": 6408,
+      "name": "Ahmedabad",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        23.0208369805955,
+        72.5971679403649
+      ],
+      "largestRank": 44,
+      "growthRank": null,
+      "population2025": 7632408,
+      "annualGrowthPct2015To2025": 1.102372,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:6408"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/ahmedabad.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Ahmedabad",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 44,
+      "priority": 121
+    },
+    {
+      "cityId": "wup2025:275",
+      "wupCityCode": 275,
+      "name": "Alexandria",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        31.1933695758061,
+        29.9517660943627
+      ],
+      "largestRank": 48,
+      "growthRank": null,
+      "population2025": 7266957,
+      "annualGrowthPct2015To2025": 2.018881,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:275"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/alexandria.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Alexandria",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 48,
+      "priority": 122
+    },
+    {
+      "cityId": "wup2025:7233",
+      "wupCityCode": 7233,
+      "name": "Surat",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        21.1776194957192,
+        72.7789187685758
+      ],
+      "largestRank": 53,
+      "growthRank": null,
+      "population2025": 6908925,
+      "annualGrowthPct2015To2025": 2.055327,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:7233"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/surat.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Surat",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 53,
+      "priority": 123
+    },
+    {
+      "cityId": "wup2025:4325",
+      "wupCityCode": 4325,
+      "name": "Al-Kharṭūm (Khartoum)",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        15.6335384772136,
+        32.4952458979726
+      ],
+      "largestRank": 56,
+      "growthRank": null,
+      "population2025": 6809355,
+      "annualGrowthPct2015To2025": 1.438109,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:4325"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/khartoum.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Khartoum",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 56,
+      "priority": 124
+    },
+    {
+      "cityId": "wup2025:6353",
+      "wupCityCode": 6353,
+      "name": "Ādīs Ᾱbeba (Addis Ababa)",
+      "country": "Ethiopia",
+      "countryCode": "ET",
+      "region": "Africa",
+      "centerLatLon": [
+        9.00714292574818,
+        38.7489828471342
+      ],
+      "largestRank": 59,
+      "growthRank": null,
+      "population2025": 6705705,
+      "annualGrowthPct2015To2025": 3.818874,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:6353"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/addis-ababa.json",
+        "research/retry/cities/addis-ababa.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Addis_Ababa",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 59,
+      "priority": 125
+    },
+    {
+      "cityId": "wup2025:3439",
+      "wupCityCode": 3439,
+      "name": "Abidjan",
+      "country": "Côte d'Ivoire",
+      "countryCode": "CI",
+      "region": "Africa",
+      "centerLatLon": [
+        5.35604816980528,
+        -4.01965468787951
+      ],
+      "largestRank": 60,
+      "growthRank": null,
+      "population2025": 6621711,
+      "annualGrowthPct2015To2025": 2.600423,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3439"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/abidjan.json",
+        "research/retry/cities/abidjan.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Abidjan",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 60,
+      "priority": 126
+    },
+    {
+      "cityId": "wup2025:2033",
+      "wupCityCode": 2033,
+      "name": "Nairobi",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "region": "Africa",
+      "centerLatLon": [
+        -1.26592113731299,
+        36.845161927435
+      ],
+      "largestRank": 65,
+      "growthRank": null,
+      "population2025": 6134334,
+      "annualGrowthPct2015To2025": 2.718356,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2033"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/nairobi.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Nairobi",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 65,
+      "priority": 127
+    },
+    {
+      "cityId": "wup2025:9587",
+      "wupCityCode": 9587,
+      "name": "Kozhikode",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        11.2059147426276,
+        75.8583486485998
+      ],
+      "largestRank": 66,
+      "growthRank": null,
+      "population2025": 6123872,
+      "annualGrowthPct2015To2025": 4.577214,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9587"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kozhikode.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kozhikode",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 66,
+      "priority": 128
+    },
+    {
+      "cityId": "wup2025:7330",
+      "wupCityCode": 7330,
+      "name": "Onitsha",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        6.17349813029485,
+        6.82053185724296
+      ],
+      "largestRank": 69,
+      "growthRank": null,
+      "population2025": 5627706,
+      "annualGrowthPct2015To2025": 3.070259,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:7330"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/onitsha.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Onitsha",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 69,
+      "priority": 129
+    },
+    {
+      "cityId": "wup2025:3336",
+      "wupCityCode": 3336,
+      "name": "Accra",
+      "country": "Ghana",
+      "countryCode": "GH",
+      "region": "Africa",
+      "centerLatLon": [
+        5.60366263373368,
+        -0.210576368296996
+      ],
+      "largestRank": 71,
+      "growthRank": null,
+      "population2025": 5592780,
+      "annualGrowthPct2015To2025": 1.957655,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3336"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/accra.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Accra",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 71,
+      "priority": 130
+    },
+    {
+      "cityId": "wup2025:2324",
+      "wupCityCode": 2324,
+      "name": "Yaoundé",
+      "country": "Cameroon",
+      "countryCode": "CM",
+      "region": "Africa",
+      "centerLatLon": [
+        3.84966629078637,
+        11.5177122171369
+      ],
+      "largestRank": 79,
+      "growthRank": null,
+      "population2025": 5106087,
+      "annualGrowthPct2015To2025": 3.884454,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2324"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/yaounde.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Yaound%C3%A9",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 79,
+      "priority": 131
+    },
+    {
+      "cityId": "wup2025:9765",
+      "wupCityCode": 9765,
+      "name": "Kochi",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        10.0612792171801,
+        76.3088105504372
+      ],
+      "largestRank": 80,
+      "growthRank": null,
+      "population2025": 5077670,
+      "annualGrowthPct2015To2025": 2.080677,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9765"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kochi.json",
+        "research/retry/cities/kochi.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kochi",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 80,
+      "priority": 132
+    },
+    {
+      "cityId": "wup2025:9717",
+      "wupCityCode": 9717,
+      "name": "Lucknow",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.8615244724503,
+        80.9654352206033
+      ],
+      "largestRank": 82,
+      "growthRank": null,
+      "population2025": 5052444,
+      "annualGrowthPct2015To2025": 0.899203,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9717"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/lucknow.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Lucknow",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 82,
+      "priority": 133
+    },
+    {
+      "cityId": "wup2025:1866",
+      "wupCityCode": 1866,
+      "name": "Kampala",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "region": "Africa",
+      "centerLatLon": [
+        0.321224889410938,
+        32.5794981900445
+      ],
+      "largestRank": 85,
+      "growthRank": null,
+      "population2025": 4880943,
+      "annualGrowthPct2015To2025": 3.384883,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:1866"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kampala.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kampala",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 85,
+      "priority": 134
+    },
+    {
+      "cityId": "wup2025:8435",
+      "wupCityCode": 8435,
+      "name": "Kano",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        11.9851852836313,
+        8.50931812932348
+      ],
+      "largestRank": 89,
+      "growthRank": null,
+      "population2025": 4840280,
+      "annualGrowthPct2015To2025": 1.734421,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8435"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kano.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 89,
+      "priority": 135
+    },
+    {
+      "cityId": "wup2025:2076",
+      "wupCityCode": 2076,
+      "name": "Casablanca",
+      "country": "Morocco",
+      "countryCode": "MA",
+      "region": "Africa",
+      "centerLatLon": [
+        33.5818411354042,
+        -7.54260580529481
+      ],
+      "largestRank": 94,
+      "growthRank": null,
+      "population2025": 4457471,
+      "annualGrowthPct2015To2025": 0.960716,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2076"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/casablanca.json",
+        "research/retry/cities/casablanca.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Casablanca",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 94,
+      "priority": 136
+    },
+    {
+      "cityId": "wup2025:3197",
+      "wupCityCode": 3197,
+      "name": "Muqdisho (Mogadishu)",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "region": "Africa",
+      "centerLatLon": [
+        2.05393262544166,
+        45.3313716202418
+      ],
+      "largestRank": 95,
+      "growthRank": null,
+      "population2025": 4399430,
+      "annualGrowthPct2015To2025": 6.708061,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3197"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/mogadishu.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Mogadishu",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 95,
+      "priority": 137
+    },
+    {
+      "cityId": "wup2025:9603",
+      "wupCityCode": 9603,
+      "name": "Kanpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.460949782044,
+        80.3406195423691
+      ],
+      "largestRank": 97,
+      "growthRank": null,
+      "population2025": 4329973,
+      "annualGrowthPct2015To2025": -0.127565,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9603"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kanpur.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kanpur",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 97,
+      "priority": 138
+    },
+    {
+      "cityId": "wup2025:1468",
+      "wupCityCode": 1468,
+      "name": "Kumasi",
+      "country": "Ghana",
+      "countryCode": "GH",
+      "region": "Africa",
+      "centerLatLon": [
+        6.69546322877124,
+        -1.61389130350228
+      ],
+      "largestRank": 98,
+      "growthRank": null,
+      "population2025": 4297984,
+      "annualGrowthPct2015To2025": 3.418956,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:1468"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kumasi.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kumasi",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 98,
+      "priority": 139
+    },
+    {
+      "cityId": "wup2025:7397",
+      "wupCityCode": 7397,
+      "name": "Luxor",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        25.6736044952306,
+        32.5858136344761
+      ],
+      "largestRank": 104,
+      "growthRank": null,
+      "population2025": 4188023,
+      "annualGrowthPct2015To2025": 7.64502,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:7397"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/luxor.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Luxor",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 104,
+      "priority": 140
+    },
+    {
+      "cityId": "wup2025:813",
+      "wupCityCode": 813,
+      "name": "Douala",
+      "country": "Cameroon",
+      "countryCode": "CM",
+      "region": "Africa",
+      "centerLatLon": [
+        4.05134876751942,
+        9.73966468522168
+      ],
+      "largestRank": 109,
+      "growthRank": null,
+      "population2025": 4104516,
+      "annualGrowthPct2015To2025": 3.272256,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:813"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/douala.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Douala",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 109,
+      "priority": 141
+    },
+    {
+      "cityId": "wup2025:8064",
+      "wupCityCode": 8064,
+      "name": "Jaipur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.9128723533915,
+        75.7865606043523
+      ],
+      "largestRank": 110,
+      "growthRank": null,
+      "population2025": 4071754,
+      "annualGrowthPct2015To2025": 1.078002,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8064"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/jaipur.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Jaipur",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 110,
+      "priority": 142
+    },
+    {
+      "cityId": "wup2025:1961",
+      "wupCityCode": 1961,
+      "name": "Antananarivo",
+      "country": "Madagascar",
+      "countryCode": "MG",
+      "region": "Africa",
+      "centerLatLon": [
+        -18.8651082509313,
+        47.5377709219744
+      ],
+      "largestRank": 118,
+      "growthRank": null,
+      "population2025": 3916219,
+      "annualGrowthPct2015To2025": 3.945163,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:1961"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_sample_candidate_citywide"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/antananarivo.json",
+        "research/retry/cities/antananarivo.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Antananarivo",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 118,
+      "priority": 143
+    },
+    {
+      "cityId": "wup2025:10447",
+      "wupCityCode": 10447,
+      "name": "Varanasi",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.3130953149596,
+        83.0050363443188
+      ],
+      "largestRank": 119,
+      "growthRank": null,
+      "population2025": 3858863,
+      "annualGrowthPct2015To2025": 0.850739,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:10447"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/varanasi.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Varanasi",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 119,
+      "priority": 144
+    },
+    {
+      "cityId": "wup2025:33",
+      "wupCityCode": 33,
+      "name": "Dakar",
+      "country": "Senegal",
+      "countryCode": "SN",
+      "region": "Africa",
+      "centerLatLon": [
+        14.7439034455783,
+        -17.3893643705506
+      ],
+      "largestRank": 120,
+      "growthRank": null,
+      "population2025": 3852475,
+      "annualGrowthPct2015To2025": 1.828571,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:33"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/dakar.json",
+        "research/retry/cities/dakar.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Dakar",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 120,
+      "priority": 145
+    },
+    {
+      "cityId": "wup2025:7369",
+      "wupCityCode": 7369,
+      "name": "Owerri",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        5.68742511130826,
+        7.03813104830766
+      ],
+      "largestRank": 121,
+      "growthRank": null,
+      "population2025": 3833343,
+      "annualGrowthPct2015To2025": 3.684677,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:7369"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/owerri.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Owerri",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 121,
+      "priority": 146
+    },
+    {
+      "cityId": "wup2025:2996",
+      "wupCityCode": 2996,
+      "name": "Ibadan",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        7.3786809782363,
+        3.92249269514
+      ],
+      "largestRank": 123,
+      "growthRank": null,
+      "population2025": 3720721,
+      "annualGrowthPct2015To2025": 1.620349,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2996"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/ibadan.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Ibadan",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 123,
+      "priority": 147
+    },
+    {
+      "cityId": "wup2025:554",
+      "wupCityCode": 554,
+      "name": "Brazzaville",
+      "country": "Congo",
+      "countryCode": "CG",
+      "region": "Africa",
+      "centerLatLon": [
+        -4.24419486632791,
+        15.2626288363336
+      ],
+      "largestRank": 126,
+      "growthRank": null,
+      "population2025": 3656322,
+      "annualGrowthPct2015To2025": 3.365984,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:554"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/brazzaville.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Brazzaville",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 126,
+      "priority": 148
+    },
+    {
+      "cityId": "wup2025:5196",
+      "wupCityCode": 5196,
+      "name": "Kasaï-Oriental",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -6.12279658565417,
+        23.5984690595655
+      ],
+      "largestRank": 130,
+      "growthRank": null,
+      "population2025": 3605738,
+      "annualGrowthPct2015To2025": 1.955506,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:5196"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kasai-oriental.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 130,
+      "priority": 149
+    },
+    {
+      "cityId": "wup2025:8886",
+      "wupCityCode": 8886,
+      "name": "Indore",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.6991756014844,
+        75.8556700061169
+      ],
+      "largestRank": 136,
+      "growthRank": null,
+      "population2025": 3476423,
+      "annualGrowthPct2015To2025": 1.580286,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8886"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/indore.json",
+        "research/retry/cities/indore.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Indore",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 136,
+      "priority": 150
+    },
+    {
+      "cityId": "wup2025:11039",
+      "wupCityCode": 11039,
+      "name": "Patna",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.5970203089431,
+        85.1397184130161
+      ],
+      "largestRank": 141,
+      "growthRank": null,
+      "population2025": 3309383,
+      "annualGrowthPct2015To2025": 1.399942,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:11039"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/patna.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Patna",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 141,
+      "priority": 151
+    },
+    {
+      "cityId": "wup2025:9793",
+      "wupCityCode": 9793,
+      "name": "Nagpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        21.1403108339582,
+        79.0798475250127
+      ],
+      "largestRank": 147,
+      "growthRank": null,
+      "population2025": 3257841,
+      "annualGrowthPct2015To2025": 0.713869,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9793"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/nagpur.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 147,
+      "priority": 152
+    },
+    {
+      "cityId": "wup2025:3444",
+      "wupCityCode": 3444,
+      "name": "El Djazaïr (Algiers)",
+      "country": "Algeria",
+      "countryCode": "DZ",
+      "region": "Africa",
+      "centerLatLon": [
+        36.7381965172536,
+        3.08705221152983
+      ],
+      "largestRank": 148,
+      "growthRank": null,
+      "population2025": 3246400,
+      "annualGrowthPct2015To2025": 1.219915,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3444"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/el-djazair-algiers.json",
+        "research/retry/cities/el-djazair-algiers.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Algiers",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 148,
+      "priority": 153
+    },
+    {
+      "cityId": "wup2025:1748",
+      "wupCityCode": 1748,
+      "name": "Ouagadougou",
+      "country": "Burkina Faso",
+      "countryCode": "BF",
+      "region": "Africa",
+      "centerLatLon": [
+        12.3616666818412,
+        -1.52722272561358
+      ],
+      "largestRank": 152,
+      "growthRank": null,
+      "population2025": 3206222,
+      "annualGrowthPct2015To2025": 3.183396,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:1748"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/ouagadougou.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Ouagadougou",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 152,
+      "priority": 154
+    },
+    {
+      "cityId": "wup2025:116",
+      "wupCityCode": 116,
+      "name": "Maputo",
+      "country": "Mozambique",
+      "countryCode": "MZ",
+      "region": "Africa",
+      "centerLatLon": [
+        -25.890514039018,
+        32.5554921959491
+      ],
+      "largestRank": 154,
+      "growthRank": null,
+      "population2025": 3166328,
+      "annualGrowthPct2015To2025": 2.053399,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:116"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/maputo.json",
+        "research/retry/cities/maputo.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Maputo",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 154,
+      "priority": 155
+    },
+    {
+      "cityId": "wup2025:8120",
+      "wupCityCode": 8120,
+      "name": "Kalyan-Dombivli",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        19.2079660812588,
+        73.1699593951258
+      ],
+      "largestRank": 156,
+      "growthRank": null,
+      "population2025": 3163424,
+      "annualGrowthPct2015To2025": 1.098028,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8120"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kalyan-dombivli.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 156,
+      "priority": 156
+    },
+    {
+      "cityId": "wup2025:9847",
+      "wupCityCode": 9847,
+      "name": "Kollam",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        9.29818038422683,
+        76.4275496736682
+      ],
+      "largestRank": 162,
+      "growthRank": null,
+      "population2025": 3074562,
+      "annualGrowthPct2015To2025": 3.388199,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9847"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kollam.json",
+        "research/retry/cities/kollam.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 162,
+      "priority": 157
+    },
+    {
+      "cityId": "wup2025:10013",
+      "wupCityCode": 10013,
+      "name": "Thiruvananthapuram",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        8.50983231508796,
+        76.9676364538033
+      ],
+      "largestRank": 166,
+      "growthRank": null,
+      "population2025": 2946119,
+      "annualGrowthPct2015To2025": 2.19214,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:10013"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/thiruvananthapuram.json",
+        "research/retry/cities/thiruvananthapuram.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Thiruvananthapuram",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 166,
+      "priority": 158
+    },
+    {
+      "cityId": "wup2025:11531",
+      "wupCityCode": 11531,
+      "name": "Asansol",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        23.6979457782642,
+        86.9114092684189
+      ],
+      "largestRank": 167,
+      "growthRank": null,
+      "population2025": 2924741,
+      "annualGrowthPct2015To2025": 0.51776,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:11531"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/asansol.json",
+        "research/retry/cities/asansol.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Asansol",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 167,
+      "priority": 159
+    },
+    {
+      "cityId": "wup2025:11755",
+      "wupCityCode": 11755,
+      "name": "Tamluk",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.3857912198346,
+        87.872341961915
+      ],
+      "largestRank": 173,
+      "growthRank": null,
+      "population2025": 2894484,
+      "annualGrowthPct2015To2025": 1.751786,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:11755"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/tamluk.json",
+        "research/retry/cities/tamluk.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Tamluk",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 173,
+      "priority": 160
+    },
+    {
+      "cityId": "wup2025:6577",
+      "wupCityCode": 6577,
+      "name": "Lubumbashi",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -11.6638992235197,
+        27.4813527003548
+      ],
+      "largestRank": 176,
+      "growthRank": null,
+      "population2025": 2832853,
+      "annualGrowthPct2015To2025": 4.342998,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:6577"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/lubumbashi.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Lubumbashi",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 176,
+      "priority": 161
+    },
+    {
+      "cityId": "wup2025:8971",
+      "wupCityCode": 8971,
+      "name": "Agra",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        27.1881643913104,
+        78.0013166778967
+      ],
+      "largestRank": 180,
+      "growthRank": null,
+      "population2025": 2786762,
+      "annualGrowthPct2015To2025": 0.939253,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8971"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/agra.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Agra",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 180,
+      "priority": 162
+    },
+    {
+      "cityId": "wup2025:655",
+      "wupCityCode": 655,
+      "name": "Coyah (Conacry)",
+      "country": "Guinea",
+      "countryCode": "GN",
+      "region": "Africa",
+      "centerLatLon": [
+        9.64830229365228,
+        -13.5649835400196
+      ],
+      "largestRank": 182,
+      "growthRank": null,
+      "population2025": 2727684,
+      "annualGrowthPct2015To2025": 1.729257,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:655"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/coyah-conakry.json",
+        "research/retry/cities/coyah-conakry.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Coyah",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 182,
+      "priority": 163
+    },
+    {
+      "cityId": "wup2025:9213",
+      "wupCityCode": 9213,
+      "name": "Bhopal",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        23.2399095144358,
+        77.4239121630525
+      ],
+      "largestRank": 199,
+      "growthRank": null,
+      "population2025": 2487205,
+      "annualGrowthPct2015To2025": 1.600001,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9213"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/bhopal.json",
+        "research/retry/cities/bhopal.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Bhopal",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 199,
+      "priority": 164
+    },
+    {
+      "cityId": "wup2025:10023",
+      "wupCityCode": 10023,
+      "name": "Venjaramoodu",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        8.65276906631116,
+        76.9124484846266
+      ],
+      "largestRank": null,
+      "growthRank": 6,
+      "population2025": 153920,
+      "annualGrowthPct2015To2025": 11.132327,
+      "cohorts": [
+        "growth200"
+      ],
+      "appCityIds": [
+        "venjaramoodu"
+      ],
+      "registryCityIds": [
+        "wup2025:10023"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "kerala-entebhoomi-ilms-map-proxy"
+      ],
+      "previousEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/kerala-runtime.json",
+        "research/growth-top20-2026-10-07/city-10023.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Venjarammoodu",
+      "workCategory": "already_live",
+      "bestCohortRank": 6,
+      "priority": 165
+    },
+    {
+      "cityId": "wup2025:939",
+      "wupCityCode": 939,
+      "name": "Luanda",
+      "country": "Angola",
+      "countryCode": "AO",
+      "region": "Africa",
+      "centerLatLon": [
+        -8.87823789616165,
+        13.2976677767811
+      ],
+      "largestRank": 28,
+      "growthRank": null,
+      "population2025": 11370127,
+      "annualGrowthPct2015To2025": 4.69581,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [
+        "luanda"
+      ],
+      "registryCityIds": [
+        "geonames:2240449"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "ao-arcgis-luanda-agt-property-polygons"
+      ],
+      "previousEvidenceFiles": [
+        "research/luanda.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Luanda",
+      "workCategory": "already_live",
+      "bestCohortRank": 28,
+      "priority": 166
+    },
+    {
+      "cityId": "wup2025:413",
+      "wupCityCode": 413,
+      "name": "Cape Town",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "region": "Africa",
+      "centerLatLon": [
+        -33.9805360922243,
+        18.5999587421507
+      ],
+      "largestRank": 93,
+      "growthRank": null,
+      "population2025": 4508921,
+      "annualGrowthPct2015To2025": 2.661422,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [
+        "cape_town"
+      ],
+      "registryCityIds": [
+        "wup2025:413"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_city_scope"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "za-cct-land-parcels"
+      ],
+      "previousEvidenceFiles": [
+        "research/cape-town.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Cape_Town",
+      "workCategory": "already_live",
+      "bestCohortRank": 93,
+      "priority": 167
+    },
+    {
+      "cityId": "wup2025:374",
+      "wupCityCode": 374,
+      "name": "Bamako",
+      "country": "Mali",
+      "countryCode": "ML",
+      "region": "Africa",
+      "centerLatLon": [
+        12.6310497786104,
+        -7.98841144489398
+      ],
+      "largestRank": 103,
+      "growthRank": null,
+      "population2025": 4244881,
+      "annualGrowthPct2015To2025": 3.752654,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [
+        "bamako"
+      ],
+      "registryCityIds": [
+        "wup2025:374"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "ml-sprdf-ninacad-parcelle-wfs"
+      ],
+      "previousEvidenceFiles": [
+        "research/bamako.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Bamako",
+      "workCategory": "already_live",
+      "bestCohortRank": 103,
+      "priority": 168
+    },
+    {
+      "cityId": "wup2025:1498",
+      "wupCityCode": 1498,
+      "name": "Lusaka",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "region": "Africa",
+      "centerLatLon": [
+        -15.3971082156756,
+        28.2915266777252
+      ],
+      "largestRank": 135,
+      "growthRank": null,
+      "population2025": 3510723,
+      "annualGrowthPct2015To2025": 3.92881,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [
+        "lusaka"
+      ],
+      "registryCityIds": [
+        "wup2025:1498"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "zm-lusaka-mtendere-east-agol-unofficial"
+      ],
+      "previousEvidenceFiles": [
+        "research/lusaka.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Lusaka",
+      "workCategory": "already_live",
+      "bestCohortRank": 135,
+      "priority": 169
+    },
+    {
+      "cityId": "wup2025:5227",
+      "wupCityCode": 5227,
+      "name": "Durban",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "region": "Africa",
+      "centerLatLon": [
+        -29.6451663770183,
+        30.7347684823797
+      ],
+      "largestRank": 153,
+      "growthRank": null,
+      "population2025": 3177927,
+      "annualGrowthPct2015To2025": 0.949968,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [
+        "durban"
+      ],
+      "registryCityIds": [
+        "wup2025:5227"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_city_scope"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "za-ethekwini-cadastral-parcels",
+        "za-giscoe-erven"
+      ],
+      "previousEvidenceFiles": [
+        "research/same-country-expansion-2026-10-07/durban-tls-research.json",
+        "research/durban.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "already_live",
+      "bestCohortRank": 153,
+      "priority": 170
+    },
+    {
+      "cityId": "wup2025:1752",
+      "wupCityCode": 1752,
+      "name": "Cotonou",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "region": "Africa",
+      "centerLatLon": [
+        6.38646680667236,
+        2.3895186609943
+      ],
+      "largestRank": 198,
+      "growthRank": null,
+      "population2025": 2506489,
+      "annualGrowthPct2015To2025": 3.041336,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [
+        "cotonou"
+      ],
+      "registryCityIds": [
+        "wup2025:1752"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "verified_sample_partial_coverage"
+      ],
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "previousEvidenceFiles": [
+        "research/cotonou.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Cotonou",
+      "workCategory": "already_live",
+      "bestCohortRank": 198,
+      "priority": 171
+    }
+  ]
+}

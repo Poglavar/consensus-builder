@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11511,
+  "cityId": "wup2025:11511",
+  "name": "Semapur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.4980899560268,
+    87.4841083291156
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 101,
+  "stateOrUT": "Bihar",
+  "administrativeIdentity": {
+    "district": "कटिहार",
+    "tehsilOrTaluk": "Barari",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/growth-top20-integration-2026-10-07/bihar.json",
+      "research/growth-top20-2026-10-07/city-11511.json"
+    ],
+    "registryFoundBefore": true,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/growth-top20-integration-2026-10-07/bihar.json",
+        "checkedAt": "2026-10-07",
+        "status": null,
+        "scope": null,
+        "source": {
+          "name": "BhuNaksha Bihar",
+          "operator": "Directorate of Land Records & Survey, Government of Bihar; BhuNaksha viewer developed by NIC",
+          "viewerUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+          "stateViewerUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "viewerClientScript": "https://bhunaksha.bihar.gov.in/index.js",
+          "selectorEndpoint": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+          "extentEndpoint": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+          "identifyEndpoint": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+          "scalarEndpoint": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+          "mapEndpoint": "https://bhunaksha.bihar.gov.in/WMS",
+          "reuseTerms": "Not assessed; informational only."
+        },
+        "requests": [],
+        "conclusion": "No target-area cadastral feature verified. Exact revenue mauza remains unresolved; Barari is a registry lead only.",
+        "nextStep": "Identify the revenue mauza containing the supplied coordinate from an authoritative local boundary or the remaining relevant BhuNaksha village extents; only then test its sheet and point lookup."
+      },
+      {
+        "path": "research/growth-top20-2026-10-07/city-11511.json",
+        "checkedAt": "2026-10-07",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Bihar BhuNaksha state selector plus DILRMP evidence for Katihar district / Barari tehsil; no exact Semapur revenue-village selection or target parcel geometry verified.",
+        "source": {
+          "sourceId": "bihar-bhunaksha",
+          "name": "BhuNaksha Bihar cadastral map viewer and NIC REST selector",
+          "operator": "Directorate of Land Records & Survey, Government of Bihar; NIC developed BhuNaksha",
+          "scope": "Bihar state viewer hierarchy is public. DILRMP lists Barari tehsil in Katihar district (201 cadastral maps, 89 villages); no exact Semapur revenue mauza or target parcel response was verified.",
+          "endpoint": "https://bhunaksha.bihar.gov.in/ (viewer); https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel (administrative hierarchy); https://bhunaksha.bihar.gov.in/WMS (image map)",
+          "method": "POST application/x-www-form-urlencoded to public selector; WMS map rendered as image",
+          "responseFormat": "JSON administrative hierarchy; WMS image/png",
+          "crs": "EPSG:32645 was reported by MapInfo for a tested Katihar map sheet; it is not a verified CRS for Semapur target geometry.",
+          "reuseStatus": "Public viewer/API and map layers reachable anonymously; reuse terms for automated access not assessed. No parcel geometry endpoint identified."
+        },
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "Direct browser-like request attempted with Chrome User-Agent, Accept, target-country Accept-Language and requests cookie session; environment DNS resolution failed before HTTP response. No response body; this is not evidence of no-data."
+          },
+          {
+            "method": "GET",
+            "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "Official report indexed in web search with district/mauza records, but live bounded parcel geometry request not available from this environment."
+          },
+          {
+            "method": "GET",
+            "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "Official DILRMP tehsil table lists Barari (201 maps, 89 villages) and reports maps digitized; this is administrative digitization evidence, not parcel geometry or exact mauza lookup."
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "Official viewer retrieved with browser-like UA/Accept/Accept-Language and session cookies outside the sandbox; JavaScript and service routes inspected."
+          },
+          {
+            "method": "POST",
+            "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "Public selector reports 7 hierarchy levels for Bihar state code 10."
+          },
+          {
+            "method": "POST",
+            "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "Returned state subdivisions/circles/mauza candidate lists with hasData flags; administrative selector response, not parcel geometry."
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities&state=10",
+            "httpStatus": 200,
+            "contentType": "image/png",
+            "assessment": "Returned 1x1 PNG (562 bytes), not a WMS capabilities document or parcel geometry."
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities",
+            "httpStatus": 500,
+            "contentType": null,
+            "assessment": "Empty server response to WMS capabilities request; viewer itself requests image WMS layers with state/gis_code/layer parameters. This is not treated as no-data."
+          },
+          {
+            "method": "POST",
+            "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "Bounded selector listing across Katihar subdivisions/circles and their mapped mauza options found no exact “Semapur” label. This is not proof the locality lacks parcel data; an alternate revenue-village name or nonmapped survey remains possible."
+          }
+        ],
+        "conclusion": null,
+        "nextStep": "Use the public Bihar hierarchy with Katihar district and Barari tehsil as the supported administrative lead, then reconcile Semapur locality to its exact revenue mauza and verify a sheet/parcel response. Do not infer target geometry from tehsil-wide map counts or the unsuccessful exact-name scan."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "सेमापुर कटिहार बिहार भू नक्शा राजस्व ग्राम खेसरा",
+        "scope": "WUP 11511 Semapur cohort label retained; exact native-script search used to identify Bihar official revenue/cadastral map entry points.",
+        "result": "Search outputs pointed to the shared official Bihar BhuNaksha/Bihar Bhumi entry points; no city-specific parcel polygon or exact WUP revenue village was returned by this search.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/",
+          "https://cdnbbsr.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2025/07/202507301204050224.pdf",
+          "https://emutation.bihar.gov.in/biharbhumidemo/Default",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://mopid.lumbini.gov.np/media/downloads/Community_Participation_Plan_of__Riji_Dumla_Nerpa_Road_Rolpa.pdf",
+          "https://cdnbbsr.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2025/05/20250522342628172.pdf",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default",
+          "https://www.biharbhumiportal.com/",
+          "https://dlrs.bihar.gov.in/attachments/Letter/344.pdf",
+          "https://biharbhumionline.com/",
+          "https://biharbhumibihar.com/",
+          "https://www.egovtschemes.com/bhu-naksha-bihar/",
+          "https://www.mapmybhumi.com/land-records",
+          "https://biharbhumi.bihar.gov.in/biharbhumi/FAQ/10.pdf",
+          "https://dlrs.bihar.gov.in/%28X%281%29S%28rkgbedvso2wjhzctmahzpeta%29%29/services.aspx?AspxAutoDetectCookieSupport=1",
+          "https://biharbhumilandrecord.co.in/",
+          "https://biharbhumii.com/",
+          "https://www.reddit.com/r/bihar/comments/1tovakh/%E0%A4%AC%E0%A4%B9%E0%A4%B0_%E0%A4%AE_%E0%A4%9C%E0%A4%AE%E0%A4%A8_%E0%A4%96%E0%A4%B0%E0%A4%A6%E0%A4%A8_%E0%A4%B8_%E0%A4%AA%E0%A4%B9%E0%A4%B2_%E0%A4%B8%E0%A4%B0%E0%A4%AB_%E0%A4%96%E0%A4%A4%E0%A4%96%E0%A4%B8%E0%A4%B0_%E0%A4%A8%E0%A4%B9_bhu_naksha_%E0%A4%AD/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bihar BhuNaksha and Bihar Bhumi",
+        "operator": "Government of Bihar, Directorate of Land Records & Survey / Revenue and Land Reforms Department",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "mapUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "observation": "Shared official state entry points returned by native Hindi searches. Prior selector evidence is recorded in inherited research; this city-specific pass did not verify a target parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=25.4980899560268&lon=87.4841083291156&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Jagdishpur, Barari, कटिहार, Bihar, 854107, India",
+        "osmType": "way",
+        "osmId": 1012651924,
+        "address": {
+          "village": "Jagdishpur",
+          "county": "Barari",
+          "state_district": "कटिहार",
+          "state": "Bihar",
+          "ISO3166-2-lvl4": "IN-BR",
+          "postcode": "854107",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://dlrs.bihar.gov.in/services.html"
+        ],
+        "scope": "Official state URLs observed in Bihar query outputs; shared across the Bihar city batch, not evidence of a city-specific sample."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": true,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
+}

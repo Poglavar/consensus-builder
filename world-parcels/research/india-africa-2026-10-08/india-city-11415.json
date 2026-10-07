@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11415,
+  "cityId": "wup2025:11415",
+  "name": "Asarganj",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.095462687706,
+    86.6697214561759
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 67,
+  "stateOrUT": "Bihar",
+  "administrativeIdentity": {
+    "district": "मुंगेर",
+    "tehsilOrTaluk": "Tarapur",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "असरगंज बिहार भूमि नक्शा राजस्व गांव खेसरा site:bhunaksha.bihar.gov.in",
+        "scope": "WUP 11415 Asarganj cohort label retained; exact native-script search used to identify Bihar official revenue/cadastral map entry points.",
+        "result": "Search outputs pointed to the shared official Bihar BhuNaksha/Bihar Bhumi entry points; no city-specific parcel polygon or exact WUP revenue village was returned by this search.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp?plotNo=b+cbmnbi",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://bhunaksha.bihar.gov.in/georef_gmaps.html?giscode=RS13031712602410701&kide=undefined&plot=null&pniu=8433D2E11PLYH0&state=10&xmax=undefined&xmin=undefined&ymax=undefined&ymin=undefined"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bihar BhuNaksha and Bihar Bhumi",
+        "operator": "Government of Bihar, Directorate of Land Records & Survey / Revenue and Land Reforms Department",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "mapUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "observation": "Shared official state entry points returned by native Hindi searches. Prior selector evidence is recorded in inherited research; this city-specific pass did not verify a target parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=25.095462687706&lon=86.6697214561759&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Tarapur, मुंगेर, Bihar, 813221, India",
+        "osmType": "way",
+        "osmId": 1010949910,
+        "address": {
+          "village": "Tarapur",
+          "county": "Tarapur",
+          "state_district": "मुंगेर",
+          "state": "Bihar",
+          "ISO3166-2-lvl4": "IN-BR",
+          "postcode": "813221",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://dlrs.bihar.gov.in/services.html"
+        ],
+        "scope": "Official state URLs observed in Bihar query outputs; shared across the Bihar city batch, not evidence of a city-specific sample."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
+}

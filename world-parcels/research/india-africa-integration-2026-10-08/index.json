@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "purpose": "Qualify and integrate the new India/Africa parcel candidates using complete native identity, viewport and proposal-binding reads. Source terms remain informational.",
+  "queueFile": "queue-india-africa.json",
+  "initialResearchFile": "research/india-africa-2026-10-08/index.json",
+  "reviewedCityCount": 7,
+  "enabledCityCount": 4,
+  "heldCityCount": 3,
+  "cities": [
+    {
+      "cityId": "wup2025:3664",
+      "name": "Johannesburg",
+      "countryCode": "ZA",
+      "status": "enabled",
+      "appCityId": "johannesburg",
+      "sourceId": "za-joburg-registered-stands",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/johannesburg-expanded.json",
+      "exactNativeIdentityCount": 730,
+      "scope": "Municipal registered stand groups; western WUP entry area verified. Complete disjoint components of each SG_ID. Update year and citywide completeness unestablished.",
+      "technicalBlockers": []
+    },
+    {
+      "cityId": "wup2025:3990",
+      "name": "Cosmo City",
+      "countryCode": "ZA",
+      "status": "enabled",
+      "appCityId": "cosmo_city",
+      "sourceId": "za-joburg-registered-stands",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/cosmo-official-final.json",
+      "exactNativeIdentityCount": 925,
+      "scope": "Municipal registered stand groups around the saved Cosmo City WUP center. Complete disjoint SG_ID components; update year unestablished.",
+      "technicalBlockers": []
+    },
+    {
+      "cityId": "wup2025:3809",
+      "name": "Ennerdale",
+      "countryCode": "ZA",
+      "status": "enabled",
+      "appCityId": "ennerdale",
+      "sourceId": "za-joburg-registered-stands",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/ennerdale-official-final.json",
+      "exactNativeIdentityCount": 285,
+      "scope": "Municipal registered stand groups around the Ennerdale WUP center. Complete disjoint SG_ID components; source differs from the conflicting GISCOE mirror.",
+      "technicalBlockers": []
+    },
+    {
+      "cityId": "wup2025:3336",
+      "name": "Accra",
+      "countryCode": "GH",
+      "status": "enabled",
+      "appCityId": "accra",
+      "sourceId": "gh-ama-public-property-app",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/accra-3336-acceptance.json",
+      "exactNativeIdentityCount": 124,
+      "scope": "Partial Accra Metro publisher app-PID footprints, 12,586 rows / 12,582 native PID groups. Four repeated PID groups have disjoint parts with matching parcelcode. This is app identity, not claimed legal cadastral identity. Official authority and source update year unconfirmed; WUP center is outside the dataset extent.",
+      "technicalBlockers": []
+    },
+    {
+      "cityId": "wup2025:4033",
+      "name": "Mboloko",
+      "countryCode": "ZA",
+      "status": "held",
+      "appCityId": null,
+      "sourceId": "za-giscoe-erven",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/giscoe-acceptance.json",
+      "technicalBlockers": [
+        "GISCOE bounded cells were complete, but all-target exact-ID acceptance did not finish. The sampled repeated SG21KEY has valid disjoint parts; its complete read takes about 22.7 seconds and exceeds the existing 15-second browser request deadline. Smaller batches also timed out."
+      ],
+      "nextStep": "Find a faster complete native-ID route or an alternate source; preserve the native code and all of its components."
+    },
+    {
+      "cityId": "wup2025:8364",
+      "name": "New Delhi",
+      "countryCode": "IN",
+      "status": "held",
+      "appCityId": null,
+      "sourceId": "in-ldo-edharti-geojson",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/india-delhi-8364-audit.json",
+      "technicalBlockers": [
+        "The complete e-Dharti snapshot has conflicting geometry for both published IDs and their pair. No alternate durable key was found; the officially linked Revenue GIS viewer timed out."
+      ],
+      "nextStep": "Revisit the Revenue GIS route or a publisher-documented disambiguating identity; retain the known L&DO conflicts."
+    },
+    {
+      "cityId": "wup2025:8616",
+      "name": "Pune",
+      "countryCode": "IN",
+      "status": "held",
+      "appCityId": null,
+      "sourceId": "in-mh-bhunaksha",
+      "evidenceFile": "research/india-africa-integration-2026-10-08/india-pune-8616-audit.json",
+      "technicalBlockers": [
+        "The current official Maharashtra map routes time out or redirect-loop. The historical WKT sample does not establish current native-ID reads, CRS or complete viewport retrieval."
+      ],
+      "nextStep": "Retry the documented BhuNaksha/e-Maps route when reachable and verify current coordinates, exact native IDs and complete map cells."
+    }
+  ],
+  "liveAcceptance": {
+    "viewportCells": 45,
+    "nativeIdentitiesExactRead": 2064,
+    "sourceSnapshotRows": 12586,
+    "sourceSnapshotNativePidGroups": 12582,
+    "accraRepeatedPidGroups": 4,
+    "requestDeadlinesChanged": false,
+    "geometryImported": false
+  },
+  "implementation": {
+    "sharedComponentRule": "Native groups retain all disjoint parts, require matching references, reject overlaps over one square centimetre. No transport OID becomes parcel identity.",
+    "johannesburgProfile": "25-record geometry pages, 80-key native batches, six concurrent queries; six actual app-sized cells completed within the existing 15-second browser deadline.",
+    "accraProfile": "Bounded public POST selecting only parcelid and parcelcode; 8 MiB / 20,000-feature caps; complete in-memory snapshot before any bbox/exact/footprint query; five-minute existing cache."
+  },
+  "verification": {
+    "status": "passed",
+    "headlessRegression": {
+      "testFiles": 17,
+      "passedTests": 259,
+      "failedTests": 0,
+      "scope": [
+        "India/Africa city configuration and source binding",
+        "GeoJSON snapshot POST and complete component assembly",
+        "Existing snapshot and ArcGIS providers",
+        "Source gateway binding, concurrency and notices",
+        "India/Africa queue, coverage report and globe data"
+      ]
+    },
+    "browserEvidenceFile": "research/india-africa-integration-2026-10-08/browser-check.json",
+    "cityBrowserChecks": 4,
+    "regionalReportRows": 171,
+    "configuredAppCityCount": 107,
+    "executableProviderCount": 94,
+    "reportWarnings": [],
+    "checkedCitiesMissingDate": 0,
+    "diffCheck": "passed"
+  }
+}

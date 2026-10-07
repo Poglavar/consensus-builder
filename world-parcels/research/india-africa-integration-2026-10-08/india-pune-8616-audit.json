@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_blocker_audit",
+  "cityId": "wup2025:8616",
+  "wupCityCode": 8616,
+  "name": "Pune",
+  "country": "India",
+  "countryCode": "IN",
+  "checkedAt": "2026-10-08",
+  "auditAtUtc": "2026-10-07T21:43Z",
+  "scope": "Bounded retry of documented public BhuNaksha and official Maharashtra/PMC map alternatives; no catalog/runtime edits, authentication or CAPTCHA bypass, or large downloads.",
+  "priorSourceId": "in-mh-bhunaksha",
+  "priorEvidenceFile": "../india-africa-2026-10-08/root-city-8616.json",
+  "nativeLanguageSearch": {
+    "query": "पुणे नगर भूमापन नकाशा ई नकाशा भू नकाशा भूमी अभिलेख महाराष्ट्र",
+    "language": "Marathi",
+    "script": "Devanagari",
+    "executedAtUtc": "2026-10-07T21:43Z",
+    "actualResultUrls": [
+      "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "https://bhumiabhilekh.maharashtra.gov.in/Home/Index",
+      "https://bhumiabhilekh.maharashtra.gov.in/Pages/AboutUsDetail?pageId=59"
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "method": "web open",
+      "outcome": "Official State Land Records page opened. It lists e-Maps / Bhu Naksha services; describes e-Maps as providing village map, city-survey map, and land-parcel map."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services/eMaps",
+      "method": "click official e-Maps link",
+      "outcome": "Web fetch failed with tool-reported “400 Timeout fetching”; no page content/geometry obtained."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "method": "open documented linked BhuNaksha viewer",
+      "outcome": "Web fetch failed with tool-reported “400 Redirect loop detected”. Prior exact GETs to this viewer, georef.js, and POST getPlotInfo returned ConnectTimeout after about 35 seconds with browser headers/referer/cookie jar; see prior city record."
+    },
+    {
+      "url": "https://autodcr.pmc.gov.in/AutoDCR.Dashboard2/PMC/pmcdash.aspx",
+      "method": "web open official PMC dashboard",
+      "outcome": "Dashboard search result is official PMC; prior page fetch HTTP200. The connected GIS wrapper previously linked a distinct plain-HTTP map viewer at http://103.224.247.79:8181/demo/geo_tag_leaflet.html, which timed out."
+    },
+    {
+      "url": "https://opendata.pmc.gov.in/pmc-reports",
+      "method": "web open official PMC portal",
+      "outcome": "Page opened and showed an empty PMC Reports table (zero listed report rows); this page provides no parcel geometry."
+    },
+    {
+      "url": "https://mahavillages.mahabhumi.gov.in/",
+      "method": "follow official State service link (jurisdiction/village master)",
+      "outcome": "Page opened; identifies official village/local-body master and ULPIN/City Survey Number/Survey Number search services, but no parcel geometry endpoint."
+    }
+  ],
+  "verifiedGeometryCount": 0,
+  "crsConfirmedForCurrentFeed": false,
+  "nativeIdReadConfirmed": false,
+  "resultCategory": "official_map_route_unavailable_no_fresh_geometry",
+  "technicalBlocker": "Official Maharashtra source confirms public map products for village, city-survey, and land-parcel maps, but the e-Maps click timed out and the BhuNaksha viewer currently fails with a redirect loop in web retrieval; earlier browser-header requests to documented map and plot endpoints timed out. The accessible PMC open-data reports page exposes no map dataset. Historical three-plot WKT sample remains historical only; no fresh bounded geometry/native-ID read or viewer-declared CRS confirmation.",
+  "nextStep": "Retain the historical three-plot sample separately. Retry the official BhuNaksha/e-Maps route when reachable; until then do not claim fresh availability, CRS confirmation, or viewport completeness."
+}

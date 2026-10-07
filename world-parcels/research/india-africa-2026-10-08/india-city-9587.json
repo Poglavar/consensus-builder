@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9587,
+  "cityId": "wup2025:9587",
+  "name": "Kozhikode",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    11.2059147426276,
+    75.8583486485998
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 128,
+  "stateOrUT": "Kerala",
+  "administrativeIdentity": {
+    "district": "Malappuram",
+    "tehsilOrTaluk": "Kondotty",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/kozhikode.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/kozhikode.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Kerala digital resurvey being notified village by village; Kozhikode coverage not confirmed",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "portal home; no parcel data"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "38 KB server-rendered page; viewer shell with no discoverable feature-service URL"
+          },
+          {
+            "method": "GET",
+            "url": "https://survey.entebhoomi.kerala.gov.in/portal/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "curl exit 35: connection reset by peer; treated as unreachable, not a permanent negative"
+          },
+          {
+            "method": "GET",
+            "url": "https://relis.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+          },
+          {
+            "method": "GET",
+            "url": "https://kgis.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+          }
+        ],
+        "conclusion": "The map viewer probably calls a backend that was not discovered (JS-driven); several state hosts were unreachable. Coverage and reuse terms unknown.",
+        "nextStep": "Inspect the viewer's network calls from a browser; look for Kerala resurvey open datasets; Kozhikode corporation villages."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Malayalam",
+        "query": "കേരളം കോഴിക്കോട് \"സർവേ\" \"ഭൂമി\" ഭൂപടം വില്ലേജ് Ente Bhoomi",
+        "scope": "WUP 9587 center; city label retained; official local identity not resolved by the WUP label alone.",
+        "result": "Opened the Government of Kerala Ente Bhoomi ILMS viewer and queried its native-language district/taluk/village selectors.",
+        "checkedAt": "2026-10-08",
+        "script": "Malayalam",
+        "actualResultUrls": [
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://training-survey.entebhoomi.kerala.gov.in/portal/",
+          "https://spb.kerala.gov.in/sites/default/files/2026-01/ER%202025%20Volume1%20Mal%20final1.pdf",
+          "https://dslr.kerala.gov.in/%E0%B4%87-%E0%B4%B0%E0%B5%87%E0%B4%96-%E0%B4%AA%E0%B4%A6%E0%B5%8D%E0%B4%A7%E0%B4%A4%E0%B4%BF/",
+          "https://prd.kerala.gov.in/ml/node/231636",
+          "https://www.manoramaonline.com/news/kerala/2025/01/14/kerala-land-transfer-ente-bhoomi.html",
+          "https://www.manoramaonline.com/karshakasree/features/2025/02/21/ente-bhoomi-digital-land-survey.html",
+          "https://www.scribd.com/document/937698725/Ente-Bhoomi-Details-4-2-2024-2",
+          "https://www.scribd.com/document/886932950/Ente-Bhoomi-Survey-No-72-Pkt-Details1",
+          "https://keralakaumudi.com/news/local/pathanamthitta/local-news-pathanamthitta-1528935",
+          "https://www.manoramaonline.com/news/kerala/2025/01/14/ente-bhoomi-land-registration-kerala.html",
+          "https://www.manoramaonline.com/karshakasree/features/2025/02/21/ente-bhoomi-digital-land-survey.amp.html",
+          "https://www.deshabhimani.com/News/kerala/ente-bhoomi-digital-resurvey-derailed-under-udf-government-temporary-staff-salary-pending-32129",
+          "https://www.reddit.com/r/Kerala/comments/1kvtxwq",
+          "https://prd.kerala.gov.in/sites/default/files/inline-files/Janapatham_April_2025_WEB%20%281%29_compressed.pdf",
+          "https://spb.kerala.gov.in/sites/default/files/2025-02/ER_2024_Mal_Vol1Press.pdf",
+          "https://kerala.bank.in/uploads/tenders/1770874879-paperpubln9.3.26.pdf",
+          "https://www.prd.kerala.gov.in/sites/default/files/inline-files/10%20years_PV%20Govt%20%283%29_2.pdf",
+          "https://prd.kerala.gov.in/sites/default/files/inline-files/PRD_5thYear.pdf",
+          "https://www.reddit.com/r/Kerala/comments/rnb8g3",
+          "https://www.reddit.com/r/Kerala/comments/1kq0sbl",
+          "https://www.reddit.com/r/Kerala/comments/t5h5q2",
+          "https://www.reddit.com/r/Kerala/comments/1vy1ur8/%E0%B4%A8%E0%B4%B1_%E0%B4%A6%E0%B4%B5%E0%B4%B8_%E0%B4%95%E0%B4%A3%E0%B4%9F_%E0%B4%AA%E0%B4%B0%E0%B4%A4%E0%B4%AF%E0%B4%95%E0%B4%9A%E0%B4%9A_%E0%B4%92%E0%B4%A8%E0%B4%A8_%E0%B4%A8%E0%B4%9F%E0%B4%A8%E0%B4%A8%E0%B4%B2%E0%B4%B2_%E0%B4%AE%E0%B4%A3%E0%B4%9F%E0%B4%95%E0%B4%95_%E0%B4%A6%E0%B4%B0%E0%B4%A8%E0%B4%A4%E0%B4%AC%E0%B4%A7%E0%B4%A4%E0%B4%B0%E0%B4%9F/",
+          "https://www.reddit.com/r/NewKeralaRevolution/comments/1vy1ueq/%E0%B4%A8%E0%B4%B1_%E0%B4%A6%E0%B4%B5%E0%B4%B8_%E0%B4%95%E0%B4%A3%E0%B4%9F_%E0%B4%AA%E0%B4%B0%E0%B4%A4%E0%B4%AF%E0%B4%95%E0%B4%9A%E0%B4%9A_%E0%B4%92%E0%B4%A8%E0%B4%A8_%E0%B4%A8%E0%B4%9F%E0%B4%A8%E0%B4%A8%E0%B4%B2%E0%B4%B2_%E0%B4%AE%E0%B4%A3%E0%B4%9F%E0%B4%95%E0%B4%95_%E0%B4%A6%E0%B4%B0%E0%B4%A8%E0%B4%A4%E0%B4%AC%E0%B4%A7%E0%B4%A4%E0%B4%B0%E0%B4%9F/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Ente Bhoomi ILMS public map",
+        "operator": "Government of Kerala, Survey and Land Records Department / NIC Kerala (portal attribution)",
+        "homeUrl": "https://entebhoomi.kerala.gov.in/web/home",
+        "mapUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "observation": "The selector exposes district, taluk, and village GIDs, with a separate published-village filter. Selector presence does not establish that a village map is published or that its geometry covers the WUP point."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=11.2059147426276&lon=75.8583486485998&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Ramanattukara, Kondotty, Malappuram, Kerala, 673633, India",
+        "osmType": "way",
+        "osmId": 713393175,
+        "address": {
+          "town": "Ramanattukara",
+          "county": "Kondotty",
+          "state_district": "Malappuram",
+          "state": "Kerala",
+          "ISO3166-2-lvl4": "IN-KL",
+          "postcode": "673633",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Current official selector page loaded with district names in Malayalam."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid?districtId=591fba1d-cddb-4765-97a6-2d4038a08c78",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official Malappuram selector returned taluk GID 884fb727-e650-4d06-85d2-14aa93928fb9 for Kondotty."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=884fb727-e650-4d06-85d2-14aa93928fb9&loadAllVillage=true&loadPublishedVillage=false",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "All-village list returned 12 Kondotty-taluka village names; it did not contain Ramanattukara. This is not evidence that no revenue village or cadastral service exists at the point."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=f6220330-f761-40c4-9f51-d322eb85834a&loadAllVillage=true&loadPublishedVillage=false",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Kozhikode taluk all-village list contained Ramanattukara (village GID 757f9a0b-73b9-4700-a2b0-d6b4e9f18141), while Nominatim places this WUP point in Malappuram/Kondotty. This is an alternate official village-name candidate, not point-in-polygon confirmation."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=f6220330-f761-40c4-9f51-d322eb85834a&loadAllVillage=true&loadPublishedVillage=true",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Ramanattukara was absent from the viewer's published-village subset."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "parameters": {
+          "districtGid": "2ece95c1-1675-4a41-9044-c3cbffeec718",
+          "talukGid": "f6220330-f761-40c4-9f51-d322eb85834a",
+          "villageGid": "757f9a0b-73b9-4700-a2b0-d6b4e9f18141"
+        },
+        "assessment": "The selector returned a map shell with location_code 110146 for Ramanattukara; no published-village status or geometry was demonstrated."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/110146",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "parameters": {
+          "layer_code": "LAND_PARCEL",
+          "crs": "32643",
+          "x": "593706.88",
+          "y": "1238884.09"
+        },
+        "assessment": "The exact WUP point request returned the portal HTML shell (28,794 bytes), not JSON or parcel geometry; no feature was verified."
+      }
+    ]
+  },
+  "status": "partial_coverage",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official Ente Bhoomi selector confirms an unpublished/alternate candidate but does not verify its boundary at the WUP point; point-identify returned only the generic HTML viewer shell, not parcel geometry.",
+  "remainingUncertainty": "The target WUP coordinate's official revenue-village identity and any published parcel geometry remain unconfirmed; neither the OSM locality nor a selector name proves containment.",
+  "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient."
+}

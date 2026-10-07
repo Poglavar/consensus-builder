@@ -1,0 +1,691 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3664",
+  "wupCityCode": 3664,
+  "name": "Johannesburg",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "centerLatLon": [
+    -26.1204492874788,
+    27.8600917239307
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 50,
+  "growthRank": null,
+  "previousStatuses": [
+    "verified_sample_city_scope"
+  ],
+  "previousEvidenceFiles": [
+    "research/same-country-expansion-2026-10-07/johannesburg-research.json",
+    "research/johannesburg.json"
+  ],
+  "registryCityIds": [
+    "wup2025:3664"
+  ],
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_partial_coverage",
+  "resultCategory": "revalidated_previous_sample_and_official_alternative",
+  "freshVerifiedSample": true,
+  "registryFound": true,
+  "verifiedSample": true,
+  "nativeLanguageSearches": [
+    {
+      "query": "Johannesburg cadastral parcels registered stands SG_ID ArcGIS",
+      "language": "English",
+      "script": "Latin",
+      "resultUrls": [
+        "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer",
+        "https://eservices.joburg.org.za/sites/cgismaps/Pages/Property-Theme.aspx"
+      ]
+    },
+    {
+      "query": "Johannesburg kadaster erwe kaart GIS",
+      "language": "Afrikaans",
+      "script": "Latin",
+      "resultUrls": [
+        "https://edit.eservices.joburg.org.za/cgis/Pages/all-maps.aspx",
+        "https://e-gis003.tshwane.gov.za/server/rest/services/Viewer"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "name": "joburg-layer6",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6?f=pjson",
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:04:54.668174+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/json,application/xhtml+xml,*/*;q=0.8",
+        "Accept-Language": "en-IN,en;q=0.9,hi;q=0.8,mr;q=0.7",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "finalUrl": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6?f=pjson",
+      "contentType": "text/plain;charset=UTF-8",
+      "bytesRead": 8149,
+      "bodyTruncated": false,
+      "elapsedMs": 1099,
+      "requestLogFile": "research/india-africa-2026-10-08/root-requests.json"
+    },
+    {
+      "name": "joburg-giscoe",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1?f=pjson",
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:04:55.767680+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/json,application/xhtml+xml,*/*;q=0.8",
+        "Accept-Language": "en-IN,en;q=0.9,hi;q=0.8,mr;q=0.7",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "finalUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1?f=pjson",
+      "contentType": "text/plain;charset=UTF-8",
+      "bytesRead": 14435,
+      "bodyTruncated": false,
+      "elapsedMs": 870,
+      "requestLogFile": "research/india-africa-2026-10-08/root-requests.json"
+    },
+    {
+      "name": "joburg-bbox",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "params": {
+        "f": "geojson",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outSR": 4326,
+        "outFields": "OBJECTID,SG_ID,STAND_NO,PROPERTY_ID,STATUS_DESC",
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:06.795839+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 1330,
+      "contentRange": null,
+      "bodyCapped": false,
+      "featureCount": 3,
+      "exceededTransferLimit": true,
+      "error": null,
+      "elapsedMs": 1761,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round2-requests.json"
+    },
+    {
+      "name": "giscoe-bbox",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "params": {
+        "f": "geojson",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outSR": 4326,
+        "outFields": "OBJECTID,SG21KEY,SGSUBKEY",
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:08.557661+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 1547,
+      "contentRange": null,
+      "bodyCapped": false,
+      "featureCount": 3,
+      "exceededTransferLimit": true,
+      "error": null,
+      "elapsedMs": 339,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round2-requests.json"
+    },
+    {
+      "name": "joburg-bbox-ids",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outSR": 4326,
+        "outFields": "OBJECTID,SG_ID,STAND_NO,PROPERTY_ID,STATUS_DESC",
+        "returnGeometry": "false",
+        "resultRecordCount": 3,
+        "returnIdsOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:13:40.442499+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 67,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 3,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 2077,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "joburg-bbox-exact-1",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "geojson",
+        "where": "SG_ID='T0IQ0488014000024550000000'",
+        "outFields": "OBJECTID,SG_ID,STAND_NO,PROPERTY_ID,STATUS_DESC",
+        "outSR": 4326,
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "checkedAt": "2026-10-07T21:13:40.443175+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 462,
+      "bodyCapped": false,
+      "featureCount": 1,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 1715,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "joburg-bbox-exact-2",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "geojson",
+        "where": "SG_ID='T0IQ0488014000024540000000'",
+        "outFields": "OBJECTID,SG_ID,STAND_NO,PROPERTY_ID,STATUS_DESC",
+        "outSR": 4326,
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "checkedAt": "2026-10-07T21:13:40.443282+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 459,
+      "bodyCapped": false,
+      "featureCount": 1,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 2037,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "joburg-bbox-exact-3",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "geojson",
+        "where": "SG_ID='T0IQ0488014000024520000000'",
+        "outFields": "OBJECTID,SG_ID,STAND_NO,PROPERTY_ID,STATUS_DESC",
+        "outSR": 4326,
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "checkedAt": "2026-10-07T21:13:42.167116+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 462,
+      "bodyCapped": false,
+      "featureCount": 1,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 1170,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "giscoe-bbox-ids",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outSR": 4326,
+        "outFields": "OBJECTID,SG21KEY,SGSUBKEY",
+        "returnGeometry": "false",
+        "resultRecordCount": 3,
+        "returnIdsOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:13:42.481339+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 70,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 3,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 877,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "giscoe-bbox-exact-1",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "geojson",
+        "where": "SG21KEY='T0IQ04880000240900000'",
+        "outFields": "OBJECTID,SG21KEY,SGSUBKEY",
+        "outSR": 4326,
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "checkedAt": "2026-10-07T21:13:42.520485+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 710,
+      "bodyCapped": false,
+      "featureCount": 1,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 11950,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "giscoe-bbox-exact-2",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "geojson",
+        "where": "SG21KEY='T0IQ04880000242700000'",
+        "outFields": "OBJECTID,SG21KEY,SGSUBKEY",
+        "outSR": 4326,
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "checkedAt": "2026-10-07T21:13:43.338196+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 422,
+      "bodyCapped": false,
+      "featureCount": 1,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 11185,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "giscoe-bbox-exact-3",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "geojson",
+        "where": "SG21KEY='T0IQ04880000242800000'",
+        "outFields": "OBJECTID,SG21KEY,SGSUBKEY",
+        "outSR": 4326,
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "checkedAt": "2026-10-07T21:13:43.359008+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 424,
+      "bodyCapped": false,
+      "featureCount": 1,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 21504,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "joburg-bbox-count-uncapped",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnCountOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:47.949486+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 12,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 1108,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round4-requests.json"
+    },
+    {
+      "name": "joburg-bbox-ids-uncapped",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnIdsOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:47.950006+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 137,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 13,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 1113,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round4-requests.json"
+    },
+    {
+      "name": "giscoe-bbox-count-uncapped",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnCountOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:47.950176+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 12,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 870,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round4-requests.json"
+    },
+    {
+      "name": "giscoe-bbox-ids-uncapped",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnIdsOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:48.821586+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 142,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 12,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 333,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round4-requests.json"
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "za-joburg-registered-stands",
+      "name": "City of Johannesburg Registered Stands",
+      "operator": "City of Johannesburg",
+      "scope": "Fresh sample at the saved Johannesburg WUP centre; no claim of citywide or nationwide completeness.",
+      "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "method": "ArcGIS REST GET",
+      "responseFormat": "GeoJSON",
+      "crs": "EPSG:4326 output",
+      "reuseStatus": "Not assessed; informational only.",
+      "verification": {
+        "bbox": [
+          27.85959,
+          -26.12095,
+          27.86059,
+          -26.11995
+        ],
+        "nativeIdField": "SG_ID",
+        "geometryFeaturesSampled": 3,
+        "uniqueNativeIdsInSample": 3,
+        "countOnly": 13,
+        "uncappedObjectIdManifestLength": 13,
+        "cappedIdRequestNote": "The initial ID request retained resultRecordCount=3. A separate uncapped request then returned the full bounded ID manifest.",
+        "completeGeometryViewportVerified": false,
+        "geometryCompletenessNote": "Count equals the uncapped ID manifest. Only three geometries were sampled, so all geometry records in this bbox have not been verified.",
+        "sampleFile": "research/india-africa-2026-10-08/root-joburg-bbox-response.json",
+        "exactIdChecks": [
+          {
+            "nativeId": "T0IQ0488014000024550000000",
+            "records": 1,
+            "geometryEqualsViewportSample": true,
+            "responseFile": "research/india-africa-2026-10-08/root-joburg-bbox-exact-1-response.json"
+          },
+          {
+            "nativeId": "T0IQ0488014000024540000000",
+            "records": 1,
+            "geometryEqualsViewportSample": true,
+            "responseFile": "research/india-africa-2026-10-08/root-joburg-bbox-exact-2-response.json"
+          },
+          {
+            "nativeId": "T0IQ0488014000024520000000",
+            "records": 1,
+            "geometryEqualsViewportSample": true,
+            "responseFile": "research/india-africa-2026-10-08/root-joburg-bbox-exact-3-response.json"
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "za-giscoe-erven",
+      "name": "GISCOE South Africa Cadastre / Erven",
+      "operator": "Esri South Africa GISCOE",
+      "scope": "Fresh sample at the saved Johannesburg WUP centre; no claim of citywide or nationwide completeness.",
+      "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+      "method": "ArcGIS REST GET",
+      "responseFormat": "GeoJSON",
+      "crs": "EPSG:4326 output",
+      "reuseStatus": "Not assessed; informational only.",
+      "verification": {
+        "bbox": [
+          27.85959,
+          -26.12095,
+          27.86059,
+          -26.11995
+        ],
+        "nativeIdField": "SG21KEY",
+        "geometryFeaturesSampled": 3,
+        "uniqueNativeIdsInSample": 3,
+        "countOnly": 12,
+        "uncappedObjectIdManifestLength": 12,
+        "cappedIdRequestNote": "The initial ID request retained resultRecordCount=3. A separate uncapped request then returned the full bounded ID manifest.",
+        "completeGeometryViewportVerified": false,
+        "geometryCompletenessNote": "Count equals the uncapped ID manifest. Only three geometries were sampled, so all geometry records in this bbox have not been verified.",
+        "sampleFile": "research/india-africa-2026-10-08/root-giscoe-bbox-response.json",
+        "exactIdChecks": [
+          {
+            "nativeId": "T0IQ04880000240900000",
+            "records": 1,
+            "geometryEqualsViewportSample": true,
+            "responseFile": "research/india-africa-2026-10-08/root-giscoe-bbox-exact-1-response.json"
+          },
+          {
+            "nativeId": "T0IQ04880000242700000",
+            "records": 1,
+            "geometryEqualsViewportSample": true,
+            "responseFile": "research/india-africa-2026-10-08/root-giscoe-bbox-exact-2-response.json"
+          },
+          {
+            "nativeId": "T0IQ04880000242800000",
+            "records": 1,
+            "geometryEqualsViewportSample": true,
+            "responseFile": "research/india-africa-2026-10-08/root-giscoe-bbox-exact-3-response.json"
+          }
+        ]
+      }
+    }
+  ],
+  "source": {
+    "sourceId": "za-joburg-registered-stands",
+    "name": "City of Johannesburg Registered Stands",
+    "operator": "City of Johannesburg",
+    "scope": "Fresh sample at the saved Johannesburg WUP centre; no claim of citywide or nationwide completeness.",
+    "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+    "method": "ArcGIS REST GET",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:4326 output",
+    "reuseStatus": "Not assessed; informational only."
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "za-joburg-registered-stands",
+    "requestUrl": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/geo+json",
+    "spatialTestAreaLonLat": [
+      27.85959,
+      -26.12095,
+      27.86059,
+      -26.11995
+    ],
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "SG_ID",
+    "responseFile": "research/india-africa-2026-10-08/root-joburg-bbox-response.json",
+    "pagination": "Three features sampled; count13 and uncapped13-OID manifest match. Complete geometry viewport not yet tested."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Johannesburg registered stands and national GISCOE erven; only the small stated Johannesburg bbox is freshly sampled.",
+    "verifiedOpenScope": "Two three-feature parcel samples, each with three matching exact-native-ID reads.",
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "Complete geometry viewport retrieval, repeated app-cell behavior and duplicate native-ID semantics remain unverified. Small three-record reads succeeded; this does not erase the earlier larger-response timeout or duplicated-SG_ID evidence elsewhere.",
+  "nextStep": "Run complete bounded viewport/native-ID acceptance in the intended app scope; use small ID batches and explicitly audit any repeated native IDs before configuring Johannesburg."
+}

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2775",
+  "queueRank": 103,
+  "wupCityCode": 2775,
+  "name": "Merca",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "centerLatLon": [
+    1.71651211139885,
+    44.766429396523
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 103,
+  "population2025": 299906,
+  "annualGrowthPct2015To2025": 5.808572,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-SO.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Somali and Arabic",
+    "exactQuery": "Merca Soomaaliya xogta dhulka khariidad cadastral parcels",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1519",
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1551",
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1525",
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1558",
+      "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1573",
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1512",
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/F29/V1511?name=perc6__23"
+    ],
+    "summary": "Somali-language search found administrative boundary data and a Berbera registration-service lead; neither is a parcel polygon feed.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1519",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1551",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1525",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1558",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1573",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1512",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/F29/V1511?name=perc6__23",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Merca\" Somalia (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Merca%22+Somalia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous parcel polygon feed for Merca was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Merca municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Merca%22+Somalia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

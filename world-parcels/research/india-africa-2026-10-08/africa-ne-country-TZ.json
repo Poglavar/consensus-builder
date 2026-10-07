@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "TZ",
+  "country": "Tanzania",
+  "checkedAt": "2026-10-08",
+  "status": "national_cadastre_credentialed_or_paid",
+  "accessModel": "registration; some services paid",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Swahili",
+      "exactQuery": "Tanzania viwanja ramani ardhi cadastral GIS e-Ardhi",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://eardhi.lands.go.tz/",
+        "https://avenix.co.tz/projects",
+        "https://www.lands.go.tz/services/surveys-and-mapping-2",
+        "https://play.google.com/store/apps/details?hl=ar&id=tz.go.lands.ilmis_mobile",
+        "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+        "https://play.google.com/store/apps/details?hl=en&id=tz.go.lands.ilmis_mobile",
+        "https://lands.go.tz/?ACT=63&lang_id=1&url=aHR0cHMlM0ElMkYlMkZsYW5kcy5nby50eiUyRnNlcnZpY2VzJTJGcmVhbC1wb3NzaWJpbGl0aWVzLW9uLWVuaGFuY2VtZW50LW9mLXRoZS1hY2hpZXZhYmxlLWVzdGltYXRlcw%3D%3D",
+        "https://mkurabita.go.tz/how-do-i/urban-property-formalization"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "observation": "Official e-Ardhi homepage HTTP 200; service request/account workflow in Swahili, some services paid."
+    },
+    {
+      "url": "https://www.lands.go.tz/",
+      "observation": "Ministry of Lands site; survey/map and title services; no public parcel WFS found."
+    },
+    {
+      "url": "https://ilmis.lands.go.tz/",
+      "observation": "Prior Dar es Salaam probe: ILMIS project page lead, host unreachable at retry."
+    },
+    {
+      "url": "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+      "observation": "Official Swahili service description explains mapped parcel plans as delivered services, not open feed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official account-based request workflow; some services paid."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Inspect e-Ardhi’s public bundles for an anonymous geospatial service; account/service workflow does not verify polygons."
+}

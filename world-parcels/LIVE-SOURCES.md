@@ -5,6 +5,26 @@ The source evidence is saved in `registry.json` and `research/`: endpoints, oper
 sample requests and responses, native identifiers, paging observations and uncertainties.
 The globe's `source` tier means a verified sample exists; it does not enable a runtime provider.
 
+## India and Africa candidate integration — 8 October 2026
+
+Four new app cities are enabled, bringing the catalogue to **107 city entries / 94 executable providers**. The [integration index](research/india-africa-integration-2026-10-08/index.json) records all seven candidates, including failed requests and alternate sources. No parcel geometry was imported.
+
+| City | Outcome and scope |
+| --- | --- |
+| Johannesburg | Official municipal registered stands; complete disjoint `SG_ID` groups. Western WUP entry area verified; update year unestablished. |
+| Cosmo City | Same municipal source; complete native groups around the WUP center. |
+| Ennerdale | Municipal source passed. The GISCOE mirror remains held because repeated native IDs have overlapping boundaries. |
+| Accra | Partial Accra Metro property app on Berry ICT's host. Complete publisher `parcelid` footprint groups, not claimed statutory cadastral identity; official authority unconfirmed. |
+| Mboloko | GISCOE cells are complete and the sampled repeated native key has disjoint parts, but complete exact-ID reads are too slow and full-target acceptance remains incomplete. |
+| New Delhi | Published e-Dharti IDs and their pair have conflicting geometries; the alternate official GIS route timed out. |
+| Pune | Current official map routes time out or redirect-loop; historical WKT samples do not establish current runtime access. |
+
+Acceptance covered **45 viewport cells and 2,064 exact native identities**, with forced small-page reads for the ArcGIS cities, explicit absence, footprint queries and complete proposal binding. Johannesburg's request profile also passed six simultaneous app-sized cells within the unchanged 15-second browser deadline. Earlier smaller-page timeouts are retained.
+
+Accra's ordinary public POST selects only PID and parcel code. Two independent complete reads returned 12,586 rows representing 12,582 native PID groups in 3.58 MB. All four repeated PID groups have disjoint geometry and matching codes. The snapshot adapter now supports fixed form POSTs and uses the same checked component assembly as ArcGIS, before building its spatial index. Overlaps and inconsistent references fail the whole load. Runtime caps are 8 MiB and 20,000 rows; the existing five-minute memory cache and deadlines are unchanged. Its displayed entry lies within the partial dataset; the WUP center is outside the observed extent. Source terms remain informational.
+
+Verification passed **259 headless tests in 17 files** and headed-browser parcel selection and panning in all four new cities. The [browser record](research/india-africa-integration-2026-10-08/browser-check.json) includes loaded-cell and retained-parcel counts; the regional report shows all 171 target cities and the current enabled source links.
+
 ## Same-country expansion: 101 configured cities
 
 The October 7, 2026 pass compared the original 200-city research cohort with the 29 countries

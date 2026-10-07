@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3626",
+  "queueRank": 193,
+  "wupCityCode": 3626,
+  "name": "El Afweyn",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "centerLatLon": [
+    9.92796133759529,
+    47.2172157735376
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 193,
+  "population2025": 128709,
+  "annualGrowthPct2015To2025": 4.816084,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-SO.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Somali and Arabic",
+    "exactQuery": "Ceel Afweyn Somaliland xogta dhulka khariidad cadastral parcels",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://somalilandgov.com/wp-content/uploads/2013/07/somali-land-book.pdf",
+      "https://www.govsomaliland.org/uploads/files/2022/05/2022-05-26-06-58-21-7044-1653548301.pdf",
+      "https://www.somalilandparliament.net/storage/budjet/1745814036_document.pdf",
+      "https://govsomalilandmap.org/",
+      "https://www.ucl.ac.uk/bartlett/development/sites/bartlett_development/files/progressio_voter_registration_process_in_somaliland_final_170317.pdf",
+      "https://www.govsomaliland.org/uploads/files/2025/08/2025-08-30-03-58-54-5587-1756569534.pdf",
+      "https://mapcarta.com/N4261812789",
+      "https://mapcarta.com/30704942"
+    ],
+    "summary": "Somali-language search found administrative boundary data and a Berbera registration-service lead; neither is a parcel polygon feed.",
+    "additionalOfficialLead": "Official Somaliland GIS portal covers administrative boundaries only.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://somalilandgov.com/wp-content/uploads/2013/07/somali-land-book.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.govsomaliland.org/uploads/files/2022/05/2022-05-26-06-58-21-7044-1653548301.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.somalilandparliament.net/storage/budjet/1745814036_document.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://govsomalilandmap.org/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ucl.ac.uk/bartlett/development/sites/bartlett_development/files/progressio_voter_registration_process_in_somaliland_final_170317.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.govsomaliland.org/uploads/files/2025/08/2025-08-30-03-58-54-5587-1756569534.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mapcarta.com/N4261812789",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mapcarta.com/30704942",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"El Afweyn\" Somalia (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22El+Afweyn%22+Somalia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous parcel polygon feed for El Afweyn was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the El Afweyn municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22El+Afweyn%22+Somalia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

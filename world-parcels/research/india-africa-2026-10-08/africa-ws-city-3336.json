@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3336",
+  "queueRank": 71,
+  "wupCityCode": 3336,
+  "name": "Accra",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "centerLatLon": [
+    5.60366263373368,
+    -0.210576368296996
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 71,
+  "growthRank": null,
+  "population2025": 5592780,
+  "annualGrowthPct2015To2025": 1.957655,
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_partial_coverage",
+  "priorEvidence": [
+    "research/accra.json"
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ws-provider-GH.json",
+  "freshCityLocalSearch": {
+    "languageScript": "English (Ghana; Latin script)",
+    "exactQueries": [
+      "\"Accra\" cadastral parcels GIS Land Commission Ghana geoserver"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [],
+    "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "gh-ama-public-property-app",
+    "requestUrl": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+    "method": "POST; tbl=parcel&flds=*&where=1=1 with Range: bytes=0-32767",
+    "httpStatus": 200,
+    "contentType": "text/html; charset=UTF-8 (body begins with GeoJSON FeatureCollection)",
+    "sampleGeometryBoundingBoxLonLat": [
+      -0.22565,
+      5.53181,
+      -0.22509,
+      5.53488
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features (first three complete records within capped 32 KiB prefix)",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "parcelid (with parcelcode retained as secondary native candidate; generic id is a row ID)",
+    "responseFile": "africa-ws-provider-GH-prefix-sample.json",
+    "pagination": "Not applicable; server ignored Range and client aborted at 32768 bytes. This is not a spatially bounded query and does not demonstrate center-area coverage."
+  },
+  "source": {
+    "sourceId": "gh-ama-public-property-app",
+    "name": "Accra Metro property identification app",
+    "operator": "App page is titled ACCRA METRO and displays AMA labels; hosted by Berry ICT, operator/official ownership not independently established",
+    "scope": "Partial Accra Metro app dataset lead only",
+    "endpoint": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+    "method": "POST to general_php_scripts/load_data.php",
+    "responseFormat": "GeoJSON FeatureCollection",
+    "crs": "EPSG:4326 coordinates in response",
+    "reuseStatus": "Not assessed"
+  },
+  "registryFound": null,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": "Accra Metro app first-record area only; partial sample, not citywide coverage",
+    "countrywideVerified": false
+  },
+  "blocker": "Partial Accra Metro app geometry sample exists, but the request had no spatial filter and the sample lies about 8 km south of the WUP center. Citywide coverage, source completeness, stable parcel-ID semantics and snapshot adapter readiness remain unproven.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Find a safe spatially bounded endpoint or a filterable local-area query near Accra, then assess native identifier semantics, source completeness and adapter readiness.",
+  "requests": [
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "The app JS sends tbl=parcel&flds=* and accepts an optional where. A Range bytes=0-32767 request with a 32768-byte client cap returned a prefix; Range was ignored. Exactly three complete features parsed and saved with parcelid, parcelcode and geometry only; no spatial filter was applied."
+    }
+  ],
+  "resultCategory": "fresh_verified_partial_city_sample",
+  "evidenceType": "new_or_retry_target_service_probe",
+  "targetEndpointProbePerformed": true,
+  "coordinatorReview": {
+    "reviewedAt": "2026-10-08",
+    "technicalBlocker": "Public application polygons were sampled, but publisher authority, native parcel-ID semantics and complete bounded retrieval remain unconfirmed.",
+    "nextStep": "Confirm the Accra application publisher and parcel-ID meaning, then verify complete bounded viewport and exact-ID retrieval within its actual published area.",
+    "priorSourceEvidenceFile": null
+  }
+}

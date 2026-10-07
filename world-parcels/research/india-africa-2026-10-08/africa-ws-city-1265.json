@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1265",
+  "queueRank": 26,
+  "wupCityCode": 1265,
+  "name": "Lagos",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [
+    6.56844874683968,
+    3.31028078517139
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 26,
+  "growthRank": null,
+  "population2025": 12791699,
+  "annualGrowthPct2015To2025": 1.425783,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    "research/lagos.json"
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ws-provider-NG.json",
+  "freshCityLocalSearch": {
+    "languageScript": "English (Latin script)",
+    "exactQueries": [
+      "\"Lagos\" cadastral parcel GIS open data official parcel polygons Nigeria land registry"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [],
+    "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "Candidate layer extent is far outside Lagos and bounded target query returned zero features.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+  "requests": [],
+  "resultCategory": "candidate_service_outside_target",
+  "evidenceType": "new_or_retry_target_service_probe",
+  "targetEndpointProbePerformed": true
+}

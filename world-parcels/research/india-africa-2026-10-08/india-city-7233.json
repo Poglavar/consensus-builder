@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 7233,
+  "cityId": "wup2025:7233",
+  "name": "Surat",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    21.1776194957192,
+    72.7789187685758
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 123,
+  "stateOrUT": "Gujarat",
+  "administrativeIdentity": {
+    "district": "सूरत",
+    "tehsilOrTaluk": "Chorasi Taluka",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/surat.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/surat.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Municipal town-planning web GIS; parcel/plot geometry not confirmed public",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://www.suratmunicipal.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=utf-8",
+            "assessment": "Portal home page only"
+          },
+          {
+            "method": "GET",
+            "url": "https://smcgis.suratmunicipal.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "Proxy tunnel failure (502); unverified"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search?q=Surat+parcel+type%3A%22Feature+Service%22&f=json",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "1 unrelated result"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search?q=Surat+cadastral+type%3A%22Feature+Service%22&f=json",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "4 unrelated Australian results"
+          },
+          {
+            "method": "GET",
+            "url": "https://anyror.gujarat.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+          }
+        ],
+        "conclusion": "The SMC Web GIS host was not reachable from this client, so whether it exposes plot polygons anonymously is unknown. Same Gujarat state considerations as Ahmedabad.",
+        "nextStep": "Retry SMC Web GIS and look for a documented feature/WFS endpoint."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Gujarati",
+        "query": "સુરત જમીન રેકોર્ડ 7/12 નકશો AnyRoR ગુજરાત",
+        "scope": "WUP 7233 Surat cohort label retained; actual query searched state AnyRoR/cadastral map sources.",
+        "result": "Search results did not surface a Government of Gujarat parcel/map page for this city. Direct open of the official AnyRoR URL below timed out in web fetch; no conclusion about service coverage is drawn.",
+        "checkedAt": "2026-10-08",
+        "script": "Gujarati",
+        "actualResultUrls": [
+          "https://akhairkar.github.io/BhumiRecord/districts/gujarat/surat.html",
+          "https://anyrorgujarat.org.in/blog/bhulekh-gujarat-land-records-online",
+          "https://anyror-gujarat.in/",
+          "https://anyror.org.in/",
+          "https://anyrorgujarat.org.in/",
+          "https://anyror.org/",
+          "https://uidaiaadhar.com/anyror-7-12",
+          "https://legiscore.in/blog/anyror-gujarat-7-12-land-records-online-check",
+          "https://www-anyror.com/",
+          "https://play.google.com/store/apps/details?id=com.gujarat.satbara.satbara_gujarat",
+          "https://anyrorgujarat.in/anyror-gujarat-7-12-online/",
+          "https://play.google.com/store/apps/details?id=com.treebo.landrecord.anyroarapp.gjlandlayoutinfo",
+          "https://www.reddit.com/r/u_Unable_Anywhere_5722/comments/1kvnmyc",
+          "https://www.suratmunicipal.gov.in/Content/Documents/Departments/PreliminarySchemes/TPSNO40_LIMBAYAT_DINDOLI/TPSNO40_FORM.pdf?ver=6583",
+          "https://environmentclearance.nic.in/writereaddata/Formb/MODITOR/08072016ASG73TEJPFR.pdf",
+          "https://www.suratmunicipal.gov.in/Content/Documents/Departments/PreliminarySchemes/TPSNO40_LIMBAYAT_DINDOLI/TPSNO40_FORM.pdf?ver=8399",
+          "https://www.dholerametrocity2help.com/DMC_5012_legal/NA-Order-dmc-5012.pdf",
+          "https://sardardham.org/upload/2023040410015445c.pdf"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "AnyRoR Gujarat (official candidate)",
+        "operator": "Government of Gujarat, Revenue Department (site affiliation not confirmed by this fetch)",
+        "homeUrl": "https://anyror.gujarat.gov.in/",
+        "mapUrl": "https://anyror.gujarat.gov.in/",
+        "observation": "Direct web open timed out (reported fetch error 400); it returned no page content or parcel geometry. Search results were third-party explainers, not used as evidence of coverage."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=21.1776194957192&lon=72.7789187685758&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "सचीन, Chorasi Taluka, सूरत, Gujarat, 395007, India",
+        "osmType": "way",
+        "osmId": 1107523103,
+        "address": {
+          "city": "सचीन",
+          "county": "Chorasi Taluka",
+          "state_district": "सूरत",
+          "state": "Gujarat",
+          "ISO3166-2-lvl4": "IN-GJ",
+          "postcode": "395007",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://anyror.gujarat.gov.in/",
+        "httpStatus": 0,
+        "contentType": "",
+        "assessment": "Web open reported fetch timeout; no service-response status or body obtained."
+      }
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_open_endpoint_after_attempts",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Reach AnyRoR through a functioning official browser route, resolve the WUP coordinate to the official village/survey hierarchy, and test whether a public response yields parcel polygon geometry and a stable survey ID."
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "passed",
+  "method": "Manual inspection in a dedicated headed Chrome via agent-browser: wait for settled parcel loads, click an actual polygon, inspect its action menu and source attribution, pan to additional cells, inspect the new retained geometry and page errors. No browser test suite was run.",
+  "frontendPort": 5638,
+  "backendPort": 4640,
+  "cacheControl": "no-store, must-revalidate",
+  "cities": [
+    {
+      "cityId": "johannesburg",
+      "initialRetainedParcels": 407,
+      "initialLoadedCells": 9,
+      "afterPanRetainedParcels": 515,
+      "afterPanLoadedCells": 12,
+      "pointerClick": [
+        571,
+        257
+      ],
+      "url": "http://localhost:5638/?city=johannesburg&backend=http%3A%2F%2Flocalhost%3A4640",
+      "parcelActionMenuVisible": true,
+      "sourceAttributionInspected": true,
+      "settledSourceWarnings": [],
+      "uncaughtPageErrors": [],
+      "screenshotVisuallyInspected": true
+    },
+    {
+      "cityId": "cosmo_city",
+      "initialRetainedParcels": 925,
+      "initialLoadedCells": 9,
+      "afterPanRetainedParcels": 1304,
+      "afterPanLoadedCells": 12,
+      "pointerClick": [
+        784,
+        461
+      ],
+      "url": "http://localhost:5638/?city=cosmo_city&backend=http%3A%2F%2Flocalhost%3A4640",
+      "parcelActionMenuVisible": true,
+      "sourceAttributionInspected": true,
+      "settledSourceWarnings": [],
+      "uncaughtPageErrors": [],
+      "screenshotVisuallyInspected": true
+    },
+    {
+      "cityId": "ennerdale",
+      "initialRetainedParcels": 285,
+      "initialLoadedCells": 9,
+      "afterPanRetainedParcels": 327,
+      "afterPanLoadedCells": 12,
+      "pointerClick": [
+        485,
+        240
+      ],
+      "url": "http://localhost:5638/?city=ennerdale&backend=http%3A%2F%2Flocalhost%3A4640",
+      "parcelActionMenuVisible": true,
+      "sourceAttributionInspected": true,
+      "settledSourceWarnings": [],
+      "uncaughtPageErrors": [],
+      "screenshotVisuallyInspected": true
+    },
+    {
+      "cityId": "accra",
+      "initialRetainedParcels": 124,
+      "initialLoadedCells": 9,
+      "afterPanRetainedParcels": 199,
+      "afterPanLoadedCells": 15,
+      "pointerClick": [
+        751,
+        283
+      ],
+      "selectedPublisherPid": "AMAPO35919A",
+      "selectedComponent": 2,
+      "url": "http://localhost:5638/?city=accra&backend=http%3A%2F%2Flocalhost%3A4640",
+      "parcelActionMenuVisible": true,
+      "sourceAttributionInspected": true,
+      "settledSourceWarnings": [],
+      "uncaughtPageErrors": [],
+      "screenshotVisuallyInspected": true
+    }
+  ],
+  "report": {
+    "url": "http://localhost:5638/parcel-coverage-report.html?cohort=india-africa#cities",
+    "visibleCityRows": 171,
+    "regionalFilter": "india-africa",
+    "configuredCandidateRows": [
+      "johannesburg",
+      "cosmo_city",
+      "ennerdale",
+      "accra"
+    ],
+    "sourceLinks": "Johannesburg, Cosmo City and Ennerdale lead with the municipal registered-stands endpoint; Accra leads with the public property viewer. Historical source evidence is retained.",
+    "uncaughtPageErrors": []
+  },
+  "harnessCorrections": [
+    "The initial apiPort URL parameter did not select the local backend; all successful city checks used the actual backend URL parameter.",
+    "Accra was first opened during the backend restart, before its listener was ready; the page was reloaded after backend readiness for the recorded successful checks."
+  ],
+  "cleanup": {
+    "taskBrowsersClosed": true,
+    "remainingAgentBrowserSessions": 0
+  }
+}

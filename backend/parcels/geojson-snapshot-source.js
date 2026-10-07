@@ -2,6 +2,7 @@
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
+import { retainParcel } from './parcel-components.js';
 
 const caches = new WeakMap();
 const CACHE_MS = 5 * 60 * 1000;
@@ -102,11 +103,31 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
     const maxFeatures = descriptor.maxFeatures ?? 10000;
     const limits = [maxSnapshotBytes, maxSnapshotFeatures, maxFeatures];
     const url = new URL(endpoint);
+    const identifier = /^[A-Za-z_][A-Za-z0-9_]*$/;
+    const requestForm = descriptor.requestForm;
+    const hasRequestForm = requestForm !== undefined;
+    const validRequestForm = !hasRequestForm || (requestForm && typeof requestForm === 'object' && !Array.isArray(requestForm)
+        && (Object.getPrototypeOf(requestForm) === Object.prototype || Object.getPrototypeOf(requestForm) === null)
+        && Object.keys(requestForm).length > 0 && Object.keys(requestForm).length <= 16
+        && Object.entries(requestForm).every(([key, value]) => identifier.test(key) && key.length <= 128
+            && typeof value === 'string' && value.length <= 512));
+    const partFieldsValid = descriptor.partMatchFields === undefined || (Array.isArray(descriptor.partMatchFields)
+        && descriptor.partMatchFields.length > 0 && descriptor.partMatchFields.length <= 8
+        && new Set(descriptor.partMatchFields).size === descriptor.partMatchFields.length
+        && descriptor.partMatchFields.every(field => typeof field === 'string' && identifier.test(field)
+            && Array.isArray(outFields) && outFields.includes(field)));
     if (!id || !idPrefix || url.protocol !== 'https:' || url.username || url.password
         || typeof fetchImpl !== 'function' || typeof now !== 'function'
         || !Array.isArray(idFields) || !idFields.length || idFields.length > 8
         || new Set(idFields).size !== idFields.length || idFields.some(field => typeof field !== 'string' || !field)
         || !Array.isArray(outFields) || idFields.some(field => !outFields.includes(field))
+        || !validRequestForm
+        || ![undefined, 'parts'].includes(descriptor.nativeGeometryMode)
+        || (descriptor.nativeGeometryMode === 'parts' && descriptor.disjointParts !== true)
+        || (descriptor.nativeGeometryMode === 'parts' && !partFieldsValid)
+        || (descriptor.nativeGeometryMode === 'parts' && !descriptor.partMatchFields?.length)
+        || (descriptor.disjointParts !== undefined && (typeof descriptor.disjointParts !== 'boolean' || descriptor.nativeGeometryMode !== 'parts'))
+        || (descriptor.partMatchFields !== undefined && (descriptor.nativeGeometryMode !== 'parts' || !partFieldsValid))
         || (descriptor.parcelNumberField && !outFields.includes(descriptor.parcelNumberField))
         || (descriptor.expectedSnapshotFeatures !== undefined && (!Number.isSafeInteger(descriptor.expectedSnapshotFeatures)
             || descriptor.expectedSnapshotFeatures < 0 || descriptor.expectedSnapshotFeatures > maxSnapshotFeatures))
@@ -128,7 +149,10 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
         const signal = AbortSignal.timeout(15000);
         let reader;
         try {
-            const response = await fetchImpl(endpoint, { signal, headers: { Accept: 'application/geo+json, application/json' } });
+            const response = await fetchImpl(endpoint, { signal,
+                ...(hasRequestForm ? { method: 'POST', body: new URLSearchParams(requestForm).toString() } : {}),
+                headers: { Accept: 'application/geo+json, application/json',
+                    ...(hasRequestForm ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) } });
             if (!response.ok || response.status !== 200) throw providerHttpError(response);
             if (response.url && new URL(response.url).protocol !== 'https:') throw upstreamError('Snapshot redirected outside HTTPS.');
             if (descriptor.expectedEtag !== undefined && response.headers.get('etag') !== descriptor.expectedEtag) {
@@ -165,12 +189,17 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
             if (descriptor.expectedSnapshotFeatures !== undefined && collection.features.length !== descriptor.expectedSnapshotFeatures) {
                 throw upstreamError('Parcel snapshot count does not match its verified release.');
             }
-            const byId = new Map(), indexed = [];
+            const byId = new Map();
             for (const feature of collection.features) {
                 if (feature?.type !== 'Feature' || !validateGeometry(feature.geometry)) throw upstreamError('Parcel snapshot returned invalid polygon geometry.');
                 if (descriptor.idNamespace && String(feature.properties?.[descriptor.idNamespace.field]) !== descriptor.idNamespace.value) {
                     throw upstreamError('Parcel snapshot returned a foreign native namespace.');
                 }
+                if (descriptor.nativeGeometryMode === 'parts' && descriptor.partMatchFields.some(field => {
+                    const value = feature.properties?.[field];
+                    return !Object.hasOwn(feature.properties || {}, field) || value === null || value === undefined
+                        || (typeof value === 'string' && !value.trim());
+                })) throw upstreamError('Parcel snapshot omitted required parcel administrative references.');
                 const extent = geometryBbox(feature);
                 if (descriptor.bbox && (extent[0] < descriptor.bbox[0] || extent[1] < descriptor.bbox[1]
                     || extent[2] > descriptor.bbox[2] || extent[3] > descriptor.bbox[3])) {
@@ -180,10 +209,12 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
                 try { nativeId = encodeSnapshotNativeId(idFields.map(field => feature.properties?.[field])); }
                 catch (_) { throw upstreamError('Parcel snapshot returned invalid native parcel identity.'); }
                 const canonical = canonicalParcelFeature(descriptor, feature, nativeId);
-                if (byId.has(canonical.id)) throw upstreamError('Parcel snapshot repeated a native parcel identity.');
-                byId.set(canonical.id, canonical);
-                indexed.push({ feature: canonical, bbox: geometryBbox(canonical) });
+                if (descriptor.nativeGeometryMode === 'parts') canonical.properties.sourcePartCount = 1;
+                else if (byId.has(canonical.id)) throw upstreamError('Parcel snapshot repeated a native parcel identity.');
+                retainParcel(byId, canonical, descriptor);
             }
+            // Index only after every source component has been merged into its complete parcel.
+            const indexed = [...byId.values()].map(feature => ({ feature, bbox: geometryBbox(feature) }));
             return { byId, indexed };
         } catch (error) {
             if (reader) { try { await reader.cancel(); } catch (_) { /* The failed stream may already be closed. */ } }

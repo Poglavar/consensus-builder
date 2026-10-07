@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2033",
+  "queueRank": 65,
+  "wupCityCode": 2033,
+  "name": "Nairobi",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "centerLatLon": [
+    -1.26592113731299,
+    36.845161927435
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 65,
+  "growthRank": null,
+  "population2025": 6134334,
+  "annualGrowthPct2015To2025": 2.718356,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/nairobi.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-KE.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Swahili and English",
+    "exactQuery": "Nairobi Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.ramani.co.ke/pages/ramani-online",
+      "https://ramani.co.ke/pages/ramani-online",
+      "https://www.ramani.co.ke/pages/ramani-land-services",
+      "https://www.ramani.co.ke/pages/gis-mapping",
+      "https://www.ramani.co.ke/",
+      "https://ardhi.nairobiservices.go.ke/",
+      "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+      "https://ramani.co.ke/solutions"
+    ],
+    "summary": "Swahili searches surfaced official national registries/Ardhisasa and county services; spatial polygon API not found.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.ramani.co.ke/pages/ramani-online",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ramani.co.ke/pages/ramani-online",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ramani.co.ke/pages/ramani-land-services",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ramani.co.ke/pages/gis-mapping",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ramani.co.ke/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ardhi.nairobiservices.go.ke/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ramani.co.ke/solutions",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Nairobi\" Kenya (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Nairobi%22+Kenya+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 5,
+    "candidateFeatureServices": [
+      {
+        "title": "nairobiLanduse",
+        "type": "Feature Service",
+        "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/nairobiLanduse/FeatureServer",
+        "id": "e013a70ddd0c4058bf5c41cbc5495c12"
+      },
+      {
+        "title": "NairobiInformalSettlements",
+        "type": "Feature Service",
+        "url": "https://services1.arcgis.com/FP03F4JPP1Njl2au/arcgis/rest/services/NairobiInformalSettlements/FeatureServer",
+        "id": "bd173f886b954e47909fea855234738c"
+      },
+      {
+        "title": "Lamu County Structure Plan_WFL1",
+        "type": "Feature Service",
+        "url": "https://services8.arcgis.com/NO2mqJqRjvPz7Kqb/arcgis/rest/services/Lamu_County_Structure_Plan_WFL1/FeatureServer",
+        "id": "d00d8cb0ddb14d458151f5b981479707"
+      }
+    ],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Nairobi parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Nairobi land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Nairobi%22+Kenya+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10481,
+  "cityId": "wup2025:10481",
+  "name": "Dohrighat",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.2938353304261,
+    83.499615518729
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 53,
+  "stateOrUT": "Uttar Pradesh",
+  "administrativeIdentity": {
+    "district": "गोरखपुर",
+    "tehsilOrTaluk": "Gola",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "दोहरीघाट मऊ उत्तर प्रदेश भू नक्शा राजस्व गांव गाटा खसरा",
+        "scope": "WUP 10481 Dohrighat cohort label retained. Actual search was to locate official UP cadastral sources; results listed are shared state entry points and any relevant district page, not a verified parcel for this city.",
+        "result": "Search surfaced official Board of Revenue/UP Bhulekh entries; it did not produce a feature geometry or city-specific map sample.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://mau.nic.in/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%95%E0%A5%87-%E0%A4%AC%E0%A4%BE%E0%A4%B0%E0%A5%87-%E0%A4%AE%E0%A5%87%E0%A4%82/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%B6%E0%A4%BE%E0%A4%B8%E0%A4%A8/%E0%A4%97%E0%A5%8D%E0%A4%B0%E0%A4%BE%E0%A4%AE-%E0%A4%AA%E0%A4%82%E0%A4%9A%E0%A4%BE%E0%A4%AF%E0%A4%A4-%E0%A4%95%E0%A5%80-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%BF/"
+        ],
+        "actualResultUrlsStatus": "preserved_from_original_search_result",
+        "actualResultUrlsNote": "City-specific official result URL(s) recorded from the actual search output; these are leads and do not confirm parcel geometry at the WUP point.",
+        "executionMethod": "City query was run in the 2026-10-08 multi-query search batch; the preserved URL(s) below were returned and matched to this city query from that batch output (not individually rerun).",
+        "recheckedAt": "2026-10-08 (batch result attribution; not an individual rerun)",
+        "resultScope": "Search-only discovery result; the URL is a query-linked lead and does not verify target parcel geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "UP Board of Revenue and Bhulekh",
+        "operator": "Government of Uttar Pradesh, Board of Revenue",
+        "homeUrl": "https://bor.up.nic.in/?search_key=HOMECENTER",
+        "mapUrl": "https://upbhulekh.gov.in/",
+        "observation": "Official Hindi result lists revenue-village map (भू-नक्शा/शजरा) and plot boundaries; a search result is not a city-specific verified parcel sample. A bounded parcel query with a specific revenue village/gata was not completed in this search-only pass."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=26.2938353304261&lon=83.499615518729&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "बड़हलगंज, Gola, गोरखपुर, Uttar Pradesh, 273402, India",
+        "osmType": "way",
+        "osmId": 693342265,
+        "address": {
+          "town": "बड़हलगंज",
+          "county": "Gola",
+          "state_district": "गोरखपुर",
+          "state": "Uttar Pradesh",
+          "ISO3166-2-lvl4": "IN-UP",
+          "postcode": "273402",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/?trk=public_post-text",
+          "https://mau.nic.in/जिला-के-बारे-में/प्रशासन/ग्राम-पंचायत-की-सूचि/"
+        ],
+        "scope": "Shared URLs returned by the actual Hindi query above; the UP Board of Revenue and UP Bhulekh URLs recur for all cohort cities. District-page links are relevant lead only."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+}

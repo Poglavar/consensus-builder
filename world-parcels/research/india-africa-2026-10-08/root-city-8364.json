@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:8364",
+  "wupCityCode": 8364,
+  "name": "New Delhi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    28.6257327699734,
+    77.2078130770808
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 4,
+  "growthRank": null,
+  "previousStatuses": [
+    "verified_sample_partial_coverage"
+  ],
+  "previousEvidenceFiles": [
+    "research/retry/cities/new-delhi.json",
+    "research/batch-six-root-source-attempts.json"
+  ],
+  "registryCityIds": [
+    "geonames:1261481"
+  ],
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_partial_coverage",
+  "resultCategory": "revalidated_previous_sample",
+  "freshVerifiedSample": true,
+  "registryFound": true,
+  "verifiedSample": true,
+  "nativeLanguageSearches": [
+    {
+      "query": "site.ldo.mohua.gov.in ई धरती जियो पोर्टल भूखंड मानचित्र",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "resultUrls": [
+        "https://www.ldo.mohua.gov.in/",
+        "https://ldo.mohua.gov.in/edharti/public-dashboard",
+        "https://ldo.mohua.gov.in/edharti/public-register"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "name": "delhi-map",
+      "url": "https://ldo.mohua.gov.in/edharti/map",
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:04:54.667776+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/json,application/xhtml+xml,*/*;q=0.8",
+        "Accept-Language": "en-IN,en;q=0.9,hi;q=0.8,mr;q=0.7",
+        "Referer": "https://ldo.mohua.gov.in/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "finalUrl": "https://ldo.mohua.gov.in/edharti/map",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 25707,
+      "bodyTruncated": false,
+      "elapsedMs": 1549,
+      "requestLogFile": "research/india-africa-2026-10-08/root-requests.json"
+    },
+    {
+      "name": "delhi-main",
+      "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/mains.js",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:05.835882+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://ldo.mohua.gov.in/edharti/map"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "bytesRead": 116101,
+      "contentRange": null,
+      "bodyCapped": false,
+      "elapsedMs": 959,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round2-requests.json"
+    },
+    {
+      "name": "delhi-range",
+      "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:05.836517+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://ldo.mohua.gov.in/edharti/map",
+        "Range": "bytes=0-16383"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 206,
+      "contentType": "application/javascript",
+      "bytesRead": 16384,
+      "contentRange": "bytes 0-16383/22117499",
+      "bodyCapped": true,
+      "parcelRecordCount": 3,
+      "responseFile": "research/india-africa-2026-10-08/root-delhi-parcel-response.json",
+      "elapsedMs": 763,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round2-requests.json"
+    }
+  ],
+  "source": {
+    "sourceId": "in-ldo-edharti-geojson",
+    "name": "e-Dharti Geo Portal 2.0 static layers (Property, Lease, VacantLand, ps_I-III)",
+    "operator": "Land & Development Office, Ministry of Housing and Urban Affairs",
+    "scope": "Only L&DO-managed government/leasehold properties in Delhi (about 26k property polygons); NOT the full Delhi cadastre and not India",
+    "endpoint": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/",
+    "method": "static file GET, no key",
+    "responseFormat": "JS var wrapping GeoJSON",
+    "crs": "WGS84",
+    "reuseStatus": "Not assessed; files contain lessee personal names (redacted in saved copy)"
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "in-ldo-edharti-geojson",
+    "requestUrl": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+    "method": "GET with Range bytes=0-16383",
+    "httpStatus": 206,
+    "contentType": "application/javascript",
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": [
+      "propertyid",
+      "unique_propert_id"
+    ],
+    "responseFile": "research/india-africa-2026-10-08/root-delhi-parcel-response.json",
+    "spatialTestAreaLonLat": [
+      77.20736542294554,
+      28.533624588132852,
+      77.20762583331681,
+      28.53385484941482
+    ],
+    "pagination": "Static 22,117,499-byte JS GeoJSON bundle. Only 16,384-byte prefix requested, three complete sanitized features retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "L&DO-managed Delhi properties only, not the full Delhi cadastre. The fresh sample is in Malviya Nagar, about 10 km south of the saved WUP centre.",
+    "verifiedOpenScope": "Three property polygons in the named static bundle.",
+    "countrywideVerified": false
+  },
+  "viewerInspection": "Current public viewer still loads Property_25999.js and other static layers. Inspected its 116,101-byte mains.js; no geometry bbox query or server-side exact-ID feature API found. Its property search operates on loaded layer properties.",
+  "technicalBlocker": "The earlier full-snapshot audit found repeated propertyid, unique_propert_id and paired identifiers with conflicting geometry. The fresh three-feature prefix confirms availability but does not resolve that native-identity failure.",
+  "nextStep": "Establish a publisher-supported durable property identity or a separately identified subset before designing complete snapshot, viewport and exact-ID retrieval.",
+  "coordinatorReview": {
+    "reviewedAt": "2026-10-08",
+    "technicalBlocker": "The earlier full-snapshot audit found repeated propertyid, unique_propert_id and paired identifiers with conflicting geometry. The fresh three-feature prefix confirms availability but does not resolve that native-identity failure.",
+    "nextStep": "Establish a publisher-supported durable property identity or a separately identified subset before designing complete snapshot, viewport and exact-ID retrieval.",
+    "priorSourceEvidenceFile": "research/batch-six-root-source-attempts.json"
+  }
+}

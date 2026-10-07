@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "AO",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "Luanda_AGT_Oficial_2_gdb FeatureServer layer 0",
+    "operator": "ArcGIS Online hosted service; named Luanda AGT Oficial; publisher authority/terms not confirmed",
+    "scope": "Feature service extent unknown here; previous Luanda evidence and new target attempts only",
+    "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+    "geometry": "advertised as parcel-like polygon layer with OBJECTID, ID_AGT, Municipio, Comuna, PredioT fields",
+    "access": "Anonymous endpoint responded to metadata; eight assigned target bbox/count=3 queries timed out or returned HTTP 000; headers pt-AO, Accept, UA, Referer were sent.",
+    "assessment": "Candidate exists but target sample unverified; each unavailable response is temporary, not evidence of no data."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "Portuguese (Latin)",
+      "exactQueries": [
+        "\"Luau\" Angola cadastro predial parcelas SIG",
+        "\"Luena\" Angola cadastro predial parcelas Geoportal",
+        "\"Malanje\" Angola cadastro predial parcelas geográfico",
+        "\"Cabinda\" Angola cadastro predial parcelas IGCA",
+        "\"M'banza Congo\" \"cadastro predial\" parcelas Angola",
+        "\"Soyo\" \"cadastro predial\" parcelas Angola",
+        "\"Lubango\" cadastro predial parcelas Angola",
+        "\"Cuito\" cadastro predial parcelas Angola"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Eight bounded target bbox/count=3 query attempts timed out or returned HTTP 000; temporary network/service failure, not a negative."
+    }
+  ],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

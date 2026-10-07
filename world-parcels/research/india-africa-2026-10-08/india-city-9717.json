@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9717,
+  "cityId": "wup2025:9717",
+  "name": "Lucknow",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.8615244724503,
+    80.9654352206033
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 133,
+  "stateOrUT": "Uttar Pradesh",
+  "administrativeIdentity": {
+    "district": "लखनऊ",
+    "tehsilOrTaluk": "Lucknow",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/lucknow.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/lucknow.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Uttar Pradesh village cadastral maps, plot-level",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "assessment": "Angular app shell"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+            "httpStatus": 200,
+            "contentType": "text/plain;charset=UTF-8",
+            "assessment": "returns 09 (Uttar Pradesh); not parcel data"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "['District','Tehsil','Village']; not parcel data"
+          },
+          {
+            "method": "POST",
+            "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+            "httpStatus": 500,
+            "contentType": "application/json",
+            "assessment": "backend reports upstream 403 Forbidden (auth-gated); tried level=0/1 with codes=09, 3 attempts; no district/village codes obtained so no plot query possible"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.up.nic.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhulekh.gov.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed"
+          }
+        ],
+        "conclusion": "Public UI claims free plot maps but the backend's level-lookup call returned an upstream 403 to an anonymous non-browser client, so village codes and plot geometry could not be requested. It may work from the browser session with a captcha; not tested. Recorded for reuse across Bhunaksha states.",
+        "nextStep": "Inspect browser flow for a captcha/session token; then call MapInfo/getPlotAtXY with a Lucknow village gisCode and check for polygon geometry; confirm terms."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "लखनऊ राजस्व ग्राम नक्शा भू नक्शा गाटा उत्तर प्रदेश",
+        "scope": "WUP 9717 Lucknow cohort label retained. Actual search was to locate official UP cadastral sources; results listed are shared state entry points and any relevant district page, not a verified parcel for this city.",
+        "result": "Search surfaced official Board of Revenue/UP Bhulekh entries; it did not produce a feature geometry or city-specific map sample.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/?search_key=bhulekh+up",
+          "https://upbhulekh.gov.in/?form=MG0AV3",
+          "https://bor.up.nic.in/?search_key=edrop.sec.kerala.gov.in%2Fpublic",
+          "https://upbhulekh.gov.in/?trk=organization-update_share-update_update-text",
+          "https://akhairkar.github.io/BhumiRecord/districts/uttar-pradesh/lucknow.html",
+          "https://www.lucknowbhulekh.in/",
+          "https://lucknow.nic.in/hi/%E0%A4%B2%E0%A4%96%E0%A4%A8%E0%A4%8A-%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%AA%E0%A5%8B%E0%A4%B0%E0%A5%8D%E0%A4%9F%E0%A4%B2/",
+          "https://ldalucknow.in/wp-content/uploads/2025/09/Board-Agenda-154.pdf",
+          "https://bhulekhnakshaup.com/documents",
+          "https://bor.up.nic.in/Department_login.aspx",
+          "https://ldalucknow.in/wp-content/uploads/2025/09/Board-Agenda-166.pdf",
+          "https://upreradisk.blob.core.windows.net/azureportaldeploy/205165464EXTRACT%20OF%20KHASHRA%20KHATAUNI.pdf",
+          "https://up-rera.in/ViewDocument?Param=17323192417.pdf",
+          "https://information.up.gov.in/admin/UploadDocument/OtherPress/compressed_18062025010328varshiki2.pdf",
+          "https://upbhulekhe.com/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "UP Board of Revenue and Bhulekh",
+        "operator": "Government of Uttar Pradesh, Board of Revenue",
+        "homeUrl": "https://bor.up.nic.in/?search_key=HOMECENTER",
+        "mapUrl": "https://upbhulekh.gov.in/",
+        "observation": "Official Hindi result lists revenue-village map (भू-नक्शा/शजरा) and plot boundaries; a search result is not a city-specific verified parcel sample. A bounded parcel query with a specific revenue village/gata was not completed in this search-only pass."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=26.8615244724503&lon=80.9654352206033&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Samatamulak - Nishatganj Road, Nishat Ganj, सिविल लाइंस, Lucknow, लखनऊ, Uttar Pradesh, 226006, India",
+        "osmType": "way",
+        "osmId": 1455700184,
+        "address": {
+          "road": "Samatamulak - Nishatganj Road",
+          "neighbourhood": "Nishat Ganj",
+          "suburb": "सिविल लाइंस",
+          "city": "Lucknow",
+          "county": "Lucknow",
+          "state_district": "लखनऊ",
+          "state": "Uttar Pradesh",
+          "ISO3166-2-lvl4": "IN-UP",
+          "postcode": "226006",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/",
+          "https://lucknow.nic.in/hi/%E0%A4%B2%E0%A4%96%E0%A4%A8%E0%A4%8A-%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%AA%E0%A5%8B%E0%A4%B0%E0%A5%8D%E0%A4%9F%E0%A4%B2/"
+        ],
+        "scope": "Shared URLs returned by the actual Hindi query above; the UP Board of Revenue and UP Bhulekh URLs recur for all cohort cities. District-page links are relevant lead only."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+}

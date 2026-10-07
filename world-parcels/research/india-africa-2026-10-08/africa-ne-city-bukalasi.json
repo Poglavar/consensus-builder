@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2633",
+  "queueRank": 13,
+  "wupCityCode": 2633,
+  "name": "Bukalasi",
+  "country": "Uganda",
+  "countryCode": "UG",
+  "centerLatLon": [
+    1.01864172628934,
+    34.3514980249162
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 13,
+  "population2025": 345288,
+  "annualGrowthPct2015To2025": 9.570719,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/growth-top20-2026-10-07/city-2633.json",
+      "status": "temporarily_unavailable"
+    }
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-UG.json",
+  "nativeLanguageSearch": {
+    "languageScript": "English and Swahili",
+    "exactQuery": "Bukalasi Uganda viwanja vya ardhi ramani ya cadastral parcels GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+      "https://mlhud.go.ug/ugnlis/",
+      "https://development.finance.go.ug/knowledge-centre-reports/uganda-national-land-information-system-nlis-portal",
+      "https://miningcadastre.minerals.go.ug/arcgis/rest/services",
+      "https://mlhud.go.ug/lands-managment/department-of-surveys-and-mapping/",
+      "https://dgsmportal.minerals.go.ug/site/CustomHtml.aspx?PageID=57d36d0f-6d0d-473a-8c6a-b4a96cb0603b",
+      "https://www.kcca.go.ug/gis/gis",
+      "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer/export?bbox=-387802.4162353526%2C145973.19681135291%2C1232588.2512353524%2C601157.1231829457"
+    ],
+    "summary": "Swahili searches surfaced official NLIS/KCCA GIS; parcel search is by plot details and public WFS did not include parcel geometry.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mlhud.go.ug/ugnlis/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://development.finance.go.ug/knowledge-centre-reports/uganda-national-land-information-system-nlis-portal",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://miningcadastre.minerals.go.ug/arcgis/rest/services",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mlhud.go.ug/lands-managment/department-of-surveys-and-mapping/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://dgsmportal.minerals.go.ug/site/CustomHtml.aspx?PageID=57d36d0f-6d0d-473a-8c6a-b4a96cb0603b",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.kcca.go.ug/gis/gis",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer/export?bbox=-387802.4162353526%2C145973.19681135291%2C1232588.2512353524%2C601157.1231829457",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Bukalasi\" Uganda (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Bukalasi%22+Uganda+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Bukalasi parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Bukalasi survey office or NLIS operator for an anonymous parcel layer or bounded extract; confirm it covers this city rather than administrative/utility layers.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Bukalasi%22+Uganda+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-02",
+      "sourceUrl": "https://miningcadastre.minerals.go.ug/arcgis/rest/services",
+      "classification": "government_mining_cadastre_catalog_not_land_parcel_service",
+      "auditSummary": "Anonymous directory request returned currentVersion 10.6 and a service list (ExportWebMap, LandfolioGPService v3/v4, SampleWorldCities). The separate LandfolioSOEv2_0_0 MapServer returned ArcGIS error 499 Token Required. No token requested or guessed; no parcel geometry or extent available.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-03",
+      "sourceUrl": "https://miningcadastre.minerals.go.ug/arcgis/rest/services/LandfolioSOEv2_0_0/MapServer/export?bbox=-387802.4162353526%2C145973.19681135291%2C1232588.2512353524%2C601157.1231829457",
+      "classification": "authentication_required_mining_service",
+      "auditSummary": "Direct MapServer metadata responded with ArcGIS error code 499 Token Required. This is a mining-cadastre service under the minerals ministry host, not evidence of a public land-ownership parcel layer. No credential flow attempted; no extent or features obtained.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Anonymous directory request returned currentVersion 10.6 and a service list (ExportWebMap, LandfolioGPService v3/v4, SampleWorldCities). The separate LandfolioSOEv2_0_0 MapServer returned ArcGIS error 499 Token Required. No token requested or guessed; no parcel geometry or extent available.; Direct MapServer metadata responded with ArcGIS error code 499 Token Required. This is a mining-cadastre service under the minerals ministry host, not evidence of a public land-ownership parcel layer. No credential flow attempted; no extent or features obtained."
+}

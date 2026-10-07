@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "assignedCityCodes": [
+    8364,
+    8616,
+    3664
+  ],
+  "searches": [
+    {
+      "query": "site.ldo.mohua.gov.in ई धरती जियो पोर्टल भूखंड मानचित्र",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "resultUrls": [
+        "https://www.ldo.mohua.gov.in/",
+        "https://ldo.mohua.gov.in/edharti/public-dashboard",
+        "https://ldo.mohua.gov.in/edharti/public-register"
+      ]
+    },
+    {
+      "query": "site.mahabhumi.gov.in पुणे भू नकाशा मिळकत नकाशा",
+      "language": "Marathi",
+      "script": "Devanagari",
+      "resultUrls": [
+        "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "https://bhumiabhilekh.maharashtra.gov.in/Services"
+      ]
+    },
+    {
+      "query": "Johannesburg cadastral parcels registered stands SG_ID ArcGIS",
+      "language": "English",
+      "script": "Latin",
+      "resultUrls": [
+        "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer",
+        "https://eservices.joburg.org.za/sites/cgismaps/Pages/Property-Theme.aspx"
+      ]
+    },
+    {
+      "query": "Johannesburg kadaster erwe kaart GIS",
+      "language": "Afrikaans",
+      "script": "Latin",
+      "resultUrls": [
+        "https://edit.eservices.joburg.org.za/cgis/Pages/all-maps.aspx",
+        "https://e-gis003.tshwane.gov.za/server/rest/services/Viewer"
+      ]
+    },
+    {
+      "language": "Marathi",
+      "script": "Devanagari",
+      "query": "site.pune.gov.in पुणे मिळकत नकाशा भू नकाशा नगर भूमापन",
+      "resultUrls": [
+        "https://pune.gov.in/service/मिळकत-पत्रिका-बघणे/",
+        "https://bhumiabhilekh.maharashtra.gov.in/Services",
+        "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=14"
+      ],
+      "assessment": "Official Pune district and state land-record sources; public records and city-survey maps exist, no geometry feed established from search."
+    },
+    {
+      "language": "English",
+      "script": "Latin",
+      "query": "site.pmc.gov.in Pune GIS cadastral property map",
+      "resultUrls": [
+        "https://autodcr.pmc.gov.in/SWC.Client/Login.aspx",
+        "https://autodcr.pmc.gov.in/AutoDCR.Dashboard2/PMC/pmcdash.aspx",
+        "https://opendata.pmc.gov.in/pmc-reports"
+      ],
+      "assessment": "Municipal AutoDCR viewer/dashboard and open-data reports are leads; polygon API not yet inspected."
+    }
+  ],
+  "notes": "Executed web discovery; result pages and catalogues are leads, not new polygon verification. Prior city samples and runtime failures will be retained in each new assessment."
+}

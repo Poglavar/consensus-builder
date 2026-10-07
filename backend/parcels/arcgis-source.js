@@ -1,14 +1,11 @@
 // Adapts a fixed ArcGIS parcel layer to complete, canonical WGS84 parcel collections.
-import { bbox as geometryBbox, booleanIntersects, feature as geoFeature, union as polygonUnion, intersect, area } from '@turf/turf';
+import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import proj4 from 'proj4';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 import { encodeSnapshotNativeId as encodeCompositeId, decodeSnapshotNativeId as decodeCompositeId } from './geojson-snapshot-source.js';
+import { retainParcel } from './parcel-components.js';
 export { validateBounds } from './source-contract.js';
-
-// Reprojection can turn a shared edge into a microscopic sliver. One square centimetre
-// accommodates numeric noise, not overlapping boundary versions (which must still fail).
-const MAX_NUMERIC_PART_OVERLAP_M2 = 0.0001;
 
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, idField, objectIdField, idPrefix, outFields } = descriptor;
@@ -82,28 +79,6 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const attributeFilter = createParcelAttributeFilter(descriptor);
     const baseWhere = attributeFilter.where || '1=1';
 
-    function retainParcel(byId, canonical) {
-        const previous = byId.get(canonical.id);
-        if (!previous) { byId.set(canonical.id, canonical); return; }
-        if (descriptor.partMatchFields?.some(field => previous.properties.sourceProperties[field] !== canonical.properties.sourceProperties[field])) {
-            throw upstreamError('Parcel provider returned inconsistent administrative references for one parcel ID.');
-        }
-        if (JSON.stringify(previous.geometry) !== JSON.stringify(canonical.geometry)) {
-            if (descriptor.nativeGeometryMode !== 'parts') throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
-            try {
-                if (descriptor.disjointParts) {
-                    const overlap = intersect(geoFeature(previous.geometry), geoFeature(canonical.geometry));
-                    if (overlap && area(overlap) > MAX_NUMERIC_PART_OVERLAP_M2) throw new Error('Parcel components overlap.');
-                }
-                const merged = polygonUnion(geoFeature(previous.geometry), geoFeature(canonical.geometry));
-                if (!merged || !validateGeometry(merged.geometry)) throw new Error('Invalid parcel union.');
-                previous.geometry = merged.geometry;
-            } catch (cause) { throw Object.assign(upstreamError('Parcel provider components could not form a valid complete parcel.'), { cause }); }
-        }
-        if (descriptor.nativeGeometryMode === 'parts') previous.properties.sourcePartCount += canonical.properties.sourcePartCount;
-        else byId.set(canonical.id, canonical);
-    }
-
     async function request(search) {
         const signal = AbortSignal.timeout(15000);
         let payload;
@@ -168,7 +143,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                     }
                 }
                 if (descriptor.nativeGeometryMode === 'parts') canonical.properties.sourcePartCount = 1;
-                retainParcel(byId, canonical);
+                retainParcel(byId, canonical, descriptor);
             }
             // Some ArcGIS GeoJSON services omit the flag even for a truncated full page.
             const limitFlag = payload.exceededTransferLimit ?? payload.properties?.exceededTransferLimit;
@@ -237,7 +212,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         for (let start = 0; start < objects.length; start += pageSize) {
             const batch = objects.slice(start, start + pageSize);
             const page = await query({ objectIds: batch.join(',') }, new Set(batch.map(String)));
-            for (const feature of page.features) retainParcel(byId, feature);
+            for (const feature of page.features) retainParcel(byId, feature, descriptor);
         }
         return { type: 'FeatureCollection', features: [...byId.values()], complete: true, sourceId: id, returnsWGS84: true,
             ...(descriptor.nativeGeometryMode === 'parts' ? { sourceRows: objects.length } : {}) };

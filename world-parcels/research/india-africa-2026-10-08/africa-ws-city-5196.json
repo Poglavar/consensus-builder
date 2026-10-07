@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:5196",
+  "queueRank": 130,
+  "wupCityCode": 5196,
+  "name": "Kasaï-Oriental",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "centerLatLon": [
+    -6.12279658565417,
+    23.5984690595655
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 130,
+  "growthRank": null,
+  "population2025": 3605738,
+  "annualGrowthPct2015To2025": 1.955506,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    "research/kasai-oriental.json"
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ws-provider-CD.json",
+  "freshCityLocalSearch": {
+    "languageScript": "French (Latin script)",
+    "exactQueries": [
+      "\"Kasaï-Oriental\" cadastre parcelles geoportail GIS"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [],
+    "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+  "requests": [],
+  "resultCategory": "no_new_verified_target_sample",
+  "evidenceType": "new_or_retry_city_specific_discovery",
+  "targetEndpointProbePerformed": false
+}

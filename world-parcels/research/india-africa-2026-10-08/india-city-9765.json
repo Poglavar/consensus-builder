@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9765,
+  "cityId": "wup2025:9765",
+  "name": "Kochi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    10.0612792171801,
+    76.3088105504372
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 132,
+  "stateOrUT": "Kerala",
+  "administrativeIdentity": {
+    "district": "Ernakulam",
+    "tehsilOrTaluk": "Kanayannur",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/kochi.json",
+      "research/retry/cities/kochi.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/kochi.json",
+        "checkedAt": "2026-09-29",
+        "status": "temporarily_unavailable",
+        "scope": "Kerala state digital resurvey; Kochi coverage unknown",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed/reset or TLS self-signed; no content"
+          },
+          {
+            "method": "GET",
+            "url": "https://erekha.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed/reset or TLS self-signed; no content"
+          },
+          {
+            "method": "GET",
+            "url": "https://relis.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed/reset or TLS self-signed; no content"
+          },
+          {
+            "method": "GET",
+            "url": "https://digitalsurvey.kerala.gov.in",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed/reset or TLS self-signed; no content"
+          },
+          {
+            "method": "GET",
+            "url": "https://opendata.kerala.gov.in",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed/reset or TLS self-signed; no content"
+          },
+          {
+            "method": "GET",
+            "url": "https://data.gov.in/",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed/reset or TLS self-signed; no content"
+          },
+          {
+            "method": "GET",
+            "url": "https://stategisportal.nic.in/stategisportal/Home/State/32",
+            "httpStatus": 0,
+            "contentType": "",
+            "assessment": "connection failed/reset or TLS self-signed; no content"
+          }
+        ],
+        "conclusion": "No Kerala or India government host reachable from the proxy, so no portal contents or bounded parcel query could be evaluated. TLS verification was not bypassed. State-level services would not imply India-wide coverage.",
+        "nextStep": "Retry from a network that reaches Kerala/NIC hosts; inspect Ente Bhoomi / e-Rekha web-map network calls for a bounded parcel query."
+      },
+      {
+        "path": "research/retry/cities/kochi.json",
+        "checkedAt": "2026-09-30",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": null,
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "Ente Bhoomi portal now loads (intermittent: same URL also gave connection resets on other attempts); links to /web/ilms/map public map and survey.entebhoomi.kerala.gov.in/portal (login)"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid?districtId=%3CErnakulam+gid%3E",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "public JSON dropdown: 7 taluks of Ernakulam incl. Kanayannur (Kochi city area)"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=%3CKanayannur%3E&loadPublishedVillage=true",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "25 published villages incl. Kakkanad (location code 070217 in viewer config)"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view (POST districtGid,talukGid,villageGid + session CSRF)",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "viewer config for village 070217, layer LAND_PARCEL (attrs parcel_gid, survey_no, block_no), EPSG:32643; embeds a per-session short-lived anonymous auth_key (<PUBLIC_TOKEN>, issued by the portal to anonymousUser) and bhunaksha.entebhoomi.kerala.gov.in WMS/tile/FGB URLs"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v1/map/wms/070217?...REQUEST=GetFeatureInfo&auth_key=%3CREDACTED%3E",
+            "httpStatus": 200,
+            "contentType": "image/png",
+            "assessment": "returned image/png, not a feature list; GetMap also PNG only (raster, not parcel records)"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/fgb/070217?auth_key=%3CREDACTED%3E",
+            "httpStatus": 405,
+            "contentType": "text/html",
+            "assessment": "GET not allowed (Allow: POST); export is per whole village so not attempted as a bounded query"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/070217 (POST layer_code,crs,x,y + CSRF)",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "returned the portal HTML page instead of JSON (CSRF/session handling not resolved); no parcel record obtained"
+          },
+          {
+            "method": "GET",
+            "url": "https://erekha.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": null,
+            "assessment": "TLS self-signed chain, not bypassed"
+          },
+          {
+            "method": "GET",
+            "url": "https://relis.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": null,
+            "assessment": "CONNECT 502"
+          },
+          {
+            "method": "GET",
+            "url": "https://digitalresurvey.kerala.gov.in/",
+            "httpStatus": 0,
+            "contentType": null,
+            "assessment": "CONNECT 502"
+          },
+          {
+            "method": "GET",
+            "url": "https://stategisportal.nic.in/",
+            "httpStatus": 0,
+            "contentType": null,
+            "assessment": "TLS self-signed chain, not bypassed"
+          },
+          {
+            "method": "GET",
+            "url": "https://dslr.kerala.gov.in/en/home/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "department site loads; no service link found"
+          }
+        ],
+        "conclusion": "New: Kerala's Ente Bhoomi public map (village-by-village, published villages only) is reachable and its viewer config was inspected; it exposes a public anonymous token and a bhunaksha WMS, but responses obtained were raster PNG or HTML, no polygon records. Village 070217 (Kakkanad) chosen as it contains 10.061N,76.309E (converted to EPSG:32643 643424,1112474). Not marked temporarily_unavailable because the site answered; not a permanent negative because the click_info JSON proxy and POST FGB export were not fully tested. No IN country retry file exists.",
+        "nextStep": "Reproduce the browser click_info call with the exact viewer session (CSRF + cookies from /web/ilms/map/view) or POST the bhunaksha FGB export for a small village; read Kerala terms."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Malayalam",
+        "query": "കേരളം കൊച്ചി എറണാകുളം റവന്യൂ വില്ലേജ് സർവേ ഭൂപടം എൻ്റെ ഭൂമി",
+        "scope": "WUP 9765 Kochi cohort label retained. This actual query led to shared Government of Kerala Ente Bhoomi portal; locality and revenue-village identity checked via official selector, not inferred from label.",
+        "result": "Search surfaced the official Ente Bhoomi viewer as the state entry point; no city-specific parcel geometry result was returned by search.",
+        "checkedAt": "2026-10-08",
+        "script": "Malayalam",
+        "actualResultUrls": [
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://kochicorporation.lsgkerala.gov.in/ml/map/299",
+          "https://prd.kerala.gov.in/sites/default/files/inline-files/Progress%20Report%202025_compressed.pdf",
+          "https://document.kerala.gov.in/documents/cabinetdecisions/cabinet2101202615%3A36%3A53.pdf",
+          "https://prd.kerala.gov.in/sites/default/files/inline-files/10%20years_PV%20Govt%20%283%29_2.pdf",
+          "https://map.opendatakerala.org/",
+          "https://keralaagriculture.gov.in/wp-content/uploads/2021/04/data-bank0001.pdf",
+          "https://kochicorporation.lsgkerala.gov.in/index.php/",
+          "https://www.keralavhs.org/pdf/SIA%20Angamaly%20Final%20report%20-%20English%20with%20annexures.pdf",
+          "https://keralalivechannel.com/%E0%B4%95%E0%B5%87%E0%B4%B0%E0%B4%B3%E0%B4%82-%E0%B4%B2%E0%B5%8B%E0%B4%95%E0%B4%A4%E0%B5%8D%E0%B4%A4%E0%B4%BF%E0%B4%A8%E0%B5%81-%E0%B4%AE%E0%B5%81%E0%B4%AE%E0%B5%8D%E0%B4%AA%E0%B4%BF%E0%B5%BD/",
+          "https://kerala.bank.in/uploads/tenders/1772627077-paperpublication25.03.2026new.pdf",
+          "https://yojana.newsgama.in/kerala-land-records/",
+          "https://kfile.in/%E0%B4%B8%E0%B4%82%E0%B4%B8%E0%B5%8D%E0%B4%A5%E0%B4%BE%E0%B4%A8%E0%B4%A4%E0%B5%8D%E0%B4%A4%E0%B5%8D-%E0%B4%AD%E0%B5%82%E0%B4%AE%E0%B4%BF-%E0%B4%B5%E0%B4%BE%E0%B4%99%E0%B5%8D%E0%B4%99%E0%B4%BE%E0%B4%A8/",
+          "https://allindialandrecords.in/kerala-land-records/",
+          "https://wardmap.ksmart.live/",
+          "https://www.manoramanews.com/kerala/latest/2026/08/14/kochi-tahsildar-arrested-for-bribery.amp.html",
+          "https://kochicorporation.lsgkerala.gov.in/index.php/ml/ward-details/328",
+          "https://www.manoramaonline.com/district-news/ernakulam/2025/02/21/nsk-umesh-best-collector-kerala.html",
+          "https://www.reddit.com/r/Kerala/comments/rnb8g3",
+          "https://www.reddit.com/r/Kerala/comments/rgqc8d",
+          "https://www.reddit.com/r/Kerala/comments/ubccwj",
+          "https://www.reddit.com/r/NewKeralaRevolution/comments/1jerrg9",
+          "https://www.reddit.com/r/Kerala/comments/1g8n38y",
+          "https://www.reddit.com/r/Kerala/comments/yb8ayl"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Ente Bhoomi ILMS public map",
+        "operator": "Government of Kerala, Survey and Land Records Department / NIC Kerala portal attribution",
+        "homeUrl": "https://entebhoomi.kerala.gov.in/web/home",
+        "mapUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "observation": "Official district/taluk/village selectors checked. In Kanayannur all-village list returned 25 entries; published-village list returned 4. The official all-village Kanayannur selector did not contain Kalamassery. The WUP coordinate reverse lead is Kalamassery/Kanayannur. A neighboring Thrikakkara North candidate was used only to test the click endpoint; it is not identity confirmation.",
+        "selectorCalls": [
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+            "status": 200,
+            "contentType": "text/html",
+            "assessment": "Official viewer and Malayalam district selector."
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid",
+            "queryParameter": "districtId from selected Malayalam district",
+            "status": 200,
+            "contentType": "application/json"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+            "queryParameters": {
+              "talukId": "selected from official taluk selector",
+              "loadAllVillage": "true",
+              "loadPublishedVillage": "false|true"
+            },
+            "status": 200,
+            "contentType": "application/json",
+            "assessment": "Observed all-village and published-village lists; exact opaque GID omitted from this record."
+          }
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=10.0612792171801&lon=76.3088105504372&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Kunnumpuram, कलमश्शेरि, Kanayannur, Ernakulam, Kerala, 683501, India",
+        "osmType": "way",
+        "osmId": 754484231,
+        "address": {
+          "suburb": "Kunnumpuram",
+          "town": "कलमश्शेरि",
+          "county": "Kanayannur",
+          "state_district": "Ernakulam",
+          "state": "Kerala",
+          "ISO3166-2-lvl4": "IN-KL",
+          "postcode": "683501",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official selector/viewer shell; district names available in Malayalam."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official all-village selector result; Kanayannur taluk contained 25 villages.",
+        "queryParameters": {
+          "talukId": "selected from live official district/taluk selector (exact opaque GID not retained in this research record)",
+          "loadAllVillage": "true",
+          "loadPublishedVillage": "false"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official published-village selector result; Kanayannur taluk contained 4 villages; target named candidate not included.",
+        "queryParameters": {
+          "talukId": "selected from live official district/taluk selector (exact opaque GID not retained in this research record)",
+          "loadAllVillage": "true",
+          "loadPublishedVillage": "true"
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Selected candidate Thrikakkara North using district/taluk/village GIDs; page config location_code 070218."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/070218",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "responseBytes": 28794,
+        "assessment": "POST form layer_code=LAND_PARCEL, crs=32643, x/y=643424.59, 1112473.97; returned generic 28,794-byte HTML viewer shell, not JSON/GeoJSON or parcel geometry.",
+        "submittedCoordinates": "643424.59, 1112473.97",
+        "coordinateNote": "WUP center transformed from EPSG:4326 to EPSG:32643 (cs2cs); input point is the cohort center, not a parcel polygon."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Public Ente Bhoomi viewer/selector loaded successfully; endpoint-only evidence."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "District selector was used to retrieve taluk list; exact districtId GID was not preserved, so this request record is non-reproducible."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "All-village and published-village lists were queried; opaque talukId GID was not preserved, so this request record is non-reproducible."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "A candidate village was selected; opaque GIDs were not preserved, so this exact request cannot be replayed."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/070218",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "responseBytes": 28794,
+        "assessment": "Successful identify-endpoint request returned the generic HTML viewer shell only, not parcel feature geometry; request is endpoint-only/non-reproducible because selector GIDs were not preserved."
+      }
+    ],
+    "viewerRequestRecordQuality": "endpoint_only_non_reproducible",
+    "viewerRequestReproducibilityNote": "The public Ente Bhoomi viewer and selector were successfully queried and returned HTTP 200. The three opaque district/taluk/village GIDs used in selector calls were not preserved in this record, so those exact requests cannot be replayed from the saved URL data. Only the endpoint paths and method/filter semantics remain; this is not a reproducible exact request log. No parcel geometry was returned."
+  },
+  "status": "partial_coverage",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient."
+}

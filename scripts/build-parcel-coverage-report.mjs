@@ -13,18 +13,27 @@ const finiteOrNull = value => typeof value === 'number' && Number.isFinite(value
 const unique = values => [...new Set(values.filter(Boolean))];
 const latest = records => records.filter(Boolean).sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0] || null;
 
-export function buildParcelReport({ registry, evidence, enrichment, countryData, coverage, sourceCatalog, growthQueue = [] }) {
+export function buildParcelReport({ registry, evidence, enrichment, countryData, coverage, sourceCatalog, growthQueue = [], focusQueue = [] }) {
     const checkedById = new Map([...evidence.cities, ...(evidence.appCities || [])].map(row => [row.cityId, row]));
     const countryEvidence = new Map(evidence.countries.map(row => [row.countryCode, row]));
     const countryNames = new Map(countryData.countries.map(row => [row.code, row.name]));
     const liveById = new Map(coverage.liveCities.map(row => [row.id, row]));
     const sourceById = new Map(registry.sources.map(row => [row.sourceId, row]));
     const growthRankByCode = new Map(growthQueue.map(row => [String(row.cityCode), row.rank]));
+    const focusByCode = new Map(focusQueue.map(row => [String(row.wupCityCode), row]));
     const inputCities = enrichment.cities.map(row => ({ ...row, registryCityIds: [...row.registryCityIds], appCityIds: [...row.appCityIds] }));
     const knownIds = new Set(inputCities.flatMap(row => row.registryCityIds));
+    const inputByWupCode = new Map(inputCities.filter(row => row.wupCityCode).map(row => [String(row.wupCityCode), row]));
     // New research rows remain visible even before their demographic enrichment is refreshed.
     for (const city of registry.cities) {
         if (knownIds.has(city.cityId)) continue;
+        const existing = inputByWupCode.get(String(city.wupCityCode || city.cityId.match(/^wup2025:(\d+)$/)?.[1]));
+        if (existing) {
+            existing.registryCityIds.push(city.cityId);
+            existing.cohorts = unique([...(existing.cohorts || []), 'registry']);
+            knownIds.add(city.cityId);
+            continue;
+        }
         inputCities.push({ id: city.cityId, name: city.name, countryCode: city.countryCode, latitude: city.centerLatLon?.[0], longitude: city.centerLatLon?.[1], registryCityIds: [city.cityId], appCityIds: [], cohorts: ['registry'] });
     }
     const cities = inputCities.map(city => {
@@ -42,6 +51,8 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
             registryCityIds: city.registryCityIds, appCityIds: city.appCityIds.filter(id => liveById.has(id)), cohorts: city.cohorts || [],
             wupCityCode: city.wupCityCode ?? null, wupName: city.wupName || null,
             growthRank: growthRankByCode.get(String(city.wupCityCode)) ?? null,
+            researchFocusRegion: focusByCode.get(String(city.wupCityCode))?.region ?? null,
+            researchPriority: focusByCode.get(String(city.wupCityCode))?.priority ?? null,
             population2015: finiteOrNull(city.population2015), population2025: finiteOrNull(city.population2025),
             annualGrowthPct2015To2025: finiteOrNull(city.annualGrowthPct2015To2025), populationPlausibility2025: city.populationPlausibility2025 || null,
             populationMatch: city.populationMatch || null,
@@ -125,6 +136,7 @@ export function runBuild(repoRoot = REPO) {
         registry, evidence: collectReportEvidence({ registry, repoRoot, appCities: coverage.liveCities, sourceCatalog }),
         enrichment: readJson(path.join(repoRoot, 'world-parcels/report/city-demographics.json')),
         growthQueue: readJson(path.join(repoRoot, 'world-parcels/queue-growth-top200.json')),
+        focusQueue: readJson(path.join(repoRoot, 'world-parcels/queue-india-africa.json')).cities,
         countryData: readJson(path.join(repoRoot, 'world-parcels/report/country-statistics.json')),
         coverage, sourceCatalog
     });

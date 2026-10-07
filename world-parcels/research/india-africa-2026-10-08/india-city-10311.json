@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10311,
+  "cityId": "wup2025:10311",
+  "name": "Mehdawal",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.9698676974383,
+    83.1020910232192
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 98,
+  "stateOrUT": "Uttar Pradesh",
+  "administrativeIdentity": {
+    "district": "Sant Kabir Nagar",
+    "tehsilOrTaluk": "Mehdawal",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "मेहदावल संत कबीर नगर भू नक्शा ग्राम नक्शा खसरा उत्तर प्रदेश",
+        "scope": "WUP 10311 Mehdawal cohort label retained. Actual search was to locate official UP cadastral sources; results listed are shared state entry points and any relevant district page, not a verified parcel for this city.",
+        "result": "Search surfaced official Board of Revenue/UP Bhulekh entries; it did not produce a feature geometry or city-specific map sample.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://upseva.in/bhulekh/sant-kabir-nagar/",
+          "https://akhairkar.github.io/BhumiRecord/districts/uttar-pradesh/sant-kabir-nagar.html",
+          "https://bhulekhnakshaup.com/documents",
+          "https://bhulaganup.in/bhulekh-up-sant-kabir-nagar/",
+          "https://sknagar.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://upbhulekh.gov.in/",
+          "https://www.districtsinindia.com/villages-in-sant-kabir-nagar-district-uttar-pradesh/",
+          "https://upseva.in/bhu-naksha/",
+          "https://sknagar.nic.in/hi/public-utility/%E0%A4%A8%E0%A4%97%E0%A4%B0-%E0%A4%AA%E0%A4%82%E0%A4%9A%E0%A4%BE%E0%A4%AF%E0%A4%A4-%E0%A4%AE%E0%A5%87%E0%A4%B9%E0%A4%A6%E0%A4%BE%E0%A4%B5%E0%A4%B2/",
+          "https://upbhulekh.gov.in/?form=MG0AV3",
+          "https://upbhulekh.gov.in/?trk=public_post-text",
+          "https://bhulekh.up.in/",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/O.A.%20No.%2073-2024%20%28CZ%29Joint%20Committee%20inspection%20report%20in%20compliance.pdf",
+          "https://urbandevelopment.up.nic.in/data/Govt_Orders/%E0%A4%B8%E0%A4%82%E0%A4%A4%E0%A4%95%E0%A4%AC%E0%A5%80%E0%A4%B0%E0%A4%A8%E0%A4%97%E0%A4%B0-8.pdf",
+          "https://urise.up.gov.in/resources/profile_image/138_khasra-khatoni.pdf",
+          "https://manebhanjyangmun.gov.np/sites/manebhanjyangmun.gov.np/files/%E0%A5%A9%E0%A5%A9.pdf",
+          "https://upreradisk.blob.core.windows.net/azureportaldeploy/205165464EXTRACT%20OF%20KHASHRA%20KHATAUNI.pdf",
+          "https://www.lbsnaa.gov.in/storage/uploads/pdf_data/1756966660_Uttar%20Pradesh%20Report.pdf",
+          "https://de.wikipedia.org/wiki/Sant_Kabir_Nagar"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "UP Board of Revenue and Bhulekh",
+        "operator": "Government of Uttar Pradesh, Board of Revenue",
+        "homeUrl": "https://bor.up.nic.in/?search_key=HOMECENTER",
+        "mapUrl": "https://upbhulekh.gov.in/",
+        "observation": "Official Hindi result lists revenue-village map (भू-नक्शा/शजरा) and plot boundaries; a search result is not a city-specific verified parcel sample. A bounded parcel query with a specific revenue village/gata was not completed in this search-only pass."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=26.9698676974383&lon=83.1020910232192&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "NH328, Mehdawal, Sant Kabir Nagar, Uttar Pradesh, India",
+        "osmType": "way",
+        "osmId": 232162815,
+        "address": {
+          "road": "NH328",
+          "town": "Mehdawal",
+          "county": "Mehdawal",
+          "state_district": "Sant Kabir Nagar",
+          "state": "Uttar Pradesh",
+          "ISO3166-2-lvl4": "IN-UP",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/",
+          "https://urbandevelopment.up.nic.in/data/Govt_Orders/%E0%A4%B8%E0%A4%82%E0%A4%A4%E0%A4%95%E0%A4%AC%E0%A5%80%E0%A4%B0%E0%A4%A8%E0%A4%97%E0%A4%B0-8.pdf"
+        ],
+        "scope": "Shared URLs returned by the actual Hindi query above; the UP Board of Revenue and UP Bhulekh URLs recur for all cohort cities. District-page links are relevant lead only."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+}

@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:4033",
+  "queueRank": 52,
+  "wupCityCode": 4033,
+  "name": "Mboloko",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "centerLatLon": [
+    -25.4662366387406,
+    27.8447650141456
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 52,
+  "population2025": 102374,
+  "annualGrowthPct2015To2025": 6.959252,
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_partial_coverage",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ws-provider-ZA.json",
+  "freshCityLocalSearch": null,
+  "verifiedParcelResponse": {
+    "sourceId": "za-giscoe-erven",
+    "requestUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query (bounded target bbox; see this record request)",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/geo+json",
+    "spatialTestAreaLonLat": "27.8437650141456,-25.4672366387406,27.845765014145602,-25.4652366387406",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon or MultiPolygon",
+    "closedRings": true,
+    "idField": "SG21KEY",
+    "responseFile": "africa-ws-city-4033-parcel-response.json",
+    "pagination": "resultRecordCount=3",
+    "requestParameters": {
+      "where": "1=1",
+      "geometry": "27.8437650141456,-25.4672366387406,27.845765014145602,-25.4652366387406",
+      "geometryType": "esriGeometryEnvelope",
+      "inSR": 4326,
+      "spatialRel": "esriSpatialRelIntersects",
+      "outFields": "OBJECTID,SG21KEY",
+      "returnGeometry": true,
+      "outSR": 4326,
+      "resultRecordCount": 3,
+      "f": "geojson"
+    }
+  },
+  "source": {
+    "sourceId": "za-giscoe-erven",
+    "name": "GISCOE South Africa Cadastre / Erven layer 1",
+    "operator": "Esri South Africa GISCOE public ArcGIS service",
+    "scope": "Verified sample at this city only",
+    "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+    "method": "ArcGIS REST query",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:4326 output",
+    "reuseStatus": "Not assessed"
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": "Mboloko",
+    "countrywideVerified": false
+  },
+  "blocker": "City-level sample verified; citywide service completeness and source authority remain unestablished.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Confirm service completeness and source authority before making broader coverage claims.",
+  "requests": [
+    {
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "assessment": "Three polygon features with distinct native SG21KEY identifiers intersect the bounded target bbox; saved response contains only ID and geometry.",
+      "requestParameters": {
+        "where": "1=1",
+        "geometry": "27.8437650141456,-25.4672366387406,27.845765014145602,-25.4652366387406",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,SG21KEY",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      }
+    }
+  ],
+  "resultCategory": "fresh_verified_sample",
+  "evidenceType": "new_or_retry_target_service_probe",
+  "targetEndpointProbePerformed": true,
+  "sharedSourceDiscovery": {
+    "languageScript": "English (South African official-source search)",
+    "exactQueries": [
+      "site:gov.za cadastral parcels Johannesburg GIS erven ArcGIS City of Johannesburg",
+      "site:ags.joburg.org.za/server/rest/services registered stands parcel"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.giscoe.gov.za/",
+      "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+      "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/31"
+    ],
+    "summary": "Country/provider discovery for public South African cadastral services; queries did not name this target city. Target city evidence comes from the separate bounded bbox request recorded below."
+  },
+  "sourceDiscovery": {
+    "kind": "shared_provider_discovery",
+    "record": "africa-ws-provider-ZA.json"
+  },
+  "coordinatorReview": {
+    "reviewedAt": "2026-10-08",
+    "technicalBlocker": "The fresh three-feature sample does not establish complete viewport/native-ID retrieval. Earlier GISCOE checks elsewhere found conflicting geometries sharing SG21KEY and exact-batch timeouts; those source-level findings remain relevant.",
+    "nextStep": "Audit all native identities in a bounded Mboloko app scope, including repeated SG21KEY geometry groups and fresh exact-ID reads; validate completeness before enabling the city.",
+    "priorSourceEvidenceFile": "research/candidate-holds-2026-10-03.json"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10427,
+  "cityId": "wup2025:10427",
+  "name": "Jianpur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.1773245235037,
+    83.2544849970165
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 46,
+  "stateOrUT": "Uttar Pradesh",
+  "administrativeIdentity": {
+    "district": "Azamgarh",
+    "tehsilOrTaluk": "Sagri",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "जियानपुर उत्तर प्रदेश भू नक्शा राजस्व गांव गाटा नक्शा आजमगढ़",
+        "scope": "WUP 10427 Jianpur cohort label retained. Actual search was to locate official UP cadastral sources; results listed are shared state entry points and any relevant district page, not a verified parcel for this city.",
+        "result": "Search surfaced official Board of Revenue/UP Bhulekh entries; it did not produce a feature geometry or city-specific map sample.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/?form=MG0AV3",
+          "https://upbhulekh.gov.in/?trk=public_post-text",
+          "https://bor.up.nic.in/?search_key=bhulekh+up",
+          "https://bhulekhnakshaup.com/documents",
+          "https://akhairkar.github.io/BhumiRecord/districts/uttar-pradesh/azamgarh.html",
+          "https://upkijankari.com/up-bhu-naksha/",
+          "https://cdnbbsr.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2025/07/20250730559970924.pdf",
+          "https://urise.up.gov.in/resources/profile_image/4017_KHATAUNI.pdf",
+          "https://up-rera.in/ViewDocument?Param=16164804354.pdf",
+          "https://up-bhulekhh.com/",
+          "https://bhoovik.com/bhunaksha-guide/",
+          "https://gharcore.com/bhulekh-up",
+          "https://bhulekh.up.in/",
+          "https://static.pib.gov.in/WriteReadData/userfiles/SVAMITVAE22042022.pdf",
+          "https://up-rera.in/ViewDocument?Param=71855337.pdf",
+          "https://up-rera.in/ViewDocument?Param=16642653528.pdf",
+          "https://en.wikipedia.org/wiki/Jiyanpur",
+          "https://www.reddit.com/r/u_HindiApna/comments/1kywlya"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "UP Board of Revenue and Bhulekh",
+        "operator": "Government of Uttar Pradesh, Board of Revenue",
+        "homeUrl": "https://bor.up.nic.in/?search_key=HOMECENTER",
+        "mapUrl": "https://upbhulekh.gov.in/",
+        "observation": "Official Hindi result lists revenue-village map (भू-नक्शा/शजरा) and plot boundaries; a search result is not a city-specific verified parcel sample. A bounded parcel query with a specific revenue village/gata was not completed in this search-only pass."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=26.1773245235037&lon=83.2544849970165&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Sagri, Azamgarh, Uttar Pradesh, 276125, India",
+        "osmType": "way",
+        "osmId": 1183869298,
+        "address": {
+          "county": "Sagri",
+          "state_district": "Azamgarh",
+          "state": "Uttar Pradesh",
+          "ISO3166-2-lvl4": "IN-UP",
+          "postcode": "276125",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/?trk=public_post-text"
+        ],
+        "scope": "Shared URLs returned by the actual Hindi query above; the UP Board of Revenue and UP Bhulekh URLs recur for all cohort cities. District-page links are relevant lead only."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+}

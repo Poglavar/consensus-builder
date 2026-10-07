@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "SD",
+  "country": "Sudan",
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "accessModel": "unknown",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Arabic",
+      "exactQuery": "السودان بوابة مكانية قطع الأراضي المسح العقاري السجل العقاري WMS WFS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://nic.gov.sd/public/projectDetails/3",
+        "https://wsmco.sa/reports/financials/2025/semi-annual.pdf",
+        "https://ayah1122.github.io/Sudan_GIS/",
+        "https://aqari.nctr.sd/ar/about",
+        "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "https://www.ogc.org/ar/standards/wms/",
+        "https://geoportal.icpac.net/layers/geonode%3Aadmin_level_0/metadata_detail",
+        "https://sj.gov.sd/ar/%D8%A7%D9%84%D9%82%D8%B1%D8%A7%D8%B1%D8%A7%D8%AA?page=1"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "observation": "Official National Information Center page states the Sudan Spatial Portal provides WMS/WFS."
+    },
+    {
+      "url": "https://www.geoportal.gov.sd/",
+      "observation": "Official portal linked by NIC; current direct request could not resolve host even after escalation, and web open also failed. Promising unavailable lead."
+    },
+    {
+      "url": "https://aqari.nctr.sd/ar",
+      "observation": "Judiciary Aqari national land-services portal reachable; public JS exposes admin/location lookups and user/partner-specific land plots route, no public spatial service found."
+    },
+    {
+      "url": "https://sj.gov.sd/ar/content/page/إدارة-تسجيلات-الاراضي",
+      "observation": "Official Judiciary explains General Registrar and regional land registry offices; account/identity/fee processes for certificates."
+    },
+    {
+      "url": "https://www.ssa.gov.sd/",
+      "observation": "Survey authority host unreachable in earlier pass."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official NIC page describes national WMS/WFS spatial portal."
+    },
+    {
+      "url": "https://www.geoportal.gov.sd/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Linked official portal; curl with browser UA/Accept/Arabic Accept-Language/cookie jar and viewer Referer failed DNS resolution; web open also reports inaccessible. Not an upstream HTTP error."
+    },
+    {
+      "url": "https://aqari.nctr.sd/ar",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Judiciary portal and public JS bundles inspected; account/user workflow. Land plots route uses partner_id; no partner ID guessed, no record query."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Retry the official national spatial portal when DNS/service recovers; inspect capabilities for cadastral layers and test a tiny city bbox."
+}

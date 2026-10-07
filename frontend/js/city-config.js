@@ -3065,6 +3065,106 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        johannesburg: {
+            id: 'johannesburg',
+            label: translateCityText('city.labels.johannesburg', 'Johannesburg, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.12045, 27.86009], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-26.12045, 27.86009], fallbackDataset: [27.86009, -26.12045]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'za-joburg-registered-stands', idPrefix: 'ZA-JOBURG-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 2,
+                attribution: '<a href="https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6">City of Johannesburg · publisher &amp; conditions</a> · Registered stand groups; western entry area verified · update year unestablished'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ennerdale: {
+            id: 'ennerdale',
+            label: translateCityText('city.labels.ennerdale', 'Ennerdale, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.4062859886009, 27.8459423386999], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-26.4062859886009, 27.8459423386999], fallbackDataset: [27.8459423386999, -26.4062859886009]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'za-joburg-registered-stands', idPrefix: 'ZA-JOBURG-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 2,
+                attribution: '<a href="https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6">City of Johannesburg · publisher &amp; conditions</a> · Registered stand groups; Ennerdale entry area verified · update year unestablished'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cosmo_city: {
+            id: 'cosmo_city',
+            label: translateCityText('city.labels.cosmo_city', 'Cosmo City, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.0359639124127, 27.9203632448749], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-26.0359639124127, 27.9203632448749], fallbackDataset: [27.9203632448749, -26.0359639124127]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'za-joburg-registered-stands', idPrefix: 'ZA-JOBURG-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 2,
+                attribution: '<a href="https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6">City of Johannesburg · publisher &amp; conditions</a> · Registered stand groups; Cosmo City entry area verified · update year unestablished'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        accra: {
+            id: 'accra',
+            label: translateCityText('city.labels.accra', 'Accra, Ghana'),
+            currency: { locale: 'en-GH', code: 'GHS' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [5.5508, -0.2162], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32630',
+                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [5.5508, -0.2162], fallbackDataset: [-0.2162, 5.5508]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'gh-ama-public-property-app', idPrefix: 'GH-AMA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 2,
+                attribution: '<a href="https://gis.berryict.com/gis/gis/ama/propertyidentification.php">Accra Metro property app · Berry ICT host · conditions</a> · Partial app-PID footprints; official authority and legal cadastral meaning unconfirmed'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).
