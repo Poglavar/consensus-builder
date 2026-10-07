@@ -47,7 +47,11 @@ PGHOST=localhost node backend/scripts/floor-plan-archive.mjs reparse
 
 ## Review and verification
 
-`frontend/floor-plan-archive.html` shows source plans, the 2D drawing, demand-rendered Three.js geometry, source conflicts and the searchable agency registry. Its main controls are **Apartment**, **2D/3D view**, **Source plan**, **Local reconstruction**, and **Registered agencies**. `?backend=...` selects the read-only API. The production API route is registered in `backend/index.js`; `scripts/floor-plan-review-server.mjs --port PORT` is a local read-only preview server.
+`frontend/floor-plan-archive.html` separates **Buildings & floor plans** and **Agencies** into tabs. The building selector includes every current registered building floor model, Avenue V apartment models, and a searchable collection of all current archived source files. Plans can be selected directly or browsed with Previous/Next; each shows its original drawing, available 2D/3D reconstruction, room schedule and source conflicts. Registered models show a stack of the reconstructed floors; Avenue V shows its authored exterior mesh. Maps use registered or authored building footprints. The archive does not turn nearby building candidates or source-page links into verified building associations.
+
+The read-only API provides `/floor-plan-archive/catalogue`, `/building/:id`, `/building/avenue-v/mesh`, and `/source/:sha256` alongside the status, agency and asset routes. Catalogue responses contain compact metadata; geometry loads when a building or source is selected. Three.js renders only on interaction or resize and disposes previews when switching buildings. Original registered PDFs load from their public source URLs; agency source files load from the local archive. Missing geometry and unresolved locations remain explicit.
+
+`?backend=...` selects the API; `building=registered-1&plan=B1-floor-0` selects a registered plan, `building=archive&plan=<sha256>` selects a source, and `tab=agencies` opens the agency review. English, Croatian, Spanish and Serbian labels are supported through `lang`. The production API route is registered in `backend/index.js`; `scripts/floor-plan-review-server.mjs --port PORT` is a local read-only preview server.
 
 ```sh
 cd backend
