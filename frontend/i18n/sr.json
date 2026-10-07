@@ -644,6 +644,8 @@
             "showDgu": "Zvanični katastar (DGU)",
             "showOsm": "Zgrade sa mape (OSM)",
             "showProposed": "Prikaži predložene zgrade",
+            "showSuggestedLayouts": "Predloženi tlocrti (prizemlje)",
+            "showSuggestedLayoutsTooltip": "Prikaži predloženi tlocrt prizemlja u svakoj predloženoj zgradi bez modelovane unutrašnjosti. Crveni isprekidani obrisi su premali za minimalno stepenišno jezgro. Ovo je sugestija, a ne deo predloga.",
             "showOverture": "Overture zgrade (3D model)",
             "showCustom": "Tvoj izvor zgrada"
         },
@@ -3851,6 +3853,15 @@
             "floorBasement": "Podrum {{level}}",
             "floorLevel": "{{level}}. sprat",
             "xrayError": "Neke tlocrte nije moguće prikazati.",
+            "suggestedLayouts": "Predloženi tlocrti",
+            "suggestedLayoutsTooltip": "Generiši podrazumevani tlocrt za predložene zgrade bez modelirane unutrašnjosti: jezgro sa stepeništem i liftom sa ulazom sa ulične strane, dva stana po jezgru. Ovo je sugestija, a ne deo predloga.",
+            "suggestedNote": "Predloženi tlocrti su generisane podrazumevane vrednosti, a ne deo predloga.",
+            "suggestedCount": "Predloženo: {{buildings}} zgrada · {{apartments}} stanova po spratu",
+            "suggestedFlagged": "{{count}} crveno: premalo za minimalno stepenišno jezgro.",
+            "suggestedPendingStreets": "Podaci o ulicama se učitavaju; ulazi gledaju na najdužu fasadu dok ne stignu.",
+            "suggestedExisting": "I postojeće zgrade",
+            "suggestedExistingTooltip": "Prikaži i tipične tlocrte po periodu gradnje za postojeće zgrade u okolini: procena iz osnove i visine, a ne snimak.",
+            "suggestedExistingCount": "Postojeće: {{count}} zgrada sa tipičnim tlocrtom po periodu.",
             "facadeStyles": {
                 "mixed": "Mešovita paleta",
                 "brick": "Opeka",
@@ -3896,11 +3907,15 @@
             "gain": "Dobit predloga",
             "currentValue": "Trenutna vrednost",
             "proposalLabel": "Predlog",
-            "show": "prikaži"
+            "show": "prikaži",
+            "suggestedLayout": "Predloženi tlocrt",
+            "suggestedSummary": "{{cores}} jezgro · {{apartments}} stanova po spratu · {{rooms}} prostorija",
+            "suggestedFlagged": "Podrazumevani tlocrt ne staje: {{reason}}"
         },
         "proposalPanel": {
             "title": "Podaci o predlogu",
             "parcelsLabel": "Parcele",
+            "suggestedTotals": "Predloženi tlocrti: {{buildings}} zgrada · {{apartmentsPerFloor}} stanova po spratu · ukupno {{apartments}}",
             "avgPerParcel": "Prosek / parceli"
         },
         "isolation": {

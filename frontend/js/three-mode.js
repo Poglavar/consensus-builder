@@ -52,6 +52,25 @@
     let floorPlanGroup = null;
     let floorPlanErrors = 0;
     const renderedFloorPlanKeys = new Set();
+    // Suggested default layouts (default-floor-plans.js) for proposed buildings without a modelled
+    // interior: a toggle inside X-ray, planned once per parcel slice and cached, with street
+    // centrelines fetched per cell so entrances face the street. Never written to any proposal.
+    const suggestedFloorPlans = window.__defaultFloorPlans || null;
+    const suggestedPlanContext = window.__defaultFloorPlanContext || null;
+    let suggestedPlansEnabled = new URLSearchParams(window.location.search).get('suggested') === '1';
+    // Typical layouts by era for the existing buildings around, inside the same toggle.
+    let suggestedExistingEnabled = new URLSearchParams(window.location.search).get('suggestedExisting') === '1';
+    let suggestedPlansButton = null;
+    let suggestedExistingRow = null;
+    let suggestedExistingCheckbox = null;
+    const suggestedPlanCache = new Map();
+    const suggestedStreetCells = new Map(); // cell key → { features: Feature[] | null, pending }
+    const suggestedPlanTotals = { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, pendingStreets: false, existing: 0, existingCapped: false };
+    // What the panels say when a parcel or a proposal is clicked: per parcel the slice's result,
+    // per proposal the totals over its buildings. Rebuilt with the scene.
+    const suggestedPlanByParcel = new Map();
+    const suggestedPlanByProposal = new Map();
+    const SUGGESTED_EXISTING_CAP = 400;
     const FACADE_PREF_KEY = 'cb_3d_facades';
     const FACADE_STYLE_KEY = 'cb_3d_facade_style';
     let facadesEnabled = false;
@@ -306,7 +325,10 @@
         demolishedGhost: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }, 0.3),
         // The permitted envelope behind an example build-out: a cool translucent hull, distinct
         // from `ghost` (which means built context) so the two never read as the same thing.
-        massing: makeBuildingMaterial({ color: 0x7f95b3, specular: 0x223344, shininess: 8 }, 0.22)
+        massing: makeBuildingMaterial({ color: 0x7f95b3, specular: 0x223344, shininess: 8 }, 0.22),
+        // A proposed building whose footprint cannot hold even the minimum stair core, shown when
+        // suggested layouts are on: the warning IS the colour, so it stays saturated and opaque.
+        flagged: makeBuildingMaterial({ color: 0xd9453a, specular: 0x331111, shininess: 10 }, 0.92)
     };
 
     function demolishedMaterialFor(buildingMaterial) {
@@ -803,9 +825,13 @@
                 <button type="button" class="parcel-panel-proposal-show" data-role="show-proposal">${escapeHtml(proposalDisplayTitle(proposal))} <span class="show-tag">[${L.show}]</span></button>
             </div>` : '';
 
+        const suggestedText = suggestedParcelPanelText(parcelId);
+        const suggestedRow = suggestedText ? `
+            <div class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</div>` : '';
         panel.innerHTML = `
             ${panelTitleHtml(`${L.title} ${escapeHtml(String(parcelId))}`)}
             ${proposalRow}
+            ${suggestedRow}
             ${metricsTableHtml(L, m.builtVolume, m.proposedVolume, m.builtFloorArea, m.proposedFloorArea)}
         `;
 
@@ -862,6 +888,8 @@
             lines.push(threeI18n('groundStats.openGroundValue', 'Open ground: {{area}} m²', { area: formatInt(summary.openGroundM2) })
                 .replace('{{area}}', formatInt(summary.openGroundM2)));
         }
+        const suggestedLine = suggestedProposalPanelText(proposal);
+        if (suggestedLine) lines.push(suggestedLine);
         panel.innerHTML = `
             ${panelTitleHtml(L.proposalHeading)}
             <div class="parcel-panel-proposal-name">${escapeHtml(proposalDisplayTitle(proposal))}</div>
@@ -1247,7 +1275,36 @@
         xrayButton.title = threeI18n('threeMode.controls.xrayTooltip',
             'Show modelled floors, walls, doors and windows.');
         xrayButton.addEventListener('click', () => setXrayEnabled(!xrayEnabled));
-        xrayRow.appendChild(xrayButton);
+        const xrayButtons = document.createElement('div');
+        xrayButtons.className = 'three-mode-xray-buttons';
+        xrayButtons.appendChild(xrayButton);
+        // Only meaningful inside X-ray: generated default interiors for buildings without evidence.
+        suggestedPlansButton = document.createElement('button');
+        suggestedPlansButton.type = 'button';
+        suggestedPlansButton.id = 'three-mode-suggested-layouts';
+        suggestedPlansButton.className = 'three-mode-xray-button';
+        suggestedPlansButton.textContent = threeI18n('threeMode.controls.suggestedLayouts', 'Suggested layouts');
+        suggestedPlansButton.title = threeI18n('threeMode.controls.suggestedLayoutsTooltip',
+            'Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the proposal.');
+        suggestedPlansButton.addEventListener('click', () => setSuggestedPlansEnabled(!suggestedPlansEnabled));
+        xrayButtons.appendChild(suggestedPlansButton);
+        xrayRow.appendChild(xrayButtons);
+        // Existing buildings get typical layouts by era, a guess from footprint and height.
+        suggestedExistingRow = document.createElement('label');
+        suggestedExistingRow.className = 'three-mode-trees-toggle three-mode-wide-toggle three-mode-suggested-existing';
+        suggestedExistingCheckbox = document.createElement('input');
+        suggestedExistingCheckbox.type = 'checkbox';
+        suggestedExistingCheckbox.id = 'three-mode-suggested-existing';
+        suggestedExistingCheckbox.checked = suggestedExistingEnabled;
+        suggestedExistingCheckbox.addEventListener('change', () => setSuggestedExistingEnabled(suggestedExistingCheckbox.checked));
+        const suggestedExistingText = document.createElement('span');
+        suggestedExistingText.className = 'three-mode-emphasis-label';
+        suggestedExistingText.textContent = threeI18n('threeMode.controls.suggestedExisting', 'Existing buildings too');
+        suggestedExistingRow.title = threeI18n('threeMode.controls.suggestedExistingTooltip',
+            'Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.');
+        suggestedExistingRow.setAttribute('aria-label', suggestedExistingRow.title);
+        suggestedExistingRow.append(suggestedExistingCheckbox, suggestedExistingText);
+        xrayRow.appendChild(suggestedExistingRow);
         floorCutawayControl = document.createElement('label');
         floorCutawayControl.className = 'three-mode-floor-cutaway';
         const cutawayLabel = document.createElement('span');
@@ -4944,6 +5001,8 @@
             // The architectural model owns this building's surfaces in Xray mode.
             // Its old solid proxy would otherwise hide the rooms in the depth buffer.
             if (appendBuildingFloorPlans(feat, buildingMaterial, estimateBuildingHeightMeters(feat))) continue;
+            // Without evidence, X-ray can still show a generated default layout per parcel slice.
+            if (appendSuggestedFloorPlans(feat, buildingMaterial, targetGroup, variationDeps)) continue;
             try {
                 // Uploaded buildings carry a glTF model URL — render the real mesh instead of an extruded box.
                 if (feat.properties && feat.properties.modelUrl) {
@@ -5654,6 +5713,258 @@
         }
         renderedFloorPlanKeys.clear();
         floorPlanErrors = 0;
+        Object.assign(suggestedPlanTotals, { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, pendingStreets: false, existing: 0, existingCapped: false });
+        suggestedPlanByParcel.clear();
+        suggestedPlanByProposal.clear();
+    }
+
+    // The regulation region of the current city, read from the locale its configuration carries.
+    function suggestedRegion() {
+        try { return suggestedPlanContext?.regionOf?.(window.CityConfigManager?.getCurrentCityConfig?.()) || null; } catch (_) { return null; }
+    }
+
+    // Everything that counts as a road for choosing an entrance side: street centrelines for the
+    // building's cell (fetched once), the plan's own applied corridors, and road parcels of the
+    // fabric. Each source is optional; a city with none of them falls back to the longest facade.
+    function suggestedRoadsFor(feature) {
+        const roads = [];
+        const streets = suggestedStreetsFor(feature);
+        if (Array.isArray(streets)) roads.push(...streets);
+        try {
+            if (typeof proposalStorage !== 'undefined' && typeof isAppliedCorridorProposal === 'function' && typeof corridorProposalDefinition === 'function') {
+                proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+                    corridorRenderEntriesForDefinition(corridorProposalDefinition(proposal)).forEach(entry => {
+                        const coordinates = entry.points.map(point => [Number(point.lng), Number(point.lat)]).filter(p => p.every(Number.isFinite));
+                        if (coordinates.length >= 2) roads.push({ type: 'Feature', geometry: { type: 'LineString', coordinates },
+                            properties: { proposalId: proposal.proposalId ?? proposal.id ?? null, title: proposal.title || proposal.name || null, source: 'corridor' } });
+                    });
+                });
+            }
+        } catch (_) { }
+        try {
+            const bbox = turf.bbox(feature);
+            const pad = 0.0006; // about 50 m
+            (window.LiveParcelFabric?.queryBounds?.([bbox[0] - pad, bbox[1] - pad, bbox[2] + pad, bbox[3] + pad], { includeCorridors: true }) || []).forEach(parcel => {
+                const props = parcel?.properties || {};
+                const id = props.parcelId ?? props.parcel_id ?? props.id;
+                const road = props.isCorridor === true || props.isRoad === true || props.isTrack === true
+                    || (typeof window.isRoadParcel === 'function' && id != null && window.isRoadParcel(String(id)));
+                if (road && parcel.geometry) roads.push(parcel);
+            });
+        } catch (_) { }
+        return roads;
+    }
+
+    // Record one planned slice for the panels: by parcel (the clicked building) and by proposal.
+    function recordSuggestedSlice(owner, slice, floors) {
+        const result = slice.result;
+        if (slice.parcelId != null) {
+            const key = String(slice.parcelId);
+            const entry = suggestedPlanByParcel.get(key) || { slices: [] };
+            entry.slices.push({ result, floors, wing: slice.wing });
+            suggestedPlanByParcel.set(key, entry);
+        }
+        const proposalId = owner?.properties?.proposalId;
+        if (proposalId === undefined || proposalId === null) return;
+        const totals = suggestedPlanByProposal.get(String(proposalId)) || { buildings: 0, flagged: 0, apartmentsPerFloor: 0, apartments: 0, cores: 0 };
+        if (result.floorPlans) {
+            totals.buildings++;
+            totals.cores += result.summary.cores;
+            totals.apartmentsPerFloor += result.summary.apartmentsPerFloor;
+            totals.apartments += result.floorPlans.floors.reduce((sum, floor) => sum + (floor.apartments || []).length, 0);
+        } else totals.flagged++;
+        suggestedPlanByProposal.set(String(proposalId), totals);
+    }
+
+    // One line for the parcel and proposal panels, or '' when suggestions are off or absent.
+    function suggestedParcelPanelText(parcelId) {
+        if (!suggestedPlansEnabled || parcelId == null) return '';
+        const entry = suggestedPlanByParcel.get(String(parcelId));
+        if (!entry) return '';
+        const planned = entry.slices.filter(slice => slice.result.floorPlans);
+        if (!planned.length) {
+            const reason = entry.slices.flatMap(slice => slice.result.warnings).find(w => w.severity === 'error');
+            return threeI18n('threeMode.parcelPanel.suggestedFlagged', `No default layout fits: ${reason ? reason.message : ''}`, { reason: reason ? reason.message : '' });
+        }
+        const cores = planned.reduce((sum, slice) => sum + slice.result.summary.cores, 0);
+        const apartments = planned.reduce((sum, slice) => sum + slice.result.summary.apartmentsPerFloor, 0);
+        const rooms = planned.reduce((sum, slice) => sum + (slice.result.summary.rooms || 0), 0);
+        return threeI18n('threeMode.parcelPanel.suggestedSummary', `${cores} core(s) · ${apartments} apartments per floor · ${rooms} rooms`, { cores, apartments, rooms });
+    }
+    function suggestedProposalPanelText(proposal) {
+        if (!suggestedPlansEnabled || !proposal) return '';
+        const totals = suggestedPlanByProposal.get(String(proposal.proposalId ?? proposal.id));
+        if (!totals || (!totals.buildings && !totals.flagged)) return '';
+        const line = threeI18n('threeMode.proposalPanel.suggestedTotals',
+            `Suggested layouts: ${totals.buildings} buildings · ${totals.apartmentsPerFloor} apartments per floor · ${totals.apartments} in total`,
+            { buildings: totals.buildings, apartmentsPerFloor: totals.apartmentsPerFloor, apartments: totals.apartments });
+        return totals.flagged ? `${line} ${threeI18n('threeMode.controls.suggestedFlagged', `${totals.flagged} in red: too small for a minimum stair core.`, { count: totals.flagged })}` : line;
+    }
+
+    // Street centrelines for the cell a building sits in, fetched once per cell. Until they arrive the
+    // entrance faces the longest facade; their arrival drops the plan cache and rebuilds once.
+    function suggestedStreetsFor(feature) {
+        if (!suggestedPlanContext) return null;
+        const cellKey = suggestedPlanContext.streetCellKey(feature, turf);
+        if (!cellKey) return null;
+        const cell = suggestedStreetCells.get(cellKey);
+        if (cell && cell.features) return cell.features;
+        if (!cell) {
+            suggestedStreetCells.set(cellKey, { features: null, pending: true });
+            const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+            const bbox = suggestedPlanContext.streetCellBbox(cellKey);
+            fetch(`${base}/streets/near?bbox=${encodeURIComponent(bbox.join(','))}`)
+                .then(response => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+                .then(data => {
+                    const features = Array.isArray(data && data.features) ? data.features : [];
+                    suggestedStreetCells.set(cellKey, { features, pending: false });
+                    suggestedPlanCache.clear();
+                    if (isActive && xrayEnabled && suggestedPlansEnabled) rebuild3DBuildingsOnly();
+                })
+                .catch(error => {
+                    console.warn(`[${new Date().toISOString()}] [3D] Street lookup for suggested layouts failed; entrances face the longest facade.`, error);
+                    suggestedStreetCells.set(cellKey, { features: [], pending: false, failed: true });
+                    suggestedPlanCache.clear();
+                    if (isActive && xrayEnabled && suggestedPlansEnabled) rebuild3DBuildingsOnly();
+                });
+        }
+        suggestedPlanTotals.pendingStreets = true;
+        return null;
+    }
+
+    // One generated default layout per parcel slice of a proposed building (one parcel, one
+    // building), or a red volume where the minimum core does not fit. The floorPlans object exists
+    // only in the scene and the cache; the proposal's own record is never touched.
+    function appendSuggestedFloorPlans(feature, buildingMaterial, targetGroup, variationDeps) {
+        if (!xrayEnabled || !suggestedPlansEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return false;
+        if (!feature?.geometry || feature.properties?.modelUrl || feature.properties?.floorPlans) return false;
+        let plan;
+        try { plan = window.UrbanRuleVariation.plannedDrawPlan(feature, plannedRepresentation, variationDeps, buildOutDisplaySalt); } catch (_) { return false; }
+        const subject = plan.buildOut || plan.massing;
+        if (!subject?.geometry) return false;
+        const height = estimateBuildingHeightMeters(subject);
+        let parcels = [];
+        try { parcels = window.LiveParcelFabric?.queryBounds?.(turf.bbox(subject), { includeCorridors: true }) || []; } catch (_) { parcels = []; }
+        // The facade design's bay width sets the room rhythm, so interior windows and the painted
+        // exterior fall into the same bays when both are shown.
+        let facadeBayWidthM = null;
+        try {
+            const city = window.CityConfigManager?.getCurrentCityId?.() || '';
+            facadeBayWidthM = buildingFacades.buildingDesign(buildingFacades.buildingKey(feature, city), height, window.STOREY_HEIGHT_M || 3.3).bayWidth;
+        } catch (_) { facadeBayWidthM = null; }
+        let planned;
+        try {
+            planned = suggestedPlanContext.planBuilding(subject, {
+                owner: feature, parcels, turf, generator: suggestedFloorPlans, region: suggestedRegion(),
+                roads: suggestedRoadsFor(subject), heightM: height, storeyFallbackM: window.STOREY_HEIGHT_M || 3.3,
+                neighbours: suggestedPlanContext.neighbourPool(feature, window.proposedBuildings, window.buildingFeaturePool, turf),
+                cache: suggestedPlanCache, rules: facadeBayWidthM ? { facadeBayWidthM } : undefined
+            });
+        } catch (error) {
+            floorPlanErrors++;
+            console.error(`[${new Date().toISOString()}] [3D] Suggested layout failed for building`, feature.properties?.name, error);
+            return false;
+        }
+        suggestedPlanTotals.buildings++;
+        for (const slice of planned.slices) {
+            suggestedPlanTotals.slices++;
+            const result = slice.result;
+            recordSuggestedSlice(feature, slice, planned.floors);
+            if (result.floorPlans) {
+                const modelled = { type: 'Feature', geometry: slice.footprint.geometry, properties: {
+                    ...feature.properties, parcelId: slice.parcelId ?? feature.properties?.parcelId ?? null, floorPlans: result.floorPlans
+                } };
+                // The modelled floors end exactly where the volume ends, so no proxy band remains.
+                if (appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, result.summary.heightM - 0.002))) {
+                    suggestedPlanTotals.cores += result.summary.cores;
+                    suggestedPlanTotals.apartments += result.summary.apartmentsPerFloor;
+                    continue;
+                }
+            }
+            suggestedPlanTotals.flagged++;
+            try {
+                polygonFeatureToMeshes(slice.footprint, buildingMaterials.flagged, 0, height).forEach(mesh => {
+                    if (slice.parcelId != null) mesh.userData.parcelId = String(slice.parcelId);
+                    mesh.userData.cbSuggestedLayoutWarnings = result.warnings;
+                    targetGroup.add(mesh);
+                });
+            } catch (_) { }
+        }
+        if (plan.massing && plan.massingStyle === 'envelope') {
+            try { createBuildingSlices(plan.massing, estimateBuildingHeightMeters(plan.massing), buildingMaterials.massing, targetGroup, null); } catch (_) { }
+        }
+        return true;
+    }
+
+    function setSuggestedPlansEnabled(enabled) {
+        suggestedPlansEnabled = enabled === true;
+        rebuild3DBuildingsOnly();
+        updateXrayControls();
+    }
+
+    function setSuggestedExistingEnabled(enabled) {
+        suggestedExistingEnabled = enabled === true;
+        rebuild3DBuildingsOnly();
+        updateXrayControls();
+    }
+
+    // Typical layouts by era for the existing buildings in the loaded radius, drawn inside their
+    // (transparent) built volumes. Footprints come from the 2D pool; a footprint without a height
+    // gets nothing, and buildings being replaced by a proposal are skipped.
+    function appendSuggestedExistingFloorPlans(buildingMaterial) {
+        if (!xrayEnabled || !suggestedPlansEnabled || !suggestedExistingEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
+        const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
+        if (!pool.length) return;
+        const view = getGeoCameraView();
+        if (!view) return;
+        const centre = turf.point([view.targetLng, view.targetLat]);
+        const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        const storeyM = window.STOREY_HEIGHT_M || 3.3;
+        let count = 0;
+        for (const feature of pool) {
+            if (!feature?.geometry) continue;
+            if (count >= SUGGESTED_EXISTING_CAP) { suggestedPlanTotals.existingCapped = true; break; }
+            let within = false;
+            try { within = turf.distance(centre, turf.centroid(feature), { units: 'meters' }) <= buildingLoadRadiusM; } catch (_) { within = false; }
+            if (!within) continue;
+            const props = feature.properties || {};
+            // The pool carries height_m and floors; a footprint with neither stays a plain volume.
+            const height = Number.isFinite(props.height_m) && props.height_m > 0 ? props.height_m
+                : Number.isFinite(props.floors) && props.floors > 0 ? props.floors * storeyM
+                : (props.height || props.levels || props.storeys) ? estimateBuildingHeightMeters(props) : null;
+            if (!height) continue;
+            // A footprint a proposal builds over is being replaced; its interior is not worth guessing.
+            let replaced = false;
+            try {
+                const bbox = turf.bbox(feature);
+                replaced = proposed.some(building => {
+                    if (!building?.geometry) return false;
+                    const other = turf.bbox(building);
+                    if (other[2] < bbox[0] || other[0] > bbox[2] || other[3] < bbox[1] || other[1] > bbox[3]) return false;
+                    const overlap = turf.intersect(feature, building);
+                    return !!overlap && turf.area(overlap) > 1;
+                });
+            } catch (_) { replaced = false; }
+            if (replaced) continue;
+            let planned;
+            try {
+                planned = suggestedPlanContext.planBuilding(feature, {
+                    owner: feature, existing: true, parcels: [], turf, generator: suggestedFloorPlans, region: suggestedRegion(),
+                    roads: suggestedRoadsFor(feature), heightM: height, storeyFallbackM: storeyM,
+                    neighbours: suggestedPlanContext.neighbourPool(feature, proposed, pool, turf), cache: suggestedPlanCache
+                });
+            } catch (error) {
+                floorPlanErrors++;
+                console.error(`[${new Date().toISOString()}] [3D] Suggested layout failed for an existing building`, props.id, error);
+                continue;
+            }
+            count++;
+            for (const slice of planned.slices) {
+                if (!slice.result.floorPlans) continue;
+                const modelled = { type: 'Feature', geometry: slice.footprint.geometry, properties: { ...props, floorPlans: slice.result.floorPlans } };
+                if (appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, slice.result.summary.heightM - 0.002))) suggestedPlanTotals.existing++;
+            }
+        }
     }
 
     function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM) {
@@ -5693,6 +6004,14 @@
 
     function updateXrayControls() {
         if (xrayButton) xrayButton.setAttribute('aria-pressed', String(xrayEnabled));
+        if (suggestedPlansButton) {
+            suggestedPlansButton.hidden = !xrayEnabled;
+            suggestedPlansButton.setAttribute('aria-pressed', String(suggestedPlansEnabled));
+        }
+        if (suggestedExistingRow) {
+            suggestedExistingRow.hidden = !(xrayEnabled && suggestedPlansEnabled);
+            if (suggestedExistingCheckbox) suggestedExistingCheckbox.checked = suggestedExistingEnabled;
+        }
         if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
         if (xrayEnabled && floorCutawaySelect) {
             const levels = [...new Set((floorPlanGroup?.children || []).filter(group => group.visible !== false)
@@ -5732,6 +6051,19 @@
         }
         if (floorPlanErrors) lines.push(threeI18n('threeMode.controls.xrayError',
             'Some floor plans could not be displayed.'));
+        if (suggestedPlansEnabled) {
+            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the proposal.'));
+            const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
+            if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
+                `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per floor`,
+                { buildings, apartments: suggestedPlanTotals.apartments }));
+            if (suggestedPlanTotals.flagged) lines.push(threeI18n('threeMode.controls.suggestedFlagged',
+                `${suggestedPlanTotals.flagged} in red: too small for a minimum stair core.`, { count: suggestedPlanTotals.flagged }));
+            if (suggestedPlanTotals.pendingStreets) lines.push(threeI18n('threeMode.controls.suggestedPendingStreets',
+                'Street data is loading; entrances face the longest facade until it arrives.'));
+            if (suggestedExistingEnabled && suggestedPlanTotals.existing) lines.push(threeI18n('threeMode.controls.suggestedExistingCount',
+                `Existing: ${suggestedPlanTotals.existing} buildings with a typical layout by era.`, { count: suggestedPlanTotals.existing }));
+        }
         xrayNote.textContent = lines.join(' ');
     }
 
@@ -5774,6 +6106,8 @@
             });
         }
         if (showProposed) buildProposedBuildings3D(buildingGroup, proposedMaterial);
+        // Typical interiors for the existing buildings around, inside their built volumes.
+        if (showExisting) appendSuggestedExistingFloorPlans(existingMaterial);
         if (showIneligibleParcels) buildIneligibleParcels3D(buildingGroup);
 
         // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).
@@ -7264,6 +7598,8 @@
     window.getThree3DGeoView = getGeoCameraView;
     window.setThreeXrayEnabled = setXrayEnabled;
     window.setThreeFloorCutaway = setFloorCutaway;
+    window.setThreeSuggestedLayoutsEnabled = setSuggestedPlansEnabled;
+    window.setThreeSuggestedExistingEnabled = setSuggestedExistingEnabled;
 
     // Window capture runs before every document-level shortcut, including the few legacy handlers
     // that also use capture. This is the keyboard-context boundary between the 3D and 2D apps.

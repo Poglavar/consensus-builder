@@ -81,9 +81,18 @@ describe('three-floor-plans volumetric adapter',()=>{
     it('cutaway changes visible levels and summaries, then restores all floors',()=>{
         const group=create();renderer.setCutaway(group,0);
         expect(group.children.map(f=>f.visible)).toEqual([true,false]);
-        expect(renderer.summarize(group)).toEqual({floors:1,buildings:1,estimatedFloors:0,apartments:1});
-        renderer.setCutaway(group,null);expect(renderer.summarize(group)).toEqual({floors:2,buildings:1,estimatedFloors:1,apartments:3});
+        expect(renderer.summarize(group)).toEqual({floors:1,buildings:1,estimatedFloors:0,apartments:1,suggestedBuildings:0});
+        renderer.setCutaway(group,null);expect(renderer.summarize(group)).toEqual({floors:2,buildings:1,estimatedFloors:1,apartments:3,suggestedBuildings:0});
         group.visible=false;expect(renderer.summarize(group).floors).toBe(0);
+    });
+    it('renders a suggested model in its own palette and counts it as suggested',()=>{
+        const suggested={properties:{...feature.properties,floorPlans:{...feature.properties.floorPlans,suggested:true}}};
+        const group=renderer.createBuildingGroup(THREE,suggested,()=>[0,0],api);
+        const evidence=create();
+        expect(group.userData.suggested).toBe(true);
+        expect(group.children[0].children[0].material.color).not.toBe(evidence.children[0].children[0].material.color);
+        expect(renderer.summarize(group).suggestedBuildings).toBe(1);
+        expect(renderer.summarize(evidence).suggestedBuildings).toBe(0);
     });
     it('disposes shared geometry and materials exactly once',()=>{
         const group=create(),geometries=new Set(),materials=new Set();

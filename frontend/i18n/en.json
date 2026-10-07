@@ -613,6 +613,8 @@
             "showDgu": "Official cadastre (DGU)",
             "showOsm": "Map buildings (OSM)",
             "showProposed": "Show proposed buildings",
+            "showSuggestedLayouts": "Suggested layouts (ground floor)",
+            "showSuggestedLayoutsTooltip": "Draw a suggested ground-floor layout inside each proposed building without a modelled interior. Red dashed outlines are too small for a minimum stair core. A suggestion, not part of the proposal.",
             "showOverture": "Overture buildings (3D model)",
             "showCustom": "Your building source"
         },
@@ -3814,6 +3816,15 @@
             "floorBasement": "Basement {{level}}",
             "floorLevel": "Floor {{level}}",
             "xrayError": "Some floor plans could not be displayed.",
+            "suggestedLayouts": "Suggested layouts",
+            "suggestedLayoutsTooltip": "Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the proposal.",
+            "suggestedNote": "Suggested layouts are generated defaults, not part of the proposal.",
+            "suggestedCount": "Suggested: {{buildings}} buildings · {{apartments}} apartments per floor",
+            "suggestedFlagged": "{{count}} in red: too small for a minimum stair core.",
+            "suggestedPendingStreets": "Street data is loading; entrances face the longest facade until it arrives.",
+            "suggestedExisting": "Existing buildings too",
+            "suggestedExistingTooltip": "Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.",
+            "suggestedExistingCount": "Existing: {{count}} buildings with a typical layout by era.",
             "facadeStyles": {
                 "mixed": "Mixed palette",
                 "brick": "Brick",
@@ -3859,11 +3870,15 @@
             "gain": "Proposal gain",
             "currentValue": "Current value",
             "proposalLabel": "Proposal",
-            "show": "show"
+            "show": "show",
+            "suggestedLayout": "Suggested layout",
+            "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per floor · {{rooms}} rooms",
+            "suggestedFlagged": "No default layout fits: {{reason}}"
         },
         "proposalPanel": {
             "title": "Proposal info",
             "parcelsLabel": "Parcels",
+            "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per floor · {{apartments}} in total",
             "avgPerParcel": "Avg / parcel"
         },
         "isolation": {

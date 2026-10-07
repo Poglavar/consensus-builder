@@ -91,7 +91,13 @@
             errors.push(...validateArchitecture(layout?.architecture, `${path}.architecture`));
             const source = layout?.source;
             if (!source || typeof source !== 'object') errors.push(error(`${path}.source`, 'is required'));
-            else {
+            else if (source.kind === 'generated') {
+                // A generated layout's evidence is the generator and its parameters, not a document.
+                // It can only appear inside a suggested model; the registry never stores one.
+                if (typeof source.generator !== 'string' || !source.generator.trim()) errors.push(error(`${path}.source.generator`, 'must name the generator'));
+                if (!source.parameters || typeof source.parameters !== 'object' || Array.isArray(source.parameters)) errors.push(error(`${path}.source.parameters`, 'must be an object'));
+                if (data.suggested !== true) errors.push(error(`${path}.source.kind`, 'generated layouts require floorPlans.suggested = true'));
+            } else {
                 if (!httpUrl(source.url)) errors.push(error(`${path}.source.url`, 'must be a valid http(s) URL'));
                 // Pages/crops describe PDF or image evidence. CAD, survey and authored sources
                 // use the same architectural contract without pretending to be paginated PDFs.
@@ -325,7 +331,45 @@
         const [width,depth] = architecture.dimensionsM;
         return buildArchitectureParts(architecture, (u,v) => [u*width,(1-v)*depth]);
     }
-    const api = { buildLocalUnitParts, SCHEMA, ARCHITECTURE_SCHEMA, buildingSourceId, uncoveredFloorBands, validateArchitecture, validateFloorPlans, buildFloorPlanGeometry, refreshRegisteredFloorPlans };
+
+    // The bilinear map from a model's unit square to the ground, as the renderer applies it.
+    function registrationToLngLat(plans) {
+        const c = plans.registration.corners;
+        return (u, v) => [
+            (1-u)*(1-v)*c[0][0] + u*(1-v)*c[1][0] + u*v*c[2][0] + (1-u)*v*c[3][0],
+            (1-u)*(1-v)*c[0][1] + u*(1-v)*c[1][1] + u*v*c[2][1] + (1-u)*v*c[3][1]
+        ];
+    }
+
+    // One floor of a model as plain WGS84 GeoJSON for 2D maps and thumbnails: wall and slab
+    // polygons, opening and stair runs as lines, each tagged with its kind. No Three.js, no DOM.
+    function floorPlanToGeoJSON(plans, level) {
+        const errors = validateFloorPlans(plans);
+        if (errors.length) throw new Error(`Invalid floorPlans: ${errors.join('; ')}`);
+        const floor = plans.floors.find(entry => entry.level === level);
+        if (!floor) return { type: 'FeatureCollection', features: [] };
+        const layout = plans.layouts.find(entry => entry.id === floor.layoutId);
+        const toLngLat = registrationToLngLat(plans);
+        const ring = points => points.map(p => toLngLat(p[0], p[1])).concat([toLngLat(points[0][0], points[0][1])]);
+        const features = [];
+        const polygonFeatures = (kind, polygons) => polygons.forEach(rings => features.push({
+            type: 'Feature', properties: { kind, level, suggested: plans.suggested === true },
+            geometry: { type: 'Polygon', coordinates: rings.map(ring) }
+        }));
+        const lineFeatures = (kind, items, extra = () => ({})) => items.forEach(item => features.push({
+            type: 'Feature', properties: { kind, level, suggested: plans.suggested === true, ...extra(item) },
+            geometry: { type: 'LineString', coordinates: [toLngLat(item.a[0], item.a[1]), toLngLat(item.b[0], item.b[1])] }
+        }));
+        const architecture = layout.architecture;
+        polygonFeatures('slab', architecture.slabs);
+        polygonFeatures('wall', architecture.walls);
+        polygonFeatures('landing', architecture.landings);
+        lineFeatures('opening', architecture.openings, item => ({ opening: item.kind }));
+        lineFeatures('stair', architecture.stairs, item => ({ steps: item.steps }));
+        lineFeatures('railing', architecture.railings);
+        return { type: 'FeatureCollection', features };
+    }
+    const api = { buildLocalUnitParts, SCHEMA, ARCHITECTURE_SCHEMA, buildingSourceId, uncoveredFloorBands, validateArchitecture, validateFloorPlans, buildFloorPlanGeometry, refreshRegisteredFloorPlans, registrationToLngLat, floorPlanToGeoJSON };
     global.__buildingFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

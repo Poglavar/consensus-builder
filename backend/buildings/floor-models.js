@@ -59,6 +59,9 @@ export function prepareFloorModel(record) {
     validateFootprint(record.footprint);
     const errors = validateFloorPlans(record.floorPlans);
     if (errors.length) throw new Error(`Invalid architectural model: ${errors.join('; ')}`);
+    // The registry holds evidence. A suggested default layout (default-floor-plans.js) is derived from
+    // the footprint at read time and would masquerade as a source if it were ever stored here.
+    if (record.floorPlans.suggested === true) throw new Error('Suggested layouts are generated for display and are not registry evidence.');
     return { ...identity, footprint: record.footprint, floorPlans: record.floorPlans,
         geomHash: fingerprint(record.footprint), modelHash: fingerprint(record.floorPlans) };
 }

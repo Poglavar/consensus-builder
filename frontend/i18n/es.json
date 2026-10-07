@@ -524,6 +524,8 @@
             "showDgu": "Catastro oficial (DGU)",
             "showOsm": "Edificios del mapa (OSM)",
             "showProposed": "Mostrar edificios propuestos",
+            "showSuggestedLayouts": "Distribuciones sugeridas (planta baja)",
+            "showSuggestedLayoutsTooltip": "Dibuja una distribución sugerida de la planta baja dentro de cada edificio propuesto sin interior modelado. Los contornos rojos discontinuos son demasiado pequeños para un núcleo de escalera mínimo. Es una sugerencia, no parte de la propuesta.",
             "showOverture": "Edificios de Overture (modelo 3D)",
             "showCustom": "Tu fuente de edificios"
         },
@@ -3865,6 +3867,15 @@
             "floorBasement": "Sótano {{level}}",
             "floorLevel": "Planta {{level}}",
             "xrayError": "No se pudieron mostrar algunos planos.",
+            "suggestedLayouts": "Distribuciones sugeridas",
+            "suggestedLayoutsTooltip": "Genera una distribución por defecto para los edificios propuestos sin interior modelado: un núcleo de escalera y ascensor con entrada desde la calle, dos viviendas por núcleo. Es una sugerencia, no parte de la propuesta.",
+            "suggestedNote": "Las distribuciones sugeridas son valores por defecto generados, no parte de la propuesta.",
+            "suggestedCount": "Sugeridos: {{buildings}} edificios · {{apartments}} viviendas por planta",
+            "suggestedFlagged": "{{count}} en rojo: demasiado pequeño para un núcleo de escalera mínimo.",
+            "suggestedPendingStreets": "Los datos de calles se están cargando; las entradas miran a la fachada más larga hasta que lleguen.",
+            "suggestedExisting": "También los edificios existentes",
+            "suggestedExistingTooltip": "Mostrar también distribuciones típicas por época para los edificios existentes del entorno: una estimación a partir de la huella y la altura, no un levantamiento.",
+            "suggestedExistingCount": "Existentes: {{count}} edificios con una distribución típica por época.",
             "facadeStyles": {
                 "mixed": "Paleta mixta",
                 "brick": "Ladrillo",
@@ -3910,11 +3921,15 @@
             "gain": "Ganancia de la propuesta",
             "currentValue": "Valor actual",
             "proposalLabel": "Propuesta",
-            "show": "ver"
+            "show": "ver",
+            "suggestedLayout": "Distribución sugerida",
+            "suggestedSummary": "{{cores}} núcleo(s) · {{apartments}} viviendas por planta · {{rooms}} habitaciones",
+            "suggestedFlagged": "Ninguna distribución por defecto cabe: {{reason}}"
         },
         "proposalPanel": {
             "title": "Información de la propuesta",
             "parcelsLabel": "Parcelas",
+            "suggestedTotals": "Distribuciones sugeridas: {{buildings}} edificios · {{apartmentsPerFloor}} viviendas por planta · {{apartments}} en total",
             "avgPerParcel": "Media / parcela"
         },
         "isolation": {

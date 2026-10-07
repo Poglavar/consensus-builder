@@ -2,10 +2,13 @@
 (function (global) {
     'use strict';
     const COLORS = { wall: 0xf2eee5, slab: 0xbfc4c7, door: 0x8b654b, frame: 0x30363b, glass: 0x8cb8c9, stair: 0xb0aaa0, railing: 0x525b61 };
+    // A generated default layout is a suggestion, so it reads in a cooler, bluer palette than an
+    // evidence-backed interior; the two must never be mistaken for one another in the same scene.
+    const SUGGESTED_COLORS = { wall: 0xd8e4ef, slab: 0xa9b7c4, door: 0x7a8ea2, frame: 0x3a4a5a, glass: 0x9ccbe0, stair: 0xa3b1bd, railing: 0x5a6b7a };
 
-    function materialFor(THREE, kind) {
+    function materialFor(THREE, kind, colors = COLORS) {
         return new THREE.MeshPhongMaterial({
-            color: COLORS[kind], side: THREE.DoubleSide, depthTest: true,
+            color: colors[kind], side: THREE.DoubleSide, depthTest: true,
             depthWrite: kind !== 'glass', transparent: kind === 'glass',
             opacity: kind === 'glass' ? .4 : 1, shininess: kind === 'glass' ? 50 : 8
         });
@@ -37,9 +40,11 @@
         const floors = api.buildFloorPlanGeometry(feature, project);
         if (!floors.length) return null;
         const props = feature.properties, registration = props.floorPlans.registration, corners = registration.corners;
+        const suggested = props.floorPlans.suggested === true;
+        const colors = suggested ? SUGGESTED_COLORS : COLORS;
         const wrapper = new THREE.Group(), layouts = new Map(), materials = new Map();
         wrapper.userData = {
-            cbFloorPlan: true, proposalId: props.proposalId ?? props.proposal_id ?? null,
+            cbFloorPlan: true, suggested, proposalId: props.proposalId ?? props.proposal_id ?? null,
             parcelId: props.parcelId ?? props.parcel_id ?? null, isNearbyBuilding3D: true,
             footprintLatLng: [corners.reduce((s,p) => s+p[0],0)/4, corners.reduce((s,p) => s+p[1],0)/4],
             floorCount: floors.length, estimatedFloorCount: floors.filter(f => f.elevationBasis === 'estimated').length,
@@ -59,7 +64,7 @@
                 layout = new Map();
                 for (const [kind, parts] of byKind) {
                     layout.set(kind, geometryFor(THREE, parts));
-                    if (!materials.has(kind)) materials.set(kind, materialFor(THREE, kind));
+                    if (!materials.has(kind)) materials.set(kind, materialFor(THREE, kind, colors));
                 }
                 layouts.set(floor.layoutId, layout);
             }
@@ -129,12 +134,13 @@
     }
 
     function summarize(group) {
-        if (!group?.userData?.cbFloorPlan || group.visible === false) return { floors: 0, buildings: 0, estimatedFloors: 0, apartments: 0 };
+        if (!group?.userData?.cbFloorPlan || group.visible === false) return { floors: 0, buildings: 0, estimatedFloors: 0, apartments: 0, suggestedBuildings: 0 };
         const visible = group.children.filter(floor => floor.userData.cbFloorPlanFloor && floor.visible !== false);
         return {
             floors: visible.length, buildings: visible.length ? 1 : 0,
             estimatedFloors: visible.filter(floor => floor.userData.elevationBasis === 'estimated').length,
-            apartments: visible.reduce((sum,floor) => sum+(floor.userData.apartmentCount || 0),0)
+            apartments: visible.reduce((sum,floor) => sum+(floor.userData.apartmentCount || 0),0),
+            suggestedBuildings: visible.length && group.userData.suggested ? 1 : 0
         };
     }
     // A below-ground cut removes the context for this draw only. Restoring visibility
