@@ -9,6 +9,7 @@
 //   formatAt({ lat, lon, zoom }) -> 'lat,lon,zoom'        5 decimals, integer zoom
 //   isSharedRoute({ pathname, search }) -> boolean         a link that names what to show (no globe)
 //   bootDecision({ cityChosen, sharedRoute, search }) -> { open, closable, firstVisit, forced }
+//   canReturnToMap(zoom) -> boolean      true when the current map is a useful return destination
 //   resolveLanding({ cityId, point, currentCityId, cityView, focus, explore }) -> landing (see below)
 //   liveCityFor({ place, currentCityId, sameCadastre }) -> the city a live place opens
 //   exploreZoomFor(place) -> zoom for an explore landing
@@ -81,14 +82,18 @@
     }
 
     // First visit = no stored city, no ?city=, no shared route. ?world=1 forces the globe for anyone;
-    // it is closable whenever a city was already chosen (there is somewhere to go back to).
+    // Boot globes never have a meaningful view to return to, even when ?world=1 was forced.
     function bootDecision(input) {
         const cityChosen = !!(input && input.cityChosen);
         const sharedRoute = !!(input && input.sharedRoute);
         let forced = false;
         try { forced = new URLSearchParams((input && input.search) || '').get('world') === '1'; } catch (_) { forced = false; }
         const firstVisit = !cityChosen && !sharedRoute;
-        return { open: forced || firstVisit, closable: !firstVisit, firstVisit, forced };
+        return { open: forced || firstVisit, closable: false, firstVisit, forced };
+    }
+
+    function canReturnToMap(zoom) {
+        return finite(zoom) && zoom > 4;
     }
 
     function exploreZoomFor(place) {
@@ -160,7 +165,7 @@
 
     return {
         EXPLORE_CITY_ID, MIN_ZOOM, MAX_ZOOM, PARCEL_ZOOM, EXPLORE_ZOOM,
-        parseAt, formatAt, isSharedRoute, bootDecision, resolveLanding, liveCityFor, exploreZoomFor, utmProjectionFor,
+        parseAt, formatAt, isSharedRoute, bootDecision, canReturnToMap, resolveLanding, liveCityFor, exploreZoomFor, utmProjectionFor,
         shouldReturnToGlobe
     };
 });

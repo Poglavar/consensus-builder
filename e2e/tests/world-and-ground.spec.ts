@@ -40,6 +40,7 @@ test.describe('World navigation and open ground @features', () => {
     const world = page.locator('#world-view');
     await expect(world).toBeVisible();
     await expect(world.locator('canvas')).toBeVisible();
+    await expect(world.getByRole('button', { name: 'Back to map' })).toBeVisible();
     await world.locator('.world-search__input').fill('Belgrade');
     await world.getByRole('option').filter({ hasText: 'Belgrade' }).first().click();
     await expect(world.locator('.world-popup__title')).toHaveText('Belgrade');
@@ -215,7 +216,7 @@ test.describe('World navigation and open ground @features', () => {
     await page.screenshot({ path: '/private/tmp/colosseum-globe-activity-phone.png' });
   });
 
-  test('zooming out by wheel returns to the globe, while programmatic framing and closing do not bounce', async ({ mockApi: page }) => {
+  test('zooming out by wheel returns to a nonclosable globe, while programmatic framing does not bounce', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).map.setView([45.8, 16], 4, { animate: false }));
     await expect(page.locator('#world-view')).toHaveCount(0);
@@ -224,7 +225,11 @@ test.describe('World navigation and open ground @features', () => {
     await expect(page.locator('#world-view')).toBeVisible({ timeout: 15000 });
     const camera = await page.evaluate(() => (window as any).WorldView.getCamera());
     expect(Math.abs(camera.lat - 45.8)).toBeLessThan(1);
-    await page.locator('.world-view__close').click(); await expect(page.locator('#world-view')).toHaveCount(0);
+    await expect(page.locator('.world-view__close')).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#world-view')).toBeVisible();
+    await page.evaluate(() => (window as any).WorldView.close());
+    await expect(page.locator('#world-view')).toHaveCount(0);
     await page.evaluate(() => (window as any).map.fire('zoomend'));
     await expect(page.locator('#world-view')).toHaveCount(0);
   });

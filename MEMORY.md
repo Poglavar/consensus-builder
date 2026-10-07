@@ -1,5 +1,9 @@
 # Memory
 
+- 2026-10-08: Keep the globe horizontally centered independently of the activity feed; desktop activity overlays the right screen edge, while mobile activity stays below the planet.
+
+- 2026-10-08: The globe landing screen has no close action; opening it from a local map offers an explicit Back to map control, so closing never exposes an unexplained flat world map.
+
 - 2026-10-05: Activity profiles use wallet-or-id identity; run wallets are enriched from the backend address book because controller type describes event provenance, not a separate actor. Blocking dialogs register their real dismiss callbacks with `ModalEscape`; drawing editors retain staged Escape behavior and nested confirmations take precedence.
 
 - 2026-10-02: Arrivals show the area's proposal count and pulse until discovery; 3D parcel selection emphasizes in place while retaining context. Selected is temporary UI state, separate from applied/unapplied: an unapplied selected preview accepts clicks until another map selection or background click clears it.

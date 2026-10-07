@@ -833,7 +833,7 @@
         state.chipIcon.className = exploring ? 'fas fa-compass' : 'fas fa-city';
         state.chipLabel.textContent = label;
         state.chipShortLabel.textContent = shortLabel;
-        const title = t('mapSearch.cityChip', 'Current city: {{city}}. Choose another', { city: label });
+        const title = t('mapSearch.cityChip', 'Current city: {{city}}. Open the globe to choose another place', { city: label });
         state.chip.title = title;
         state.chip.setAttribute('aria-label', title);
     }

@@ -12,7 +12,7 @@
 //     opts.onRequestCity(place)        "Ask for this city" (tier 'source'); may return a Promise —
 //                                      resolved shows a thank-you, rejected shows an error line
 //     opts.onClose()                   after the view closed through its own close button / Escape
-//     opts.closable (default true)     show the close button (false on a first visit)
+//     opts.closable (default true)     show a return control; opts.closeLabel is its i18n key
 //     opts.initialView {lat, lon, altitudeKm}   starting camera
 //     opts.coverageUrl                 default 'data/world-coverage.json'
 //   close()                          removes the overlay and frees every GPU resource
@@ -379,7 +379,6 @@
 
         // ---- DOM chrome ----
         const top = el('div', 'world-view__top');
-        const title = el('h1', 'world-view__title');
         const searchWrap = el('div', 'world-search');
         const searchInput = el('input', 'world-search__input', {
             type: 'search', role: 'combobox', 'aria-autocomplete': 'list', 'aria-expanded': 'false',
@@ -388,12 +387,15 @@
         const results = el('ul', 'world-search__results', { id: 'world-search-results', role: 'listbox' });
         results.hidden = true;
         searchWrap.append(searchInput, results);
-        const hint = el('p', 'world-view__hint');
-        top.append(title, searchWrap, hint);
+        top.append(searchWrap);
         root.appendChild(top);
 
         const closeBtn = el('button', 'world-view__close', { type: 'button' });
-        closeBtn.textContent = '×';
+        closeBtn.textContent = opts.closeLabel ? '' : '×';
+        if (opts.closeLabel) {
+            root.classList.add('world-view--back-to-map');
+            closeBtn.classList.add('world-view__close--back');
+        }
         if (opts.closable !== false) root.appendChild(closeBtn);
 
         const legend = el('div', 'world-legend');
@@ -423,11 +425,12 @@
 
         function renderStaticText() {
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
-            title.textContent = t('world.title', 'Choose a place');
             searchInput.placeholder = t('world.search.placeholder', 'Search a city or country');
             searchInput.setAttribute('aria-label', t('world.search.label', 'Search places'));
-            hint.textContent = t('world.hint', 'Drag to spin · click anywhere to see what parcel data exists there');
-            closeBtn.setAttribute('aria-label', t('world.close', 'Close'));
+            const closeLabel = opts.closeLabel ? t(opts.closeLabel, 'Back to map') : t('world.close', 'Close');
+            closeBtn.textContent = opts.closeLabel ? closeLabel : '×';
+            closeBtn.setAttribute('aria-label', closeLabel);
+            closeBtn.title = closeLabel;
             legendTitle.textContent = t('world.legend.title', 'Parcel data');
             legendList.textContent = '';
             ['live', 'source', 'none', 'unknown'].forEach(tier => {
@@ -470,7 +473,7 @@
             renderer.setSize(w, h, false);
             camera.aspect = w / h;
             // Nudge the globe below the search box: shift the view centre down a little.
-            camera.setViewOffset(w, h, w >= 1100 ? Math.round(w * 0.12) : 0, w >= 1100 ? -Math.round(Math.min(48, h * 0.045)) : Math.round(h * 0.06), w, h);
+            camera.setViewOffset(w, h, 0, w >= 1100 ? -Math.round(Math.min(48, h * 0.045)) : Math.round(h * 0.06), w, h);
             camera.updateProjectionMatrix();
             if (!cam.altitudeKm) cam.altitudeKm = fitAltitude();
             dirty = true;
@@ -738,7 +741,12 @@
                 }
             }
             // Live-city labels: nearest-first greedy placement, skipping overlaps and the far side.
+            // Reserve the desktop activity overlay so city names never compete with its text.
             const placed = [];
+            if (viewport.w >= 1100) {
+                const bounds = root.querySelector('.world-activity').getBoundingClientRect();
+                placed.push({ x: bounds.left, y: bounds.top, w: bounds.width, h: bounds.height });
+            }
             const showLabels = true;
             liveLabels.forEach(item => {
                 const s = showLabels ? screenOf(item.vec) : null;

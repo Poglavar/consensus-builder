@@ -78,9 +78,18 @@ describe('shared routes and first visit', () => {
         expect(Model.bootDecision({ cityChosen: true, sharedRoute: false, search: '' }).open).toBe(false);
         expect(Model.bootDecision({ cityChosen: false, sharedRoute: true, search: '' }).open).toBe(false);
         expect(Model.bootDecision({ cityChosen: true, sharedRoute: false, search: '?world=1' }))
-            .toEqual({ open: true, closable: true, firstVisit: false, forced: true });
+            .toEqual({ open: true, closable: false, firstVisit: false, forced: true });
         expect(Model.bootDecision({ cityChosen: false, sharedRoute: false, search: '?world=1' }).closable).toBe(false);
         expect(Model.bootDecision({ cityChosen: true, sharedRoute: false, search: '?world=0' }).open).toBe(false);
+    });
+});
+
+describe('globe return control', () => {
+    it('offers a map return only above the automatic globe threshold', () => {
+        expect(Model.canReturnToMap(5)).toBe(true);
+        expect(Model.canReturnToMap(4)).toBe(false);
+        expect(Model.canReturnToMap(null)).toBe(false);
+        expect(Model.canReturnToMap(Infinity)).toBe(false);
     });
 });
 

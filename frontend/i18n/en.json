@@ -4162,6 +4162,7 @@
         "hint": "Drag to spin · click anywhere to see what parcel data exists there",
         "canvasLabel": "Globe. Drag to rotate, scroll to zoom, click a place to check parcel data.",
         "close": "Close",
+        "backToMap": "Back to map",
         "search": {
             "placeholder": "Search a city or country",
             "label": "Search places",
@@ -4331,7 +4332,7 @@
         "open": "Search",
         "close": "Close search",
         "clear": "Clear",
-        "cityChip": "Current city: {{city}}. Choose another",
+        "cityChip": "Current city: {{city}}. Open the globe to choose another place",
         "groups": {
             "recent": "Recent searches",
             "cities": "Cities",

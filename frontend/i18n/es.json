@@ -4213,6 +4213,7 @@
         "hint": "Arrastra para girar · haz clic en cualquier lugar para ver qué datos de parcelas existen",
         "canvasLabel": "Globo. Arrastra para girar, desplaza para acercar, haz clic en un lugar para ver sus datos de parcelas.",
         "close": "Cerrar",
+        "backToMap": "Volver al mapa",
         "search": {
             "placeholder": "Busca una ciudad o un país",
             "label": "Buscar lugares",
@@ -4382,7 +4383,7 @@
         "open": "Buscar",
         "close": "Cerrar la búsqueda",
         "clear": "Borrar",
-        "cityChip": "Ciudad actual: {{city}}. Elegir otra",
+        "cityChip": "Ciudad actual: {{city}}. Abre el globo para elegir otro lugar",
         "groups": {
             "recent": "Búsquedas recientes",
             "cities": "Ciudades",

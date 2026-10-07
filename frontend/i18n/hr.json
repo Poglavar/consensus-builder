@@ -4199,6 +4199,7 @@
         "hint": "Povucite za okretanje · kliknite bilo gdje da vidite koji podaci o česticama postoje",
         "canvasLabel": "Globus. Povucite za okretanje, kotačićem zumirajte, kliknite mjesto da provjerite podatke o česticama.",
         "close": "Zatvori",
+        "backToMap": "Natrag na kartu",
         "search": {
             "placeholder": "Tražite grad ili državu",
             "label": "Pretraga mjesta",
@@ -4370,7 +4371,7 @@
         "open": "Traži",
         "close": "Zatvori pretragu",
         "clear": "Očisti",
-        "cityChip": "Trenutni grad: {{city}}. Odaberi drugi",
+        "cityChip": "Trenutni grad: {{city}}. Otvorite globus za odabir drugog mjesta",
         "groups": {
             "recent": "Nedavne pretrage",
             "cities": "Gradovi",

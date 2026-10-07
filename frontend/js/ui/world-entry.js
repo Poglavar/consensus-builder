@@ -5,7 +5,7 @@
 // banner. Decisions live in js/world/world-entry-model.js; this file wires them to the page.
 //
 // API (window.WorldEntry)
-//   open(opts) -> Promise    opts: { closable = true, focus: { lat, lon, zoom? } | Place }
+//   open(opts) -> Promise    opts: { closable?: false, focus: { lat, lon, zoom? } | Place }
 //   ownsBoot() -> boolean    true while a first-visit globe is (about to be) open; the site intro
 //                            waits for the 'worldview:landed' event instead of stacking on it
 //   explorePlaceName() -> string   the explored place for the city chip ('' until known)
@@ -190,8 +190,11 @@
             const center = map.getCenter();
             initialView = { lat: center.lat, lon: center.lng };
         }
+        const closable = options.closable !== false
+            && Model.canReturnToMap(map && typeof map.getZoom === 'function' ? map.getZoom() : null);
         state.opening = view.open({
-            closable: options.closable !== false,
+            closable,
+            closeLabel: closable ? 'world.backToMap' : null,
             initialView,
             chooseCity: place => {
                 const current = manager().getCurrentCityId();
