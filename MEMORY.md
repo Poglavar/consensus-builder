@@ -358,3 +358,11 @@
 
 - 2026-10-07: After verified DMARC, TLS reporting and 2048-bit DKIM setup (SPF/DKIM/DMARC PASS in project Gmail Primary inbox), the user chose to continue city outreach at the existing pace: at least 60 seconds between sends, retaining provider-warning checks. Respect reply-to-decline requests and do not retry permanent failures blindly.
 - 2026-10-07: The user explicitly authorized official enquiry forms where suitable planning emails cannot be found; required identity or business contact details must be supplied rather than invented.
+
+## Agency floor-plan evidence (2026-10-07)
+
+- Keep the HGK company registry, candidate websites, immutable source archive and OCR drafts in `floor_plan`; only reviewed, registered architecture belongs in `consensus.building_floor_model`, because a public drawing does not establish a building or floor transform.
+- New-build advertisements receive priority while resale evidence is retained; site failures and incomplete crawls never imply removal.
+- Avenue V currently has five public unit reconstructions, one with conflicting floor labels, and no verified whole-floor registration; preserve the unknown building areas.
+
+- A listing can embed other apartments in project tables and recommendation cards; archive their sources, but assign a plan only to its evidenced row/card owner and never treat the first card as the page listing.

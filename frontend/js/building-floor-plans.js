@@ -138,7 +138,7 @@
     const length = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
     const lerp = (a, b, t) => [a[0] + (b[0]-a[0])*t, a[1] + (b[1]-a[1])*t];
 
-    function validateArchitecture(model, path) {
+    function validateArchitecture(model, path = 'architecture') {
         const errors = [];
         const fail = (field, message) => errors.push(error(`${path}.${field}`, message));
         if (!model || model.schema !== ARCHITECTURE_SCHEMA) return [error(path, `must use ${ARCHITECTURE_SCHEMA}`)];
@@ -319,7 +319,13 @@
         return { buildings: result, changed };
     }
 
-    const api = { SCHEMA, ARCHITECTURE_SCHEMA, buildingSourceId, uncoveredFloorBands, validateFloorPlans, buildFloorPlanGeometry, refreshRegisteredFloorPlans };
+    function buildLocalUnitParts(architecture) {
+        const errors = validateArchitecture(architecture);
+        if (errors.length) throw new Error(errors.join('; '));
+        const [width,depth] = architecture.dimensionsM;
+        return buildArchitectureParts(architecture, (u,v) => [u*width,(1-v)*depth]);
+    }
+    const api = { buildLocalUnitParts, SCHEMA, ARCHITECTURE_SCHEMA, buildingSourceId, uncoveredFloorBands, validateArchitecture, validateFloorPlans, buildFloorPlanGeometry, refreshRegisteredFloorPlans };
     global.__buildingFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
