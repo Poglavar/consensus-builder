@@ -153,6 +153,43 @@ describe('urban block view controller', () => {
         expect(fetchRoads).toHaveBeenCalledTimes(2);
     });
 
+    it('retains ready roads and clears them on reload, disable, and city reset', async () => {
+        const retainedRoads = fc(way('ready-road', [[0, 0], [0.01, 0]]));
+        let resolveReload;
+        const fetchRoads = vi.fn()
+            .mockResolvedValueOnce(retainedRoads)
+            .mockImplementationOnce(() => new Promise(resolve => { resolveReload = resolve; }))
+            .mockResolvedValueOnce(fc());
+        const detect = vi.fn(async () => ({ type: 'FeatureCollection', features: [] }));
+        const view = controller.create({ fetchRoads, detect, onChange: vi.fn() });
+        view.setEnabled(true);
+
+        await view.refresh(viewport);
+        expect(view.snapshot()).toMatchObject({ phase: 'ready', roads: retainedRoads });
+        await view.refresh(viewport);
+        expect(fetchRoads).toHaveBeenCalledTimes(1);
+
+        const reload = view.refresh(viewport, true);
+        const reloadSignal = fetchRoads.mock.calls[1][1];
+        expect(view.snapshot()).toMatchObject({ phase: 'roads', roads: null, blocks: null });
+
+        // The view's cityChanged handler resets through setEnabled while the checkbox stays on.
+        view.setEnabled(true);
+        expect(reloadSignal.aborted).toBe(true);
+        expect(view.snapshot()).toMatchObject({ phase: 'idle', roads: null });
+        resolveReload(fc(way('stale-road', [[0, 0], [0.01, 0]])));
+        await reload;
+        expect(view.snapshot()).toMatchObject({ phase: 'idle', roads: null });
+        expect(detect).toHaveBeenCalledTimes(1);
+
+        await view.refresh(viewport);
+        expect(view.snapshot()).toMatchObject({ phase: 'ready', roads: { features: [] } });
+        view.setEnabled(false);
+        expect(view.snapshot()).toMatchObject({ phase: 'off', roads: null });
+        expect(fetchRoads).toHaveBeenCalledTimes(3);
+        expect(detect).toHaveBeenCalledTimes(2);
+    });
+
     it('surfaces load and detection errors and allows retry', async () => {
         const fetchRoads = vi.fn().mockRejectedValueOnce(new Error('Overpass timeout')).mockResolvedValue({ features: [] });
         const view = controller.create({ fetchRoads, detect: async () => 'blocks', onChange: vi.fn() });

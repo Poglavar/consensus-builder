@@ -134,7 +134,8 @@
                 'css/command-palette.css',
                 'css/world.css',
                 'css/ground-fallback.css',
-                'css/urban-blocks.css'
+                'css/urban-blocks.css',
+                'css/urban-blocks-playground.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -264,19 +265,49 @@
     <div id="map-container">
         <div id="map"></div>
 
-        <!-- Independent OSM block inspector: side panel on desktop, collapsible phone sheet. -->
+        <!-- Independent OSM block browser and inspector: side panel on desktop, collapsible phone sheet. -->
+        <button type="button" id="urban-blocks-open-map" class="btn urban-blocks-open-map" hidden></button>
         <section id="urban-block-panel" class="urban-block-panel right-dock-panel" aria-labelledby="urban-block-panel-title" hidden>
             <header class="urban-block-panel-header">
                 <div class="urban-block-panel-heading">
-                    <h2 id="urban-block-panel-title" data-i18n-key="urbanBlocks.blockTitle">Urban block</h2>
+                    <h2 id="urban-block-panel-title">Blocks in this area</h2>
                     <span id="urban-block-panel-summary"></span>
                 </div>
                 <button type="button" id="urban-block-copy" class="btn-quiet" data-i18n-key="urbanBlocks.copyLink" data-i18n-attr="title,aria-label" title="Copy block link" aria-label="Copy block link"><i class="fas fa-link" aria-hidden="true"></i></button>
                 <button type="button" id="urban-block-fit" class="btn-quiet" data-i18n-key="urbanBlocks.fit" data-i18n-attr="title,aria-label" title="Fit whole block" aria-label="Fit whole block"><i class="fas fa-expand" aria-hidden="true"></i></button>
-                <button type="button" id="urban-block-collapse" class="btn-quiet" aria-controls="urban-block-panel-body" aria-expanded="true"></button>
+                <button type="button" id="urban-block-collapse" class="btn-quiet" aria-controls="urban-block-list-view urban-block-details-view" aria-expanded="true"></button>
                 <button type="button" id="urban-block-close" class="close-circle-btn" data-i18n-key="urbanBlocks.close" data-i18n-attr="title,aria-label" title="Close block details" aria-label="Close block details">×</button>
             </header>
-            <div id="urban-block-panel-body" class="urban-block-info"></div>
+            <div id="urban-block-list-view" class="urban-block-list-view">
+                <div class="urban-block-list-controls">
+                    <label><span data-i18n-key="urbanBlocks.colorBy">Colors</span>
+                        <select id="urban-blocks-color-by">
+                            <option value="distinct" data-i18n-key="urbanBlocks.distinctColors">Distinct blocks</option>
+                            <option value="walk" data-i18n-key="urbanBlocks.walkColors">Walking time</option>
+                        </select>
+                    </label>
+                    <label id="urban-blocks-threshold-control" hidden><span data-i18n-key="urbanBlocks.walkThreshold">Threshold</span>
+                        <select id="urban-blocks-threshold">
+                            <option value="5">5 min</option>
+                            <option value="10" selected>10 min</option>
+                            <option value="15">15 min</option>
+                            <option value="20">20 min</option>
+                            <option value="30">30 min</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="urban-blocks-legend" class="urban-blocks-legend" hidden></div>
+                <div class="urban-block-list-status-row">
+                    <p id="urban-block-list-status" class="urban-block-info-note" role="status" aria-live="polite"></p>
+                    <button type="button" id="urban-block-list-refresh" class="btn-quiet" data-i18n-key="urbanBlocks.refresh" data-i18n-attr="title,aria-label" title="Refresh this area" aria-label="Refresh this area"><i class="fas fa-sync-alt" aria-hidden="true"></i></button>
+                </div>
+                <ol id="urban-block-list" class="urban-block-list"></ol>
+                <p class="urban-block-info-note" data-i18n-key="urbanBlocks.listNote">Complete blocks in the loaded area, including its edges. Walking estimates use the outer perimeter at 5 km/h.</p>
+            </div>
+            <div id="urban-block-details-view" class="urban-block-details-view" hidden>
+                <button type="button" id="urban-block-back" class="btn-quiet urban-block-back"><span aria-hidden="true">←</span> <span data-i18n-key="urbanBlocks.listTitle">Blocks in this area</span></button>
+                <div id="urban-block-panel-body" class="urban-block-info"></div>
+            </div>
         </section>
 
         <!-- Floating status toast: the latest status line, always visible, small and out of the way.
@@ -467,6 +498,7 @@
                         </div>
                         <p id="urban-blocks-status" class="sheet-note" role="status" aria-live="polite">Load OSM roads, then colour the enclosed blocks. Parcel data is optional.</p>
                         <button type="button" id="urban-blocks-refresh" class="btn" disabled>Refresh this area</button>
+                        <button type="button" id="urban-blocks-browse" class="btn" data-i18n-key="urbanBlocks.browse" disabled>Browse blocks</button>
                     </div>
                 </div>
 
@@ -1697,6 +1729,7 @@
             'js/urban-blocks-controller.js',
             'js/urban-blocks-layout.js',
             'js/urban-blocks-links.js',
+            'js/urban-blocks-playground.js',
             'js/urban-blocks-view.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',

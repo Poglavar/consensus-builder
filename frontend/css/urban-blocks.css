@@ -15,7 +15,7 @@
     box-shadow: var(--cb-shadow-md);
     z-index: var(--cb-z-panel);
 }
-.urban-block-panel[hidden] { display: none; }
+.urban-block-panel [hidden], .urban-block-panel[hidden], .urban-blocks-open-map[hidden] { display: none; }
 .urban-block-panel-header {
     display: flex;
     align-items: center;
@@ -29,6 +29,29 @@
 #urban-block-panel-summary { font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
 .urban-block-panel-header .btn-quiet { min-width: var(--cb-control-height); min-height: var(--cb-control-height); padding: 0; }
 .urban-block-info { padding: var(--cb-space-4); overflow-y: auto; font-size: var(--cb-text-md); line-height: var(--cb-leading); }
+.urban-block-details-view { display: flex; flex-direction: column; min-height: 0; }
+.urban-block-back { align-self: flex-start; margin: var(--cb-space-1) var(--cb-space-3) 0; flex-shrink: 0; }
+.urban-block-list-view { padding: var(--cb-space-3); overflow-y: auto; min-height: 0; overscroll-behavior: contain; }
+.urban-block-list-controls { display: flex; gap: var(--cb-space-3); align-items: end; }
+.urban-block-list-controls label { display: flex; flex-direction: column; gap: var(--cb-space-1); min-width: 0; flex: 1; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+.urban-block-list-controls select { width: 100%; min-width: 0; min-height: var(--cb-control-height); font-size: var(--cb-text-md); }
+.urban-blocks-legend { display: flex; flex-wrap: wrap; gap: var(--cb-space-3); margin-top: var(--cb-space-2); font-size: var(--cb-text-sm); }
+.urban-blocks-legend > span { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
+.urban-block-swatch { display: inline-block; width: var(--cb-space-3); height: var(--cb-space-3); flex-shrink: 0; border-radius: var(--cb-radius-sm); }
+.urban-block-list-status-row { display: flex; align-items: center; gap: var(--cb-space-2); margin-block: var(--cb-space-2); }
+.urban-block-list-status-row p { margin: 0; flex: 1; }
+.urban-block-list-status-row button { min-width: var(--cb-control-height); min-height: var(--cb-control-height); flex-shrink: 0; }
+.urban-block-list { margin: 0; padding: 0; list-style: none; }
+.urban-block-list > li + li { border-top: 1px solid var(--cb-line); }
+.urban-block-list button { display: flex; align-items: center; gap: var(--cb-space-2); width: 100%; min-height: var(--cb-control-height-lg); padding: var(--cb-space-3) var(--cb-space-1); color: var(--cb-text); background: transparent; border: 0; border-radius: var(--cb-radius-sm); text-align: left; font: inherit; cursor: pointer; }
+.urban-block-list button:hover, .urban-block-list button[aria-current="true"] { background: var(--cb-primary-soft); }
+.urban-block-list button:focus-visible { outline: 2px solid var(--cb-primary); outline-offset: -2px; }
+.urban-block-rank { min-width: 2ch; font-size: var(--cb-text-sm); color: var(--cb-text-muted); text-align: right; }
+.urban-block-row-description { display: flex; flex-direction: column; gap: var(--cb-space-1); flex: 1; min-width: 0; }
+.urban-block-row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cb-text-md); }
+.urban-block-row-metrics { font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+.urban-block-row-walk { flex-shrink: 0; font-size: var(--cb-text-md); font-variant-numeric: tabular-nums; }
+.urban-blocks-open-map { position: absolute; top: var(--map-shell-top-clearance); right: var(--right-dock-gap); z-index: var(--cb-z-panel); box-shadow: var(--cb-shadow-md); }
 .urban-block-info dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--cb-space-2) var(--cb-space-3); margin: 0; }
 .urban-block-info dt { color: var(--cb-text-muted); }
 .urban-block-info dd { margin: 0; font-weight: var(--cb-weight-semibold); text-align: right; }
@@ -40,7 +63,7 @@
 .urban-block-target-summary .btn { flex-shrink: 0; }
 .urban-block-target label { display: flex; align-items: center; justify-content: space-between; gap: var(--cb-space-2); }
 .urban-block-target select { max-width: 55%; }
-.urban-block-panel.is-collapsed .urban-block-info { display: none; }
+.urban-block-panel.is-collapsed .urban-block-list-view, .urban-block-panel.is-collapsed .urban-block-details-view { display: none; }
 body.urban-blocks-active #map { cursor: pointer; }
 @media (max-width: 767.98px) {
     .urban-block-panel {

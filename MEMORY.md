@@ -519,3 +519,10 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - Avenue V currently has five public unit reconstructions, one with conflicting floor labels, and no verified whole-floor registration; preserve the unknown building areas.
 
 - A listing can embed other apartments in project tables and recommendation cards; archive their sources, but assign a plan only to its evidenced row/card owner and never treat the first card as the page listing.
+
+- 2026-10-07: Urban-block subdivision stays a read-only playground: live candidate visibility is separate from generating splits, pieces must satisfy both target area and maximum side, and shared links carry the chosen split geometry so recipients reopen the same layout without running a new search.
+- 2026-10-07: Perimeter fallback candidates use one cyclic walk from real junctions or alley entrances, restarting spacing at each encountered connection; split generation reuses the displayed candidates so its geometry remains inspectable.
+- 2026-10-07: T-junction candidates come from road connections on the enclosing road network and project to the nearest block boundary point, including corner and oblique approaches whose straight continuation would miss the block.
+- 2026-10-07: Connected blind alleys also provide candidates by extending their last road segment straight to the first outer block boundary; courtyard obstructions stop the projection, and only the gap beyond the existing alley counts as new street length.
+- 2026-10-07: Candidate road topology excludes `area=yes` street outlines. Mapped street areas establish the gap between adjacent road centreline junctions and block edges; an alley ending at a street-area edge can continue into the block and project to its opposite border.
+- 2026-10-07: Playground split limits are maximum block area in m² and maximum tolerated side length; coherent, compact shapes rank independently of those ceilings. Result pieces show their areas and distinct shades over any loaded cadastral borders.

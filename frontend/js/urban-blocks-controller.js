@@ -21,19 +21,19 @@
 
     function create({ fetchRoads, detect, onChange }) {
         let version = 0, pending = null;
-        let state = { enabled: false, phase: 'off', blocks: null, coverage: null, roadCount: 0, error: '' };
+        let state = { enabled: false, phase: 'off', blocks: null, roads: null, coverage: null, roadCount: 0, error: '' };
         const emit = patch => { state = { ...state, ...patch }; onChange(state); };
         function cancel() { version++; pending?.abort(); pending = null; }
         function setEnabled(enabled) {
             cancel();
-            emit({ enabled, phase: enabled ? 'idle' : 'off', blocks: null, coverage: null, error: '', roadCount: 0 });
+            emit({ enabled, phase: enabled ? 'idle' : 'off', blocks: null, roads: null, coverage: null, error: '', roadCount: 0 });
         }
         async function refresh(viewport, force = false) {
             if (!state.enabled) return;
             const bbox = requestBounds(viewport);
             if (!bbox) {
                 cancel();
-                emit({ phase: 'zoom', blocks: null, coverage: null, roadCount: 0 });
+                emit({ phase: 'zoom', blocks: null, roads: null, coverage: null, roadCount: 0 });
                 return;
             }
             if (!force && state.phase === 'ready' && contains(state.coverage, viewport.bbox)) return;
@@ -46,7 +46,7 @@
             const controller = new AbortController();
             pending = controller;
             const current = () => state.enabled && version === ownVersion;
-            emit({ phase: 'roads', blocks: null, coverage: null, error: '', roadCount: 0 });
+            emit({ phase: 'roads', blocks: null, roads: null, coverage: null, error: '', roadCount: 0 });
             try {
                 const roads = await fetchRoads(bbox, controller.signal);
                 if (!current()) return;
@@ -54,10 +54,10 @@
                 emit({ phase: 'blocks', roadCount: roads.features.length });
                 const blocks = await detect(roads, bbox, controller.signal);
                 if (!current()) return;
-                emit({ phase: 'ready', blocks, coverage: bbox });
+                emit({ phase: 'ready', blocks, roads, coverage: bbox });
             } catch (error) {
                 if (!current()) return;
-                emit({ phase: 'error', blocks: null, coverage: null, error: error.message });
+                emit({ phase: 'error', blocks: null, roads: null, coverage: null, error: error.message });
             } finally {
                 if (current()) pending = null;
             }

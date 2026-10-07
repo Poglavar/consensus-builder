@@ -10,6 +10,7 @@
         'residential', 'living_street', 'pedestrian', 'service', 'motorway_link', 'trunk_link',
         'primary_link', 'secondary_link', 'tertiary_link']);
     const COLORS = ['#ea9575', '#65b8a6', '#9c97ce', '#e4bc58', '#76a8cf', '#ce86ae', '#a0ba68', '#dd9e55'];
+    const WALK_COLORS = Object.freeze({ within: '#0e7490', over: '#d97706' });
     const coord = p => p.map(v => Math.round(v * 1e9) / 1e9);
     const key = p => p.join(',');
     const edgeKey = (a, b) => [key(a), key(b)].sort().join('|');
@@ -23,6 +24,10 @@
         return HIGHWAYS.has(properties.highway || properties.highway_type)
             && !activeTag(properties.bridge) && !activeTag(properties.tunnel)
             && Number.isFinite(layer) && layer === 0 && properties.location !== 'underground';
+    }
+
+    function isRoadArea(properties = {}) {
+        return ['yes', 'true', '1'].includes(String(properties.area));
     }
 
     // Noding is necessary before polygonize: a crossing inside either segment must become a
@@ -190,6 +195,18 @@
         return ids.size;
     }
 
+    // Include spanning parcels too: SVG clipping shows only their borders inside this block.
+    // Input comes from the immutable cadastral repository, never from proposal geometry.
+    function parcelsInBlock(block, parcels, turf) {
+        const bbox = turf.bbox(block);
+        return turf.featureCollection((parcels || []).filter(parcel => {
+            if (!['Polygon', 'MultiPolygon'].includes(parcel.geometry?.type)) return false;
+            const extent = turf.bbox(parcel);
+            return extent[0] <= bbox[2] && extent[2] >= bbox[0] && extent[1] <= bbox[3] && extent[3] >= bbox[1]
+                && turf.booleanIntersects(parcel, block);
+        }));
+    }
+
     // A transparent area scenario, not a subdivision design: new streets and irregular shapes
     // will change the result. Keep at least one block and round up to meet the target area.
     function targetBlockCount(areaM2, targetSideM = 100) {
@@ -197,5 +214,20 @@
         return Math.max(1, Math.ceil(areaM2 / (targetSideM * targetSideM)));
     }
 
-    return { detectBlocks, nodeRoads, metrics, loadedParcelCount, isGroundRoad, targetBlockCount };
+    // Rank the complete loaded enclosures without mutating the detection result. Raw perimeter
+    // decides the order (and therefore walking time at a fixed speed); IDs break exact ties.
+    function rankBlocks(features) {
+        return features.slice().sort((a, b) => b.properties.perimeterM - a.properties.perimeterM || a.id.localeCompare(b.id));
+    }
+
+    function walkBand(minutes, thresholdMinutes) {
+        return minutes > thresholdMinutes ? 'over' : 'within';
+    }
+
+    function blockColor(feature, colorBy, thresholdMinutes) {
+        return colorBy === 'walk' ? WALK_COLORS[walkBand(feature.properties.walkMinutes, thresholdMinutes)] : feature.properties.color;
+    }
+
+    return { detectBlocks, nodeRoads, metrics, loadedParcelCount, parcelsInBlock, isGroundRoad, isRoadArea, targetBlockCount,
+        rankBlocks, walkBand, blockColor, WALK_COLORS };
 });

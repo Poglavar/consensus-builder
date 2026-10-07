@@ -1,11 +1,12 @@
 // Standalone OSM urban-block overlay and inspector. Owns map clicks while enabled, keeps roads
-// invisible, and reads loaded cadastral parcels only as an optional statistic.
+// invisible, and reads loaded cadastral parcels for the optional count and playground overlay.
 (function (win) {
     'use strict';
     if (!win?.document) return;
     const doc = win.document;
     const PANE = 'urbanBlocksPane';
-    let layer = null, selectionLayer = null, selected = null, wired = false, fitting = false;
+    let layer = null, selectionLayer = null, selected = null, selectedRoads = null, wired = false, fitting = false;
+    let panelMode = 'list', rankedBlocks = [], colorBy = 'distinct', walkThresholdMinutes = 10;
     let targetSideM = 100;
     let linkedBlock = win.UrbanBlocksLinks.parse(win.location.href);
     const el = id => doc.getElementById(id);
@@ -45,18 +46,102 @@
         });
     }
 
+    const blockColor = feature => win.UrbanBlocksModel.blockColor(feature, colorBy, walkThresholdMinutes);
+    function selectionStyle(feature) {
+        return { color: '#173954', weight: 3, fillColor: blockColor(feature), fillOpacity: 0.65 };
+    }
     function style(feature) {
         const active = feature.id === selected?.id;
         return { color: '#ffffff', weight: 1, opacity: active ? 0 : 1,
-            fillColor: feature.properties.color, fillOpacity: active ? 0 : 0.38 };
+            fillColor: blockColor(feature), fillOpacity: active ? 0 : 0.38 };
     }
     function clearSelection() {
         if (selected) clearBlockUrl();
         selected = null;
+        selectedRoads = null;
         if (selectionLayer) win.map.removeLayer(selectionLayer);
         selectionLayer = null;
-        el('urban-block-panel').hidden = true;
         layer?.setStyle(style);
+    }
+
+    function updatePanel() {
+        const details = panelMode === 'details' && selected;
+        const state = controller.snapshot();
+        el('urban-block-list-view').hidden = !!details;
+        el('urban-block-details-view').hidden = !details;
+        el('urban-block-copy').hidden = el('urban-block-fit').hidden = !details;
+        el('urban-block-panel-title').textContent = details ? t('blockTitle', 'Urban block') : t('listTitle', 'Blocks in this area');
+        el('urban-block-panel-summary').textContent = details
+            ? `${format(selected.properties.areaM2)} m² · ${format(selected.properties.walkMinutes, 1)} min`
+            : state.phase === 'ready' ? t('listCount', '{{count}} blocks · Longest perimeter first', { count: format(rankedBlocks.length) }) : '';
+        el('urban-blocks-open-map').hidden = !state.enabled || !el('urban-block-panel').hidden;
+        el('urban-blocks-open-map').textContent = t('mapBrowse', 'Blocks · {{count}}', { count: format(rankedBlocks.length) });
+        for (const row of el('urban-block-list').querySelectorAll('button[data-block-id]')) {
+            if (row.dataset.blockId === selected?.id) row.setAttribute('aria-current', 'true');
+            else row.removeAttribute('aria-current');
+        }
+        updateCollapse();
+    }
+
+    function showList() {
+        closeOtherPanels();
+        panelMode = 'list';
+        el('urban-block-panel').hidden = false;
+        el('urban-block-panel').classList.remove('is-collapsed');
+        updatePanel(); fitSelected();
+    }
+
+    function closePanel() {
+        clearSelection();
+        el('urban-block-panel').hidden = true;
+        updatePanel();
+    }
+
+    function renderList(state, message) {
+        rankedBlocks = win.UrbanBlocksModel.rankBlocks(state.blocks?.features || []);
+        const walking = colorBy === 'walk';
+        el('urban-blocks-threshold-control').hidden = !walking;
+        const legend = el('urban-blocks-legend');
+        legend.hidden = !walking;
+        const swatch = color => {
+            const node = doc.createElement('span'); node.className = 'urban-block-swatch';
+            node.style.backgroundColor = color; node.setAttribute('aria-hidden', 'true');
+            return node;
+        };
+        legend.replaceChildren(...['within', 'over'].map(band => {
+            const item = doc.createElement('span');
+            item.append(swatch(win.UrbanBlocksModel.WALK_COLORS[band]),
+                `${band === 'within' ? '≤' : '>'} ${format(walkThresholdMinutes)} min`);
+            return item;
+        }));
+        const overCount = rankedBlocks.filter(block => win.UrbanBlocksModel.walkBand(block.properties.walkMinutes, walkThresholdMinutes) === 'over').length;
+        el('urban-block-list-status').textContent = state.phase === 'ready' && rankedBlocks.length
+            ? walking ? t('overThreshold', '{{count}} above {{minutes}} min', { count: format(overCount), minutes: format(walkThresholdMinutes) })
+                : t('listHint', 'Select a row to frame and inspect its block.')
+            : message;
+        el('urban-block-list-status').setAttribute('role', state.phase === 'error' ? 'alert' : 'status');
+        el('urban-block-list-refresh').disabled = !state.enabled || ['roads', 'blocks'].includes(state.phase);
+        const rows = rankedBlocks.map((feature, index) => {
+            const item = doc.createElement('li');
+            const button = doc.createElement('button'); button.type = 'button'; button.dataset.blockId = feature.id;
+            const rank = doc.createElement('span'); rank.className = 'urban-block-rank'; rank.textContent = format(index + 1);
+            const description = doc.createElement('span'); description.className = 'urban-block-row-description';
+            const name = doc.createElement('strong'); name.className = 'urban-block-row-name';
+            name.textContent = feature.properties.streets.join(' · ') || t('unnamedBlock', 'Unnamed streets');
+            name.title = name.textContent;
+            const metrics = doc.createElement('span'); metrics.className = 'urban-block-row-metrics';
+            metrics.textContent = t('rowMetrics', '{{perimeter}} m around · {{area}} ha', {
+                perimeter: format(feature.properties.perimeterM), area: format(feature.properties.areaM2 / 10000, 2)
+            });
+            description.append(name, metrics);
+            const walk = doc.createElement('strong'); walk.className = 'urban-block-row-walk';
+            walk.textContent = `≈ ${format(feature.properties.walkMinutes, 1)} min`;
+            button.append(rank, swatch(blockColor(feature)), description, walk);
+            button.addEventListener('click', () => { showBlock(feature); el('urban-block-back').focus({ preventScroll: true }); });
+            item.append(button); return item;
+        });
+        el('urban-block-list').replaceChildren(...rows);
+        updatePanel();
     }
     function render(state) {
         const messages = {
@@ -74,6 +159,7 @@
         el('urban-blocks-status').setAttribute('role', state.phase === 'error' ? 'alert' : 'status');
         el('urban-blocks-refresh').disabled = !state.enabled || ['roads', 'blocks'].includes(state.phase);
         el('urban-blocks-refresh').textContent = t(state.phase === 'error' ? 'retry' : 'refresh', state.phase === 'error' ? 'Retry road loading' : 'Refresh this area');
+        el('urban-blocks-browse').disabled = !state.enabled;
         doc.body.classList.toggle('urban-blocks-active', state.enabled);
         if (state.phase === 'ready') {
             if (layer) win.map.removeLayer(layer);
@@ -91,7 +177,12 @@
                 const feature = state.blocks.features.find(block => block.id === link.blockId);
                 if (feature) {
                     targetSideM = link.targetSideM;
+                    const incomingUrl = win.location.href;
                     showBlock(feature);
+                    if (link.subdivision || link.subdivisionError) {
+                        openSharedPlayground(link);
+                        if (link.subdivision) win.history.replaceState(win.history.state, '', incomingUrl);
+                    }
                 } else {
                     clearBlockUrl();
                     win.showEphemeralMessage(t('linkMissing', 'This block’s outline has changed or is unavailable. Select a block on the map.'));
@@ -100,10 +191,11 @@
         } else if (!['roads', 'blocks'].includes(state.phase)) {
             // Inspection owns a separate polygon. Framing a large block can cross the loading
             // zoom limit or start another road request without losing the block being inspected.
-            if (['off', 'idle'].includes(state.phase)) clearSelection();
+            if (['off', 'idle'].includes(state.phase)) closePanel();
             if (layer) win.map.removeLayer(layer);
             layer = null;
         }
+        renderList(state, messages[state.phase]);
     }
 
     const controller = win.UrbanBlocksController.create({ fetchRoads, detect, onChange: render });
@@ -127,6 +219,26 @@
             city: win.CityConfigManager.getCurrentCityId(), blockId: selected.id,
             bbox: win.turf.bbox(selected), targetSideM });
     }
+    function openSharedPlayground(link) {
+        win.UrbanBlocksPlayground.open({ block: selected, roads: selectedRoads, targetSideM: link.targetSideM,
+            parcels: playgroundParcels(), subdivision: link.subdivision, shareError: link.subdivisionError, shareBaseUrl: selectedLink() });
+    }
+    function followSharedLayout() {
+        const link = win.UrbanBlocksLinks.parse(win.location.href);
+        if (!link || (!link.subdivision && !link.subdivisionError)) return;
+        if (selected?.id === link.blockId && selectedRoads) {
+            targetSideM = link.targetSideM;
+            renderInfo();
+            openSharedPlayground(link);
+        } else {
+            const incomingUrl = win.location.href;
+            linkedBlock = link;
+            el('showUrbanBlocks').checked = true;
+            controller.setEnabled(true);
+            win.history.replaceState(win.history.state, '', incomingUrl);
+            showList(); refresh(true);
+        }
+    }
     function updateBlockUrl() {
         const link = selectedLink();
         if (link) win.history.replaceState(win.history.state, '', link);
@@ -135,6 +247,8 @@
     function clearBlockUrl() {
         const url = new URL(win.location.href);
         for (const key of ['block', 'blockBounds', 'blockSize']) url.searchParams.delete(key);
+        const hash = new URLSearchParams(url.hash.slice(1));
+        if (hash.has('splits')) { hash.delete('splits'); url.hash = hash.toString(); }
         win.history.replaceState(win.history.state, '', url);
     }
     async function copyBlockLink() {
@@ -189,8 +303,12 @@
         icon.className = `fas fa-chevron-${collapsed ? 'up' : 'down'}`;
         icon.setAttribute('aria-hidden', 'true');
         button.replaceChildren(icon);
-        button.title = button.ariaLabel = t(collapsed ? 'expand' : 'collapse', collapsed ? 'Expand block details' : 'Collapse block details');
+        button.title = button.ariaLabel = t(collapsed ? 'expand' : 'collapse', collapsed ? 'Expand block panel' : 'Collapse block panel');
         button.setAttribute('aria-expanded', String(!collapsed));
+    }
+
+    function playgroundParcels(parcels = win.CadastralParcelRepository?.list?.() || []) {
+        return win.UrbanBlocksModel.parcelsInBlock(selected, parcels, win.turf);
     }
 
     function updateParcelCount() {
@@ -198,7 +316,9 @@
         let count = null;
         // Failure or absence of optional parcel data must never prevent geometry inspection.
         try {
-            count = win.UrbanBlocksModel.loadedParcelCount(selected, win.CadastralParcelRepository?.list?.() || [], win.turf);
+            const parcels = win.CadastralParcelRepository?.list?.() || [];
+            count = win.UrbanBlocksModel.loadedParcelCount(selected, parcels, win.turf);
+            win.UrbanBlocksPlayground.updateParcels(playgroundParcels(parcels));
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [urban-blocks] Optional parcel count unavailable: ${error.message}`);
         }
@@ -212,13 +332,14 @@
         const result = doc.createElement('strong'); result.setAttribute('aria-live', 'polite');
         const preview = doc.createElement('button');
         preview.id = 'urban-block-see-how'; preview.type = 'button'; preview.className = 'btn';
-        preview.disabled = true;
         preview.textContent = t('seeHow', 'See how');
-        preview.title = t('seeHowSoon', 'Block layout preview is coming soon.');
+        preview.disabled = !selectedRoads;
+        preview.addEventListener('click', () => win.UrbanBlocksPlayground.open({ block: feature, roads: selectedRoads,
+            parcels: playgroundParcels(), targetSideM, shareBaseUrl: selectedLink() }));
         summary.append(result, preview);
         const label = doc.createElement('label'); label.textContent = t('targetSize', 'Target block size');
         const input = doc.createElement('select'); input.id = 'urban-block-target-size';
-        for (const size of [50, 100, 150, 200]) {
+        for (const size of [50, 75, 100, 150, 200]) {
             const option = doc.createElement('option'); option.value = size;
             option.textContent = `${format(size)} × ${format(size)} m`;
             input.append(option);
@@ -264,10 +385,8 @@
 
     function renderInfo() {
         if (!selected) return;
-        el('urban-block-panel-title').textContent = t('blockTitle', 'Urban block');
-        el('urban-block-panel-summary').textContent = `${format(selected.properties.areaM2)} m² · ${format(selected.properties.walkMinutes, 1)} min`;
         el('urban-block-panel-body').replaceChildren(infoContent(selected));
-        updateParcelCount(); updateCollapse();
+        updateParcelCount(); updatePanel();
     }
 
     function selectAt(latlng) {
@@ -280,16 +399,22 @@
         showBlock(feature);
     }
 
-    function showBlock(feature) {
-        clearSelection();
-        if (!feature) return;
+    function closeOtherPanels() {
         win.MapShell?.closeSheets?.();
         win.ParcelMenu?.close?.(); win.GroundMenu?.close?.();
         win.hideParcelInfoPanel?.(); win.__drillUi?.hidePanel?.();
+    }
+
+    function showBlock(feature) {
+        const roads = feature && feature.id === selected?.id ? selectedRoads : controller.snapshot().roads;
+        clearSelection();
+        if (!feature) { closePanel(); return; }
+        closeOtherPanels();
         selected = feature;
+        selectedRoads = roads;
+        panelMode = 'details';
         layer?.setStyle(style);
-        selectionLayer = win.L.geoJSON(feature, { pane: PANE, interactive: false,
-            style: { color: '#173954', weight: 3, fillColor: feature.properties.color, fillOpacity: 0.65 } }).addTo(win.map);
+        selectionLayer = win.L.geoJSON(feature, { pane: PANE, interactive: false, style: selectionStyle }).addTo(win.map);
         el('urban-block-panel').classList.remove('is-collapsed');
         el('urban-block-panel').hidden = false;
         renderInfo(); fitSelected(); updateBlockUrl();
@@ -315,12 +440,24 @@
             else url.searchParams.delete('blocks');
             win.history.replaceState(win.history.state, '', url);
             if (controller.snapshot().enabled) {
-                win.ParcelMenu?.close?.(); win.GroundMenu?.close?.(); win.hideParcelInfoPanel?.();
-                refresh();
+                showList(); refresh();
             }
         });
-        el('urban-blocks-refresh').addEventListener('click', () => refresh(true));
-        el('urban-block-close').addEventListener('click', clearSelection);
+        for (const id of ['urban-blocks-refresh', 'urban-block-list-refresh']) el(id).addEventListener('click', () => {
+            clearSelection(); showList(); refresh(true);
+        });
+        for (const id of ['urban-blocks-browse', 'urban-blocks-open-map', 'urban-block-back']) el(id).addEventListener('click', () => {
+            showList();
+            const rows = el('urban-block-list');
+            (rows.querySelector('[aria-current="true"]') || rows.querySelector('button'))?.focus({ preventScroll: true });
+        });
+        for (const id of ['urban-blocks-color-by', 'urban-blocks-threshold']) el(id).addEventListener('change', () => {
+            colorBy = el('urban-blocks-color-by').value;
+            walkThresholdMinutes = Number(el('urban-blocks-threshold').value);
+            layer?.setStyle(style); selectionLayer?.setStyle(selectionStyle);
+            renderList(controller.snapshot(), el('urban-blocks-status').textContent);
+        });
+        el('urban-block-close').addEventListener('click', closePanel);
         el('urban-block-copy').addEventListener('click', copyBlockLink);
         el('urban-block-fit').addEventListener('click', fitSelected);
         el('urban-block-collapse').addEventListener('click', () => {
@@ -333,13 +470,14 @@
         resizeObserver.observe(el('urban-block-panel'));
         resizeObserver.observe(win.map.getContainer());
         win.addEventListener('parcelFabricCommitted', updateParcelCount);
+        win.addEventListener('hashchange', followSharedLayout);
         win.addEventListener('cityChanged', () => {
             if (linkedBlock?.city && linkedBlock.city !== win.CityConfigManager.getCurrentCityId()) {
                 linkedBlock = null;
                 clearBlockUrl();
             }
             controller.setEnabled(el('showUrbanBlocks').checked);
-            if (controller.snapshot().enabled) refresh();
+            if (controller.snapshot().enabled) { showList(); refresh(); }
         });
         win.map.getContainer().addEventListener('click', captureClick, true);
         const translate = () => { render(controller.snapshot()); renderInfo(); };
@@ -348,7 +486,7 @@
         render(controller.snapshot());
         if (linkedBlock || new URLSearchParams(win.location.search).get('blocks') === '1') {
             el('showUrbanBlocks').checked = true;
-            controller.setEnabled(true); refresh();
+            controller.setEnabled(true); showList(); refresh();
         }
     }
     win.UrbanBlocksView = { initialize, isEnabled: () => controller.snapshot().enabled, ownsClicks, selectAt,
