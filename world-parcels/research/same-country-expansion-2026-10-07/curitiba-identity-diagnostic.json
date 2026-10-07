@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-07",
+  "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+  "bbox": [
+    -49.2725,
+    -25.4275,
+    -49.269999999999996,
+    -25.425
+  ],
+  "rowCount": 129,
+  "uniqueNativeIds": 128,
+  "duplicateGroups": [
+    {
+      "nativeId": " ",
+      "sourceRows": 1600,
+      "nullLotCodeRows": 1600,
+      "nullBlockCodeRows": 1600,
+      "interpretation": "A single-space fiscal value is unassigned, not a parcel identity."
+    }
+  ]
+}

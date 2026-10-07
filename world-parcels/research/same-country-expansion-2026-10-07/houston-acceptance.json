@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "houston",
+      "sourceId": "us-tx-harris-hcad-parcels",
+      "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.3725,
+            29.7575,
+            -95.37,
+            29.76
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.37,
+            29.7575,
+            -95.3675,
+            29.76
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.3675,
+            29.7575,
+            -95.36500000000001,
+            29.76
+          ],
+          "count": 155,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.3725,
+            29.76,
+            -95.37,
+            29.762500000000003
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.37,
+            29.76,
+            -95.3675,
+            29.762500000000003
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.3675,
+            29.76,
+            -95.36500000000001,
+            29.762500000000003
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.3725,
+            29.762500000000003,
+            -95.37,
+            29.765
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.37,
+            29.762500000000003,
+            -95.3675,
+            29.765
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.3675,
+            29.762500000000003,
+            -95.36500000000001,
+            29.765
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36500000000001,
+            29.7575,
+            -95.36250000000001,
+            29.76
+          ],
+          "count": 310,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36250000000001,
+            29.7575,
+            -95.36,
+            29.76
+          ],
+          "count": 185,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36,
+            29.7575,
+            -95.3575,
+            29.76
+          ],
+          "count": 37,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36500000000001,
+            29.76,
+            -95.36250000000001,
+            29.762500000000003
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36250000000001,
+            29.76,
+            -95.36,
+            29.762500000000003
+          ],
+          "count": 151,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36,
+            29.76,
+            -95.3575,
+            29.762500000000003
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36500000000001,
+            29.762500000000003,
+            -95.36250000000001,
+            29.765
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36250000000001,
+            29.762500000000003,
+            -95.36,
+            29.765
+          ],
+          "count": 258,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -95.36,
+            29.762500000000003,
+            -95.3575,
+            29.765
+          ],
+          "count": 214,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -95.3725,
+          29.76,
+          -95.37,
+          29.762500000000003
+        ],
+        "forcedPageSize": 3,
+        "count": 7,
+        "returned": 7,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 851,
+      "exactResolved": 851,
+      "nativeIds": [
+        "0400030000014",
+        "0400030000013",
+        "1035350000018"
+      ],
+      "footprintCount": 7,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-tx-harris-hcad-parcels",
+        "parcels": 1,
+        "siteM2": 15149.88
+      },
+      "requests": 213
+    }
+  ]
+}

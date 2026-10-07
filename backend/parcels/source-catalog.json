@@ -3385,6 +3385,197 @@
         "Blank and zero parcel keys are excluded. The 674 zero-key rows share a blank RECORD_ value and cannot identify individual parcels; zero as an unassigned placeholder is an inference.",
         "All parts of a native PARCEL_ID must agree on RECORD_ and have no material overlap; ambiguous groups fail visibly."
       ]
+    },
+    {
+      "id": "us-tx-harris-hcad-parcels",
+      "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+      "idField": "HCAD_NUM",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-HCAD-",
+      "outFields": [
+        "OBJECTID",
+        "HCAD_NUM",
+        "acct_num"
+      ],
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "disjointParts": true,
+      "partMatchFields": [
+        "acct_num"
+      ],
+      "attributeNotNull": [
+        "HCAD_NUM"
+      ],
+      "scope": "Identified HCAD account parcels in Harris County, Texas; Houston portions outside Harris County are not covered.",
+      "adapter": "arcgis",
+      "name": "Harris County HCAD account parcels",
+      "cityIds": [
+        "houston"
+      ],
+      "countryCode": "US",
+      "metricSrid": 32615,
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "partsCoordinatePrecision": 9,
+      "operator": "Harris County Appraisal District / Harris County GIS",
+      "catalogueUrl": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+      "coverageNote": "Harris County identified account parcels; other Houston counties excluded",
+      "caveats": [
+        "Two source rows without an HCAD account number are excluded.",
+        "All rows for an account are read; exact duplicate polygons are collapsed and separate components are combined. Non-identical overlapping components or inconsistent acct_num references fail visibly."
+      ],
+      "evidenceFile": "research/same-country-expansion-2026-10-07/houston-acceptance.json",
+      "attribution": "Harris County Appraisal District / Harris County GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "stateCode": "TX"
+    },
+    {
+      "id": "br-curitiba-ippuc-lote-cadastral",
+      "name": "Curitiba cadastral lots — IPPUC",
+      "adapter": "arcgis",
+      "cityIds": [
+        "curitiba"
+      ],
+      "countryCode": "BR",
+      "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+      "idField": "gtm_ind_fiscal",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "BR-CURITIBA-",
+      "outFields": [
+        "objectid",
+        "gtm_ind_fiscal",
+        "gtm_cod_lote",
+        "gtm_cod_quadra"
+      ],
+      "attributeNotNull": [
+        "gtm_ind_fiscal"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32722,
+      "attributeExclusions": {
+        "gtm_ind_fiscal": [
+          "",
+          " "
+        ]
+      },
+      "operator": "IPPUC / Prefeitura de Curitiba",
+      "catalogueUrl": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+      "scope": "Curitiba municipal cadastral lots with a nonblank native fiscal indication; unassigned records are excluded.",
+      "coverageNote": "Curitiba municipal cadastral lots with fiscal identifiers",
+      "caveats": [
+        "Null, empty and single-space fiscal identifiers are excluded; these records cannot identify individual parcels.",
+        "The source describes legal lots and approved subdivision plans. Municipal technical cadastre is not proof of legal title.",
+        "Explicit record-ID manifests replace the provider’s unreliable offset paging; object IDs are only transport tokens."
+      ],
+      "evidenceFile": "research/same-country-expansion-2026-10-07/curitiba-identified-acceptance.json",
+      "attribution": "IPPUC / Prefeitura de Curitiba. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "br-recife-prefeitura-lotes",
+      "countryCode": "BR",
+      "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "idField": "DSQFL",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "BR-RECIFE-",
+      "idType": "string",
+      "attributeNotNull": [
+        "DSQFL"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "disjointParts": true,
+      "outFields": [
+        "OBJECTID",
+        "DSQFL",
+        "DISTRITO",
+        "SETOR",
+        "QUADRA",
+        "FACE",
+        "LOTE"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32725,
+      "scope": "Recife municipal lot polygons identified by the published district/sector/block/face/lot DSQFL code.",
+      "name": "Recife identified lot polygons",
+      "operator": "Prefeitura do Recife",
+      "adapter": "arcgis",
+      "cityIds": [
+        "recife"
+      ],
+      "maxConcurrentQueries": 2,
+      "partMatchFields": [
+        "DISTRITO",
+        "SETOR",
+        "QUADRA",
+        "FACE",
+        "LOTE"
+      ],
+      "catalogueUrl": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "coverageNote": "Recife identified municipal lots; complete components for each lot code",
+      "caveats": [
+        "All components of a DSQFL lot code are read before publication. Components must have consistent district/sector/block/face/lot attributes and no material overlap.",
+        "The alternative SEQIMOVEL field is not used as identity; it is absent or invalid on some lots.",
+        "City scope only; broader Brazilian coverage is not implied."
+      ],
+      "evidenceFile": "research/same-country-expansion-2026-10-07/recife-acceptance.json",
+      "attribution": "Prefeitura do Recife. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "za-ethekwini-cadastral-parcels",
+      "name": "eThekwini municipal cadastral parcels",
+      "adapter": "arcgis",
+      "cityIds": [
+        "durban"
+      ],
+      "countryCode": "ZA",
+      "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "idField": "GlobalID",
+      "idType": "string",
+      "parcelNumberField": "PROPERTYID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ZA-ETHEKWINI-",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID",
+        "PROPERTYID",
+        "PROPKEY"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 25,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32736,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "operator": "eThekwini Municipality, Corporate GIS",
+      "catalogueUrl": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "scope": "Official eThekwini municipal cadastral parcel layer; central Durban viewport and exact-ID acceptance, not a claim of national coverage.",
+      "coverageNote": "eThekwini municipal cadastral parcels; central Durban verified",
+      "caveats": [
+        "The provider’s GlobalID identifies each published parcel feature; PROPERTYID is retained as the displayed cadastral number.",
+        "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+        "Geometry pages are limited to 25 records to stay within the existing upstream timeout."
+      ],
+      "evidenceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json",
+      "attribution": "eThekwini Municipality, Corporate GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
     }
   ]
 }

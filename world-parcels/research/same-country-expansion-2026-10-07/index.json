@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Original top-200 candidates in countries with an existing supported city.",
+  "inventoryFile": "research/same-country-expansion-2026-10-07/candidate-inventory.json",
+  "before": {
+    "configuredCities": 97,
+    "executableProviders": 87,
+    "supportedCountryCodes": [
+      "AE",
+      "AO",
+      "AR",
+      "AU",
+      "BD",
+      "BE",
+      "BJ",
+      "BR",
+      "CA",
+      "CN",
+      "CO",
+      "DE",
+      "ES",
+      "FR",
+      "GB",
+      "HK",
+      "HR",
+      "JO",
+      "JP",
+      "ML",
+      "NL",
+      "OM",
+      "PE",
+      "QA",
+      "RS",
+      "SI",
+      "US",
+      "ZA",
+      "ZM"
+    ],
+    "originalCohortSize": 200,
+    "originalCohortMatchedCities": 34
+  },
+  "after": {
+    "configuredCities": 101,
+    "executableProviders": 91,
+    "originalCohortConfiguredCities": 38,
+    "sameCountryCandidatesRemaining": 46
+  },
+  "investigatedCities": 9,
+  "addedCities": [
+    {
+      "cityId": "houston",
+      "originalCityId": "wup2025:6237",
+      "name": "Houston",
+      "sourceId": "us-tx-harris-hcad-parcels",
+      "sourceNote": "Harris County identified account parcels; other Houston counties excluded",
+      "researchFile": "research/same-country-expansion-2026-10-07/us-research.json",
+      "acceptanceFile": "research/same-country-expansion-2026-10-07/houston-acceptance.json",
+      "viewportCells": 18,
+      "exactNativeIds": 851
+    },
+    {
+      "cityId": "curitiba",
+      "originalCityId": "wup2025:6446",
+      "name": "Curitiba",
+      "sourceId": "br-curitiba-ippuc-lote-cadastral",
+      "sourceNote": "Curitiba municipal cadastral lots with fiscal identifiers",
+      "researchFile": "research/same-country-expansion-2026-10-07/brazil-research.json",
+      "acceptanceFile": "research/same-country-expansion-2026-10-07/curitiba-identified-acceptance.json",
+      "viewportCells": 18,
+      "exactNativeIds": 1568
+    },
+    {
+      "cityId": "recife",
+      "originalCityId": "wup2025:8535",
+      "name": "Recife",
+      "sourceId": "br-recife-prefeitura-lotes",
+      "sourceNote": "Recife identified municipal lots; complete components for each lot code",
+      "researchFile": "research/same-country-expansion-2026-10-07/brazil-research.json",
+      "acceptanceFile": "research/same-country-expansion-2026-10-07/recife-acceptance.json",
+      "viewportCells": 18,
+      "exactNativeIds": 1765
+    },
+    {
+      "cityId": "durban",
+      "originalCityId": "wup2025:5227",
+      "name": "Durban",
+      "sourceId": "za-ethekwini-cadastral-parcels",
+      "sourceNote": "eThekwini municipal cadastral parcels; central Durban verified",
+      "researchFile": "research/same-country-expansion-2026-10-07/durban-tls-research.json",
+      "acceptanceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json",
+      "viewportCells": 18,
+      "exactNativeIds": 1199
+    }
+  ],
+  "verification": {
+    "viewportCells": 72,
+    "uniqueNativeIds": 5383,
+    "exactNativeIds": 5383,
+    "allExactGeometryStable": true,
+    "independentCountsAndForcedPaging": true,
+    "completeFootprintAndSourceBinding": true,
+    "newAdapterImplementations": 0,
+    "reusedAdapter": "arcgis",
+    "headlessTests": {
+      "files": 10,
+      "tests": 174,
+      "failed": 0
+    },
+    "headedBrowser": {
+      "evidenceFile": "research/same-country-expansion-2026-10-07/browser-verification.json",
+      "cities": 4,
+      "initialLoading": true,
+      "pointerSelection": true,
+      "additionalViewportStreaming": true,
+      "pageErrors": 0,
+      "settledSourceAlerts": 0
+    }
+  },
+  "held": [
+    {
+      "city": "Chicago",
+      "sourceId": "us-il-cook-county-clerk-parcels-2021",
+      "reason": "Current Cook County service timed out; the older 2021 PIN10 geometry conflicts remain unresolved.",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/us-research.json"
+    },
+    {
+      "city": "Rio de Janeiro",
+      "sourceId": "br-rio-prefeitura-lotes-2013",
+      "reason": "No durable alternative to repeated lot labels or system row IDs was verified.",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/brazil-research.json"
+    },
+    {
+      "city": "Medellín",
+      "sourceId": "co-medellin-catastro-lote",
+      "reason": "Current VC_Catastro metadata and bounded requests returned the municipal WAF HTTP 500 block.",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
+    },
+    {
+      "city": "Cali",
+      "sourceId": "co-cali-idesc-cat-bas-terrenos",
+      "reason": "Alternative CVC hostnames failed DNS; earlier IDESC native-ID geometry conflicts remain unresolved.",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
+    },
+    {
+      "city": "Johannesburg",
+      "sourceId": "za-giscoe-erven",
+      "reason": "The separate official registered-stands candidate returned sample polygons, but geometry-by-OID pages timed out; no complete runtime acceptance.",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/johannesburg-research.json"
+    }
+  ],
+  "notes": [
+    "No new parcel tables or persistent geometry imports.",
+    "Terms and licences are informational, never integration gates.",
+    "Nine selected candidates were revisited; the inventory does not imply a fresh source search for all 50 same-country candidates.",
+    "Original failed attempts are preserved, including Durban transient timeouts before the successful full run."
+  ]
+}

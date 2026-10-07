@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "method": "Manual headed Chrome inspection using agent-browser; actual pointer selection and map dragging, not a browser test suite.",
+  "frontend": "http://localhost:5638/",
+  "backend": "http://localhost:4638/",
+  "frontendCacheControl": "no-store, must-revalidate",
+  "cities": [
+    {
+      "cityId": "houston",
+      "initialRetainedParcels": 225,
+      "afterDragRetainedParcels": 418,
+      "initialLoadedCells": 9,
+      "afterDragLoadedCells": 12,
+      "realParcelPointerSelection": true,
+      "proposeHereMenuVisible": true,
+      "pageErrors": [],
+      "settledSourceAlerts": []
+    },
+    {
+      "cityId": "curitiba",
+      "initialRetainedParcels": 926,
+      "afterDragRetainedParcels": 1187,
+      "initialLoadedCells": 9,
+      "afterDragLoadedCells": 12,
+      "realParcelPointerSelection": true,
+      "proposeHereMenuVisible": true,
+      "pageErrors": [],
+      "settledSourceAlerts": []
+    },
+    {
+      "cityId": "recife",
+      "initialRetainedParcels": 919,
+      "afterDragRetainedParcels": 1119,
+      "initialLoadedCells": 9,
+      "afterDragLoadedCells": 12,
+      "realParcelPointerSelection": true,
+      "proposeHereMenuVisible": true,
+      "pageErrors": [],
+      "settledSourceAlerts": []
+    },
+    {
+      "cityId": "durban",
+      "initialRetainedParcels": 817,
+      "afterDragRetainedParcels": 889,
+      "initialLoadedCells": 9,
+      "afterDragLoadedCells": 12,
+      "realParcelPointerSelection": true,
+      "proposeHereMenuVisible": true,
+      "pageErrors": [],
+      "settledSourceAlerts": []
+    }
+  ],
+  "geometrySaved": false,
+  "notes": [
+    "Every city loaded more canonical parcels after a real map drag.",
+    "Source attribution and scope were visible; selected parcel outlines and native source prefixes were checked in screenshots.",
+    "Development API was restarted to load new descriptors; final checks ran with the configured API ready."
+  ]
+}

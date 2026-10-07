@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "recife",
+      "sourceId": "br-recife-prefeitura-lotes",
+      "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.925,
+            -8.049999999999999,
+            -34.9225,
+            -8.0475
+          ],
+          "count": 187,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9225,
+            -8.049999999999999,
+            -34.92,
+            -8.0475
+          ],
+          "count": 203,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.92,
+            -8.049999999999999,
+            -34.9175,
+            -8.0475
+          ],
+          "count": 165,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.925,
+            -8.0475,
+            -34.9225,
+            -8.045
+          ],
+          "count": 159,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9225,
+            -8.0475,
+            -34.92,
+            -8.045
+          ],
+          "count": 175,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.92,
+            -8.0475,
+            -34.9175,
+            -8.045
+          ],
+          "count": 128,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.925,
+            -8.045,
+            -34.9225,
+            -8.042499999999999
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9225,
+            -8.045,
+            -34.92,
+            -8.042499999999999
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.92,
+            -8.045,
+            -34.9175,
+            -8.042499999999999
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9175,
+            -8.049999999999999,
+            -34.915,
+            -8.0475
+          ],
+          "count": 199,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.915,
+            -8.049999999999999,
+            -34.9125,
+            -8.0475
+          ],
+          "count": 275,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9125,
+            -8.049999999999999,
+            -34.91,
+            -8.0475
+          ],
+          "count": 160,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9175,
+            -8.0475,
+            -34.915,
+            -8.045
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.915,
+            -8.0475,
+            -34.9125,
+            -8.045
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9125,
+            -8.0475,
+            -34.91,
+            -8.045
+          ],
+          "count": 161,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9175,
+            -8.045,
+            -34.915,
+            -8.042499999999999
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.915,
+            -8.045,
+            -34.9125,
+            -8.042499999999999
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -34.9125,
+            -8.045,
+            -34.91,
+            -8.042499999999999
+          ],
+          "count": 96,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -34.9225,
+          -8.045,
+          -34.92,
+          -8.042499999999999
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 1765,
+      "exactResolved": 1765,
+      "nativeIds": [
+        "41475260040290",
+        "41475150030110",
+        "41475200030060"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:br-recife-prefeitura-lotes",
+        "parcels": 1,
+        "siteM2": 343.16
+      },
+      "requests": 268
+    }
+  ]
+}

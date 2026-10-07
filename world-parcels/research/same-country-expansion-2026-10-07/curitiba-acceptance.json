@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "curitiba",
+      "sourceId": "br-curitiba-ippuc-lote-cadastral",
+      "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.277499999999996,
+            -25.4325,
+            -49.275,
+            -25.43
+          ],
+          "count": 153,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.275,
+            -25.4325,
+            -49.2725,
+            -25.43
+          ],
+          "count": 109,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2725,
+            -25.4325,
+            -49.269999999999996,
+            -25.43
+          ],
+          "count": 123,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.277499999999996,
+            -25.43,
+            -49.275,
+            -25.4275
+          ],
+          "count": 135,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.275,
+            -25.43,
+            -49.2725,
+            -25.4275
+          ],
+          "count": 115,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2725,
+            -25.43,
+            -49.269999999999996,
+            -25.4275
+          ],
+          "count": 100,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.277499999999996,
+            -25.4275,
+            -49.275,
+            -25.425
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.275,
+            -25.4275,
+            -49.2725,
+            -25.425
+          ],
+          "count": 116,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 33,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 849,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    }
+  ]
+}

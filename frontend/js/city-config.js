@@ -2913,6 +2913,106 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        houston: {
+            id: 'houston',
+            label: translateCityText('city.labels.houston', 'Houston, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [29.7604, -95.3698], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32615',
+                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [29.7604, -95.3698], fallbackDataset: [-95.3698, 29.7604]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-tx-harris-hcad-parcels', idPrefix: 'US-TX-HCAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS · publisher &amp; conditions</a> · Harris County identified account parcels; other Houston counties excluded · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        curitiba: {
+            id: 'curitiba',
+            label: translateCityText('city.labels.curitiba', 'Curitiba, Brazil'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.429, -49.273], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32722',
+                metricDefinition: '+proj=utm +zone=22 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-25.429, -49.273], fallbackDataset: [-49.273, -25.429]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'br-curitiba-ippuc-lote-cadastral', idPrefix: 'BR-CURITIBA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15">IPPUC / Prefeitura de Curitiba · publisher &amp; conditions</a> · Curitiba municipal cadastral lots with fiscal identifiers · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        recife: {
+            id: 'recife',
+            label: translateCityText('city.labels.recife', 'Recife, Brazil'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-8.04622135042311, -34.9207751899257], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32725',
+                metricDefinition: '+proj=utm +zone=25 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-8.04622135042311, -34.9207751899257], fallbackDataset: [-34.9207751899257, -8.04622135042311]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'br-recife-prefeitura-lotes', idPrefix: 'BR-RECIFE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3">Prefeitura do Recife · publisher &amp; conditions</a> · Recife identified municipal lots; complete components for each lot code · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        durban: {
+            id: 'durban',
+            label: translateCityText('city.labels.durban', 'Durban, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-29.8585, 31.0218], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32736',
+                metricDefinition: '+proj=utm +zone=36 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-29.8585, 31.0218], fallbackDataset: [31.0218, -29.8585]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'za-ethekwini-cadastral-parcels', idPrefix: 'ZA-ETHEKWINI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 6,
+                attribution: '<a href="https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17">eThekwini Municipality, Corporate GIS · publisher &amp; conditions</a> · eThekwini municipal cadastral parcels; central Durban verified · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

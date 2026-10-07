@@ -715,24 +715,32 @@
           "outcome": "conflicting-native-ids",
           "detail": "Held: two NPN keys identify different polygons, including exact lookup; id_predio repeats for both and does not disambiguate. No proven durable alternate key.",
           "evidenceFile": "research/cali-live.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "operation": "Same-country discovery and alternate-source retry",
+          "outcome": "technical-hold",
+          "detail": "Alternative CVC hostnames failed DNS; earlier IDESC native-ID geometry conflicts remain unresolved.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
         }
       ],
       "liveIntegration": {
         "status": "held",
-        "evidenceFile": "research/cali-live.json",
+        "evidenceFile": "research/same-country-expansion-2026-10-07/colombia-research.json",
         "previousAssessment": {
           "reason": "Exact geometry reuse terms unresolved.",
           "evidenceFile": "research/cali-live-assessment.json"
         },
         "technicalBlockers": [
-          "Held: two NPN keys identify different polygons, including exact lookup; id_predio repeats for both and does not disambiguate. No proven durable alternate key."
+          "Alternative CVC hostnames failed DNS; earlier IDESC native-ID geometry conflicts remain unresolved."
         ],
         "termsAreInformational": true,
         "cityIds": [
           "cali"
         ],
-        "reason": "Held: two NPN keys identify different polygons, including exact lookup; id_predio repeats for both and does not disambiguate. No proven durable alternate key."
-      }
+        "reason": "Alternative CVC hostnames failed DNS; earlier IDESC native-ID geometry conflicts remain unresolved."
+      },
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
     },
     {
       "sourceId": "za-cct-land-parcels",
@@ -801,23 +809,29 @@
           "outcome": "technical-hold",
           "detail": "15 of 18 cells completed; one cell timed out and two cells rejected conflicting same-PIN10 geometries. Two exact-ID batches also conflicted; each conflicting key was confirmed to be parceltype=1 (Baseparcel), so the documented type filter does not resolve the identity issue. The current 2025 route remains unverified after prior timeouts.",
           "evidenceFile": "research/chicago-live-hold-2026-10-03.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "operation": "Same-country discovery and alternate-source retry",
+          "outcome": "technical-hold",
+          "detail": "Current Cook County service timed out; the older 2021 PIN10 geometry conflicts remain unresolved.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/us-research.json"
         }
       ],
       "liveIntegration": {
         "status": "held",
-        "evidenceFile": "research/chicago-live-hold-2026-10-03.json",
-        "reason": "No reliable complete current runtime source is established. The official 2021 Socrata candidate failed the bounded/exact acceptance gate: a cell timeout and repeated geometry conflicts under PIN10 remain even among published parceltype=1 Baseparcel rows.",
+        "evidenceFile": "research/same-country-expansion-2026-10-07/us-research.json",
+        "reason": "Current Cook County service timed out; the older 2021 PIN10 geometry conflicts remain unresolved.",
         "previousAssessment": {
           "reason": "No current verified runtime endpoint.",
           "evidenceFile": "research/chicago-live-candidates.json"
         },
         "technicalBlockers": [
-          "Current 2025 ArcGIS service routes timed out during prior direct requests; coverage and exact identity remain unverified.",
-          "The 2021 candidate completed only 15 of 18 cells; one cell timed out and two cells failed same-PIN10 geometry integrity checks.",
-          "Two exact-ID batches contained conflicting geometry for PIN10s that are all parceltype=1; first-winner geometry handling would be lossy."
+          "Current Cook County service timed out; the older 2021 PIN10 geometry conflicts remain unresolved."
         ],
         "termsAreInformational": true
-      }
+      },
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/us-research.json"
     },
     {
       "sourceId": "bj-andf-efoncier-geoserver",
@@ -879,14 +893,14 @@
     },
     {
       "sourceId": "br-curitiba-ippuc-lote-cadastral",
-      "name": "GeoCuritiba Mapa Cadastral, layer 15 Lote Cadastral",
-      "operator": "IPPUC (Instituto de Pesquisa e Planejamento Urbano de Curitiba) / Prefeitura de Curitiba",
+      "name": "Curitiba cadastral lots — IPPUC",
+      "operator": "IPPUC / Prefeitura de Curitiba",
       "countryCode": "BR",
-      "scope": "Municipality of Curitiba (layer native extent spans the city and part of the metropolitan region); one small area sampled",
+      "scope": "Curitiba municipal cadastral lots with a nonblank native fiscal indication; unassigned records are excluded.",
       "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
-      "method": "GET ArcGIS MapServer query",
-      "responseFormat": "Esri JSON",
-      "crs": "native EPSG:31982 (SIRGAS 2000 UTM 22S); outSR=4326 honoured",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
+      "crs": "EPSG:4326 output",
       "verificationStatus": "verified_sample_city_scope",
       "reuseStatus": "no licence text or copyright found in the layer metadata (copyrightText empty); reuse terms unverified",
       "verifiedCityIds": [
@@ -894,19 +908,13 @@
       ],
       "evidenceFile": "research/curitiba.json",
       "liveIntegration": {
-        "status": "held",
+        "status": "enabled",
         "cityIds": [
           "curitiba"
         ],
-        "reason": "Forced paging repeats records; fiscal identifiers include nulls. Complete deterministic reads unresolved.",
-        "evidenceFile": "research/curitiba-live-assessment.json",
-        "previousAssessment": {
-          "reason": "Reuse rights unresolved; repeated rows in forced multipage query.",
-          "evidenceFile": "research/curitiba-live-assessment.json"
-        },
-        "technicalBlockers": [
-          "Forced paging repeats records; fiscal identifiers include nulls. Complete deterministic reads unresolved."
-        ],
+        "evidenceFile": "research/same-country-expansion-2026-10-07/curitiba-identified-acceptance.json",
+        "reason": "Curitiba municipal cadastral lots with fiscal identifiers; complete viewport, exact-native and source-binding acceptance passed.",
+        "technicalBlockers": [],
         "termsAreInformational": true
       },
       "integrationAttempts": [
@@ -941,8 +949,41 @@
           "outcome": "reuse-unresolved",
           "detail": "Layer copyright and item licenseInfo are empty; checked official geodownload page states informational purpose but no geometry reuse grant.",
           "evidenceFile": "research/curitiba-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+          "operation": "Initial same-country live acceptance",
+          "outcome": "failed",
+          "detail": "Parcel provider returned conflicting geometry for one parcel ID.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/curitiba-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+          "operation": "18 viewport cells, forced paging versus provider count, all retained native IDs, footprint and source binding",
+          "outcome": "success",
+          "detail": "1568 native parcel IDs exact-read with matching geometry. No parcel imports.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/curitiba-identified-acceptance.json"
         }
-      ]
+      ],
+      "previousLiveIntegration": {
+        "status": "held",
+        "cityIds": [
+          "curitiba"
+        ],
+        "reason": "Forced paging repeats records; fiscal identifiers include nulls. Complete deterministic reads unresolved.",
+        "evidenceFile": "research/curitiba-live-assessment.json",
+        "previousAssessment": {
+          "reason": "Reuse rights unresolved; repeated rows in forced multipage query.",
+          "evidenceFile": "research/curitiba-live-assessment.json"
+        },
+        "technicalBlockers": [
+          "Forced paging repeats records; fiscal identifiers include nulls. Complete deterministic reads unresolved."
+        ],
+        "termsAreInformational": true
+      },
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/brazil-research.json"
     },
     {
       "sourceId": "za-giscoe-erven",
@@ -970,8 +1011,25 @@
           "The published GlobalID field returned no known IDs for both braced and bare exact lookup literals.",
           "SG21KEY exact batches and an 80-ParcelGuid batch timed out; Durban cells also return distinct geometries for one SG21KEY. A usable complete native-key retrieval strategy remains unverified."
         ],
-        "termsAreInformational": true
-      }
+        "termsAreInformational": true,
+        "alternativeEnabledCities": [
+          {
+            "cityId": "durban",
+            "sourceId": "za-ethekwini-cadastral-parcels",
+            "evidenceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json"
+          }
+        ]
+      },
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/johannesburg-research.json",
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-07",
+          "operation": "Same-country discovery and alternate-source retry",
+          "outcome": "technical-hold",
+          "detail": "The separate official registered-stands candidate returned sample polygons, but geometry-by-OID pages timed out; no complete runtime acceptance.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/johannesburg-research.json"
+        }
+      ]
     },
     {
       "sourceId": "de-nrw-geobasis-alkis-vereinfacht-wfs",
@@ -1136,14 +1194,14 @@
     },
     {
       "sourceId": "us-tx-harris-hcad-parcels",
-      "name": "HCAD Parcels (Harris County Appraisal District GIS)",
-      "operator": "Harris County Appraisal District",
+      "name": "Harris County HCAD account parcels",
+      "operator": "Harris County Appraisal District / Harris County GIS",
       "countryCode": "US",
-      "scope": "Harris County, Texas (layer copyright HCAD GIS Division)",
+      "scope": "Identified HCAD account parcels in Harris County, Texas; Houston portions outside Harris County are not covered.",
       "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
-      "method": "ArcGIS REST MapServer query",
-      "responseFormat": "JSON, geoJSON",
-      "crs": "native EPSG:2278 (wkid 102740); requested outSR=4326",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
+      "crs": "EPSG:4326 output",
       "verificationStatus": "verified_sample_county_scope",
       "reuseStatus": "Licence terms not read; layer also exposes owner names and mailing addresses, which were excluded from the saved reply via outFields.",
       "verifiedCityIds": [
@@ -1159,9 +1217,27 @@
           "detail": "1,550,492 rows, two missing accounts, seven duplicate account groups; four different geometries. Active-account filter does not resolve them; no GlobalID.",
           "evidenceFile": "research/houston-live-assessment.json",
           "httpStatus": 200
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+          "operation": "18 viewport cells, forced paging versus provider count, all retained native IDs, footprint and source binding",
+          "outcome": "success",
+          "detail": "851 native parcel IDs exact-read with matching geometry. No parcel imports.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/houston-acceptance.json"
         }
       ],
       "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "houston"
+        ],
+        "evidenceFile": "research/same-country-expansion-2026-10-07/houston-acceptance.json",
+        "reason": "Harris County identified account parcels; other Houston counties excluded; complete viewport, exact-native and source-binding acceptance passed.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "previousLiveIntegration": {
         "status": "held",
         "evidenceFile": "research/houston-live-assessment.json",
         "reason": "Account identifiers duplicate across different geometries and include missing values; no GlobalID.",
@@ -1173,7 +1249,8 @@
           "Account identifiers duplicate across different geometries and include missing values; no GlobalID."
         ],
         "termsAreInformational": true
-      }
+      },
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/us-research.json"
     },
     {
       "sourceId": "tr-tkgm-cbsapi-parsel",
@@ -1333,21 +1410,29 @@
           "detail": "HTTP 500 HTML; not an empty cadastral result. Alternate official metadata candidates also failed.",
           "evidenceFile": "research/medellin-live-assessment.json",
           "httpStatus": 500
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "operation": "Same-country discovery and alternate-source retry",
+          "outcome": "technical-hold",
+          "detail": "Current VC_Catastro metadata and bounded requests returned the municipal WAF HTTP 500 block.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
         }
       ],
       "liveIntegration": {
         "status": "held",
-        "evidenceFile": "research/medellin-live-assessment.json",
-        "reason": "Current official metadata/geometry requests returned malformed responses or HTTP 500 HTML.",
+        "evidenceFile": "research/same-country-expansion-2026-10-07/colombia-research.json",
+        "reason": "Current VC_Catastro metadata and bounded requests returned the municipal WAF HTTP 500 block.",
         "previousAssessment": {
           "reason": "Current official services unavailable.",
           "evidenceFile": "research/medellin-live-assessment.json"
         },
         "technicalBlockers": [
-          "Current official metadata/geometry requests returned malformed responses or HTTP 500 HTML."
+          "Current VC_Catastro metadata and bounded requests returned the municipal WAF HTTP 500 block."
         ],
         "termsAreInformational": true
-      }
+      },
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
     },
     {
       "sourceId": "au-vic-vicmap-property",
@@ -1540,14 +1625,14 @@
     },
     {
       "sourceId": "br-recife-prefeitura-lotes",
-      "name": "Lotes (Area urbana dataset), Portal de Dados Abertos da Cidade do Recife",
-      "operator": "Prefeitura do Recife (data via EMPREL CKAN)",
+      "name": "Recife identified lot polygons",
+      "operator": "Prefeitura do Recife",
       "countryCode": "BR",
-      "scope": "Municipality of Recife, ~114k lot polygons",
-      "endpoint": "https://dados.recife.pe.gov.br/dataset/1702c764-ec7a-4ef0-9861-8acd0e40c819/resource/c41ee0d0-bb33-4380-8809-2e9082d79ab0/download/lotes.geojson",
-      "method": "GET static GeoJSON download (CKAN)",
-      "responseFormat": "GeoJSON MultiPolygon",
-      "crs": "CRS84 (lon/lat)",
+      "scope": "Recife municipal lot polygons identified by the published district/sector/block/face/lot DSQFL code.",
+      "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
+      "crs": "EPSG:4326 output",
       "verificationStatus": "verified_sample_city_scope",
       "reuseStatus": "CKAN package license_id odc-odbl (Open Database License); attribution/share-alike terms not reviewed in detail",
       "verifiedCityIds": [
@@ -1570,9 +1655,27 @@
           "outcome": "technical-hold",
           "detail": "Only 5/18 cells completed. Twelve cells returned missing or invalid SEQIMOVEL values and one returned conflicting geometry under SEQIMOVEL; all 226 IDs retained from complete cells exact-read with no absences, which does not remedy incomplete spatial coverage.",
           "evidenceFile": "research/recife-seqimovel-live-hold-2026-10-03.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+          "operation": "18 viewport cells, forced paging versus provider count, all retained native IDs, footprint and source binding",
+          "outcome": "success",
+          "detail": "1765 native parcel IDs exact-read with matching geometry. No parcel imports.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/recife-acceptance.json"
         }
       ],
       "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "recife"
+        ],
+        "evidenceFile": "research/same-country-expansion-2026-10-07/recife-acceptance.json",
+        "reason": "Recife identified municipal lots; complete components for each lot code; complete viewport, exact-native and source-binding acceptance passed.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "previousLiveIntegration": {
         "status": "held",
         "reason": "Both alternative ArcGIS identities fail full spatial validation: DSQFL conflicts in the earlier candidate, while native SEQIMOVEL produced only 5/18 complete cells due missing/invalid IDs and a same-key geometry conflict.",
         "evidenceFile": "research/recife-seqimovel-live-hold-2026-10-03.json",
@@ -1585,7 +1688,9 @@
           "reason": "DSQFL conflicts within the earlier bounded viewport.",
           "evidenceFile": "research/next-five-source-attempts-2026-10-03.json"
         }
-      }
+      },
+      "previousEndpoint": "https://dados.recife.pe.gov.br/dataset/1702c764-ec7a-4ef0-9861-8acd0e40c819/resource/c41ee0d0-bb33-4380-8809-2e9082d79ab0/download/lotes.geojson",
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/brazil-research.json"
     },
     {
       "sourceId": "br-rio-prefeitura-lotes-2013",
@@ -1608,14 +1713,14 @@
         "cityIds": [
           "rio_de_janeiro"
         ],
-        "reason": "Display lot codes duplicate; only system-maintained row identity available. Complete adapter read unverified.",
-        "evidenceFile": "research/rio-live-assessment.json",
+        "reason": "No durable alternative to repeated lot labels or system row IDs was verified.",
+        "evidenceFile": "research/same-country-expansion-2026-10-07/brazil-research.json",
         "previousAssessment": {
           "reason": "No documented durable parcel key; repeated display lot labels and system-maintained OID only.",
           "evidenceFile": "research/rio-live-assessment.json"
         },
         "technicalBlockers": [
-          "Display lot codes duplicate; only system-maintained row identity available. Complete adapter read unverified."
+          "No durable alternative to repeated lot labels or system row IDs was verified."
         ],
         "termsAreInformational": true
       },
@@ -1651,8 +1756,16 @@
           "outcome": "tool-access-failure",
           "detail": "Local Node network and browser client restrictions prevented a completed retry; this is not evidence of source outage.",
           "evidenceFile": "research/rio-live-assessment.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "operation": "Same-country discovery and alternate-source retry",
+          "outcome": "technical-hold",
+          "detail": "No durable alternative to repeated lot labels or system row IDs was verified.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/brazil-research.json"
         }
-      ]
+      ],
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/brazil-research.json"
     },
     {
       "sourceId": "us-ca-sf-datasf-active-parcels",
@@ -10208,6 +10321,58 @@
           "evidenceFile": "research/oman-resolution-2026-10-06/mutrah-acceptance.json"
         }
       ]
+    },
+    {
+      "sourceId": "za-ethekwini-cadastral-parcels",
+      "verifiedCityIds": [
+        "wup2025:5227"
+      ],
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+          "operation": "Initial same-country live acceptance",
+          "outcome": "failed",
+          "detail": "Parcel provider timed out.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/durban-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+          "operation": "Initial same-country live acceptance",
+          "outcome": "failed",
+          "detail": "Parcel provider timed out.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/durban-small-page-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+          "operation": "18 viewport cells, forced paging versus provider count, all retained native IDs, footprint and source binding",
+          "outcome": "success",
+          "detail": "1199 native parcel IDs exact-read with matching geometry. No parcel imports.",
+          "evidenceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json"
+        }
+      ],
+      "name": "eThekwini municipal cadastral parcels",
+      "operator": "eThekwini Municipality, Corporate GIS",
+      "countryCode": "ZA",
+      "scope": "Official eThekwini municipal cadastral parcel layer; central Durban viewport and exact-ID acceptance, not a claim of national coverage.",
+      "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "method": "ArcGIS REST adapter",
+      "responseFormat": "WGS84 GeoJSON",
+      "crs": "EPSG:4326 output",
+      "verificationStatus": "verified_sample_city_scope",
+      "latestResearchFile": "research/same-country-expansion-2026-10-07/durban-tls-research.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "durban"
+        ],
+        "evidenceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json",
+        "reason": "eThekwini municipal cadastral parcels; central Durban verified; complete viewport, exact-native and source-binding acceptance passed.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      }
     }
   ],
   "countryCoverage": [
@@ -11281,7 +11446,8 @@
       "sourceIds": [
         "br-rio-prefeitura-lotes-2013"
       ],
-      "researchFile": "research/rio-de-janeiro.json"
+      "researchFile": "research/rio-de-janeiro.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/brazil-research.json"
     },
     {
       "cityId": "wup2025:2994",
@@ -11572,7 +11738,8 @@
       "sourceIds": [
         "za-giscoe-erven"
       ],
-      "researchFile": "research/johannesburg.json"
+      "researchFile": "research/johannesburg.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/johannesburg-research.json"
     },
     {
       "cityId": "wup2025:8833",
@@ -12725,7 +12892,10 @@
       "sourceIds": [
         "us-tx-harris-hcad-parcels"
       ],
-      "researchFile": "research/houston.json"
+      "researchFile": "research/houston.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/us-research.json",
+      "liveAcceptanceFile": "research/same-country-expansion-2026-10-07/houston-acceptance.json",
+      "appCityId": "houston"
     },
     {
       "cityId": "wup2025:6218",
@@ -12877,7 +13047,10 @@
       "sourceIds": [
         "br-recife-prefeitura-lotes"
       ],
-      "researchFile": "research/recife.json"
+      "researchFile": "research/recife.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/brazil-research.json",
+      "liveAcceptanceFile": "research/same-country-expansion-2026-10-07/recife-acceptance.json",
+      "appCityId": "recife"
     },
     {
       "cityId": "wup2025:7747",
@@ -12895,7 +13068,8 @@
       "sourceIds": [
         "us-il-cook-county-clerk-parcels-2021"
       ],
-      "researchFile": "research/chicago.json"
+      "researchFile": "research/chicago.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/us-research.json"
     },
     {
       "cityId": "wup2025:554",
@@ -13147,7 +13321,8 @@
       "sourceIds": [
         "co-medellin-catastro-lote"
       ],
-      "researchFile": "research/medellin.json"
+      "researchFile": "research/medellin.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
     },
     {
       "cityId": "wup2025:9948",
@@ -13399,9 +13574,13 @@
       "researchOrder": 153,
       "parcelStatus": "verified_sample_city_scope",
       "sourceIds": [
+        "za-ethekwini-cadastral-parcels",
         "za-giscoe-erven"
       ],
-      "researchFile": "research/durban.json"
+      "researchFile": "research/durban.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/durban-tls-research.json",
+      "liveAcceptanceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json",
+      "appCityId": "durban"
     },
     {
       "cityId": "wup2025:116",
@@ -13933,7 +14112,8 @@
       "sourceIds": [
         "co-cali-idesc-cat-bas-terrenos"
       ],
-      "researchFile": "research/cali.json"
+      "researchFile": "research/cali.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/colombia-research.json"
     },
     {
       "cityId": "wup2025:9300",
@@ -14225,7 +14405,10 @@
       "sourceIds": [
         "br-curitiba-ippuc-lote-cadastral"
       ],
-      "researchFile": "research/curitiba.json"
+      "researchFile": "research/curitiba.json",
+      "latestAttemptFile": "research/same-country-expansion-2026-10-07/brazil-research.json",
+      "liveAcceptanceFile": "research/same-country-expansion-2026-10-07/curitiba-identified-acceptance.json",
+      "appCityId": "curitiba"
     },
     {
       "cityId": "geonames:3186886",

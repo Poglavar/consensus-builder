@@ -5,6 +5,42 @@ The source evidence is saved in `registry.json` and `research/`: endpoints, oper
 sample requests and responses, native identifiers, paging observations and uncertainties.
 The globe's `source` tier means a verified sample exists; it does not enable a runtime provider.
 
+## Same-country expansion: 101 configured cities
+
+The October 7, 2026 pass compared the original 200-city research cohort with the 29 countries
+already represented in the app. It found 50 unconfigured same-country candidates, investigated
+nine, and enabled four. The app now has **101 configured cities and 91 executable providers**;
+38 cities from the original cohort are configured. The other 46 same-country candidates remain
+in the saved inventory; this pass did not repeat every one of their searches.
+
+| City | Provider and native identity | Scope |
+| --- | --- | --- |
+| Houston | Harris County HCAD, `HCAD_NUM` account number | Identified Harris County parcels; Houston's other counties excluded |
+| Curitiba | IPPUC municipal cadastral lots, `gtm_ind_fiscal` | Lots with nonblank fiscal identifiers |
+| Recife | Municipal lot layer, `DSQFL` district/sector/block/face/lot code | Complete components of identified Recife lots |
+| Durban | eThekwini municipal parcel layer, `GlobalID`; displayed number `PROPERTYID` | Central Durban verified; municipal source, not national coverage |
+
+All four reuse the ArcGIS adapter. Houston and Recife now fetch every component for each native
+key before publishing a parcel; matching administrative references and the disjoint-parts check
+reject ambiguous groups. Identical duplicate rows remain harmless. Curitiba uses explicit record-ID
+manifests to avoid the provider's broken offset paging, excluding null, empty and single-space
+fiscal placeholders. Record IDs remain transport tokens, never cadastral identity.
+
+Durban's server omits its Sectigo intermediate certificate. The source-scoped HTTPS transport
+adds the published Sectigo Public Server Authentication CA DV R36 intermediate to the ordinary
+trusted roots, with hostname and certificate verification enabled. The bundled intermediate
+expires March 21, 2036. Geometry pages contain at most 25 records. Initial transient timeouts
+are recorded; the final complete acceptance run required no retries.
+
+Acceptance covered 72 viewport cells and **5,383 native parcel IDs**, all reread with unchanged
+geometry, plus independent provider counts, forced small pages, footprint reads and complete
+source binding. No parcel geometry was imported into the database. Chicago, Rio de Janeiro,
+Medellín, Cali and Johannesburg retain documented technical holds and fresh follow-up leads.
+
+The [batch index](research/same-country-expansion-2026-10-07/index.json) links the complete
+candidate inventory, native-language searches, failed attempts, source scope and acceptance
+evidence. Earlier research files and their historical assessments remain intact.
+
 Executable providers are declared in `backend/parcels/source-catalog.json`, packaged with the
 backend. The first provider is Toronto's municipal Property Boundary layer; it reads the
 City's ArcGIS service directly and does not import parcel rows into our database. Bogotá also

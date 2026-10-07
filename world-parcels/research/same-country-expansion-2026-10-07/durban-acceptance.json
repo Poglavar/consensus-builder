@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "durban",
+      "sourceId": "za-ethekwini-cadastral-parcels",
+      "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0175,
+            -29.8625,
+            31.02,
+            -29.86
+          ],
+          "count": 105,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.02,
+            -29.8625,
+            31.0225,
+            -29.86
+          ],
+          "count": 121,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider timed out.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 11,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 988,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    }
+  ]
+}

@@ -3539,7 +3539,11 @@
             "muscat": "Mascate, Omán",
             "frankfort": "Frankfort, Estados Unidos",
             "oklahoma_city": "Oklahoma City, Estados Unidos",
-            "pierre": "Pierre, Estados Unidos"
+            "pierre": "Pierre, Estados Unidos",
+            "houston": "Houston, Estados Unidos",
+            "curitiba": "Curitiba, Brasil",
+            "recife": "Recife, Brasil",
+            "durban": "Durban, Sudáfrica"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",

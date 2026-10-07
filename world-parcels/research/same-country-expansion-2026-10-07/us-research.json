@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "scope": "US parcel source follow-up for Houston (WUP queue rank 115) and Chicago (rank 125). This is source research only; no shared registry/catalog/config was changed.",
+  "runtimeContext": {
+    "arcgisSource": "backend/parcels/arcgis-source.js",
+    "availableModes": [
+      "nativeGeometryMode=parts",
+      "boundsQueryMode=object-ids",
+      "idsQueryMode=object-ids",
+      "disjointParts",
+      "partMatchFields"
+    ],
+    "partsRequirement": "Use parts mode only after complete group reads demonstrate multiple rows for one native parcel key are components of that same parcel. disjointParts requires disjoint components; partMatchFields can enforce administrative identity consistency. This mode cannot legitimize unrelated parcels sharing an account/PIN."
+  },
+  "nativeLanguageSearch": {
+    "note": "Both target places are in English-dominant jurisdictions; native-language search is English. Exact English queries are recorded below with source/result summaries.",
+    "queries": [
+      {
+        "query": "site:gis.hctx.net HCAD HCAD_NUM parcels split account geometry parcel type",
+        "results": [
+          "No result establishing duplicate account geometry semantics."
+        ]
+      },
+      {
+        "query": "HCAD_NUM LOWPARCELID parcel split HCAD parcel GIS",
+        "results": [
+          "Official HCAD GIS ReadMe and GIS downloads surfaced; the ReadMe describes HCAD_NUM as an account number and older CONDO_FLAG/stacked semantics, not the current duplicate groups."
+        ]
+      },
+      {
+        "query": "site:hcad.org HCAD GIS ReadMe 2026 LOWPARCELID parcel_type",
+        "results": [
+          "2026 HCAD GIS ReadMe surfaced; HCAD_NUM is described as the HCAD account number; Parcel_typ is described as a migration artifact slated for removal."
+        ]
+      },
+      {
+        "query": "Cook County ArcGIS Parcel 2025 PIN10 gis12 CookViewer3Dynamic MapServer/2025",
+        "results": [
+          "Official Cook County CookViewer3Dynamic and cookviewer3DynamicLabels services surfaced, with Parcel 2025 layer 2025."
+        ]
+      },
+      {
+        "query": "site:gis.cookcountyil.gov/traditional/rest/services/CookViewer3Dynamic/MapServer/2025 PIN10 GlobalID",
+        "results": [
+          "No exact match; search surfaced the labels service metadata, which has PIN10 but no GlobalID field on the 2025 archive layer."
+        ]
+      },
+      {
+        "query": "Cook County GIS parcels current ArcGIS PIN14 PARID public service",
+        "results": [
+          "Official current-parcel service candidates surfaced: CookViewer3Parcels layer 0 with PARID, PIN10, PIN14, GlobalID and parcel_current_beta layer 0 with PARID, PIN14 and GlobalID, plus other viewer layers."
+        ]
+      }
+    ],
+    "searchDate": "2026-10-07"
+  },
+  "houston": {
+    "cityId": "wup2025:6237",
+    "queueRank": 115,
+    "centerLatLon": [
+      29.7463622221773,
+      -95.46766651668
+    ],
+    "previousEvidence": [
+      "research/houston.json",
+      "research/houston-live-assessment.json",
+      "registry.json source us-tx-harris-hcad-parcels integrationAttempts (2026-10-03 identity-conflict)"
+    ],
+    "candidate": {
+      "sourceId": "us-tx-harris-hcad-parcels",
+      "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+      "operator": "Harris Central Appraisal District GIS Division",
+      "scope": "Harris County, Texas; city parcel coverage is partial beyond county limits.",
+      "geometry": "esriGeometryPolygon; native WKID 102740 / EPSG:2278; current layer supports GeoJSON and query operations.",
+      "candidateNativeFields": [
+        "HCAD_NUM",
+        "LOWPARCELID"
+      ],
+      "identitySemantics": "Official HCAD documentation defines HCAD_NUM as an HCAD account number (the prior GIS help calls it a unique real-property account number). It defines LOWPARCELI/LOWPARCELID as an account-number enumeration used to tie multiple accounts to one polygon, and Stacked as indicating a polygon contains multiple accounts. The current layer has seven HCAD_NUM duplicate groups; full group reads show each has two rows. Four pairs have disjoint geometry and three pairs have exactly identical geometry, with no partial-overlap pairs. All seven pairs agree on acct_num and on tax-year/status/site reference fields; six also agree on LOWPARCELID, one varies. The three exact-geometry duplicate pairs are the same groups where Stacked varies. These observations support HCAD_NUM as the account-level canonical unit and geometry union/deduplication; do not require disjointness. LOWPARCELID and Stacked are unsuitable partMatchFields.",
+      "possibleFilter": "Use attributeNotNull=[HCAD_NUM] to avoid synthesizing identities. Both HCAD_NUM-null rows were also null for LOWPARCELID and acct_num, so they have no published parcel/account key. The non-null HCAD_NUM inventory has seven duplicate groups, all fully inspected.",
+      "suggestedDescriptorIfResolved": {
+        "idField": "HCAD_NUM",
+        "idType": "string",
+        "objectIdField": "OBJECTID",
+        "outFields": [
+          "OBJECTID",
+          "HCAD_NUM",
+          "acct_num"
+        ],
+        "attributeNotNull": [
+          "HCAD_NUM"
+        ],
+        "nativeGeometryMode": "parts",
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "disjointParts": true,
+        "partMatchFields": [
+          "acct_num"
+        ],
+        "partMatchFieldsCaveat": "acct_num was invariant within all seven observed duplicate groups and is the only extra account reference required for this integration.",
+        "disjointPartsRationale": "The runtime skips overlap testing when component GeoJSON is exactly equal; the three exact duplicate pairs are therefore deduplicated. The other four observed pairs are disjoint. True rejects any future non-identical overlapping components."
+      },
+      "latestAttempt": {
+        "checkedAt": "2026-10-07",
+        "method": "Browser-like Chrome User-Agent, Accept and Accept-Language; ArcGIS statistics query (groupByFieldsForStatistics=HCAD_NUM, count OBJECTID, HAVING count>1) followed by complete HCAD_NUM IN queries for all observed duplicate account IDs. Requested only identity, account grouping, year/status/site/admin fields and geometry; no owner or mailing fields. Geometries and account IDs remained in memory and were not saved.",
+        "outcome": "duplicate-account-groups-inspected",
+        "httpStatus": 200,
+        "aggregateResults": {
+          "duplicateHcadNumGroups": 7,
+          "rowsPerDuplicateGroup": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "duplicateRowsFetched": 14,
+          "pairwiseComparisons": 7,
+          "disjointGeometryPairs": 4,
+          "exactIdenticalGeometryPairs": 3,
+          "positiveAreaOverlapPairs": 3,
+          "partialOverlapPairs": 0,
+          "groupsWithInvariantAcctNum": 7,
+          "groupsWithInvariantLowparcelid": 6,
+          "groupsWhereLowparcelidVaries": 1,
+          "groupsWhereStackedVaries": 3,
+          "allOtherRequestedPartMatchFieldsInvariant": 7,
+          "nullHcadNumRows": 2,
+          "nullRowsAlsoMissingLowparcelid": 2,
+          "nullRowsAlsoMissingAcctNum": 2
+        },
+        "geometryMethod": "ArcGIS f=geoJSON, outSR=4326. Turf 6.5 intersection and area were evaluated on all complete account pairs. Identical geometry pairs have positive intersection area; the other four pairs have zero intersection area. No partial-overlap pair was observed.",
+        "officialSemantics": [
+          {
+            "url": "https://hcad.org/assets/uploads/pdf/resources/2026/GIS-ReadMeV2-2.pdf",
+            "observation": "Official current GIS help defines HCAD_NUM as HCAD account number; LOWPARCELI as account-number enumeration/account number tying multiple accounts in one polygon; Stacked as indicating whether polygon contains multiple accounts."
+          },
+          {
+            "url": "https://hcad.org/assets/uploads/pdf/GIS-ReadMe.pdf",
+            "observation": "Official earlier GIS help says the Parcels shapefile contains polygons for every real-property parcel and describes HCAD_NUM as unique 13-digit real-property account number. The older CONDO_FLAG describes stacked duplicates for condos, undivided interest and pure accounts."
+          },
+          {
+            "url": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+            "observation": "Current live layer metadata confirms HCAD_NUM has a non-unique index, OBJECTID is a unique service-row identifier, no GlobalID is available, and geometry is native WKID 102740 / EPSG:2278."
+          }
+        ],
+        "conclusion": "The seven account groups are not arbitrary conflicts: four distinct non-overlapping components and three exact duplicate copies, all sharing acct_num. HCAD_NUM remains the official account-level unit. Runtime retainParcel checks exact geometry equality before its optional disjointParts intersection check, so identical copies deduplicate; set disjointParts=true to reject any non-identical overlapping components. Use acct_num as the sole invariant partMatchField. Exclude the two records without any HCAD account key using attributeNotNull on HCAD_NUM.",
+        "earlyGateAssessment": "Likely to pass early identity and geometry acceptance with the descriptor above. Full bounded 18-cell and exact-ID runtime gate remains coordinator work."
+      },
+      "suggestedDescriptor": "See candidate.suggestedDescriptorIfResolved. Parts mode is evidence-supported for the seven observed groups with disjointParts=true (exact duplicate geometries are handled before overlap checking); match acct_num. Integration remains gated on full bounded/exact runtime acceptance and terms review.",
+      "latestAttemptSummary": "2026-10-07 duplicate-group audit: seven groups, 14 rows, four disjoint component pairs, three exact duplicate geometry pairs, no partial overlaps; HCAD_NUM documented as account identity. Parts mode with disjointParts=true is supported because exact duplicates are deduplicated before intersection; use acct_num match and HCAD_NUM IS NOT NULL."
+    },
+    "latestAttempt": {
+      "checkedAt": "2026-10-07",
+      "method": "Official English search plus service metadata inspection via web search. A live query was attempted from the local shell with browser User-Agent, Accept and Accept-Language, but the restricted sandbox could not resolve www.gis.hctx.net; no claim of provider outage is made.",
+      "webEvidence": [
+        {
+          "url": "https://hcad.org/assets/uploads/pdf/resources/2026/GIS-ReadMeV2-2.pdf",
+          "observation": "Official 2026 GIS help describes HCAD_NUM as the HCAD account number; Parcel_typ as a migration artifact."
+        },
+        {
+          "url": "https://hcad.org/pdata/pdata-gis-downloads.html",
+          "observation": "Official quarterly GIS downloads list parcel polygons and HCAD account numbers; 2026 tax parcels listed as October 2026 vintage."
+        },
+        {
+          "url": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+          "observation": "Current official layer metadata confirms polygon layer, EPSG:2278, HCAD_NUM index non-unique, no GlobalID, OBJECTID unique; exposes Stacked, acct_num and tax_year fields."
+        }
+      ],
+      "outcome": "identity-conflict-still-unresolved",
+      "reason": "No evidence supports aggregating the duplicate account groups as components of one parcel, and null keys remain. The `parts` runtime feature cannot safely be applied yet.",
+      "earlyGateAssessment": "Not likely to pass early identity acceptance without additional evidence from HCAD defining same-account multiple geometries and explaining null-key features. A simple HCAD_NUM filter or first-winner geometry would lose source features/information."
+    },
+    "latestAttemptSummary": "Duplicate-group audit and configured runtime gate complete: 7 duplicated HCAD_NUM groups (4 disjoint geometry pairs, 3 exact duplicates, no partial overlaps); HCAD_NUM account identity documented. Runtime parts descriptor with disjointParts=true, acct_num match, and HCAD_NUM non-null filter passed all 18 cells plus exact, paging, footprint and binding checks (851 unique IDs/exact reads).",
+    "runtimeAcceptance": {
+      "evidenceFile": "houston-acceptance.json",
+      "status": "passed",
+      "checkedAt": "2026-10-07",
+      "viewportCells": 18,
+      "uniqueNativeIds": 851,
+      "exactResolved": 851,
+      "forcedPaging": {
+        "pageSize": 3,
+        "returned": 7,
+        "complete": true
+      },
+      "footprintCount": 7,
+      "sourceBinding": {
+        "coverage": "complete",
+        "source": "server:us-tx-harris-hcad-parcels",
+        "parcels": 1
+      },
+      "requests": 213,
+      "persistedIdentitySamples": 3,
+      "rawGeometryStored": false,
+      "interpretation": "Configured adapter acceptance passed all 18 cells, forced paging, exact native-ID reads, footprint query and source binding. Run evidence keeps only three sample native IDs and no raw geometry or owner attributes."
+    }
+  },
+  "chicago": {
+    "cityId": "wup2025:7747",
+    "queueRank": 125,
+    "centerLatLon": [
+      41.8726060313807,
+      -87.7074504792355
+    ],
+    "previousEvidence": [
+      "research/chicago.json",
+      "research/chicago-live-candidates.json",
+      "research/chicago-live-hold-2026-10-03.json",
+      "research/chicago-conflict-types-2026-10-03.json",
+      "registry.json source us-il-cook-county-clerk-parcels-2021 integrationAttempts (2026-10-02 timeout; 2026-10-03 technical-hold)"
+    ],
+    "preferredCandidate": {
+      "sourceId": "new Cook County current parcel candidate (registry entry not established)",
+      "endpoint": "https://gis.cookcountyil.gov/traditional/rest/services/CookViewer3Parcels/MapServer/0",
+      "operator": "Cook County GIS",
+      "scope": "Cook County, Illinois; Cook County includes the City of Chicago.",
+      "vintage": "Current parcel layer per service name/metadata; a data as-of date has not been independently confirmed.",
+      "fields": [
+        "PARID",
+        "PIN10",
+        "PIN14",
+        "GlobalID",
+        "OBJECTID"
+      ],
+      "identityAssessment": "Better candidate than historical PIN10-only layer because it exposes the full PIN/PARID identity plus GlobalID; exact semantic identity/uniqueness still requires live group queries. Treat the string PARID or PIN14 as prospective cadastral identity only after confirming uniqueness/geometry grouping; GlobalID may be durable service-row identity, but is not automatically cadastral identity.",
+      "nativeSrid": 3435,
+      "suggestedDescriptor": {
+        "idField": "PARID (preferred probe) or PIN14, after uniqueness and completeness proof",
+        "idType": "string",
+        "objectIdField": "OBJECTID",
+        "outFields": [
+          "OBJECTID",
+          "GlobalID",
+          "PARID",
+          "PIN10",
+          "PIN14",
+          "TAXYR",
+          "CUR",
+          "STATUS",
+          "UNITDESC",
+          "UNITNO"
+        ],
+        "boundsSrid": 3435,
+        "boundsProjection": "+proj=lcc +lat_1=41.7 +lat_2=42.1 +lat_0=41.7 +lon_0=-87.75 +x_0=300000 +y_0=0 +datum=NAD83 +units=us-ft +no_defs",
+        "nativeGeometryMode": "parts only if same-PARID/PIN14 rows prove disjoint, administratively consistent parcel components",
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "disjointParts": "Only when component status and pairwise disjointness are demonstrated; current candidate has not been queried live.",
+        "partMatchFields": [
+          "PIN10",
+          "PIN14",
+          "PARID",
+          "TAXYR",
+          "CUR",
+          "STATUS"
+        ]
+      },
+      "otherOfficialCandidate": {
+        "endpoint": "https://gis.cookcountyil.gov/traditional/rest/services/parcel_current_beta/FeatureServer/0",
+        "fields": [
+          "GlobalID",
+          "PARID",
+          "PIN10",
+          "PIN14"
+        ],
+        "nativeSrid": 3435,
+        "observation": "Official service metadata was indexed through search; this appears to be a current assessor parcel layer with a fuller identity set, but current service requests timed out from the local network."
+      },
+      "currentArcgisAttempt": {
+        "checkedAt": "2026-10-07",
+        "endpointAttempts": [
+          "https://gis.cookcountyil.gov/traditional/rest/services/CookViewer3Dynamic/MapServer/2025?f=pjson",
+          "https://gis.cookcountyil.gov/traditional/rest/services/parcel_current_beta/FeatureServer/0?f=pjson"
+        ],
+        "outcome": "timeout",
+        "method": "Browser-like Chrome User-Agent, Accept: application/json and Accept-Language: en-US,en;q=0.9; curl request timeout 25 seconds. Default sandbox first returned DNS resolution failure; escalated network attempts timed out. Web indexing supplied official metadata, but a direct query returning actual parcel polygons was not obtained in this session.",
+        "statusInterpretation": "Network-limited candidate, not verified and not classified as provider failure."
+      },
+      "webEvidence": [
+        {
+          "url": "https://gis.cookcountyil.gov/traditional/rest/services/CookViewer3Parcels/MapServer/0",
+          "observation": "Current official Cook County GIS polygon layer; metadata lists PARID, PIN10, PIN14, GlobalID, OBJECTID and native WKID 102671 / EPSG:3435."
+        },
+        {
+          "url": "https://gis.cookcountyil.gov/traditional/rest/services/parcel_current_beta/FeatureServer/0",
+          "observation": "Official Cook County current-beta parcel layer metadata lists GlobalID, PARID, PIN10 and PIN14."
+        },
+        {
+          "url": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/2025",
+          "observation": "Official 2025 archive layer is polygon geometry, Cook County GIS copyright, EPSG:3435 and PIN10 only; metadata says designed as continuous, non-overlapping spatial database."
+        },
+        {
+          "url": "https://gis.cookcountyil.gov/traditional/rest/services/parcelHistorical/MapServer/2025",
+          "observation": "Alternative official 2025 archive layer has Name (PIN14), PIN10 and parcel polygons, county extent EPSG:3435; has no GlobalID in listed fields."
+        }
+      ],
+      "earlyGateAssessment": "Best live-integration lead of the two cities: current official layer has stronger parcel identifiers than 2021 Socrata. It is not yet accepted because this environment obtained no bounded live feature response, no exact-ID read and no terms. Priority next action is a tiny Chicago bbox, objectIds manifest, full component reads and exact reads for a few returned native IDs from the official current layer."
+    },
+    "historicalCandidate": {
+      "sourceId": "us-il-cook-county-clerk-parcels-2021",
+      "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+      "previousFindings": "Held on 2026-10-03 after 15/18 test cells completed (1 timeout; 2 geometry-integrity conflicts), and two exact-ID batches conflicted. All conflict groups were parceltype=1 Baseparcel, so the documented parcel type filter did not resolve them. Raw conflicts were summarized only as counts; no IDs/geometries copied here.",
+      "decision": "Keep held; do not use nativeGeometryMode=parts without proving those multiple Baseparcel polygons are disjoint parts belonging to one PIN10. The source is dated 2021 and has unreviewed reuse terms."
+    }
+  },
+  "acceptanceRemaining": [
+    "Review HCAD data reuse/attribution terms before enablement.",
+    "For Chicago, verify the current Cook County layer with a tiny live polygon query and complete exact-ID reads; current service metadata alone is not verification.",
+    "Prove Chicago bounded/exact runtime gates and review source-specific reuse terms before enablement.",
+    "Houston acceptance is complete with disjointParts:true, consistent acct_num references and no imported parcel storage; see coordinatorAcceptance."
+  ],
+  "coordinatorAcceptance": {
+    "houston": {
+      "runtimeStatus": "enabled",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/houston-acceptance.json",
+      "nativeIdField": "HCAD_NUM",
+      "exactNativeIds": 851,
+      "catalogueSourceId": "us-tx-harris-hcad-parcels"
+    }
+  }
+}

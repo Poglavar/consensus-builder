@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "johannesburg",
+      "sourceId": "za-joburg-registered-stands",
+      "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider timed out.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 9,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 335,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    }
+  ]
+}
