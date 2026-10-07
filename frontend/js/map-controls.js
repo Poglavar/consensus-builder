@@ -438,6 +438,14 @@ function toggleLayer(layerType) {
         }
     }
 
+    // The suggested ground-floor layouts of proposed buildings (js/suggested-layouts-2d.js, which also
+    // adds the #showSuggestedLayouts row). Drawn from building zoom only, so the same zoom notice applies.
+    if (layerType === 'suggestedLayouts') {
+        const showSuggested = !!document.getElementById('showSuggestedLayouts')?.checked;
+        if (showSuggested) announceBuildingZoomGate();
+        window.__suggestedLayouts2D.setEnabled(showSuggested);
+    }
+
     if (layerType === 'blocks') {
         // This is now primarily handled by toggleAccordion for the 'blocks' section.
         // updateBlockButtonStates() is called from there.
@@ -703,7 +711,8 @@ function updateParcelsCheckboxByZoom(within) {
         const showBuildingsCheckbox = document.getElementById('showBuildings');
         const showBuildingsDguCheckbox = document.getElementById('showBuildingsDgu');
         const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-        [showBuildingsCheckbox, showBuildingsDguCheckbox, showProposedBuildingsCheckbox].forEach(cb => {
+        const showSuggestedLayoutsCheckbox = document.getElementById('showSuggestedLayouts');
+        [showBuildingsCheckbox, showBuildingsDguCheckbox, showProposedBuildingsCheckbox, showSuggestedLayoutsCheckbox].forEach(cb => {
             if (!cb) return;
             cb.disabled = !within;
         });

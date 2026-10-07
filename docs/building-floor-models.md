@@ -19,6 +19,17 @@ This is a parametric architectural model, not a stored triangle mesh or a raw PD
 
 The common schemas and validation live in `frontend/js/building-floor-plans.js`; `three-floor-plans.js` only creates and manages Three.js objects. Pionir's PDF interpretation is confined to its authoring scripts. Another supplier needs an adapter to the same schema, not another renderer.
 
+## Suggested default layouts
+
+A proposed building without a registered model can show a generated default interior in X-ray when
+**Suggested layouts** is on (`?suggested=1`): a point-access stair-and-lift core entered from the
+street-facing facade, two apartments per core, blind party walls, one core per ~240 m² of floor.
+`frontend/js/default-floor-plans.js` produces the same v2 contract with `suggested: true` and layout
+sources of `kind: 'generated'`; the validator accepts such sources only inside a suggested model, the
+renderer draws them in a cooler palette, and `prepareFloorModel` refuses to store them. A slice whose
+footprint cannot hold the minimum core is painted red instead. Design, parameters and their regulatory
+basis: [`floor-plans.md`](../floor-plans.md).
+
 ## Read paths
 
 `GET /proposals/:id`, `POST /proposals/batch` and parcel-scoped proposal reads join models onto building features as `properties.floorPlans` and `properties.floorModel`. A proposal footprint must exactly match its registered footprint before attachment. Models are derived read data, stripped when a proposal is saved, so publishing a copied or cached proposal cannot duplicate or overwrite the registry.

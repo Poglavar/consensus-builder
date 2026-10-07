@@ -1,5 +1,7 @@
 // Exercise optional model lookup, immutable versioning, and safe archive attachment.
 import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
+import * as turf from '@turf/turf';
 import request from 'supertest';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { setupBuildingFloorModelsRoute } from '../routes/building-floor-models.js';
@@ -31,6 +33,17 @@ describe('building floor model registry', () => {
         expect(() => prepareFloorModel(model({ source: 'proposal' }))).toThrow(/ownerId/);
         expect(() => prepareFloorModel(model({ source: 'survey-3d', ownerId: 'proposal-1' }))).toThrow(/ownerId/);
         expect(canonicalJson(['city_a', 'proposal', 'p', 'b']) ).not.toBe(canonicalJson(['city_a', 'survey-3d', '', 'b']));
+    });
+
+    it('refuses to store a suggested default layout as evidence', () => {
+        const require = createRequire(import.meta.url);
+        const generator = require('../../frontend/js/default-floor-plans.js');
+        const footprintWgs = turf.polygon([[[16, 45.8], [16.00026, 45.8], [16.00026, 45.80011], [16, 45.80011], [16, 45.8]]]);
+        const suggested = generator.planDefaultFloorPlans({ footprint: footprintWgs, floors: 3, storeyHeightM: 3 }, { turf }).floorPlans;
+        expect(suggested.suggested).toBe(true);
+        expect(() => prepareFloorModel(model({ footprint: footprintWgs.geometry, floorPlans: suggested }))).toThrow(/Suggested layouts are generated for display/);
+        // The same solids without the flag are rejected earlier, by the shared validator.
+        expect(() => prepareFloorModel(model({ footprint: footprintWgs.geometry, floorPlans: { ...suggested, suggested: false } }))).toThrow(/floorPlans.suggested = true/);
     });
 
     it('cannot attach a same-numbered building from another city, survey, proposal, or custom feed', async () => {

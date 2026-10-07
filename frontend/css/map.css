@@ -305,6 +305,21 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     border-top: 1px solid var(--cb-line-strong);
 }
 
+/* X-ray and its suggested-layouts companion sit side by side; each keeps its pressed state. */
+#three-container .three-mode-xray-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+/* The existing-buildings checkbox under the two buttons; hidden with the toggle off. */
+#three-container .three-mode-suggested-existing:not([hidden]) {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+}
+
 #three-container .three-mode-xray-button {
     min-height: var(--cb-control-height);
     padding: var(--cb-space-1) var(--cb-space-3);
@@ -1427,4 +1442,69 @@ body.three-mode-active #agent-bubbles-container {
     margin: var(--cb-space-2) 0 0;
     font-size: var(--cb-text-xs);
     color: var(--cb-text-muted);
+}
+
+/* Suggested layouts on the 2D map (js/suggested-layouts-2d.js): the ground floor of the default
+   layout of each proposed building without a modelled interior, on its own SVG pane. The roles are
+   custom properties so the script can read the same values back for its inline path colours. */
+:root {
+    --suggested-layout-slab: var(--cb-surface);
+    --suggested-layout-line: var(--cb-line-strong);
+    --suggested-layout-wall: var(--cb-text-strong);
+    --suggested-layout-core: var(--cb-text-muted);
+    --suggested-layout-window: var(--cb-primary);
+    --suggested-layout-door: var(--cb-warning);
+    --suggested-layout-entrance: var(--cb-success);
+    --suggested-layout-lift: var(--cb-text-faint);
+    --suggested-layout-flagged: var(--cb-danger);
+}
+
+.cb-suggested-layout--slab {
+    fill: var(--suggested-layout-slab);
+    stroke: var(--suggested-layout-line);
+}
+
+.cb-suggested-layout--wall {
+    fill: var(--suggested-layout-wall);
+    stroke: var(--suggested-layout-wall);
+}
+
+.cb-suggested-layout--landing {
+    fill: var(--suggested-layout-core);
+}
+
+.cb-suggested-layout--stair,
+.cb-suggested-layout--railing {
+    stroke: var(--suggested-layout-core);
+}
+
+.cb-suggested-layout--window {
+    stroke: var(--suggested-layout-window);
+}
+
+.cb-suggested-layout--door {
+    stroke: var(--suggested-layout-door);
+}
+
+.cb-suggested-layout--glazed-door {
+    stroke: var(--suggested-layout-entrance);
+}
+
+.cb-suggested-layout--sliding-door {
+    stroke: var(--suggested-layout-lift);
+}
+
+/* A slice too small for a minimum stair core: red and dashed, as the 3D view paints it red. */
+.cb-suggested-layout--flagged {
+    fill: var(--suggested-layout-flagged);
+    stroke: var(--suggested-layout-flagged);
+}
+
+/* Why a slice is flagged (the generator's reasons): wrapped, not one long line across the map. */
+.leaflet-tooltip.cb-suggested-layout-tooltip {
+    max-width: min(280px, 70vw);
+    white-space: normal;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text);
+    border-color: var(--suggested-layout-flagged);
 }

@@ -29,7 +29,7 @@ describe('three-mode Xray wiring', () => {
             clearGroupChildren: vi.fn(), disposeFloorPlans: vi.fn(), restoreParcelEmphasis: vi.fn(),
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
-            buildNearbyProposalBuildings3D: vi.fn(), buildProposedBuildings3D: vi.fn(),
+            buildNearbyProposalBuildings3D: vi.fn(), buildProposedBuildings3D: vi.fn(), appendSuggestedExistingFloorPlans: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelEmphasis: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn()
@@ -91,7 +91,7 @@ describe('three-mode Xray wiring', () => {
         const draw=vi.fn(), group={};
         const [build] = extracted('buildProposedBuildings3D', 'let plannedRepresentation="both",buildOutDisplaySalt=0;let buildingMaterials={};', {
             window:{ proposedBuildings:[model,ordinary], UrbanRuleVariation:{plannedDrawPlan:feature=>({buildOut:feature})} },
-            turf:{}, appendBuildingFloorPlans:feature=>feature===model,
+            turf:{}, appendBuildingFloorPlans:feature=>feature===model, appendSuggestedFloorPlans:()=>false,
             createBuildingSlices:draw, estimateBuildingHeightMeters:()=>9
         });
         build(group,'solid');
@@ -99,12 +99,125 @@ describe('three-mode Xray wiring', () => {
     });
     it('disposeFloorPlans disposes every owned child, removes them, and resets bookkeeping', () => {
         const children = [{}, {}], remove = vi.fn(), dispose = vi.fn(), keys = new Set(['a']);
-        const [disposePlans] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3;', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose } });
+        const [disposePlans] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3; const suggestedPlanTotals={buildings:2,slices:3,flagged:1,apartments:4,cores:2,pendingStreets:true}; const suggestedPlanByParcel=new Map([["a",1]]); const suggestedPlanByProposal=new Map([["p",1]]);', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose } });
         disposePlans(); expect(dispose).toHaveBeenCalledTimes(2); expect(remove).toHaveBeenCalledTimes(2); expect(keys.size).toBe(0);
     });
     it('applyIsolationVisibility filters floor-plan wrappers by parcel identity', () => {
         const [apply, context] = extracted('applyIsolationVisibility', `let flatGroup=null; let buildingGroup=null; let floorPlanGroup=this.fpGroup; let plannedFlatGroup=null; let parkGroup=null; let squareGroup=null; let lakeGroup=null; let stationGroup=null; let existingTransitAlignmentGroup=null;`, { fpGroup: { children: [{ userData: { parcelId: 'keep' } }, { userData: { parcelId: 'hide' } }] }, turf: { point: () => ({}), booleanPointInPolygon: () => false }, updateXrayControls: vi.fn() });
         apply(new Set(['keep']), []);
         expect(context.fpGroup.children.map(child => child.visible)).toEqual([true, false]);
+    });
+
+    // Suggested default layouts: generated per parcel slice, flagged red when the core does not fit.
+    function suggestedHarness(overrides = {}) {
+        const okPlans = { suggested: true, registration: { corners: [[0, 0], [1, 0], [1, 1], [0, 1]] }, floors: [{ id: 'f0' }] };
+        const slices = overrides.slices || [
+            { parcelId: 'A', footprint: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } },
+                result: { floorPlans: okPlans, warnings: [], summary: { cores: 1, apartmentsPerFloor: 2, heightM: 12 } } },
+            { parcelId: 'B', footprint: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } },
+                result: { floorPlans: null, warnings: [{ code: 'core-does-not-fit' }], summary: { cores: 0, apartmentsPerFloor: 0 } } }
+        ];
+        const stubs = {
+            suggestedFloorPlans: {}, suggestedPlanContext: { planBuilding: vi.fn(() => ({ slices, floors: 4 })), neighbourPool: vi.fn(() => []) },
+            window: { UrbanRuleVariation: { plannedDrawPlan: feature => ({ buildOut: feature, massing: null }) }, LiveParcelFabric: { queryBounds: () => ['parcel'] },
+                proposedBuildings: [], buildingFeaturePool: [], STOREY_HEIGHT_M: 3.3 },
+            turf: { bbox: () => [0, 0, 1, 1] }, estimateBuildingHeightMeters: () => 12, suggestedRoadsFor: vi.fn(() => ['road']), suggestedRegion: () => 'HR',
+            recordSuggestedSlice: vi.fn(), buildingFacades: { buildingKey: () => 'k', buildingDesign: () => ({ bayWidth: 3.2 }) },
+            appendBuildingFloorPlans: vi.fn(() => true), polygonFeatureToMeshes: vi.fn(() => [{ userData: {} }]), createBuildingSlices: vi.fn(),
+            ...(overrides.stubs || {})
+        };
+        const [append, c] = extracted('appendSuggestedFloorPlans', `
+            let xrayEnabled=${overrides.xray !== false}, suggestedPlansEnabled=${overrides.suggested !== false}, floorPlanGroup={}, floorPlanErrors=0;
+            let plannedRepresentation='both', buildOutDisplaySalt=0;
+            const suggestedPlanCache=new Map();
+            const suggestedPlanTotals={buildings:0,slices:0,flagged:0,apartments:0,cores:0,pendingStreets:false};
+            const buildingMaterials={flagged:'flagged-material',massing:'massing-material'};
+            this.totals=suggestedPlanTotals;
+        `, stubs);
+        return { append, c, slices };
+    }
+    it('appendSuggestedFloorPlans stays out of the way while X-ray or the toggle is off, and never second-guesses evidence', () => {
+        const feature = { geometry: {}, properties: { name: 'house' } };
+        const off = suggestedHarness({ suggested: false });
+        expect(off.append(feature, 'm', { add: vi.fn() }, {})).toBe(false);
+        expect(off.c.suggestedPlanContext.planBuilding).not.toHaveBeenCalled();
+        expect(suggestedHarness({ xray: false }).append(feature, 'm', { add: vi.fn() }, {})).toBe(false);
+        const on = suggestedHarness();
+        expect(on.append({ geometry: {}, properties: { floorPlans: {} } }, 'm', { add: vi.fn() }, {})).toBe(false);
+        expect(on.append({ geometry: {}, properties: { modelUrl: 'x.glb' } }, 'm', { add: vi.fn() }, {})).toBe(false);
+        expect(on.c.suggestedPlanContext.planBuilding).not.toHaveBeenCalled();
+    });
+    it('appendSuggestedFloorPlans draws a generated interior per fitting slice and a red volume per flagged one, leaving the proposal untouched', () => {
+        const { append, c, slices } = suggestedHarness();
+        const feature = { geometry: {}, properties: { name: 'block piece', proposalId: 'p1', buildingIndex: 2 } };
+        const group = { add: vi.fn() };
+        expect(append(feature, 'planned-material', group, {})).toBe(true);
+        expect(c.suggestedPlanContext.planBuilding).toHaveBeenCalledOnce();
+        const [subject, context] = c.suggestedPlanContext.planBuilding.mock.calls[0];
+        expect(subject).toBe(feature);
+        expect(context).toMatchObject({ owner: feature, parcels: ['parcel'], heightM: 12, storeyFallbackM: 3.3, roads: ['road'], region: 'HR', rules: { facadeBayWidthM: 3.2 } });
+        expect(c.recordSuggestedSlice).toHaveBeenCalledTimes(2);
+        const [modelled, material, proxyHeight] = c.appendBuildingFloorPlans.mock.calls[0];
+        expect(modelled.properties).toMatchObject({ name: 'block piece', parcelId: 'A', floorPlans: slices[0].result.floorPlans });
+        expect(modelled.geometry).toBe(slices[0].footprint.geometry);
+        expect(material).toBe('planned-material');
+        expect(proxyHeight).toBeCloseTo(11.998);
+        expect(feature.properties.floorPlans).toBeUndefined();
+        expect(c.polygonFeatureToMeshes).toHaveBeenCalledExactlyOnceWith(slices[1].footprint, 'flagged-material', 0, 12);
+        expect(group.add).toHaveBeenCalledOnce();
+        expect(group.add.mock.calls[0][0].userData).toEqual({ parcelId: 'B', cbSuggestedLayoutWarnings: slices[1].result.warnings });
+        expect(c.totals).toMatchObject({ buildings: 1, slices: 2, flagged: 1, apartments: 2, cores: 1 });
+    });
+    it('appendSuggestedFloorPlans keeps the translucent envelope when the plan draws an example inside it', () => {
+        const massing = { geometry: {}, properties: {} };
+        const { append, c } = suggestedHarness({ stubs: { window: {
+            UrbanRuleVariation: { plannedDrawPlan: feature => ({ buildOut: feature, massing, massingStyle: 'envelope' }) },
+            LiveParcelFabric: null, proposedBuildings: [], buildingFeaturePool: [], STOREY_HEIGHT_M: 3.3
+        } } });
+        expect(append({ geometry: {}, properties: {} }, 'm', { add: vi.fn() }, {})).toBe(true);
+        expect(c.createBuildingSlices).toHaveBeenCalledExactlyOnceWith(massing, 12, 'massing-material', expect.anything(), null);
+    });
+    it('records slices per parcel and per proposal, and the panels read them back', () => {
+        const variables = `
+            let suggestedPlansEnabled=true;
+            const suggestedPlanByParcel=new Map(); const suggestedPlanByProposal=new Map();
+            this.byParcel=suggestedPlanByParcel; this.byProposal=suggestedPlanByProposal;`;
+        const stubs = { threeI18n: (key, fallback) => fallback };
+        const [record, c] = extracted('recordSuggestedSlice', variables, stubs);
+        const owner = { properties: { proposalId: 'p1' } };
+        const ok = { floorPlans: { floors: [{ apartments: [{}, {}] }, { apartments: [{}, {}] }] }, warnings: [], summary: { cores: 1, apartmentsPerFloor: 2, rooms: 9 } };
+        const bad = { floorPlans: null, warnings: [{ severity: 'error', message: 'Too small to fit a minimum stair core of 4.6 × 5.87 m behind the front facade.' }], summary: { cores: 0, apartmentsPerFloor: 0 } };
+        record(owner, { parcelId: 'A', wing: null, result: ok }, 2);
+        record(owner, { parcelId: 'B', wing: null, result: bad }, 2);
+        expect(c.byProposal.get('p1')).toEqual({ buildings: 1, flagged: 1, apartmentsPerFloor: 2, apartments: 4, cores: 1 });
+        const panelVariables = `let suggestedPlansEnabled=true; const suggestedPlanByParcel=this.byParcel; const suggestedPlanByProposal=this.byProposal;`;
+        const [parcelText] = extracted('suggestedParcelPanelText', panelVariables, { ...stubs, byParcel: c.byParcel, byProposal: c.byProposal });
+        expect(parcelText('A')).toBe('1 core(s) · 2 apartments per floor · 9 rooms');
+        expect(parcelText('B')).toMatch(/^No default layout fits: Too small/);
+        expect(parcelText('Z')).toBe('');
+        const [proposalText] = extracted('suggestedProposalPanelText', panelVariables, { ...stubs, byParcel: c.byParcel, byProposal: c.byProposal });
+        expect(proposalText({ proposalId: 'p1' })).toBe('Suggested layouts: 1 buildings · 2 apartments per floor · 4 in total 1 in red: too small for a minimum stair core.');
+        const [offText] = extracted('suggestedProposalPanelText', `let suggestedPlansEnabled=false; const suggestedPlanByParcel=new Map(); const suggestedPlanByProposal=this.byProposal;`, { ...stubs, byProposal: c.byProposal });
+        expect(offText({ proposalId: 'p1' })).toBe('');
+    });
+    it('setSuggestedPlansEnabled rebuilds and refreshes the controls', () => {
+        const [set, context] = extracted('setSuggestedPlansEnabled', 'let suggestedPlansEnabled=false;',
+            { rebuild3DBuildingsOnly: () => context.calls.push('rebuild'), updateXrayControls: () => context.calls.push('update') });
+        set(true);
+        expect(context.calls).toEqual(['rebuild', 'update']);
+    });
+    it('suggestedStreetsFor answers from the cell cache, fetches a missing cell once and reports the wait', () => {
+        const fetch = vi.fn(() => new Promise(() => {}));
+        const [streetsFor, c] = extracted('suggestedStreetsFor', `
+            const suggestedStreetCells=new Map([['cached', { features: ['street'], pending: false }]]);
+            const suggestedPlanTotals={pendingStreets:false}; const suggestedPlanCache=new Map();
+            let isActive=true, xrayEnabled=true, suggestedPlansEnabled=true; this.totals=suggestedPlanTotals;`,
+        { suggestedPlanContext: { streetCellKey: feature => feature.cell, streetCellBbox: () => [1, 2, 3, 4] }, turf: {}, fetch, window: { getBackendBase: () => 'http://api' } });
+        expect(streetsFor({ cell: 'cached' })).toEqual(['street']);
+        expect(c.totals.pendingStreets).toBe(false);
+        expect(streetsFor({ cell: 'fresh' })).toBeNull();
+        expect(streetsFor({ cell: 'fresh' })).toBeNull();
+        expect(fetch).toHaveBeenCalledExactlyOnceWith('http://api/streets/near?bbox=1%2C2%2C3%2C4');
+        expect(c.totals.pendingStreets).toBe(true);
     });
 });
