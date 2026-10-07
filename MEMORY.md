@@ -511,3 +511,11 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-06: Building `floorPlans` v2 stores reusable architectural solids, per-floor source provenance/elevations and explicit WGS84 registration; X-ray batches shared meshes by layout/material and offers a floor cutaway, with CAD footprints and inferred vertical/opening details kept explicit to avoid implying an as-built survey.
 - 2026-10-07: Optional interiors live in the versioned `consensus.building_floor_model` registry keyed by city and stable source/building identity; APIs attach them on read and the browser extrudes reusable layouts, keeping source importers separate and ordinary buildings unchanged when evidence is absent.
 - 2026-10-07: Recovered whole-floor drawings are modeled only at documented levels; unmodeled vertical intervals keep the source massing, shared basements have one registered owner, and a basement cut temporarily removes ground/context occlusion without changing layer settings.
+
+## Agency floor-plan evidence (2026-10-07)
+
+- Keep the HGK company registry, candidate websites, immutable source archive and OCR drafts in `floor_plan`; only reviewed, registered architecture belongs in `consensus.building_floor_model`, because a public drawing does not establish a building or floor transform.
+- New-build advertisements receive priority while resale evidence is retained; site failures and incomplete crawls never imply removal.
+- Avenue V currently has five public unit reconstructions, one with conflicting floor labels, and no verified whole-floor registration; preserve the unknown building areas.
+
+- A listing can embed other apartments in project tables and recommendation cards; archive their sources, but assign a plan only to its evidenced row/card owner and never treat the first card as the page listing.
