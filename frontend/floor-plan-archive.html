@@ -1,15 +1,29 @@
 <!doctype html>
-<!-- Read-only review of archived agency evidence and local apartment reconstructions. -->
+<!-- Read-only review of processed buildings, floor plans and archived agency evidence. -->
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Avenue V · floor-plan archive</title><link rel="stylesheet" href="css/floor-plan-archive.css?v=2">
+<title>Buildings & floor plans</title><link rel="stylesheet" href="css/floor-plan-archive.css?v=3">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"}}</script>
 </head><body><main class="archive">
-<header><p class="eyebrow" data-i18n="eyebrow"></p><h1 data-i18n="title"></h1><p class="lede" data-i18n="lede"></p>
-<div class="toolbar"><label><span data-i18n="unit"></span><select id="unit"></select></label><button id="view3d" type="button" data-i18n="view3d"></button><span id="status" class="status" role="status"></span></div></header>
-<section id="coverage" class="coverage"></section><section class="comparison">
+<header><p class="eyebrow" data-i18n="eyebrow"></p><h1 data-i18n="title"></h1><p class="lede" data-i18n="lede"></p></header>
+<nav class="tabs" role="tablist" aria-label="Review"><button id="tab-buildings" role="tab" aria-controls="panel-buildings" aria-selected="true" data-i18n="buildingTab"></button><button id="tab-agencies" role="tab" aria-controls="panel-agencies" aria-selected="false" tabindex="-1" data-i18n="agencyTab"></button></nav>
+<p id="status" class="status" role="status"></p>
+<section id="panel-buildings" role="tabpanel" aria-labelledby="tab-buildings">
+<section id="coverage" class="coverage"></section>
+<div class="toolbar card"><label><span data-i18n="building"></span><select id="building"></select></label><label class="plan-select"><span data-i18n="planLabel"></span><select id="unit"></select></label><label id="source-filter-label" hidden><span data-i18n="filter"></span><input id="source-filter" type="search"></label><button id="previous" class="secondary" type="button" data-i18n="previous"></button><button id="next" class="secondary" type="button" data-i18n="next"></button></div>
+<div class="selection-heading"><h2 id="selection-name"></h2><p id="selection-note" class="note"></p></div>
+<section id="building-context" class="context-grid">
+<article class="card"><div class="card-heading"><h2 data-i18n="wholeBuilding"></h2><button id="show-building" class="secondary" type="button" data-i18n="resetView"></button></div><div id="building-3d" class="scene"></div><p id="building-note" class="note"></p></article>
+<article class="card"><h2 data-i18n="location"></h2><div id="map" class="map"></div><p id="map-note" class="note"></p></article>
+</section>
+<section class="comparison">
 <article class="card"><h2 data-i18n="original"></h2><div id="asset" class="asset"></div><p id="source-link" class="note"></p></article>
-<article class="card"><h2 data-i18n="reconstructed"></h2><div id="plan" class="plan-svg"></div><p class="note" data-i18n="localNote"></p></article></section>
-<section class="details card"><div><h2 data-i18n="rooms"></h2><table><thead><tr><th data-i18n="room"></th><th data-i18n="area"></th></tr></thead><tbody id="rooms"></tbody></table></div><div><h2 data-i18n="areas"></h2><dl id="areas"></dl><p id="dimensions" class="note"></p></div></section>
+<article class="card"><div class="card-heading"><h2 data-i18n="reconstructed"></h2><button id="view3d" class="secondary" type="button" data-i18n="view3d"></button></div><div id="plan" class="plan-svg"></div><p id="geometry-note" class="note"></p></article>
+</section>
+<section id="plan-details" class="details card"><div><h2 data-i18n="rooms"></h2><table><thead><tr><th data-i18n="room"></th><th data-i18n="area"></th></tr></thead><tbody id="rooms"></tbody></table></div><div><h2 data-i18n="areas"></h2><dl id="areas"></dl><p id="dimensions" class="note"></p></div></section>
 <section id="conflict" class="conflict" hidden></section>
-<details class="card registry"><summary data-i18n="registry"></summary><p class="note" data-i18n="registryNote"></p><input id="agency-search" type="search"><div class="table-scroll"><table><thead><tr><th data-i18n="agency"></th><th data-i18n="address"></th><th data-i18n="website"></th></tr></thead><tbody id="agencies"></tbody></table></div></details>
-</main><script src="js/building-floor-plans.js?v=2"></script><script src="js/three-floor-plans.js?v=2"></script><script src="js/floor-plan-archive.js?v=2"></script></body></html>
+</section>
+<section id="panel-agencies" role="tabpanel" aria-labelledby="tab-agencies" hidden>
+<section id="agency-coverage" class="coverage"></section><article class="card registry"><h2 data-i18n="registry"></h2><p class="note" data-i18n="registryNote"></p><input id="agency-search" type="search"><p id="agency-count" class="note"></p><div class="table-scroll"><table><thead><tr><th data-i18n="agency"></th><th data-i18n="address"></th><th data-i18n="website"></th></tr></thead><tbody id="agencies"></tbody></table></div></article>
+</section>
+</main><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/building-floor-plans.js?v=2"></script><script src="js/three-floor-plans.js?v=2"></script><script src="js/floor-plan-review-geometry.js?v=3"></script><script src="js/floor-plan-review-renderer.js?v=3"></script><script src="js/floor-plan-archive-i18n.js?v=3"></script><script src="js/floor-plan-archive.js?v=3"></script></body></html>
