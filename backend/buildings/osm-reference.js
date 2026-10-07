@@ -246,7 +246,7 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
         } finally {
             clearTimeout(timer);
         }
-        const fc = convert(json && json.elements, cap);
+        const fc = convert(json && json.elements, cap, json);
         if (own) console.log(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} answered in ${cacheNow() - started} ms (${fc.features.length} features)`);
         return fc;
     }

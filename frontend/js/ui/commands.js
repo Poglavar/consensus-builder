@@ -37,6 +37,7 @@
         'highlightOwnershipPrivate',
         'parcels-in-view',
         // Layers sheet: blocks, buildings, roads
+        'showUrbanBlocks', 'urban-blocks-refresh',
         'parcelBlocksCheckbox', 'showBlockNames', 'showParksCheckbox', 'showSquaresCheckbox',
         'showBuildings', 'showBuildingsDgu', 'showBuildingsOsm', 'showProposedBuildings',
         'showGovernmentRoadPlan', 'showOSMRoadLines', 'showGUPRoadLines', 'showWFSPolygons',
@@ -245,6 +246,10 @@
             run: clearLocalParcelData },
 
         // ---- Layers sheet: blocks, buildings, roads ----
+        control('showUrbanBlocks', { id: 'layers.urbanBlocks', group: 'layers', kind: 'toggle', surfaces: ['layers'],
+            labelKey: 'urbanBlocks.toggle', fallbackLabel: 'Detect and analyse blocks', icon: 'fas fa-shapes' }),
+        control('urban-blocks-refresh', { id: 'urbanBlocks.refresh', group: 'blocks', surfaces: ['layers'],
+            labelKey: 'urbanBlocks.refresh', fallbackLabel: 'Refresh this area', icon: 'fas fa-rotate' }),
         control('parcelBlocksCheckbox', { id: 'layers.blocks', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.blocks.showBlocks', fallbackLabel: 'Show parcel blocks', icon: 'fas fa-th-large' }),
         control('showBlockNames', { id: 'layers.blockNames', group: 'layers', kind: 'toggle', surfaces: ['layers'],

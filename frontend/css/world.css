@@ -648,9 +648,8 @@ body.world-view-pending::before {
 /* The explore city: no parcels, so the controls that need them are not offered. Settings, Tools
    (Measure, stations, sites), Activity and Proposals stay (a site drawn here is a proposal with an
    empty binding, PARCEL-OPTIONAL.md), and so do the model/photo/AI modes, which render proposals
-   without parcels. Gone: Layers (every layer in it is a cadastre or a Zagreb dataset), the parcel
-   game, the cadastre view and the walk (no transit-sim location here). */
-body.explore-city #layers-button,
+   without parcels. Layers stays available for worldwide OSM urban blocks and buildings. Gone:
+   the parcel game, the cadastre view and the walk (no transit-sim location here). */
 body.explore-city #cadastre-view-toggle.map-mode-toggle,
 body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     display: none;

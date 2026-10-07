@@ -466,6 +466,12 @@
     }
 
     function presentDialog(context) {
+        // Parcel recovery is optional context while analysing OSM blocks. Keep the failure in
+        // failures for explicit recovery later, without covering a parcel-independent tool.
+        if (global.UrbanBlocksView?.isEnabled() && !context.explicit) {
+            pendingDialog = null;
+            return null;
+        }
         if (introVisible()) {
             pendingDialog = context;
             return null;

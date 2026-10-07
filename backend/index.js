@@ -27,6 +27,7 @@ import { setupBuildingFloorModelsRoute } from './routes/building-floor-models.js
 import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
+import { setupUrbanBlocksRoutes } from './routes/urban-blocks.js';
 import { setupOsmRoadRoute } from './routes/osm-road.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
@@ -461,6 +462,7 @@ export function createApp({
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);
+    setupUrbanBlocksRoutes(app);
     setupOsmRoadRoute(app, activePool);
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);

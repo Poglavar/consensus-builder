@@ -64,6 +64,7 @@
 
     function blocksSelection() {
         if (isHeld()) return true;
+        if (global.UrbanBlocksView?.ownsClicks()) return true;
         if (truthy('measureMode') || global.measureMode) return true;
         if (truthy('roadDrawingMode')) return true;
         if (truthy('cadastreViewActive')) return true;

@@ -50,6 +50,7 @@
     }
 
     function highlightFeature(e) {
+        if (global.UrbanBlocksView?.ownsClicks()) return;
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
         // The drill owns hover when active: it highlights the TOPMOST claim at the cursor —
         // which may be a building or structure standing above this parcel — so the parcel's own

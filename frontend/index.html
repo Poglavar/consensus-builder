@@ -133,7 +133,8 @@
                 'css/map-search.css',
                 'css/command-palette.css',
                 'css/world.css',
-                'css/ground-fallback.css'
+                'css/ground-fallback.css',
+                'css/urban-blocks.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -262,6 +263,20 @@
     <!-- Map container -->
     <div id="map-container">
         <div id="map"></div>
+
+        <!-- Independent OSM block inspector: side panel on desktop, collapsible phone sheet. -->
+        <section id="urban-block-panel" class="urban-block-panel right-dock-panel" aria-labelledby="urban-block-panel-title" hidden>
+            <header class="urban-block-panel-header">
+                <div class="urban-block-panel-heading">
+                    <h2 id="urban-block-panel-title" data-i18n-key="urbanBlocks.blockTitle">Urban block</h2>
+                    <span id="urban-block-panel-summary"></span>
+                </div>
+                <button type="button" id="urban-block-fit" class="btn-quiet" data-i18n-key="urbanBlocks.fit" data-i18n-attr="title,aria-label" title="Fit whole block" aria-label="Fit whole block"><i class="fas fa-expand" aria-hidden="true"></i></button>
+                <button type="button" id="urban-block-collapse" class="btn-quiet" aria-controls="urban-block-panel-body" aria-expanded="true"></button>
+                <button type="button" id="urban-block-close" class="close-circle-btn" data-i18n-key="urbanBlocks.close" data-i18n-attr="title,aria-label" title="Close block details" aria-label="Close block details">×</button>
+            </header>
+            <div id="urban-block-panel-body" class="urban-block-info"></div>
+        </section>
 
         <!-- Floating status toast: the latest status line, always visible, small and out of the way.
              The full status bar and its log live in the Activity sheet. -->
@@ -435,6 +450,22 @@
                         <div id="parcels-in-view" class="sheet-note"
                             data-i18n-key="sidebar.parcels.inViewDefault">Parcels in map view / total: 0
                             / 0</div>
+                    </div>
+                </div>
+
+                <!-- OSM blocks remain available in every city, including those without parcels. -->
+                <div class="accordion-section" data-section="urban-blocks">
+                    <h3 class="sheet-section-title">
+                        <i class="fas fa-shapes" aria-hidden="true"></i>
+                        <span data-i18n-key="urbanBlocks.title">Urban blocks · OSM</span>
+                    </h3>
+                    <div class="sheet-section-body">
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="showUrbanBlocks">
+                                <span data-i18n-key="urbanBlocks.toggle">Detect and analyse blocks</span></label>
+                        </div>
+                        <p id="urban-blocks-status" class="sheet-note" role="status" aria-live="polite">Load OSM roads, then colour the enclosed blocks. Parcel data is optional.</p>
+                        <button type="button" id="urban-blocks-refresh" class="btn" disabled>Refresh this area</button>
                     </div>
                 </div>
 
@@ -1661,6 +1692,10 @@
             'js/user-management.js',
             'js/site-intro.js',
             'js/map-controls.js',
+            'js/urban-blocks-model.js',
+            'js/urban-blocks-controller.js',
+            'js/urban-blocks-layout.js',
+            'js/urban-blocks-view.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',
             'js/mobile-dock-sheet.js',
@@ -1867,6 +1902,7 @@
                 window.MapSearch.initialize();
                 window.CommandPalette.initialize();
                 initializeMapControls();
+                window.UrbanBlocksView.initialize();
                 initializeMapCore();
                 if (typeof gameState !== 'undefined' && gameState.updateGameUI) {
                     gameState.updateGameUI();

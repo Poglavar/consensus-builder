@@ -71,6 +71,14 @@ The frontend has no sidebar; the map is the whole interface:
   *Offer my land*, *View in 3D*, *Detect block*. Multi-select shows a **selection tray**
   (*Propose*, *Detect block*, *Clear*, *Done*).
 - **Command palette**: Ctrl/Cmd-K.
+- **Urban blocks · OSM** in Layers: detects enclosed blocks from OSM road centrelines worldwide,
+  including Explore mode without parcels. Roads load automatically without a line overlay; click
+  a coloured block for area, outer perimeter, estimated walking time at 5 km/h, compactness and,
+  when available, a live count of loaded parcels. Details use a side panel on desktop and a
+  collapsible bottom sheet on phones; the whole selected block fits in the unobstructed map area.
+  An adjustable target size (100 × 100 m by default) estimates how many smaller blocks its area
+  represents, without designing a subdivision. The view follows the map at neighbourhood scale;
+  open or clipped blocks stay unshaded. This analysis is separate from parcel-based block tools.
 - **World view**: on first visit a globe coloured by parcel-data coverage; pick a city, or
   *Explore anyway* to open a place without parcel data.
 
