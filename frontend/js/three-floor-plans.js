@@ -147,7 +147,22 @@
             renderer.render(scene, camera);
         } finally { hidden.forEach(child => { child.visible = true; }); }
     }
-    const api = { createBuildingGroup, setCutaway, disposeGroup, summarize, renderCutaway };
+    function createLocalUnitGroup(THREE, architecture, geometryApi) {
+        const parts = (geometryApi || global.__buildingFloorPlans).buildLocalUnitParts(architecture);
+        const group = new THREE.Group(), byKind = new Map();
+        group.userData.cbFloorPlan = true;
+        for (const part of parts) {
+            if (!byKind.has(part.kind)) byKind.set(part.kind, []);
+            byKind.get(part.kind).push(part);
+        }
+        for (const [kind, values] of byKind) {
+            const mesh = new THREE.Mesh(geometryFor(THREE,values),materialFor(THREE,kind));
+            mesh.name = `UnitPart:${kind}`;
+            group.add(mesh);
+        }
+        return group;
+    }
+    const api = { createLocalUnitGroup, createBuildingGroup, setCutaway, disposeGroup, summarize, renderCutaway };
     global.__threeFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

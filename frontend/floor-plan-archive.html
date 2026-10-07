@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- Read-only review of archived agency evidence and local apartment reconstructions. -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Avenue V · floor-plan archive</title><link rel="stylesheet" href="css/floor-plan-archive.css?v=2">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"}}</script>
+</head><body><main class="archive">
+<header><p class="eyebrow" data-i18n="eyebrow"></p><h1 data-i18n="title"></h1><p class="lede" data-i18n="lede"></p>
+<div class="toolbar"><label><span data-i18n="unit"></span><select id="unit"></select></label><button id="view3d" type="button" data-i18n="view3d"></button><span id="status" class="status" role="status"></span></div></header>
+<section id="coverage" class="coverage"></section><section class="comparison">
+<article class="card"><h2 data-i18n="original"></h2><div id="asset" class="asset"></div><p id="source-link" class="note"></p></article>
+<article class="card"><h2 data-i18n="reconstructed"></h2><div id="plan" class="plan-svg"></div><p class="note" data-i18n="localNote"></p></article></section>
+<section class="details card"><div><h2 data-i18n="rooms"></h2><table><thead><tr><th data-i18n="room"></th><th data-i18n="area"></th></tr></thead><tbody id="rooms"></tbody></table></div><div><h2 data-i18n="areas"></h2><dl id="areas"></dl><p id="dimensions" class="note"></p></div></section>
+<section id="conflict" class="conflict" hidden></section>
+<details class="card registry"><summary data-i18n="registry"></summary><p class="note" data-i18n="registryNote"></p><input id="agency-search" type="search"><div class="table-scroll"><table><thead><tr><th data-i18n="agency"></th><th data-i18n="address"></th><th data-i18n="website"></th></tr></thead><tbody id="agencies"></tbody></table></div></details>
+</main><script src="js/building-floor-plans.js?v=2"></script><script src="js/three-floor-plans.js?v=2"></script><script src="js/floor-plan-archive.js?v=2"></script></body></html>
