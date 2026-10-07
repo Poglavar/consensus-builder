@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:2565",
+  "queueRank": 17,
+  "growthCohort": "top20-2015-2025",
+  "name": "Mbale City",
+  "countryCode": "UG",
+  "centerLatLon": [
+    1.07878290451076,
+    34.1841997126949
+  ],
+  "administrativeIdentity": "Mbale City, Uganda; official MLHUD lists Mbale among UgNLIS Ministry Zonal Offices. Coordinates match Mbale urban area.",
+  "checkedAt": "2026-10-07",
+  "status": "temporarily_unavailable",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://mlhud.go.ug/ugnlis/",
+      "observation": "Official MLHUD description says UgNLIS manages spatially referenced land data nationally and names Mbale as a Ministry Zonal Office."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "observation": "Official UgNLIS public portal link; public search supports parcel/title lookups with fees per official poster."
+    },
+    {
+      "url": "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf",
+      "observation": "Official portal poster: parcel search requires county/municipality/town council and block/road and plot number; UGX 10,000 per search."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "observation": "Official UgNLIS public portal link; public search supports parcel/title lookups with fees per official poster."
+    },
+    {
+      "url": "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf",
+      "observation": "Official portal poster: parcel search requires county/municipality/town council and block/road and plot number; UGX 10,000 per search."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mlhud.go.ug/ugnlis/",
+      "method": "GET",
+      "httpStatus": "web-open",
+      "contentType": "text/html",
+      "assessment": "Official national system description; no open geometry response."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "method": "GET",
+      "httpStatus": "web-open",
+      "contentType": "unknown",
+      "assessment": "Official portal link fetch timed out; prior direct attempts reset intermittently."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Prior retry obtained shell once, but repeated bundle/config requests reset; no endpoint identified."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Browser-header request returned 31 KB Ionic SPA shell. Script references runtime.feef167cd20bfc0f.js, polyfills.7626f7ef3e7f56d2.js, main.8123d6213976b174.js; bundle fetch attempts timed out/hung before API inspection. No parcel data returned."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "Uganda official UgNLIS parcel map Mbale City cadastral",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://mlhud.go.ug/ugnlis/",
+        "https://ugnlis.mlhud.go.ug/public",
+        "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf"
+      ]
+    },
+    {
+      "language": "Luganda/English",
+      "exactQuery": "Uganda land parcel search map Mbale city cadastral official",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://mlhud.go.ug/ugnlis/",
+        "https://ugnlis.mlhud.go.ug/public",
+        "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National UgNLIS system; coverage of particular settlements unknown",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "targetAreaRegistryConfirmed": true
+  },
+  "nextStep": "Retry portal bundle/network inspection and determine whether Mbale polygons are exposed in the map independently of the paid title/parcel search. No polygon request verified.",
+  "failedAttemptsPreserved": [
+    {
+      "reference": "world-parcels/research/retry/countries/UG.json",
+      "note": "Prior dated country retry retained; see this record’s requests for current follow-up and note status history."
+    }
+  ],
+  "requestHeadersUsed": "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml,application/json,*/*;q=0.8; Accept-Language varied by target country (en-SS/ar; en-KE/sw-KE; en-UG; fr-DZ/ar; fr-MG/mg); cookie jar enabled in direct requests. Web research used for official indexed pages.",
+  "registryLeadFound": true,
+  "registryFoundReason": "Official MLHUD identifies Mbale as a UgNLIS Ministry Zonal Office, and UgNLIS is described as the national system managing spatially referenced land registration data; this supports local registry/service presence in Mbale, but no open parcel geometry or precise neighborhood coverage was verified.",
+  "scopedConclusion": {
+    "targetArea": "Mbale City, Uganda; official MLHUD lists Mbale among UgNLIS Ministry Zonal Offices. Coordinates match Mbale urban area.",
+    "cadastralRegistryConfirmedAtTarget": true,
+    "registryLeadFound": true,
+    "conclusion": "Official MLHUD identifies Mbale as a UgNLIS Ministry Zonal Office, and UgNLIS is described as the national system managing spatially referenced land registration data; this supports local registry/service presence in Mbale, but no open parcel geometry or precise neighborhood coverage was verified.",
+    "coverageBoundary": "This conclusion is limited to the named target area and supplied WUP coordinate; national or other-area sources are leads only."
+  },
+  "registryBasis": "Official MLHUD identifies Mbale as a UgNLIS Ministry Zonal Office, and UgNLIS is described as the national system managing spatially referenced land registration data; this supports local registry/service presence in Mbale, but no open parcel geometry or precise neighborhood coverage was verified.",
+  "registryEvidenceUrls": [
+    "https://mlhud.go.ug/ugnlis/",
+    "https://ugnlis.mlhud.go.ug/public",
+    "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf"
+  ]
+}

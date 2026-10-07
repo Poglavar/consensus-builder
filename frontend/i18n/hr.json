@@ -3591,6 +3591,7 @@
             "santa_fe": "Santa Fe, SAD",
             "albany": "Albany, SAD",
             "raleigh": "Raleigh, SAD",
+            "new_hope": "New Hope, Sjeverna Karolina, SAD",
             "bismarck": "Bismarck, SAD",
             "columbus": "Columbus, SAD",
             "salem": "Salem, SAD",
@@ -3620,7 +3621,8 @@
             "houston": "Houston, SAD",
             "curitiba": "Curitiba, Brazil",
             "recife": "Recife, Brazil",
-            "durban": "Durban, Južnoafrička Republika"
+            "durban": "Durban, Južnoafrička Republika",
+            "venjaramoodu": "Venjaramoodu, Indija"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",

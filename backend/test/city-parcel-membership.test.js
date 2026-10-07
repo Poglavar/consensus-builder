@@ -71,7 +71,11 @@ describe('isInCity covers every configured city', () => {
             zagreb: 'HR-335533-4090/1',
             split: 'HR-334286-1',
             sibenik: 'HR-330264-628',
+            doha: 'qa-cgis:123456789',
+            dubai: 'AE-DDA-123456789',
             belgrade: 'SR-70123-456',
+            amman: 'jo-dls:123456789012345',
+            muscat: 'OM-MM-MUTRAH-152642~128',
             ljubljana: 'SI-1234-56',
             buenos_aires: '001-002-3A',
             colorado: 'US-CO-12345',
@@ -81,6 +85,7 @@ describe('isInCity covers every configured city', () => {
             birmingham: 'GB-HMLR-23394370',
             london: 'GB-HMLR-LONDON-23394370',
             manchester: 'GB-HMLR-MANCHESTER-23394370',
+            frankfort: 'US-KY-FRANKFORT-061-00-00-103.00',
             madrid: 'ES-DGC-28079000000001',
             barcelona: 'ES-DGC-08019000000001',
             savar: 'BD-DLRS-201901-4105-010510026-001-0001',
@@ -93,6 +98,9 @@ describe('isInCity covers every configured city', () => {
             montreal: 'CA-QC-CADASTRE-11111111-2222-3333-4444-555555555555',
             bogota: 'CO-BOGOTA-006106001009',
             los_angeles: 'US-CA-LA-5149001915',
+            oklahoma_city: 'US-OK-OKLAHOMA_CITY-1234567890',
+            pierre: 'US-SD-PIERRE-11899',
+            houston: 'US-TX-HCAD-123456789',
             miami: 'US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}',
             washington_dc: 'US-DC-{1B157667-518C-4B56-9DFC-1DAEC1559EAB}',
             paris: 'FR-PCI-75105000AD0011',
@@ -139,6 +147,8 @@ describe('isInCity covers every configured city', () => {
             santa_fe: "US-NM-SANTA-FE-99306489",
             albany: "US-NY-ALBANY-01010007600700010010000000",
             raleigh: "US-NC-WAKE-1703678831",
+            new_hope: "US-NC-WAKE-1706681938",
+            venjaramoodu: "IN-KL-ENTEBHOOMI-010309-ce0688a8-8689-41b8-8d14-1edd191a86ee",
             bismarck: "US-ND-BURLEIGH-1-064-005",
             columbus: "US-OH-FRANKLIN-010-007484",
             salem: "US-OR-MARION-073W22DC04500",
@@ -157,8 +167,14 @@ describe('isInCity covers every configured city', () => {
             olympia: "US-WA-OLYMPIA-THURSTON-09850005000",
             providence: "US-RI-PROVIDENCE-240405",
             tallahassee: "US-FL-TALLAHASSEE-2136252231785",
-            topeka: "US-KS-TOPEKA-1330602013011000"
+            topeka: "US-KS-TOPEKA-1330602013011000",
+            curitiba: 'BR-CURITIBA-11150008',
+            recife: 'BR-RECIFE-0100100010010001',
+            durban: 'ZA-ETHEKWINI-{11111111-2222-3333-4444-555555555555}'
         };
+        // These values exercise membership only. Muscat, Curitiba, and Frankfort use observed
+        // native-format examples; the other new values are synthetic strings shaped from the
+        // configured prefix/native field type and are not claims of source verification.
         configuredCityIds().forEach(city => {
             expect(sample[city], `no sample parcel id for configured city ${city}`).toBeTruthy();
             expect(isInCity(sample[city], city), `${city} refuses its own parcel`).toBe(true);

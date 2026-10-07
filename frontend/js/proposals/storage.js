@@ -56,7 +56,7 @@ function isInCity(parcelId, cityId) {
     const configuredPrefix = typeof CityConfigManager !== 'undefined'
         ? CityConfigManager.getCityConfig?.(city)?.parcels?.idPrefix : null;
     const prefix = configuredPrefix || CITY_PARCEL_ID_PREFIXES[city];
-    if (prefix) return upper.startsWith(prefix);
+    if (prefix) return upper.startsWith(prefix.toString().toUpperCase());
 
     // Unknown city: refuse the parcel rather than silently letting cross-city
     // ids through. Reaching this point means an unconfigured city or missing source metadata.

@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:10605",
+  "queueRank": 7,
+  "growthCohort": "top20-2015-2025",
+  "name": "Shankarpur",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.8134713841866,
+    84.1157517852504
+  ],
+  "administrativeIdentity": "Bihar; district, tehsil and revenue-village identity for the supplied coordinate remains unresolved. The BhuNaksha selector surfaced same-name Shankarpur candidates in Dandkhora and Kadwa circles of Katihar, but neither candidate has been matched to this point.",
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "bihar-bhunaksha-lead",
+    "name": "BhuNaksha Bihar cadastral map viewer and NIC REST selector",
+    "operator": "Directorate of Land Records & Survey, Government of Bihar; NIC developed BhuNaksha",
+    "scope": "Bihar BhuNaksha state selector is an investigative lead only. The supplied coordinate has not been tied to a Bihar district, tehsil, or revenue village; no target registry or parcel sheet is confirmed.",
+    "endpoint": "https://bhunaksha.bihar.gov.in/ (viewer); https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel (administrative hierarchy); https://bhunaksha.bihar.gov.in/WMS (image map)",
+    "method": "POST application/x-www-form-urlencoded to public selector; WMS map rendered as image",
+    "responseFormat": "JSON administrative hierarchy; WMS image/png",
+    "crs": "EPSG:32645 was reported for a tested Katihar map sheet; it does not establish Shankarpur location, target sheet, or CRS.",
+    "reuseStatus": "Public viewer/API and map layers reachable anonymously; reuse terms for automated access not assessed. No parcel geometry endpoint identified."
+  },
+  "sourcesFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official state government cadastral/land-record viewer or integrated land service found by search. Candidate existence only; no parcel geometry verified."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official state revenue/land-records portal found; records/viewer capability is evidence of a portal, not a tested vector parcel endpoint."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "observation": "Official Bihar land revenue report surfaces district/circle/mauza administrative lists; not parcel geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official viewer HTML and public JavaScript inspected. JavaScript exposes REST selector `rest/Levels/ListsAfterLevel`, MapInfo extent calls, `ScalarDatahandler`, and WMS image layers; it does not request vector polygon features in the public map UI."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Bihar BhuNaksha state viewer page returned HTTP 200. Legacy state page links to `/rest/GetMapInstanceMap/getMapInstance` and its map flow; not parcel verification."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official state government cadastral/land-record viewer or integrated land service found by search. Candidate existence only; no parcel geometry verified."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official state revenue/land-records portal found; records/viewer capability is evidence of a portal, not a tested vector parcel endpoint."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "observation": "Official Bihar land revenue report surfaces district/circle/mauza administrative lists; not parcel geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official viewer HTML and public JavaScript inspected. JavaScript exposes REST selector `rest/Levels/ListsAfterLevel`, MapInfo extent calls, `ScalarDatahandler`, and WMS image layers; it does not request vector polygon features in the public map UI."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Bihar BhuNaksha state viewer page returned HTTP 200. Legacy state page links to `/rest/GetMapInstanceMap/getMapInstance` and its map flow; not parcel verification."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Direct browser-like request attempted with Chrome User-Agent, Accept, target-country Accept-Language and requests cookie session; environment DNS resolution failed before HTTP response. No response body; this is not evidence of no-data."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official report indexed in web search with district/mauza records, but live bounded parcel geometry request not available from this environment."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official viewer retrieved with browser-like UA/Accept/Accept-Language and session cookies outside the sandbox; JavaScript and service routes inspected."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Public selector reports 7 hierarchy levels for Bihar state code 10."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Returned state subdivisions/circles/mauza candidate lists with hasData flags; administrative selector response, not parcel geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities&state=10",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "assessment": "Returned 1x1 PNG (562 bytes), not a WMS capabilities document or parcel geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": null,
+      "assessment": "Empty server response to WMS capabilities request; viewer itself requests image WMS layers with state/gis_code/layer parameters. This is not treated as no-data."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Bihar selector scan surfaced same-name Shankarpur candidates in Katihar’s Dandkhora and Kadwa circles, showing why name-only matching is ambiguous. No candidate matched to supplied coordinate."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "official Bihar BhuNaksha cadastral map parcel viewer",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://land.bihar.gov.in/landbihar/Default.aspx"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "बिहार भू नक्शा कटिहार सीवान खेसरा नक्शा आधिकारिक",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "सीवान दरौली रघुनाथपुर भू नक्शा राजस्व गांव नक्शा",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx/1000",
+        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "शंकरपुर 26.81347 84.11575 बिहार जिला",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://eastchamparan.nic.in/village-panchayats/",
+        "https://gis.bihar.gov.in/DEPTS/Booth/Booth.aspx"
+      ]
+    },
+    {
+      "language": "English",
+      "exactQuery": "26.81347 84.11575 Shankarpur Bihar village district",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://gis.bihar.gov.in/DEPTS/Booth/Booth.aspx",
+        "https://eastchamparan.nic.in/village-panchayats/"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "शंकरपुर 26.81347 84.11575 बिहार जिला",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://gis.bihar.gov.in/DEPTS/Booth/Booth.aspx"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bihar state portal is a lead only; the supplied point has not been assigned to a district, tehsil, or revenue village. Same-name Shankarpur candidates surfaced in Dandkhora and Kadwa (Katihar), but neither was matched to the coordinate.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "nextStep": "Resolve the supplied point against authoritative administrative boundaries first. Only after district/tehsil/village identity is supported should its BhuNaksha registry and any target parcel sheet be tested.",
+  "failures": [
+    {
+      "kind": "local_sandbox_dns",
+      "host": "bhunaksha.bihar.gov.in",
+      "detail": "Initial Python request failed DNS before HTTP within local sandbox. Retried with browser-like headers, cookies, and network approval; official viewer and selector routes returned HTTP 200. This was an environment limitation, not a source outage."
+    }
+  ],
+  "registryBasis": "Bihar BhuNaksha is a source lead; the supplied Shankarpur point has not been matched to its district, tehsil and revenue village.",
+  "registryEvidenceUrls": [
+    "https://bhunaksha.bihar.gov.in/index.jsp",
+    "https://land.bihar.gov.in/landbihar/Default.aspx",
+    "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+    "https://bhunaksha.bihar.gov.in/10/index.jsp"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T19:00:56.557Z",
+  "cityId": "venjaramoodu",
+  "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+  "cellWgs84": [
+    76.91,
+    8.65,
+    76.915,
+    8.655
+  ],
+  "cellAreaKm2": 0.306,
+  "complete": true,
+  "featureCount": 220,
+  "uniqueIdCount": 220,
+  "upstreamResponse": {
+    "status": 200,
+    "contentType": "application/geo+json",
+    "bytes": 153595
+  },
+  "note": "One enclosing bounded cell for the observed browser viewport. Response size is measured from a cloned body; geometry/property contents are not retained."
+}

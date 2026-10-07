@@ -225,7 +225,10 @@
         const parcelKey = parcelId ? parcelId.toString() : '';
 
         // Check if ownership data is already in feature properties (from backend)
-        const rawOwnershipListFromProps = buildRawOwnershipList(feature.properties);
+        const simulatedOwnershipMode = !!global.gameState?.isRunning;
+        const ownershipSupported = simulatedOwnershipMode
+            || global.CityConfigManager?.getCurrentCityConfig?.()?.parcels?.ownership !== false;
+        const rawOwnershipListFromProps = ownershipSupported ? buildRawOwnershipList(feature.properties) : null;
         let ownershipListFromProps = rawOwnershipListFromProps;
 
         // Normalize ownership data from backend format (ownerLabel, percentageShare) to frontend format (name, actualShareText)
@@ -277,9 +280,10 @@
             });
         }
 
-        const ownershipTypeFromProps = feature.properties.ownershipType
-            || deriveOwnershipTypeFromSummary(feature.properties.ownership_summary)
-            || null;
+        const rawOwnershipType = feature.properties.ownershipType;
+        const ownershipTypeFromProps = ownershipSupported
+            ? (rawOwnershipType || deriveOwnershipTypeFromSummary(feature.properties.ownership_summary) || null)
+            : null;
 
         const blockName = typeof global.parcelBlockNameForId === 'function'
             ? global.parcelBlockNameForId(parcelId)
@@ -366,21 +370,27 @@
         const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
             || (global.Parcels && global.Parcels.ownership && global.Parcels.ownership.shouldUseRealParcelOwners)
             || global.shouldUseRealParcelOwners;
-        const shouldFetchRealOwners = typeof shouldUseRealOwnersFn === 'function'
+        const shouldFetchRealOwners = ownershipSupported && typeof shouldUseRealOwnersFn === 'function'
             ? shouldUseRealOwnersFn()
             : false;
-        const simulatedOwnerHtml = buildSimulatedOwnerHtml(parcelId);
+        const unknownOwnershipType = typeof feature?.properties?.ownershipType === 'string'
+            && ['unknown', 'unavailable', 'not available'].includes(feature.properties.ownershipType.trim().toLowerCase());
+        const ownershipIsUnknown = !ownershipSupported
+            || (unknownOwnershipType && !ownershipListFromProps && !shouldFetchRealOwners && !simulatedOwnershipMode);
+        const unknownOwnerLabel = tParcel('common.unknownOwner', {}, 'Unknown owner');
+        const unknownOwnerHtml = `<span data-i18n-key="common.unknownOwner">${unknownOwnerLabel}</span>`;
+        const simulatedOwnerHtml = ownershipIsUnknown ? '' : buildSimulatedOwnerHtml(parcelId);
         const fallbackOwnerName = tParcel('panel.parcel.owner.single', {}, 'Single owner');
-        const fallbackOwnerHtml = simulatedOwnerHtml || `
+        const fallbackOwnerHtml = ownershipIsUnknown ? unknownOwnerHtml : (simulatedOwnerHtml || `
             <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
                 <span data-i18n-key="panel.parcel.owner.single">${fallbackOwnerName}</span>
                 <span style="color: #666; font-size: 0.9em;">100%</span>
             </div>
-        `;
+        `);
         let ownershipHtml = fallbackOwnerHtml;
 
         // If ownership data is available from feature properties, use it directly
-        let initialOwnerCount = 1;
+        let initialOwnerCount = ownershipIsUnknown ? null : 1;
         if (ownershipListFromProps && ownershipListFromProps.length > 0) {
             const buildRealOwnerRowsHtmlFn = global.buildRealOwnerRowsHtml
                 || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.buildRealOwnerRowsHtml)
@@ -664,7 +674,7 @@
                 <div class="parcel-owner-header-label" data-i18n-key="panel.parcel.metrics.owner">${ownerLabel}</div>
                 ${ownershipTypeLabel}
                 ${adButtonHtml}
-                <div class="parcel-owner-header-label parcel-owner-header-share" data-i18n-key="panel.parcel.metrics.share">${shareLabel}</div>
+                ${ownershipIsUnknown ? '' : `<div class="parcel-owner-header-label parcel-owner-header-share" data-i18n-key="panel.parcel.metrics.share">${shareLabel}</div>`}
             </div>
             ${adLink ? `
             <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" style="display:none;">
@@ -799,7 +809,9 @@
             } else {
                 ownersCountElement.removeAttribute('role');
                 ownersCountElement.removeAttribute('aria-label');
-                ownersCountElement.textContent = initialOwnerCount.toString();
+                ownersCountElement.textContent = initialOwnerCount === null
+                    ? tParcel('common.unknown', {}, 'Unknown')
+                    : initialOwnerCount.toString();
             }
         }
 
@@ -813,18 +825,23 @@
             if (!ownershipTypeLabelEl) {
                 return;
             }
+            if (!ownershipSupported) {
+                ownershipTypeLabelEl.style.display = 'none';
+                return;
+            }
 
             let typeLabel = '';
 
             // Re-check feature properties directly in case variables weren't set correctly
-            const directOwnershipType = feature?.properties?.ownershipType;
-            const directOwnershipList = Array.isArray(feature?.properties?.ownershipList) ? feature.properties.ownershipList : null;
+            const directOwnershipType = ownershipSupported ? feature?.properties?.ownershipType : null;
+            const directOwnershipList = ownershipSupported && Array.isArray(feature?.properties?.ownershipList)
+                ? feature.properties.ownershipList : null;
 
             // First priority: use ownershipType directly from feature properties (from backend)
             const ownershipTypeToUse = ownershipTypeFromProps || directOwnershipType;
             if (ownershipTypeToUse && typeof ownershipTypeToUse === 'string') {
                 const type = ownershipTypeToUse.trim();
-                if (type) {
+                if (type && !['unknown', 'unavailable', 'not available'].includes(type.toLowerCase())) {
                     // Normalize the type to match expected values
                     const normalizedType = type === 'private individual' ? 'individual' : type;
                     typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {},

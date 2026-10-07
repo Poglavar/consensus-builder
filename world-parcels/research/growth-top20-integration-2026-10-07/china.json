@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "countryCode": "CN",
+  "status": "no_verified_public_parcel_geometry",
+  "summary": "The Zhengzhou leads resolve to public map browsing and cadastral-information query guidance, but no anonymous parcel feature service or downloadable complete geometry was exposed. Putian's official parcel-map lookup is tied to the QR code on a property certificate, while the official Fujian public map platform publishes general base-map services and requires service authentication. No target-intersecting parcel polygons or complete viewport response could be verified; do not add a source descriptor or synthetic response fixtures.",
+  "targets": [
+    {
+      "cityId": "wup2025:9524",
+      "name": "Dajindian",
+      "localName": "大金店镇",
+      "administrativeContext": "Dengfeng, Zhengzhou, Henan",
+      "centerLatLon": [34.3730765718093, 113.024002574101],
+      "placeMatch": {
+        "source": "Wikimedia Chinese article for 大金店镇, already verified in the growth-city report",
+        "url": "https://zh.wikipedia.org/wiki/大金店镇",
+        "returnedPoint": [34.37365, 112.97732],
+        "distanceKmFromWupCenter": 4.285,
+        "assessment": "Confirms the intended Zhengzhou/Dengfeng town context; not parcel geometry or a cadastral boundary."
+      },
+      "officialViewerEvidence": {
+        "url": "https://henan.tianditu.gov.cn/zhengzhou/",
+        "title": "天地图·郑州",
+        "httpStatus": 200,
+        "scripts": [
+          "https://henan.tianditu.gov.cn/zhengzhou/config.js",
+          "https://henan.tianditu.gov.cn/zhengzhou/assets/tianditu-api.js",
+          "https://henan.tianditu.gov.cn/zhengzhou/assets/map/basemap.js",
+          "https://henan.tianditu.gov.cn/zhengzhou/assets/js/app.8bdf1985.js"
+        ],
+        "config": {
+          "apiHost": "https://henan.tianditu.gov.cn/zhengzhou",
+          "administrativeCode": "4101",
+          "clusterLayers": [],
+          "domTimelineEntries": 8,
+          "domTimelineType": "WMTS",
+          "domTimelineDescription": "2022–2024 orthophoto/image timeline and generic image-map layers; no cadastral layer declared"
+        },
+        "assessment": "This is an accessible public basemap/imagery viewer covering Zhengzhou. Its published config and app bundle expose no parcel, cadastre, land-registration or cadastral feature-query layer. The official Zhengzhou home page links to this viewer as 天地图·郑州."
+      }
+    },
+    {
+      "cityId": "wup2025:12097",
+      "name": "Dongjiao",
+      "localName": "东峤镇",
+      "administrativeContext": "Xiuyu District, Putian, Fujian",
+      "centerLatLon": [25.2753341420267, 119.176078071476],
+      "placeMatch": {
+        "source": "Wikimedia Chinese article for 东峤镇, already verified in the growth-city report",
+        "url": "https://zh.wikipedia.org/wiki/东峤镇",
+        "returnedPoint": [25.26973, 119.16701],
+        "distanceKmFromWupCenter": 1.104,
+        "assessment": "Confirms the intended Putian/Xiuyu town context; not parcel geometry or a cadastral boundary."
+      },
+      "officialCadastralServiceEvidence": {
+        "url": "https://zrzyj.putian.gov.cn/ztzl/yhyshj/202308/t20230814_1844792.htm",
+        "httpStatusViaIndexedOfficialPage": 200,
+        "serviceDescription": "The official Putian bureau says a certificate holder can scan the QR code on their own property certificate to view registration information, parcel map and unit floor plan; it also describes identity-certified access for a related registration workflow.",
+        "accessBoundary": "Known-certificate/holder-oriented query; no open spatial search, public feature service, or bulk viewport geometry route is documented."
+      },
+      "publicCounterpartEvidence": {
+        "url": "https://fujian.tianditu.gov.cn/",
+        "officialDescription": "Fujian Natural Resources Department describes this as the provincial public geographic-information platform. Its published public services are base maps, imagery, shaded relief, roads, water, labels and names; separate vector-tile services are stated for the government intranet. The platform states that node services continue security authentication management.",
+        "officialDescriptionSource": "https://zrzyt.fujian.gov.cn/zwgk/zfxxgkzl/zfxxgkml/chdlxxgl/202307/t20230721_6211646.htm",
+        "accessBoundary": "Service authentication is required; described public basemap catalog is not a cadastral parcel service. The live platform timed out in this network check, so no additional service calls were made.",
+        "officialResultsCatalog": "https://ff.fjmap.net/Chcgzhfw/",
+        "officialResultsCatalogSource": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202504/t20250411_6887356.htm",
+        "catalogAssessment": "The official provincial notice routes users to the survey/geographic-results catalog and says platform services are obtained from the provincial geospatial center. No public target-area parcel dataset or downloadable product was verified."
+      }
+    }
+  ],
+  "publicOfficialSources": [
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/tzgg/8042625.jhtml",
+      "title": "郑州市自然资源和规划局关于进一步做好要素保障服务优化营商环境工作的通知",
+      "date": "2023-10-24",
+      "finding": "The municipal notice describes free vector-map downloads under 一码管地 only after a land-supply contract or allocation decision is signed, after the supplying department enters it, and through a user who has real-name registered and logged in to the Henan government service portal. It is contract/parcel-specific and does not provide reusable citywide cadastral coverage."
+    },
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/",
+      "title": "Zhengzhou Natural Resources and Planning Bureau",
+      "finding": "The public home page links to 天地图·郑州, Zhengzhou Unified Real-Estate Registration, land acquisition-information search, and a 码上查询 entry. The 码上查询 entry redirects to the Henan government-service real-name login flow."
+    },
+    {
+      "url": "https://sj.jiceng.zhengzhou.gov.cn/attachment/郑州市上街区不动产登记中心通过网上渠道查询信息办事指南.pdf",
+      "title": "郑州市上街区不动产登记中心通过网上渠道查询信息办事指南",
+      "finding": "The official PDF is indexed with instructions to use the Zhengzhou Real-Estate Registration Center WeChat account and its 地籍图查询 menu. Search by an already-known 不动产单元号/宗地代码 positions the corresponding property graphic. The document is scoped to the Shangjie district service; it documents a keyed registry-information query, not a public bulk polygon endpoint. Search indexing exposes the instructions; direct fetch of the attachment returned 404."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/zfxxgkzl/zfxxgkml/chdlxxgl/202307/t20230721_6211646.htm",
+      "title": "福建省自然资源厅关于发布福建省地理信息公共服务平台（天地图·福建）2023版的公告",
+      "date": "2023-07-06",
+      "finding": "Official description identifies public basemap, imagery, shaded relief, road, water and place-name services; 15 vector-tile layers are specified for the government intranet. The announcement says node service authentication remains in effect and directs users to technical support. It does not describe cadastral parcels as a public layer."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/ztzl/yhyshj/202308/t20230814_1844792.htm",
+      "title": "莆田市开展不动产登记队伍作风和素质提升专项行动",
+      "date": "2023-08-14",
+      "finding": "The Putian bureau describes parcel-map access via the QR code on the property certificate and identity-verified flows; its article also stresses legally restricted registry-archive queries. It supplies no open map-search URL or public feature API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://henan.tianditu.gov.cn/zhengzhou/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "responseBytes": 12569,
+      "assessment": "Accessible official Zhengzhou public map viewer."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/zhengzhou/config.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "responseBytes": 4149,
+      "assessment": "Published config has city code 4101, eight imagery-timeline WMTS entries, an empty cluster-layer list, and no cadastral/parcel layer or feature endpoint. Layer URLs point to imagery and generic image tiles. No tokens copied into this record."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/zhengzhou/assets/js/app.8bdf1985.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "responseBytes": 234123,
+      "assessment": "Public viewer bundle contains no cadastral or parcel-query identifiers. The observed API references are common resource/upload/download functions; downloads include a bearer-authorization header."
+    },
+    {
+      "url": "https://zzbdc.zrzyhghj.zhengzhou.gov.cn:8443/",
+      "method": "GET",
+      "httpStatus": 0,
+      "assessment": "Official Zhengzhou guidance names this registration portal; the parent research pass timed out after 35 seconds. No guessed route or login/CAPTCHA path was probed. The bureau homepage's 码上查询 link points into the provincial real-name login flow."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/zhengzhou/",
+      "method": "GET",
+      "httpStatus": "200 via public viewer; no cadastral query route found",
+      "assessment": "The publicly reachable same-city map counterpart is ordinary Tianditu imagery/base-map browsing; its observed config does not expose cadastre."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "assessment": "Direct browser-header request timed out after 20 seconds. Specific official article pages are retrievable through the indexed public result and document the certificate-QR access model."
+    },
+    {
+      "url": "https://fujian.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "assessment": "Official Fujian public-map counterpart timed out in the web fetch. No fallback host, authentication bypass or guessed endpoint was tried."
+    },
+    {
+      "url": "https://ff.fjmap.net/Chcgzhfw/",
+      "method": "GET",
+      "httpStatus": 0,
+      "assessment": "Officially referenced service catalog was not accessible through the web fetch. Its source notice says product/service requests are handled by the provincial geospatial information center; no target parcel geometry was retrieved."
+    }
+  ],
+  "decision": {
+    "descriptorProposed": false,
+    "snapshotFixturesWritten": false,
+    "reason": "No anonymous, stable parcel geometry endpoint or exact target-area parcel response was found. Zhengzhou's public viewer is imagery/base-map only; its registry-related query guidance requires a known property identifier, and vector downloads require a signed land contract/allocation record plus real-name login. Putian's official property-map path is certificate-QR based; the province's public map service is authenticated and does not advertise cadastral layers. The city natural-resources host timeouts are transport failures, not proof that no records exist. No descriptor or fake geometry fixture should be created.",
+    "nextUsefulEvidence": "If a legally authorized publicly documented route becomes available, inspect the Zhengzhou registry map viewer or Putian credentialed service through its normal interface and verify a target-intersecting polygon, native parcel key, full response count, extent, and viewport completeness."
+  }
+}

@@ -7520,7 +7520,7 @@
       "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
       "countryCode": "US",
       "stateCode": "NC",
-      "scope": "Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; configured for Raleigh.",
+      "scope": "Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; runtime configured for Raleigh and the WUP New Hope urban-centre point.",
       "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
       "method": "ArcGIS REST adapter",
       "responseFormat": "WGS84 GeoJSON",
@@ -7530,15 +7530,20 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "raleigh"
+          "raleigh",
+          "new_hope"
         ],
         "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
         "reason": "Complete bounded, exact-native and binding acceptance passed.",
         "technicalBlockers": [],
-        "termsAreInformational": true
+        "termsAreInformational": true,
+        "additionalCityEvidence": {
+          "new_hope": "research/growth-top20-integration-2026-10-07/new-hope-final.json"
+        }
       },
       "verifiedCityIds": [
-        "us-capital:NC"
+        "us-capital:NC",
+        "wup2025:8018"
       ],
       "integrationAttempts": [
         {
@@ -7650,6 +7655,27 @@
           "outcome": "passed",
           "detail": "See linked publisher references, aggregate diagnosis and protocol outcomes.",
           "evidenceFile": "research/us-capitals-batch-four-north-results-2026-10-06.json"
+        },
+        {
+          "cityId": "wup2025:8018",
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+          "operation": "Bounded New Hope WUP-centre sample in EPSG:2264 and exact county-qualified parcel ID read",
+          "outcome": "verified-sample",
+          "httpStatus": 200,
+          "detail": "NC OneMap returned three Wake County parcel polygons at the WUP New Hope point and one matching exact parcel-ID read. Existing Raleigh source can be reused after target viewport acceptance.",
+          "evidenceFile": "research/growth-top20-2026-10-07/city-8018.json"
+        },
+        {
+          "cityId": "wup2025:8018",
+          "appCityId": "new_hope",
+          "checkedAt": "2026-10-07",
+          "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+          "operation": "Nine viewport cells, exact-ID geometry round trips for every retained parcel, and authoritative binding",
+          "outcome": "passed",
+          "httpStatus": 200,
+          "detail": "239 distinct parcels across nine complete viewport cells; all exact reads matched. Binding returned complete coverage. Exact-ID requests use batches of five after larger batches timed out. No owner fields or parcel geometry retained.",
+          "evidenceFile": "research/growth-top20-integration-2026-10-07/new-hope-final.json"
         }
       ],
       "previousResearchSourceId": "us-capital-nc-parcel-research"
@@ -10371,6 +10397,43 @@
         "evidenceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json",
         "reason": "eThekwini municipal cadastral parcels; central Durban verified; complete viewport, exact-native and source-binding acceptance passed.",
         "technicalBlockers": [],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+      "name": "Kerala Ente Bhoomi — Manikkal cadastral parcels",
+      "operator": "Government of Kerala, Survey and Land Records Department / NIC Kerala (as credited by portal)",
+      "scope": "Published Manikkal village 010309, Nedumangad taluk, around the WUP Venjaramoodu point. Other villages and statewide coverage are not established.",
+      "endpoint": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "Public viewer session selects Manikkal; POST bounded GeoJSON export in EPSG:32643. Exact parcel_gid reads use the public feature_info proxy. Temporary viewer keys and cookie/CSRF values stay only in memory.",
+      "responseFormat": "Bounded GeoJSON and exact-ID JSON with MULTIPOLYGON Z WKT",
+      "crs": "EPSG:32643",
+      "reuseStatus": "Public viewer session and bounded polygon export verified. Provider terms are informational and were not a technical integration blocker. Runtime retains only parcel ID, survey number and block number; no ownership fields.",
+      "countryCode": "IN",
+      "exactReadEndpoint": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/{locationCode}",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "verifiedCityIds": [
+        "wup2025:10023"
+      ],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/kerala-runtime.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "venjaramoodu"
+        ],
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/kerala-runtime.json",
+        "additionalEvidenceFiles": [
+          "research/growth-top20-integration-2026-10-07/kerala.json",
+          "research/growth-top20-integration-2026-10-07/kerala-final.json",
+          "research/growth-top20-integration-2026-10-07/kerala-viewport-scope.json"
+        ],
+        "reason": "Default 0.005-degree cell returned 220 complete polygons in both direct and runtime checks. Fresh-adapter exact reads matched all four parcels in nine smaller cells; authoritative runtime binding returned complete coverage.",
+        "technicalBlockers": [],
+        "limitations": [
+          "Only published Manikkal village is configured.",
+          "Empty untyped HTTP 200 bodies remain unavailable errors. The enclosing default grid avoids empty subcell responses at the entry point."
+        ],
         "termsAreInformational": true
       }
     }
@@ -13834,7 +13897,41 @@
       "researchOrder": 168,
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/aleppo.json"
+      "researchFile": "research/growth-top20-2026-10-07/city-1601.json",
+      "previousResearchFile": "research/aleppo.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/aleppo.json",
+      "growthQueueRank": 11,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Aleppo cadastral office issues registry statements and survey plans. The officially linked electronic-service portal did not connect from this network, and no anonymous Aleppo parcel geometry endpoint was verified.",
+        "registryEvidenceUrls": [
+          "https://sana.sy/governorates/aleppo/2256077/",
+          "https://www.syrianrealestate.gov.sy/",
+          "https://www.cadastre.gov.sy/",
+          "https://ecsc.gov.sy/",
+          "https://sana.sy/governorates/2433432/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "public_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+          "verifiedOpenScope": "none",
+          "countrywideVerified": false,
+          "finding": "Aleppo cadastral office issues registry statements and survey plans. The officially linked electronic-service portal did not connect from this network, and no anonymous Aleppo parcel geometry endpoint was verified."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/aleppo.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/aleppo.json",
+        "reason": "Aleppo cadastral office issues registry statements and survey plans. The officially linked electronic-service portal did not connect from this network, and no anonymous Aleppo parcel geometry endpoint was verified.",
+        "technicalBlockers": [
+          "Aleppo cadastral office issues registry statements and survey plans. The officially linked electronic-service portal did not connect from this network, and no anonymous Aleppo parcel geometry endpoint was verified."
+        ],
+        "termsAreInformational": true
+      }
     },
     {
       "cityId": "wup2025:6721",
@@ -15985,6 +16082,820 @@
         "nativeSampleVerified": true,
         "runtimeReadiness": "enabled",
         "scope": "Mutrah Directorate in Muscat: plots with published PLOTUID and new plot number. Unnumbered plots are outside this partial source; Oman nationwide coverage is not provided."
+      }
+    },
+    {
+      "cityId": "wup2025:2564",
+      "wupCityCode": 2564,
+      "name": "Narus",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "centerLatLon": [
+        4.50390707903259,
+        34.1660430983317
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-2564.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-2564.json",
+      "parcelStatus": "temporarily_unavailable",
+      "growthQueueRank": 1,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "South Sudan has an official national GIS/mapping authority and a Ministry of Lands lead, but no source found ties cadastral registry records to Narus or the supplied coordinate.",
+        "registryEvidenceUrls": [
+          "https://www.ssnbss.org/home/geographical-information-system/",
+          "https://mlhud.gov.ss/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "National ministry/GIS authority leads; exact local parcel coverage unknown",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false,
+          "targetAreaRegistryConfirmed": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-2564.json"
+      }
+    },
+    {
+      "cityId": "wup2025:2896",
+      "wupCityCode": 2896,
+      "name": "Mutuati",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "centerLatLon": [
+        0.306228592288694,
+        37.9499417669457
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-2896.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-2896.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 2,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Ardhisasa and the official Meru County thematic map catalog are broader candidate sources; no cadastral records or parcel service were tied to the WUP point. The WUP point is about 8 km south of the common Mutuati centroid, so the target urban/locality extent is also unresolved.",
+        "registryEvidenceUrls": [
+          "https://ardhisasa.lands.go.ke/",
+          "https://lands.go.ke/land-survey-searches",
+          "https://meru.go.ke/county-maps/",
+          "https://meru.go.ke/1043/state-county-address-by-he-governor-kiraitu-murungi/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "National Ardhisasa land services and Meru County thematic GIS maps; Mutuati local parcel coverage unknown",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false,
+          "targetAreaRegistryConfirmed": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-2896.json"
+      }
+    },
+    {
+      "cityId": "wup2025:6393",
+      "wupCityCode": 6393,
+      "name": "Nandail",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        24.5572807401755,
+        90.7026558036547
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-6393.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "growthQueueRank": 3,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Nandail has local cadastral-map records. The current and alternate public survey selectors do not expose its target sheet; nearby Achargaon catalog entries are non-georeferenced preview images, not parcel vectors.",
+        "registryEvidenceUrls": [
+          "https://acl.nandail.mymensingh.gov.bd/",
+          "https://dlrs.gov.bd/",
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+          "https://map.settlement.gov.bd/",
+          "https://acl.nandail.mymensingh.gov.bd/pages/officers"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_sheet_unavailable",
+        "format": null,
+        "scope": {
+          "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+          "verifiedOpenScope": "No target-area sheet returned/intersected in the bounded selector/sheet checks.",
+          "countrywideVerified": false,
+          "finding": "Nandail has local cadastral-map records. The current and alternate public survey selectors do not expose its target sheet; nearby Achargaon catalog entries are non-georeferenced preview images, not parcel vectors."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+        "reason": "Nandail has local cadastral-map records. The current and alternate public survey selectors do not expose its target sheet; nearby Achargaon catalog entries are non-georeferenced preview images, not parcel vectors.",
+        "technicalBlockers": [
+          "Nandail has local cadastral-map records. The current and alternate public survey selectors do not expose its target sheet; nearby Achargaon catalog entries are non-georeferenced preview images, not parcel vectors."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:11511",
+      "wupCityCode": 11511,
+      "name": "Semapur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.4980899560268,
+        87.4841083291156
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-11511.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 4,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "DILRMP inventories cadastral maps for Barari tehsil, Katihar. BhuNaksha lists 88 mapped Barari revenue villages but none named Semapur; the exact mauza for the WUP point remains unresolved.",
+        "registryEvidenceUrls": [
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://katihar.nic.in/block-maps/",
+          "https://bbnl.nic.in/admnis/admin/showimg.aspx?ID=11"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": "JSON administrative hierarchy; WMS image/png; scalar single-plot bbox response",
+        "scope": {
+          "claimedScope": "Bihar BhuNaksha Barari-circle cadastral sheets and DILRMP Barari tehsil map inventory. Exact Semapur revenue mauza and target parcel geometry remain unverified.",
+          "verifiedOpenScope": "A Barari(254) CS sheet returned georeferenced WMS imagery, but its nearest tested sheet bbox is about 8.9 km from the WUP point. No target-area parcel feature verified.",
+          "countrywideVerified": false,
+          "finding": "Semapur’s exact revenue mauza remains unresolved. The public viewer returned raster imagery and point-level plot IDs/bboxes only; the target point did not resolve to a parcel."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+        "reason": "Bihar BhuNaksha has mapped Barari cadastral sheets, but the exact Semapur revenue mauza and WUP target parcel are unresolved. The tested WMS and scalar endpoints do not provide complete parcel polygons or bounded viewport features.",
+        "technicalBlockers": [
+          "Exact Semapur revenue mauza containing the WUP coordinate is unresolved; the nearest tested Barari(254) CS sheet is about 8.9 km away.",
+          "The public viewer returns WMS raster imagery and single-plot IDs/bboxes only; no complete bounded parcel polygon response was found in the tested public-client routes."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:6901",
+      "wupCityCode": 6901,
+      "name": "Narayanpur",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        23.3652908200707,
+        90.7267370158698
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-6901.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-6901.json",
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "growthQueueRank": 5,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "A functioning public DLRS sheet endpoint was tested for Char Kalipur, Gazaria, near the WUP coordinate, but no polygon intersected the 400 m-square test area and no official source ties the Narayanpur label to that mouza. Target-specific registry existence is therefore unresolved.",
+        "registryEvidenceUrls": [
+          "https://settlement.gov.bd/",
+          "https://dlrs.gov.bd/",
+          "https://map.settlement.gov.bd/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+          "verifiedOpenScope": "Char Kalipur, Gazaria: 97 polygon records with Dag_No in one sheet; 0 intersected the bounded WUP-center area.",
+          "countrywideVerified": false,
+          "finding": "The exact Narayanpur place-name / WUP coordinate match is unresolved. The official Munshiganj selector exposed a BDS sheet for Char Kalipur mouza (unitcod 011402071, sheet 001); it returned 97 polygons with Dag_No IDs, but none intersected the 400m-square test around the WUP point. This confirms an operational DLRS geometry+ID source for a nearby mouza only; it does not establish Narayanpur target coverage or target-specific registry existence."
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-6901.json"
+      }
+    },
+    {
+      "cityId": "wup2025:10023",
+      "wupCityCode": 10023,
+      "name": "Venjaramoodu",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        8.65276906631116,
+        76.9124484846266
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [
+        "kerala-entebhoomi-ilms-map-proxy"
+      ],
+      "researchFile": "research/growth-top20-2026-10-07/city-10023.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/kerala-runtime.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "growthQueueRank": 6,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The default map cell returned 220 polygons. All four parcels across nine smaller cells matched fresh exact-ID reads. Browser rendering and proposal binding passed for the configured Manikkal village source.",
+        "registryEvidenceUrls": [
+          "https://entebhoomi.kerala.gov.in/web/ilms/map",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://survey.entebhoomi.kerala.gov.in/portal/"
+        ],
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled",
+        "format": "WGS84 GeoJSON parcel polygons adapted from EPSG:32643",
+        "scope": {
+          "claimedScope": "Kerala Ente Bhoomi/digital resurvey service by published village; this sample is in Manikkal (Nedumangad taluk), Thiruvananthapuram district",
+          "verifiedOpenScope": "220 polygons in the default 0.005-degree cell around the WUP point; four local parcels matched exact-ID reads, and a sampled parcel passed complete authoritative binding. Other village/city coverage is unverified.",
+          "countrywideVerified": false
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/kerala-runtime.json"
+      },
+      "appCityId": "venjaramoodu",
+      "liveIntegration": {
+        "status": "enabled",
+        "appCityId": "venjaramoodu",
+        "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/kerala-runtime.json",
+        "technicalBlockers": [],
+        "limitations": [
+          "Only published Manikkal village is configured.",
+          "Empty untyped HTTP 200 bodies remain unavailable errors. The enclosing default grid avoids empty subcell responses at the entry point."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:10605",
+      "wupCityCode": 10605,
+      "name": "Shankarpur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.8134713841866,
+        84.1157517852504
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-10605.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-10605.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 7,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Bihar BhuNaksha is a source lead; the supplied Shankarpur point has not been matched to its district, tehsil and revenue village.",
+        "registryEvidenceUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": "JSON administrative hierarchy; WMS image/png",
+        "scope": {
+          "claimedScope": "Bihar state portal is a lead only; the supplied point has not been assigned to a district, tehsil, or revenue village. Same-name Shankarpur candidates surfaced in Dandkhora and Kadwa (Katihar), but neither was matched to the coordinate.",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-10605.json"
+      }
+    },
+    {
+      "cityId": "wup2025:4216",
+      "wupCityCode": 4216,
+      "name": "Saghatta",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        25.0857005453527,
+        89.5488082012097
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-4216.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "growthQueueRank": 8,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Saghatta has local cadastral-map records. The public survey selectors do not expose its target sheet; nearby Kamaler Para catalog entries are non-georeferenced preview images, not parcel vectors.",
+        "registryEvidenceUrls": [
+          "https://acl.saghata.gaibandha.gov.bd/",
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_sheet_unavailable",
+        "format": null,
+        "scope": {
+          "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+          "verifiedOpenScope": "No target-area sheet returned/intersected in the bounded selector/sheet checks.",
+          "countrywideVerified": false,
+          "finding": "Saghatta has local cadastral-map records. The public survey selectors do not expose its target sheet; nearby Kamaler Para catalog entries are non-georeferenced preview images, not parcel vectors."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+        "reason": "Saghatta has local cadastral-map records. The public survey selectors do not expose its target sheet; nearby Kamaler Para catalog entries are non-georeferenced preview images, not parcel vectors.",
+        "technicalBlockers": [
+          "Saghatta has local cadastral-map records. The public survey selectors do not expose its target sheet; nearby Kamaler Para catalog entries are non-georeferenced preview images, not parcel vectors."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:12097",
+      "wupCityCode": 12097,
+      "name": "Dongjiao",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        25.2753341420267,
+        119.176078071476
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-12097.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/china.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 9,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The Dongjiao target resolves to Dongqiao Town in Putian/Xiuyu. Official cadastral-map access uses certificate QR lookup; no anonymous viewport and exact-ID polygon service was verified.",
+        "registryEvidenceUrls": [
+          "https://www.fj.gov.cn/zwgk/zfxxgk/szfwj/jgzz/gtzycxjs/202605/t20260512_7146781.htm",
+          "https://zrzyj.putian.gov.cn/",
+          "https://fujian.tianditu.gov.cn/map",
+          "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202403/t20240322_6418271.htm",
+          "https://zrzyt.fujian.gov.cn/zwgk/zfxxgkzl/zfxxgkml/chdlxxgl/202307/P020230721611283194370.pdf",
+          "https://zrzyj.putian.gov.cn/xxgk/czzj/czyjs/202502/P020250227309584708319.pdf",
+          "https://zrzyj.putian.gov.cn/xxgk/czzj/czyjs/202602/P020260206609417427628.pdf",
+          "https://mzt.fujian.gov.cn/yw/mzdt/202012/t20201216_5492050.htm"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "public_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+          "verifiedOpenScope": "none",
+          "countrywideVerified": false,
+          "finding": "The Dongjiao target resolves to Dongqiao Town in Putian/Xiuyu. Official cadastral-map access uses certificate QR lookup; no anonymous viewport and exact-ID polygon service was verified."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/china.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/china.json",
+        "reason": "The Dongjiao target resolves to Dongqiao Town in Putian/Xiuyu. Official cadastral-map access uses certificate QR lookup; no anonymous viewport and exact-ID polygon service was verified.",
+        "technicalBlockers": [
+          "The Dongjiao target resolves to Dongqiao Town in Putian/Xiuyu. Official cadastral-map access uses certificate QR lookup; no anonymous viewport and exact-ID polygon service was verified."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:2109",
+      "wupCityCode": 2109,
+      "name": "Riwoto",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "centerLatLon": [
+        4.87591907165739,
+        33.5152380082506
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-2109.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-2109.json",
+      "parcelStatus": "temporarily_unavailable",
+      "growthQueueRank": 10,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "South Sudan has an official national GIS/mapping authority and a Ministry of Lands lead, but no source found ties cadastral registry records to Riwoto or the supplied coordinate.",
+        "registryEvidenceUrls": [
+          "https://www.ssnbss.org/home/geographical-information-system/",
+          "https://mlhud.gov.ss/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "National ministry/GIS authority leads; exact local parcel coverage unknown",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false,
+          "targetAreaRegistryConfirmed": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-2109.json"
+      }
+    },
+    {
+      "cityId": "wup2025:3027",
+      "wupCityCode": 3027,
+      "name": "Lanckhul",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        33.574648740408,
+        74.9436957142741
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-3027.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-3027.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 12,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Jammu and Kashmir LRIS scans and a newer authenticated records application are leads; target village coverage remains unconfirmed.",
+        "registryEvidenceUrls": [
+          "https://landrecords.jk.gov.in/",
+          "https://stategisportal.nic.in/stategisportal/home/state/1",
+          "https://d14fnjoywemmi.cloudfront.net/jklr/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": "LRIS portal publishes scans/records per official description; new API JSON for textual Jamabandi/Khasra records",
+        "scope": {
+          "claimedScope": "J&K LRIS provides digital cadastral map scans and other land records; cited 2025 audit reports 6,334 of 6,850 maps digitized and 6,163 georeferenced UT-wide, while RoR linkage is partial. Kulgam/Lanckhul coverage not confirmed.",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-3027.json"
+      }
+    },
+    {
+      "cityId": "wup2025:2633",
+      "wupCityCode": 2633,
+      "name": "Bukalasi",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "centerLatLon": [
+        1.01864172628934,
+        34.3514980249162
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-2633.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-2633.json",
+      "parcelStatus": "temporarily_unavailable",
+      "growthQueueRank": 13,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "UgNLIS is a national land information system and includes parcel search, but no evidence ties registry records/service coverage to Bukalasi specifically; the public portal shell was reachable but no target parcel data was observed.",
+        "registryEvidenceUrls": [
+          "https://ugnlis.mlhud.go.ug/public",
+          "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf",
+          "https://mlhud.go.ug/ugnlis/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "National UgNLIS system; coverage of particular settlements unknown",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false,
+          "targetAreaRegistryConfirmed": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-2633.json"
+      }
+    },
+    {
+      "cityId": "wup2025:10737",
+      "wupCityCode": 10737,
+      "name": "Darauli",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.1350913588765,
+        84.1658019427551
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-10737.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 14,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "DILRMP inventories cadastral maps for Darauli tehsil, Siwan. BhuNaksha exposes a namesake Darauli(157) revenue mauza, but the supplied WUP point is outside all four listed CS sheet bounds.",
+        "registryEvidenceUrls": [
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://katihar.nic.in/block-maps/",
+          "https://bbnl.nic.in/admnis/admin/showimg.aspx?ID=11"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": "JSON administrative hierarchy; WMS image/png; scalar single-plot bbox response",
+        "scope": {
+          "claimedScope": "Bihar BhuNaksha Darauli(157) cadastral sheets and DILRMP Siwan tehsil map inventory. The exact revenue mauza for the supplied WUP coordinate remains unverified.",
+          "verifiedOpenScope": "Darauli(157) CS sheet 01 returned georeferenced WMS imagery; its bbox is about 5.0 km from the WUP point. A separate point inside that sheet resolved to one plot ID and bbox, not a polygon.",
+          "countrywideVerified": false,
+          "finding": "The WUP point is outside all four exposed Darauli(157) CS sheet bounds. The nearest sheet and sample point do not establish target-point parcel coverage."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+        "reason": "The WUP coordinate is outside all four exposed sheets for namesake Darauli(157), and its exact neighboring revenue mauza is unresolved. WMS returns raster images; point/plot calls return one ID and bbox, not complete polygons.",
+        "technicalBlockers": [
+          "Exact revenue mauza for the WUP coordinate is unresolved; it lies outside all four exposed Darauli(157) CS sheet extents.",
+          "The public viewer has no verified bounded viewport polygon response; WMS is raster and OP=4/PNIU provide bbox envelopes only."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:9524",
+      "wupCityCode": 9524,
+      "name": "Dajindian",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        34.3730765718093,
+        113.024002574101
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-9524.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/china.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 15,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Dajindian registry notices and a local map-query workflow are documented. The public map offers basemaps; parcel lookup needs a known identifier, and vector downloads require real-name access and a contract or allocation record.",
+        "registryEvidenceUrls": [
+          "https://public.dengfeng.gov.cn/D49Y/6909395.jhtml",
+          "https://www.dengfeng.gov.cn/xzqh.jhtml",
+          "https://www.dengfeng.gov.cn/",
+          "https://henan.tianditu.gov.cn/",
+          "https://public.dengfeng.gov.cn/D49Y/1941579.jhtml",
+          "https://zrzyhghj.zhengzhou.gov.cn/tzgg/8042625.jhtml",
+          "https://zrzyhghj.zhengzhou.gov.cn/",
+          "https://public.dengfeng.gov.cn/attachment/《登封市大金店镇国土空间总体规划（2021-2035 年）》（征求意见稿）.pdf"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "public_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+          "verifiedOpenScope": "none",
+          "countrywideVerified": false,
+          "finding": "Dajindian registry notices and a local map-query workflow are documented. The public map offers basemaps; parcel lookup needs a known identifier, and vector downloads require real-name access and a contract or allocation record."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/china.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/china.json",
+        "reason": "Dajindian registry notices and a local map-query workflow are documented. The public map offers basemaps; parcel lookup needs a known identifier, and vector downloads require real-name access and a contract or allocation record.",
+        "technicalBlockers": [
+          "Dajindian registry notices and a local map-query workflow are documented. The public map offers basemaps; parcel lookup needs a known identifier, and vector downloads require real-name access and a contract or allocation record."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:8018",
+      "wupCityCode": 8018,
+      "name": "New Hope",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        35.8609596134079,
+        -78.6416325645578
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [
+        "us-nc-wake-raleigh-parcels"
+      ],
+      "researchFile": "research/growth-top20-2026-10-07/city-8018.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/new-hope-final.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "growthQueueRank": 16,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "239 distinct parcels across nine complete viewport cells; all exact reads matched. Binding returned complete coverage. Exact-ID requests use batches of five after larger batches timed out. No owner fields or parcel geometry retained.",
+        "registryEvidenceUrls": [
+          "https://www.nconemap.gov/pages/parcels"
+        ],
+        "nativeSampleVerified": true,
+        "runtimeReadiness": "enabled",
+        "format": "WGS84 GeoJSON parcel polygons",
+        "scope": {
+          "claimedScope": "Publisher statewide compilation; existing runtime descriptor constrained to Wake County",
+          "verifiedOpenScope": "239 distinct parcel polygons in nine adjacent grid cells at the WUP New Hope point, with matching exact-ID reads and complete authoritative binding.",
+          "countrywideVerified": false
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/new-hope-final.json"
+      },
+      "liveIntegration": {
+        "status": "enabled",
+        "appCityId": "new_hope",
+        "sourceId": "us-nc-wake-raleigh-parcels",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/new-hope-final.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "appCityId": "new_hope"
+    },
+    {
+      "cityId": "wup2025:2565",
+      "wupCityCode": 2565,
+      "name": "Mbale City",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "centerLatLon": [
+        1.07878290451076,
+        34.1841997126949
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-2565.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/mbale.json",
+      "parcelStatus": "temporarily_unavailable",
+      "growthQueueRank": 17,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Mbale has an NLIS registry office. The public cadastral-division viewer configures administrative zones, districts, offices and basemaps, with no parcel layer. Its advertised GeoServer routes returned 404.",
+        "registryEvidenceUrls": [
+          "https://mlhud.go.ug/ugnlis/",
+          "https://ugnlis.mlhud.go.ug/public",
+          "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "public_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "National UgNLIS system; coverage of particular settlements unknown",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false,
+          "targetAreaRegistryConfirmed": true,
+          "finding": "Mbale has an NLIS registry office. The public cadastral-division viewer configures administrative zones, districts, offices and basemaps, with no parcel layer. Its advertised GeoServer routes returned 404."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/mbale.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/mbale.json",
+        "reason": "Mbale has an NLIS registry office. The public cadastral-division viewer configures administrative zones, districts, offices and basemaps, with no parcel layer. Its advertised GeoServer routes returned 404.",
+        "technicalBlockers": [
+          "Mbale has an NLIS registry office. The public cadastral-division viewer configures administrative zones, districts, offices and basemaps, with no parcel layer. Its advertised GeoServer routes returned 404."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:10791",
+      "wupCityCode": 10791,
+      "name": "Raghunathpur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.9929452167679,
+        84.2915701031615
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-10791.json",
+      "latestAssessmentFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 18,
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "DILRMP inventories cadastral maps for Raghunathpur tehsil, Siwan. BhuNaksha exposes a namesake Raghunathpur(384) revenue mauza, but the supplied WUP point lies outside all three listed CS sheet bounds.",
+        "registryEvidenceUrls": [
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://katihar.nic.in/block-maps/",
+          "https://bbnl.nic.in/admnis/admin/showimg.aspx?ID=11"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": "JSON administrative hierarchy; WMS image/png; scalar single-plot bbox response",
+        "scope": {
+          "claimedScope": "Bihar BhuNaksha Raghunathpur(384) cadastral sheets and DILRMP Siwan tehsil map inventory. The exact revenue mauza for the supplied WUP coordinate remains unverified.",
+          "verifiedOpenScope": "Raghunathpur(384) CS sheet 02 returned georeferenced WMS imagery; its bbox is about 493.5 m west of the WUP point. A separate point inside sheet 01 resolved to one plot ID and bbox, not a polygon.",
+          "countrywideVerified": false,
+          "finding": "The WUP point lies outside all three exposed Raghunathpur(384) CS sheet bounds. The nearest sheet and non-target sample do not establish target-point parcel coverage."
+        },
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json"
+      },
+      "liveIntegration": {
+        "status": "held",
+        "checkedAt": "2026-10-07",
+        "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+        "reason": "The WUP coordinate is outside all three exposed sheets for namesake Raghunathpur(384), and its exact neighboring revenue mauza is unresolved. WMS returns raster images; point/plot calls return one ID and bbox, not complete polygons.",
+        "technicalBlockers": [
+          "Exact revenue mauza for the WUP coordinate is unresolved; it lies outside all three exposed Raghunathpur(384) CS sheet extents.",
+          "The public viewer has no verified bounded viewport polygon response; WMS is raster and OP=4/PNIU provide bbox envelopes only."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "wup2025:3846",
+      "wupCityCode": 3846,
+      "name": "Meftah",
+      "country": "Algeria",
+      "countryCode": "DZ",
+      "centerLatLon": [
+        36.6354855393707,
+        3.2360931732742
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-3846.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-3846.json",
+      "parcelStatus": "temporarily_unavailable",
+      "growthQueueRank": 19,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Algerian cadastral services and Fadaeldjazair are national leads, but no source was found that ties cadastral records or a parcel service to Meftah; the reachable BNDG viewer exposes topographic/administrative layers only.",
+        "registryEvidenceUrls": [
+          "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+          "https://www.dgdn.gov.dz/"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "National cadastral services reported; Meftah local coverage unknown",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false,
+          "targetAreaRegistryConfirmed": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-3846.json"
+      }
+    },
+    {
+      "cityId": "wup2025:2198",
+      "wupCityCode": 2198,
+      "name": "Antsiramandroso",
+      "country": "Madagascar",
+      "countryCode": "MG",
+      "centerLatLon": [
+        -18.0327220798438,
+        49.3376073680055
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "sourceIds": [],
+      "researchFile": "research/growth-top20-2026-10-07/city-2198.json",
+      "latestAssessmentFile": "research/growth-top20-2026-10-07/city-2198.json",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "growthQueueRank": 20,
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "OITF/SILOAT is a national territorial-information portal, but the PLOF layers discovered are named for Antananarivo environs and do not establish cadastral coverage in Sahandahatra/Toamasina II. The locality identity is supported, but coverage at the target is not.",
+        "registryEvidenceUrls": [
+          "https://observatoire-territoire.mg/",
+          "https://observatoire-territoire.mg/carte/",
+          "https://observatoire-territoire.mg/presentation/",
+          "https://cnlegis.gov.mg/uploads/LISTE_ET_EMPLACEMENT_BV.pdf",
+          "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf"
+        ],
+        "nativeSampleVerified": false,
+        "runtimeReadiness": "target_geometry_unverified",
+        "format": null,
+        "scope": {
+          "claimedScope": "SILOAT/OITF territorial-information and commune-level PLOF mapping; no Antsiramandroso coverage verified",
+          "verifiedOpenScope": null,
+          "countrywideVerified": false,
+          "targetAreaRegistryConfirmed": false
+        },
+        "evidenceFile": "research/growth-top20-2026-10-07/city-2198.json"
       }
     }
   ],
@@ -22772,5 +23683,18 @@
       "configuredCapitals": 51,
       "remainingCapitals": []
     }
+  },
+  "growthResearch": {
+    "queueFile": "queue-growth-top200.json",
+    "latestCohortFile": "research/growth-top20-2026-10-07/index.json",
+    "checkedAt": "2026-10-07",
+    "citiesChecked": 20,
+    "citiesWithLocalRegistryEvidence": 11,
+    "citiesWithVerifiedTargetParcelSamples": 2,
+    "note": "Registry or local cadastral-map evidence is distinct from public polygon access and live runtime integration.",
+    "latestIntegrationFile": "research/growth-top20-integration-2026-10-07/index.json",
+    "requestedRegistryCities": 11,
+    "enabledAppCities": 2,
+    "heldAppCities": 9
   }
 }

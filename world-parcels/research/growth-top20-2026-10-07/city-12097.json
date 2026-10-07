@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:12097",
+  "queueRank": 9,
+  "growthCohort": "top20-2015-2025",
+  "name": "Dongjiao",
+  "countryCode": "CN",
+  "centerLatLon": [
+    25.2753341420267,
+    119.176078071476
+  ],
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://zrzyj.putian.gov.cn/",
+      "observation": "Official Putian Natural Resources Bureau portal; search results include land-planning and real-estate-registration materials."
+    },
+    {
+      "url": "https://www.fj.gov.cn/zwgk/zfxxgk/szfwj/jgzz/gtzycxjs/202605/t20260512_7146781.htm",
+      "observation": "Fujian government notice explicitly locates land in Xiuyu District, Dongjiao Town and describes post-acquisition real-estate registration; documents registry process, not parcel-vector API."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202403/t20240322_6418271.htm",
+      "observation": "Official Fujian Natural Resources Department links the public 天地图·福建 portal (fujian.tianditu.gov.cn/map), introduced as a geographic information sharing service for government, enterprises and public users."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/zfxxgkzl/zfxxgkml/chdlxxgl/202307/P020230721611283194370.pdf",
+      "observation": "Official 2023 notice announces the updated provincial public platform. It includes public vector basemap/service products and satellite imagery; no cadastral parcel layer is described."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/xxgk/czzj/czyjs/202502/P020250227309584708319.pdf",
+      "observation": "Official Putian Surveying and Geoinformation Development Center 2025 budget confirms maintenance of 天地图·莆田 / Putian public geospatial platform; it does not document parcel feature exposure."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/xxgk/czzj/czyjs/202602/P020260206609417427628.pdf",
+      "observation": "Official 2026 budget confirms continued TianDiTu Putian platform operation and city basic-geospatial database maintenance; no cadastral public feature layer stated."
+    },
+    {
+      "url": "https://mzt.fujian.gov.cn/yw/mzdt/202012/t20201216_5492050.htm",
+      "observation": "Official Fujian Civil Affairs article describes Putian address database and city spatial-information platform using TianDiTu basemap, managing place names, administrative divisions, boundaries and building/doorplate addresses. This is an adjacent geodata lead, not parcel boundaries."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://zrzyj.putian.gov.cn/",
+      "observation": "Official Putian Natural Resources Bureau portal; search results include land-planning and real-estate-registration materials."
+    },
+    {
+      "url": "https://www.fj.gov.cn/zwgk/zfxxgk/szfwj/jgzz/gtzycxjs/202605/t20260512_7146781.htm",
+      "observation": "Fujian government notice explicitly locates land in Xiuyu District, Dongjiao Town and describes post-acquisition real-estate registration; documents registry process, not parcel-vector API."
+    },
+    {
+      "url": "https://fujian.tianditu.gov.cn/map",
+      "observation": "Official provincial public online mapping platform linked by Fujian Natural Resources Department; documented public vectors/base maps and imagery. Direct GET from this research network timed out (8s/12s); this reachability result is not a service absence finding."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/",
+      "observation": "Official Putian Natural Resources Bureau; official budgets document the municipal TianDiTu public geospatial platform. Root/direct map endpoint timed out from this network."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://fujian.tianditu.gov.cn/map",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Direct read-only public portal request with Chrome-like headers timed out (ConnectTimeout); official Fujian Natural Resources page links the platform and describes its public geoinformation-sharing role and service products."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Direct read-only request to official municipal bureau timed out; its official 2025/2026 budget PDFs were retrievable in the web source reader and confirm TianDiTu Putian operation. No parcel service path exposed by this attempt."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202403/t20240322_6418271.htm",
+      "method": "GET via public web reader",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "assessment": "Official source opened and links to https://fujian.tianditu.gov.cn/map; describes public geographic information sharing. No cadastral/parcels layer identified."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/xxgk/czzj/czyjs/202502/P020250227309584708319.pdf",
+      "method": "GET via public web reader",
+      "httpStatus": null,
+      "contentType": "application/pdf",
+      "assessment": "Official 29-page 2025 municipal surveying/geoinformation center budget opened; pages 2-3 document basic geospatial database stewardship and annual TianDiTu Putian platform operations, not parcel delivery."
+    }
+  ],
+  "searchQueries": [
+    {
+      "text": "莆田市秀屿区东峤镇 不动产登记 地籍图 宗地 查询",
+      "language": "Chinese (Simplified)",
+      "script": "Chinese",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://zrzyj.putian.gov.cn/"
+      ]
+    },
+    {
+      "text": "东峤镇 地籍 不动产登记 莆田 自然资源局",
+      "language": "Chinese (Simplified)",
+      "script": "Chinese",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://zrzyj.putian.gov.cn/"
+      ]
+    },
+    {
+      "text": "Putian Dongjiao Xiuyu cadastral parcel map natural resources bureau",
+      "language": "English",
+      "script": "Latin",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://zrzyj.putian.gov.cn/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false,
+    "finding": "Coordinates resolve to Dongjiao Town (东峤镇), Xiuyu District, Putian City, Fujian, rather than an unspecified similarly named locality. Official provincial/city material documents land and real-estate registration and local land administration; no anonymous parcel polygon endpoint with stable native parcel key was verified. Registration/service visibility is not equivalent to downloadable geometry. Follow-up inspected the official provincial TianDiTu portal and municipal Putian geospatial program. They expose public base-map/vector/imagery geoinformation, and Putian maintains its own public geospatial platform; no cadastral parcel layer or stable parcel ID was identified. The official Putian bureau/municipal map host timed out in direct requests, so this is a source discovery lead with endpoint inspection incomplete."
+  },
+  "nextStep": "When Putian/Fujian map hosts are reachable, inspect public app service configuration/catalogue and any cadastral or land thematic layers; test only a tiny Dongjiao viewport for polygons with permanent parcel IDs. Current evidence confirms public mapping platforms and imagery/vector basemaps only.",
+  "registryBasis": "Official Dongjiao land and real-estate registration evidence. Public mapping platforms found; no anonymous parcel polygon endpoint verified.",
+  "registryEvidenceUrls": [
+    "https://www.fj.gov.cn/zwgk/zfxxgk/szfwj/jgzz/gtzycxjs/202605/t20260512_7146781.htm",
+    "https://zrzyj.putian.gov.cn/",
+    "https://fujian.tianditu.gov.cn/map",
+    "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202403/t20240322_6418271.htm",
+    "https://zrzyt.fujian.gov.cn/zwgk/zfxxgkzl/zfxxgkml/chdlxxgl/202307/P020230721611283194370.pdf",
+    "https://zrzyj.putian.gov.cn/xxgk/czzj/czyjs/202502/P020250227309584708319.pdf",
+    "https://zrzyj.putian.gov.cn/xxgk/czzj/czyjs/202602/P020260206609417427628.pdf",
+    "https://mzt.fujian.gov.cn/yw/mzdt/202012/t20201216_5492050.htm"
+  ]
+}

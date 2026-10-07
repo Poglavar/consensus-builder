@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:6393",
+  "queueRank": 3,
+  "growthCohort": "top20-2015-2025",
+  "name": "Nandail",
+  "countryCode": "BD",
+  "centerLatLon": [
+    24.5572807401755,
+    90.7026558036547
+  ],
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_sample_candidate_citywide",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://dlrs.gov.bd/",
+      "observation": "Official DLRS portal; links to map purchase and ongoing-survey map/khatian systems, not itself proof of Nandail parcel vectors."
+    },
+    {
+      "url": "https://settlement.gov.bd/",
+      "observation": "Official survey portal says it shows ongoing survey mouzas through draft-to-final publication stages."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "observation": "Known public per-sheet GeoJSON endpoint from Dhaka/Chattogram evidence; Nandail sheet availability is unverified."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official mouza-map purchase portal, potentially relevant to record/map access; vector service not verified."
+    },
+    {
+      "url": "https://acl.nandail.mymensingh.gov.bd/pages/officers",
+      "observation": "Official Nandail Upazila Land Office page identifies the Assistant Commissioner (Land) and local land-office service. Supports place-specific registry/land-office existence only, not public parcel polygons."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://dlrs.gov.bd/",
+      "observation": "Official DLRS portal; links to map purchase and ongoing-survey map/khatian systems, not itself proof of Nandail parcel vectors."
+    },
+    {
+      "url": "https://settlement.gov.bd/",
+      "observation": "Official survey portal says it shows ongoing survey mouzas through draft-to-final publication stages."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "observation": "Known public per-sheet GeoJSON endpoint from Dhaka/Chattogram evidence; Nandail sheet availability is unverified."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official mouza-map purchase portal, potentially relevant to record/map access; vector service not verified."
+    },
+    {
+      "url": "https://acl.nandail.mymensingh.gov.bd/",
+      "observation": "Official Nandail Upazila Land Office portal; specific office exists; no anonymous parcel-vector endpoint documented."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Returned official division selector; Mymensingh division code 070000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "requestForm": "divid=070000000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Listed Mymensingh district unitcod 070300000, comcod 4171."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "requestForm": "districtid=070300000&comcod=4171",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Listed one active survey entry rsnum 201901, RS/digital survey."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "requestForm": "comcod=4171&rsno1=201901&districtid=070300000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Returned empty list []; Nandail not exposed for this survey, so no exact mouza/sheet was available."
+    }
+  ],
+  "searchQueries": [
+    {
+      "text": "নান্দাইল উপজেলা ভূমি অফিস মৌজা ডিজিটাল জরিপ খতিয়ান",
+      "language": "Bengali",
+      "script": "Bengali",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://dlrs.gov.bd/"
+      ]
+    },
+    {
+      "text": "নান্দাইল মৌজা নকশা ভূমি রেকর্ড DLRS",
+      "language": "Bengali",
+      "script": "Bengali",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://settlement.gov.bd/"
+      ]
+    },
+    {
+      "text": "Nandail Bangladesh cadastral parcel survey map DLRS",
+      "language": "English",
+      "script": "Latin",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://settlement.gov.bd/"
+      ]
+    },
+    {
+      "text": "নান্দাইল উপজেলা ভূমি অফিস ময়মনসিংহ ভূমি রেকর্ড",
+      "language": "Bengali",
+      "script": "Bengali",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://acl.nandail.mymensingh.gov.bd/pages/officers"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+    "verifiedOpenScope": "No target-area sheet returned/intersected in the bounded selector/sheet checks.",
+    "countrywideVerified": false,
+    "finding": "An official Nandail Upazila Land Office confirms local land-administration/registry capacity. Separately, the live DLRS selector chain found Mymensingh district BDS/RS survey 201901 but its GetThanaListBySurveyMap result was empty, so no Nandail mouza/sheet was available in that active survey selector. No parcel geometry was verified; this is not proof of absent cadastral records or other survey editions."
+  },
+  "nextStep": "The active Mymensingh survey chain returned no upazila entries. Check other survey editions / selector codes for Mymensingh district and recheck whether Nandail appears; request a single sheet only after the exact target mouza is exposed.",
+  "headersUsed": "Current desktop Chrome User-Agent; Accept: application/json, text/plain, */*; Accept-Language: bn-BD,bn;q=0.9,en-US;q=0.8,en;q=0.7; Origin and Referer https://settlement.gov.bd/; persistent cookie session. Live publisher returned HTTP 200.",
+  "registryLeadFound": true,
+  "registryBasis": "Official Nandail Upazila Land Office (উপজেলা ভূমি অফিস, নান্দাইল, ময়মনসিংহ) lists the Assistant Commissioner (Land) and surveyor as staff; this confirms a place-specific land administration office, not publicly accessible parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://acl.nandail.mymensingh.gov.bd/",
+    "https://dlrs.gov.bd/",
+    "https://settlement.gov.bd/",
+    "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+    "https://map.settlement.gov.bd/",
+    "https://acl.nandail.mymensingh.gov.bd/pages/officers"
+  ]
+}

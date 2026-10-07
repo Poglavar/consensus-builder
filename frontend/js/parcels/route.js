@@ -11,11 +11,11 @@
     // Where an HR parcel goes when we cannot place it (offline, unknown id). Matches the behaviour
     // from before Croatia had more than one city, so nothing regresses when the lookup fails.
     const CROATIAN_FALLBACK_CITY = 'zagreb';
-    // Deadline for that lookup. It sits on the deep-link boot path, so a slow or wedged backend must
-    // degrade to the fallback city rather than leave the page waiting on a parcel forever. Read at
-    // call time so the unit test can shorten it — the real timeout would otherwise add 6 idle
-    // seconds to every suite run just to watch a timer expire.
-    const CITY_LOOKUP_TIMEOUT_MS = 6000;
+    // Deadline for that lookup. Allow the source's 15 s request timeout plus the bounded queue of
+    // startup viewport requests sharing its concurrency slots, while keeping a wedged lookup from
+    // blocking deep-link boot indefinitely. Read at call time so unit tests can shorten it — the
+    // real timeout would otherwise add 30 idle seconds to a suite run just to watch a timer expire.
+    const CITY_LOOKUP_TIMEOUT_MS = 30000;
     function cityLookupTimeoutMs() {
         const override = Number(global.__CB_CITY_LOOKUP_TIMEOUT_MS__);
         return Number.isFinite(override) && override > 0 ? override : CITY_LOOKUP_TIMEOUT_MS;

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:4216",
+  "queueRank": 8,
+  "growthCohort": "top20-2015-2025",
+  "name": "Saghatta",
+  "countryCode": "BD",
+  "centerLatLon": [
+    25.0857005453527,
+    89.5488082012097
+  ],
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_sample_candidate_citywide",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://acl.saghata.gaibandha.gov.bd/",
+      "observation": "Official উপজেলা ভূমি অফিস, সাঘাটা, গাইবান্ধা portal; proves local land-office presence, not a public parcel API."
+    },
+    {
+      "url": "https://settlement.gov.bd/",
+      "observation": "Official DLRS portal for current survey mouza records and maps."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "observation": "Known per-sheet GeoJSON endpoint from other Bangladesh samples; no Saghata-specific response tested."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://acl.saghata.gaibandha.gov.bd/",
+      "observation": "Official উপজেলা ভূমি অফিস, সাঘাটা, গাইবান্ধা portal; proves local land-office presence, not a public parcel API."
+    },
+    {
+      "url": "https://settlement.gov.bd/",
+      "observation": "Official DLRS portal for current survey mouza records and maps."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "observation": "Known per-sheet GeoJSON endpoint from other Bangladesh samples; no Saghata-specific response tested."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Returned official division selector; Rangpur division code 080000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "requestForm": "divid=080000000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Listed Gaibandha district unitcod 080400000, comcod 4186."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "requestForm": "districtid=080400000&comcod=4186",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Listed one active survey entry rsnum 201901, RS/BRS digital survey."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "requestForm": "comcod=4186&rsno1=201901&districtid=080400000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Returned empty list []; Saghata not exposed for this survey, so no exact mouza/sheet was available."
+    }
+  ],
+  "searchQueries": [
+    {
+      "text": "সাঘাটা উপজেলা ভূমি অফিস গাইবান্ধা মৌজা খতিয়ান",
+      "language": "Bengali",
+      "script": "Bengali",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://acl.saghata.gaibandha.gov.bd/"
+      ]
+    },
+    {
+      "text": "সাঘাটা মৌজা নকশা ডিজিটাল জরিপ DLRS",
+      "language": "Bengali",
+      "script": "Bengali",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://settlement.gov.bd/"
+      ]
+    },
+    {
+      "text": "Saghata Gaibandha mouza cadastral parcel survey map",
+      "language": "English",
+      "script": "Latin",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://settlement.gov.bd/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+    "verifiedOpenScope": "No target-area sheet returned/intersected in the bounded selector/sheet checks.",
+    "countrywideVerified": false,
+    "finding": "The official Saghata Upazila Land Office portal confirms local land administration. Separately, DLRS listed Gaibandha district RS/BRS survey 201901 but its GetThanaListBySurveyMap result was empty, so no Saghata mouza/sheet was available in that active survey selector. No parcel geometry was verified; this is not proof of absent cadastral records or other survey editions."
+  },
+  "nextStep": "The active Gaibandha survey chain returned no upazila entries. Check other survey editions / selector codes for Gaibandha and recheck whether Saghata appears; request a single sheet only after the exact target mouza is exposed.",
+  "headersUsed": "Current desktop Chrome User-Agent; Accept: application/json, text/plain, */*; Accept-Language: bn-BD,bn;q=0.9,en-US;q=0.8,en;q=0.7; Origin and Referer https://settlement.gov.bd/; persistent cookie session. Live publisher returned HTTP 200.",
+  "registryLeadFound": true,
+  "registryBasis": "Official Saghata Upazila Land Office (উপজেলা ভূমি অফিস, সাঘাটা, গাইবান্ধা) portal confirms a place-specific government land office. This is administrative/registry existence evidence, not a public parcel-data endpoint.",
+  "registryEvidenceUrls": [
+    "https://acl.saghata.gaibandha.gov.bd/",
+    "https://settlement.gov.bd/",
+    "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey"
+  ]
+}

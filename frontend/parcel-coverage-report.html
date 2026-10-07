@@ -1,0 +1,80 @@
+<!doctype html>
+<!-- Interactive, sourced inventory of parcel-registry research and jurisdiction-level coverage proxies. -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A sourced report on global parcel-registry research, population growth, and country-level coverage evidence.">
+    <title>Global parcel registry report</title>
+    <link rel="stylesheet" href="css/parcel-coverage-report.css?v=1">
+</head>
+<body>
+    <header class="masthead">
+        <a class="brand" href="./">Consensus Builder <span>↗</span></a>
+        <div class="header-actions">
+            <label for="report-language" data-t="language">Language</label>
+            <select id="report-language" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="hr">Hrvatski</option><option value="sr">Srpski</option></select>
+            <button id="print-report" class="quiet-button" type="button" data-t="print">Print report</button>
+        </div>
+    </header>
+    <main>
+        <section class="intro" aria-labelledby="report-title">
+            <p class="eyebrow" data-t="eyebrow">Global land data · Research report</p>
+            <h1 id="report-title" data-t="title">Where can we find parcel registries?</h1>
+            <p class="lede" data-t="lede">An evidence-based view of the registries we have found, the cities we have checked, and the places still to investigate.</p>
+            <p class="dateline" id="snapshot-date"></p>
+            <nav class="section-nav" aria-label="Report sections" data-aria-t="reportSections"><a href="#coverage" data-t="coverage">Coverage</a><a href="#cities" data-t="cities">Cities</a><a href="#countries" data-t="countries">Countries & territories</a><a href="#methodology" data-t="methodology">Methods & sources</a></nav>
+        </section>
+        <p id="load-status" role="status" data-t="loading">Loading report…</p>
+        <div id="report-content" hidden>
+            <section class="summary-grid" id="summary-cards" aria-label="Research totals" data-aria-t="researchTotals"></section>
+            <section id="coverage" class="report-section">
+                <div class="section-heading"><p class="section-number">01</p><div><h2 data-t="coverageTitle">How much of the world is represented?</h2><p data-t="coverageIntro">The measures below describe the jurisdictions in which registry evidence was found.</p></div></div>
+                <aside class="scope-note"><strong data-t="scopeTitle">Registered land area remains unmeasured.</strong><p data-t="scopeText">A working source or two successful regional samples do not establish complete coverage. We have not mapped the union of registered parcels. These percentages measure jurisdictions with evidence, not the fraction of land registered or available in the app.</p></aside>
+                <div class="metric-charts" id="metric-charts"></div>
+                <p class="small-note" data-t="builtUpNote">Built-up surface is a proxy for where structures stand. It includes non-residential buildings and does not measure all inhabited land.</p>
+                <div class="table-wrap breakdown-wrap" tabindex="0" data-table-region="breakdown"><table id="breakdown-table"><caption data-t="breakdownCaption">Jurisdiction evidence, weighted by area and population</caption><thead></thead><tbody></tbody></table></div>
+                <p class="small-note" id="denominator-note"></p>
+            </section>
+            <section id="cities" class="report-section">
+                <div class="section-heading"><p class="section-number">02</p><div><h2 data-t="cityTitle">City research ledger</h2><p data-t="cityIntro">Checked cities and queued candidates, including the largest-city and fastest-growing-city lists.</p></div></div>
+                <div class="table-controls">
+                    <label class="search-label"><span data-t="searchCities">Search cities or countries</span><input id="city-search" type="search" autocomplete="off"></label>
+                    <label><span data-t="checked">Checked</span><select id="city-checked"><option value="all" data-t="all">All</option><option value="yes" data-t="yes">Yes</option><option value="no" data-t="no">No</option></select></label>
+                    <label><span data-t="registryFound">Registry found</span><select id="city-registry"><option value="all" data-t="all">All</option><option value="yes" data-t="yes">Yes</option><option value="no" data-t="no">No</option><option value="unknown" data-t="unknown">Unknown</option></select></label>
+                    <label><span data-t="cohortFilter">Cohort</span><select id="city-cohort"><option value="all" data-t="cohortAll">All cities</option><option value="largest200" data-t="cohortLargest200">Largest 200</option><option value="growth200" data-t="cohortGrowth200">Fastest-growing 200</option><option value="growth-top20" data-t="cohortGrowthTop20">Top 20 growth cohort</option></select></label>
+                    <label><span data-t="country">Country</span><select id="city-country"></select></label>
+                </div>
+                <div class="table-meta"><p id="city-count" aria-live="polite"></p><p data-t="sortHint">Click any column heading to sort; click again to reverse.</p></div>
+                <div class="table-wrap city-table-wrap" tabindex="0" data-table-region="cities"><table id="city-table"><caption class="sr-only" data-t="cityTitle">City research ledger</caption><thead></thead><tbody></tbody></table></div>
+                <p class="small-note" data-t="cityNote">“No” means no registry was established by the recorded checks. “Unknown” includes incomplete or unavailable checks. “Implied parcels tried” refers to documented tests of inferred parcel generation; missing records are shown as “Not recorded.”</p>
+                <p class="small-note" data-t="populationNote">Population: UN WUP 2025 urban centres. Growth: estimated average annual population change, 2015–2025. These boundaries can differ from municipalities. Missing or uncertain matches remain blank; hover over an estimate for its matched place.</p>
+            </section>
+            <section id="countries" class="report-section">
+                <div class="section-heading"><p class="section-number">03</p><div><h2 data-t="countryTitle">Countries & territories</h2><p id="roster-note"></p></div></div>
+                <div class="table-controls">
+                    <label class="search-label"><span data-t="searchCountries">Search countries or territories</span><input id="country-search" type="search" autocomplete="off"></label>
+                    <label><span data-t="evidence">Evidence</span><select id="country-category"><option value="all" data-t="all">All</option><option value="national" data-t="categoryNational">National or parent registry identified</option><option value="local" data-t="categoryLocal">Local, regional or partial evidence</option><option value="none" data-t="categoryNone">Checked, no source established</option><option value="unknown" data-t="categoryUnknown">Unresolved or unchecked</option></select></label>
+                </div>
+                <div class="table-meta"><p id="country-count" aria-live="polite"></p><p data-t="sortHint">Click any column heading to sort; click again to reverse.</p></div>
+                <div class="table-wrap country-table-wrap" tabindex="0" data-table-region="countries"><table id="country-table"><caption class="sr-only" data-t="countryTitle">Countries & territories</caption><thead></thead><tbody></tbody></table></div>
+                <p class="small-note" data-t="countryNote">A national registry can be gated, viewer-only or sampled. “Yes” establishes its identification, not full territorial coverage or open access. Dependencies and supplementary territories are listed separately; overlapping areas are not counted twice.</p>
+            </section>
+            <section id="methodology" class="report-section methods-section">
+                <div class="section-heading"><p class="section-number">04</p><div><h2 data-t="methodology">Methods & sources</h2></div></div>
+                <div class="methods-grid">
+                    <article><h3 data-t="methodResearch">What counts as a check?</h3><p data-t="methodResearchText">A recorded investigation counts, including a failed request. Check dates come from the linked investigation, not from the date this report was built. An identified source and a verified parcel response are tracked separately.</p></article>
+                    <article><h3 data-t="methodGrowth">How is growth calculated?</h3><p data-t="methodGrowthText">The UN average annual rate is 100 × ln(population in 2025 / population in 2015) / 10. It describes historical estimates. Forecasts are not mixed into this column, and missing values are never treated as zero.</p></article>
+                    <article><h3 data-t="methodArea">How are the shares calculated?</h3><p data-t="methodAreaText">Each statistical jurisdiction belongs to one evidence category. Its area and population are summed in that category and divided by the dataset’s world total. National evidence takes precedence over local evidence; unidentified or missing amounts remain unresolved.</p></article>
+                    <article><h3 data-t="methodLimits">What does this leave unanswered?</h3><p data-t="methodLimitsText">The actual extent, completeness and freshness of cadastral polygons. Registry discovery cannot establish that every parcel is registered, downloadable, publicly accessible or supported by the app.</p></article>
+                </div>
+                <details><summary data-t="dataQuality">Data quality & matching details</summary><div id="quality-details"></div></details>
+                <div class="sources-heading"><h3 data-t="sources">Sources</h3><a href="data/parcel-coverage-report.json" download data-t="download">Download report data (JSON)</a></div>
+                <ol id="report-sources" class="source-list"></ol>
+            </section>
+        </div>
+    </main>
+    <footer><span>Consensus Builder</span><span data-t="footer">A research inventory. Every conclusion retains its scope.</span></footer>
+    <script type="module" src="js/parcel-coverage-report.js?v=2"></script>
+</body>
+</html>

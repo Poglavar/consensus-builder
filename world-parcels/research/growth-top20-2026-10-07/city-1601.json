@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:1601",
+  "queueRank": 11,
+  "growthCohort": "top20-2015-2025",
+  "name": "Aleppo",
+  "countryCode": "SY",
+  "centerLatLon": [
+    36.2044832004488,
+    37.142929022666
+  ],
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://sana.sy/governorates/aleppo/2256077/",
+      "observation": "Official SANA report on Aleppo real-estate directorate service changes, including real-estate statements and cadastral plans; no public GIS service documented."
+    },
+    {
+      "url": "https://www.syrianrealestate.gov.sy/",
+      "observation": "Candidate official national real-estate portal from prior Syria evidence; earlier environment request could not connect, so current availability and GIS capability remain unknown."
+    },
+    {
+      "url": "https://www.cadastre.gov.sy/",
+      "observation": "Candidate cadastral authority host from prior city evidence; prior request was blocked/unavailable from network; not proof of nonexistence."
+    },
+    {
+      "url": "https://sana.sy/governorates/2433432/",
+      "observation": "Official SANA 2026-03-24 report links the General Directorate of Cadastral Affairs electronic registry service to the Anjez platform (ecsc.gov.sy) and Maamelati app. At publication, e-registry coverage is Damascus, Daraa, Quneitra and Latakia; Aleppo is not yet listed and expansion is described as future."
+    },
+    {
+      "url": "https://ecsc.gov.sy/",
+      "observation": "Official linked Anjez public-services portal. Direct read-only GET timed out from this research network. The SANA report describes electronic cadastral register statements, with cadastral statements and survey plans explicitly planned as later services; no public map/vector endpoint is documented."
+    },
+    {
+      "url": "https://sana.sy/governorates/aleppo/2256077/",
+      "observation": "Official SANA Aleppo report describes the directorate issuing real-estate statements and survey plans and providing technical services through its office; it does not link a map viewer or downloadable GIS service."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://sana.sy/governorates/aleppo/2256077/",
+      "observation": "Official SANA report on Aleppo real-estate directorate service changes, including real-estate statements and cadastral plans; no public GIS service documented."
+    },
+    {
+      "url": "https://www.syrianrealestate.gov.sy/",
+      "observation": "Candidate official national real-estate portal from prior Syria evidence; earlier environment request could not connect, so current availability and GIS capability remain unknown."
+    },
+    {
+      "url": "https://www.cadastre.gov.sy/",
+      "observation": "Candidate cadastral authority host from prior city evidence; prior request was blocked/unavailable from network; not proof of nonexistence."
+    },
+    {
+      "url": "https://ecsc.gov.sy/",
+      "observation": "Official SANA-linked Anjez online-service platform for electronic cadastral registry statements; direct public GET timed out here. As of the 2026-03-24 official launch report, service coverage was four other governorates, with broader rollout planned. No parcel map/vector service is described."
+    },
+    {
+      "url": "https://sana.sy/governorates/2433432/",
+      "observation": "Official launch and scope notice for the linked e-registry service; identifies service products/coverage and explicitly says survey plans will be added later."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ecsc.gov.sy/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Read-only direct request to official portal linked by SANA timed out (ConnectTimeout); not a conclusion about portal availability elsewhere."
+    },
+    {
+      "url": "https://sana.sy/governorates/2433432/",
+      "method": "GET via public web reader",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "assessment": "Opened official service-launch report. It says e-registration statements are currently active in Damascus, Daraa, Quneitra and Latakia; expansion to all governorates is future. Cadastral statements and survey-plan services are future additions. No GIS viewer/API linked."
+    },
+    {
+      "url": "https://www.syrianrealestate.gov.sy/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Candidate national real-estate portal from prior Aleppo/Syria research; previous direct probe did not establish a working map endpoint. Current search found no official link to parcel GIS."
+    },
+    {
+      "url": "https://www.cadastre.gov.sy/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Candidate cadastral host from prior city research; previous direct attempt was blocked/unavailable from this network. Current SANA article links e-registry via Anjez, not this host; neither result proves a public GIS service absent."
+    }
+  ],
+  "searchQueries": [
+    {
+      "text": "حلب مديرية المصالح العقارية خريطة قطع الأراضي GIS بيانات جغرافية",
+      "language": "Arabic",
+      "script": "Arabic",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://sana.sy/governorates/aleppo/2256077/"
+      ]
+    },
+    {
+      "text": "حلب مديرية المصالح العقارية مخطط مساحي خريطة عقارية نظام معلومات جغرافي",
+      "language": "Arabic",
+      "script": "Arabic",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.syrianrealestate.gov.sy/"
+      ]
+    },
+    {
+      "text": "Aleppo cadastral parcel GIS map real estate registry",
+      "language": "English",
+      "script": "Latin",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.syrianrealestate.gov.sy/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false,
+    "finding": "Aleppo has an identified Directorate of Cadastral Affairs / Real Estate Registry. SANA reporting describes the directorate issuing real-estate statements and cadastral plans; this confirms registry and plan activity, not a public queryable GIS/vector source. Native Arabic search found no anonymous geometry+stable parcel ID endpoint. Earlier native-language audit also found no public GIS source. Follow-up traced the official online service linked by the national cadastral directorate: Anjez (ecsc.gov.sy) currently offers electronic registry statements in Damascus, Daraa, Quneitra and Latakia; Aleppo is not in its stated current coverage. The official report says cadastral statements and survey plans will be added later. The official Aleppo office reports issuing survey plans in person, but no public map viewer or vector API is linked. Direct Anjez access timed out from this network."
+  },
+  "nextStep": "Recheck Anjez when its announced governorate coverage expands to Aleppo and survey-plan functions launch; inspect the official public interface for a map or geometry service then. Do not infer GIS access from electronic registry statements or in-person plan issuance.",
+  "registryBasis": "Aleppo cadastral office issues registry statements and survey plans. The identified national electronic service does not currently list Aleppo; no public geometry endpoint verified.",
+  "registryEvidenceUrls": [
+    "https://sana.sy/governorates/aleppo/2256077/",
+    "https://www.syrianrealestate.gov.sy/",
+    "https://www.cadastre.gov.sy/",
+    "https://ecsc.gov.sy/",
+    "https://sana.sy/governorates/2433432/"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "countryCode": "UG",
+  "status": "no_verified_public_parcel_geometry",
+  "summary": "The official Uganda NLIS public cadastral map bundle exposes its exact public map configuration: workspace `portal`, map CRS EPSG:21096, and six configured layers (three WMS basemaps plus WFS management-zone, district-boundary and office layers). None is a parcel layer. The advertised GeoServer root and workspace WFS/WMS capabilities routes return Tomcat 404. No target parcel feature, native parcel key, or complete viewport response could be verified. Do not add a parcel source descriptor or response fixtures from this evidence.",
+  "targets": [
+    {
+      "cityId": "wup2025:2565",
+      "name": "Mbale",
+      "centerLatLon": [1.07878290451076, 34.1841997126949],
+      "officialViewerEvidence": {
+        "url": "https://ugnlis.mlhud.go.ug/public/cadastral-division-map",
+        "title": "Uganda National Land Information System public cadastral division map",
+        "httpStatus": 200,
+        "applicationEvidence": {
+          "mapRouteChunk": "3242.adff7e30b24a66ff.js",
+          "mapImplementationChunk": "8365.b1d0cc9fe61e428b.js",
+          "geoserverBaseUrl": "https://gis.mlhud.go.ug/geoserver",
+          "workspace": "portal",
+          "mapCrs": "EPSG:21096",
+          "configuredLayers": [
+            { "name": "Countries", "type": "WMS", "layer": "portal_ug_neighbour_countries" },
+            { "name": "Aerial images", "type": "WMS", "layer": "ortho-40cm", "visibleByDefault": false },
+            { "name": "Topographic map", "type": "WMS", "layer": "portal_Topographic" },
+            { "name": "MZO", "type": "WFS", "layer": "portal_mzo", "searchField": "mzo" },
+            { "name": "Districts", "type": "WFS", "layer": "portal_adm_boundaries", "searchField": "adm_distri" },
+            { "name": "Offices", "type": "WFS", "layer": "portal_uganda_offices", "searchField": "name" }
+          ],
+          "parcelLayerConfigured": false,
+          "documentedRequests": [
+            "WFS 2.0.0 GetFeature uses <geoserver>/<workspace>/wfs, typeNames=<workspace>:<layer>, propertyName, and outputFormat=application/json for public search options.",
+            "WFS 1.1.0 GetFeature uses <geoserver>/wfs with typename=<workspace>:<layer>, outputFormat=application/json, srsname, and bbox for viewport loading."
+          ],
+          "initialViewExtent": [356980, 106289, 517966, 271215],
+          "extentCrs": "EPSG:21096",
+          "assessment": "The public layer catalog is explicit and contains no parcel/cadastre feature layer: WFS features are MZO management zones, administrative district boundaries and offices. The bundle does not establish a parcel-query workflow. No parcel-layer name or exact native parcel identifier is asserted here."
+        },
+        "geoserverProbe": {
+          "baseUrl": "https://gis.mlhud.go.ug/geoserver",
+          "requestHeaders": "Ordinary Chrome browser User-Agent, Accept, and Referer for the public cadastral map; no credentials or authorization headers.",
+          "results": [
+            { "path": "/wfs?service=WFS&version=2.0.0&request=GetCapabilities", "httpStatus": 404, "response": "Tomcat 9.0.75; resource /geoserver/wfs not available." },
+            { "path": "/ows?service=WFS&version=2.0.0&request=GetCapabilities", "httpStatus": 404, "response": "Tomcat 9.0.75; resource /geoserver/ows not available." },
+            { "path": "/wms?service=WMS&request=GetCapabilities", "httpStatus": 404, "response": "Tomcat 9.0.75; resource /geoserver/wms not available." },
+            { "path": "/web/", "httpStatus": 404, "response": "Tomcat 9.0.75; resource /geoserver/web/ not available." },
+            { "path": "/portal/wfs?service=WFS&version=2.0.0&request=GetCapabilities", "httpStatus": 404, "response": "Tomcat 9.0.75; workspace WFS route returned 404." },
+            { "path": "/portal/wms?service=WMS&request=GetCapabilities", "httpStatus": 404, "response": "Tomcat 9.0.75; workspace WMS route returned 404." }
+          ],
+          "assessment": "The app catalog fixes the workspace as `portal`; the client uses both root `/wfs` and `/portal/wfs` paths. Root service paths and exact workspace `/portal/wfs` and `/portal/wms` capabilities paths were all unavailable at the time checked. This does not establish that records are absent from another authorized service, but the public viewer config contains no parcel layer."
+        }
+      }
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "Public NLIS application shell and static application bundles were accessible."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public/cadastral-division-map",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "Public route source defines the cadastral division map component."
+    },
+    {
+      "url": "https://gis.mlhud.go.ug/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "assessment": "Root WFS endpoint returned Tomcat 404; no capabilities or feature types."
+    },
+    {
+      "url": "https://gis.mlhud.go.ug/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "assessment": "Root OWS endpoint returned Tomcat 404; no capabilities or feature types."
+    },
+    {
+      "url": "https://gis.mlhud.go.ug/geoserver/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "assessment": "Root WMS endpoint returned Tomcat 404."
+    },
+    {
+      "url": "https://gis.mlhud.go.ug/geoserver/portal/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "assessment": "Exact configured workspace WFS capabilities route also returned Tomcat 404."
+    },
+    {
+      "url": "https://gis.mlhud.go.ug/geoserver/portal/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "assessment": "Exact configured workspace WMS capabilities route also returned Tomcat 404."
+    },
+    {
+      "url": "https://gis.mlhud.go.ug/geoserver/web/",
+      "method": "GET",
+      "httpStatus": 404,
+      "assessment": "GeoServer web endpoint returned Tomcat 404."
+    }
+  ],
+  "decision": {
+    "descriptorProposed": false,
+    "snapshotFixturesWritten": false,
+    "reason": "The exact public layer catalog exposes only WMS basemaps and WFS MZO/district/office features, and the tested advertised GeoServer endpoints return 404. No target parcel geometry, stable parcel key, or complete response count/extent was retrieved. This public map is not a verified parcel-data source; the evidence does not show that no parcel records exist elsewhere.",
+    "nextUsefulEvidence": "Identify a separate official public parcel-data service for Uganda, if one is available. Do not use the viewer's management-zone, district-boundary or office layers as parcel geometry. Verify target intersection, native parcel keys, and complete viewport retrieval before proposing a descriptor."
+  }
+}

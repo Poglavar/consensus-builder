@@ -1,0 +1,544 @@
+{
+  "schemaVersion": 1,
+  "cityId": "new_hope",
+  "researchCityId": "wup2025:8018",
+  "checkedAt": "2026-10-07T18:20:58.972Z",
+  "sourceId": "us-nc-wake-raleigh-parcels",
+  "descriptorChanges": {},
+  "tests": [
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.6425,
+        35.86,
+        -78.64,
+        35.8625
+      ],
+      "count": 56,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.645,
+        35.86,
+        -78.6425,
+        35.8625
+      ],
+      "count": 16,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.64,
+        35.86,
+        -78.6375,
+        35.8625
+      ],
+      "count": 35,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.6425,
+        35.8575,
+        -78.64,
+        35.86
+      ],
+      "count": 22,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.6425,
+        35.8625,
+        -78.64,
+        35.865
+      ],
+      "count": 57,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.645,
+        35.8575,
+        -78.6425,
+        35.86
+      ],
+      "count": 8,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.64,
+        35.8575,
+        -78.6375,
+        35.86
+      ],
+      "count": 36,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.645,
+        35.8625,
+        -78.6425,
+        35.865
+      ],
+      "count": 45,
+      "complete": true
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        -78.64,
+        35.8625,
+        -78.6375,
+        35.865
+      ],
+      "count": 44,
+      "complete": true
+    },
+    {
+      "operation": "queryIds",
+      "count": 239,
+      "absentIds": [],
+      "allGeometriesMatch": true
+    },
+    {
+      "operation": "binding",
+      "coverage": "complete",
+      "parcelCount": 1,
+      "siteM2": 1129.45,
+      "sampledParcelId": "US-NC-WAKE-1706681938",
+      "geometrySha256": "ed2362153082f60182e47ce6b9ba350dc61980146c00350f26caf4548077d447"
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-07T18:20:58.974Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.6425%2C35.86%2C-78.64%2C35.8625&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:20:59.633Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.645%2C35.86%2C-78.6425%2C35.8625&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:20:59.842Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.64%2C35.86%2C-78.6375%2C35.8625&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:00.049Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.6425%2C35.8575%2C-78.64%2C35.86&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:00.301Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.6425%2C35.8625%2C-78.64%2C35.865&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:00.523Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.645%2C35.8575%2C-78.6425%2C35.86&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:00.745Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.64%2C35.8575%2C-78.6375%2C35.86&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:00.955Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.645%2C35.8625%2C-78.6425%2C35.865&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:01.193Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.64%2C35.8625%2C-78.6375%2C35.865&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:01.438Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706681938%27%2C%271706691037%27%2C%271706686856%27%2C%271706589543%27%2C%271706681219%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:04.564Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706692054%27%2C%271706684594%27%2C%271706683191%27%2C%271706681067%27%2C%271706682252%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:07.535Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706685379%27%2C%271706685913%27%2C%271706687611%27%2C%271706589956%27%2C%271706683615%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:10.432Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706685679%27%2C%271706599067%27%2C%271706684726%27%2C%271706681523%27%2C%271706589131%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:13.360Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706684677%27%2C%271706684302%27%2C%271706687138%27%2C%271706683439%27%2C%271706589129%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:16.009Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706681434%27%2C%271706681940%27%2C%271706589749%27%2C%271706684905%27%2C%271706696028%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:18.702Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706589642%27%2C%271706589848%27%2C%271706683707%27%2C%271706589741%27%2C%271706697004%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:21.579Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706589446%27%2C%271706682193%27%2C%271706682457%27%2C%271706685566%27%2C%271706681134%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:24.319Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706589346%27%2C%271706684384%27%2C%271706684845%27%2C%271706682823%27%2C%271706589238%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:27.007Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706683938%27%2C%271706684260%27%2C%271706682320%27%2C%271706686736%27%2C%271706684512%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:30.330Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706681810%27%2C%271706681613%27%2C%271706682620%27%2C%271706681211%27%2C%271706687454%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:34.127Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706686549%27%2C%271706598076%27%2C%271706484547%27%2C%271706494251%27%2C%271706597190%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:37.804Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706782918%27%2C%271706697070%27%2C%271706689345%27%2C%271706782231%27%2C%271706784155%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:41.911Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706688657%27%2C%271706780458%27%2C%271706790042%27%2C%271706783057%27%2C%271706689923%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:44.972Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706784346%27%2C%271706688946%27%2C%271706688463%27%2C%271706689713%27%2C%271706796223%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:48.330Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706687830%27%2C%271706781779%27%2C%271706781899%27%2C%271706687694%27%2C%271706781604%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:51.204Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706688707%27%2C%271706780517%27%2C%271706780410%27%2C%271706698180%27%2C%271706792046%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:53.947Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706780809%27%2C%271706699066%27%2C%271706673821%27%2C%271706682021%27%2C%271706676817%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:56.956Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706579907%27%2C%271706579817%27%2C%271706673346%27%2C%271706677004%27%2C%271706673960%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:21:59.971Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706673919%27%2C%271706589084%27%2C%271706671821%27%2C%271706579883%27%2C%271706575340%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:02.869Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706677320%27%2C%271706670879%27%2C%271706691762%27%2C%271706694770%27%2C%271706695668%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:05.416Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706692234%27%2C%271706599587%27%2C%271706690567%27%2C%271706599399%27%2C%271706599930%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:08.260Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706696690%27%2C%271706599308%27%2C%271706598598%27%2C%271706690990%27%2C%271706693317%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:11.368Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706695398%27%2C%271706696494%27%2C%271706690910%27%2C%271706696251%27%2C%271706690379%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:13.924Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706694809%27%2C%271706598296%27%2C%271706696624%27%2C%271706696837%27%2C%271706694109%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:16.989Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706693599%27%2C%271706599782%27%2C%271706693601%27%2C%271706692950%27%2C%271706691369%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:20.452Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706691256%27%2C%271706697803%27%2C%271706691970%27%2C%271706694175%27%2C%271706693222%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:23.480Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706690752%27%2C%271706697138%27%2C%271706691631%27%2C%271706599285%27%2C%271706695404%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:26.168Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706692455%27%2C%271706694712%27%2C%271706693712%27%2C%271706695151%27%2C%271706690266%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:29.366Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706695950%27%2C%271706599701%27%2C%271706694889%27%2C%271706695504%27%2C%271706695257%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:31.980Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706693930%27%2C%271706694325%27%2C%271706771801%27%2C%271706773379%27%2C%271706772307%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:34.670Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706774365%27%2C%271706679690%27%2C%271706678244%27%2C%271706773842%27%2C%271706772578%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:37.574Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706773230%27%2C%271706771277%27%2C%271706679448%27%2C%271706770730%27%2C%271706678395%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:40.251Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706772253%27%2C%271706771402%27%2C%271706770361%27%2C%271706678558%27%2C%271706774455%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:42.803Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706772397%27%2C%271706771974%27%2C%271706774622%27%2C%271706770202%27%2C%271706774853%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:45.253Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706773640%27%2C%271706774107%27%2C%271706770593%27%2C%271706771577%27%2C%271706592664%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:47.828Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706591478%27%2C%271706595837%27%2C%271706591862%27%2C%271706596389%27%2C%271706592893%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:50.444Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706593410%27%2C%271706598300%27%2C%271706596921%27%2C%271706593943%27%2C%271706595217%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:53.195Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706596592%27%2C%271706597981%27%2C%271706596751%27%2C%271706592903%27%2C%271706597741%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:56.329Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706597901%27%2C%271706594563%27%2C%271706597114%27%2C%271706595678%27%2C%271706591699%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:22:59.300Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706598505%27%2C%271706592433%27%2C%271706598960%27%2C%271706594963%27%2C%271706593724%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:02.166Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706593598%27%2C%271706595494%27%2C%271706594695%27%2C%271706595292%27%2C%271706593375%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:04.926Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706598721%27%2C%271706594341%27%2C%271706595439%27%2C%271706697556%27%2C%271706790631%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:07.503Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706698521%27%2C%271706698352%27%2C%271706699453%27%2C%271706698734%27%2C%271706699700%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:09.915Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706790214%27%2C%271706699894%27%2C%271706792262%27%2C%271706792746%27%2C%271706792382%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:12.723Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706791325%27%2C%271706792541%27%2C%271706699665%27%2C%271706793419%27%2C%271706790349%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:15.325Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706698104%27%2C%271706698487%27%2C%271706791573%27%2C%271706792155%27%2C%271706791507%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:17.766Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=%28stcntyfips+%3D+%2737183%27%29+AND+%28parno+IN+%28%271706697778%27%2C%271706790291%27%2C%271706699248%27%2C%271706697396%27%29%29&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:23:20.423Z",
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips+%3D+%2737183%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=500&resultOffset=0&geometry=-78.64204503102887%2C35.862250071601665%2C-78.64136844274468%2C35.86248024112054&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    }
+  ],
+  "privacy": "Only protocol metadata, counts, safe parcel identifiers and geometry hashes retained. No owner or parcel geometry stored.",
+  "result": "passed",
+  "uniqueParcels": 239,
+  "runtimeDescriptor": {
+    "idBatchSize": 5,
+    "idField": "parno",
+    "objectIdField": "objectid",
+    "attributeFilters": {
+      "stcntyfips": "37183"
+    },
+    "outSR": 4326,
+    "metricSrid": 32617
+  }
+}

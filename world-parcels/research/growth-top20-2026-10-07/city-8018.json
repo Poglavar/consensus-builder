@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:8018",
+  "queueRank": 16,
+  "growthCohort": "top20-2015-2025",
+  "name": "New Hope",
+  "country": "United States of America",
+  "countryCode": "US",
+  "centerLatLon": [
+    35.8609596134079,
+    -78.6416325645578
+  ],
+  "checkedAt": "2026-10-07",
+  "status": "verified_sample_partial_coverage",
+  "registryFound": true,
+  "locationIdentity": {
+    "source": "UN WUP 2025 City_Code 8018",
+    "description": "UN-labelled New Hope urban centre at 35.86096,-78.64163, in the Raleigh/Wake County area. This is not New Hope, Pennsylvania or Minnesota; no separate municipal boundary is assumed.",
+    "verifiedCountyFips": "37183",
+    "basis": "All returned parcel attributes carry the Wake County namespace, and returned polygons intersect the small box at the WUP coordinate."
+  },
+  "source": {
+    "sourceId": "us-nc-wake-raleigh-parcels",
+    "name": "NC OneMap parcels — Wake County",
+    "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
+    "scope": "Wake County, stcntyfips=37183. This probe verifies a small area at the WUP New Hope centre only.",
+    "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+    "method": "GET",
+    "responseFormat": "ArcGIS JSON polygon features",
+    "crs": "EPSG:2264 native; EPSG:4326 output",
+    "idField": "parno",
+    "namespaceField": "stcntyfips",
+    "reuseStatus": "terms_informational"
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "us-nc-wake-raleigh-parcels",
+    "requestUrl": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27&geometry=2105787.402%2C768077.507%2C2106587.402%2C768877.507&geometryType=esriGeometryEnvelope&inSR=2264&spatialRel=esriSpatialRelIntersects&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -78.64264,
+      35.85986,
+      -78.64063,
+      35.86206
+    ],
+    "nativeBbox": [
+      2105787.402,
+      768077.507,
+      2106587.402,
+      768877.507
+    ],
+    "nativeBboxCrs": "EPSG:2264",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "parno (qualified by stcntyfips)",
+    "responseFile": "research/growth-top20-2026-10-07/city-8018-parcel-response.json",
+    "pagination": {
+      "resultRecordCount": 3,
+      "exceededTransferLimit": true,
+      "completeness": "Three-feature discovery sample; complete viewport pagination is not tested."
+    },
+    "exactRead": {
+      "parcelNumber": "1706686856",
+      "count": 1,
+      "exceededTransferLimit": false,
+      "geometryMatchesSample": true,
+      "responseFile": "research/growth-top20-2026-10-07/city-8018-exact-response.json"
+    }
+  },
+  "sourcesFound": [
+    {
+      "url": "https://www.nconemap.gov/pages/parcels",
+      "format": "ArcGIS REST / JSON / GeoJSON / PBF",
+      "scope": "Statewide compilation; this source uses a fixed Wake County namespace"
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://www.nconemap.gov/pages/parcels",
+      "observation": "Official parcel catalogue; API metadata describes an aggregation of all100 North Carolina counties and Eastern Band of Cherokee Indians, not a claim established by this bounded probe."
+    }
+  ],
+  "searchQueries": [
+    {
+      "query": "\"New Hope\" \"Raleigh\" North Carolina",
+      "language": "English",
+      "checkedAt": "2026-10-07",
+      "resultUrls": [
+        "https://en.wikipedia.org/wiki/Raleigh,_North_Carolina"
+      ],
+      "assessment": "Name alone is ambiguous. Source selection uses the saved WUP coordinates and returned county namespace."
+    },
+    {
+      "query": "site.wake.gov real estate parcels GIS open data",
+      "language": "English",
+      "checkedAt": "2026-10-07",
+      "resultUrls": [],
+      "assessment": "Existing Raleigh source record supplied the NC OneMap catalogue; direct catalogue and layer metadata were then inspected."
+    }
+  ],
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+    "Accept": "application/json,text/plain,*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.nconemap.gov/"
+  },
+  "requests": [
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27&geometry=-78.6426325645578%2C35.8599596134079%2C-78.6406325645578%2C35.8619596134079&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&orderByFields=objectid+ASC&f=json",
+      "method": "GET",
+      "operation": "bounded New Hope WUP-centre parcel sample",
+      "checkedAt": "2026-10-07T16:58:43.512579+00:00",
+      "httpStatus": null,
+      "error": "The read operation timed out"
+    },
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27&geometry=2105787.402%2C768077.507%2C2106587.402%2C768877.507&geometryType=esriGeometryEnvelope&inSR=2264&spatialRel=esriSpatialRelIntersects&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "operation": "native EPSG:2264 bbox retry at New Hope WUP centre, 244m square",
+      "checkedAt": "2026-10-07T17:05:08.016793+00:00",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "featureCount": 3,
+      "exceededTransferLimit": true,
+      "error": null
+    },
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27+AND+parno%3D%271706686856%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "operation": "exact county-scoped native parcel ID read",
+      "checkedAt": "2026-10-07T17:05:08.686974+00:00",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "featureCount": 1,
+      "exceededTransferLimit": false,
+      "error": null
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Publisher statewide compilation; existing runtime descriptor constrained to Wake County",
+    "verifiedOpenScope": "Three polygons in a 244m-square bbox at the WUP point, plus one exact county-qualified native-ID round trip",
+    "countrywideVerified": false
+  },
+  "adapterProspect": {
+    "existingAdapter": "arcgis",
+    "existingSourceId": "us-nc-wake-raleigh-parcels",
+    "readiness": "Bounded discovery and one exact ID verified; city configuration and complete viewport acceptance are not changed by this research task.",
+    "queryObservation": "WGS84 bbox query timed out; retry in native EPSG:2264 returned immediately. One failure does not prove WGS84 is unsupported."
+  },
+  "remainingUncertainty": "UN urban-centre boundary, complete paging and continued source availability have not been verified for this candidate.",
+  "nextStep": "Reuse the existing county-scoped ArcGIS source for a bounded viewport acceptance run at the New Hope WUP centre before enabling a city marker.",
+  "registryBasis": "NC OneMap returned three Wake County parcel polygons at the WUP New Hope point and one matching exact parcel-ID read. Existing Raleigh source can be reused after target viewport acceptance.",
+  "registryEvidenceUrls": [
+    "https://www.nconemap.gov/pages/parcels"
+  ]
+}

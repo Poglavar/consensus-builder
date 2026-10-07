@@ -196,7 +196,7 @@ describe('resolveCroatianCityId — placing an HR parcel from its coordinates', 
     });
 
     it('bounds the repository wait so a wedged transport cannot stall deep-link boot', async () => {
-        globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__ = 50; // real deadline is 6 s; don't idle for it here
+        globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__ = 50; // real deadline is 30 s; don't idle for it here
         ensureIds.mockReturnValue(new Promise(() => {}));
         try {
             await expect(route.resolveCroatianCityId('HR-330264-4975/4')).resolves.toBe('zagreb');
@@ -228,7 +228,9 @@ describe('shared parcel sources resolve city from geometry', () => {
         ['NL-BRK-11460432670000', 4.9, 52.3725, 'amsterdam', 'amsterdam'],
         ['DE-NRW-05344102100105______', 6.9603, 50.9375, 'cologne', 'essen'],
         ['DE-NRW-05344102100105______', 7.0123, 51.4556, 'essen', 'essen'],
-        ['DE-NRW-05913000000012345678', 7.466, 51.51494, 'dortmund', 'essen']
+        ['DE-NRW-05913000000012345678', 7.466, 51.51494, 'dortmund', 'essen'],
+        ['US-NC-WAKE-1706681938', -78.6416325645578, 35.8609596134079, 'new_hope', 'raleigh'],
+        ['US-NC-WAKE-1703678831', -78.6382, 35.7796, 'raleigh', 'raleigh']
     ])('places %s from exact geometry in %s', async (id, lng, lat, target, lookupCity) => {
         locateIds.mockResolvedValue({ status: 'ready', features: [
             { id, geometry: { type: 'Polygon', coordinates: [[[lng, lat]]] } }
@@ -236,6 +238,31 @@ describe('shared parcel sources resolve city from geometry', () => {
         expect(route.parcelIdToCityId(id)).toBeNull();
         await expect(route.resolveCityIdForParcel(id)).resolves.toBe(target);
         expect(locateIds).toHaveBeenCalledWith([id], { city: lookupCity });
+    });
+    it('waits through startup viewport queuing for the shared New Hope parcel lookup', async () => {
+        vi.useFakeTimers();
+        const id = 'US-NC-WAKE-1706681938';
+        locateIds.mockImplementation(() => new Promise(resolve => {
+            // Nine startup viewport requests use the same provider slots; model the exact lookup
+            // finishing after that queue and the source's bounded upstream request timeout.
+            setTimeout(() => resolve({ status: 'ready', features: [
+                { id, geometry: { type: 'Polygon', coordinates: [[[-78.6416325645578, 35.8609596134079]]] } }
+            ] }), 7000);
+        }));
+        let settled = false;
+        try {
+            const lookup = route.resolveCityIdForParcel(id).then(city => {
+                settled = true;
+                return city;
+            });
+            await vi.advanceTimersByTimeAsync(6100);
+            expect(settled).toBe(false);
+            await vi.advanceTimersByTimeAsync(900);
+            await expect(lookup).resolves.toBe('new_hope');
+            expect(locateIds).toHaveBeenCalledWith([id], { city: 'raleigh' });
+        } finally {
+            vi.useRealTimers();
+        }
     });
     it.each([
         { status: 'partial', features: [] },

@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "countryCode": "BD",
+  "adapter": "dlrs-sheet",
+  "status": "no_verified_open_sheet_candidate",
+  "summary": "The two WUP centers have nearby mouza-map catalog leads, but the public catalog exposes purchasable map records and preview thumbnails rather than parcel GeoJSON or map extents. The live settlement portal exposes no current survey upazilas for either target district. No exact unitcod, complete public sheet response, intersecting polygons, or stable native plot lookup was established; do not add a source descriptor.",
+  "adapterContract": {
+    "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+    "method": "POST",
+    "requiredFormFields": [
+      "rsnum",
+      "comcod",
+      "unitcod",
+      "sheetno"
+    ],
+    "requirements": [
+      "numeric source keys",
+      "complete fixed-sheet response",
+      "verified exact feature count",
+      "unique Dag_No values",
+      "closed WGS84 polygon geometries"
+    ],
+    "note": "The existing adapter is a public whole-sheet GeoJSON path. Public map-purchase catalog records do not supply the endpoint's source keys or a GeoJSON equivalent. No hypothetical form was posted."
+  },
+  "targets": [
+    {
+      "cityId": "wup2025:6393",
+      "name": "Nandail",
+      "centerLatLon": [
+        24.5572807401755,
+        90.7026558036547
+      ],
+      "selectorEvidence": {
+        "division": "Mymensingh",
+        "district": "Mymensingh",
+        "unitcod": "070300000",
+        "comcod": "4171",
+        "currentSurvey": "201901",
+        "currentSurveyLabel": "RS / digital survey",
+        "currentUpazilaSelector": {
+          "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+          "method": "POST",
+          "form": "comcod=4171&rsno1=201901&districtid=070300000",
+          "httpStatus": 200,
+          "resultCount": 0,
+          "result": [],
+          "assessment": "Official selector returned an empty list; no current-survey mouza, sheet or unitcod was available."
+        }
+      },
+      "nearbyPlaceClue": {
+        "source": "OpenStreetMap Nominatim reverse geocoder",
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=24.5572807401755&lon=90.7026558036547&format=jsonv2&zoom=14&addressdetails=1",
+        "httpStatus": 200,
+        "returnedPlace": "Achargaon",
+        "returnedAdmin": "Nandail Upazila, Mymensingh District, Bangladesh",
+        "returnedPoint": [
+          24.5462865,
+          90.7006184
+        ],
+        "returnedBoundingBox": [
+          24.5262865,
+          24.5662865,
+          90.6806184,
+          90.7206184
+        ],
+        "assessment": "Nearby-name clue only. The geocoder's point and bounding box are not cadastral boundaries and do not prove sheet intersection."
+      },
+      "mapCatalogEvidence": {
+        "portal": "https://map.settlement.gov.bd/",
+        "searchEndpoint": "https://map.settlement.gov.bd/api/search-mouzas?search=%E0%A6%86%E0%A6%9A%E0%A6%BE%E0%A6%B0%E0%A6%97%E0%A6%BE%E0%A6%81&page=1&limit=21",
+        "httpStatus": 200,
+        "match": {
+          "mouzaName": "আচারগাঁও",
+          "upazila": "নান্দাইল",
+          "district": "ময়মনসিংহ",
+          "jlNo": "৮৬"
+        },
+        "catalogRecords": 13,
+        "surveyEditions": [
+          "সি.এস",
+          "আর.এস"
+        ],
+        "observedRsSheetNumbers": [
+          "১",
+          "২",
+          "৩",
+          "৪",
+          "৫"
+        ],
+        "recordStatus": "AVAILABLE",
+        "accessEvidence": "Catalog results expose product IDs, survey labels, sheet labels and thumbnail URLs. They do not expose parcel geometry, map coordinates, exact settlement.gov.bd unitcod, or feature count; records are offered through the map-purchase portal.",
+        "assessment": "Achargaon is a nearby catalog lead, not yet proven to be the mouza intersecting the WUP center. The thumbnails are not a georeferenced polygon service.",
+        "records": [
+          {
+            "id": "674848649544708000",
+            "surveyType": "সি.এস",
+            "sheetNo": "১",
+            "thumbnailUrl": "/uploads/previews/e6ea8508da9e64687d4a97f75bc37184.png"
+          },
+          {
+            "id": "717472306355523000",
+            "surveyType": "আর.এস",
+            "sheetNo": "১",
+            "thumbnailUrl": "/uploads/previews/ae0644d9a4541bb634b78f19de0778bb.png"
+          },
+          {
+            "id": "674848667320168000",
+            "surveyType": "সি.এস",
+            "sheetNo": "২",
+            "thumbnailUrl": "/uploads/previews/b8cf03512c7b4c1ca91e34bc0cf66e93.png"
+          },
+          {
+            "id": "717472311921364000",
+            "surveyType": "আর.এস",
+            "sheetNo": "২",
+            "thumbnailUrl": "/uploads/previews/04647290f06f953c010b136eddff5de5.png"
+          },
+          {
+            "id": "870892408932405000",
+            "surveyType": "আর.এস",
+            "sheetNo": "২",
+            "thumbnailUrl": "/uploads/previews/86-ACARGAW-2.pdf.png"
+          },
+          {
+            "id": "674848660550561000",
+            "surveyType": "সি.এস",
+            "sheetNo": "৩",
+            "thumbnailUrl": "/uploads/previews/dccdfddc01087742cc30f82f17fd5187.png"
+          },
+          {
+            "id": "717472317176827000",
+            "surveyType": "আর.এস",
+            "sheetNo": "৩",
+            "thumbnailUrl": "/uploads/previews/e5f1fb3359ae335d97be5ed0fe796ee1.png"
+          },
+          {
+            "id": "674848542535430000",
+            "surveyType": "সি.এস",
+            "sheetNo": "৪",
+            "thumbnailUrl": "/uploads/previews/8b944a6eac736b146c3b49004e14cef6.png"
+          },
+          {
+            "id": "674849243525279000",
+            "surveyType": "সি.এস",
+            "sheetNo": "৪",
+            "thumbnailUrl": "/uploads/previews/e34405059fb5d075421b6ae83062b543.png"
+          },
+          {
+            "id": "717472322679754000",
+            "surveyType": "আর.এস",
+            "sheetNo": "৪",
+            "thumbnailUrl": "/uploads/previews/f3e7a10a2d18c86af230f7e6791dc086.png"
+          },
+          {
+            "id": "870892382650896000",
+            "surveyType": "আর.এস",
+            "sheetNo": "৪",
+            "thumbnailUrl": "/uploads/previews/86-ACARGAW-4.pdf.png"
+          },
+          {
+            "id": "717472327842942000",
+            "surveyType": "আর.এস",
+            "sheetNo": "৫",
+            "thumbnailUrl": "/uploads/previews/bb6e26c82ce1411c5832ceabf74c7cb9.png"
+          },
+          {
+            "id": "870892349067104000",
+            "surveyType": "আর.এস",
+            "sheetNo": "৫",
+            "thumbnailUrl": "/uploads/previews/86-ACARGAW-5.pdf.png"
+          }
+        ],
+        "resultMeta": {
+          "page": 1,
+          "limit": 21,
+          "total": 13,
+          "totalPages": 1
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:4216",
+      "name": "Saghatta",
+      "centerLatLon": [
+        25.0857005453527,
+        89.5488082012097
+      ],
+      "selectorEvidence": {
+        "division": "Rangpur",
+        "district": "Gaibandha",
+        "unitcod": "080400000",
+        "comcod": "4186",
+        "currentSurvey": "201901",
+        "currentSurveyLabel": "RS / BRS digital survey",
+        "currentUpazilaSelector": {
+          "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+          "method": "POST",
+          "form": "comcod=4186&rsno1=201901&districtid=080400000",
+          "httpStatus": 200,
+          "resultCount": 0,
+          "result": [],
+          "assessment": "Official selector returned an empty list; no current-survey mouza, sheet or unitcod was available."
+        }
+      },
+      "nearbyPlaceClue": {
+        "source": "OpenStreetMap Nominatim reverse geocoder",
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=25.0857005453527&lon=89.5488082012097&format=jsonv2&zoom=14&addressdetails=1",
+        "httpStatus": 200,
+        "returnedPlace": "কামালেরপাড়া (Kamaler Para)",
+        "returnedAdmin": "Kamaler Para Union, Saghata Upazila, Gaibandha District, Bangladesh",
+        "returnedPoint": [
+          25.0757624,
+          89.5488235
+        ],
+        "returnedBoundingBox": [
+          25.0557624,
+          25.0957624,
+          89.5288235,
+          89.5688235
+        ],
+        "assessment": "Nearby-name clue only. The geocoder's point and bounding box are not cadastral boundaries and do not prove sheet intersection."
+      },
+      "mapCatalogEvidence": {
+        "portal": "https://map.settlement.gov.bd/",
+        "searchEndpoint": "https://map.settlement.gov.bd/api/search-mouzas?search=%E0%A6%95%E0%A6%BE%E0%A6%AE%E0%A6%BE%E0%A6%B2%E0%A7%87%E0%A6%B0%20%E0%A6%AA%E0%A6%BE%E0%A7%9C%E0%A6%BE&page=1&limit=21",
+        "httpStatus": 200,
+        "match": {
+          "mouzaName": "কামালের পাড়া",
+          "upazila": "সাঘাটা",
+          "district": "গাইবান্ধা",
+          "jlNo": "৭৯"
+        },
+        "surveyEditions": [
+          "আর.এস"
+        ],
+        "observedRsSheetNumbers": [
+          "১",
+          "২"
+        ],
+        "otherCatalogRows": "The same text search also returned CS records under a mismatched Rangpur district and different JL number; do not conflate those rows with the Gaibandha RS records.",
+        "recordStatus": "AVAILABLE",
+        "accessEvidence": "Catalog results expose product IDs, survey labels, sheet labels and thumbnail URLs. They do not expose parcel geometry, map coordinates, exact settlement.gov.bd unitcod, or feature count; records are offered through the map-purchase portal.",
+        "assessment": "Kamaler Para is a nearby catalog lead, not yet proven to be the mouza intersecting the WUP center. The thumbnails are not a georeferenced polygon service.",
+        "records": [
+          {
+            "id": "675008312311361000",
+            "division": "রংপুর",
+            "district": "রংপুর",
+            "surveyType": "সি.এস",
+            "jlNo": "৭৮",
+            "sheetNo": "১"
+          },
+          {
+            "id": "888307242938404000",
+            "division": "রংপুর",
+            "district": "গাইবান্ধা",
+            "surveyType": "আর.এস",
+            "jlNo": "৭৯",
+            "sheetNo": "১",
+            "thumbnailUrl": "/uploads/previews/79-Kamaler%20para-1_result_result.png"
+          },
+          {
+            "id": "675008318208552000",
+            "division": "রংপুর",
+            "district": "রংপুর",
+            "surveyType": "সি.এস",
+            "jlNo": "৭৮",
+            "sheetNo": "২"
+          },
+          {
+            "id": "888307479425847000",
+            "division": "রংপুর",
+            "district": "গাইবান্ধা",
+            "surveyType": "আর.এস",
+            "jlNo": "৭৯",
+            "sheetNo": "২",
+            "thumbnailUrl": "/uploads/previews/79-Kamaler%20para-2_result_result.png"
+          },
+          {
+            "id": "675007697787052000",
+            "division": "রাজশাহী",
+            "district": "বগুড়া",
+            "upazila": "সারিয়াকান্দি",
+            "surveyType": "সি.এস",
+            "jlNo": "২২",
+            "sheetNo": null
+          }
+        ],
+        "resultMeta": {
+          "page": 1,
+          "limit": 21,
+          "total": 5,
+          "totalPages": 1
+        }
+      }
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://map.settlement.gov.bd/api/locations/upazilas?division=%E0%A6%AE%E0%A7%9F%E0%A6%AE%E0%A6%A8%E0%A6%B8%E0%A6%BF%E0%A6%82%E0%A6%B9&district=%E0%A6%AE%E0%A7%9F%E0%A6%AE%E0%A6%A8%E0%A6%B8%E0%A6%BF%E0%A6%82%E0%A6%B9",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "Corrected the Bengali district label and found Nandail in the official map portal's location list."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/api/locations/mouzas",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": [],
+      "assessment": "The corrected exact-label endpoint listed উত্তর পালাহার (JL 42), while search inventory separately matched Achargaon. The two catalog views differ, so a source key cannot be assigned from names alone.",
+      "query": {
+        "division": "ময়মনসিংহ",
+        "district": "ময়মনসিংহ",
+        "upazila": "নান্দাইল"
+      }
+    },
+    {
+      "url": "https://map.settlement.gov.bd/api/locations/mouzas",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "The corrected exact-label endpoint listed উত্তর পালাহার (JL 42), while search inventory separately matched Achargaon. The two catalog views differ, so a source key cannot be assigned from names alone.",
+      "query": {
+        "division": "ময়মনসিংহ",
+        "district": "ময়মনসিংহ",
+        "upazila": "নান্দাইল"
+      }
+    },
+    {
+      "url": "https://map.settlement.gov.bd/api/locations/survey-types?division=%E0%A6%B0%E0%A6%82%E0%A6%AA%E0%A7%81%E0%A6%B0&district=%E0%A6%97%E0%A6%BE%E0%A6%B9%E0%A7%8D%E0%A6%BE%E0%A6%B0%E0%A6%B0&upazila=%E0%A6%B8%E0%A6%BE%E0%A6%98%E0%A6%BE%E0%A6%9F%E0%A6%BE",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": [
+        "আর.এস"
+      ],
+      "assessment": "The upazila-wide public catalog lists RS as an available edition; this does not identify a target sheet or provide polygons."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/api/locations/sheet-numbers",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": [
+        "১",
+        "২",
+        "৩",
+        "৪",
+        "৫"
+      ],
+      "assessment": "The unfiltered upazila catalogue returned generic sheet numbers, not a mouza-specific sheet list. Exact Kamaler Para sheets 1 and 2 came from search records.",
+      "query": {
+        "division": "রংপুর",
+        "district": "গাইবান্ধা",
+        "upazila": "সাঘাটা"
+      }
+    },
+    {
+      "url": "https://map.settlement.gov.bd/api/search?division=...&district=...&upazila=...&page=1&limit=21",
+      "method": "GET",
+      "httpStatus": 400,
+      "response": {
+        "error": "Missing required search parameters"
+      },
+      "assessment": "The public inventory search requires a mouza parameter. Not an upstream failure and not used as evidence of absent records."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurvey",
+      "method": "POST",
+      "requestForm": "compcode=4171&rsno1=201901&districtid=070300000",
+      "httpStatus": 200,
+      "result": [
+        {
+          "comcod": "4171",
+          "rsnum": "201901",
+          "unitcod": "070311028",
+          "unitnam": "পালগাঁও",
+          "upzcod": "070311000",
+          "upazila": "ভালুকা উপজেলা"
+        }
+      ],
+      "assessment": "This is the alternate khatian-search thana route observed in /js/kh-search.js. It returned Bhaluka only, not Nandail."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurvey",
+      "method": "POST",
+      "requestForm": "compcode=4186&rsno1=201901&districtid=080400000",
+      "httpStatus": 200,
+      "result": [
+        {
+          "comcod": "4186",
+          "rsnum": "201901",
+          "unitcod": "080403034",
+          "unitnam": "তারাপুর",
+          "upzcod": "080403000",
+          "upazila": "সুন্দরগঞ্জ উপজেলা"
+        }
+      ],
+      "assessment": "This is the alternate khatian-search thana route observed in /js/kh-search.js. It returned Sundarganj only, not Saghata."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "requestForm": "divid=010000000",
+      "httpStatus": 200,
+      "assessment": "The official current division list labels 010000000 as Dhaka. Its district response includes legacy hierarchy rows (including 017200000 Sherpur and 017300000 Jamalpur under comcod 4198), but contains no Mymensingh district row; no old Mymensingh-in-Dhaka selector code was exposed."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "httpStatus": 200,
+      "assessment": "Official list exposes current Mymensingh division code 070000000 and Dhaka division 010000000; there is no separate historical Mymensingh division selector entry."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/api/maps/717472306355523000",
+      "method": "GET",
+      "httpStatus": 200,
+      "resultFields": [
+        "id",
+        "division",
+        "district",
+        "upazila",
+        "mouzaName",
+        "jlNo",
+        "sheetNo",
+        "surveyType",
+        "status",
+        "isDigitized",
+        "thumbnailUrl",
+        "price",
+        "deliveryFee",
+        "courtFee"
+      ],
+      "assessment": "Public product detail adds no geometry, coordinates, extent or source unitcod."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/api/maps/888307242938404000",
+      "method": "GET",
+      "httpStatus": 200,
+      "resultFields": [
+        "id",
+        "division",
+        "district",
+        "upazila",
+        "mouzaName",
+        "jlNo",
+        "sheetNo",
+        "surveyType",
+        "status",
+        "isDigitized",
+        "thumbnailUrl",
+        "price",
+        "deliveryFee",
+        "courtFee"
+      ],
+      "assessment": "Public product detail adds no geometry, coordinates, extent or source unitcod."
+    }
+  ],
+  "decision": {
+    "descriptorProposed": false,
+    "snapshotFilesWritten": false,
+    "reason": "The official current survey selector exposes neither target upazila. Testing both observed thana-selector variants still returns only unrelated upazilas, and the published Dhaka hierarchy contains no Mymensingh district code. The separate public map-purchase catalog identifies nearby historical mouza/sheet products, and its public detail and thumbnail routes add no geometry, map extent, source unitcod, or feature count. A descriptor or fabricated tiny sheet response would fail the existing adapter’s completeness and identity checks.",
+    "nextUsefulEvidence": "Obtain a legally/publicly accessible georeferenced RS/CS vector or map extent for Achargaon JL 86 and Kamaler Para JL 79, or a public archive selector that supplies exact unitcod and full-sheet GeoJSON; then test native Dag_No uniqueness and center intersection before proposing a descriptor."
+  },
+  "publicPreviews": [
+    {
+      "url": "https://map.settlement.gov.bd/uploads/previews/ae0644d9a4541bb634b78f19de0778bb.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "dimensionsPx": [
+        227,
+        320
+      ],
+      "assessment": "Catalog-supplied preview image for Achargaon RS sheet 1; a small scan thumbnail without map-coordinate/extent metadata. The catalogue marks the map as a paid product."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/uploads/previews/79-Kamaler%20para-1_result_result.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "dimensionsPx": [
+        227,
+        320
+      ],
+      "assessment": "Catalog-supplied preview image for Kamaler Para RS sheet 1; a small scan thumbnail without map-coordinate/extent metadata. The catalogue marks the map as a paid product."
+    }
+  ],
+  "alternateSurveyCheck": {
+    "officialClientFiles": [
+      "https://settlement.gov.bd/js/MapSearch.js",
+      "https://settlement.gov.bd/js/kh-search.js"
+    ],
+    "observedCurrentMapFlow": [
+      "/Map/GetDivisionList",
+      "/Khatian/getdistrictlistdivisionwise",
+      "/Khatian/GetSurveyListDistrictWise",
+      "/Khatian/GetThanaListBySurveyMap"
+    ],
+    "observedAlternateKhatianSearchFlow": [
+      "/Khatian/GetSurveyListDistrictWise",
+      "/Khatian/GetThanaListBySurvey",
+      "/Khatian/GetMouzaListBySurvey"
+    ],
+    "finding": "Both official client flows obtain their available survey edition list from the same district-level GetSurveyListDistrictWise endpoint. Mymensingh returns only rsnum 201901 (RS digital survey); Gaibandha returns only rsnum 201901 (RS/BRS digital survey). No CS/SA historic rsnum appears in that public selector. The separate public purchase catalog labels historic CS/RS products but exposes no matching numeric rsnum or parcel API. The live Dhaka hierarchy has no Mymensingh district row."
+  }
+}

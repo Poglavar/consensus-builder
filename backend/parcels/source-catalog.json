@@ -2263,7 +2263,7 @@
       "adapter": "arcgis",
       "name": "NC OneMap Parcels (polys)",
       "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
-      "scope": "Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; configured for Raleigh.",
+      "scope": "Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; configured for Raleigh and the WUP New Hope urban-centre point.",
       "idField": "parno",
       "objectIdField": "objectid",
       "idType": "string",
@@ -2276,7 +2276,8 @@
       "id": "us-nc-wake-raleigh-parcels",
       "stateCode": "NC",
       "cityIds": [
-        "raleigh"
+        "raleigh",
+        "new_hope"
       ],
       "idPrefix": "US-NC-WAKE-",
       "metricSrid": 32617,
@@ -2284,7 +2285,8 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "caveats": [
-        "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+        "Bounded viewport acceptance at Raleigh and New Hope does not establish full municipal or statewide coverage.",
+        "New Hope denotes the WUP urban-centre point in Wake County, not a separate municipal boundary."
       ],
       "attributeFilters": {
         "stcntyfips": "37183"
@@ -2294,7 +2296,8 @@
       "maxConcurrentQueries": 2,
       "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
       "attribution": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors. Adapted to WGS84.",
-      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "idBatchSize": 5
     },
     {
       "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
@@ -3576,6 +3579,40 @@
       "evidenceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json",
       "attribution": "eThekwini Municipality, Corporate GIS. Adapted to WGS84.",
       "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    },
+    {
+      "id": "kerala-entebhoomi-ilms-map-proxy",
+      "name": "Kerala Ente Bhoomi — Manikkal cadastral parcels",
+      "adapter": "kerala-entebhoomi",
+      "endpoint": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "idField": "parcel_gid",
+      "idType": "string",
+      "idPrefix": "IN-KL-ENTEBHOOMI-010309-",
+      "outFields": [
+        "parcel_gid",
+        "survey_no",
+        "block_no"
+      ],
+      "parcelNumberField": "survey_no",
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "metricSrid": 32643,
+      "cityIds": [
+        "venjaramoodu"
+      ],
+      "scope": "Published Manikkal cadastral village (010309), Nedumangad taluk, around the WUP Venjaramoodu point. Coverage outside this village is not established.",
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/kerala.json",
+      "attribution": "Government of Kerala, Survey and Land Records Department / NIC Kerala — Ente Bhoomi. Adapted parcel geometry; ownership not provided.",
+      "licenceUrl": "https://entebhoomi.kerala.gov.in/web/home",
+      "catalogueUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "caveats": [
+        "The public viewer issues a temporary map-session key; it is refreshed once on expiry and kept only in memory.",
+        "The provider returns an empty HTTP 200 body for some unserved bounds. These are treated as unavailable, never confirmed empty coverage.",
+        "Map polygons are adapted to WGS84 from EPSG:32643. Only parcel ID, survey number and block number are retained."
+      ]
     }
   ]
 }

@@ -2263,6 +2263,58 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        new_hope: {
+            id: 'new_hope',
+            label: translateCityText('city.labels.new_hope', 'New Hope, North Carolina, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.8609596134079, -78.6416325645578], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [35.8609596134079, -78.6416325645578],
+                fallbackDataset: [-78.6416325645578, 35.8609596134079]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'us-nc-wake-raleigh-parcels', idPrefix: 'US-NC-WAKE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.nconemap.gov/pages/parcels">North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors · publisher &amp; conditions</a> · Wake County coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        venjaramoodu: {
+            id: 'venjaramoodu',
+            label: translateCityText('city.labels.venjaramoodu', 'Venjaramoodu, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [8.65276906631116, 76.9124484846266], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32643',
+                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [8.65276906631116, 76.9124484846266],
+                fallbackDataset: [76.9124484846266, 8.65276906631116]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.005, source: 'parcel-source',
+                sourceId: 'kerala-entebhoomi-ilms-map-proxy', idPrefix: 'IN-KL-ENTEBHOOMI-010309-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
+                attribution: '<a href="https://entebhoomi.kerala.gov.in/web/ilms/map">Kerala Survey and Land Records Department / NIC Kerala · Ente Bhoomi</a> · Manikkal village coverage · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         bismarck: {
             id: 'bismarck',
             label: translateCityText('city.labels.bismarck', 'Bismarck, United States'),

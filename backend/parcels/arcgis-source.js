@@ -15,6 +15,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const pageSize = descriptor.pageSize || 2000;
     const maxFeatures = descriptor.maxFeatures || 10000;
     const maxBboxKm2 = descriptor.maxBboxKm2 || 25;
+    const idBatchSize = descriptor.idBatchSize ?? 80;
     const idType = descriptor.idType || 'integer';
     const idPattern = descriptor.idPattern ? new RegExp(descriptor.idPattern) : null;
     const idQueryBraces = descriptor.idQueryBraces === true;
@@ -32,6 +33,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || (!composite && descriptor.idFieldTypes !== undefined)
         || (descriptor.parcelNumberField && (!identifier.test(descriptor.parcelNumberField) || !outFields.includes(descriptor.parcelNumberField)))
         || !['integer', 'string'].includes(idType)
+        || !Number.isInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
         || (descriptor.idQueryBraces !== undefined && typeof descriptor.idQueryBraces !== 'boolean')
         || (idQueryBraces && idType !== 'string')
         || ![undefined, 'offset', 'object-ids'].includes(descriptor.boundsQueryMode)
@@ -264,10 +266,22 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const queryValue = idQueryBraces ? `{${tail}}` : tail;
             return idType === 'string' ? `'${queryValue.replaceAll("'", "''")}'` : tail;
         });
-        const params = { where: composite ? native.join(' OR ') : `${idField} IN (${native.join(',')})` };
-        // Older ArcGIS servers support native-key filters and OID reads but reject offsets/order.
-        const result = descriptor.idsQueryMode === 'object-ids' ? await queryObjectIds(params) : await query(params);
-        if (result.features.some(feature => !unique.includes(feature.properties.parcelId))) throw upstreamError('Parcel ID query returned unexpected parcels.');
+        // Some statewide providers time out on large native-ID predicates. Validate the entire
+        // request first, then fetch configured small batches; publish only after every batch passes.
+        const result = { type: 'FeatureCollection', features: [], complete: true, sourceId: id, returnsWGS84: true };
+        let sourceRows = 0;
+        for (let start = 0; start < native.length; start += idBatchSize) {
+            const values = native.slice(start, start + idBatchSize);
+            const expected = new Set(unique.slice(start, start + idBatchSize));
+            const params = { where: composite ? values.join(' OR ') : `${idField} IN (${values.join(',')})` };
+            // Older ArcGIS servers support native-key filters and OID reads but reject offsets/order.
+            const batch = descriptor.idsQueryMode === 'object-ids' ? await queryObjectIds(params) : await query(params);
+            if (batch.features.some(feature => !expected.has(feature.properties.parcelId))) throw upstreamError('Parcel ID query returned unexpected parcels.');
+            sourceRows += batch.sourceRows ?? batch.features.length;
+            if (sourceRows > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use fewer IDs.');
+            result.features.push(...batch.features);
+        }
+        if (descriptor.nativeGeometryMode === 'parts') result.sourceRows = sourceRows;
         const present = new Set(result.features.map(feature => feature.properties.parcelId));
         return { ...result, absentIds: unique.filter(value => !present.has(value)) };
     }

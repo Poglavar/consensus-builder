@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "checked": "2026-10-07",
+  "scope": "Focused article-scope corrections for flagged administrative pages and obvious top-20 growth settlements; not an exhaustive audit of all 460 candidates.",
+  "policy": "The Wikipedia column links only to an article about the settlement itself (city, town, or municipality). A broader administrative-area article is not accepted solely because its coordinates are nearby. Native-language Wikipedia articles are accepted. No guessed or search/disambiguation URLs.",
+  "corrections": [
+    {
+      "city": "Nandail",
+      "action": "replace",
+      "rejectedUrl": "https://en.wikipedia.org/wiki/Nandail_Upazila",
+      "rejectionReason": "Article is about Nandail Upazila, broader than the target settlement.",
+      "acceptedUrl": "https://bn.wikipedia.org/wiki/নান্দাইল_পৌরসভা",
+      "evidence": "Article explicitly identifies Nandail Municipality, Mymensingh, Bangladesh."
+    },
+    {
+      "city": "Golapganj",
+      "action": "replace",
+      "rejectedUrl": "https://en.wikipedia.org/wiki/Golapganj_Upazila",
+      "rejectionReason": "Article is about Golapganj Upazila, broader administrative area.",
+      "acceptedUrl": "https://en.wikipedia.org/wiki/Golapganj_Municipality",
+      "pageCoordinates": {
+        "lat": 24.8583,
+        "lon": 92.0208
+      },
+      "evidence": "Municipality-specific title and settlement coordinates verified."
+    },
+    {
+      "city": "Lakhai",
+      "action": "remove",
+      "rejectedUrl": "https://en.wikipedia.org/wiki/Lakhai_Upazila",
+      "rejectionReason": "Article is about Lakhai Upazila; no specific town article verified in this focused audit."
+    },
+    {
+      "city": "Bahubal",
+      "action": "remove",
+      "rejectedUrl": "https://en.wikipedia.org/wiki/Bahubal_Upazila",
+      "rejectionReason": "Article is about Bahubal Upazila; no specific town article verified in this focused audit."
+    },
+    {
+      "city": "Dajindian",
+      "action": "add",
+      "acceptedUrl": "https://zh.wikipedia.org/wiki/大金店镇",
+      "pageTitle": "大金店镇",
+      "pageId": 1902080,
+      "apiEndpoint": "https://zh.wikipedia.org/w/api.php",
+      "pageCoordinates": {
+        "lat": 34.37365,
+        "lon": 112.97732
+      },
+      "candidateCoordinates": {
+        "lat": 34.3730765718093,
+        "lon": 113.024002574101
+      },
+      "evidence": "MediaWiki action=query returned exact page title and coordinates; town page geotag is within 30 km of candidate."
+    }
+  ],
+  "top20SettlementPagesAdded": [
+    {
+      "city": "Narus",
+      "url": "https://en.wikipedia.org/wiki/Narus,_South_Sudan",
+      "coordinates": {
+        "lat": 4.50111,
+        "lon": 34.16167
+      }
+    },
+    {
+      "city": "Meftah",
+      "url": "https://en.wikipedia.org/wiki/Meftah_(town)",
+      "coordinates": {
+        "lat": 36.617,
+        "lon": 3.233
+      }
+    },
+    {
+      "city": "Dongjiao",
+      "url": "https://zh.wikipedia.org/wiki/东峤镇",
+      "coordinates": {
+        "lat": 25.26973,
+        "lon": 119.16701
+      }
+    },
+    {
+      "city": "Raghunathpur",
+      "url": "https://en.wikipedia.org/wiki/Raghunathpur,_Siwan",
+      "coordinates": {
+        "lat": 25.992945,
+        "lon": 84.29157
+      },
+      "evidence": "Article covers both town and block; coordinates correspond to the target town."
+    }
+  ],
+  "verificationNotes": [
+    "The Dajindian page was verified through the public zh.wikipedia.org MediaWiki API; exact title 大金店镇, page ID 1902080, coordinate 34.37365,112.97732.",
+    "Audit does not assert that every remaining top-20 null has no article; unverified candidates remain null."
+  ],
+  "top20LinkedPageSpotChecks": [
+    {
+      "city": "Venjaramoodu",
+      "url": "https://en.wikipedia.org/wiki/Venjarammoodu",
+      "pageTitle": "Venjarammoodu",
+      "pageCoordinates": {
+        "lat": 8.68333333,
+        "lon": 76.93333333
+      },
+      "distanceKm": 4.1,
+      "result": "retained",
+      "checked": "2026-10-07"
+    },
+    {
+      "city": "Riwoto",
+      "url": "https://en.wikipedia.org/wiki/Riwoto",
+      "pageTitle": "Riwoto",
+      "pageCoordinates": {
+        "lat": 4.895309,
+        "lon": 33.521025
+      },
+      "distanceKm": 2.2,
+      "result": "retained",
+      "checked": "2026-10-07"
+    },
+    {
+      "city": "Aleppo",
+      "url": "https://en.wikipedia.org/wiki/Aleppo",
+      "pageTitle": "Aleppo",
+      "pageCoordinates": {
+        "lat": 36.2,
+        "lon": 37.16
+      },
+      "distanceKm": 1.6,
+      "result": "retained",
+      "checked": "2026-10-07"
+    },
+    {
+      "city": "Darauli",
+      "url": "https://en.wikipedia.org/wiki/Darauli",
+      "pageTitle": "Darauli",
+      "pageCoordinates": {
+        "lat": 26.0774,
+        "lon": 84.1316
+      },
+      "distanceKm": 7.3,
+      "result": "retained",
+      "checked": "2026-10-07"
+    },
+    {
+      "city": "Mbale City",
+      "url": "https://en.wikipedia.org/wiki/Mbale",
+      "pageTitle": "Mbale",
+      "pageCoordinates": {
+        "lat": 1.08055556,
+        "lon": 34.175
+      },
+      "distanceKm": 1.0,
+      "result": "retained",
+      "checked": "2026-10-07"
+    }
+  ]
+}

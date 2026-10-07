@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:3027",
+  "queueRank": 12,
+  "growthCohort": "top20-2015-2025",
+  "name": "Lanckhul",
+  "countryCode": "IN",
+  "centerLatLon": [
+    33.574648740408,
+    74.9436957142741
+  ],
+  "administrativeIdentity": "Lanckhul village is in D H Pora area, Kulgam district, Kashmir Division, Jammu and Kashmir (place indexed at approximately the supplied coordinate).",
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "jklr-lris",
+    "name": "Jammu & Kashmir Land Records Information System (LRIS) and JK Revenue records portal",
+    "operator": "Revenue Department, Government of Jammu and Kashmir / JaKLaRMA",
+    "scope": "J&K land records; cadastral map scans and records are documented UT-wide, but Kulgam/Lanckhul record or map linkage is unconfirmed",
+    "endpoint": "https://landrecords.jk.gov.in/ (LRIS); https://d14fnjoywemmi.cloudfront.net/jklr/ (new JK-Revenue static app/API)",
+    "method": "LRIS browser portal; JK-Revenue API POST routes require authenticated session",
+    "responseFormat": "LRIS portal publishes scans/records per official description; new API JSON for textual Jamabandi/Khasra records",
+    "crs": null,
+    "reuseStatus": "No anonymous parcel geometry endpoint established. The linked JK-Revenue API explicitly returned HTTP 401 Unauthorized for district/village/parcel-record routes; no login or access controls were bypassed."
+  },
+  "sourcesFound": [
+    {
+      "url": "https://landrecords.jk.gov.in/",
+      "observation": "Official LRIS portal for Jammu and Kashmir, government referenced; reported to provide cadastral map scans and records. No open vector endpoint or coverage of Kulgam/Lanckhul established."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/home/state/1",
+      "observation": "Official NIC State GIS portal gives general base-map layers, not cadastral parcels."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "observation": "Public React/Vite application and linked bundle inspected. Bundle exposes `/api/v1/get-districts`, `/api/v1/get-tehsil-by-district`, `/api/v1/get-village-by-tehsil`, `/api/v1/get-jamabandi-by-khasra`, and `/api/v1/get-khasra-by-khata`; these are textual records routes, not geometries."
+    },
+    {
+      "url": "https://landrecords.jk.gov.in/",
+      "observation": "Official LRIS host timed out on one outside-sandbox browser-like request (35 s). Government audit report documents portal function and national government services portal corroborates LRIS; no access-control bypass attempted."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://landrecords.jk.gov.in/",
+      "observation": "Official LRIS portal for Jammu and Kashmir, government referenced; reported to provide cadastral map scans and records. No open vector endpoint or coverage of Kulgam/Lanckhul established."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/home/state/1",
+      "observation": "Official NIC State GIS portal gives general base-map layers, not cadastral parcels."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "observation": "Public React/Vite application and linked bundle inspected. Bundle exposes `/api/v1/get-districts`, `/api/v1/get-tehsil-by-district`, `/api/v1/get-village-by-tehsil`, `/api/v1/get-jamabandi-by-khasra`, and `/api/v1/get-khasra-by-khata`; these are textual records routes, not geometries."
+    },
+    {
+      "url": "https://landrecords.jk.gov.in/",
+      "observation": "Official LRIS host timed out on one outside-sandbox browser-like request (35 s). Government audit report documents portal function and national government services portal corroborates LRIS; no access-control bypass attempted."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://landrecords.jk.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Direct browser-like request attempted with Chrome User-Agent, Accept, target-country Accept-Language and requests cookie session; environment DNS resolution failed before HTTP response. No response body; this is not evidence of no-data."
+    },
+    {
+      "url": "https://landrecords.jk.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Outside-sandbox request with browser-like headers and cookie session timed out at 35 seconds; temporary unavailability, not a no-data result."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts",
+      "method": "POST",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district",
+      "method": "POST",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil",
+      "method": "POST",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-khasra-by-khata",
+      "method": "POST",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-jamabandi-by-khasra",
+      "method": "POST",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "Jammu Kashmir official land records cadastral map Kulgam Lanckhul LRIS",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://landrecords.jk.gov.in/",
+        "https://services.india.gov.in/service/detail/land-records-information-system-jammu-and-kashmir-1"
+      ]
+    },
+    {
+      "language": "Urdu",
+      "exactQuery": "لَنکحول کولگام جموں کشمیر محکمہ مال زمین کا نقشہ اراضی ریکارڈ",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://landrecords.jk.gov.in/",
+        "https://jkrevenue.nic.in/index.html"
+      ]
+    },
+    {
+      "language": "Kashmiri/Urdu (Perso-Arabic)",
+      "exactQuery": "لَنکحول ڈی ایچ پورہ کولگام ریونیو گاؤں زمین کا نقشہ",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://landrecords.jk.gov.in/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "J&K LRIS provides digital cadastral map scans and other land records; cited 2025 audit reports 6,334 of 6,850 maps digitized and 6,163 georeferenced UT-wide, while RoR linkage is partial. Kulgam/Lanckhul coverage not confirmed.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "nextStep": "If open parcel geometry is required, ask J&K Revenue for a public GIS/data export or use a legally authorized portal path; the currently linked JK-Revenue APIs require authentication and LRIS was temporarily unresponsive. Do not treat this as a negative for cadastral-map existence.",
+  "failures": [
+    {
+      "kind": "local_sandbox_dns",
+      "host": "landrecords.jk.gov.in",
+      "detail": "Initial local sandbox DNS failure; retry outside sandbox reached a connection timeout after 35 seconds."
+    },
+    {
+      "kind": "temporary_timeout",
+      "host": "landrecords.jk.gov.in",
+      "detail": "Official LRIS root timed out on outside-sandbox request; timeout retained as temporarily unavailable."
+    },
+    {
+      "kind": "auth_wall",
+      "host": "d14fnjoywemmi.cloudfront.net",
+      "detail": "New JK-Revenue app’s public record APIs returned 401 Unauthorized requiring full authentication. No authentication bypass attempted."
+    }
+  ],
+  "registryBasis": "Jammu and Kashmir LRIS scans and a newer authenticated records application are leads; target village coverage remains unconfirmed.",
+  "registryEvidenceUrls": [
+    "https://landrecords.jk.gov.in/",
+    "https://stategisportal.nic.in/stategisportal/home/state/1",
+    "https://d14fnjoywemmi.cloudfront.net/jklr/"
+  ]
+}

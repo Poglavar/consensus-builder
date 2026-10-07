@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-07T18:32:46Z",
+  "transport": "Unmodified local runtime gateway; default adapter fetch headers",
+  "checks": [
+    {
+      "city": "new_hope",
+      "operation": "viewport-and-exact",
+      "httpStatus": 200,
+      "complete": true,
+      "count": 56,
+      "exactStatus": 200,
+      "exactCount": 5,
+      "exactComplete": true,
+      "absentIds": [],
+      "sampleIds": [
+        "US-NC-WAKE-1706681938",
+        "US-NC-WAKE-1706691037",
+        "US-NC-WAKE-1706686856",
+        "US-NC-WAKE-1706589543",
+        "US-NC-WAKE-1706681219"
+      ],
+      "geometriesMatch": true
+    },
+    {
+      "city": "raleigh",
+      "operation": "viewport-and-exact",
+      "httpStatus": 200,
+      "complete": true,
+      "count": 54,
+      "exactStatus": 200,
+      "exactCount": 5,
+      "exactComplete": true,
+      "absentIds": [],
+      "sampleIds": [
+        "US-NC-WAKE-1703781789",
+        "US-NC-WAKE-1703688783",
+        "US-NC-WAKE-1703785518",
+        "US-NC-WAKE-1703790137",
+        "US-NC-WAKE-1703782312"
+      ],
+      "geometriesMatch": true
+    },
+    {
+      "city": "new_hope",
+      "operation": "authoritative-proposal-binding",
+      "checkedAt": "2026-10-07T18:38:36Z",
+      "httpStatus": 200,
+      "coverage": "complete",
+      "source": "server:us-nc-wake-raleigh-parcels",
+      "parcelCount": 1,
+      "siteM2": 16403.92,
+      "parcelId": "US-NC-WAKE-1706687138",
+      "containsSelectedParcel": true
+    }
+  ],
+  "result": "passed"
+}

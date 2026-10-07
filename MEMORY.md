@@ -526,3 +526,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-07: Connected blind alleys also provide candidates by extending their last road segment straight to the first outer block boundary; courtyard obstructions stop the projection, and only the gap beyond the existing alley counts as new street length.
 - 2026-10-07: Candidate road topology excludes `area=yes` street outlines. Mapped street areas establish the gap between adjacent road centreline junctions and block edges; an alley ending at a street-area edge can continue into the block and project to its opposite border.
 - 2026-10-07: Playground split limits are maximum block area in m² and maximum tolerated side length; coherent, compact shapes rank independently of those ceilings. Result pieces show their areas and distinct shades over any loaded cadastral borders.
+
+- 2026-10-07: The parcel coverage report joins recorded investigations, configured city sources and UN/JRC demographic snapshots; area shares describe jurisdictions with registry evidence because discovery and bounded samples do not measure registered parcel area.

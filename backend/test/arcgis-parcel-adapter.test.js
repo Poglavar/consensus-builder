@@ -120,6 +120,28 @@ describe('createArcgisParcelSource', () => {
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 
+    it('splits native-ID requests at the provider limit and combines verified absences', async () => {
+        const { fetchImpl, calls } = makeFetch([response([feature(1, '11')]), response([feature(3, '33')])]);
+        const source = createArcgisParcelSource({ ...descriptor, idBatchSize: 2 }, { fetchImpl });
+        const result = await source.queryIds(['CA-ON-TORONTO-11', 'CA-ON-TORONTO-22', 'CA-ON-TORONTO-33', 'CA-ON-TORONTO-11']);
+        expect(calls.map(url => url.searchParams.get('where'))).toEqual(['PARCELID IN (11,22)', 'PARCELID IN (33)']);
+        expect(result.features.map(f => f.id)).toEqual(['CA-ON-TORONTO-11', 'CA-ON-TORONTO-33']);
+        expect(result).toMatchObject({ complete: true, absentIds: ['CA-ON-TORONTO-22'] });
+    });
+
+    it('rejects the entire exact read when a later batch fails or includes another batch’s parcel', async () => {
+        const ids = ['CA-ON-TORONTO-11', 'CA-ON-TORONTO-22'];
+        for (const second of [new Error('transport failed'), response([feature(1, '11')])]) {
+            const { fetchImpl } = makeFetch([response([feature(1, '11')]), second]);
+            await expect(createArcgisParcelSource({ ...descriptor, idBatchSize: 1 }, { fetchImpl }).queryIds(ids)).rejects.toThrow();
+        }
+        const { fetchImpl } = makeFetch([]);
+        const source = createArcgisParcelSource({ ...descriptor, idBatchSize: 1 }, { fetchImpl });
+        await expect(source.queryIds(['CA-ON-TORONTO-11', 'FOREIGN-22'])).rejects.toThrow(/different source/);
+        expect(fetchImpl).not.toHaveBeenCalled();
+        for (const idBatchSize of [0, -1, 81, 1.5, '5']) expect(() => createArcgisParcelSource({ ...descriptor, idBatchSize })).toThrow(/descriptor/);
+    });
+
     it('uses a search envelope and then removes features that do not intersect the requested geometry', async () => {
         const target = { type: 'Polygon', coordinates: [[[0, 0], [0.01, 0], [0, 0.01], [0, 0]]] };
         const { fetchImpl, calls } = makeFetch([response([

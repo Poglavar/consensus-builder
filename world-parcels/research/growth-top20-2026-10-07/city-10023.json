@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:10023",
+  "queueRank": 6,
+  "growthCohort": "top20-2015-2025",
+  "name": "Venjaramoodu",
+  "countryCode": "IN",
+  "centerLatLon": [
+    8.65276906631116,
+    76.9124484846266
+  ],
+  "administrativeIdentity": "Venjaramoodu locality is in Thiruvananthapuram district; supplied point matched Ente Bhoomi’s published Manikkal revenue village (Nedumangad taluk, target map location code 010309).",
+  "checkedAt": "2026-10-07",
+  "status": "verified_sample_partial_coverage",
+  "registryFound": true,
+  "verifiedParcelResponse": {
+    "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+    "requestUrl": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/010309",
+    "method": "POST",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "spatialTestAreaLonLat": [
+      76.9124484846266,
+      8.65276906631116
+    ],
+    "parcelRecordCount": 1,
+    "recordListPath": "safeFeatures",
+    "geometryType": "MULTIPOLYGON Z",
+    "closedRings": true,
+    "idField": "safeIdFields.parcel_gid",
+    "responseFile": "research/growth-top20-2026-10-07/city-10023-parcel-response.json",
+    "pagination": "Point identify returned 1 feature; exact by-ID feature_info lookup with parcel_gid returned 1 feature.",
+    "responseFileById": "research/growth-top20-2026-10-07/city-10023-parcel-by-id-response.json",
+    "idRoundTrip": "Filter parcel_gid ce0688a8-8689-41b8-8d14-1edd191a86ee returned the same one MULTIPOLYGON Z feature (survey 41, block 27); full ring closure inspected."
+  },
+  "source": {
+    "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+    "name": "Ente Bhoomi ILIMS map proxy (LAND_PARCEL click identify)",
+    "operator": "Government of Kerala, Survey and Land Records Department / NIC Kerala (as credited by portal)",
+    "scope": "Map location code 010309 (published Manikkal village, Nedumangad taluk); city-scale or statewide coverage not established",
+    "endpoint": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/{locationCode} (point identify); https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/{locationCode} (filter by parcel_gid)",
+    "method": "POST application/x-www-form-urlencoded for point identify (requests Session data fields); POST application/json for exact feature_info lookup. Both used the session cookie and dynamically named CSRF header/token obtained from the viewer bootstrap. A viewer-issued temporary auth_key was present in the initdata FlatGeobuf URL and used only for a bounded Range GET.",
+    "responseFormat": "JSON with attributes and MULTIPOLYGON Z WKT",
+    "crs": "EPSG:32643",
+    "reuseStatus": "Public viewer returned a point feature and exact parcel_gid lookup anonymously through its viewer session. Reuse/licensing terms were not assessed in this bounded technical check; review them before broader operational reuse. This informational check did not block the sample. No temporary key or CSRF/session value was retained."
+  },
+  "sourcesFound": [
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "observation": "Portal overview checked 2026-10-07 describes parcel-map/re-survey services for eligible digital-survey villages. The subsequent target-specific map selection and point identify confirmed published Manikkal village locationCode 010309 and one parcel at the supplied point."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/",
+      "observation": "Official Survey and Land Records portal describes digital survey records and login-based user services. It is not the endpoint used for this sample; the separate public Ente Bhoomi map viewer returned one Manikkal parcel through its session-backed map proxy."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "observation": "General portal text checked 2026-10-07 described service eligibility and reported its then-current surveyed-village totals, but did not itself establish Manikkal inclusion. Target inclusion was subsequently confirmed through the public selector and successful point identify on 2026-10-07."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "observation": "Public map page and JavaScript module checked 2026-10-07. The module sets LAND_PARCEL and EPSG:32643 and calls /web/proxy/click_info/multiple/{locationCode}; selector chose published Manikkal village (010309), and point identify returned one feature. A viewer-issued temporary auth_key was used only for a bounded FlatGeobuf Range probe; its value was not retained."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "observation": "Portal overview checked 2026-10-07 describes parcel-map/re-survey services for eligible digital-survey villages. The subsequent target-specific map selection and point identify confirmed published Manikkal village locationCode 010309 and one parcel at the supplied point."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/",
+      "observation": "Official Survey and Land Records portal describes digital survey records and login-based user services. It is not the endpoint used for this sample; the separate public Ente Bhoomi map viewer returned one Manikkal parcel through its session-backed map proxy."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "observation": "General portal text checked 2026-10-07 described service eligibility and reported its then-current surveyed-village totals, but did not itself establish Manikkal inclusion. Target inclusion was subsequently confirmed through the public selector and successful point identify on 2026-10-07."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "observation": "Public map page and JavaScript module checked 2026-10-07. The module sets LAND_PARCEL and EPSG:32643 and calls /web/proxy/click_info/multiple/{locationCode}; selector chose published Manikkal village (010309), and point identify returned one feature. A viewer-issued temporary auth_key was used only for a bounded FlatGeobuf Range probe; its value was not retained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Initial GET attempted 2026-10-07 with browser-like headers; local sandbox DNS failed before HTTP. Later outside-sandbox GET of /web/ilms/map succeeded and bootstrapped the target viewer session; this is a local environment observation, not a source outage."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official portal page returned HTTP 200 and general coverage text on 2026-10-07; that page request itself made no spatial-feature query. A later target-specific map selection and point identify on the same date confirmed Manikkal and one parcel."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/010309",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "One point identify at supplied center returned one record with parcel_gid, block_no, survey_no and closed MULTIPOLYGON Z WKT in EPSG:32643. Sanitized geometry and safe IDs are in city-10023-parcel-response.json; owner/personal fields were discarded."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact single-parcel lookup by `attributes.parcel_gid` returned one geometry record with the same safe IDs and MULTIPOLYGON Z WKT. The first guess `attributes.parcel_id` returned an empty array; corrected to the actual `parcel_gid` field exposed in point identify. Sanitized reply: city-10023-parcel-by-id-response.json."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "Kerala Survey and Land Records Ente Bhoomi Venjaramoodu digital resurvey village parcel map",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://entebhoomi.kerala.gov.in/web/home",
+        "https://survey.entebhoomi.kerala.gov.in/portal/"
+      ]
+    },
+    {
+      "language": "Malayalam",
+      "exactQuery": "വെഞ്ഞാറമൂട് എന്റെ ഭൂമി ഡിജിറ്റൽ സർവേ ഭൂമി ഭൂപടം",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://entebhoomi.kerala.gov.in/web/home",
+        "https://survey.entebhoomi.kerala.gov.in/portal/"
+      ]
+    },
+    {
+      "language": "Malayalam",
+      "exactQuery": "കേരള സർവേ ഭൂരേഖ വകുപ്പ് വെഞ്ഞാറമൂട് റീസർവേ വില്ലേജ്",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://survey.entebhoomi.kerala.gov.in/portal/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Kerala Ente Bhoomi/digital resurvey service by published village; this sample is in Manikkal (Nedumangad taluk), Thiruvananthapuram district",
+    "verifiedOpenScope": "One parcel feature in published Manikkal village returned by point identify; wider village/city/state coverage and permanent tokenless API access not tested",
+    "countrywideVerified": false
+  },
+  "nextStep": "For another bounded sample, resolve a published village locationCode, acquire a fresh viewer session/CSRF pair, use click_info with a point in EPSG:32643, then feature_info filtered by the returned parcel_gid. The service terms should be reviewed before broader operational reuse; successful FGB/viewport streaming remains unverified.",
+  "failures": [
+    {
+      "kind": "local_sandbox_dns",
+      "host": "entebhoomi.kerala.gov.in",
+      "detail": "Initial in-sandbox request failed DNS before HTTP. Retried outside sandbox successfully; this is retained as a local execution-environment observation, not a source outage."
+    },
+    {
+      "kind": "candidate_endpoint",
+      "host": "bhunaksha.entebhoomi.kerala.gov.in",
+      "detail": "On 2026-10-07, a bounded FlatGeobuf request using Range: bytes=0-31 returned HTTP 405. The viewer bundle includes a Range/selectBbox client, but successful FlatGeobuf, viewport querying, and streaming remain unverified. The separate point-identify and exact parcel_gid JSON lookups did succeed."
+    },
+    {
+      "kind": "bounded_api_result",
+      "host": "entebhoomi.kerala.gov.in",
+      "detail": "On 2026-10-07, the viewer-issued fgb_url was tested with GET and Range: bytes=0-31 and returned HTTP 405. This does not establish whether any viewport streaming path works. Exact parcel_gid feature_info returned one feature; FlatGeobuf is not required for that bounded sample."
+    }
+  ],
+  "requestReplay": {
+    "checkedAt": "2026-10-07",
+    "bootstrap": [
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "details": "Start a cookie-persisting session; parse meta[name=\"_csrf\"] for the token and meta[name=\"_csrf_header\"] for its header name. The request also returns the district selector."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid",
+        "query": {
+          "districtId": "<THIRUVANANTHAPURAM_DISTRICT_GID>"
+        },
+        "details": "Sent in the same cookie session with the dynamic CSRF header; select Nedumangad from the response."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "query": {
+          "talukId": "<NEDUMANGAD_TALUK_GID>",
+          "loadAllVillage": "true",
+          "loadPublishedVillage": "true"
+        },
+        "details": "Sent in the same cookie session with the dynamic CSRF header; select published Manikkal from the response."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "contentType": "application/x-www-form-urlencoded",
+        "form": {
+          "districtGid": "<THIRUVANANTHAPURAM_DISTRICT_GID>",
+          "talukGid": "<NEDUMANGAD_TALUK_GID>",
+          "villageGid": "<MANIKKAL_VILLAGE_GID>"
+        },
+        "details": "Same cookie session and CSRF header. Response supplied location_code 010309 and initdata.fgb_url containing a temporary viewer-issued auth_key; key value is intentionally omitted."
+      }
+    ],
+    "commonHeaders": {
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+      "Accept": "application/json,*/*",
+      "Accept-Language": "en-IN,en;q=0.9,ml;q=0.8",
+      "Referer": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "<CSRF_HEADER_NAME>": "<CSRF_TOKEN_FROM_BOOTSTRAP>",
+      "Cookie": "<SESSION_COOKIE_JAR_FROM_BOOTSTRAP>"
+    },
+    "pointIdentify": {
+      "method": "POST",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/010309",
+      "contentType": "application/x-www-form-urlencoded",
+      "form": {
+        "layer_code": "LAND_PARCEL",
+        "crs": "32643",
+        "x": "710439.0113",
+        "y": "956992.1737"
+      },
+      "result": "HTTP 200; one feature. Coordinates transformed from supplied lon/lat [76.9124484846266,8.65276906631116] to EPSG:32643."
+    },
+    "exactParcelLookup": {
+      "method": "POST",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "contentType": "application/json",
+      "json": {
+        "map_type": "GENERIC_MAP",
+        "layer_code": "LAND_PARCEL",
+        "attributes": {
+          "parcel_gid": "ce0688a8-8689-41b8-8d14-1edd191a86ee"
+        },
+        "fit_to_this": "false",
+        "type": "json"
+      },
+      "result": "HTTP 200; one feature. The earlier parcel_id-only guess returned an empty list; parcel_gid was the working field."
+    },
+    "flatGeobufProbe": {
+      "method": "GET",
+      "url": "<initdata.fgb_url_with_auth_key_omitted>",
+      "headers": {
+        "Range": "bytes=0-31",
+        "Accept": "application/octet-stream",
+        "Referer": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "Cookie": "<SESSION_COOKIE_JAR_FROM_BOOTSTRAP>"
+      },
+      "result": "HTTP 405 to a bounded Range GET. The viewer bundle contains a FlatGeobuf Range/selectBbox client, but a successful FGB response, viewport query, or streaming path was not verified."
+    },
+    "securityNote": "Placeholders only. Do not persist or share live CSRF tokens, session cookies, or auth_key values. Actual point identify and feature_info bodies above were sent as written; the Range attempt used the viewer-issued URL returned in initdata."
+  },
+  "registryBasis": "Ente Bhoomi returned one parcel at the WUP point in published Manikkal village and the same geometry by parcel_gid. Viewport streaming remains unverified.",
+  "registryEvidenceUrls": [
+    "https://entebhoomi.kerala.gov.in/web/ilms/map",
+    "https://entebhoomi.kerala.gov.in/web/home",
+    "https://survey.entebhoomi.kerala.gov.in/portal/"
+  ]
+}

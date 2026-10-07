@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:2564",
+  "queueRank": 1,
+  "growthCohort": "top20-2015-2025",
+  "name": "Narus",
+  "countryCode": "SS",
+  "centerLatLon": [
+    4.50390707903259,
+    34.1660430983317
+  ],
+  "administrativeIdentity": "Narus, South Sudan at the supplied WUP coordinate; exact administrative unit not independently confirmed.",
+  "checkedAt": "2026-10-07",
+  "status": "temporarily_unavailable",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://www.ssnbss.org/home/geographical-information-system/",
+      "observation": "South Sudan National Bureau of Statistics GIS/RS and Cartography unit describes itself as mapping authority and publishes foundational thematic, administrative and topographical data; no cadastral parcel layer advertised."
+    },
+    {
+      "url": "https://mlhud.gov.ss/",
+      "observation": "Ministry of Lands, Housing & Urban Development official host; prior country and retry checks could not connect."
+    }
+  ],
+  "portalsFound": [],
+  "requests": [
+    {
+      "url": "https://mlhud.gov.ss/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Repeated prior and current browser-header requests failed at DNS/proxy connection; no HTTP response."
+    },
+    {
+      "url": "https://www.ssnbss.org/home/geographical-information-system/",
+      "method": "GET",
+      "httpStatus": "web-open",
+      "contentType": "text/html",
+      "assessment": "Official GIS unit page identifies thematic/map services but does not identify cadastral parcel polygons or a download endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "South Sudan official land cadastre parcel map GIS Ministry Lands",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.ssnbss.org/home/geographical-information-system/",
+        "https://mlhud.gov.ss/"
+      ]
+    },
+    {
+      "language": "Arabic",
+      "exactQuery": "جنوب السودان سجل الأراضي خريطة قطع الأراضي مسح الأراضي وزارة الأراضي",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.ssnbss.org/home/geographical-information-system/",
+        "https://mlhud.gov.ss/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National ministry/GIS authority leads; exact local parcel coverage unknown",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "targetAreaRegistryConfirmed": false
+  },
+  "nextStep": "Retry Ministry of Lands and GIS unit endpoints from another network; ask GIS/RS mapping authority or Land Commission for cadastral data/service details. No public parcel endpoint verified.",
+  "failedAttemptsPreserved": [
+    {
+      "reference": "world-parcels/research/retry/countries/SS.json",
+      "note": "Prior dated country retry retained; see this record’s requests for current follow-up and note status history."
+    }
+  ],
+  "requestHeadersUsed": "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml,application/json,*/*;q=0.8; Accept-Language varied by target country (en-SS/ar; en-KE/sw-KE; en-UG; fr-DZ/ar; fr-MG/mg); cookie jar enabled in direct requests. Web research used for official indexed pages.",
+  "registryLeadFound": true,
+  "registryFoundReason": "South Sudan has an official national GIS/mapping authority and a Ministry of Lands lead, but no source found ties cadastral registry records to Narus or the supplied coordinate.",
+  "scopedConclusion": {
+    "targetArea": "Narus, South Sudan at the supplied WUP coordinate; exact administrative unit not independently confirmed.",
+    "cadastralRegistryConfirmedAtTarget": false,
+    "registryLeadFound": true,
+    "conclusion": "South Sudan has an official national GIS/mapping authority and a Ministry of Lands lead, but no source found ties cadastral registry records to Narus or the supplied coordinate.",
+    "coverageBoundary": "This conclusion is limited to the named target area and supplied WUP coordinate; national or other-area sources are leads only."
+  },
+  "registryBasis": "South Sudan has an official national GIS/mapping authority and a Ministry of Lands lead, but no source found ties cadastral registry records to Narus or the supplied coordinate.",
+  "registryEvidenceUrls": [
+    "https://www.ssnbss.org/home/geographical-information-system/",
+    "https://mlhud.gov.ss/"
+  ]
+}

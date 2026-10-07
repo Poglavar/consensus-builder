@@ -1,0 +1,93 @@
+// Regressions for comparable report totals, null preservation and every column's sorting behavior.
+import { describe, expect, it } from 'vitest';
+import { nextSort, sortRows, filterCities, countryCategory, summarizeJurisdictions, mapLinks } from '../../frontend/js/parcel-coverage-report-model.mjs';
+import { buildParcelReport } from '../../scripts/build-parcel-coverage-report.mjs';
+import { reportMessages } from '../../frontend/js/parcel-coverage-report-i18n.mjs';
+
+describe('parcel coverage report', () => {
+    it('sorts numeric values rather than formatted text, toggles both ways, and leaves missing values last', () => {
+        const rows = [{ id: 'missing', population: null }, { id: 'hundred', population: 100 }, { id: 'nine', population: 9 }, { id: 'zero', population: 0 }];
+        const first = nextSort(null, 'population');
+        expect(sortRows(rows, first).map(row => row.id)).toEqual(['zero', 'nine', 'hundred', 'missing']);
+        const second = nextSort(first, 'population');
+        expect(sortRows(rows, second).map(row => row.id)).toEqual(['hundred', 'nine', 'zero', 'missing']);
+        expect(nextSort(second, 'population')).toEqual(first);
+        expect(nextSort(second, 'name')).toEqual({ key: 'name', direction: 'asc' });
+    });
+
+    it('preserves checked negatives, unavailable findings and unchecked candidates as distinct states', () => {
+        const cities = [{ name: 'First', country: 'Country', countryCode: 'AA', checked: true, registryFound: false }, { name: 'Second', country: 'Country', countryCode: 'AA', checked: true, registryFound: null }, { name: 'Third', country: 'Country', countryCode: 'AA', checked: false, registryFound: null }];
+        expect(filterCities(cities, { checked: 'yes', registry: 'no' }).map(row => row.name)).toEqual(['First']);
+        expect(filterCities(cities, { checked: 'no' }).map(row => row.name)).toEqual(['Third']);
+        expect(filterCities(cities, { checked: 'yes', registry: 'unknown' }).map(row => row.name)).toEqual(['Second']);
+        expect(sortRows(cities, { key: 'registryFound', direction: 'desc' })[0].registryFound).toBe(false);
+    });
+
+    it('filters largest and growth cohorts, limiting the growth top 20 to saved numeric ranks 1–20', () => {
+        const cities = [
+            { name: 'Largest only', cohorts: ['largest200'], growthRank: null },
+            { name: 'Growth rank one', cohorts: ['growth200'], growthRank: 1 },
+            { name: 'Growth rank twenty', cohorts: ['growth200'], growthRank: 20 },
+            { name: 'Growth rank twenty-one', cohorts: ['growth200'], growthRank: 21 },
+            { name: 'Missing growth rank', cohorts: ['growth200'], growthRank: null },
+            { name: 'Numeric rank without cohort tag', cohorts: [], growthRank: 2 }
+        ];
+        expect(filterCities(cities, { cohort: 'all' }).map(row => row.name)).toEqual(cities.map(row => row.name));
+        expect(filterCities(cities, { cohort: 'largest200' }).map(row => row.name)).toEqual(['Largest only']);
+        expect(filterCities(cities, { cohort: 'growth200' }).map(row => row.name)).toEqual(['Growth rank one', 'Growth rank twenty', 'Growth rank twenty-one', 'Missing growth rank']);
+        expect(filterCities(cities, { cohort: 'growth-top20' }).map(row => row.name)).toEqual(['Growth rank one', 'Growth rank twenty', 'Numeric rank without cohort tag']);
+    });
+
+    it('does not count a dependency twice or silently lose unallocated world amounts', () => {
+        const world = { landAreaKm2: 1000, builtUpAreaKm2: 100, population: 10000 };
+        const countries = [
+            { code: 'AA', category: 'national', landAreaKm2: 600, builtUpAreaKm2: 60, population: 6000 },
+            { code: 'BB', category: 'local', landAreaKm2: 300, builtUpAreaKm2: 30, population: 3000 },
+            { code: 'XAA', category: 'unknown', statisticsIncluded: false, landAreaKm2: 600, builtUpAreaKm2: 60, population: 6000 }
+        ];
+        const summary = summarizeJurisdictions(countries, world);
+        expect(summary.rows.find(row => row.id === 'national').landAreaKm2Pct).toBe(60);
+        expect(summary.rows.find(row => row.id === 'unknown')).toMatchObject({ landAreaKm2: 100, builtUpAreaKm2: 10, population: 1000 });
+        expect(summary.rows.reduce((sum, row) => sum + row.populationPct, 0)).toBe(100);
+        expect(() => summarizeJurisdictions([...countries, { ...countries[0], code: 'duplicate' }], world)).toThrow(/exceed world/);
+    });
+
+    it('keeps discovery categories separate from territorial completeness', () => {
+        expect(countryCategory({ nationalCadastreFound: true, probeStatus: 'national_cadastre_viewer_only' })).toBe('national');
+        expect(countryCategory({ nationalCadastreFound: null, citiesWithRegistry: 1 })).toBe('local');
+        expect(countryCategory({ nationalCadastreFound: false, citiesWithRegistry: 0 })).toBe('none');
+        expect(countryCategory({ nationalCadastreFound: null, citiesWithRegistry: 0 })).toBe('unknown');
+        expect(mapLinks(null, 15).osmUrl).toBeNull();
+        expect(mapLinks(0, 0).googleMapsUrl).toContain('query=0.00000%2C0.00000');
+    });
+
+    it('includes checked and queued cities, keeps unknowns null, and never sums overlapping city populations for world shares', () => {
+        const report = buildParcelReport({
+            growthQueue: [{ cityCode: 123, rank: 20 }],
+            registry: { cities: [], sources: [] }, sourceCatalog: { sources: [] }, coverage: { liveCities: [{ id: 'first' }] },
+            evidence: { cities: [
+                { cityId: 'checked', checked: true, checkedDate: '2026-10-01', checkedDateEvidence: { date: '2026-10-01', path: 'research/check.json' }, registryFound: true, verifiedSample: true, sourceIds: [], evidenceUrls: [], evidenceFiles: [] }
+            ], appCities: [
+                { cityId: 'app:first', checked: true, checkedDate: '2026-10-02', checkedDateEvidence: { date: '2026-10-02', path: 'research/app-check.json' }, registryFound: true, verifiedSample: true, sourceIds: [], evidenceUrls: [], evidenceFiles: [] }
+            ], countries: [{ countryCode: 'AA', checked: true, nationalCadastreFound: true }], warnings: [] },
+            enrichment: { asOf: '2026-10-07', cities: [
+                { id: 'one', wupCityCode: 123, name: 'First', countryCode: 'AA', registryCityIds: ['checked'], appCityIds: ['first'], population2025: 100000, population2015: 50000, annualGrowthPct2015To2025: 6.93, latitude: 1, longitude: 1 },
+                { id: 'two', name: 'Second', countryCode: 'AA', registryCityIds: [], appCityIds: [], population2025: null, latitude: 2, longitude: 2 }
+            ] },
+            countryData: { countries: [{ code: 'AA', name: 'Country', stats: { year: 2025, landAreaKm2: 1000, builtUpAreaKm2: 100, population: 10000 } }], world: { landAreaKm2: 1000, builtUpAreaKm2: 100, population: 10000 }, sources: [] }
+        });
+        expect(report.countries[0]).toMatchObject({ citiesChecked: 1, citiesWithRegistry: 1 });
+        expect(report.cities[1]).toMatchObject({ checked: false, checkedDate: null, registryFound: null, population2025: null, annualGrowthPct2015To2025: null });
+        expect(report.world.population).toBe(10000);
+        expect(report.metadata.checkedCityCount).toBe(1);
+        expect(report.cities[0].checkedDate).toBe('2026-10-02');
+        expect(report.cities.map(row => row.growthRank)).toEqual([20, null]);
+    });
+
+    it('keeps all four locales and their interpolation fields complete', () => {
+        for (const messages of Object.values(reportMessages)) {
+            expect(Object.keys(messages).sort()).toEqual(Object.keys(reportMessages.en).sort());
+            for (const key of Object.keys(reportMessages.en)) expect((messages[key].match(/\{\w+\}/g) || []).sort()).toEqual((reportMessages.en[key].match(/\{\w+\}/g) || []).sort());
+        }
+    });
+});

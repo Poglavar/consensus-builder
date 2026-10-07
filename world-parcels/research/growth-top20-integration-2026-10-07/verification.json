@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T19:05:54.298818+00:00",
+  "repository": "consensus-builder-colosseum-worlds-fair",
+  "browserChecks": [
+    {
+      "cityId": "new_hope",
+      "result": "passed",
+      "observed": [
+        "Default area rendered cadastral parcels.",
+        "A link starting in Raleigh resolved US-NC-WAKE-1706681938 to New Hope and selected it.",
+        "Unknown owner and unknown owner count shown; no invented ownership share."
+      ],
+      "sourceAcceptanceFile": "new-hope-final.json",
+      "runtimeAcceptanceFile": "new-hope-runtime.json"
+    },
+    {
+      "cityId": "venjaramoodu",
+      "result": "passed",
+      "observed": [
+        "The default 0.005-degree cell loaded 220 cadastral features and 220 live parcel faces.",
+        "IN-KL-ENTEBHOOMI-010309-ce0688a8-8689-41b8-8d14-1edd191a86ee deep link selected the exact parcel.",
+        "Unknown owner and unknown owner count shown.",
+        "No uncaught browser errors reported."
+      ],
+      "sourceAcceptanceFiles": [
+        "kerala-final.json",
+        "kerala-viewport-scope.json"
+      ],
+      "runtimeAcceptanceFile": "kerala-runtime.json"
+    },
+    {
+      "page": "parcel-coverage-report.html?cohort=growth-top20#cities",
+      "result": "passed",
+      "observed": [
+        "20 cohort rows shown.",
+        "New Hope and Venjaramoodu marked Configured in the app.",
+        "Official registry links retained.",
+        "Total configured app city count is 103."
+      ]
+    }
+  ],
+  "headlessRegression": {
+    "filesPassed": 19,
+    "testsPassed": 293,
+    "result": "passed",
+    "scope": "Kerala adapter and configured-city binding; ArcGIS batching/composite IDs; gateway validation, binding, health/concurrency/metrics; city/deep-link routing; ownership display; coverage/report builders"
+  },
+  "diffWhitespaceCheck": "passed",
+  "limitations": [
+    "Venjaramoodu covers the configured published Manikkal village; no wider city or state coverage claim.",
+    "Empty untyped upstream bodies fail closed.",
+    "Nine requested registry/map leads remain held with technical blockers in index.json."
+  ],
+  "publication": "Local worktree and local development servers only; no commit, push or deployment."
+}

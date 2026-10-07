@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "cityId": "wup2025:10023",
+  "name": "Venjaramoodu",
+  "status": "verified_bounded_parcel_geojson_exact_id_fgb",
+  "administrativeIdentity": {
+    "district": "Thiruvananthapuram",
+    "taluk": "Nedumangad",
+    "publishedRevenueVillage": "Manikkal",
+    "locationCode": "010309"
+  },
+  "assessment": {
+    "confirmed": "Public map selection resolves to published Manikkal village. Point identify and exact parcel_gid lookup both work. The correctly village-scoped `/core/v2/map/export/geojson/010309` request returns bounded parcel polygons in EPSG:32643; a 100 m parent bbox and four 50 m quadrants produced identical 8 parcel IDs and geometries after deduplication. A 10 m bbox returned one row. Sanitized point, exact-ID and one-feature WGS84 export samples are retained.",
+    "viewport": "A bounded viewport transport is verified through POST GeoJSON export at the selected locationCode path. The exporter ignores `limit`, so the adapter uses a conservative grid, local feature cap and byte cap; it validates/filter-intersects returned geometry to the requested WGS84 bbox. An off-village bbox currently returns HTTP 200 with an empty untyped body, so the adapter fails closed there instead of inferring absence. Exact-ID absence is available only from parsed [] on feature_info.",
+    "adapterDecision": "Implement the bounded GeoJSON and exact-ID adapter with strict response validation, EPSG:32643-to-WGS84 conversion, a one-retry auth refresh, and fail-closed empty/invalid viewport responses. Do not use approximate pixel sampling or treat empty untyped response as absence.",
+    "runtimeVerification": "The 0.005-degree enclosing default cell returned 220 polygons (153595-byte upstream response) and rendered 220 features in the browser. Smaller default cells exposed the provider empty-body behavior; those attempts are preserved in kerala-initial-grid.json. Four distinct local polygons were reread through a fresh adapter with matching geometry. POST /proposals/binding returned complete coverage with one parcel and site area 3520.20 m²."
+  },
+  "bootstrap": {
+    "cookieSession": "GET https://entebhoomi.kerala.gov.in/web/ilms/map using a cookie-persisting session.",
+    "csrf": "Read meta[name=\"_csrf\"] and meta[name=\"_csrf_header\"]; use the resulting token under the dynamically named header for selector requests and map selection. No values retained.",
+    "locationCode": "GET /web/taluk/gid?districtId=<districtGid>, then GET /web/village/gid?talukId=<talukGid>&loadAllVillage=true&loadPublishedVillage=true; POST /web/ilms/map/view as application/x-www-form-urlencoded with districtGid/talukGid/villageGid. Response identifies locationCode 010309 and initdata.fgb_url with a temporary auth_key. Never persist key, CSRF or cookie values."
+  },
+  "verifiedRequests": [
+    {
+      "method": "POST",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/010309",
+      "contentType": "application/x-www-form-urlencoded",
+      "formFields": {
+        "layer_code": "LAND_PARCEL",
+        "crs": "32643",
+        "x": "710439.0113",
+        "y": "956992.1737"
+      },
+      "status": 200,
+      "recordCount": 1,
+      "geometryType": "MULTIPOLYGON Z",
+      "resultFile": "kerala-point-feature.json"
+    },
+    {
+      "method": "POST",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "contentType": "application/json",
+      "body": {
+        "map_type": "GENERIC_MAP",
+        "layer_code": "LAND_PARCEL",
+        "attributes": {
+          "parcel_gid": "ce0688a8-8689-41b8-8d14-1edd191a86ee"
+        },
+        "fit_to_this": "false",
+        "type": "json"
+      },
+      "status": 200,
+      "recordCount": 1,
+      "resultFile": "kerala-parcel-id-feature.json"
+    },
+    {
+      "method": "POST",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "contentType": "application/json",
+      "body": {
+        "map_type": "GENERIC_MAP",
+        "layer_code": "LAND_PARCEL",
+        "attributes": {
+          "parcel_id": "ce0688a8-8689-41b8-8d14-1edd191a86ee"
+        },
+        "fit_to_this": "false",
+        "type": "json"
+      },
+      "status": 200,
+      "recordCount": 0,
+      "observation": "Wrong field guess; parcel_gid is the working identifier."
+    }
+  ],
+  "viewportTransportInvestigation": {
+    "bundle": "Official /assets/map-library-v3/bn-map.umd.js includes a FlatGeobuf HTTP Range reader that sends GET with Range: bytes=start-end. The official web_ilmsMapView_xyz.js uses click_info for point identify and feature_info/extent for attribute lookup; it does not contain a direct FGB or bbox parcel query. Current map-view output_layers uses LAND_PARCEL_LRM_STYLE image tiles and WMS layers; no active FGB layer was configured.",
+    "fgbUrl": "Map-view response includes initdata.fgb_url at https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/fgb/010309?<temporary-auth-key-omitted>. The viewer-issued URL and key were not written to disk or included here.",
+    "tests": [
+      {
+        "method": "GET",
+        "headers": {
+          "Range": "bytes=0-31"
+        },
+        "status": 405,
+        "contentType": "application/json",
+        "allow": "POST",
+        "result": "No content-range; Range reader path not served by the endpoint."
+      },
+      {
+        "method": "GET",
+        "headers": {
+          "Range": "bytes=0-31",
+          "Origin": "https://entebhoomi.kerala.gov.in",
+          "Referer": "https://entebhoomi.kerala.gov.in/web/ilms/map"
+        },
+        "status": 405,
+        "contentType": "application/json",
+        "allow": "POST",
+        "result": "Adding browser Origin/Referer did not change method response."
+      },
+      {
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "{}",
+        "status": 200,
+        "contentTypeResponse": "text/html;charset=UTF-8",
+        "contentLength": 247,
+        "result": "HTML Whitelabel error page, not FlatGeobuf; no parcel bytes retained."
+      },
+      {
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "(empty)",
+        "status": 400,
+        "contentTypeResponse": "application/problem+json",
+        "result": "Problem response; no parcel data."
+      },
+      {
+        "method": "POST",
+        "endpoint": "active INDIA_BOUNDARY GeoJSON export path",
+        "body": {
+          "map_type": "VIRTUAL_LAYER",
+          "layer_code": "LAND_PARCEL_LRM_STYLE",
+          "srs": "EPSG:32643"
+        },
+        "status": 200,
+        "contentType": "(absent)",
+        "contentLength": 0,
+        "result": "No GeoJSON returned when the configured India-boundary exporter was reused with the parcel raster layer code."
+      },
+      {
+        "method": "POST",
+        "endpoint": "active INDIA_BOUNDARY GeoJSON export path",
+        "body": {
+          "map_type": "GENERIC_MAP",
+          "layer_code": "LAND_PARCEL",
+          "srs": "EPSG:32643"
+        },
+        "status": 200,
+        "contentType": "(absent)",
+        "contentLength": 0,
+        "result": "No GeoJSON returned when the configured boundary exporter was reused with the parcel identify layer code."
+      },
+      {
+        "method": "POST",
+        "endpoint": "active INDIA_BOUNDARY GeoJSON export path",
+        "body": {
+          "map_type": "VIRTUAL_LAYER",
+          "layer_code": "LAND_PARCEL_LRM_STYLE",
+          "srs": "EPSG:32643",
+          "bbox": "710389,956942,710489,957042",
+          "limit": 3
+        },
+        "status": 200,
+        "contentType": "(absent)",
+        "contentLength": 0,
+        "result": "Adding this tiny 100 m EPSG:32643 bbox and limit did not produce a response body."
+      },
+      {
+        "method": "POST",
+        "endpoint": "active INDIA_BOUNDARY GeoJSON export path",
+        "body": {
+          "map_type": "GENERIC_MAP",
+          "layer_code": "LAND_PARCEL",
+          "srs": "EPSG:32643",
+          "bbox": "710389,956942,710489,957042",
+          "limit": 3
+        },
+        "status": 200,
+        "contentType": "(absent)",
+        "contentLength": 0,
+        "result": "Same empty response with the point-identify layer code and tiny bbox."
+      },
+      {
+        "method": "GET",
+        "endpoint": "active WMS overlay path /core/v1/map/wms/010309",
+        "request": "GetFeatureInfo, layer/query_layers LAND_PARCEL_LRM_STYLE, info_format application/json, 100 m EPSG:32643 bbox, feature_count=1",
+        "status": 404,
+        "contentLength": 0,
+        "result": "Active WMS endpoint did not answer a standard GetFeatureInfo request."
+      },
+      {
+        "method": "POST",
+        "endpoint": "active INDIA_BOUNDARY GeoJSON export path",
+        "body": {
+          "map_type": "GENERIC_MAP",
+          "layer_code": "LAND_PARCEL",
+          "srs": "EPSG:32643",
+          "spatialfilter": "710389,956942,710489,957042",
+          "limit": 3
+        },
+        "status": 200,
+        "contentType": "(absent)",
+        "contentLength": 0,
+        "result": "Control request with the configured INDIA_BOUNDARY source input succeeded in the same session; this parcel layer_code/spatialfilter query returned an empty body."
+      },
+      {
+        "method": "POST",
+        "endpoint": "active INDIA_BOUNDARY GeoJSON export path",
+        "body": {
+          "map_type": "GENERIC_MAP",
+          "layer_code": "LAND_PARCEL",
+          "srs": "EPSG:32643",
+          "spatialfilter": {
+            "bbox": [
+              710389,
+              956942,
+              710489,
+              957042
+            ]
+          },
+          "limit": 3
+        },
+        "status": 200,
+        "contentType": "(absent)",
+        "contentLength": 0,
+        "result": "Object-shaped bbox spatialfilter variant also returned an empty body; configured boundary control succeeded in the same session."
+      }
+    ],
+    "conclusion": "The earlier parcel-code probes used the active INDIA_BOUNDARY exporter path `/core/v2/map/export/geojson/000000`; that path is scoped to the boundary layer and returned an empty body for substituted parcel codes. The selected viewer auth_key and actual village path `/core/v2/map/export/geojson/010309` are required. At that target path, the actual bounded GeoJSON request body with `map_type=GENERIC_MAP`, `layer_code=LAND_PARCEL`, `srs=EPSG:32643` and `bbox` returned 8 geometries; partitioning the 100 m bbox into four 50 m quadrants produced the identical deduplicated IDs and geometries. `limit` is ignored and is not treated as a completeness signal. The active WMS GetFeatureInfo test remains 404. FGB at `/fgb/010309` returned a bounded 3,392-byte payload with FGB magic despite an application/geo+json response header; GeoJSON is used by the adapter. Empty off-village GeoJSON currently produces no body, so no absent viewport result is claimed.",
+    "actualVillageExport": {
+      "locationCode": "010309",
+      "safePathPattern": "/bhunaksha_v5_emaps/core/v2/map/export/{geojson|fgb}/010309",
+      "body": {
+        "map_type": "GENERIC_MAP",
+        "layer_code": "LAND_PARCEL",
+        "srs": "EPSG:32643",
+        "bbox": "710389,956942,710489,957042",
+        "limit": 3
+      },
+      "geojsonResponse": {
+        "status": 200,
+        "contentType": "application/geo+json",
+        "bytes": 6217,
+        "featureCollectionRows": 8,
+        "propertyKeys": [
+          "survey_no",
+          "block_no",
+          "parcel_gid",
+          "relis_approved"
+        ],
+        "bboxSemantics": "returned geometries intersect the requested 100m bbox and are not clipped to it",
+        "limit": "limit:3 was ignored"
+      },
+      "flatgeobufResponse": {
+        "status": 200,
+        "contentType": "application/geo+json",
+        "bytes": 3392,
+        "magic": "fgb\\u0003",
+        "boundedBySameBbox": true
+      },
+      "decompositionCheck": {
+        "parentBboxMetres": [
+          710389,
+          956942,
+          710489,
+          957042
+        ],
+        "parentRows": 8,
+        "quadrantRows": [
+          1,
+          5,
+          1,
+          7
+        ],
+        "unionIds": 8,
+        "sameIdSetAsParent": true,
+        "sameGeometries": true
+      },
+      "narrowCheck": {
+        "bboxMetres": [
+          710434,
+          956987,
+          710444,
+          956997
+        ],
+        "limit": 3,
+        "status": 200,
+        "contentType": "application/geo+json",
+        "bytes": 1018,
+        "rows": 1
+      },
+      "emptyCellCheck": {
+        "bboxMetres": [
+          900000,
+          1200000,
+          900010,
+          1200010
+        ],
+        "status": 200,
+        "contentType": null,
+        "bytes": 0,
+        "interpretation": "HTTP 200 with zero bytes/no content type is invalid and fail-closed; it is not treated as a complete empty result."
+      },
+      "exactIdAbsence": {
+        "method": "POST",
+        "endpointPath": "/web/proxy/mapinfo/feature_info/010309",
+        "body": {
+          "map_type": "GENERIC_MAP",
+          "layer_code": "LAND_PARCEL",
+          "attributes": {
+            "parcel_gid": "00000000-0000-0000-0000-000000000000"
+          },
+          "fit_to_this": "false",
+          "type": "json"
+        },
+        "status": 200,
+        "contentType": "application/json",
+        "bytes": 2,
+        "jsonType": "array",
+        "rows": 0,
+        "interpretation": "Valid exact lookup can establish absence only when it returns this parsed empty array; empty/untyped viewport exports remain errors."
+      },
+      "exactIdGeometryCheck": {
+        "boundedRows": 1,
+        "exactIdRows": 1,
+        "sameParcelId": true,
+        "geometryShapeMatches": true,
+        "maxVertexDeltaDegrees": 0
+      }
+    }
+  },
+  "canonicalIdentityRecommendation": {
+    "sourceId": "in-kl-entebhoomi-manikkal",
+    "idPrefix": "IN-KL-ENTEBHOOMI-010309-",
+    "nativeIdentity": "parcel_gid",
+    "namespace": "Include locationCode 010309 in the canonical prefix because parcel_gid uniqueness across villages was not established.",
+    "outFields": [
+      "parcel_gid",
+      "survey_no",
+      "block_no"
+    ],
+    "geometry": "WKT MULTIPOLYGON Z is in EPSG:32643; convert XY to WGS84 for runtime output after a bounded adapter is possible."
+  },
+  "reuseAndTerms": "The adapter uses the viewer-issued temporary key for bounded GeoJSON requests within its normal public map session, refreshing once on expiry. Keys, cookies and CSRF values stay only in memory. Provider terms are informational; ownership attributes are excluded.",
+  "files": {
+    "point": "kerala-point-feature.json",
+    "exactId": "kerala-parcel-id-feature.json",
+    "boundedSample": "kerala-parcel-sample.geojson"
+  },
+  "sensitiveData": "No CSRF token, session cookie, temporary auth key, or unrelated external API key is included.",
+  "activeLayerConfiguration": {
+    "selectedVillage": "Manikkal",
+    "locationCode": "010309",
+    "landParcelRaster": {
+      "layerId": "LAND_PARCEL_LRM_STYLE",
+      "renderer": "image tile layer / raster; no active FGB vector layer in output_layers"
+    },
+    "wmsOverlay": {
+      "layerId": "LRM_LEGEND",
+      "urlPath": "/bhunaksha_v5_emaps/core/v1/map/wms/010309",
+      "params": {
+        "map_type": "VIRTUAL_LAYER",
+        "layer_code": "LAND_PARCEL_LRM_STYLE",
+        "ignore_georef": "N",
+        "srs": "EPSG:32643",
+        "VERSION": "1.1.1",
+        "transparent": true
+      }
+    },
+    "geojsonVectorSource": {
+      "layerId": "INDIA_BOUNDARY",
+      "urlPath": "/bhunaksha_v5_emaps/core/v2/map/export/geojson/000000",
+      "requestMethod": "POST",
+      "contentType": "application/json",
+      "input": {
+        "map_type": "GENERIC_MAP",
+        "layer_code": "INDIA_BOUNDARY",
+        "srs": "EPSG:32643"
+      },
+      "response": "HTTP 200 application/geo+json, 75,275 bytes, FeatureCollection with one feature and geometry; this is the configured India boundary, not cadastral data"
+    },
+    "credentialHandling": "All URLs above omit query strings. Live viewer auth_key and CSRF/session values were used in memory only and not retained."
+  },
+  "adapterProtocol": {
+    "adapter": "kerala-entebhoomi",
+    "descriptorEndpoint": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+    "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+    "idPrefix": "IN-KL-ENTEBHOOMI-010309-",
+    "nativeId": "parcel_gid",
+    "fields": [
+      "parcel_gid",
+      "survey_no",
+      "block_no"
+    ],
+    "parcelNumberField": "survey_no",
+    "sourceCrs": "EPSG:32643",
+    "queryMaxBboxKm2": 1,
+    "maxFeatures": 1000,
+    "maxResponseBytes": 2097152,
+    "maxConcurrentQueries": 2,
+    "bootstrap": "Public cookie + dynamic CSRF map session; select fixed district/taluk/Manikkal IDs, validate location_code 010309, use viewer-issued temporary auth_key only in memory; on auth status refresh once and retry once. Fixed origins and paths, redirects rejected.",
+    "runtimeGridSizeDegrees": 0.005
+  },
+  "integrationEvidenceFiles": [
+    "kerala-final.json",
+    "kerala-initial-grid.json",
+    "kerala-grid-scope.json",
+    "kerala-viewport-scope.json",
+    "kerala-runtime.json"
+  ]
+}

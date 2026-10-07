@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:6901",
+  "queueRank": 5,
+  "growthCohort": "top20-2015-2025",
+  "name": "Narayanpur",
+  "countryCode": "BD",
+  "centerLatLon": [
+    23.3652908200707,
+    90.7267370158698
+  ],
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://settlement.gov.bd/",
+      "observation": "Official DLRS survey portal exposes active survey-mouza records and maps; exact Narayanpur administrative match unverified."
+    },
+    {
+      "url": "https://dlrs.gov.bd/",
+      "observation": "Official Department of Land Records and Surveys authority."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official mouza map purchase portal; exact target mouza not identified."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://settlement.gov.bd/",
+      "observation": "Official DLRS survey portal exposes active survey-mouza records and maps; exact Narayanpur administrative match unverified."
+    },
+    {
+      "url": "https://dlrs.gov.bd/",
+      "observation": "Official Department of Land Records and Surveys authority."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official mouza map purchase portal; exact target mouza not identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Returned official division selector; Dhaka division code 010000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "requestForm": "divid=010000000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Listed Munshiganj district under comcod 4105 (unitcod 011400000) and a distinct Diara survey listing (comcod 4198)."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "requestForm": "districtid=011400000&comcod=4105",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Listed BDS rsnum 201901."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "requestForm": "comcod=4105&rsno1=201901&districtid=011400000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Only Gazaria upazila exposed; selected entry is Char Kalipur mouza unitcod 011402071, sheet 001. This identifies an official candidate sheet, but not the queued urban-centre name."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "method": "POST",
+      "requestForm": "rsnum=201901&comcod=4105&unitcod=011402071&sheetno=001",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 97,
+      "geometryType": "Polygon",
+      "idField": "Dag_No",
+      "spatialTestAreaLonLat": [
+        90.724737,
+        23.363291,
+        90.728737,
+        23.367291
+      ],
+      "assessment": "Bounded check of sanitized geometry and Dag_No found 0 polygons intersecting a 400m-square test around the WUP coordinate. No owner attributes retained. Thus the available Char Kalipur sheet does not verify Narayanpur target coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "text": "নারায়ণপুর বাংলাদেশ মৌজা নকশা ভূমি জরিপ",
+      "language": "Bengali",
+      "script": "Bengali",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://settlement.gov.bd/"
+      ]
+    },
+    {
+      "text": "নারায়ণপুর উপজেলা ভূমি অফিস জেলা",
+      "language": "Bengali",
+      "script": "Bengali",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://dlrs.gov.bd/"
+      ]
+    },
+    {
+      "text": "Narayanpur Bangladesh 23.36529 90.72674 cadastral land survey",
+      "language": "English",
+      "script": "Latin",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://settlement.gov.bd/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+    "verifiedOpenScope": "Char Kalipur, Gazaria: 97 polygon records with Dag_No in one sheet; 0 intersected the bounded WUP-center area.",
+    "countrywideVerified": false,
+    "finding": "The exact Narayanpur place-name / WUP coordinate match is unresolved. The official Munshiganj selector exposed a BDS sheet for Char Kalipur mouza (unitcod 011402071, sheet 001); it returned 97 polygons with Dag_No IDs, but none intersected the 400m-square test around the WUP point. This confirms an operational DLRS geometry+ID source for a nearby mouza only; it does not establish Narayanpur target coverage or target-specific registry existence."
+  },
+  "nextStep": "Resolve the exact Narayanpur place-name to a mouza around the WUP point; enumerate adjacent Gazaria BDS sheets and sample only the correct target-intersecting sheet, then confirm stable Dag_No identity in that sheet.",
+  "headersUsed": "Current desktop Chrome User-Agent; Accept: application/json, text/plain, */*; Accept-Language: bn-BD,bn;q=0.9,en-US;q=0.8,en;q=0.7; Origin and Referer https://settlement.gov.bd/; persistent cookie session. Live publisher returned HTTP 200.",
+  "registryLeadFound": true,
+  "registryBasis": "A functioning public DLRS sheet endpoint was tested for Char Kalipur, Gazaria, near the WUP coordinate, but no polygon intersected the 400 m-square test area and no official source ties the Narayanpur label to that mouza. Target-specific registry existence is therefore unresolved.",
+  "registryEvidenceUrls": [
+    "https://settlement.gov.bd/",
+    "https://dlrs.gov.bd/",
+    "https://map.settlement.gov.bd/"
+  ]
+}

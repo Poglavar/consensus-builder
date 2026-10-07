@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "requestedCityCount": 11,
+  "enabledCityCount": 2,
+  "heldCityCount": 9,
+  "scopeNote": "These eleven cities had documented registry/map leads. Only two currently pass live parcel geometry integration. Registry existence does not imply anonymous, complete polygon access.",
+  "cities": [
+    {
+      "cityId": "wup2025:11511",
+      "name": "Semapur",
+      "countryCode": "IN",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+      "technicalBlockers": [
+        "Exact Semapur revenue mauza containing the WUP coordinate is unresolved; the nearest tested Barari(254) CS sheet is about 8.9 km away.",
+        "The public viewer returns WMS raster imagery and single-plot IDs/bboxes only; no complete bounded parcel polygon response was found in the tested public-client routes."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:10737",
+      "name": "Darauli",
+      "countryCode": "IN",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+      "technicalBlockers": [
+        "Exact revenue mauza for the WUP coordinate is unresolved; it lies outside all four exposed Darauli(157) CS sheet extents.",
+        "The public viewer has no verified bounded viewport polygon response; WMS is raster and OP=4/PNIU provide bbox envelopes only."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:10791",
+      "name": "Raghunathpur",
+      "countryCode": "IN",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/bihar.json",
+      "technicalBlockers": [
+        "Exact revenue mauza for the WUP coordinate is unresolved; it lies outside all three exposed Raghunathpur(384) CS sheet extents.",
+        "The public viewer has no verified bounded viewport polygon response; WMS is raster and OP=4/PNIU provide bbox envelopes only."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:6393",
+      "name": "Nandail",
+      "countryCode": "BD",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+      "technicalBlockers": [
+        "Nandail has local cadastral-map records. The current and alternate public survey selectors do not expose its target sheet; nearby Achargaon catalog entries are non-georeferenced preview images, not parcel vectors."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:4216",
+      "name": "Saghatta",
+      "countryCode": "BD",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+      "technicalBlockers": [
+        "Saghatta has local cadastral-map records. The public survey selectors do not expose its target sheet; nearby Kamaler Para catalog entries are non-georeferenced preview images, not parcel vectors."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:10023",
+      "name": "Venjaramoodu",
+      "countryCode": "IN",
+      "registryFound": true,
+      "status": "enabled",
+      "appCityId": "venjaramoodu",
+      "sourceIds": [
+        "kerala-entebhoomi-ilms-map-proxy"
+      ],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/kerala-runtime.json",
+      "technicalBlockers": [],
+      "limitations": [
+        "Only published Manikkal village is configured.",
+        "Empty untyped HTTP 200 bodies remain unavailable errors. The enclosing default grid avoids empty subcell responses at the entry point."
+      ]
+    },
+    {
+      "cityId": "wup2025:12097",
+      "name": "Dongjiao",
+      "countryCode": "CN",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/china.json",
+      "technicalBlockers": [
+        "The Dongjiao target resolves to Dongqiao Town in Putian/Xiuyu. Official cadastral-map access uses certificate QR lookup; no anonymous viewport and exact-ID polygon service was verified."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:9524",
+      "name": "Dajindian",
+      "countryCode": "CN",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/china.json",
+      "technicalBlockers": [
+        "Dajindian registry notices and a local map-query workflow are documented. The public map offers basemaps; parcel lookup needs a known identifier, and vector downloads require real-name access and a contract or allocation record."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:1601",
+      "name": "Aleppo",
+      "countryCode": "SY",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/aleppo.json",
+      "technicalBlockers": [
+        "Aleppo cadastral office issues registry statements and survey plans. The officially linked electronic-service portal did not connect from this network, and no anonymous Aleppo parcel geometry endpoint was verified."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:2565",
+      "name": "Mbale City",
+      "countryCode": "UG",
+      "registryFound": true,
+      "status": "held",
+      "appCityId": null,
+      "sourceIds": [],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/mbale.json",
+      "technicalBlockers": [
+        "Mbale has an NLIS registry office. The public cadastral-division viewer configures administrative zones, districts, offices and basemaps, with no parcel layer. Its advertised GeoServer routes returned 404."
+      ],
+      "limitations": []
+    },
+    {
+      "cityId": "wup2025:8018",
+      "name": "New Hope",
+      "countryCode": "US",
+      "registryFound": true,
+      "status": "enabled",
+      "appCityId": "new_hope",
+      "sourceIds": [
+        "us-nc-wake-raleigh-parcels"
+      ],
+      "evidenceFile": "research/growth-top20-integration-2026-10-07/new-hope-final.json",
+      "technicalBlockers": [],
+      "limitations": []
+    }
+  ]
+}

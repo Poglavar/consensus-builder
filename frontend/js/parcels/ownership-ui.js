@@ -182,8 +182,14 @@
         return typeof global.gameState !== 'undefined' && global.gameState && !!global.gameState.isRunning;
     }
 
+    function supportsParcelOwnership() {
+        if (isGameModeActive()) return true;
+        const config = global.CityConfigManager?.getCurrentCityConfig?.();
+        return config?.parcels?.ownership !== false;
+    }
+
     function shouldUseRealParcelOwners() {
-        if (isGameModeActive()) {
+        if (!supportsParcelOwnership() || isGameModeActive()) {
             return false;
         }
         if (typeof global.getCurrentDataSource !== 'function') {
@@ -320,7 +326,7 @@
 
     function mapOwnerRecordsToSlots(parcelId, owners = []) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
-        if (!normalizedId) {
+        if (!normalizedId || !supportsParcelOwnership()) {
             return [];
         }
         const list = Array.isArray(owners) ? owners : [];
@@ -408,6 +414,12 @@
     }
 
     function buildRealOwnerRowsHtml(owners) {
+        if (!supportsParcelOwnership()) {
+            const unknownOwner = global.tParcel
+                ? global.tParcel('common.unknownOwner', {}, 'Unknown owner')
+                : 'Unknown owner';
+            return `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
+        }
         const fallbackLabel = global.tParcel
             ? global.tParcel('panel.parcel.owner.single', {}, 'Single owner')
             : 'Single owner';
@@ -585,7 +597,7 @@
 
     async function getRealParcelOwners(parcelId) {
         const cacheKey = parcelId ? parcelId.toString() : '';
-        if (!cacheKey) {
+        if (!cacheKey || !supportsParcelOwnership()) {
             return [];
         }
 
@@ -736,6 +748,9 @@
         if (!normalizedId) {
             return { owners: [], slots: [] };
         }
+        if (!supportsParcelOwnership()) {
+            return { owners: [], slots: [] };
+        }
 
         if (options.forceRefresh) {
             clearStoredParcelOwners(normalizedId);
@@ -769,7 +784,7 @@
 
     async function ensureParcelOwnerSlots(parcelId, options = {}) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
-        if (!normalizedId) {
+        if (!normalizedId || !supportsParcelOwnership()) {
             return [];
         }
 
@@ -798,6 +813,24 @@
     function fetchAndDisplayRealOwners(parcelId, options = {}) {
         const target = document.getElementById(PARCEL_OWNER_VALUE_ELEMENT_ID);
         if (!target || !parcelId) {
+            return;
+        }
+
+        if (!supportsParcelOwnership()) {
+            const unknownOwner = global.tParcel
+                ? global.tParcel('common.unknownOwner', {}, 'Unknown owner')
+                : 'Unknown owner';
+            target.innerHTML = `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
+            const countElement = document.getElementById('parcel-owners-count');
+            if (countElement) {
+                countElement.removeAttribute('role');
+                countElement.removeAttribute('aria-label');
+                countElement.textContent = global.tParcel
+                    ? global.tParcel('common.unknown', {}, 'Unknown')
+                    : 'Unknown';
+            }
+            const typeLabel = document.querySelector('.parcel-ownership-type-label');
+            if (typeLabel) typeLabel.style.display = 'none';
             return;
         }
 

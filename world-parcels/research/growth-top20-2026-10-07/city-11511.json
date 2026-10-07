@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:11511",
+  "queueRank": 4,
+  "growthCohort": "top20-2015-2025",
+  "name": "Semapur",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.4980899560268,
+    87.4841083291156
+  ],
+  "administrativeIdentity": "Semapur locality is in Katihar district, Bihar; the supplied point is in Barari block/tehsil area. The exact revenue mauza corresponding to the locality/point has not been matched to an official village selector entry.",
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "bihar-bhunaksha",
+    "name": "BhuNaksha Bihar cadastral map viewer and NIC REST selector",
+    "operator": "Directorate of Land Records & Survey, Government of Bihar; NIC developed BhuNaksha",
+    "scope": "Bihar state viewer hierarchy is public. DILRMP lists Barari tehsil in Katihar district (201 cadastral maps, 89 villages); no exact Semapur revenue mauza or target parcel response was verified.",
+    "endpoint": "https://bhunaksha.bihar.gov.in/ (viewer); https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel (administrative hierarchy); https://bhunaksha.bihar.gov.in/WMS (image map)",
+    "method": "POST application/x-www-form-urlencoded to public selector; WMS map rendered as image",
+    "responseFormat": "JSON administrative hierarchy; WMS image/png",
+    "crs": "EPSG:32645 was reported by MapInfo for a tested Katihar map sheet; it is not a verified CRS for Semapur target geometry.",
+    "reuseStatus": "Public viewer/API and map layers reachable anonymously; reuse terms for automated access not assessed. No parcel geometry endpoint identified."
+  },
+  "sourcesFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official state government cadastral/land-record viewer or integrated land service found by search. Candidate existence only; no parcel geometry verified."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official state revenue/land-records portal found; records/viewer capability is evidence of a portal, not a tested vector parcel endpoint."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "observation": "Official Bihar land revenue report surfaces district/circle/mauza administrative lists; not parcel geometry."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+      "observation": "Official Government of India DILRMP Katihar table lists Barari tehsil (201 cadastral maps, 89 villages) and reports maps digitized; tehsil-level evidence only, not an exact Semapur revenue-mauza match or parcel response."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official viewer HTML and public JavaScript inspected. JavaScript exposes REST selector `rest/Levels/ListsAfterLevel`, MapInfo extent calls, `ScalarDatahandler`, and WMS image layers; it does not request vector polygon features in the public map UI."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Bihar BhuNaksha state viewer page returned HTTP 200. Legacy state page links to `/rest/GetMapInstanceMap/getMapInstance` and its map flow; not parcel verification."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official state government cadastral/land-record viewer or integrated land service found by search. Candidate existence only; no parcel geometry verified."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official state revenue/land-records portal found; records/viewer capability is evidence of a portal, not a tested vector parcel endpoint."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "observation": "Official Bihar land revenue report surfaces district/circle/mauza administrative lists; not parcel geometry."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+      "observation": "Official Government of India DILRMP Katihar table lists Barari tehsil (201 cadastral maps, 89 villages) and reports maps digitized; tehsil-level evidence only, not an exact Semapur revenue-mauza match or parcel response."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official viewer HTML and public JavaScript inspected. JavaScript exposes REST selector `rest/Levels/ListsAfterLevel`, MapInfo extent calls, `ScalarDatahandler`, and WMS image layers; it does not request vector polygon features in the public map UI."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Bihar BhuNaksha state viewer page returned HTTP 200. Legacy state page links to `/rest/GetMapInstanceMap/getMapInstance` and its map flow; not parcel verification."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Direct browser-like request attempted with Chrome User-Agent, Accept, target-country Accept-Language and requests cookie session; environment DNS resolution failed before HTTP response. No response body; this is not evidence of no-data."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official report indexed in web search with district/mauza records, but live bounded parcel geometry request not available from this environment."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official DILRMP tehsil table lists Barari (201 maps, 89 villages) and reports maps digitized; this is administrative digitization evidence, not parcel geometry or exact mauza lookup."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official viewer retrieved with browser-like UA/Accept/Accept-Language and session cookies outside the sandbox; JavaScript and service routes inspected."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Public selector reports 7 hierarchy levels for Bihar state code 10."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Returned state subdivisions/circles/mauza candidate lists with hasData flags; administrative selector response, not parcel geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities&state=10",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "assessment": "Returned 1x1 PNG (562 bytes), not a WMS capabilities document or parcel geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": null,
+      "assessment": "Empty server response to WMS capabilities request; viewer itself requests image WMS layers with state/gis_code/layer parameters. This is not treated as no-data."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Bounded selector listing across Katihar subdivisions/circles and their mapped mauza options found no exact “Semapur” label. This is not proof the locality lacks parcel data; an alternate revenue-village name or nonmapped survey remains possible."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "official Bihar BhuNaksha cadastral map Barari Katihar",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://land.bihar.gov.in/landbihar/Default.aspx"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "बिहार भू नक्शा कटिहार सीवान खेसरा नक्शा आधिकारिक",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "सीवान दरौली रघुनाथपुर भू नक्शा राजस्व गांव नक्शा",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx/1000",
+        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "शंकरपुर 26.81347 84.11575 बिहार जिला",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://eastchamparan.nic.in/village-panchayats/",
+        "https://gis.bihar.gov.in/DEPTS/Booth/Booth.aspx"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bihar BhuNaksha state selector plus DILRMP evidence for Katihar district / Barari tehsil; no exact Semapur revenue-village selection or target parcel geometry verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "nextStep": "Use the public Bihar hierarchy with Katihar district and Barari tehsil as the supported administrative lead, then reconcile Semapur locality to its exact revenue mauza and verify a sheet/parcel response. Do not infer target geometry from tehsil-wide map counts or the unsuccessful exact-name scan.",
+  "failures": [
+    {
+      "kind": "local_sandbox_dns",
+      "host": "bhunaksha.bihar.gov.in",
+      "detail": "Initial Python request failed DNS before HTTP within local sandbox. Retried with browser-like headers, cookies, and network approval; official viewer and selector routes returned HTTP 200. This was an environment limitation, not a source outage."
+    }
+  ],
+  "endpointTests": [],
+  "registryBasis": "DILRMP inventories cadastral maps for Barari tehsil, Katihar, containing Semapur. Exact revenue mauza and target parcel geometry remain unverified.",
+  "registryEvidenceUrls": [
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
+    "https://bhunaksha.bihar.gov.in/index.jsp",
+    "https://land.bihar.gov.in/landbihar/Default.aspx",
+    "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+    "https://bhunaksha.bihar.gov.in/10/index.jsp"
+  ]
+}

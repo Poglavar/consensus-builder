@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:3846",
+  "queueRank": 19,
+  "growthCohort": "top20-2015-2025",
+  "name": "Meftah",
+  "countryCode": "DZ",
+  "centerLatLon": [
+    36.6354855393707,
+    3.2360931732742
+  ],
+  "administrativeIdentity": "Meftah commune and daïra, Blida Province, Algeria; WUP coordinate is within/near Meftah urban area.",
+  "checkedAt": "2026-10-07",
+  "status": "temporarily_unavailable",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+      "observation": "Finance Ministry Fadaeldjazair geo-services portal reportedly offers cadastral/land information; prior and current direct access fails by connection reset."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "observation": "Official Algerian National Geospatial Data Base (BNDG/ASGA) 1:200,000 viewer is reachable, with boundary, wilaya, commune, raster/topographic and geology layers; not cadastral parcel data."
+    },
+    {
+      "url": "https://www.dgdn.gov.dz/",
+      "observation": "Direction Générale du Domaine National official domain; prior check found maintenance 503; current endpoint cannot be reached directly."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+      "observation": "Finance Ministry Fadaeldjazair geo-services portal reportedly offers cadastral/land information; prior and current direct access fails by connection reset."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "observation": "Official Algerian National Geospatial Data Base (BNDG/ASGA) 1:200,000 viewer is reachable, with boundary, wilaya, commune, raster/topographic and geology layers; not cadastral parcel data."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Prior retry and current direct request failed/reset at TLS/proxy; unavailable, not no-data."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "GET",
+      "httpStatus": "web-open",
+      "contentType": "text/html",
+      "assessment": "Official 1:200k viewer loads base/topographic, admin boundary, commune and geology layers, with login link; no parcel layer advertised."
+    },
+    {
+      "url": "https://www.dgdn.gov.dz/",
+      "method": "GET",
+      "httpStatus": 503,
+      "contentType": "text/html",
+      "assessment": "Prior check found site under maintenance; current direct request failed DNS/proxy."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "French",
+      "exactQuery": "cadastre parcelles Meftah Blida géoportail cadastral Algérie officiel",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+        "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+        "https://www.dgdn.gov.dz/"
+      ]
+    },
+    {
+      "language": "Arabic",
+      "exactQuery": "مسح الأراضي قطع الأراضي مفتاح البليدة الجزائر بوابة جغرافية رسمية",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+        "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+        "https://www.dgdn.gov.dz/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National cadastral services reported; Meftah local coverage unknown",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "targetAreaRegistryConfirmed": false
+  },
+  "nextStep": "Retry Fadaeldjazair geo_services and DGDN when reachable; inspect cadastral service or ask Blida cadastre office. BNDG viewer is a cartographic lead and does not show parcel geometry.",
+  "failedAttemptsPreserved": [
+    {
+      "reference": "world-parcels/research/retry/countries/DZ.json",
+      "note": "Prior dated country retry retained; see this record’s requests for current follow-up and note status history."
+    }
+  ],
+  "requestHeadersUsed": "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml,application/json,*/*;q=0.8; Accept-Language varied by target country (en-SS/ar; en-KE/sw-KE; en-UG; fr-DZ/ar; fr-MG/mg); cookie jar enabled in direct requests. Web research used for official indexed pages.",
+  "registryLeadFound": true,
+  "registryFoundReason": "Algerian cadastral services and Fadaeldjazair are national leads, but no source was found that ties cadastral records or a parcel service to Meftah; the reachable BNDG viewer exposes topographic/administrative layers only.",
+  "scopedConclusion": {
+    "targetArea": "Meftah commune and daïra, Blida Province, Algeria; WUP coordinate is within/near Meftah urban area.",
+    "cadastralRegistryConfirmedAtTarget": false,
+    "registryLeadFound": true,
+    "conclusion": "Algerian cadastral services and Fadaeldjazair are national leads, but no source was found that ties cadastral records or a parcel service to Meftah; the reachable BNDG viewer exposes topographic/administrative layers only.",
+    "coverageBoundary": "This conclusion is limited to the named target area and supplied WUP coordinate; national or other-area sources are leads only."
+  },
+  "registryBasis": "Algerian cadastral services and Fadaeldjazair are national leads, but no source was found that ties cadastral records or a parcel service to Meftah; the reachable BNDG viewer exposes topographic/administrative layers only.",
+  "registryEvidenceUrls": [
+    "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+    "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+    "https://www.dgdn.gov.dz/"
+  ]
+}

@@ -3554,6 +3554,7 @@
             "santa_fe": "Santa Fe, United States",
             "albany": "Albany, United States",
             "raleigh": "Raleigh, United States",
+            "new_hope": "New Hope, North Carolina, United States",
             "bismarck": "Bismarck, United States",
             "columbus": "Columbus, United States",
             "salem": "Salem, United States",
@@ -3583,7 +3584,8 @@
             "houston": "Houston, United States",
             "curitiba": "Curitiba, Brazil",
             "recife": "Recife, Brazil",
-            "durban": "Durban, South Africa"
+            "durban": "Durban, South Africa",
+            "venjaramoodu": "Venjaramoodu, India"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",
