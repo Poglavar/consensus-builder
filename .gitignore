@@ -18,3 +18,22 @@ test-results/
 backend/logs/
 .env
 frontend/carto-config.js
+
+# Raw agency downloads stay in the database or local source caches, outside Git.
+/data/floor-plan-downloads/
+/data/floor-plan-agencies/raw/
+/data/floor-plan-agencies/downloads/
+/data/floor-plan-agencies/**/*.pdf
+/data/floor-plan-agencies/**/*.png
+/data/floor-plan-agencies/**/*.jpg
+/data/floor-plan-agencies/**/*.jpeg
+/data/floor-plan-agencies/**/*.webp
+/data/floor-plan-agencies/**/*.html
+/rekonstrukcije/avenue-v/raw/
+/rekonstrukcije/avenue-v/downloads/
+/rekonstrukcije/avenue-v/**/*.pdf
+/rekonstrukcije/avenue-v/**/*.png
+/rekonstrukcije/avenue-v/**/*.jpg
+/rekonstrukcije/avenue-v/**/*.jpeg
+/rekonstrukcije/avenue-v/**/*.webp
+/rekonstrukcije/avenue-v/**/*.html
