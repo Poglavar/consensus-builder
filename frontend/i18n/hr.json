@@ -32,7 +32,11 @@
         "targetOne": "Ovo stane u jedan ciljni blok",
         "targetNote": "Površina ÷ ciljna površina, zaokruženo naviše. Usporedba veličine; nove ulice i oblik bloka utječu na stvarnu podjelu.",
         "seeHow": "Pogledaj kako",
-        "seeHowSoon": "Pregled rasporeda blokova uskoro dolazi."
+        "seeHowSoon": "Pregled rasporeda blokova uskoro dolazi.",
+        "copyLink": "Kopiraj poveznicu na blok",
+        "linkCopied": "Poveznica na blok je kopirana.",
+        "copyFailed": "Kopiranje nije uspjelo. Kopirajte poveznicu iz adresne trake preglednika.",
+        "linkMissing": "Obris ovog bloka promijenjen je ili nije dostupan. Odaberite blok na karti."
     },
     "parcelSourceNotice": {
         "title": "Informacije o izvoru čestica",

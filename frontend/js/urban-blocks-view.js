@@ -7,6 +7,7 @@
     const PANE = 'urbanBlocksPane';
     let layer = null, selectionLayer = null, selected = null, wired = false, fitting = false;
     let targetSideM = 100;
+    let linkedBlock = win.UrbanBlocksLinks.parse(win.location.href);
     const el = id => doc.getElementById(id);
     function t(key, fallback, params) {
         const text = win.i18n?.t?.(`urbanBlocks.${key}`, params);
@@ -50,6 +51,7 @@
             fillColor: feature.properties.color, fillOpacity: active ? 0 : 0.38 };
     }
     function clearSelection() {
+        if (selected) clearBlockUrl();
         selected = null;
         if (selectionLayer) win.map.removeLayer(selectionLayer);
         selectionLayer = null;
@@ -83,6 +85,18 @@
             pane.style.pointerEvents = 'none';
             layer = win.L.geoJSON(state.blocks, { pane: PANE, interactive: false, style }).addTo(win.map);
             selectionLayer?.bringToFront();
+            if (linkedBlock) {
+                const link = linkedBlock;
+                linkedBlock = null;
+                const feature = state.blocks.features.find(block => block.id === link.blockId);
+                if (feature) {
+                    targetSideM = link.targetSideM;
+                    showBlock(feature);
+                } else {
+                    clearBlockUrl();
+                    win.showEphemeralMessage(t('linkMissing', 'This block’s outline has changed or is unavailable. Select a block on the map.'));
+                }
+            }
         } else if (!['roads', 'blocks'].includes(state.phase)) {
             // Inspection owns a separate polygon. Framing a large block can cross the loading
             // zoom limit or start another road request without losing the block being inspected.
@@ -97,7 +111,43 @@
         const b = win.map.getBounds();
         return { bbox: [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()], zoom: win.map.getZoom() };
     }
-    function refresh(force = false) { return controller.refresh(viewport(), force); }
+    function refresh(force = false) {
+        if (linkedBlock) {
+            // Finish the whole enclosure from the link, even when a phone viewport would cut it
+            // off. Ordinary boot/resize move events must not supersede this targeted request.
+            if (!force && ['roads', 'blocks'].includes(controller.snapshot().phase)) return;
+            return controller.loadBounds(win.UrbanBlocksLinks.loadBounds(linkedBlock.bbox));
+        }
+        return controller.refresh(viewport(), force);
+    }
+
+    function selectedLink() {
+        if (!selected) return null;
+        return win.UrbanBlocksLinks.build({ baseUrl: win.location.href,
+            city: win.CityConfigManager.getCurrentCityId(), blockId: selected.id,
+            bbox: win.turf.bbox(selected), targetSideM });
+    }
+    function updateBlockUrl() {
+        const link = selectedLink();
+        if (link) win.history.replaceState(win.history.state, '', link);
+        return link;
+    }
+    function clearBlockUrl() {
+        const url = new URL(win.location.href);
+        for (const key of ['block', 'blockBounds', 'blockSize']) url.searchParams.delete(key);
+        win.history.replaceState(win.history.state, '', url);
+    }
+    async function copyBlockLink() {
+        const link = updateBlockUrl();
+        if (!link) return;
+        try {
+            await win.navigator.clipboard.writeText(link);
+            win.showEphemeralMessage(t('linkCopied', 'Block link copied.'));
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [urban-blocks] Could not copy block link: ${error.message}`);
+            win.showEphemeralMessage(t('copyFailed', 'Could not copy. Copy the link from your browser’s address bar.'));
+        }
+    }
 
     function ownsClicks() {
         return controller.snapshot().enabled && !win.__mapEditLock?.isHeld() && !win.measureMode
@@ -181,7 +231,7 @@
                 ? t('targetCount', 'This should be {{count}} blocks instead', { count: format(count) })
                 : t('targetOne', 'This fits within one target block');
         };
-        input.addEventListener('change', update); update();
+        input.addEventListener('change', () => { update(); updateBlockUrl(); }); update();
         const note = doc.createElement('p'); note.className = 'urban-block-info-note';
         note.textContent = t('targetNote', 'Area ÷ target area, rounded up. A size comparison; new streets and block shape will affect a real subdivision.');
         label.append(input); section.append(summary, label, note);
@@ -225,6 +275,12 @@
         const point = win.turf.point([latlng.lng, latlng.lat]);
         const feature = controller.snapshot().blocks?.features.find(block => win.turf.booleanPointInPolygon(point, block))
             || (selected && win.turf.booleanPointInPolygon(point, selected) ? selected : null);
+        if (linkedBlock) clearBlockUrl();
+        linkedBlock = null;
+        showBlock(feature);
+    }
+
+    function showBlock(feature) {
         clearSelection();
         if (!feature) return;
         win.MapShell?.closeSheets?.();
@@ -236,7 +292,7 @@
             style: { color: '#173954', weight: 3, fillColor: feature.properties.color, fillOpacity: 0.65 } }).addTo(win.map);
         el('urban-block-panel').classList.remove('is-collapsed');
         el('urban-block-panel').hidden = false;
-        renderInfo(); fitSelected();
+        renderInfo(); fitSelected(); updateBlockUrl();
     }
 
     function captureClick(event) {
@@ -251,7 +307,13 @@
         if (wired) return;
         wired = true;
         el('showUrbanBlocks').addEventListener('change', () => {
+            linkedBlock = null;
+            clearBlockUrl();
             controller.setEnabled(el('showUrbanBlocks').checked);
+            const url = new URL(win.location.href);
+            if (controller.snapshot().enabled) url.searchParams.set('blocks', '1');
+            else url.searchParams.delete('blocks');
+            win.history.replaceState(win.history.state, '', url);
             if (controller.snapshot().enabled) {
                 win.ParcelMenu?.close?.(); win.GroundMenu?.close?.(); win.hideParcelInfoPanel?.();
                 refresh();
@@ -259,6 +321,7 @@
         });
         el('urban-blocks-refresh').addEventListener('click', () => refresh(true));
         el('urban-block-close').addEventListener('click', clearSelection);
+        el('urban-block-copy').addEventListener('click', copyBlockLink);
         el('urban-block-fit').addEventListener('click', fitSelected);
         el('urban-block-collapse').addEventListener('click', () => {
             el('urban-block-panel').classList.toggle('is-collapsed');
@@ -271,6 +334,10 @@
         resizeObserver.observe(win.map.getContainer());
         win.addEventListener('parcelFabricCommitted', updateParcelCount);
         win.addEventListener('cityChanged', () => {
+            if (linkedBlock?.city && linkedBlock.city !== win.CityConfigManager.getCurrentCityId()) {
+                linkedBlock = null;
+                clearBlockUrl();
+            }
             controller.setEnabled(el('showUrbanBlocks').checked);
             if (controller.snapshot().enabled) refresh();
         });
@@ -279,7 +346,7 @@
         win.addEventListener('i18n:translationsLoaded', translate);
         win.i18n?.onChange?.(translate);
         render(controller.snapshot());
-        if (new URLSearchParams(win.location.search).get('blocks') === '1') {
+        if (linkedBlock || new URLSearchParams(win.location.search).get('blocks') === '1') {
             el('showUrbanBlocks').checked = true;
             controller.setEnabled(true); refresh();
         }

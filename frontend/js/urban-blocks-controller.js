@@ -37,6 +37,10 @@
                 return;
             }
             if (!force && state.phase === 'ready' && contains(state.coverage, viewport.bbox)) return;
+            return loadBounds(bbox);
+        }
+        async function loadBounds(bbox) {
+            if (!state.enabled) return;
             cancel();
             const ownVersion = version;
             const controller = new AbortController();
@@ -58,7 +62,7 @@
                 if (current()) pending = null;
             }
         }
-        return { setEnabled, refresh, snapshot: () => state };
+        return { setEnabled, refresh, loadBounds, snapshot: () => state };
     }
     return { create, requestBounds };
 });

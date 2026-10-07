@@ -32,7 +32,11 @@
         "targetOne": "This fits within one target block",
         "targetNote": "Area ÷ target area, rounded up. A size comparison; new streets and block shape will affect a real subdivision.",
         "seeHow": "See how",
-        "seeHowSoon": "Block layout preview is coming soon."
+        "seeHowSoon": "Block layout preview is coming soon.",
+        "copyLink": "Copy block link",
+        "linkCopied": "Block link copied.",
+        "copyFailed": "Could not copy. Copy the link from your browser’s address bar.",
+        "linkMissing": "This block’s outline has changed or is unavailable. Select a block on the map."
     },
     "parcelSourceNotice": {
         "title": "Parcel source information",

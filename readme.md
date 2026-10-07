@@ -77,7 +77,10 @@ The frontend has no sidebar; the map is the whole interface:
   when available, a live count of loaded parcels. Details use a side panel on desktop and a
   collapsible bottom sheet on phones; the whole selected block fits in the unobstructed map area.
   An adjustable target size (100 × 100 m by default) estimates how many smaller blocks its area
-  represents, without designing a subdivision. The view follows the map at neighbourhood scale;
+  represents, without designing a subdivision. Selecting a block updates the URL; **Copy block
+  link** shares its outline ID, bounds and target size. Opening that link loads the whole road
+  enclosure, selects the block and frames it above/beside the panel on any screen size.
+  The view follows the map at neighbourhood scale;
   open or clipped blocks stay unshaded. This analysis is separate from parcel-based block tools.
 - **World view**: on first visit a globe coloured by parcel-data coverage; pick a city, or
   *Explore anyway* to open a place without parcel data.

@@ -32,7 +32,11 @@
         "targetOne": "Esto cabe en un bloque del tamaño objetivo",
         "targetNote": "Área ÷ área objetivo, redondeada hacia arriba. Comparación de tamaños; las nuevas calles y la forma del bloque afectan a la subdivisión real.",
         "seeHow": "Ver cómo",
-        "seeHowSoon": "La vista previa de la distribución de bloques estará disponible próximamente."
+        "seeHowSoon": "La vista previa de la distribución de bloques estará disponible próximamente.",
+        "copyLink": "Copiar enlace al bloque",
+        "linkCopied": "Enlace al bloque copiado.",
+        "copyFailed": "No se pudo copiar. Copia el enlace de la barra de direcciones del navegador.",
+        "linkMissing": "El contorno de este bloque ha cambiado o no está disponible. Selecciona un bloque en el mapa."
     },
     "parcelSourceNotice": {
         "title": "Información sobre la fuente parcelaria",

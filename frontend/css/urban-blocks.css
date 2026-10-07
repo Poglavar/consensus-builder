@@ -54,6 +54,7 @@ body.urban-blocks-active #map { cursor: pointer; }
         border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
     }
     .urban-block-panel.is-collapsed { height: auto; }
+    .urban-block-panel-header { gap: var(--cb-space-1); padding: var(--cb-space-2); }
     .urban-block-panel-header .btn-quiet { min-width: var(--cb-control-height-lg); min-height: var(--cb-control-height-lg); }
     .urban-block-panel-header .close-circle-btn { width: var(--cb-control-height-lg); height: var(--cb-control-height-lg); }
 }
