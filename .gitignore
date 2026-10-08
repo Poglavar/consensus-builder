@@ -27,6 +27,10 @@ backend/test/__pycache__/
 .env
 frontend/carto-config.js
 
+# Generated audiobook assets are local deliverables, not repository source.
+/data/metrocoalescence-chapter-*.mp3
+/data/Metrocoalescense-SinglePages.pdf
+
 # Raw agency downloads stay in the database or local source caches, outside Git.
 /data/floor-plan-downloads/
 /data/floor-plan-agencies/raw/
