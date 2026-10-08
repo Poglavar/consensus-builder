@@ -1,12 +1,125 @@
 (function (global) {
     'use strict';
 
-    let parcelNumberLabels = [];
+    const parcelNumberLabelMarkers = new Map();
+    const activeParcelNumberMarkerIds = new Set();
     let parcelNumberLabelFilter = null;
     let parcelNumberMapListenersAttached = false;
+    let parcelNumberLabelCity = null;
+    let centroidCache = new WeakMap();
+    let centroidCacheCity = null;
+    const featureRevisionById = new Map();
 
-    const parcelIdForLayer = layer => global.ParcelPresenter?.getIdForLayer?.(layer) || null;
-    const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
+    if (typeof global.addEventListener === 'function') {
+        global.addEventListener('parcelFabricCommitted', event => {
+            const detail = event?.detail || {};
+            const removedIds = new Set((detail.removedIds || []).map(String));
+            const changedIds = new Set([
+                ...(detail.addedIds || []),
+                ...(detail.updatedIds || [])
+            ].map(String));
+            changedIds.forEach(id => featureRevisionById.set(id, (featureRevisionById.get(id) || 0) + 1));
+            if (removedIds.size) {
+                // Revisions are needed only while an ID is live. Reset the WeakMap once on removals
+                // so a later re-add that reuses the same feature object cannot hit an old centroid.
+                centroidCache = new WeakMap();
+                removedIds.forEach(id => {
+                    featureRevisionById.delete(id);
+                    forgetNumberMarker(id);
+                });
+            }
+        });
+    }
+
+    function currentCity() {
+        try { return String(global.getCurrentCityId ? global.getCurrentCityId() || '' : ''); }
+        catch (_) { return ''; }
+    }
+
+    function parcelLabelPosition(feature, layer, parcelId) {
+        if (!feature || typeof feature !== 'object') return null;
+        const city = currentCity();
+        if (city !== centroidCacheCity) {
+            centroidCache = new WeakMap();
+            featureRevisionById.clear();
+            centroidCacheCity = city;
+        }
+        const id = parcelId === undefined || parcelId === null ? null : String(parcelId);
+        const revision = id ? featureRevisionById.get(id) || 0 : null;
+        const cached = centroidCache.get(feature);
+        if (cached && cached.id === id && cached.revision === revision) return cached.position;
+
+        let position = null;
+        const geometry = feature.geometry;
+        if (geometry && global.turf && typeof global.turf.centerOfMass === 'function') {
+            try {
+                const coords = global.turf.centerOfMass(geometry)?.geometry?.coordinates;
+                if (Array.isArray(coords) && coords.length >= 2
+                    && Number.isFinite(coords[0]) && Number.isFinite(coords[1])) {
+                    position = global.L.latLng(coords[1], coords[0]);
+                }
+            } catch (error) {
+                console.warn('Unable to compute centroid for parcel label', error);
+            }
+        }
+        if (!position && layer && typeof layer.getBounds === 'function') {
+            try {
+                const center = layer.getBounds()?.getCenter?.();
+                if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
+                    position = global.L.latLng(center.lat, center.lng);
+                }
+            } catch (_) { /* fall through */ }
+        }
+        centroidCache.set(feature, { id, revision, position });
+        return position;
+    }
+
+    global.ParcelLabelModel = Object.freeze({ currentCity, position: parcelLabelPosition });
+
+    function parcelIdForLayer(layer) {
+        return global.ParcelPresenter?.getIdForLayer?.(layer) || null;
+    }
+
+    function parcelFeature(parcelId) {
+        return parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
+    }
+
+    function parcelLayersInViewport(bounds) {
+        // The presenter owns the parcel bbox index; all parcel UI modules use it to avoid walking
+        // the retained citywide layer after each pan/zoom.
+        return global.getParcelsInBounds(bounds);
+    }
+
+    function detachNumberMarker(id) {
+        const record = parcelNumberLabelMarkers.get(id);
+        if (record && global.map && global.map.hasLayer(record.marker)) {
+            global.map.removeLayer(record.marker);
+        }
+        activeParcelNumberMarkerIds.delete(id);
+    }
+
+    function clearNumberMarkerCache() {
+        activeParcelNumberMarkerIds.forEach(detachNumberMarker);
+        parcelNumberLabelMarkers.clear();
+        activeParcelNumberMarkerIds.clear();
+    }
+
+    function forgetNumberMarker(id) {
+        detachNumberMarker(id);
+        parcelNumberLabelMarkers.delete(id);
+    }
+
+    function parcelNumberIcon(text) {
+        const content = document.createElement('span');
+        content.className = 'parcel-number-label';
+        content.textContent = text;
+        return global.L.divIcon({
+            className: 'parcel-number-label-anchor',
+            html: content,
+            iconSize: [0, 0],
+            iconAnchor: [0, 0]
+        });
+    }
 
     function toggleParcelNumbers() {
         const checkbox = document.getElementById('showParcelNumbers');
@@ -20,118 +133,81 @@
     }
 
     function drawParcelNumberLabels() {
-        clearParcelNumberLabels();
-        if (!global.parcelLayer) return;
-
-        const bounds = (global.map && typeof global.map.getBounds === 'function')
-            ? global.map.getBounds()
-            : null;
-
-        const cityId = global.getCurrentCityId ? global.getCurrentCityId() : null;
-        const parcelNumberProperty = cityId === 'buenos_aires'
+        if (!global.parcelLayer || !global.map) return;
+        const city = currentCity();
+        if (city !== parcelNumberLabelCity) {
+            clearNumberMarkerCache();
+            parcelNumberLabelCity = city;
+        }
+        const bounds = global.map.getBounds();
+        const parcelNumberProperty = city === 'buenos_aires'
             ? 'smp'
-            : cityId === 'belgrade'
+            : city === 'belgrade'
                 ? 'parcelNum'
                 : 'BROJ_CESTICE';
+        const visibleIds = new Set();
 
-        global.parcelLayer.eachLayer(layer => {
+        parcelLayersInViewport(bounds).forEach(layer => {
             const parcelId = parcelIdForLayer(layer);
             const feature = parcelFeature(parcelId);
             if (!feature) return;
             const parcelNumber = feature.properties?.[parcelNumberProperty];
-            if (!parcelNumber) return;
-            if (parcelNumberLabelFilter && parcelId && !parcelNumberLabelFilter.has(parcelId)) {
-                return;
-            }
+            if (!parcelNumber || (parcelNumberLabelFilter && parcelId && !parcelNumberLabelFilter.has(parcelId))) return;
+            const position = parcelLabelPosition(feature, layer, parcelId);
+            if (!position || (bounds && !bounds.contains(position))) return;
 
-            let labelLatLng = null;
-            const geometry = feature.geometry;
-
-            if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
-                try {
-                    const centroid = turf.centerOfMass(geometry);
-                    const coords = centroid?.geometry?.coordinates;
-                    if (Array.isArray(coords) && coords.length >= 2) {
-                        const [lng, lat] = coords;
-                        if (Number.isFinite(lat) && Number.isFinite(lng)) {
-                            labelLatLng = L.latLng(lat, lng);
-                        }
-                    }
-                } catch (error) {
-                    console.warn('Unable to compute centroid for parcel label', error);
+            const id = String(parcelId);
+            visibleIds.add(id);
+            const text = String(parcelNumber);
+            let record = parcelNumberLabelMarkers.get(id);
+            if (!record) {
+                const marker = global.L.marker(position, {
+                    icon: parcelNumberIcon(text),
+                    interactive: false
+                });
+                record = { marker, text };
+                parcelNumberLabelMarkers.set(id, record);
+            } else {
+                if (record.marker.getLatLng) {
+                    const current = record.marker.getLatLng();
+                    if (current.lat !== position.lat || current.lng !== position.lng) record.marker.setLatLng(position);
+                } else {
+                    record.marker.setLatLng(position);
+                }
+                if (record.text !== text) {
+                    record.marker.setIcon(parcelNumberIcon(text));
+                    record.text = text;
                 }
             }
+            if (!global.map.hasLayer(record.marker)) global.map.addLayer(record.marker);
+            activeParcelNumberMarkerIds.add(id);
+        });
 
-            if (!labelLatLng && typeof layer.getBounds === 'function') {
-                const bounds = layer.getBounds();
-                if (bounds && typeof bounds.getCenter === 'function') {
-                    const center = bounds.getCenter();
-                    if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
-                        labelLatLng = center;
-                    }
-                }
-            }
-
-            if (!labelLatLng) return;
-
-            if (bounds && !bounds.contains(labelLatLng)) {
-                return;
-            }
-
-            // Create a temporary element to measure the text size
-            const tempDiv = document.createElement('div');
-            tempDiv.className = 'parcel-number-label';
-            tempDiv.textContent = parcelNumber;
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.visibility = 'hidden';
-            tempDiv.style.whiteSpace = 'nowrap';
-            document.body.appendChild(tempDiv);
-            const width = tempDiv.offsetWidth;
-            const height = tempDiv.offsetHeight;
-            document.body.removeChild(tempDiv);
-
-            const label = L.marker(labelLatLng, {
-                icon: L.divIcon({
-                    className: 'parcel-number-label',
-                    html: `${parcelNumber}`,
-                    iconSize: [width, height],
-                    iconAnchor: [width / 2, height / 2]
-                }),
-                interactive: false
-            }).addTo(global.map);
-            parcelNumberLabels.push(label);
+        parcelNumberLabelMarkers.forEach((_record, id) => {
+            if (!visibleIds.has(id)) forgetNumberMarker(id);
         });
     }
 
     function clearParcelNumberLabels() {
-        parcelNumberLabels.forEach(label => global.map.removeLayer(label));
-        parcelNumberLabels = [];
+        activeParcelNumberMarkerIds.forEach(detachNumberMarker);
     }
 
     function refreshParcelNumberLabelsIfVisible() {
         const checkbox = document.getElementById('showParcelNumbers');
-        if (checkbox && checkbox.checked) {
-            drawParcelNumberLabels();
-        }
+        if (checkbox && checkbox.checked) drawParcelNumberLabels();
     }
 
     function attachParcelNumberMapListeners() {
-        if (!global.map || typeof global.map.on !== 'function' || parcelNumberMapListenersAttached) {
-            return;
-        }
-        try {
-            global.map.on('moveend', refreshParcelNumberLabelsIfVisible);
-            global.map.on('zoomend', refreshParcelNumberLabelsIfVisible);
-            parcelNumberMapListenersAttached = true;
-        } catch (_) { /* ignore */ }
+        if (!global.map || typeof global.map.on !== 'function' || parcelNumberMapListenersAttached) return;
+        global.map.on('moveend', refreshParcelNumberLabelsIfVisible);
+        global.map.on('zoomend', refreshParcelNumberLabelsIfVisible);
+        parcelNumberMapListenersAttached = true;
     }
 
     function setParcelNumberLabelFilter(ids) {
-        if (ids && ids.size) {
-            parcelNumberLabelFilter = new Set(Array.from(ids).map(id => id.toString()));
-        } else {
-            parcelNumberLabelFilter = null;
-        }
+        parcelNumberLabelFilter = ids && ids.size
+            ? new Set(Array.from(ids).map(id => id.toString()))
+            : null;
         refreshParcelNumberLabelsIfVisible();
     }
 

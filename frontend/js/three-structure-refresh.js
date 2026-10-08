@@ -61,6 +61,7 @@
                 const sources = Array.isArray(object.material) ? object.material : [object.material];
                 const scoped = sources.map(scopedStructureMaterial);
                 object.material = Array.isArray(object.material) ? scoped : scoped[0];
+                options.markOwnedMaterials?.(object, object.material);
                 scoped.forEach(material => {
                     if (!material || seenMaterials.has(material)) return;
                     seenMaterials.add(material);
@@ -92,7 +93,7 @@
         }
     }
 
-    function refreshStructureScene3D(options = {}) {
+    function refreshStructureScene3D(options = {}, eventName = null) {
         if (typeof options.isActive !== 'function' || !options.isActive()) return 'inactive';
         if (typeof options.hasScene !== 'function' || !options.hasScene()) {
             if (typeof options.initScene === 'function') options.initScene();
@@ -103,13 +104,27 @@
         if (typeof clearGroup !== 'function') {
             throw new TypeError('A clearGroup function is required for a live 3D structure refresh.');
         }
-        (Array.isArray(options.groups) ? options.groups : []).forEach(group => clearGroup(group));
+        const layer = ({
+            parksUpdated: 'parks', squaresUpdated: 'squares', lakesUpdated: 'lakes',
+            stationsUpdated: 'stations', buildingGroundsUpdated: 'buildingGrounds'
+        })[eventName];
+        const selected = options.layers?.[layer];
+        if (selected) {
+            if (selected.rebuildParcelGround && typeof options.rebuildParcelGround === 'function') {
+                options.rebuildParcelGround();
+            }
+            (Array.isArray(selected.groups) ? selected.groups : []).forEach(group => clearGroup(group));
+            callSafely(layer, selected.build, options.onError);
+            if (options.reparcellizationGroup) clearGroup(options.reparcellizationGroup);
+        } else {
+            // Initial callers and unknown events retain the complete-build behavior.
+            (Array.isArray(options.groups) ? options.groups : []).forEach(group => clearGroup(group));
+            ['parks', 'squares', 'lakes', 'stations', 'buildingGrounds'].forEach(name => {
+                callSafely(name, options.layers?.[name]?.build, options.onError);
+            });
+            if (typeof options.rebuildParcelGround === 'function') options.rebuildParcelGround();
+        }
 
-        callSafely('parks', options.buildParks, options.onError);
-        callSafely('squares', options.buildSquares, options.onError);
-        callSafely('lakes', options.buildLakes, options.onError);
-        callSafely('stations', options.buildStations, options.onError);
-        callSafely('proposalGrounds', options.buildProposalGrounds, options.onError);
         callSafely('reparcellization', options.buildReparcellization, options.onError);
         callSafely('display', options.applyDisplay, options.onError);
 

@@ -1,6 +1,9 @@
 // Unit tests for proposal-to-draft editor adapters and exact geometry round trips.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import { parse } from '@babel/parser';
 
 const require = createRequire(import.meta.url);
 
@@ -10,6 +13,7 @@ const require = createRequire(import.meta.url);
 Object.assign(globalThis, require('../../frontend/js/corridor-profile.js'));
 globalThis.turf = require('@turf/turf');
 const turf = globalThis.turf;
+const listUiSource = readFileSync(new URL('../../frontend/js/proposals/list-ui.js', import.meta.url), 'utf8');
 
 const {
     CREATABLE_PROPOSAL_GOALS,
@@ -19,6 +23,45 @@ const {
     reparcellizationAdapter,
     buildStructureAdapter
 } = require('../../frontend/js/proposal-editor-adapters.js');
+
+function loadListUiFunction(name, values) {
+    const ast = parse(listUiSource, { sourceType: 'script' });
+    const declaration = ast.program.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === name);
+    expect(declaration, `${name} declaration exists`).toBeTruthy();
+    const context = vm.createContext(values);
+    vm.runInContext(`${listUiSource.slice(declaration.start, declaration.end)}\nthis.launcher = ${name};`, context);
+    return context.launcher;
+}
+
+describe('fresh building editor launch results', () => {
+    it.each([
+        ['launchSingleBuildingToolForSelection', 'openSingleBuildingForParcels'],
+        ['launchRowHouseToolForSelection', 'openRowHouseForParcels'],
+        ['launchParcelBasedToolForSelection', 'openParcelBasedForParcels']
+    ])('waits for %s and reports a cancelled editor open as false', async (launcherName, openName) => {
+        let openStarted;
+        const started = new Promise(resolve => { openStarted = resolve; });
+        let resolveOpen;
+        const pendingOpen = new Promise(resolve => { resolveOpen = resolve; });
+        const launcher = loadListUiFunction(launcherName, {
+            getCurrentParcelSelectionContext: () => ({ ids: ['p1'] }),
+            shouldStopFreshProposalForWholeBlock: async () => false,
+            formatParcelSelectionLabel: () => 'Block A',
+            getPendingBuildingSeedFor: () => null,
+            [openName]: () => { openStarted(); return pendingOpen; }
+        });
+
+        const opening = launcher();
+        await started;
+        let settled = false;
+        opening.then(() => { settled = true; });
+        await Promise.resolve();
+        expect(settled).toBe(false);
+
+        resolveOpen(false);
+        await expect(opening).resolves.toBe(false);
+    });
+});
 
 function draftFor(adapter, proposal, overrides = {}) {
     // Editor inputs are authored records. Keep fixtures on the same side of the persistence
@@ -282,6 +325,62 @@ describe('building proposal adapters', () => {
             }
         }
     };
+
+    it.each([
+        ['single', 'openSingleBuildingForParcels'],
+        ['row', 'openRowHouseForParcels'],
+        ['parcelBased', 'openParcelBasedForParcels']
+    ])('waits for the %s editor and propagates a cancelled open', async (typology, openName) => {
+        const adapter = buildBuildingAdapter(typology);
+        const source = {
+            ...proposal,
+            proposalId: `building-open-${typology}`,
+            goal: typology === 'single' ? 'single' : 'buildings',
+            typologyType: typology,
+            buildingProposal: {
+                ...proposal.buildingProposal,
+                typologyType: typology,
+                parameters: { typology }
+            }
+        };
+        const draft = draftFor(adapter, source);
+        // Opening a saved design uses its exact live parcel IDs. Avoid footprint rebasing here so
+        // the test isolates the async editor result contract.
+        draft.previewGeometry = null;
+
+        const names = [
+            'LiveParcelFabric', 'ParcelPresenter', 'multiParcelSelection',
+            'pendingBuildingProposalContext', openName
+        ];
+        const prior = new Map(names.map(name => [name, {
+            existed: Object.prototype.hasOwnProperty.call(globalThis, name), value: globalThis[name]
+        }]));
+        let openStarted;
+        const started = new Promise(resolve => { openStarted = resolve; });
+        let resolveOpen;
+        const pendingOpen = new Promise(resolve => { resolveOpen = resolve; });
+        try {
+            globalThis.LiveParcelFabric = { get: id => id === 'p1' ? feature : null };
+            globalThis.ParcelPresenter = { getLayer: id => id === 'p1' ? { id } : null };
+            globalThis.multiParcelSelection = null;
+            globalThis[openName] = () => { openStarted(); return pendingOpen; };
+
+            const opening = adapter.openDesignEditor(draft);
+            await started;
+            let settled = false;
+            opening.then(() => { settled = true; });
+            await Promise.resolve();
+            expect(settled).toBe(false);
+
+            resolveOpen(false);
+            await expect(opening).resolves.toBe(false);
+        } finally {
+            prior.forEach((saved, name) => {
+                if (saved.existed) globalThis[name] = saved.value;
+                else delete globalThis[name];
+            });
+        }
+    });
 
     it('preserves manual footprints and every editor parameter', () => {
         const adapter = buildBuildingAdapter('buildings');

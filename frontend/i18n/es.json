@@ -1,4 +1,7 @@
 {
+    "optionalTools": {
+        "loadFailed": "No se pudo cargar esta herramienta. Inténtalo de nuevo."
+    },
     "urbanBlocks": {
         "title": "Manzanas urbanas · OSM",
         "toggle": "Detectar y analizar manzanas",

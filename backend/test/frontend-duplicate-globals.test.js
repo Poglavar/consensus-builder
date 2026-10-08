@@ -13,7 +13,7 @@
 // defined") until the alias in sharing.js was renamed. `var` is included for completeness (it
 // redeclares silently, like a function).
 //
-// This test fails on any function/const/let/var name declared at the TOP LEVEL of more than one file.
+// This test fails on top-level names shared by classic frontend scripts. Standalone ES modules are classified separately because their declarations do not enter the classic global namespace.
 // Declarations nested inside an IIFE, block or another function are module-private and are not
 // globals, so they are not collected — only `ast.program.body` is walked.
 //
@@ -45,7 +45,8 @@ function listJsFiles(dir) {
 // in a classic script). Anything inside an IIFE, block or another function is module-private and is
 // skipped. Destructuring patterns are skipped — only plain `Identifier` binding names are collected.
 function topLevelGlobalNames(source) {
-    const ast = parse(source, { sourceType: 'script' });
+    const ast = parse(source, { sourceType: 'unambiguous' });
+    if (ast.program.sourceType === 'module') return [];
     const out = [];
     for (const node of ast.program.body) {
         if (node.type === 'FunctionDeclaration' && node.id) {
@@ -68,7 +69,13 @@ describe('frontend global namespace', () => {
         expect(files.length).toBeGreaterThan(100);
     });
 
-    it('declares each top-level (global) function/const/let/var in exactly one file', () => {
+    it('classifies the standalone parcel coverage page as an ES module, not a classic global script', () => {
+        const source = readFileSync(path.resolve(FRONTEND_JS, 'parcel-coverage-report.js'), 'utf8');
+        expect(parse(source, { sourceType: 'unambiguous' }).program.sourceType).toBe('module');
+        expect(topLevelGlobalNames(source)).toEqual([]);
+    });
+
+    it('declares each top-level (global) function/const/let/var in exactly one classic script', () => {
         const byName = new Map();
 
         for (const file of files) {

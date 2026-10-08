@@ -78,11 +78,11 @@ describe('3D snapshot navigation', () => {
 
     it('starts the nearby-building query from the frozen entry anchor before parcel rendering', () => {
         const initScene = threeModeSource.slice(
-            threeModeSource.indexOf('    function initScene()'),
+            threeModeSource.indexOf('    async function initScene()'),
             threeModeSource.indexOf('    function startLoop()')
         );
         expect(initScene).toMatch(
-            /captureSceneLoadGeometry\(\);[\s\S]*?ensureNearbyProposalBuildings\(\);[\s\S]*?buildParcels3D\(flatGroup\);/
+            /captureSceneLoadGeometry\(\);[\s\S]*?ensureNearbyProposalBuildings\(\);[\s\S]*?const parcelGeneration = \+\+parcelGroundGeneration;[\s\S]*?await buildParcels3D\(flatGroup,\s*parcelGeneration,\s*isCurrent\);/
         );
     });
 });

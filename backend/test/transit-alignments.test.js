@@ -1,18 +1,23 @@
 // Tests the immutable OSM alignment registry independently of map, DOM, and Three.js rendering.
 import { afterEach, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const alignments = require('../../frontend/js/transit-alignments.js');
 
 afterEach(() => alignments.reset());
 
+import { mapModeModelScripts, readFrontendIndex } from './helpers/map-mode-loader.mjs';
+
 describe('transit reference alignment normalization', () => {
-    it('loads the registry before station placement and the rail builder before the 3D consumer', () => {
-        const index = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
+    it('loads the registry before station placement and rail builder before the 3D consumer', () => {
+        const index = readFrontendIndex();
+        const modelScripts = mapModeModelScripts();
         expect(index.indexOf("'js/transit-alignments.js'")).toBeLessThan(index.indexOf("'js/transit-stations.js'"));
-        expect(index.indexOf("'js/elevated-rail-3d.js'")).toBeLessThan(index.indexOf("'js/three-mode.js'"));
+        expect(index).toContain("'js/map-mode-loader.js'");
+        expect(modelScripts.indexOf('js/elevated-rail-3d.js')).toBeGreaterThan(-1);
+        expect(modelScripts.indexOf('js/elevated-rail-3d.js'))
+            .toBeLessThan(modelScripts.indexOf('js/three-mode.js'));
     });
 
     it('turns LineString and MultiLineString features into stable station-alignment records', () => {

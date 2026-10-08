@@ -1,4 +1,7 @@
 {
+    "optionalTools": {
+        "loadFailed": "Could not load this tool. Please try again."
+    },
     "urbanBlocks": {
         "title": "Urban blocks · OSM",
         "toggle": "Detect and analyse blocks",

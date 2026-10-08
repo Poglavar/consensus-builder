@@ -1,4 +1,7 @@
 {
+    "optionalTools": {
+        "loadFailed": "Alat nije mogao da se učita. Pokušajte ponovo."
+    },
     "urbanBlocks": {
         "title": "Urbani blokovi · OSM",
         "toggle": "Otkrij i analiziraj blokove",

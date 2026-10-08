@@ -324,13 +324,13 @@ async function launchSingleBuildingToolForSelection() {
     // Reopen on the existing design (a copied proposal, or your own in-progress edits) when the
     // pending context matches this selection. Position lives in the geometry, so pass features.
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
-    openSingleBuildingForParcels({
+    const opened = await openSingleBuildingForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null,
         initialGroundTreatment: seed?.groundSurface?.treatment || null
     });
-    return true;
+    return opened !== false;
 }
 
 async function launchRowHouseToolForSelection() {
@@ -345,12 +345,12 @@ async function launchRowHouseToolForSelection() {
         return false;
     }
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
-    openRowHouseForParcels({
+    const opened = await openRowHouseForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialParameters: seed ? seed.parameters : null
     });
-    return true;
+    return opened !== false;
 }
 
 async function launchParcelBasedToolForSelection() {
@@ -367,12 +367,12 @@ async function launchParcelBasedToolForSelection() {
         return false;
     }
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
-    openParcelBasedForParcels({
+    const opened = await openParcelBasedForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialParameters: seed ? seed.parameters : null
     });
-    return true;
+    return opened !== false;
 }
 
 function toggleDepositInput() {

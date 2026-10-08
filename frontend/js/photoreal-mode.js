@@ -80,6 +80,9 @@
                 ({ CesiumIonAuthPlugin, GLTFExtensionsPlugin, TileCompressionPlugin,
                     ReorientationPlugin } = mods[1]);
                 DRACOLoaderCtor = mods[2].DRACOLoader;
+            }).catch(function (error) {
+                tilesLibPromise = null;
+                throw error;
             });
         }
         return tilesLibPromise;
@@ -87,6 +90,11 @@
 
     // ---- state ----
     let active = false;
+    let activating = false;
+    let activationGeneration = 0;
+    let retentionTimer = null;
+    const RETAIN_TILES_MS = 60000;
+    const RETAIN_TILES_BYTES = 128 * 1024 * 1024;
     let loading = false; // photo view is composing (entry → first seat); drives the globe-icon spinner
     let tiles = null;
     let tilesAnchorKey = null; // anchor of the live tile session; reuse while it matches
@@ -348,7 +356,11 @@
         grounded = true;
         // The globe spinner is no longer stopped here — updateLoader syncs it to the "Streaming 3D
         // tiles…" indicator, so it stops exactly when that does (seating can lag a little behind).
+        cancelTerrainGridBuild();
         terrainGrid = null; // re-seated: the height field must be re-sampled in the new frame
+        groundTexture?.dispose();
+        groundTexture = null;
+        corridorUniforms.uGroundTex.value = null;
         resetTerrainRefreshTracking();
         // The world is in place: carve it under the proposals, swap the abstract built layers
         // for the mesh, and reveal — the first visible frame is the final composition.
@@ -478,6 +490,7 @@
     let maskMaterialPark = null; // green mask = keep-vegetation (park) regions
     let terrainGrid = null; // cached cleaned ground field, sampled once per covered plan extent
     let groundTexture = null; // DataTexture of terrainGrid heights, fed to the keep-veg shader
+    let terrainGridBuildGeneration = 0;
     let maskReady = false;
     let maskCenterX = 0;
     let maskCenterY = 0;
@@ -1486,43 +1499,69 @@
         return { minX: minX - pad, minY: minY - pad, maxX: maxX + pad, maxY: maxY + pad };
     }
 
+    function cancelTerrainGridBuild() {
+        terrainGridBuildGeneration += 1;
+    }
+
     // Sample a coarse tile-height grid over the bbox of all carve footprints, ONCE. The tile mesh
     // has no BVH, so per-vertex raycasting every rebuild would hitch; the terrain doesn't move, so
-    // one grid serves every wall. A later carve outside the cached extent triggers a larger rebuild.
-    function buildTerrainGrid(entries, suppliedBounds) {
-        if (!internals || !tiles) { terrainGrid = null; return; }
+    // one grid serves every wall. Stage samples off to the side and publish only a complete grid.
+    async function buildTerrainGrid(entries, suppliedBounds, onReady) {
+        const generation = ++terrainGridBuildGeneration;
+        const buildInternals = internals;
+        const buildTiles = tiles;
+        const stillCurrent = function () {
+            return generation === terrainGridBuildGeneration
+                && active && internals === buildInternals && tiles === buildTiles
+                && !!buildInternals && !!buildTiles;
+        };
+        if (!buildInternals || !buildTiles || !window.__threeSceneWork?.forEach) {
+            return Promise.resolve(false);
+        }
         // The seat shift was just applied — bake it into the world matrices before we raycast.
-        try { internals.scene.updateMatrixWorld(true); } catch (_) { }
+        try { buildInternals.scene.updateMatrixWorld(true); } catch (_) { }
         const bounds = suppliedBounds || terrainBoundsForEntries(entries);
-        if (!bounds) { terrainGrid = null; return; }
+        if (!bounds) return Promise.resolve(false);
         const minX = bounds.minX, minY = bounds.minY, maxX = bounds.maxX, maxY = bounds.maxY;
         const w = Math.max(1, maxX - minX), h = Math.max(1, maxY - minY);
         const nx = Math.max(2, Math.min(TERRAIN_GRID_MAX, Math.ceil(w / TERRAIN_GRID_MIN_CELL_M) + 1));
         const ny = Math.max(2, Math.min(TERRAIN_GRID_MAX, Math.ceil(h / TERRAIN_GRID_MIN_CELL_M) + 1));
-        const rawZ = new Float32Array(nx * ny);
-        for (let j = 0; j < ny; j++) {
-            for (let i = 0; i < nx; i++) {
-                const t = sampleTileSurfaceZ(minX + (w * i) / (nx - 1), minY + (h * j) / (ny - 1));
-                rawZ[j * nx + i] = (t === null || !isFinite(t)) ? NaN : t;
-            }
-        }
+        const count = nx * ny;
+        const indices = Array.from({ length: count }, function (_, index) { return index; });
+        const rawZ = new Float32Array(count);
+        const completed = await window.__threeSceneWork.forEach(indices, function (index) {
+            const i = index % nx;
+            const j = Math.floor(index / nx);
+            const t = sampleTileSurfaceZ(minX + (w * i) / (nx - 1), minY + (h * j) / (ny - 1));
+            rawZ[index] = (t === null || !isFinite(t)) ? NaN : t;
+        }, { isCurrent: stillCurrent, budgetMs: 6 });
+        if (!completed || !stillCurrent()) return false;
+
         const z = window.__photorealGround.cleanGroundGrid(rawZ, nx, ny, {
             openingRadiusCells: TERRAIN_OPENING_RADIUS_CELLS,
             obstacleMinHeightM: TERRAIN_OBSTACLE_MIN_HEIGHT_M,
             gapFillPasses: TERRAIN_GAP_FILL_PASSES
         });
-        terrainGrid = { minX: minX, minY: minY, dx: w / (nx - 1), dy: h / (ny - 1), nx: nx, ny: ny, z: z };
-        updateGroundTexture();
+        if (!stillCurrent()) return false;
+        const nextGrid = {
+            minX: minX, minY: minY, dx: w / (nx - 1), dy: h / (ny - 1),
+            nx: nx, ny: ny, z: z
+        };
+        // Create/upload the matching texture before publishing the new grid, so rendering never
+        // observes coordinates from one generation with heights from another.
+        updateGroundTexture(nextGrid);
+        terrainGrid = nextGrid;
+        if (typeof onReady === 'function' && stillCurrent()) onReady(nextGrid);
+        return true;
     }
 
     // Upload the height grid as a single-channel float texture the keep-veg shader samples for the
     // local ground height (nearest filtering — no float-linear extension needed). Missing samples
     // (NaN) fall back to 0 so a park over unstreamed tiles still discards its lawn near z≈0.
-    function updateGroundTexture() {
+    function updateGroundTexture(grid) {
         const THREE = window.THREE;
-        const g = terrainGrid;
-        if (!THREE || !g) return;
-        if (groundTexture) { try { groundTexture.dispose(); } catch (_) { } groundTexture = null; }
+        const g = grid || terrainGrid;
+        if (!THREE || !g) return false;
         const data = new Float32Array(g.nx * g.ny);
         for (let i = 0; i < data.length; i++) data[i] = isFinite(g.z[i]) ? g.z[i] : 0;
         const tex = new THREE.DataTexture(data, g.nx, g.ny, THREE.RedFormat, THREE.FloatType);
@@ -1531,12 +1570,15 @@
         tex.wrapS = THREE.ClampToEdgeWrapping;
         tex.wrapT = THREE.ClampToEdgeWrapping;
         tex.needsUpdate = true;
+        const previousTexture = groundTexture;
         groundTexture = tex;
         corridorUniforms.uGroundTex.value = tex;
         if (corridorUniforms.uGroundMin.value) corridorUniforms.uGroundMin.value.set(g.minX, g.minY);
         if (corridorUniforms.uGroundInvSpan.value) {
             corridorUniforms.uGroundInvSpan.value.set(1 / ((g.nx - 1) * g.dx), 1 / ((g.ny - 1) * g.dy));
         }
+        if (previousTexture) { try { previousTexture.dispose(); } catch (_) { } }
+        return true;
     }
 
     // Bilinear tile height at a scene-XY point from the cached grid; null if outside it or if every
@@ -1713,9 +1755,19 @@
         // Terrain sampling must never break the seal: a failure just leaves the grid null, and the
         // curtain falls back to the fixed skirt (old plinth behaviour).
         const terrainBounds = terrainBoundsForEntries(entries);
-        if (terrainBounds && (!terrainGrid
+        if (!options.skipTerrainGrid && terrainBounds && (!terrainGrid
             || !window.__photorealGround.coversBounds(terrainGrid, terrainBounds))) {
-            try { buildTerrainGrid(entries, terrainBounds); } catch (_) { terrainGrid = null; }
+            buildTerrainGrid(entries, terrainBounds, function (completedGrid) {
+                const latestBounds = terrainBoundsForEntries(collectCarveGeometries());
+                const gridCoversLatest = !latestBounds
+                    || window.__photorealGround.coversBounds(completedGrid, latestBounds);
+                // The synchronous mask build above used its old grid or fixed-skirt fallback.
+                // Rebuild after all samples and the matching texture are committed, then redraw.
+                buildMaskShapes({ skipTerrainGrid: gridCoversLatest, skipTerrainRefit: true });
+                renderCarveMask(maskCenterX, maskCenterY);
+            }).catch(function (error) {
+                console.warn('[photoreal] terrain height grid build failed', error);
+            });
         }
         // Roads follow direct samples of the currently visible Google mesh. The cleaned coarse grid
         // remains useful for park/structure ground bands and fallback curtains, but it is not precise
@@ -2102,7 +2154,11 @@
     }
 
     function disposeMask() {
+        cancelTerrainGridBuild();
         disposeMaskShapes();
+        for (const material of new Set([maskMaterial, maskMaterialRoad, maskMaterialPark,
+            maskMaterialProtect, apronMaterial, apronMaterialWater, apronMaterialPark,
+            apronMaterialSquare, roadFoundationMaterial, roadCollarMaterial])) material?.dispose();
         if (maskRT) { try { maskRT.dispose(); } catch (_) { } }
         maskRT = null;
         maskScene = null;
@@ -2224,7 +2280,8 @@
                 console.warn('[photoreal] no tiles streamed — no Google coverage here?');
                 setStatus(photorealI18n('threeMode.controls.noCoverage',
                     'No photorealistic coverage here — staying in abstract 3D.'));
-                deactivate({ keepStatus: true });
+                deactivate({ keepStatus: true, destination: 'model' });
+                window.requestMapMode('model');
                 return;
             }
             tryLockGround(dtS);
@@ -2264,18 +2321,16 @@
     }
 
     // ---- activate / deactivate ----
-    async function activate(options) {
-        if (active) return;
-        // Direct calls (URL-driven entry) can arrive before 3D mode is up — route through
-        // the same enter-3D-first path the globe button takes, then re-enter here. Only when
-        // that path actually exists: if three-mode failed to load, bouncing to goRealistic()
-        // would recurse right back here forever.
-        if (!(typeof window.isThreeModeActive === 'function' && window.isThreeModeActive())) {
-            if (typeof window.enterThreeMode === 'function') { goRealistic(); return; }
-            console.error('[photoreal] 3D mode is unavailable (three-mode failed to load)');
-            setStatus('Failed to start 3D mode.');
-            return;
-        }
+    async function activate(options = {}) {
+        if (!options.modeRequest) return window.requestMapMode('photo', options);
+        if (active) return true;
+        clearTimeout(retentionTimer);
+        retentionTimer = null;
+        const generation = ++activationGeneration;
+        const isCurrent = () => generation === activationGeneration && options.modeRequest.isCurrent();
+        activating = true;
+        setPhotorealLoading(true);
+        if (!window.isThreeModeActive?.() || !isCurrent()) return false;
         const btn = toggleBtn();
         if (btn) { btn.classList.add('active'); btn.disabled = true; }
         try {
@@ -2287,24 +2342,6 @@
             // URL-driven entry — by the time this layer attaches, the camera is already
             // framed on the proposal and the intro auto-rotate is running.)
             internals = (typeof window.getThreeModeInternals === 'function') ? window.getThreeModeInternals() : null;
-            if (!internals) {
-                // 3D mode may still be booting (URL-driven entry): wait for its ready signal.
-                // The timeout is a loud failure, never a stand-in for "ready".
-                await new Promise(function (resolve, reject) {
-                    let timer = null;
-                    const onReady = function () {
-                        window.removeEventListener('threeModeReady', onReady);
-                        clearTimeout(timer);
-                        resolve();
-                    };
-                    window.addEventListener('threeModeReady', onReady);
-                    timer = setTimeout(function () {
-                        window.removeEventListener('threeModeReady', onReady);
-                        reject(new Error('3D mode did not signal threeModeReady within 15 s'));
-                    }, 15000);
-                });
-                internals = (typeof window.getThreeModeInternals === 'function') ? window.getThreeModeInternals() : null;
-            }
             if (!internals) throw new Error('3D mode internals unavailable');
             const anchor = internals.originLatLng();
             const frame = window.__photorealFrame;
@@ -2323,6 +2360,7 @@
             // re-download the whole neighbourhood every time.
             const anchorKey = anchor.lat.toFixed(6) + ',' + anchor.lng.toFixed(6);
             if (tiles && scaleNode && tilesAnchorKey === anchorKey) {
+                active = true;
                 internals.scene.add(scaleNode);
                 if (tilesCamera && tilesCamera !== internals.camera) {
                     try { tiles.deleteCamera(tilesCamera); } catch (_) { }
@@ -2350,14 +2388,14 @@
                 active = true;
                 if (typeof window.scheduleViewAngleHint === 'function') window.scheduleViewAngleHint('photo');
                 console.log('[photoreal] reusing streamed tile session (anchor unchanged)');
-                return;
+                return true;
             }
             if (tiles) hardDisposeTiles(); // anchor changed — a fresh session is genuinely needed
 
             profT = { t0: performance.now() };
             await loadTilesLib();
             profT.lib = performance.now();
-            if (!document.body.classList.contains('realistic-mode-active')) return; // left meanwhile
+            if (!isCurrent() || !window.isThreeModeActive?.()) return false;
 
             tiles = new TilesRenderer();
             tiles.registerPlugin(new CesiumIonAuthPlugin({
@@ -2445,11 +2483,15 @@
             if (typeof window.scheduleViewAngleHint === 'function') window.scheduleViewAngleHint('photo');
             console.log('[photoreal] streaming Google 3D Tiles anchored at '
                 + anchor.lat.toFixed(5) + ',' + anchor.lng.toFixed(5) + ' (k=' + mercatorK.toFixed(3) + ')');
+            return true;
         } catch (err) {
+            if (!isCurrent()) return false;
             console.error('[photoreal] activation failed:', err);
             setStatus('Failed to load photorealistic 3D.');
-            deactivate({ keepStatus: true });
+            deactivate({ keepStatus: true, destination: '2d' });
+            return false;
         } finally {
+            if (generation === activationGeneration) activating = false;
             if (btn) btn.disabled = false;
             if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
         }
@@ -2457,13 +2499,16 @@
 
     function deactivate(options) {
         options = options || {};
+        if (!active && !activating && !internals && !loading) return;
+        activationGeneration++;
+        activating = false;
         active = false;
         hideCover(); // never let the loading cover outlive the mode (e.g. no-coverage fallback)
         setPhotorealLoading(false); // clear the globe spinner on exit / failure to compose
         if (typeof window.unregisterThreeModeFrameHook === 'function') {
             window.unregisterThreeModeFrameHook(onFrame);
         }
-        if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(false);
+        if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(false, { exiting: options.destination === '2d' });
         if (internals && internals.scene) {
             if (scaleNode) { try { internals.scene.remove(scaleNode); } catch (_) { } }
             if (hadSavedBackground) {
@@ -2477,6 +2522,11 @@
         // Google session and re-downloading the neighbourhood. hardDisposeTiles() drops them
         // when the anchor actually changes.
         internals = null;
+        clearTimeout(retentionTimer);
+        // Keep quick toggles warm, but bound abandoned Google sessions by both bytes and time.
+        const cacheBytes = tiles?.lruCache?.cachedBytes;
+        if (typeof cacheBytes === 'number' && cacheBytes > RETAIN_TILES_BYTES) hardDisposeTiles();
+        else retentionTimer = setTimeout(() => { if (!active && !activating) hardDisposeTiles(); }, RETAIN_TILES_MS);
         if (options.keepStatus) {
             if (loaderEl) loaderEl.classList.remove('visible');
             setTimeout(function () { removeUiElements(); }, 6000);
@@ -2490,6 +2540,8 @@
     }
 
     function hardDisposeTiles() {
+        clearTimeout(retentionTimer);
+        retentionTimer = null;
         clearAllTileSeamCaps();
         loadedTileScenes.clear();
         seamBoundaryGrid = null;
@@ -2507,32 +2559,10 @@
     }
 
     function toggle() {
-        if (active) deactivate(); else goRealistic();
+        return window.requestMapMode(active || activating ? 'model' : 'photo');
     }
 
-    // Globe-button click: layer the real world into 3D mode. From 2D it first enters abstract
-    // 3D and waits for the scene to actually be up (threeModeReady) before attaching tiles.
-    function goRealistic() {
-        if (active) return;
-        setPhotorealLoading(true); // spin the globe icon from the click until the world is seated
-        if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) {
-            activate();
-            return;
-        }
-        if (typeof window.enterThreeMode !== 'function') {
-            console.error('[photoreal] 3D mode is unavailable (three-mode failed to load)');
-            setStatus('Failed to start 3D mode.');
-            return;
-        }
-        const btn = toggleBtn();
-        if (btn) btn.classList.add('active');
-        try {
-            const b2 = document.getElementById('mode-2d-toggle'); if (b2) b2.classList.remove('active');
-        } catch (_) { }
-        const onReady = function () { window.removeEventListener('threeModeReady', onReady); activate(); };
-        window.addEventListener('threeModeReady', onReady);
-        try { window.enterThreeMode(); } catch (_) { window.removeEventListener('threeModeReady', onReady); }
-    }
+    function goRealistic() { return window.requestMapMode('photo'); }
 
     // Keep the carve in sync while the layer is up (proposal edits re-mirror this global).
     window.addEventListener('proposedBuildingsUpdated', function () {
@@ -2560,15 +2590,13 @@
 
     // Auto-exit when the user leaves 3D mode entirely (three-mode clears the body class).
     const bodyObserver = new MutationObserver(function () {
-        if (active && !document.body.classList.contains('three-mode-active')) {
-            deactivate();
+        if ((active || activating) && !document.body.classList.contains('three-mode-active')) {
+            deactivate({ destination: '2d' });
         }
     });
     bodyObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
     function init() {
-        const btn = toggleBtn();
-        if (btn) btn.addEventListener('click', toggle);
         if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
     }
     if (document.readyState === 'loading') {

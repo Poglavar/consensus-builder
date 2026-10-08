@@ -791,36 +791,16 @@ function isRealisticModeRequestedFromUrl(params) {
 }
 
 function tryEnterRealisticMode(options) {
-    try {
-        if (typeof window !== 'undefined' && window.PhotorealMode && typeof window.PhotorealMode.activate === 'function') {
-            window.PhotorealMode.activate(options || {});
-            return true;
-        }
-    } catch (err) {
-        console.warn('[realistic] failed to enter realistic mode', err);
-    }
-    return false;
+    if (typeof window.requestMapMode !== 'function') return false;
+    window.requestMapMode('photo', options || {});
+    return true;
 }
 
-// URL-driven view entry: enter 3D (framing the just-loaded proposal), then overlay realistic mode
-// when requested — framing the whole proposal from the top, tilted ~45°, with a gentle auto-rotate.
+// URL entry shares the same cancellable transition as the mode buttons.
 function enterUrlDrivenView(focusProposalIds) {
-    // A shared AI render (?scene=<slug>) carries the exact camera pose it was shot from; when the
-    // scene has been fetched, reproduce it instead of auto-framing. If the fetch hasn't resolved
-    // yet, ai-scene-follow re-applies it once it lands, so this only misses on a fast race.
     const restoreView = (typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null;
-    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds, restoreView: restoreView });
-    if (entered && isRealisticModeRequestedFromUrl()) {
-        const activateRealistic = () => tryEnterRealisticMode({ frameProposal: true, pitchDeg: -45, autoRotate: true });
-        if (typeof window.__ensure3DModeStack === 'function' && !window.PhotorealMode) {
-            // The lazy 3D stack may still be loading (enterThreeMode is the
-            // loader wrapper until it lands); PhotorealMode arrives with it.
-            window.__ensure3DModeStack().then(activateRealistic);
-        } else {
-            activateRealistic();
-        }
-    }
-    return entered;
+    const options = { fromUrl: true, focusProposalIds, restoreView, frameProposal: true };
+    return isRealisticModeRequestedFromUrl() ? tryEnterRealisticMode(options) : tryEnterThreeMode(options);
 }
 
 function roughlyEqualLatLng(a, b, eps = 1e-12) {

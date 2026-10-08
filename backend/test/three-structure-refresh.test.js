@@ -22,6 +22,15 @@ function sceneOptions(overrides = {}) {
         buildSquares: vi.fn(() => events.push('build:squares')),
         buildLakes: vi.fn(() => events.push('build:lakes')),
         buildStations: vi.fn(() => events.push('build:stations')),
+        rebuildParcelGround: vi.fn(() => events.push('rebuild:parcelground')),
+        reparcellizationGroup: 'reparcel',
+        layers: {
+            parks: { groups: ['park-flat', 'parks'], build: vi.fn(() => events.push('build:parks')) },
+            squares: { groups: ['square-flat', 'squares'], build: vi.fn(() => events.push('build:squares')) },
+            lakes: { groups: ['lake-flat', 'lakes'], rebuildParcelGround: true, build: vi.fn(() => events.push('build:lakes')) },
+            stations: { groups: ['stations'], rebuildParcelGround: true, build: vi.fn(() => events.push('build:stations')) },
+            buildingGrounds: { groups: ['building-grounds'], build: vi.fn(() => events.push('build:grounds')) }
+        },
         buildReparcellization: vi.fn(() => events.push('build:reparcellization')),
         applyDisplay: vi.fn(() => events.push('apply:display')),
         rebuildBuildings: vi.fn(() => events.push('rebuild:buildings')),
@@ -50,26 +59,34 @@ describe('refreshStructureScene3D', () => {
         expect(options.rebuildBuildings).not.toHaveBeenCalled();
     });
 
-    it('rebuilds all structures and then the affected existing buildings', () => {
-        const { events, groups, options } = sceneOptions();
+    it.each([
+        ['parksUpdated', ['park-flat', 'parks'], 'build:parks', false],
+        ['squaresUpdated', ['square-flat', 'squares'], 'build:squares', false],
+        ['lakesUpdated', ['lake-flat', 'lakes'], 'build:lakes', true],
+        ['stationsUpdated', ['stations'], 'build:stations', true],
+        ['buildingGroundsUpdated', ['building-grounds'], 'build:grounds', false]
+    ])('refreshes only the %s layer while preserving shared follow-up work', (eventName, selectedGroups, buildEvent, parcelGround) => {
+        const { events, options } = sceneOptions();
 
-        expect(refreshStructureScene3D(options)).toBe('rebuilt');
-        expect(options.clearGroup.mock.calls.map(call => call[0])).toEqual(groups);
-        expect(events).toEqual([
-            'clear:planned', 'clear:parks', 'clear:squares', 'clear:lakes', 'clear:stations',
-            'build:parks', 'build:squares', 'build:lakes', 'build:stations', 'build:reparcellization',
-            'apply:display',
-            'rebuild:buildings', 'rebuild:interaction'
-        ]);
+        expect(refreshStructureScene3D(options, eventName)).toBe('rebuilt');
+        expect(options.clearGroup.mock.calls.map(call => call[0])).toEqual([...selectedGroups, 'reparcel']);
+        expect(events).toContain(buildEvent);
+        expect(events).toContain('build:reparcellization');
+        expect(events).toContain('apply:display');
+        expect(events).toContain('rebuild:buildings');
+        expect(events).toContain('rebuild:interaction');
+        expect(options.rebuildParcelGround).toHaveBeenCalledTimes(parcelGround ? 1 : 0);
+        const allBuilds = events.filter(event => event.startsWith('build:'));
+        expect(allBuilds).toEqual([buildEvent, 'build:reparcellization']);
     });
 
     it('still rebuilds buildings when one decoration renderer fails', () => {
         const error = new Error('park decoration failed');
-        const { options } = sceneOptions({ buildParks: vi.fn(() => { throw error; }) });
+        const { options } = sceneOptions();
+        options.layers.parks.build = vi.fn(() => { throw error; });
 
-        expect(refreshStructureScene3D(options)).toBe('rebuilt');
+        expect(refreshStructureScene3D(options, 'parksUpdated')).toBe('rebuilt');
         expect(options.onError).toHaveBeenCalledWith('parks', error);
-        expect(options.buildSquares).toHaveBeenCalledOnce();
         expect(options.rebuildBuildings).toHaveBeenCalledOnce();
     });
 });
@@ -108,11 +125,13 @@ describe('applyStructureDisplayMode', () => {
     it('makes planned structures visibly transparent without writing invisible depth', () => {
         const source = testMaterial();
         const group = testGroup(source);
+        const markOwnedMaterials = vi.fn();
 
-        expect(applyStructureDisplayMode([group], 'ghost')).toEqual({
+        expect(applyStructureDisplayMode([group], 'ghost', { markOwnedMaterials })).toEqual({
             mode: 'ghost', visible: true, materialCount: 1
         });
         expect(group.mesh.material).not.toBe(source);
+        expect(markOwnedMaterials).toHaveBeenCalledWith(group.mesh, group.mesh.material);
         expect(group.mesh.material).toMatchObject({
             opacity: 0.38,
             transparent: true,

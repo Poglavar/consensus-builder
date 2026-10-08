@@ -1,10 +1,18 @@
 (function (global) {
     'use strict';
 
-    let ownerCountLabels = [];
+    const ownerCountLabelMarkers = new Map();
+    const activeOwnerCountMarkerIds = new Set();
     let ownerCountLabelFilter = null;
     let ownerCountMapListenersAttached = false;
     let ownerCountHotkeyAttached = false;
+    let ownerCountLabelCity = null;
+
+    if (typeof global.addEventListener === 'function') {
+        global.addEventListener('parcelFabricCommitted', event => {
+            (event?.detail?.removedIds || []).forEach(id => forgetOwnerCountMarker(String(id)));
+        });
+    }
 
     const isEditableTarget = (target) => {
         if (!target) return false;
@@ -26,6 +34,23 @@
 
     const parcelIdForLayer = layer => global.ParcelPresenter?.getIdForLayer?.(layer) || null;
     const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
+
+    function detachOwnerCountMarker(id) {
+        const record = ownerCountLabelMarkers.get(id);
+        if (record && global.map && global.map.hasLayer(record.marker)) global.map.removeLayer(record.marker);
+        activeOwnerCountMarkerIds.delete(id);
+    }
+
+    function forgetOwnerCountMarker(id) {
+        detachOwnerCountMarker(id);
+        ownerCountLabelMarkers.delete(id);
+    }
+
+    function clearOwnerCountLabelMarkers() {
+        activeOwnerCountMarkerIds.forEach(detachOwnerCountMarker);
+        ownerCountLabelMarkers.clear();
+        activeOwnerCountMarkerIds.clear();
+    }
 
     function getOwnerCountFromFeature(feature) {
         if (!feature || !feature.properties) return null;
@@ -70,14 +95,16 @@
     }
 
     function drawOwnerCountLabels() {
-        clearOwnerCountLabels();
-        if (!global.parcelLayer) return;
+        if (!global.parcelLayer || !global.map) return;
+        const city = global.ParcelLabelModel?.currentCity?.() || '';
+        if (city !== ownerCountLabelCity) {
+            clearOwnerCountLabelMarkers();
+            ownerCountLabelCity = city;
+        }
+        const bounds = global.map.getBounds();
+        const visibleIds = new Set();
 
-        const bounds = (global.map && typeof global.map.getBounds === 'function')
-            ? global.map.getBounds()
-            : null;
-
-        global.parcelLayer.eachLayer(layer => {
+        global.getParcelsInBounds(bounds).forEach(layer => {
             const parcelId = parcelIdForLayer(layer);
             const feature = parcelFeature(parcelId);
             if (!feature) return;
@@ -88,56 +115,49 @@
             const ownerCount = getOwnerCountFromFeature(feature);
             if (ownerCount === null) return;
 
-            let labelLatLng = null;
-            const geometry = feature.geometry;
+            const labelPosition = global.ParcelLabelModel?.position?.(feature, layer, parcelId);
+            if (!labelPosition || (bounds && !bounds.contains(labelPosition))) return;
 
-            if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
-                try {
-                    const centroid = turf.centerOfMass(geometry);
-                    const coords = centroid?.geometry?.coordinates;
-                    if (Array.isArray(coords) && coords.length >= 2) {
-                        const [lng, lat] = coords;
-                        if (Number.isFinite(lat) && Number.isFinite(lng)) {
-                            labelLatLng = L.latLng(lat, lng);
-                        }
-                    }
-                } catch (error) {
-                    console.warn('Unable to compute centroid for owner count label', error);
+            const id = String(parcelId);
+            visibleIds.add(id);
+            let record = ownerCountLabelMarkers.get(id);
+            if (!record) {
+                const marker = L.marker(labelPosition, {
+                    icon: ownerCountLabelIcon(ownerCount),
+                    interactive: false
+                });
+                record = { marker, ownerCount };
+                ownerCountLabelMarkers.set(id, record);
+            } else {
+                const current = record.marker.getLatLng();
+                if (current.lat !== labelPosition.lat || current.lng !== labelPosition.lng) {
+                    record.marker.setLatLng(labelPosition);
+                }
+                if (record.ownerCount !== ownerCount) {
+                    record.marker.setIcon(ownerCountLabelIcon(ownerCount));
+                    record.ownerCount = ownerCount;
                 }
             }
+            if (!global.map.hasLayer(record.marker)) global.map.addLayer(record.marker);
+            activeOwnerCountMarkerIds.add(id);
+        });
 
-            if (!labelLatLng && typeof layer.getBounds === 'function') {
-                const bounds = layer.getBounds();
-                if (bounds && typeof bounds.getCenter === 'function') {
-                    const center = bounds.getCenter();
-                    if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
-                        labelLatLng = center;
-                    }
-                }
-            }
+        ownerCountLabelMarkers.forEach((_record, id) => {
+            if (!visibleIds.has(id)) forgetOwnerCountMarker(id);
+        });
+    }
 
-            if (!labelLatLng) return;
-
-            if (bounds && !bounds.contains(labelLatLng)) {
-                return;
-            }
-
-            const label = L.marker(labelLatLng, {
-                icon: L.divIcon({
-                    className: 'parcel-owner-count-label',
-                    html: `${ownerCount}`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                }),
-                interactive: false
-            }).addTo(global.map);
-            ownerCountLabels.push(label);
+    function ownerCountLabelIcon(ownerCount) {
+        return L.divIcon({
+            className: 'parcel-owner-count-label',
+            html: String(ownerCount),
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
         });
     }
 
     function clearOwnerCountLabels() {
-        ownerCountLabels.forEach(label => global.map.removeLayer(label));
-        ownerCountLabels = [];
+        activeOwnerCountMarkerIds.forEach(detachOwnerCountMarker);
     }
 
     function refreshOwnerCountLabelsIfVisible() {

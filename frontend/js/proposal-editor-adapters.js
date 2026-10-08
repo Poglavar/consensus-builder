@@ -1101,27 +1101,27 @@
                 const typology = draft.editorPayload?.typology || key;
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 if (typology === 'single' && typeof global.openSingleBuildingForParcels === 'function') {
-                    global.openSingleBuildingForParcels({
+                    const opened = await global.openSingleBuildingForParcels({
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialBuildings: features,
                         initialGroundTreatment: context.groundSurface?.treatment || null,
                         initialTakeWholeParcels: context.takeWholeParcels === true
                     });
-                    return true;
+                    return opened !== false;
                 }
                 if (typology === 'row' && typeof global.openRowHouseForParcels === 'function') {
-                    global.openRowHouseForParcels({
+                    const opened = await global.openRowHouseForParcels({
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialParameters: context.parameters || null,
                         initialFeature: features[0] || null
                     });
-                    return true;
+                    return opened !== false;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
-                    global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, initialParameters: context.parameters || null });
-                    return true;
+                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, initialParameters: context.parameters || null });
+                    return opened !== false;
                 }
                 if (typeof global.openUrbanRuleForParcels === 'function') {
                     const seed = typeof global.buildBlockifySeed === 'function' ? global.buildBlockifySeed(context) : context.parameters;

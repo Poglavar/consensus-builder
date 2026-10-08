@@ -98,6 +98,12 @@ for p in paths:
 PY
 echo "🆕 Cache-bust token: $BUILD_ID"
 
+# Build immutable production-only classic-script bundles from the freshly reset, metadata-stamped
+# source tree. The builder writes a staged copy and never mutates the checked-out frontend.
+STAGING_DIR=$(mktemp -d "${TMPDIR:-/tmp}/cb-frontend-static.XXXXXX")
+trap 'rm -rf "$STAGING_DIR"' EXIT
+node "$REMOTE_REPO/frontend/build-static.cjs" "$STAGING_DIR" "$REMOTE_REPO/frontend"
+
 # Back up current docroot, then prune old ones. Without the prune this leaked a
 # full ~25 MB copy per deploy forever: by 2026-08-15 there were 222 backups
 # eating 4.4 GB on a disk that was 95% full.
@@ -125,7 +131,7 @@ rsync -a --delete \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
-    "$REMOTE_REPO/frontend/" "$DOCROOT/"
+    "$STAGING_DIR/" "$DOCROOT/"
 # Excluded destination files survive rsync --delete. Remove exact deployment artefacts that an
 # older deployment may already have copied into the public docroot.
 rm -f \

@@ -126,14 +126,7 @@
             return;
         }
 
-        const visibleParcels = layers.filter(layer => {
-            try {
-                const layerBounds = layer && typeof layer.getBounds === 'function' ? layer.getBounds() : null;
-                return layerBounds ? bounds.intersects(layerBounds) : false;
-            } catch (_) {
-                return false;
-            }
-        });
+        const visibleParcels = global.getParcelsInBounds(bounds);
 
         setLabel(
             'sidebar.parcels.inViewTemplate',

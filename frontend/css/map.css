@@ -1114,6 +1114,21 @@ body.three-mode-active #agent-bubbles-container {
     line-height: 1;
 }
 
+/* A zero-size Leaflet anchor lets the auto-sized label child center itself at the parcel point. */
+.parcel-number-label-anchor.leaflet-div-icon {
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.parcel-number-label-anchor > .parcel-number-label {
+    position: relative;
+    transform: translate(-50%, -50%);
+}
+
 /* Parcel owner count labels */
 .parcel-owner-count-label {
     background: transparent !important;

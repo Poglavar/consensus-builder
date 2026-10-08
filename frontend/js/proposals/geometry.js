@@ -626,7 +626,7 @@ async function handleGeometryAction(actionKey) {
                 }
                 if (typeof shouldStopFreshProposalForWholeBlock === 'function'
                     && await shouldStopFreshProposalForWholeBlock('single', selection)) break;
-                window.BuildingUpload.open(
+                await window.BuildingUpload.open(
                     {
                         parcelIds: selection.ids,
                         blockName: (typeof formatParcelSelectionLabel === 'function')

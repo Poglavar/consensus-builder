@@ -6,7 +6,10 @@ import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const { classifyThreeModeKeydown } = require('../../frontend/js/three-keyboard-context.js');
-const indexSource = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
+import { mapModeModelScripts, readFrontendIndex } from './helpers/map-mode-loader.mjs';
+
+const indexSource = readFrontendIndex();
+const modelScripts = mapModeModelScripts();
 const threeModeSource = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 
 describe('3D keyboard context', () => {
@@ -47,9 +50,11 @@ describe('3D keyboard context', () => {
         expect(threeModeSource).toContain('window.MapShell.isBlockingDialogOpen()');
     });
 
-    it('loads the policy before 3D and installs a capture-phase boundary', () => {
-        expect(indexSource.indexOf("'js/three-keyboard-context.js'"))
-            .toBeLessThan(indexSource.indexOf("'js/three-mode.js'"));
+    it('loads the policy through the model loader before 3D and installs a capture-phase boundary', () => {
+        expect(indexSource).toContain("'js/map-mode-loader.js'");
+        expect(modelScripts.indexOf('js/three-keyboard-context.js')).toBeGreaterThan(-1);
+        expect(modelScripts.indexOf('js/three-keyboard-context.js'))
+            .toBeLessThan(modelScripts.indexOf('js/three-mode.js'));
         expect(threeModeSource).toContain("window.addEventListener('keydown', handleThreeModeKeyboardContext, true);");
         expect(threeModeSource).toContain('evt.stopImmediatePropagation();');
     });

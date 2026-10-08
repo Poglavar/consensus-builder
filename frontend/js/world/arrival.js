@@ -53,11 +53,8 @@
         const key = global.getProposalKey(proposal);
         const decision = api.plan({ proposalId: key, buildingsSource: buildingsSource() });
         if (!decision.dive3D) { log(`staying in 2D (buildings: ${buildingsSource() || 'unknown'})`); return false; }
-        const loaded = await global.__ensure3DModeStack();
-        if (!loaded) { log('3D stack failed to load; staying in 2D'); return false; }
-        const ready = new Promise(resolve => global.addEventListener('threeModeReady', resolve, { once: true }));
-        global.enterThreeMode({ fromUrl: true, focusProposalIds: [key] });
-        await ready;
+        const ready = await global.enterThreeMode({ fromUrl: true, focusProposalIds: [key] });
+        if (!ready) { log('3D entry cancelled or unavailable; staying in the current view'); return false; }
         // Entering 3D closes the proposal card, which drops the selection, and a downloaded
         // (unapplied) proposal is drawn in 3D only while selected. Select it again without the 2D
         // card, the same call a 3D click on a proposal makes.

@@ -58,6 +58,7 @@ let buildingLayer = null;
 let buildingFeatureById = new Map();
 let buildingRenderedLayersById = new Map();
 let renderedBuildingOutcomeSignatures = new Map();
+let renderedBuildingFeatureSignatures = new Map();
 let dguBuildingLayer = null;
 let osmBuildingLayer = null;
 let roadLayer = null;
@@ -777,14 +778,85 @@ function buildingFeatureWithOutcome(feature, state) {
     return { ...feature, geometry, properties: { ...(feature.properties || {}), __outcome: outcome } };
 }
 
+function reconcileBuildingFeatureEntries(previousSignatures, features, getId, prepareFeature, signatureOf) {
+    const nextSignatures = new Map();
+    const nextFeatures = new Map();
+    const changed = [];
+    for (const source of features) {
+        const id = getId(source);
+        if (!id || !source?.geometry) continue;
+        const feature = prepareFeature(source);
+        const signature = signatureOf(feature);
+        nextSignatures.set(id, signature);
+        nextFeatures.set(id, source);
+        if (previousSignatures.get(id) !== signature) changed.push({ id, feature });
+    }
+    const removed = [];
+    previousSignatures.forEach((_signature, id) => {
+        if (!nextSignatures.has(id)) removed.push(id);
+    });
+    return { nextSignatures, nextFeatures, changed, removed };
+}
+
+function stableBuildingFeatureSignature(feature, style = null) {
+    // Hash the canonical JSON walk in place: retaining serialized copies of up to 12k building
+    // geometries doubled a large part of the pool just to avoid repainting unchanged features.
+    let first = 2166136261;
+    let second = 0x9e3779b9;
+    const write = text => {
+        for (let index = 0; index < text.length; index++) {
+            const code = text.charCodeAt(index);
+            first = Math.imul(first ^ code, 16777619) >>> 0;
+            second = Math.imul(second ^ code, 2246822519) >>> 0;
+        }
+    };
+    const visit = value => {
+        if (Array.isArray(value)) {
+            write('[');
+            value.forEach((entry, index) => { if (index) write(','); visit(entry); });
+            write(']');
+        } else if (value && typeof value === 'object') {
+            write('{');
+            const keys = Object.keys(value).filter(key => {
+                const type = typeof value[key];
+                return type !== 'undefined' && type !== 'function' && type !== 'symbol';
+            }).sort();
+            keys.forEach((key, index) => {
+                if (index) write(',');
+                write(JSON.stringify(key));
+                write(':');
+                visit(value[key]);
+            });
+            write('}');
+        } else {
+            const encoded = JSON.stringify(value);
+            write(encoded === undefined ? 'null' : encoded);
+        }
+    };
+    visit({ feature, style });
+    return `${first.toString(16).padStart(8, '0')}:${second.toString(16).padStart(8, '0')}`;
+}
+
+function buildingStyleForFeature(feature) {
+    return (typeof window.buildingOutcomeStyle === 'function')
+        ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
+        : (window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 });
+}
+
+function applyBuildingFeatureLayerChanges(layerGroup, layersById, changes) {
+    changes.removed.concat(changes.changed.map(entry => entry.id)).forEach(id => {
+        (layersById.get(id) || []).forEach(layer => layerGroup.removeLayer(layer));
+        layersById.delete(id);
+    });
+    changes.changed.forEach(entry => layerGroup.addData(entry.feature));
+}
+
 function buildingLayerOptions() {
     return {
         // Context only: existing buildings must never intercept clicks meant for the parcels
         // beneath them (they are inspectable in 3D, not in 2D).
         interactive: false,
-        style: (feature) => (typeof window.buildingOutcomeStyle === 'function')
-            ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
-            : (window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }),
+        style: buildingStyleForFeature,
         onEachFeature: (feature, layer) => {
             const id = buildingPoolFeatureKey(feature);
             if (!id) return;
@@ -806,24 +878,28 @@ function buildingLayerOptions() {
 function rebuildBuildingLayerFromPool() {
     const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
     const state = currentBuildingOutcomeState();
-    buildingFeatureById = new Map();
-    pool.forEach(feature => {
-        const id = buildingPoolFeatureKey(feature);
-        if (id && feature?.geometry) buildingFeatureById.set(id, feature);
-    });
-    const features = pool.map(feature => buildingFeatureWithOutcome(feature, state));
+    const changes = reconcileBuildingFeatureEntries(
+        renderedBuildingFeatureSignatures,
+        pool,
+        buildingPoolFeatureKey,
+        feature => buildingFeatureWithOutcome(feature, state),
+        feature => stableBuildingFeatureSignature(feature, buildingStyleForFeature(feature))
+    );
     // The Layers-sheet checkbox is the source of truth for visibility. Deciding from "was the old
     // layer on the map" broke the show-buildings toggle: the corridor preload fills the pool and
     // rebuilds the layer OFF-map while the box is unticked, and the next tick inherited hidden.
     const checkbox = document.getElementById('showBuildings');
     const shouldShow = checkbox ? checkbox.checked : (buildingLayer ? map.hasLayer(buildingLayer) : true);
-    if (buildingLayer) {
-        map.removeLayer(buildingLayer);
+    if (!buildingLayer) {
+        buildingLayer = L.geoJSON(null, buildingLayerOptions());
+        buildingRenderedLayersById = new Map();
     }
-    buildingRenderedLayersById = new Map();
-    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, buildingLayerOptions());
+    applyBuildingFeatureLayerChanges(buildingLayer, buildingRenderedLayersById, changes);
+    buildingFeatureById = changes.nextFeatures;
+    renderedBuildingFeatureSignatures = changes.nextSignatures;
     renderedBuildingOutcomeSignatures = buildingOutcomeSignatures(state);
-    if (shouldShow) buildingLayer.addTo(map);
+    if (shouldShow && !map.hasLayer(buildingLayer)) buildingLayer.addTo(map);
+    else if (!shouldShow && map.hasLayer(buildingLayer)) map.removeLayer(buildingLayer);
     try { window.buildingLayer = buildingLayer; } catch (_) { }
 }
 window.rebuildBuildingLayerFromPool = rebuildBuildingLayerFromPool;
@@ -852,10 +928,16 @@ function refreshBuildingOutcomesFromRecords() {
         buildingRenderedLayersById.delete(id);
 
         const source = buildingFeatureById.get(id);
-        if (!source?.geometry) return;
-        try { buildingLayer.addData(buildingFeatureWithOutcome(source, state)); } catch (error) {
-            console.error('[map-core] local building outcome refresh failed', id, error);
+        if (!source?.geometry) {
+            renderedBuildingFeatureSignatures.delete(id);
+            return;
         }
+        const effective = buildingFeatureWithOutcome(source, state);
+        try { buildingLayer.addData(effective); } catch (error) {
+            console.error('[map-core] local building outcome refresh failed', id, error);
+            return;
+        }
+        renderedBuildingFeatureSignatures.set(id, stableBuildingFeatureSignature(effective, buildingStyleForFeature(effective)));
     });
     try { window.buildingLayer = buildingLayer; } catch (_) { }
 }
