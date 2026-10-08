@@ -13,7 +13,7 @@ import { reparseListings } from '../floor-plans/reparse.js';
 import { processAssets } from '../floor-plans/process-assets.js';
 import { matchBuildingCandidates } from '../floor-plans/building-links.js';
 import { importSites,importWebsiteCandidates,verifyArchivedSites } from '../floor-plans/agency-sites.js';
-import { seedReviewedBindings,resolveBuildingLinks } from '../floor-plans/building-resolution.js';
+import { importBuildingBindings,seedReviewedBindings,resolveBuildingLinks } from '../floor-plans/building-resolution.js';
 import { enqueuePlanTasks,interpretPlans } from '../floor-plans/interpret-plans.js';
 import { DEFAULT_MODEL } from '../floor-plans/plan-reading.js';
 
@@ -29,6 +29,7 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
  websites --file FILE         Import registry-mapped website search candidates
  verify-sites                 Recheck legal identity on archived home/contact pages
  resolve-bindings             Seed reviewed bindings, resolve exact matches, suggest spatial candidates
+ bindings --file FILE         Import independently verified listing/project/address bindings
  models --file FILE           Import reviewed unit geometry against archived source hashes
  extract [--max-assets 100] [--max-minutes 45] [--matched-only]
  enqueue-plans [--limit 1000]
@@ -63,6 +64,7 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
   else if(action==='websites') result=await importWebsiteCandidates(client,await readJson(option('--file')));
   else if(action==='sites') result=await importSites(client,await readJson(option('--file')));
   else if(action==='models') result=await importUnitModels(client,await readJson(option('--file')));
+  else if(action==='bindings') result=await importBuildingBindings(client,await readJson(option('--file')));
   else if(action==='enqueue') result={enqueued:await enqueue(client,option('--url'),{agencyId:has('--agency')?Number(option('--agency')):null,kind:has('--kind')?option('--kind'):'page',priority:100})};
   else if(action==='resolve-bindings') result={reviewed:await seedReviewedBindings(client),resolved:await resolveBuildingLinks(client),spatialCandidates:await matchBuildingCandidates(client)};
   else if(action==='enqueue-plans') result=await enqueuePlanTasks(client,{limit:number('--limit',1000)});
