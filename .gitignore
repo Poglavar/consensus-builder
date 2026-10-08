@@ -19,6 +19,7 @@ blockchain/solana/.prospective-external-market.private.json
 backend/logs/
 backend/.venv-floor-plans/
 scripts/__pycache__/
+backend/scripts/__pycache__/
 backend/.venv-floor-plans/
 
 # Stray screenshots in the repo root (debug captures belong in a scratch directory)
