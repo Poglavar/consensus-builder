@@ -4,10 +4,10 @@
   "checkedAt": "2026-10-08",
   "verifiedParcelResponse": null,
   "source": null,
-  "registryFound": null,
+  "registryFound": true,
   "verifiedSample": false,
   "targetGeometryEvidence": "none",
-  "nativeIdReadiness": "not_verified",
+  "nativeIdReadiness": "schema_only_unverified_values",
   "cityId": "capital:TJ:dushanbe",
   "name": "Dushanbe",
   "country": "Tajikistan",
@@ -92,14 +92,31 @@
       "httpStatus": "TLS certificate verification failure: certificate expired",
       "contentType": "unavailable",
       "assessment": "Officially linked from baqaydgiri.tj but inaccessible without disabling TLS verification. Its corresponding HTTP root redirects (303) to HTTPS, so no content was inspected."
+    },
+    {
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6?f=json",
+      "method": "GET with a per-request certificate-verification exception",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Public polygon-layer metadata verified. Subsequent feature/count queries fail, including from a second network; see the linked diagnostic for every request.",
+      "evidenceFile": "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json"
     }
   ],
   "coverageAssessment": {
-    "claimedScope": "Tajikistan real-estate registration geoportal, exact published spatial extent unverified.",
+    "claimedScope": "Public Tajikistan real-estate geoportal; its Dushanbe-specific OLD_DATA layer declares an approximately 29 by 29 km extent around the city.",
     "verifiedOpenScope": null,
-    "countrywideVerified": false
+    "countrywideVerified": false,
+    "declaredExtentEvidenceFile": "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json"
   },
-  "blocker": "The official registration-service homepage is reachable and directly confirms the Geoportal entry at geoportal.tj; ordinary HTTP on both portal aliases forces HTTPS, whose certificate is expired. Its linked State Committee website also redirects to HTTPS with an expired certificate. TLS verification was not bypassed, so viewer scripts/service endpoints could not be inspected and no parcel polygon was verified.",
-  "remainingUncertainty": "Whether the citizen-facing portal exposes parcel polygons anonymously, whether full geometry is limited to graphical plans or login/workflow, the coverage around Dushanbe, feature identifiers, exact service terms, and city coverage all remain unverified.",
-  "nextStep": "Retry the official portal through a permitted public browser or another network; inspect viewer-linked service calls and make a tiny Dushanbe query before classifying geometry or coverage."
+  "blocker": "A per-request TLS certificate exception reaches the public portal, web map and OLD_DATA Dushanbe parcel-layer metadata. Actual count, spatial and object-ID reads return ArcGIS error 400 through both FeatureServer and MapServer, including on a second network. CADASTR_NEW parcel-layer metadata times out after 55 seconds locally and 80 seconds on the second network despite a completed TLS handshake. No nonempty parcel response was obtained; the evidence points to a provider-side data-service failure whose exact internal cause is unexposed. The certificate exception is working.",
+  "remainingUncertainty": "Actual parcel geometry, geometry quality, present data coverage, cadastral-code values/uniqueness/repeatability, parcel update dates and reuse terms remain unverified. The portal/public service metadata and its declared parcel schema are now confirmed.",
+  "nextStep": "Retry the published OLD_DATA/OLD_DATA/FeatureServer/6 and MapServer/6 queries, plus CADASTR/CADASTR_NEW/FeatureServer/1, after the service recovers. A source-specific certificate exception is authorized; normal certificate validation remains the default. After obtaining polygons, audit local coverage, validity/overlaps, cadastral-code availability and repeatability before enabling the source.",
+  "officialRegistryOrPortalFound": true,
+  "publicEndpointVerified": true,
+  "publicEndpointVerificationScope": "Anonymous service metadata only; no successful nonempty feature query.",
+  "publicParcelGeometryFound": false,
+  "nativeIdField": "Cadastral_code",
+  "diagnosticFile": "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json",
+  "latestAssessmentAt": "2026-10-08",
+  "assessmentHistoryNote": "Earlier HTTP/TLS checks below are retained as historical attempts; the source-scoped certificate-bypass diagnostic supersedes their certificate-only blocker."
 }

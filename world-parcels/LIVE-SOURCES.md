@@ -21,9 +21,11 @@ The first full browser viewport exposed a provider BBOX overfetch: one genuine p
 | --- | --- |
 | Astana | Enabled for the public provider's Esil district view. Partial city coverage; ownership and boundary update dates unestablished. |
 | Bishkek | Official public WFS returns native `PROPCODE` and parcel geometry. Published `NAZNACHENI=земельный участок` filters out overlapping premises. In nine cells, 111 parcel polygons include three invalid geometries and 12 positive-area overlap pairs; candidate adapter/tests exist but are not wired into the runtime. |
-| Dushanbe | Official registration service links a public parcel geoportal; its expired HTTPS certificate blocks ordinary verified access. HTTP redirects to the same HTTPS service. |
+| Dushanbe | Public portal and Dushanbe polygon-layer metadata verified with a request-scoped certificate exception. Actual feature/count reads fail with ArcGIS 400 from two networks; the newer cadastral service times out. No polygon retrieved or runtime adapter enabled. |
 | Tashkent | Official sources describe the public NGIS parcel/real-estate geoportal; HTTP and HTTPS requests timed out. |
 | Ashgabat | Official law documents the cadastre and cadastral maps; no anonymous parcel-feature service was found in the checked public sources. |
+
+The [Dushanbe service diagnostic](research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json) supersedes the earlier certificate-only blocker. The public map references `OLD_DATA/OLD_DATA/FeatureServer/6`, a parcel polygon layer with `Cadastral_code`, `OBJECTID` and a declared extent about 29 by 29 km around Dushanbe in EPSG:32642. Count, spatial and object-ID queries fail despite reachable metadata; a map export contains zero visible pixels. The newer `CADASTR/CADASTR_NEW/FeatureServer/1` times out even after 80 seconds on a second network. This supports a provider-side data-service failure, whose exact internal cause is unexposed. Layer extent and schema do not verify actual coverage, identifier values, boundary quality or update dates. HTTPS validation remains the default; a narrowly scoped exception for this source is authorized if data access recovers.
 
 These are city-source findings, not claims that the other countries lack cadastres. None of the new live sources imports parcel geometry into the database; continuation changes remain uncommitted and undeployed.
 

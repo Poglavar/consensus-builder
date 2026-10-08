@@ -39,7 +39,8 @@
       "verifiedSample": false,
       "sourceId": null,
       "runtimeStatus": "not_integrated",
-      "decision": "Official portal existence documented; host TLS failure prevented service or geometry verification."
+      "decision": "Public portal and parcel-layer metadata verified using a per-request certificate exception. Actual count/spatial/object-ID queries return ArcGIS 400 from two networks; CADASTR_NEW times out. Held because no geometry can be retrieved, not because of the certificate.",
+      "followupEvidenceFile": "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json"
     },
     {
       "cityId": "wup2025:3082",

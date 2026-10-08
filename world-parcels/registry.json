@@ -23900,19 +23900,24 @@
       "latestAssessmentFile": "research/central-asia-capitals-2026-10-08/city-dushanbe.json",
       "dataFindings": {
         "registryFound": true,
-        "registryBasis": "Official Tajik registration-service material links to the State Geoportal; the portal search index describes land parcels, cadastral numbers and geometry. This documents an official parcel-portal lead, but the site redirects to HTTPS with an expired certificate. No service endpoint or public geometry was verified.",
-        "reason": "Official Tajik registration-service material links to the State Geoportal; the portal search index describes land parcels, cadastral numbers and geometry. This documents an official parcel-portal lead, but the site redirects to HTTPS with an expired certificate. No service endpoint or public geometry was verified.",
+        "registryBasis": "The official registration authority links a public geoportal whose anonymous web map explicitly includes a Dushanbe parcel polygon layer. Its live metadata exposes Cadastral_code and OBJECTID in EPSG:32642, with a declared extent about 29 by 29 km around Dushanbe. A request-scoped certificate exception retrieves this metadata, but parcel and count queries fail with ArcGIS 400 from two networks; the newer cadastral service times out. Public service metadata is verified; parcel geometry, actual coverage and data freshness remain unverified.",
+        "reason": "The official registration authority links a public geoportal whose anonymous web map explicitly includes a Dushanbe parcel polygon layer. Its live metadata exposes Cadastral_code and OBJECTID in EPSG:32642, with a declared extent about 29 by 29 km around Dushanbe. A request-scoped certificate exception retrieves this metadata, but parcel and count queries fail with ArcGIS 400 from two networks; the newer cadastral service times out. Public service metadata is verified; parcel geometry, actual coverage and data freshness remain unverified.",
         "registryEvidenceUrls": [
           "https://geoportal.tj/",
           "https://mis.nsift.tj/gis",
           "https://baqaydgiri.tj/",
-          "https://www.zamin.tj/"
+          "https://www.zamin.tj/",
+          "https://geoportal.tj/portal/apps/webappviewer/index.html?id=88b9d98aa10c40629596524b7b22b253",
+          "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6"
         ],
         "officialRegistryOrPortalFound": true,
         "publicParcelGeometryFound": false,
-        "publicEndpointVerified": false,
-        "registryDiscoverySemantics": "Official registry/portal existence is documented; this does not mean an anonymous public endpoint or parcel geometry was obtained.",
-        "checkedAt": "2026-10-08"
+        "publicEndpointVerified": true,
+        "registryDiscoverySemantics": "Official public portal and parcel-layer metadata verified; actual polygon/count requests failed, so public geometry is not verified.",
+        "checkedAt": "2026-10-08",
+        "publicEndpointMetadataVerified": true,
+        "publicGeometryQueryVerified": false,
+        "publicEndpointVerificationScope": "Anonymous service metadata only."
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
@@ -23921,10 +23926,13 @@
         "evidenceFile": "research/central-asia-capitals-2026-10-08/city-dushanbe.json",
         "resultCategory": "promising_unavailable",
         "freshVerifiedSample": false,
-        "technicalBlocker": "The official registration-service homepage is reachable and directly confirms the Geoportal entry at geoportal.tj; ordinary HTTP on both portal aliases forces HTTPS, whose certificate is expired. Its linked State Committee website also redirects to HTTPS with an expired certificate. TLS verification was not bypassed, so viewer scripts/service endpoints could not be inspected and no parcel polygon was verified.",
-        "nextStep": "Retry the official portal through a permitted public browser or another network; inspect viewer-linked service calls and make a tiny Dushanbe query before classifying geometry or coverage.",
+        "technicalBlocker": "A per-request TLS certificate exception reaches the public portal, web map and OLD_DATA Dushanbe parcel-layer metadata. Actual count, spatial and object-ID reads return ArcGIS error 400 through both FeatureServer and MapServer, including on a second network. CADASTR_NEW parcel-layer metadata times out after 55 seconds locally and 80 seconds on the second network despite a completed TLS handshake. No nonempty parcel response was obtained; the evidence points to a provider-side data-service failure whose exact internal cause is unexposed. The certificate exception is working.",
+        "nextStep": "Retry the published OLD_DATA/OLD_DATA/FeatureServer/6 and MapServer/6 queries, plus CADASTR/CADASTR_NEW/FeatureServer/1, after the service recovers. A source-specific certificate exception is authorized; normal certificate validation remains the default. After obtaining polygons, audit local coverage, validity/overlaps, cadastral-code availability and repeatability before enabling the source.",
         "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary.",
-        "registryDiscoveryNote": "Official registry/portal existence only; no public parcel geometry was obtained."
+        "registryDiscoveryNote": "Public parcel-layer metadata verified, but no nonempty parcel response obtained.",
+        "additionalEvidenceFiles": [
+          "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json"
+        ]
       }
     },
     {

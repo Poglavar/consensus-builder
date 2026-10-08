@@ -16,11 +16,12 @@
       "countryCode": "TJ",
       "resultCategory": "promising_unavailable",
       "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-dushanbe.json",
-      "registryFound": null,
+      "registryFound": true,
       "verifiedSample": false,
       "targetGeometryEvidence": "none",
-      "blocker": "The official registration-service homepage is reachable and directly confirms the Geoportal entry at geoportal.tj; ordinary HTTP on both portal aliases forces HTTPS, whose certificate is expired. Its linked State Committee website also redirects to HTTPS with an expired certificate. TLS verification was not bypassed, so viewer scripts/service endpoints could not be inspected and no parcel polygon was verified.",
-      "nextStep": "Retry the official portal through a permitted public browser or another network; inspect viewer-linked service calls and make a tiny Dushanbe query before classifying geometry or coverage."
+      "blocker": "A per-request TLS certificate exception reaches the public portal, web map and OLD_DATA Dushanbe parcel-layer metadata. Actual count, spatial and object-ID reads return ArcGIS error 400 through both FeatureServer and MapServer, including on a second network. CADASTR_NEW parcel-layer metadata times out after 55 seconds locally and 80 seconds on the second network despite a completed TLS handshake. No nonempty parcel response was obtained; the evidence points to a provider-side data-service failure whose exact internal cause is unexposed. The certificate exception is working.",
+      "nextStep": "Retry the published OLD_DATA/OLD_DATA/FeatureServer/6 and MapServer/6 queries, plus CADASTR/CADASTR_NEW/FeatureServer/1, after the service recovers. A source-specific certificate exception is authorized; normal certificate validation remains the default. After obtaining polygons, audit local coverage, validity/overlaps, cadastral-code availability and repeatability before enabling the source.",
+      "diagnosticFile": "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json"
     },
     {
       "cityId": "wup2025:3082",
@@ -47,5 +48,5 @@
       "nextStep": "Search for a publicly advertised official Ashgabat land-resource/registration map or dataset; use only a published public service and bounded feature query if found."
     }
   ],
-  "overallFinding": "No parcel polygon was verified for these three cities. Dushanbe has an official public geoportal lead, but its HTTP aliases redirect to HTTPS with an expired certificate; the linked registration service is accessible and confirms the portal link. Tashkent’s official portal times out over both HTTP and HTTPS. Turkmen law confirms Ashgabat cadastral maps exist, but this search found no anonymous online service; statutory information access can be paid or restricted."
+  "overallFinding": "No parcel polygon was verified for these three cities. Dushanbe now has confirmed public parcel-layer metadata reached with a source-scoped certificate exception, but actual reads fail on two networks and the newer cadastral service times out. Tashkent’s official portal times out over both HTTP and HTTPS. Turkmen law confirms Ashgabat cadastral maps exist, but this search found no anonymous online service; statutory information access can be paid or restricted."
 }

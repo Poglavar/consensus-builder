@@ -9221,7 +9221,7 @@
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Official Tajik registration-service material links to the State Geoportal; the portal search index describes land parcels, cadastral numbers and geometry. This documents an official parcel-portal lead, but the site redirects to HTTPS with an expired certificate. No service endpoint or public geometry was verified.",
+      "registryBasis": "The official registration authority links a public geoportal whose anonymous web map explicitly includes a Dushanbe parcel polygon layer. Its live metadata exposes Cadastral_code and OBJECTID in EPSG:32642, with a declared extent about 29 by 29 km around Dushanbe. A request-scoped certificate exception retrieves this metadata, but parcel and count queries fail with ArcGIS 400 from two networks; the newer cadastral service times out. Public service metadata is verified; parcel geometry, actual coverage and data freshness remain unverified.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -9229,7 +9229,9 @@
         "https://geoportal.tj/",
         "https://mis.nsift.tj/gis",
         "https://baqaydgiri.tj/",
-        "https://www.zamin.tj/"
+        "https://www.zamin.tj/",
+        "https://geoportal.tj/portal/apps/webappviewer/index.html?id=88b9d98aa10c40629596524b7b22b253",
+        "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6"
       ],
       "evidenceFiles": [
         "research/central-asia-capitals-2026-10-08/city-dushanbe.json"

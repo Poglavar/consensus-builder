@@ -88,19 +88,23 @@
       "pointBasis": "Chosen central-city query point, not a WUP centroid or administrative boundary.",
       "resultCategory": "promising_unavailable",
       "officialRegistryOrPortalFound": true,
-      "publicEndpointVerified": false,
+      "publicEndpointVerified": true,
       "verifiedSample": false,
-      "nativeIdField": null,
+      "nativeIdField": "Cadastral_code",
       "runtimeStatus": "not_integrated",
       "sourceId": null,
       "targetGeometryEvidence": "none",
-      "technicalBlocker": "The official State Geoportal is linked by the registration authority and indexed as a land-parcel map, but its HTTPS certificate was expired; no viewer service or geometry could be verified.",
+      "technicalBlocker": "A per-request TLS certificate exception reaches the public portal, web map and OLD_DATA Dushanbe parcel-layer metadata. Actual count, spatial and object-ID reads return ArcGIS error 400 through both FeatureServer and MapServer, including on a second network. CADASTR_NEW parcel-layer metadata times out after 55 seconds locally and 80 seconds on the second network despite a completed TLS handshake. No nonempty parcel response was obtained; the evidence points to a provider-side data-service failure whose exact internal cause is unexposed. The certificate exception is working.",
       "limitations": [
-        "Official portal existence is documented; public service availability and city coverage are not verified."
+        "Parcel layer schema and declared extent verified, but actual geometry, coverage, identifier values and freshness remain unverified.",
+        "Data-service errors persist after a source-scoped certificate exception and on a second network."
       ],
       "evidenceFiles": [
-        "research/central-asia-capitals-2026-10-08/city-dushanbe.json"
-      ]
+        "research/central-asia-capitals-2026-10-08/city-dushanbe.json",
+        "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json"
+      ],
+      "publicEndpointVerificationScope": "Anonymous service metadata only; polygon/count queries failed.",
+      "nativeIdReadiness": "schema_only_unverified_values"
     },
     {
       "cityId": "wup2025:3082",
