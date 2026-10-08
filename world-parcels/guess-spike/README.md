@@ -147,6 +147,57 @@ The completed expanded run did not improve validation performance. Whole-parcel 
 
 On the fresh test set, the retained cleaned SAM adapter matched 105/570 masks (precision 14.6%, recall 18.4%, F1 0.163). The OSM baseline matched 85/570 (precision 28.0%, recall 14.9%, F1 0.195). More SAM matches came with many more false positives. This result does not rule out other objectives, learning rates or encoder adaptation. A completed `--resume` replay skipped all 384 training updates and reproduced all 80 prediction archives exactly at the array level; the selected adapter and training journal were unchanged. Metered API cost was $0.
 
+## Lower-learning-rate controls
+
+`sam3_expanded_train.py` also compares learning rates `1e-5` and `3e-6` against the completed `1e-4` run. Both controls start from the same stronger 32-tile adapter, use the same 96 training tiles, and run four epochs (384 updates). Data hashes, model revision, trainable modules, tile order, loss, precision and cleanup search stay fixed. The report rejects recipe differences beyond learning rate and recomputes test metrics from the saved masks. Validation selects the checkpoint and cleanup configuration; the reused 16-tile test set is a diagnostic comparison, not a fresh final benchmark.
+
+Both controls completed. Validation selected epoch one for each rate and selected `3e-6` overall, using boundary F1 to break ties. The test ranking differs, so the `1e-5` test score does not replace that validation choice.
+
+| Method | Selected epoch | Validation parcel F1 | Test parcel F1 | Test predictions | Test matches / references |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Starting adapter / original `1e-4` control | 0 | 0.158 | 0.163 | 720 | 105/570 |
+| `1e-5` | 1 | 0.163 | 0.180 | 573 | 103/570 |
+| `3e-6` | 1 | 0.168 | 0.172 | 595 | 100/570 |
+| OSM baseline | — | — | 0.195 | 304 | 85/570 |
+
+Counts describe tile-clipped parcel masks, so the same cadastral identity can occur in several tiles. Both lower rates reduced false positives while slightly reducing correct matches. Selected `3e-6` test precision/recall were 16.8%/17.5%, compared with 14.6%/18.4% for the starting adapter and 28.0%/14.9% for OSM. Lower learning rates helped modestly, but this experiment provides no basis for replacing the OSM baseline. Later epochs did not improve validation selection; the results do not establish an accuracy ceiling for SAM 3 or other training recipes.
+
+The `1e-5` run resumed from update 248 after the disk reserve guard stopped it; no data was removed or training recipe changed. Final verification checked all 384 journal steps per run, identical tile order, input/source recipes differing only in learning rate, identical starting validation selections, changed selected adapter tensors, and all 48 baseline prediction archives per new run against the original control. The report independently recomputed the comparison metrics from saved masks. Both runs used local computation with $0 metered model API charges.
+
+From the repository root, use the existing ML Python environment:
+
+```sh
+PARCEL_SPIKE=world-parcels/guess-spike
+PARCEL_OUTPUT="$PARCEL_SPIKE/output"
+for PARCEL_RATE in 1e-5 3e-6; do
+  python "$PARCEL_SPIKE/sam3_expanded_train.py" --run --stream \
+    --backbone-device mps --backbone-dtype float16 --device mps \
+    --epochs 4 --learning-rate "$PARCEL_RATE" \
+    --dataset "$PARCEL_OUTPUT/parcel-expanded-check/dataset" \
+    --prior-dataset "$PARCEL_OUTPUT/sam3-finetune/dataset" \
+    --cache "$PARCEL_OUTPUT/sam3-model-cache-fast" \
+    --initial "$PARCEL_OUTPUT/parcel-learning-check/sam3-pilot-02/best.pt" \
+    --output "$PARCEL_OUTPUT/parcel-learning-rate-check/lr-$PARCEL_RATE"
+done
+python "$PARCEL_SPIKE/sam3_lr_report.py" --run
+```
+
+Use a managed `run-job` for long runs and add `--resume` when continuing an existing checkpoint. The report is written to ignored `output/parcel-learning-check/report/learning-rate/` and includes validation curves, pooled and per-block test metrics, clickable comparison overlays, and the reviewed audit gallery when its JSON is present.
+
+## Training-label audit and representation checks
+
+A visual audit reviewed 60 training parcels from 12 density-stratified blocks, with one tile per block and one uniform parcel pick from each area quintile. This qualitative, stratified sample is not a population estimate. Visibility was strong for 13 parcels, partial for 31, weak for 15 and uncertain for one; 42 of 60 were clipped at tile edges. Artificial clip edges were excluded from visibility judgments, and no training or reference geometry was changed. No systematic image/cadastre shift was confirmed where physical edges were discernible; two local roof/footprint discrepancies were noted, with parallax a possible explanation. A single 2022 image cannot establish whether a mismatch reflects a later cadastral change.
+
+The geometry check found 3,121 valid training geometries, including 1,870 clipped instances. Separately, reproducing the training-mask representation and comparing it with the independent geometry rasterizer yielded shape F1 of 0.992 for the exported 256-pixel masks and 0.993 after the 128-pixel loss-grid round trip. This checks representation fidelity; it is not trained-model accuracy or an accuracy ceiling. The audit and diagnostics are generated under the ignored `output/parcel-learning-rate-check/` directory. From the repository root, use the existing ML Python environment to regenerate the sample images; the saved review observations were recorded by visual inspection:
+
+```sh
+PARCEL_SPIKE=world-parcels/guess-spike
+PARCEL_EXPERIMENT="$PARCEL_SPIKE/output/parcel-expanded-check"
+python3 "$PARCEL_SPIKE/sam3_label_audit.py" --run \
+  --dataset "$PARCEL_EXPERIMENT/dataset" \
+  --output "$PARCEL_SPIKE/output/parcel-learning-rate-check/audit"
+```
+
 ## Reproduce
 
 Requires local PostgreSQL `geodata` credentials in `cadastre-data/.env`, the CDOF cache at `zagreb-parkiralista/data/tiles/cdof2022`, Python packages `numpy`, `Pillow`, `scipy`, `opencv-python`, and the existing backend Node dependencies. Run from this repository root:

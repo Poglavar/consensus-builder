@@ -372,6 +372,8 @@ def build(args):
     html_doc = ['<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
                 '<title>Parcel model experiments</title><link rel="stylesheet" href="report.css"><main>',
                 '<h1>Parcel model experiments</h1>',
+                ('<p class="note"><a href="learning-rate/">Open the SAM 3 learning-rate comparison and label audit</a></p>'
+                 if (args.output / 'learning-rate' / 'index.html').is_file() else ''),
                 ('<p class="note"><a href="expanded/">Open the expanded SAM 3 training comparison on fresh geographic areas</a></p>'
                  if (args.output / 'expanded' / 'index.html').is_file() else ''),
                 ('<p class="note"><a href="quality/">Open the SAM 3 mask-quality and overlap comparison</a></p>'
