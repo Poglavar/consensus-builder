@@ -54,7 +54,8 @@ describe('source reading to vector architecture',()=>{
         const payload=JSON.parse(request.params.messages[0].content[1].text);
         expect(payload).not.toHaveProperty('building');
         expect(payload.listing).not.toHaveProperty('coordinates');
-        expect(request.params.output_config.format).toMatchObject({type:'json_schema',schema:{additionalProperties:false}});
+        expect(request.params.tool_choice).toEqual({type:'tool',name:'record_floor_plan'});
+        expect(request.params.tools[0].input_schema).toMatchObject({additionalProperties:false});
     });
 });
 

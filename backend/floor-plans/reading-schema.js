@@ -1,4 +1,4 @@
-// Provider-enforced JSON structure; metric and topology constraints are checked independently.
+// Forced tool-call shape; structure, metric constraints and topology are validated independently.
 const number={type:'number'},string={type:'string'},nullableNumber={type:['number','null']};
 const array=items=>({type:'array',items});
 const point=array(number),nullablePoint={anyOf:[point,{type:'null'}]};

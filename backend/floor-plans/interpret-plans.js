@@ -153,9 +153,10 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
                     usage:message.usage,cost_usd:cost,batch:true,meta:{taskId:task.id,batchId:batch.provider_id,sourceSha256:task.source_sha256,page:task.page}});
                 result.costUsd+=cost;
                 try {
-                    if(message.stop_reason!=='end_turn') throw new Error(`Incomplete model response: ${message.stop_reason}`);
-                    const text=message.content.filter(p=>p.type==='text').map(p=>p.text).join('');
-                    const reading=parseReading(text,task,{...task.result.image,model:message.model||batch.model});
+                    if(message.stop_reason!=='tool_use') throw new Error(`Incomplete structured response: ${message.stop_reason}`);
+                    const calls=message.content.filter(p=>p.type==='tool_use'&&p.name==='record_floor_plan');
+                    if(calls.length!==1) throw new Error('Expected exactly one structured floor-plan reading.');
+                    const reading=parseReading(JSON.stringify(calls[0].input),task,{...task.result.image,model:message.model||batch.model});
                     const saved=await storeReading(db,task,reading,{associationCurrent:await currentTaskContext(db,task)});
                     for(const key of ['ready','needsReview','notPlan']) result[key]+=saved[key];
                 } catch(error) {
@@ -178,7 +179,8 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
                     if(!await currentTaskContext(db,task)) throw new Error('Source or building association changed before processing.');
                     const image=await render(db,task,{deadline}),request=buildReadingRequest(task,image,model);
                     if(Date.now()>=deadline) break;
-                    const tokens=await client.messages.countTokens({model,system:request.params.system,messages:request.params.messages,output_config:request.params.output_config},{timeout:timeout()});
+                    const tokens=await client.messages.countTokens({model,system:request.params.system,messages:request.params.messages,
+                        tools:request.params.tools,tool_choice:request.params.tool_choice},{timeout:timeout()});
                     const maximum=reservationUsd(model,tokens.input_tokens,price);
                     if(used+reserve+maximum>dailyBudgetUsd) {result.budgetDeferred++;break;}
                     await db.query(`UPDATE floor_plan.plan_task SET result=$2,updated_at=now() WHERE id=$1`,[task.id,JSON.stringify({image:{width:image.width,height:image.height},reservedUsd:maximum})]);
