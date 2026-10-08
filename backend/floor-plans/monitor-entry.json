@@ -1,0 +1,16 @@
+{
+  "name": "Agency Floor Plans",
+  "description": "Daily known-agency discovery, verified building matching and budgeted architectural plan interpretation. Vector geometry and source evidence are stored in geodata; meshes are derived on demand. A limited backfill, blocked sites or failed processing remain partial rather than claiming complete coverage.",
+  "machine": {"host":"67.205.138.129","user":"root","sshKey":"~/.ssh/id_ed25519","workDir":"~/code/consensus-builder"},
+  "schedule": {"cron":"0 6 * * *","description":"Daily at 06:00 UTC; up to three hours of bounded work, checked after four hours.","checkDelayMinutes":240},
+  "successCriteria": {
+    "type":"run-stats","field":"verdict","equals":"success","timestampField":"endedAt",
+    "requireRecent":true,"useLastScheduledRunForRecency":true,
+    "minValues":{"sitesSeeded":1,"pagesFetched":1},
+    "maxValues":{"failed":0,"unknownBatches":0,"failedPlanTasks":0},
+    "description":"Stats are written atomically after querying current source associations and stored vector artifacts. Normal pending provider batches and zero new plans are allowed; stale runs, empty source walks, source/processing failures and ambiguous paid submissions fail. Current processed-plan and publication counts are evidence, not a mandatory daily new-plan quota. Partial backfill/source coverage deliberately remains visible."
+  },
+  "entrypoint":"backend/scripts/floor-plan-archive.mjs daily",
+  "logFile":"~/code/consensus-builder/backend/logs/floor-plan-daily.out.log",
+  "runStatsCommand":"node -e \"const s=require('./backend/logs/floor-plan-run-stats.json'); console.log(JSON.stringify({...s,...s.counters}))\""
+}

@@ -54,6 +54,7 @@ if ! command -v pm2 >/dev/null 2>&1; then
   exit 1
 fi
 cd "$BACKEND_DIR"
+export FLOOR_PLAN_PYTHON="$VENV_DIR/bin/python"
 if ! node scripts/floor-plan-archive.mjs check --production; then
   echo "Floor-plan production preflight failed; refusing to enable." >&2
   exit 1

@@ -4,11 +4,12 @@ import argparse
 import json
 import subprocess
 import tempfile
+import math
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 
-def render(source, output, page=1):
+def render(source, output, page=1, grid=False):
     with tempfile.TemporaryDirectory(prefix='floor-plan-page-') as directory:
         with open(source, 'rb') as stream:
             is_pdf = stream.read(5) == b'%PDF-'
@@ -24,7 +25,21 @@ def render(source, output, page=1):
             if original.width * original.height > 50_000_000:
                 raise ValueError('Source image exceeds 50 megapixels')
             image = original.convert('RGB')
-            image.thumbnail((1568, 1568))
+            # Stay below the vision provider's rescaling threshold, preserving labelled pixel positions.
+            factor = min(1, 1568 / max(image.size), math.sqrt(1_050_000 / (image.width * image.height)))
+            image = image.resize((round(image.width * factor), round(image.height * factor)))
+            if grid:
+                draw = ImageDraw.Draw(image, 'RGBA')
+                font = ImageFont.load_default(size=12)
+                for x in range(0, image.width, 100):
+                    draw.line([(x, 0), (x, image.height)], fill=(0, 155, 220, 65), width=1)
+                for y in range(0, image.height, 100):
+                    draw.line([(0, y), (image.width, y)], fill=(0, 155, 220, 65), width=1)
+                    for x in range(0, image.width, 100):
+                        text = f'{x},{y}'
+                        box = draw.textbbox((x+2, y+2), text, font=font)
+                        draw.rectangle(box, fill=(255, 255, 255, 225))
+                        draw.text((x+2, y+2), text, fill=(0, 120, 190, 255), font=font)
             image.save(output, 'PNG')
             return {'width': image.width, 'height': image.height}
 
@@ -51,10 +66,11 @@ if __name__ == '__main__':
     parser.add_argument('output', type=Path)
     parser.add_argument('--page', type=int, default=1)
     parser.add_argument('--overlay-model', type=Path)
+    parser.add_argument('--grid', action='store_true')
     args = parser.parse_args()
     if args.overlay_model:
         overlay(args.source, args.overlay_model, args.output)
     else:
         if args.page < 1:
             parser.error('--page must be positive')
-        print(json.dumps(render(args.source, args.output, args.page)))
+        print(json.dumps(render(args.source, args.output, args.page, args.grid)))

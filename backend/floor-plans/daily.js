@@ -12,7 +12,7 @@ import { processAssets } from './process-assets.js';
 import { matchBuildingCandidates } from './building-links.js';
 import { seedReviewedBindings,resolveBuildingLinks } from './building-resolution.js';
 import { enqueuePlanTasks,interpretPlans } from './interpret-plans.js';
-import { DEFAULT_MODEL } from './plan-reading.js';
+import { DEFAULT_MODEL,PROCESSOR } from './plan-reading.js';
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
 
 const exec=promisify(execFile);
@@ -66,9 +66,9 @@ async function verifiedOutcome(db) {
     SELECT 1 FROM floor_plan.target t WHERE t.current_sha256=e.sha256 AND t.kind='asset'
       AND EXISTS(SELECT 1 FROM floor_plan.listing l WHERE l.match_status='verified' AND l.building_id IS NOT NULL
         AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true)))))::int AS "matchedExtractionPending",
-  (SELECT count(*) FROM floor_plan.plan_task WHERE status='queued')::int AS "queuedPlanTasks",
+  (SELECT count(*) FROM floor_plan.plan_task WHERE status='queued' AND processor=$1)::int AS "queuedPlanTasks",
   (SELECT count(*) FROM floor_plan.plan_task WHERE status='submitted')::int AS "submittedPlanTasks",
-  (SELECT count(*) FROM floor_plan.plan_task WHERE status='error')::int AS "failedPlanTasks",
+  (SELECT count(*) FROM floor_plan.plan_task WHERE status='error' AND processor=$1)::int AS "failedPlanTasks",
   (SELECT count(*) FROM floor_plan.processed_plan p JOIN floor_plan.plan_task pt ON pt.id=p.task_id
     JOIN floor_plan.target t ON t.url=pt.source_url AND t.kind='asset' AND t.current_sha256=p.source_sha256
     JOIN floor_plan.listing l ON l.url=pt.listing_url AND l.match_status='verified'
@@ -86,7 +86,7 @@ async function verifiedOutcome(db) {
       AND pt.context->'building'->>'source'=p.source AND COALESCE(pt.context->'building'->>'ownerId','')=p.owner_id
       AND pt.context->'building'->>'buildingId'=p.building_id
       AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))
-    WHERE p.status='published')::int AS "publishedPlans"`);
+    WHERE p.status='published')::int AS "publishedPlans"`,[PROCESSOR]);
  return rows[0];
 }
 

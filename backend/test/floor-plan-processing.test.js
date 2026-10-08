@@ -12,8 +12,8 @@ function drawing() {return {schema:'floor-plan-reading.v1',notPlan:false,issues:
     wallsPx:[{a:[20,20],b:[20,180],widthPx:2},{a:[180,20],b:[180,180],widthPx:2},
         {a:[20,20],b:[60,20],widthPx:2},{a:[80,20],b:[180,20],widthPx:2},
         {a:[20,180],b:[60,180],widthPx:2},{a:[90,180],b:[180,180],widthPx:2}],
-    openingsPx:[{kind:'window',a:[60,20],b:[80,20],widthPx:2},
-        {kind:'door',a:[60,180],b:[90,180],widthPx:2,hinge:[60,180],openTip:[60,150]}],
+    openingsPx:[{kind:'window',a:[60,20],b:[80,20],depthPx:2},
+        {kind:'door',a:[60,180],b:[90,180],depthPx:2,hinge:[60,180],openTip:[60,150]}],
     rooms:[{name:'Living room',areaM2:null}],wallHeightM:null,heightEvidence:'',elevationM:null,elevationEvidence:'',northPx:null,northEvidence:'',issues:[]
 }]};}
 const parse=raw=>parseReading(JSON.stringify(raw),task,{width:200,height:200});
@@ -54,6 +54,7 @@ describe('source reading to vector architecture',()=>{
         const payload=JSON.parse(request.params.messages[0].content[1].text);
         expect(payload).not.toHaveProperty('building');
         expect(payload.listing).not.toHaveProperty('coordinates');
+        expect(request.params.output_config.format).toMatchObject({type:'json_schema',schema:{additionalProperties:false}});
     });
 });
 

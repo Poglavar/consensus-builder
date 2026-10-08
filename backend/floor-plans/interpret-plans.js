@@ -63,7 +63,7 @@ export async function renderTask(db,task,{python=process.env.FLOOR_PLAN_PYTHON||
     const directory=await mkdtemp(join(tmpdir(),'floor-plan-vision-'));
     try {
         const source=join(directory,'source'),output=join(directory,'page.png');await writeFile(source,row.data);
-        const {stdout}=await exec(python,[fileURLToPath(new URL('../scripts/render-floor-plan-page.py',import.meta.url)),source,output,'--page',String(task.page)],{timeout:Math.max(1,Math.min(120000,deadline-Date.now())),maxBuffer:1024*1024});
+        const {stdout}=await exec(python,[fileURLToPath(new URL('../scripts/render-floor-plan-page.py',import.meta.url)),source,output,'--page',String(task.page),'--grid'],{timeout:Math.max(1,Math.min(120000,deadline-Date.now())),maxBuffer:1024*1024});
         return {...JSON.parse(stdout),data:await readFile(output)};
     } finally {await rm(directory,{recursive:true,force:true});}
 }
@@ -170,7 +170,7 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
         }
         const unresolved=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.ai_batch WHERE status IN ('submitted','unknown')`)).rows[0].n);
         if(submit&&dailyBudgetUsd>0&&!unresolved&&Date.now()<deadline) {
-            const tasks=(await db.query(`SELECT * FROM floor_plan.plan_task WHERE status='queued' ORDER BY created_at,id LIMIT $1`,[chunkSize])).rows;
+            const tasks=(await db.query(`SELECT * FROM floor_plan.plan_task WHERE status='queued' AND processor=$2 ORDER BY created_at,id LIMIT $1`,[chunkSize,PROCESSOR])).rows;
             const requests=[],accepted=[];let reserve=0,used=await budgetUsed(db);
             for(const task of tasks) {
                 if(Date.now()>=deadline) break;
@@ -178,7 +178,7 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
                     if(!await currentTaskContext(db,task)) throw new Error('Source or building association changed before processing.');
                     const image=await render(db,task,{deadline}),request=buildReadingRequest(task,image,model);
                     if(Date.now()>=deadline) break;
-                    const tokens=await client.messages.countTokens({model,system:request.params.system,messages:request.params.messages},{timeout:timeout()});
+                    const tokens=await client.messages.countTokens({model,system:request.params.system,messages:request.params.messages,output_config:request.params.output_config},{timeout:timeout()});
                     const maximum=reservationUsd(model,tokens.input_tokens,price);
                     if(used+reserve+maximum>dailyBudgetUsd) {result.budgetDeferred++;break;}
                     await db.query(`UPDATE floor_plan.plan_task SET result=$2,updated_at=now() WHERE id=$1`,[task.id,JSON.stringify({image:{width:image.width,height:image.height},reservedUsd:maximum})]);
@@ -206,8 +206,8 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
                 }
             }
         }
-        result.queued=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task WHERE status='queued'`)).rows[0].n);
-        result.errors=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task WHERE status='error'`)).rows[0].n);
+        result.queued=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task WHERE status='queued' AND processor=$1`,[PROCESSOR])).rows[0].n);
+        result.errors=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task WHERE status='error' AND processor=$1`,[PROCESSOR])).rows[0].n);
         result.unknownBatches=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.ai_batch WHERE status='unknown'`)).rows[0].n);
         result.status=result.failed||result.errors||result.unknownBatches||result.budgetDeferred?'partial':'complete';
         return result;
