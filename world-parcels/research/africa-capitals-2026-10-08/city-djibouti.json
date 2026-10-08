@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:DJ:djibouti",
+  "queueRank": null,
+  "name": "Djibouti",
+  "country": "Djibouti",
+  "countryCode": "DJ",
+  "centerLatLon": [
+    11.5886,
+    43.1451
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Djibouti city cadastral parcel GIS SIGVD public map land registry",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "French",
+        "query": "cadastre foncier parcelles ville Djibouti SIGVD carte cadastrale",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.journalofficiel.dj/arabe/texte-juridique/decret-n2015-289-pr-met-portant-mise-en-place-du-systeme-dinformations-geographiques-de-la-ville-de-djibouti-sigvd/",
+        "observation": "Official decree created SIGVD city GIS for planning, roads and public utilities; it confirms city GIS, but does not specify cadastral parcels."
+      },
+      {
+        "url": "https://budget.gouv.dj/ddecf/",
+        "observation": "Official DDCF/Bureau du Cadastre description lists land registration, cadastral plan maintenance, map reproduction/consultation, survey and GIS cartographic database duties. It does not establish anonymous online parcels."
+      },
+      {
+        "url": "https://www.ministere-finances.dj/MEFPP/Organisations.html",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "Official DDCF/Bureau du Cadastre description lists land registration, cadastral plan maintenance, map reproduction/consultation, survey and GIS cartographic database duties. It does not establish anonymous online parcels.",
+    "nextStep": "Find a city-specific active registry or cadastral-coverage source before changing registryFound from null.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official Djibouti city parcel decrees identify actual Livre Foncier/title records, including Ambouli title TF 913 in 2024; DDECF administers cadastre and land-title conservation. SIGVD alone establishes city GIS, not cadastral geometry. Neither complete city coverage nor a public parcel API is inferred.",
+  "registryEvidenceUrls": [
+    "https://budget.gouv.dj/ddecf/",
+    "https://www.journalofficiel.dj/texte-juridique/arrete-2024-049-pr-mb-portant-reversement-dune-parcelle-de-terrain-bati/",
+    "https://www.journalofficiel.dj/arabe/texte-juridique/decret-n2015-289-pr-met-portant-mise-en-place-du-systeme-dinformations-geographiques-de-la-ville-de-djibouti-sigvd/",
+    "https://www.ministere-finances.dj/MEFPP/Organisations.html"
+  ],
+  "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/DJ.json",
+    "world-parcels/research/retry/countries/DJ.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Djibouti city cadastral parcel GIS SIGVD public map land registry",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "French",
+      "query": "cadastre foncier parcelles ville Djibouti SIGVD carte cadastrale",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "previousRegistryAssessment": {
+    "registryFound": null,
+    "registryBasis": "The official SIGVD covers the city GIS and the national Bureau du Cadastre maintains cadastral records, but no source confirms city-wide parcel-registry coverage or public features.",
+    "resultCategory": "city_gis_exists_cadastral_city_coverage_unestablished"
+  },
+  "registryReview": {
+    "checkedAt": "2026-10-08",
+    "basis": "Official Djibouti city parcel decrees identify actual Livre Foncier/title records, including Ambouli title TF 913 in 2024; DDECF administers cadastre and land-title conservation. SIGVD alone establishes city GIS, not cadastral geometry. Neither complete city coverage nor a public parcel API is inferred.",
+    "evidenceUrls": [
+      "https://budget.gouv.dj/ddecf/",
+      "https://www.journalofficiel.dj/texte-juridique/arrete-2024-049-pr-mb-portant-reversement-dune-parcelle-de-terrain-bati/"
+    ],
+    "interpretation": "Registry activity and partial cadastral records can establish presence; citywide completeness is not required."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

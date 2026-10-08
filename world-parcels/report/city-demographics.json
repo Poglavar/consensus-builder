@@ -64,7 +64,8 @@
     "Coalesced app-only Washington into canonical Washington, D.C. after same-country name alias and 2.78 km center check; retained app source ID and source coordinates on canonical row.",
     "Wikipedia links are included only when the linked article is about the candidate city/town/municipality; broader administrative-area pages are rejected. A focused manual scope audit on 2026-10-07 corrected Nandail and Golapganj, removed unsupported Lakhai and Bahubal links, and added verified settlement pages in English, Bengali, and Chinese. The original API-derived links and rejected evidence are retained in wikipediaEvidence where reviewed.",
     "The October 8 follow-up adds one distinct Iravipuram village row without transferring population or configured status from the distant WUP Kollam point. Other enrichment-run counters retain their original snapshot meaning.",
-    "The October 8 Central Asia capitals integration adds four non-WUP capital rows with no transferred population values. Astana has an accepted app entry scoped to Esil district 254; Bishkek has a verified partial official geometry sample held from runtime pending local geometry QA. Dushanbe and Ashgabat document official registry/portal existence without public parcel geometry."
+    "The October 8 Central Asia capitals integration adds four non-WUP capital rows with no transferred population values. Astana has an accepted app entry scoped to Esil district 254; Bishkek has a verified partial official geometry sample held from runtime pending local geometry QA. Dushanbe and Ashgabat document official registry/portal existence without public parcel geometry.",
+    "October 8 African-capital research adds 43 distinct city seats with chosen query locators and no inferred WUP populations. Three accepted city entries are linked to runtime sources; Porto-Novo and Victoria geometry is verified but held for material overlap; Porto-Novo also has self-intersections. This includes separately labelled associated/transitional seats and a disputed/de facto supplement."
   ],
   "counts": {
     "registryRows": 273,
@@ -1431,7 +1432,9 @@
       "registryCityIds": [
         "geonames:745044"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "istanbul"
+      ],
       "wupCityCode": 2626,
       "cohorts": [
         "largest200",
@@ -12893,7 +12896,9 @@
       "registryCityIds": [
         "wup2025:833"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "athens"
+      ],
       "wupCityCode": 833,
       "cohorts": [
         "largest200",
@@ -31042,6 +31047,1090 @@
           }
         }
       ]
+    },
+    {
+      "id": "capital:BJ:porto-novo",
+      "name": "Porto-Novo",
+      "countryCode": "BJ",
+      "latitude": 6.4969,
+      "longitude": 2.6289,
+      "registryCityIds": [
+        "capital:BJ:porto-novo"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:BW:gaborone",
+      "name": "Gaborone",
+      "countryCode": "BW",
+      "latitude": -24.6581,
+      "longitude": 25.9122,
+      "registryCityIds": [
+        "capital:BW:gaborone"
+      ],
+      "appCityIds": [
+        "gaborone"
+      ],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals",
+        "app"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:BI:gitega",
+      "name": "Gitega",
+      "countryCode": "BI",
+      "latitude": -3.4264,
+      "longitude": 29.9306,
+      "registryCityIds": [
+        "capital:BI:gitega"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:BI:bujumbura",
+      "name": "Bujumbura",
+      "countryCode": "BI",
+      "latitude": -3.3614,
+      "longitude": 29.3599,
+      "registryCityIds": [
+        "capital:BI:bujumbura"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:CV:praia",
+      "name": "Praia",
+      "countryCode": "CV",
+      "latitude": 14.9177,
+      "longitude": -23.5092,
+      "registryCityIds": [
+        "capital:CV:praia"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:CF:bangui",
+      "name": "Bangui",
+      "countryCode": "CF",
+      "latitude": 4.3947,
+      "longitude": 18.5582,
+      "registryCityIds": [
+        "capital:CF:bangui"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:TD:n-djamena",
+      "name": "N'Djamena",
+      "countryCode": "TD",
+      "latitude": 12.1348,
+      "longitude": 15.0557,
+      "registryCityIds": [
+        "capital:TD:n-djamena"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:KM:moroni",
+      "name": "Moroni",
+      "countryCode": "KM",
+      "latitude": -11.7172,
+      "longitude": 43.2473,
+      "registryCityIds": [
+        "capital:KM:moroni"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:DJ:djibouti",
+      "name": "Djibouti",
+      "countryCode": "DJ",
+      "latitude": 11.5886,
+      "longitude": 43.1451,
+      "registryCityIds": [
+        "capital:DJ:djibouti"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:EG:new-capital",
+      "name": "New Capital",
+      "countryCode": "EG",
+      "latitude": 30.018,
+      "longitude": 31.764,
+      "registryCityIds": [
+        "capital:EG:new-capital"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:GQ:ciudad-de-la-paz",
+      "name": "Ciudad de la Paz",
+      "countryCode": "GQ",
+      "latitude": 1.591,
+      "longitude": 10.831,
+      "registryCityIds": [
+        "capital:GQ:ciudad-de-la-paz"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:GQ:malabo",
+      "name": "Malabo",
+      "countryCode": "GQ",
+      "latitude": 3.7504,
+      "longitude": 8.7371,
+      "registryCityIds": [
+        "capital:GQ:malabo"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:ER:asmara",
+      "name": "Asmara",
+      "countryCode": "ER",
+      "latitude": 15.3229,
+      "longitude": 38.9251,
+      "registryCityIds": [
+        "capital:ER:asmara"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:SZ:mbabane",
+      "name": "Mbabane",
+      "countryCode": "SZ",
+      "latitude": -26.3054,
+      "longitude": 31.1367,
+      "registryCityIds": [
+        "capital:SZ:mbabane"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:SZ:lobamba",
+      "name": "Lobamba",
+      "countryCode": "SZ",
+      "latitude": -26.4465,
+      "longitude": 31.2064,
+      "registryCityIds": [
+        "capital:SZ:lobamba"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:GA:libreville",
+      "name": "Libreville",
+      "countryCode": "GA",
+      "latitude": 0.3924,
+      "longitude": 9.4536,
+      "registryCityIds": [
+        "capital:GA:libreville"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:GM:banjul",
+      "name": "Banjul",
+      "countryCode": "GM",
+      "latitude": 13.4549,
+      "longitude": -16.579,
+      "registryCityIds": [
+        "capital:GM:banjul"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:GN:conakry",
+      "name": "Conakry",
+      "countryCode": "GN",
+      "latitude": 9.5092,
+      "longitude": -13.7122,
+      "registryCityIds": [
+        "capital:GN:conakry"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:GW:bissau",
+      "name": "Bissau",
+      "countryCode": "GW",
+      "latitude": 11.8636,
+      "longitude": -15.5977,
+      "registryCityIds": [
+        "capital:GW:bissau"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:CI:yamoussoukro",
+      "name": "Yamoussoukro",
+      "countryCode": "CI",
+      "latitude": 6.8276,
+      "longitude": -5.2893,
+      "registryCityIds": [
+        "capital:CI:yamoussoukro"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:LS:maseru",
+      "name": "Maseru",
+      "countryCode": "LS",
+      "latitude": -29.3158,
+      "longitude": 27.486,
+      "registryCityIds": [
+        "capital:LS:maseru"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:LR:monrovia",
+      "name": "Monrovia",
+      "countryCode": "LR",
+      "latitude": 6.3156,
+      "longitude": -10.8074,
+      "registryCityIds": [
+        "capital:LR:monrovia"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:LY:tripoli",
+      "name": "Tripoli",
+      "countryCode": "LY",
+      "latitude": 32.8872,
+      "longitude": 13.1913,
+      "registryCityIds": [
+        "capital:LY:tripoli"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:MW:lilongwe",
+      "name": "Lilongwe",
+      "countryCode": "MW",
+      "latitude": -13.9626,
+      "longitude": 33.7741,
+      "registryCityIds": [
+        "capital:MW:lilongwe"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:MR:nouakchott",
+      "name": "Nouakchott",
+      "countryCode": "MR",
+      "latitude": 18.0735,
+      "longitude": -15.9582,
+      "registryCityIds": [
+        "capital:MR:nouakchott"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:MU:port-louis",
+      "name": "Port Louis",
+      "countryCode": "MU",
+      "latitude": -20.1609,
+      "longitude": 57.5012,
+      "registryCityIds": [
+        "capital:MU:port-louis"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:MA:rabat",
+      "name": "Rabat",
+      "countryCode": "MA",
+      "latitude": 34.0209,
+      "longitude": -6.8416,
+      "registryCityIds": [
+        "capital:MA:rabat"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:NA:windhoek",
+      "name": "Windhoek",
+      "countryCode": "NA",
+      "latitude": -22.5597,
+      "longitude": 17.0832,
+      "registryCityIds": [
+        "capital:NA:windhoek"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:NE:niamey",
+      "name": "Niamey",
+      "countryCode": "NE",
+      "latitude": 13.5116,
+      "longitude": 2.1254,
+      "registryCityIds": [
+        "capital:NE:niamey"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:NG:abuja",
+      "name": "Abuja",
+      "countryCode": "NG",
+      "latitude": 9.0765,
+      "longitude": 7.3986,
+      "registryCityIds": [
+        "capital:NG:abuja"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:ST:sao-tome",
+      "name": "São Tomé",
+      "countryCode": "ST",
+      "latitude": 0.3365,
+      "longitude": 6.7273,
+      "registryCityIds": [
+        "capital:ST:sao-tome"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:SC:victoria",
+      "name": "Victoria",
+      "countryCode": "SC",
+      "latitude": -4.6191,
+      "longitude": 55.4513,
+      "registryCityIds": [
+        "capital:SC:victoria"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:SL:freetown",
+      "name": "Freetown",
+      "countryCode": "SL",
+      "latitude": 8.4657,
+      "longitude": -13.2317,
+      "registryCityIds": [
+        "capital:SL:freetown"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:ZA:pretoria",
+      "name": "Pretoria",
+      "countryCode": "ZA",
+      "latitude": -25.7479,
+      "longitude": 28.2293,
+      "registryCityIds": [
+        "capital:ZA:pretoria"
+      ],
+      "appCityIds": [
+        "pretoria"
+      ],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals",
+        "app"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:ZA:bloemfontein",
+      "name": "Bloemfontein",
+      "countryCode": "ZA",
+      "latitude": -29.118,
+      "longitude": 26.214,
+      "registryCityIds": [
+        "capital:ZA:bloemfontein"
+      ],
+      "appCityIds": [
+        "bloemfontein"
+      ],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals",
+        "app"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:SS:juba",
+      "name": "Juba",
+      "countryCode": "SS",
+      "latitude": 4.8594,
+      "longitude": 31.5713,
+      "registryCityIds": [
+        "capital:SS:juba"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:TZ:dodoma",
+      "name": "Dodoma",
+      "countryCode": "TZ",
+      "latitude": -6.163,
+      "longitude": 35.7516,
+      "registryCityIds": [
+        "capital:TZ:dodoma"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:TG:lome",
+      "name": "Lomé",
+      "countryCode": "TG",
+      "latitude": 6.1375,
+      "longitude": 1.2123,
+      "registryCityIds": [
+        "capital:TG:lome"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:TN:tunis",
+      "name": "Tunis",
+      "countryCode": "TN",
+      "latitude": 36.8065,
+      "longitude": 10.1815,
+      "registryCityIds": [
+        "capital:TN:tunis"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:ZW:harare",
+      "name": "Harare",
+      "countryCode": "ZW",
+      "latitude": -17.8252,
+      "longitude": 31.0335,
+      "registryCityIds": [
+        "capital:ZW:harare"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:EH:laayoune",
+      "name": "Laayoune",
+      "countryCode": "EH",
+      "latitude": 27.1253,
+      "longitude": -13.1625,
+      "registryCityIds": [
+        "capital:EH:laayoune"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:EH:tifariti",
+      "name": "Tifariti",
+      "countryCode": "EH",
+      "latitude": 26.1594,
+      "longitude": -10.5674,
+      "registryCityIds": [
+        "capital:EH:tifariti"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
+    },
+    {
+      "id": "capital:SO:hargeisa",
+      "name": "Hargeisa",
+      "countryCode": "SO",
+      "latitude": 9.5624,
+      "longitude": 44.0775,
+      "registryCityIds": [
+        "capital:SO:hargeisa"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "africa-capitals"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted"
     }
   ],
   "wikipediaLookupErrors": [

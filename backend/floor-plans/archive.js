@@ -43,8 +43,15 @@ export async function saveObservation(db,target,response,evidence,runId) {
  const observedAt=new Date(),hash=await putBlob(db,response.body,response.headers.contentType);
  await db.query(`INSERT INTO floor_plan.observation(url,sha256,evidence,run_id,observed_at) VALUES($1,$2,$3,$4,$5) ON CONFLICT(url,sha256) DO UPDATE SET updated_at=now()`,[target.url,hash,JSON.stringify(evidence),runId,observedAt]);
  await db.query(`UPDATE floor_plan.target SET state='ok',http_status=$2,failure=NULL,etag=$3,last_modified=$4,current_sha256=$5,last_fetched_at=$6,next_check_at=now()+interval '1 day',updated_at=now() WHERE url=$1`,[target.url,response.status,response.headers.etag,response.headers.lastModified,hash,observedAt]);
- if(evidence.listing) await db.query(`INSERT INTO floor_plan.listing(url,agency_id,source_id,facts,asset_urls,last_observed_at) VALUES($1,$2,$3,$4,$5,$6)
-  ON CONFLICT(url) DO UPDATE SET source_id=excluded.source_id,facts=excluded.facts,asset_urls=excluded.asset_urls,last_observed_at=excluded.last_observed_at,updated_at=now()`,[target.url,target.agency_id,evidence.listing.sourceId,JSON.stringify(evidence.listing),JSON.stringify((evidence.assets || []).filter(asset=>asset.listingOwned===true)),observedAt]);
+ if(evidence.listing) await db.query(`INSERT INTO floor_plan.listing AS l(url,agency_id,source_id,facts,asset_urls,last_observed_at) VALUES($1,$2,$3,$4,$5,$6)
+  ON CONFLICT(url) DO UPDATE SET source_id=excluded.source_id,facts=excluded.facts,asset_urls=excluded.asset_urls,last_observed_at=excluded.last_observed_at,
+  match_status=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN 'unresolved' ELSE l.match_status END,
+  building_city=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN NULL ELSE l.building_city END,
+  building_source=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN NULL ELSE l.building_source END,
+  building_owner_id=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN '' ELSE l.building_owner_id END,
+  building_id=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN NULL ELSE l.building_id END,
+  building_evidence=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN NULL ELSE l.building_evidence END,
+  match_checked_at=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN NULL ELSE l.match_checked_at END,updated_at=now()`,[target.url,target.agency_id,evidence.listing.sourceId,JSON.stringify(evidence.listing),JSON.stringify((evidence.assets || []).filter(asset=>asset.listingOwned===true)),observedAt]);
  if(target.kind==='asset') await db.query(`INSERT INTO floor_plan.extraction(sha256,evidence) VALUES($1,$2) ON CONFLICT DO NOTHING`,[hash,JSON.stringify({sourceUrl:target.url,discoveredFrom:target.discovered_from,mediaType:response.headers.contentType})]);
  return {hash,changed:target.current_sha256!==hash};
 }

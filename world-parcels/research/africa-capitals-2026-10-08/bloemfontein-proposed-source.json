@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Proposed ArcGIS source descriptor for reviewer consideration; not registered or activated.",
+  "status": "proposal-only",
+  "researchCityId": "capital:ZA:bloemfontein",
+  "evidence": "bloemfontein-adapter-acceptance-initial.json",
+  "sourceAudit": "bloemfontein-source-audit.json",
+  "descriptor": {
+    "id": "za-mangaung-cadastre-2025",
+    "endpoint": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11",
+    "idField": "SG_CODE",
+    "idType": "string",
+    "idPrefix": "za-mangaung-sgcode:",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "SG_CODE",
+      "PARCEL_NR"
+    ],
+    "parcelNumberField": "PARCEL_NR",
+    "pageSize": 10,
+    "idBatchSize": 10,
+    "maxFeatures": 2500,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "identityQualification": {
+    "field": "SG_CODE",
+    "type": "string",
+    "prefix": "za-mangaung-sgcode:",
+    "qualifiedInSample": true,
+    "scope": "53 parcels across the tested cells only",
+    "neverUseAsNativeIdentity": [
+      "OBJECTID",
+      "PARCEL_NR"
+    ]
+  },
+  "qualification": "Bounded adapter, paging, manifest, exact-read, absence, footprint and source-binding checks passed. Keep the proposal provisional until a city boundary/coverage requirement and authoritative lineage are resolved."
+}

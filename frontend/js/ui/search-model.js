@@ -54,15 +54,19 @@
     // Something a cadastre could call a parcel: digits with optional slash/dash parts
     // (1813/6, 335550-1813/6, 1000010010, 001-005-027A), or one of the countries' prefixes
     // (HR-335550-1813/6, US-NY-1000010010). No spaces: "Ilica 1" is an address.
-    function looksLikeParcelId(query) {
+    function looksLikeParcelId(query, options = {}) {
         const q = String(query || '').trim();
         if (!q || /\s/.test(q)) return false;
+        const prefix = options.parcelIdPrefix;
+        if (typeof prefix === 'string' && prefix && q.toUpperCase().startsWith(prefix.toUpperCase())) {
+            return /\d/.test(q.slice(prefix.length));
+        }
         if (KNOWN_PREFIX.test(q)) return /\d/.test(q.replace(KNOWN_PREFIX, ''));
         return /^\d[\dA-Za-z]*([/.-][\dA-Za-z]+)*$/.test(q);
     }
 
     // What the query could be. A leading '>' asks for commands only (as in an editor's palette).
-    function classifyQuery(query) {
+    function classifyQuery(query, options = {}) {
         const raw = String(query || '');
         const trimmed = raw.trim();
         if (!trimmed) return { text: '', empty: true, kinds: [] };
@@ -70,7 +74,7 @@
             return { text: trimmed.slice(1).trim(), empty: false, commandsOnly: true, kinds: ['command'] };
         }
         const hasLetter = /\p{L}/u.test(trimmed);
-        const parcel = looksLikeParcelId(trimmed);
+        const parcel = looksLikeParcelId(trimmed, options);
         const kinds = [];
         // Names and addresses need a word ("Ilica 1", "Main St"); an id with a letter in it
         // (001-005-027A, HR-…) is a parcel, not a place.
@@ -90,7 +94,7 @@
     // loaded, so the UI can say which prefix to add.
     function parcelIdCandidates(query, options = {}) {
         const q = String(query || '').trim();
-        if (!looksLikeParcelId(q)) return { ids: [], needsMunicipality: false };
+        if (!looksLikeParcelId(q, options)) return { ids: [], needsMunicipality: false };
         const loaded = Array.isArray(options.loadedIds) ? options.loadedIds : [];
         const limit = options.limit || GROUP_LIMITS.parcels;
         const upper = q.toUpperCase();
@@ -105,12 +109,17 @@
         }
 
         const croatian = options.parcelSource === CROATIAN_SOURCE;
+        const prefix = options.parcelIdPrefix;
         let needsMunicipality = false;
-        if (KNOWN_PREFIX.test(q)) {
+        if (typeof prefix === 'string' && prefix && upper.startsWith(prefix.toUpperCase())) {
+            add(`${prefix}${q.slice(prefix.length)}`);
+        } else if (KNOWN_PREFIX.test(q)) {
             add(upper.replace(/^(HR|SI|SR|US-NY|US-CO)-/i, m => m.toUpperCase()));
         } else if (croatian) {
             if (/^\d{6}-\S+$/.test(q)) add(`HR-${q}`);
             else if (!out.length) needsMunicipality = true;
+        } else if (typeof prefix === 'string' && prefix) {
+            add(`${prefix}${q}`);
         } else if (CITY_PARCEL_PREFIX[options.cityId]) {
             add(`${CITY_PARCEL_PREFIX[options.cityId]}${q}`);
         } else {

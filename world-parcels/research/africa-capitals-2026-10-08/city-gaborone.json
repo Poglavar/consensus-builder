@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "cityId": "capital:BW:gaborone",
+  "name": "Gaborone",
+  "country": "Botswana",
+  "countryCode": "BW",
+  "centerLatLon": [
+    -24.6581,
+    25.9122
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "registryFound": true,
+  "officialRegistryOrPortalFound": null,
+  "publicEndpointVerified": true,
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "targetGeometryEvidence": "sampled polygons",
+  "resultCategory": "verified_sample_partial_coverage",
+  "source": {
+    "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+    "operator": "public ArcGIS service; municipality/operator as stated in service metadata",
+    "observation": "Public ArcGIS polygon layer explicitly described as Gaborone plots.",
+    "geometryType": "polygon",
+    "nativeIdField": "OBJECTID",
+    "sampleFile": "sample-gaborone-bounded.geojson"
+  },
+  "verifiedParcelResponse": {
+    "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?geometry=25.9112%2C-24.6591%2C25.9132%2C-24.6571&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+    "method": "GET anonymous ArcGIS REST query",
+    "httpStatus": 200,
+    "contentType": "application/geo+json",
+    "featureCount": 7,
+    "coordinateReferenceSystem": "EPSG:4326 input and output",
+    "sampleFile": "sample-gaborone-bounded.geojson",
+    "pagination": "Omitted; bounded response returned below service transfer limits."
+  },
+  "englishQueries": [
+    {
+      "languageScript": "English",
+      "exactQuery": "Gaborone cadastral plots parcel map GIS land registry Botswana official",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer"
+      ],
+      "summary": "English query executed; the Bofinet ArcGIS layer is described as Gaborone city plots, and a bounded anonymous polygon query succeeded."
+    }
+  ],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Setswana",
+      "exactQuery": "Gaborone Botswana Setswana diphuthego tsa dikadastre lefatshe mapa ya lefatshe parcele",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer"
+      ],
+      "summary": "Setswana-language search executed; the official-source candidate was the Bofinet ArcGIS layer explicitly labelled Gaborone city plots."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+      "observation": "Public ArcGIS polygon layer explicitly described as Gaborone plots."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?geometry=25.9112%2C-24.6591%2C25.9132%2C-24.6571&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+      "method": "GET with bounded envelope; returnGeometry=true; safe identifier fields only",
+      "httpStatus": 200,
+      "assessment": "Nonempty polygon FeatureCollection, 7 features; saved first three only.",
+      "contentType": "application/geo+json",
+      "bboxWgs84": {
+        "west": 25.911199999999997,
+        "south": -24.659100000000002,
+        "east": 25.9132,
+        "north": -24.6571
+      },
+      "pagination": "Omitted; this service did not require pagination for bounded query."
+    }
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "Bounded Gaborone city-plot samples in 13 cells. Composite LotId plus OBJECTID_1 is a provisional source-row reference, not an official cadastral title identity. Repeated LotId values and tiny published fragments are retained unchanged. Broader coverage and source-row identifier permanence are unverified.",
+    "wholeCityCoverageVerified": false,
+    "countrywideVerified": false
+  },
+  "blocker": null,
+  "remainingUncertainty": "Citywide completeness and cadastral validity remain unverified.",
+  "nextStep": "Monitor source availability and retain the documented scope; wider coverage and legal currentness remain unverified.",
+  "purpose": "City-specific research into parcel geometry and presence of a city-level registry or cadastre. Registry evidence is assessed separately from publicly retrievable geometry.",
+  "registryEvidenceUrls": [
+    "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0"
+  ],
+  "registryBasis": "The public BOFINET Gaborone city-plots polygon layer is a city-scoped parcel dataset. Its tested composite LotId plus OBJECTID_1 identifies source rows, not an official cadastral title identity; legal registry status and complete city coverage are unverified.",
+  "status": "complete",
+  "portalInspectionComplete": true,
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Gaborone cadastral plots parcel map GIS land registry Botswana official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Gaborone Botswana Setswana diphuthego tsa dikadastre lefatshe mapa ya lefatshe parcele",
+      "language": "Setswana",
+      "method": "web.run search_query"
+    }
+  ],
+  "previousRegistryAssessment": {
+    "registryFound": null,
+    "registryBasis": "Public polygon layer explicitly described as Gaborone city plots, but this does not establish a separate legal land registry.",
+    "resultCategory": "verified_geometry"
+  },
+  "registryReview": {
+    "checkedAt": "2026-10-08",
+    "basis": "The public BOFINET Gaborone city-plots polygon layer is a city-scoped parcel dataset. Its tested composite LotId plus OBJECTID_1 identifies source rows, not an official cadastral title identity; legal registry status and complete city coverage are unverified.",
+    "evidenceUrls": [],
+    "interpretation": "Registry activity and partial cadastral records can establish presence; citywide completeness is not required."
+  },
+  "sourceIds": [
+    "gaborone-bofinet-plots-provisional"
+  ],
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "acceptance": {
+    "protocolFile": "gaborone-composite-complete-audit.json",
+    "geometryQualityFile": "gaborone-shapely-quality.json",
+    "protocolPassed": true,
+    "runtimeEnabled": true,
+    "distinctParcelReferences": 76
+  },
+  "parcelStatus": "verified_sample_partial_coverage",
+  "runtimeConfiguration": {
+    "pageSize": 100,
+    "acceptancePageSize": 3,
+    "reason": "Acceptance forced small pages. Runtime uses bounded 100-row OID batches, retaining count/manifest and local complete-response checks."
+  }
+}

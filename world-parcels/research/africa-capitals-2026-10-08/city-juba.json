@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:SS:juba",
+  "queueRank": null,
+  "name": "Juba",
+  "country": "South Sudan",
+  "countryCode": "SS",
+  "centerLatLon": [
+    4.8594,
+    31.5713
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Juba South Sudan public land cadastre parcel registry GIS map",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "English",
+        "query": "Juba South Sudan municipal land registry cadastral parcels GIS public geometry",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.ssnbss.org/home/geographical-information-system/",
+        "observation": "Juba Strategic Plan describes existing cadastre and registry records as inconsistent and proposes a linked land information system and comprehensive digital cadastre. This confirms city registry/cadastre records exist but does not prove online access."
+      },
+      {
+        "url": "https://unhabitat.org/sites/default/files/2023/01/juba_strategic_plan_digital_2023.pdf",
+        "observation": "South Sudan statistics GIS offers general geospatial information, with no parcel feature layer found."
+      },
+      {
+        "url": "https://land.igad.int/index.php/documents-1/countries/south-sudan/rural-development-5/1074-southern-sudan-land-policy-2011-draft/file",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "South Sudan statistics GIS offers general geospatial information, with no parcel feature layer found.",
+    "nextStep": "Revisit the official map/service after a public, non-personal feature endpoint is identified; validate city coverage and geometry before calling this a sample.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Juba Strategic Plan states the city has existing cadastre and land-registry records, though inconsistent; proposed integrated digital system is not treated as live.",
+  "registryEvidenceUrls": [
+    "https://www.ssnbss.org/home/geographical-information-system/",
+    "https://unhabitat.org/sites/default/files/2023/01/juba_strategic_plan_digital_2023.pdf",
+    "https://land.igad.int/index.php/documents-1/countries/south-sudan/rural-development-5/1074-southern-sudan-land-policy-2011-draft/file"
+  ],
+  "resultCategory": "city_registry_exists_inconsistent_no_public_geometry",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/SS.json",
+    "world-parcels/research/retry/countries/SS.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Juba South Sudan public land cadastre parcel registry GIS map",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "English",
+      "query": "Juba South Sudan municipal land registry cadastral parcels GIS public geometry",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

@@ -838,7 +838,7 @@
       "name": "e-Foncier GeoServer, workspace efb, layer efb_parcel (Cadastre National du Benin)",
       "operator": "ANDF (Agence Nationale du Domaine et du Foncier), Benin",
       "countryCode": "BJ",
-      "scope": "digital cadastre parcels; sampled in Cotonou (Littoral) and, with 1 feature, near Seme-Podji (Oueme); extent of national coverage unverified",
+      "scope": "Digital cadastral parcels sampled in Cotonou and near Seme-Podji; additional Porto-Novo geometry was verified on 2026-10-08 but held from runtime for material overlap and self-intersections. National and complete city coverage remain unverified.",
       "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
       "method": "GET OGC WFS 1.0.0 GetFeature (outputFormat=application/json); endpoint found in the config of the public web app https://cadastre.andf.bj/",
       "responseFormat": "GeoJSON",
@@ -846,7 +846,8 @@
       "verificationStatus": "verified_sample_partial_coverage",
       "reuseStatus": "GeoServer capabilities list Fees NONE / AccessConstraints NONE, which is a default, not a licence; reuse terms unverified",
       "verifiedCityIds": [
-        "wup2025:1752"
+        "wup2025:1752",
+        "capital:BJ:porto-novo"
       ],
       "evidenceFile": "research/cotonou.json",
       "liveIntegration": {
@@ -888,6 +889,15 @@
           "outcome": "success",
           "detail": "18 complete cells, 2374 unique NUP identifiers and all exact reads verified without conflicts; footprint returned 7 complete intersecting parcels. Source conditions informational; only bounded Cotonou entry enabled.",
           "evidenceFile": "research/cotonou-live.json"
+        },
+        {
+          "checkedAt": "2026-10-08",
+          "cityId": "capital:BJ:porto-novo",
+          "operation": "Porto-Novo complete paging, exact rereads and independent geometry quality review",
+          "outcome": "geometry_quality_hold",
+          "detail": "Protocol passed for 2,126 references. Nine self-intersections and a near-complete nested overlap remain unchanged on fresh reads; no lifecycle field explains them. Porto-Novo runtime entry is held.",
+          "evidenceFile": "research/africa-capitals-2026-10-08/porto-novo-overlap-followup.json",
+          "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs"
         }
       ]
     },
@@ -2067,20 +2077,20 @@
     },
     {
       "sourceId": "sg-sla-cadastral-land-parcel",
-      "name": "SLA Cadastral Land Parcel (data.gov.sg)",
-      "operator": "Singapore Land Authority",
+      "name": "SLA Cadastral Land Parcel",
+      "operator": "Singapore Land Authority, published on data.gov.sg",
       "countryCode": "SG",
-      "scope": "Singapore (island-wide surveyed land lots)",
+      "scope": "The entire cadastral map of Singapore: polygons of surveyed land parcels/land lots.",
       "endpoint": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
-      "method": "GET (poll-download then file download)",
-      "responseFormat": "GeoJSON FeatureCollection",
-      "crs": "EPSG:4326 (WGS84 lon/lat coordinates observed)",
-      "verificationStatus": "verified_sample_city_scope",
-      "reuseStatus": "Published on data.gov.sg as open data; licence text not read; check before redistribution",
+      "method": "GET poll-download metadata, then presigned GeoJSON file download (weekly snapshot)",
+      "responseFormat": "GeoJSON FeatureCollection, CADASTRAL_LAND_LOT",
+      "crs": "WGS84 lon/lat observed",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "Singapore Open Data Licence: worldwide, perpetual, royalty-free use/copy/distribute/modify, commercial or non-commercial, with attribution and stated conditions",
       "verifiedCityIds": [
         "wup2025:165"
       ],
-      "evidenceFile": "research/singapore.json",
+      "evidenceFile": "research/developed/SG.json",
       "integrationAttempts": [
         {
           "checkedAt": "2026-10-02",
@@ -2113,7 +2123,14 @@
           "No official small-area vector export or bbox-plus-exact-LOT_KEY endpoint was found in the documented SLA/OneMap services."
         ],
         "termsAreInformational": true
-      }
+      },
+      "verifiedRegions": [
+        "west",
+        "central",
+        "east Singapore"
+      ],
+      "nativeIdField": "LOT_KEY",
+      "scopeReviewFile": "country-coverage-reviews.json"
     },
     {
       "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
@@ -2556,20 +2573,37 @@
     },
     {
       "sourceId": "tr-tkgm-parselsorgu-api",
-      "name": "TKGM Parsel Sorgu backing API (megsiswebapi.v3)",
+      "name": "TKGM Parsel Sorgu backing API (megsiswebapi.v3.1)",
       "operator": "Tapu ve Kadastro Genel Mudurlugu (General Directorate of Land Registry and Cadastre)",
       "countryCode": "TR",
       "scope": "Point lookup of a single parcel; tested only in Istanbul (Fatih). Ankara test point returned 404 (point likely not a parcel), so no second-region proof",
-      "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}/",
-      "method": "GET, no key seen",
+      "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+      "method": "Anonymous GET by point or neighborhood/block/parcel identifiers",
       "responseFormat": "GeoJSON Feature",
       "crs": "WGS84 lon/lat",
       "verificationStatus": "verified_sample_partial_coverage",
-      "reuseStatus": "Undocumented endpoint used by the public viewer; terms not read, bulk/reuse rights unknown",
+      "reuseStatus": "Public viewer and anonymous geometry queries verified. Viewer terms restrict supporting-service access and commercial use; no open reuse licence is claimed.",
       "verifiedCityIds": [
         "geonames:745044"
       ],
-      "evidenceFile": "research/retry/cities/istanbul.json"
+      "evidenceFile": "research/istanbul-live-2026-10-08.json",
+      "viewerUrl": "https://parselsorgu.tkgm.gov.tr/",
+      "liveIntegration": {
+        "status": "enabled",
+        "appCityId": "istanbul",
+        "queryMode": "point",
+        "areaEnumeration": false,
+        "evidenceFile": "research/istanbul-live-2026-10-08.json",
+        "termsAreInformational": true,
+        "capabilities": [
+          "point-identify",
+          "exact-native-id"
+        ],
+        "limitation": "Individual parcel geometry loads on click. Complete area enumeration is unavailable; area-dependent operations cannot use this source.",
+        "cityIds": [
+          "istanbul"
+        ]
+      }
     },
     {
       "sourceId": "ar-caba-idecaba-wfs-parcelas",
@@ -3058,7 +3092,7 @@
       "verificationStatus": "verified_nonempty_sample",
       "reuseStatus": "DL_DE_ZERO_2_0",
       "verifiedCityIds": [
-        "geonames:2928810",
+        "wup2025:675",
         "geonames:2935517"
       ],
       "evidenceFile": "research/essen-live.json",
@@ -11143,7 +11177,7 @@
         ],
         "termsAreInformational": true,
         "cityIds": [
-          "capital:KZ:astana"
+          "astana"
         ]
       },
       "identityPolicy": "Use public native kad_nomer with city/source prefix KZ-ASTANA-PKK- for application references. Do not infer ownership/current title or unverified citywide coverage."
@@ -11193,6 +11227,259 @@
         ]
       },
       "implementationNote": "Prototype adapter implemented in backend/parcels/bishkek-source.js; not registered/wired to runtime pending geometry QA."
+    },
+    {
+      "sourceId": "rs-rgz-dkp-imported-belgrade",
+      "name": "Serbian RGZ cadastral parcels — existing Belgrade WFS import",
+      "operator": "Republički geodetski zavod (RGZ)",
+      "countryCode": "RS",
+      "scope": "Belgrade import and archived sample verified; nationwide completeness is unconfirmed.",
+      "endpoint": "https://portal.rgz.gov.rs/rga-portal-api/gis/wms/proxy",
+      "upstreamEndpoint": "https://ogc-tmp.geosrbija.rs/regdkp/ows",
+      "method": "Anonymous WFS 1.1.0 GetFeature through the public RGZ proxy; typeName dkp:dkp_parcels_weekly_only_utm",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:32634",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "Anonymous historical access verified; reuse terms unreviewed.",
+      "verifiedCityIds": [
+        "wup2025:556"
+      ],
+      "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+      "archivedSampleFile": "research/belgrade-import-sample-2026-10-08.json",
+      "responseTimestamp": "2025-12-10T18:50:17.394Z",
+      "latestReachability": {
+        "checkedAt": "2026-10-08",
+        "outcome": "temporarily_unavailable",
+        "detail": "Bounded anonymous feature recheck timed out; existing import evidence remains valid."
+      },
+      "importedData": {
+        "table": "public.parcel_bg",
+        "productionGeometryRows": 668352,
+        "checkedAt": "2026-10-08",
+        "importer": "cadastre-data/cities/beograd/bg-fetch-all.js",
+        "appCityId": "belgrade"
+      }
+    },
+    {
+      "sourceId": "nz-linz-primary-parcels-arcgis",
+      "name": "NZ Primary Parcels",
+      "operator": "Land Information New Zealand (LINZ)",
+      "countryCode": "NZ",
+      "scope": "Current primary parcel polygons covering New Zealand; not the separate non-primary parcel overlay or historic/pending parcels.",
+      "endpoint": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+      "method": "Anonymous ArcGIS FeatureServer bounded query (provider page also links standard APIs; LINZ Data Service WFS requires a free API key)",
+      "responseFormat": "GeoJSON Polygon features",
+      "crs": "NZGD2000 / EPSG:4167 in source; sample query requested WGS84",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "CC BY 4.0; attribution required; commercial use permitted",
+      "evidenceFile": "research/countries/NZ.json",
+      "verifiedRegions": [
+        "Auckland",
+        "Christchurch"
+      ],
+      "nativeIdField": "id",
+      "scopeReviewFile": "country-coverage-reviews.json",
+      "verifiedCityIds": []
+    },
+    {
+      "sourceId": "gr-ktimatologio-active-parcels-arcgis",
+      "name": "Hellenic Cadastre active cadastral parcels",
+      "operator": "Hellenic Cadastre (Ktimatologio)",
+      "countryCode": "GR",
+      "scope": "Operating Cadastre areas only. Athens center was verified; neither whole Athens nor all Greece is inferred from this neighborhood. Large road/common-land geometries coexist with ordinary lot polygons.",
+      "endpoint": "https://services-eu1.arcgis.com/40tFGWzosjaLJpmn/arcgis/rest/services/GEOTEMAXIA_LEITOURGOUN_ON_gdb/FeatureServer/0",
+      "method": "Anonymous ArcGIS spatial paging and exact KAEK lookup",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326 requested output",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "Public query access verified; publisher terms informational.",
+      "verifiedCityIds": [
+        "wup2025:833"
+      ],
+      "evidenceFile": "research/athens-live-2026-10-08.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "appCityId": "athens",
+        "evidenceFile": "research/athens-live-2026-10-08.json",
+        "termsAreInformational": true,
+        "cityIds": [
+          "athens"
+        ]
+      },
+      "viewerUrl": "https://maps.ktimatologio.gr/"
+    },
+    {
+      "sourceId": "ge-msda-napr-registered-land-plots",
+      "name": "Georgia NAPR registered land plots via MSDA public map",
+      "operator": "Municipal Services Development Agency / National Agency of Public Registry",
+      "countryCode": "GE",
+      "scope": "One registered parcel near the user-provided Tbilisi location is verified. Citywide and nationwide completeness are not inferred.",
+      "endpoint": "https://ms.gov.ge/core-api/v1/search/unified-search",
+      "viewerUrl": "https://ms.gov.ge/msmap/#C=44.8067283-41.7088867@Z=20",
+      "method": "Anonymous POST search by cadastral code; separate public point query",
+      "responseFormat": "JSON with WKT polygon",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "Anonymous public geometry access verified; reuse terms unreviewed.",
+      "verifiedCityIds": [
+        "msda:tbilisi"
+      ],
+      "evidenceFile": "research/tbilisi-msda-2026-10-08.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "appCityId": "tbilisi",
+        "queryMode": "point",
+        "areaEnumeration": false,
+        "evidenceFile": "research/tbilisi-msda-2026-10-08.json",
+        "termsAreInformational": true,
+        "capabilities": [
+          "point-identify",
+          "exact-native-id"
+        ],
+        "limitation": "Individual parcel geometry loads on click. Complete area enumeration is unavailable; area-dependent operations cannot use this source.",
+        "cityIds": [
+          "tbilisi"
+        ]
+      }
+    },
+    {
+      "sourceId": "gaborone-bofinet-plots-provisional",
+      "name": "BOFINET Gaborone city plots",
+      "operator": "BOFINET public GIS",
+      "countryCode": "BW",
+      "scope": "Bounded Gaborone city-plot samples in 13 cells. Composite LotId plus OBJECTID_1 is a provisional source-row reference, not an official cadastral title identity. Repeated LotId values and tiny published fragments are retained unchanged. Broader coverage and source-row identifier permanence are unverified.",
+      "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+      "method": "Anonymous ArcGIS queries through the configured adapter; complete spatial paging, fresh exact references, footprint and source binding verified.",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326 output; metric audit EPSG:32735",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public read access verified; publisher terms informational.",
+      "verifiedCityIds": [
+        "capital:BW:gaborone"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "gaborone"
+        ],
+        "reason": "Bounded Gaborone city-plot samples in 13 cells. Composite LotId plus OBJECTID_1 is a provisional source-row reference, not an official cadastral title identity. Repeated LotId values and tiny published fragments are retained unchanged. Broader coverage and source-row identifier permanence are unverified.",
+        "evidenceFile": "research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "operation": "Actual adapter and independent geometry quality qualification",
+          "outcome": "success",
+          "evidenceFile": "research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json",
+          "geometryQualityFile": "research/africa-capitals-2026-10-08/gaborone-shapely-quality.json",
+          "distinctParcelReferences": 76,
+          "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+          "detail": "Bounded Gaborone city-plot samples in 13 cells. Composite LotId plus OBJECTID_1 is a provisional source-row reference, not an official cadastral title identity. Repeated LotId values and tiny published fragments are retained unchanged. Broader coverage and source-row identifier permanence are unverified."
+        }
+      ]
+    },
+    {
+      "sourceId": "za-mangaung-cadastre-2025",
+      "name": "Mangaung Cadastre 2025 — Bloemfontein",
+      "operator": "Mangaung municipal ArcGIS publisher",
+      "countryCode": "ZA",
+      "scope": "Public Mangaung Cadastre_2025 layer described as SG Approved. All 53 retained SG_CODE references passed fresh reads in 17 bounded Bloemfontein cells. Municipal publisher metadata is identified, but upstream lineage, current legal registration and citywide completeness are unverified.",
+      "endpoint": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11",
+      "method": "Anonymous ArcGIS queries through the configured adapter; complete spatial paging, fresh exact references, footprint and source binding verified.",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326 output; metric audit EPSG:32735",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public read access verified; publisher terms informational.",
+      "verifiedCityIds": [
+        "capital:ZA:bloemfontein"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "bloemfontein"
+        ],
+        "reason": "Public Mangaung Cadastre_2025 layer described as SG Approved. All 53 retained SG_CODE references passed fresh reads in 17 bounded Bloemfontein cells. Municipal publisher metadata is identified, but upstream lineage, current legal registration and citywide completeness are unverified.",
+        "evidenceFile": "research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "operation": "Actual adapter and independent geometry quality qualification",
+          "outcome": "success",
+          "evidenceFile": "research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json",
+          "geometryQualityFile": "research/africa-capitals-2026-10-08/bloemfontein-shapely-quality.json",
+          "distinctParcelReferences": 53,
+          "endpoint": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11",
+          "detail": "Public Mangaung Cadastre_2025 layer described as SG Approved. All 53 retained SG_CODE references passed fresh reads in 17 bounded Bloemfontein cells. Municipal publisher metadata is identified, but upstream lineage, current legal registration and citywide completeness are unverified."
+        }
+      ]
+    },
+    {
+      "sourceId": "za-tshwane-registered-parcels",
+      "name": "City of Tshwane registered surveyed parcels — Pretoria",
+      "operator": "City of Tshwane",
+      "countryCode": "ZA",
+      "scope": "Published Registered status only; Now Scheme, Road, Railway and Unregistered records are excluded. Thirteen bounded Pretoria cells and 93 LIS-key geometry rereads passed. Seven sampled boundary slivers are below 2.26 m² and 0.34% of the smaller parcel. Original-survey semantics and legal currentness remain unverified; no citywide completeness claim.",
+      "endpoint": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1",
+      "method": "Anonymous ArcGIS queries through the configured adapter; complete spatial paging, fresh exact references, footprint and source binding verified.",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326 output; metric audit EPSG:32735",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public read access verified; publisher terms informational.",
+      "verifiedCityIds": [
+        "capital:ZA:pretoria"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "pretoria"
+        ],
+        "reason": "Published Registered status only; Now Scheme, Road, Railway and Unregistered records are excluded. Thirteen bounded Pretoria cells and 93 LIS-key geometry rereads passed. Seven sampled boundary slivers are below 2.26 m² and 0.34% of the smaller parcel. Original-survey semantics and legal currentness remain unverified; no citywide completeness claim.",
+        "evidenceFile": "research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json",
+        "technicalBlockers": [],
+        "termsAreInformational": true
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "operation": "Actual adapter and independent geometry quality qualification",
+          "outcome": "success",
+          "evidenceFile": "research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json",
+          "geometryQualityFile": "research/africa-capitals-2026-10-08/pretoria-overlap-assessment.json",
+          "distinctParcelReferences": 93,
+          "endpoint": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1",
+          "detail": "Published Registered status only; Now Scheme, Road, Railway and Unregistered records are excluded. Thirteen bounded Pretoria cells and 93 LIS-key geometry rereads passed. Seven sampled boundary slivers are below 2.26 m² and 0.34% of the smaller parcel. Original-survey semantics and legal currentness remain unverified; no citywide completeness claim."
+        }
+      ]
+    },
+    {
+      "sourceId": "sc-mlh-current-parcels-arcgis",
+      "name": "Seychelles public cadastral parcels — Victoria",
+      "operator": "Seychelles government public GIS",
+      "countryCode": "SC",
+      "scope": "Verified bounded Victoria parcel polygons; open-ended validity does not remove a retained older/newer parcel overlap. Runtime held pending documented lifecycle correction.",
+      "endpoint": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0",
+      "method": "Anonymous public ArcGIS queries; dated current-subset adapter and geometry-quality review.",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:32740 native; EPSG:4326 output",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public read access verified; publisher conditions informational.",
+      "verifiedCityIds": [
+        "capital:SC:victoria"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/victoria-acceptance.json",
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/africa-capitals-2026-10-08/victoria-overlap-review.json",
+        "reason": "Material parent/subdivision-like overlap remains in open-ended validity records; no documented safe exclusion."
+      }
     }
   ],
   "countryCoverage": [
@@ -11362,10 +11649,11 @@
       "countryCode": "HR",
       "country": "Croatia",
       "status": "verified_countrywide",
-      "basis": "two_region_test",
-      "reviewed": false,
-      "evidenceFile": "research/countries/HR.json",
-      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+      "basis": "official_national_scope_and_verified_geometry",
+      "reviewed": true,
+      "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+      "caveats": "DGU explicitly identifies national geographic scope and public DKP downloads. The national index is reachable; individual municipality downloads were not all rechecked.",
+      "checkedAt": "2026-10-08"
     },
     {
       "countryCode": "IE",
@@ -11506,10 +11794,12 @@
       "countryCode": "NZ",
       "country": "New Zealand",
       "status": "verified_countrywide",
-      "basis": "two_region_test",
-      "reviewed": false,
+      "basis": "official_national_scope_and_verified_geometry",
+      "reviewed": true,
       "evidenceFile": "research/countries/NZ.json",
-      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+      "caveats": "LINZ defines a nationwide primary land-parcel fabric. This covers base land parcels, including roads and waterways; non-primary interests and historical/pending parcels are separate datasets. App integration is separate from this scope finding.",
+      "scopeReviewFile": "country-coverage-reviews.json",
+      "scopeReviewedAt": "2026-10-08"
     },
     {
       "countryCode": "PL",
@@ -11560,10 +11850,12 @@
       "countryCode": "SG",
       "country": "Singapore",
       "status": "verified_countrywide",
-      "basis": "two_region_test",
-      "reviewed": false,
+      "basis": "official_national_scope_and_verified_geometry",
+      "reviewed": true,
       "evidenceFile": "research/countries/SG.json",
-      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+      "caveats": "SLA describes this dataset as the entire cadastral map of Singapore's surveyed land lots. Airspace and strata products are separate. The weekly GeoJSON snapshot still needs indexing for app use.",
+      "scopeReviewFile": "country-coverage-reviews.json",
+      "scopeReviewedAt": "2026-10-08"
     },
     {
       "countryCode": "SI",
@@ -12158,9 +12450,10 @@
       "sourceIds": [
         "tr-tkgm-parselsorgu-api"
       ],
-      "researchFile": "research/retry/cities/istanbul.json",
+      "researchFile": "research/istanbul-live-2026-10-08.json",
       "previousResearchFile": "research/istanbul.json",
-      "retryFile": "research/retry/cities/istanbul.json"
+      "retryFile": "research/retry/cities/istanbul.json",
+      "note": "TKGM parcel polygons in Fatih are verified in the current v3.1 API and available in the app by map click or exact neighborhood/block/parcel ID. Complete area enumeration remains unavailable."
     },
     {
       "cityId": "geonames:524901",
@@ -13965,20 +14258,27 @@
         "wup2025:7330",
         "Onitsha"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/africa-ws-city-7330.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-7330.json",
       "dataFindings": {
-        "registryFound": false,
-        "registryBasis": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
-        "reason": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass."
+        "registryFound": true,
+        "registryBasis": "Onitsha-specific land records administered through Anambra State Ministry of Lands; official notice identifies Onitsha layouts and says ANAMGIS service center/application is in Awka. A 2014 World Bank procedure report explicitly says title searches were conducted in Awka because there was no Land Registry in Onitsha. This supports city-scoped records, not a local Onitsha registry office.",
+        "reason": "No anonymous Onitsha parcel polygons. Official services expose land records, but the linked printout concerns owner/history data and was not queried.",
+        "registryEvidenceUrls": [
+          "https://www.mol.anambrastate.gov.ng/october-2024-newsletter/",
+          "https://documents1.worldbank.org/curated/en/642301468100158784/pdf/ACS129090WP0P14521000PUBLIC00Box391431B.pdf"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-7330.json",
-        "resultCategory": "no_new_verified_target_sample",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-7330.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/africa-ws-city-7330.json",
+        "resultCategory": "official_cadastre_online_services_no_geometry",
         "freshVerifiedSample": false,
-        "technicalBlocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
-        "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only."
+        "technicalBlocker": "No anonymous Onitsha parcel polygons. Official services expose land records, but the linked printout concerns owner/history data and was not queried.",
+        "nextStep": "If an anonymous geometry source is found, verify a bounded Onitsha bbox with a count-only request, then read only ID+geometry for a small sample; do not use paid owner/history register workflows."
       }
     },
     {
@@ -14207,20 +14507,26 @@
         "wup2025:2324",
         "Yaoundé"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/africa-ws-city-2324.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-2324.json",
       "dataFindings": {
-        "registryFound": false,
-        "registryBasis": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
-        "reason": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass."
+        "registryFound": true,
+        "registryBasis": "Official MINDCAF documents identify land-conservation services for the Mfoundi department covering Yaoundé I–VII (including separate A/B/C conservation units with Yaoundé offices) and department-level cadastre functions. This establishes an official city-scoped registry/cadastre basis, not anonymous access.",
+        "reason": "No credible anonymous parcel geometry; third-party Urban model contains a 32-shape sub-100m² microcluster, not usable city coverage.",
+        "registryEvidenceUrls": [
+          "https://mindcaf.gov.cm/fr/docs/"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-2324.json",
-        "resultCategory": "no_new_verified_target_sample",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-2324.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/africa-ws-city-2324.json",
+        "resultCategory": "third_party_urban_model_microcluster_rejected_for_coverage_scale_and_provenance",
         "freshVerifiedSample": false,
-        "technicalBlocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
-        "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only."
+        "technicalBlocker": "No credible anonymous parcel geometry; third-party Urban model contains a 32-shape sub-100m² microcluster, not usable city coverage.",
+        "nextStep": "Find a credible public MINDCAF/CUY or other documented city parcel source, then validate geographic placement, parcel scale and fresh native-ID or geometry-reference reads. The retained Urban microcluster does not qualify."
       }
     },
     {
@@ -14423,20 +14729,27 @@
         "wup2025:1866",
         "Kampala"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/africa-ne-city-kampala.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-1866.json",
       "dataFindings": {
-        "registryFound": null,
-        "registryBasis": "No anonymous Kampala parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
-        "reason": "No anonymous Kampala parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry."
+        "registryFound": true,
+        "registryBasis": "Kampala cadastral information is confirmed by the official KCCA description; open geometry access remains unverified.",
+        "reason": "The official KCCA GIS confirms city cadastre information exists, but the actual anonymous app layer configuration lists only Boundary, Divisions, Buildings, Parishes and Villages (no CAD layer), while its anonymous WFS advertises no parcel-named layer and the bounded generic polygon query returned zero features.",
+        "registryEvidenceUrls": [
+          "https://www.kcca.go.ug/gis",
+          "https://camcamv.kcca.go.ug/GisWebApp/gis/home"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-kampala.json",
-        "resultCategory": "public_service_no_geometry",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-1866.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/africa-ne-city-kampala.json",
+        "resultCategory": "no_verified_open_endpoint_after_attempts",
         "freshVerifiedSample": false,
-        "technicalBlocker": "No anonymous Kampala parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
-        "nextStep": "Check the Kampala survey office or NLIS operator for an anonymous parcel layer or bounded extract; confirm it covers this city rather than administrative/utility layers."
+        "technicalBlocker": "The official KCCA GIS confirms city cadastre information exists, but the actual anonymous app layer configuration lists only Boundary, Divisions, Buildings, Parishes and Villages (no CAD layer), while its anonymous WFS advertises no parcel-named layer and the bounded generic polygon query returned zero features.",
+        "nextStep": "Ask KCCA GIS or MoLHUD whether a public WFS/ArcGIS layer or a small geometry-only parcel extract is available, and test that source with the saved point before integration."
       }
     },
     {
@@ -14508,20 +14821,27 @@
         "wup2025:8435",
         "Kano"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/africa-ws-city-8435.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-8435.json",
       "dataFindings": {
-        "registryFound": false,
-        "registryBasis": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
-        "reason": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass."
+        "registryFound": true,
+        "registryBasis": "Kano city lies within Kano State; KANGIS publicly identifies itself as the state geospatial-data custodian and describes Kano-area SLTR parcel demarcation, data processing and official title registration. This establishes a relevant official land registry, not an open geometry service.",
+        "reason": "No anonymous parcel geometry was verified. The tested KANGIS Buildings FeatureServer root returned ArcGIS JSON error 499 Token Required; this finding applies only to that endpoint. The ministry land host linked by KANGIS was inaccessible (Cloudflare 403); other services were not established as token-gated.",
+        "registryEvidenceUrls": [
+          "https://www.kangis.gov.ng/",
+          "https://www.kangis.gov.ng/sltr.html"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-8435.json",
-        "resultCategory": "no_new_verified_target_sample",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-8435.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/africa-ws-city-8435.json",
+        "resultCategory": "official_registry_and_public_catalog_limited_no_geometry",
         "freshVerifiedSample": false,
-        "technicalBlocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
-        "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only."
+        "technicalBlocker": "No anonymous parcel geometry was verified. The tested KANGIS Buildings FeatureServer root returned ArcGIS JSON error 499 Token Required; this finding applies only to that endpoint. The ministry land host linked by KANGIS was inaccessible (Cloudflare 403); other services were not established as token-gated.",
+        "nextStep": "Find a documented public KANGIS parcel service or geometry-only extract, then validate a bounded Kano-area sample and fresh native-ID or source-scoped geometry-reference lookups."
       }
     },
     {
@@ -14617,20 +14937,27 @@
         "wup2025:2076",
         "Casablanca"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/africa-ne-city-casablanca.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-2076.json",
       "dataFindings": {
-        "registryFound": null,
-        "registryBasis": "No open parcel polygons for Casablanca were verified. ANCFCC plan requests are tied to identity/title details and payment, so the service does not provide a public city-wide feed.",
-        "reason": "No open parcel polygons for Casablanca were verified. ANCFCC plan requests are tied to identity/title details and payment, so the service does not provide a public city-wide feed."
+        "registryFound": true,
+        "registryBasis": "National official cadastre plus named Casablanca external office/product catalogue; no public target parcel geometry verified.",
+        "reason": "ANCFCC exposes products and a title-specific request workflow rather than an anonymous city-wide geometry endpoint; the AUC geoportal requires account/security-code access, its Open Data page lists no vector dataset, and Casa Maps is a city-district/POI map. The public Eaux et Forêts parcel layer is forest inventory outside the target point.",
+        "registryEvidenceUrls": [
+          "https://www.ancfcc.gov.ma/ServicesExterieursAr/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-casablanca.json",
-        "resultCategory": "public_service_no_geometry",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-2076.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/africa-ne-city-casablanca.json",
+        "resultCategory": "no_verified_open_endpoint_after_attempts",
         "freshVerifiedSample": false,
-        "technicalBlocker": "No open parcel polygons for Casablanca were verified. ANCFCC plan requests are tied to identity/title details and payment, so the service does not provide a public city-wide feed.",
-        "nextStep": "Check whether ANCFCC or Casablanca’s municipality publishes a public vector layer or bounded parcel extract; treat identity-gated cadastral plans as records access, not an open feed."
+        "technicalBlocker": "ANCFCC exposes products and a title-specific request workflow rather than an anonymous city-wide geometry endpoint; the AUC geoportal requires account/security-code access, its Open Data page lists no vector dataset, and Casa Maps is a city-district/POI map. The public Eaux et Forêts parcel layer is forest inventory outside the target point.",
+        "nextStep": "Ask ANCFCC/AUC for an anonymous WFS, public parcel layer, or bounded geometry-only extract around the WUP point; validate its CRS, parcel semantics, coverage, native IDs or source-scoped geometry hashes before integration."
       }
     },
     {
@@ -15024,27 +15351,37 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 110,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
       "researchFile": "research/jaipur.json",
       "aliases": [
         "wup2025:8064",
         "Jaipur"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-8064.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-8064.json",
       "dataFindings": {
-        "registryFound": false,
-        "registryBasis": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
-        "reason": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication."
+        "registryFound": true,
+        "registryBasis": "The official Rajasthan Urban GIS Portal explicitly attributes khasra/village boundaries to the Settlement Department and advertises Jaipur Settlement_JDA and JDA_Plots services. City-scoped cadastral map publication is documented; live geometry access is not verified.",
+        "reason": "Advertised official parcel services are currently unreachable from both checked networks. Certificate bypass cannot cure a pre-TLS TCP timeout.",
+        "registryEvidenceUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/india-city-8064.json",
-        "resultCategory": "no_verified_sample_candidate_citywide",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-8064.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/india-city-8064.json",
+        "resultCategory": "official_urban_parcel_services_temporarily_unavailable",
         "freshVerifiedSample": false,
-        "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
-        "nextStep": "Use the official Bhu-Naksha location selector to resolve the WUP point to the exact Jaipur village, then verify its target plot geometry and stable plot number."
+        "technicalBlocker": "Advertised official parcel services are currently unreachable from both checked networks. Certificate bypass cannot cure a pre-TLS TCP timeout.",
+        "nextStep": "Retry the exact public parcel services when reachable, following the portal’s ordinary anonymous bootstrap if required, then request only geometry and parcel identifiers in a small Jaipur bbox. Confirm location, polygon quality and fresh identity resolution before enabling a provider.",
+        "additionalEvidenceFiles": [
+          "research/india-africa-batch4-2026-10-08/jaipur-urban-gis-diagnostic.json"
+        ]
       }
     },
     {
@@ -15271,27 +15608,37 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 119,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
       "researchFile": "research/varanasi.json",
       "aliases": [
         "wup2025:10447",
         "Varanasi"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10447.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-10447.json",
       "dataFindings": {
-        "registryFound": false,
-        "registryBasis": "State revenue portals are discoverable, but this bounded search did not resolve the exact WUP-point revenue village or return a nonempty parcel geometry.",
-        "reason": "State revenue portals are discoverable, but this bounded search did not resolve the exact WUP-point revenue village or return a nonempty parcel geometry."
+        "registryFound": true,
+        "registryBasis": "Official UP BhuNaksha resolves district 197 वाराणसी, Sadar tehsil 00996 and real nearby revenue-village maps/plots (Shivpur, Domari); these are city-region registry records, though neither nearby sample contains the WUP center.",
+        "reason": "Nearby public hit-test results provide parcel codes and bounding boxes only. The full-shape endpoint and GeoJSON layer endpoint return 401; the WMS evidence is a raster.",
+        "registryEvidenceUrls": [
+          "https://upbhunaksha.gov.in/home/",
+          "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/india-city-10447.json",
-        "resultCategory": "no_verified_sample_candidate_citywide",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-10447.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/india-city-10447.json",
+        "resultCategory": "public_cadastral_raster_and_hit_test_no_open_vector_geometry",
         "freshVerifiedSample": false,
-        "technicalBlocker": "State revenue portals are discoverable, but this bounded search did not resolve the exact WUP-point revenue village or return a nonempty parcel geometry.",
-        "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+        "technicalBlocker": "Nearby public hit-test results provide parcel codes and bounding boxes only. The full-shape endpoint and GeoJSON layer endpoint return 401; the WMS evidence is a raster.",
+        "nextStep": "Use a separately documented public vector route if one becomes available; validate full boundaries, geographic placement and fresh native-ID or source-scoped geometry-reference reads. Preserve the nearby public raster as viewing evidence only.",
+        "additionalEvidenceFiles": [
+          "research/india-africa-batch4-2026-10-08/india-varanasi-10447-map-sample.json"
+        ]
       }
     },
     {
@@ -15710,7 +16057,7 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 136,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
       "researchFile": "research/indore.json",
       "previousResearchFile": "research/indore.json",
@@ -15719,20 +16066,32 @@
         "wup2025:8886",
         "Indore"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-8886.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-8886.json",
       "dataFindings": {
-        "registryFound": null,
-        "registryBasis": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
-        "reason": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication."
+        "registryFound": true,
+        "registryBasis": "Official Indore district Revenue Department page identifies local revenue administration and its online directory of patwari/revenue inspectors/tehsildars; official Indore district officers page lists the भू-अभिलेख (land records) office. Sources: https://indore.nic.in/en/departments/revenue-department/ and https://indore.nic.in/en/district-officers-contacts-directory/.",
+        "reason": "The official municipal GIS times out before TLS from two networks. Public commercial demo shapes are rotated and shifted into an undocumented private frame, so they are not verified georeferenced parcel geometry.",
+        "registryEvidenceUrls": [
+          "https://indore.nic.in/en/departments/revenue-department/",
+          "https://indore.nic.in/en/district-officers-contacts-directory/",
+          "https://indore.nic.in/en/indore-gis/"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/india-city-8886.json",
-        "resultCategory": "no_verified_sample_candidate_citywide",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-8886.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/india-city-8886.json",
+        "resultCategory": "official_gis_unavailable_and_public_demo_not_georeferenced",
         "freshVerifiedSample": false,
-        "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
-        "nextStep": "Open the official WebGIS in a live browser session, resolve the WUP point to district/tehsil/village, and verify the parcel feature geometry and stable khasra identifier."
+        "technicalBlocker": "The official municipal GIS times out before TLS from two networks. Public commercial demo shapes are rotated and shifted into an undocumented private frame, so they are not verified georeferenced parcel geometry.",
+        "nextStep": "Recheck the official municipal WebGIS when reachable, or obtain the publisher’s documented georeferenced public layout feed. The demonstration-coordinate shapes are not a runtime substitute.",
+        "additionalEvidenceFiles": [
+          "research/india-africa-batch4-2026-10-08/indore-municipal-diagnostic.json",
+          "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+        ]
       }
     },
     {
@@ -15968,27 +16327,37 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 147,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
       "researchFile": "research/nagpur.json",
       "aliases": [
         "wup2025:9793",
         "Nagpur"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-9793.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-9793.json",
       "dataFindings": {
-        "registryFound": false,
-        "registryBasis": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
-        "reason": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry."
+        "registryFound": true,
+        "registryBasis": "Official Nagpur District Superintendent of Land Records page identifies the city district land-records authority; Maharashtra Bhumi Abhilekh officially documents eMaps for city-survey/plot maps and property-card access.",
+        "reason": "Maharashtra BhuNaksha viewer timed out on direct requests. Official NMC map PDF is a static survey-boundary/number map rather than machine-readable parcel geometry. DILRMP Nagpur Urban tehsil code 0 does not support assuming rural digitization covers urban CTS records.",
+        "registryEvidenceUrls": [
+          "https://nagpur.gov.in/district-superintendent-land-records/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Services"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/india-city-9793.json",
-        "resultCategory": "no_verified_sample_candidate_citywide",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-9793.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/india-city-9793.json",
+        "resultCategory": "official_city_survey_viewer_temporarily_unavailable",
         "freshVerifiedSample": false,
-        "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
-        "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+        "technicalBlocker": "Maharashtra BhuNaksha viewer timed out on direct requests. Official NMC map PDF is a static survey-boundary/number map rather than machine-readable parcel geometry. DILRMP Nagpur Urban tehsil code 0 does not support assuming rural digitization covers urban CTS records.",
+        "nextStep": "Retry the documented Maharashtra viewer after service recovery, then verify geographically scoped Nagpur city-survey parcel geometry. The secondary-network timeout is already recorded; the rural Jamtha report does not establish urban coverage.",
+        "additionalEvidenceFiles": [
+          "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+        ]
       }
     },
     {
@@ -16204,27 +16573,37 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 156,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
       "researchFile": "research/kalyan-dombivli.json",
       "aliases": [
         "wup2025:8120",
         "Kalyan-Dombivli"
       ],
-      "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-8120.json",
+      "latestAssessmentFile": "research/india-africa-batch4-2026-10-08/city-8120.json",
       "dataFindings": {
-        "registryFound": false,
-        "registryBasis": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
-        "reason": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry."
+        "registryFound": true,
+        "registryBasis": "KDMC official ArcGIS service metadata exposes city-survey boundary layer (survey_no, ward_id, village_name); a municipal parcel registry layer is documented, but WUP center may lie outside KDMC in Ulhasnagar.",
+        "reason": "The KDMC public ArcGIS layer endpoint returns an HTTP 200 HTML Web Adaptor error saying no server machines are accessible, reproduced on a second network. The WUP locator may fall in Ulhasnagar, so eventual KDMC geometry also needs explicit coverage qualification.",
+        "registryEvidenceUrls": [
+          "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer",
+          "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_GIS_ENT/FeatureServer/13"
+        ],
+        "publicParcelGeometryFound": false
       },
       "regionalResearch": {
         "checkedAt": "2026-10-08",
         "cohort": "india-africa",
-        "evidenceFile": "research/india-africa-2026-10-08/india-city-8120.json",
-        "resultCategory": "no_verified_sample_candidate_citywide",
+        "batch": 4,
+        "evidenceFile": "research/india-africa-batch4-2026-10-08/city-8120.json",
+        "previousAssessmentFile": "research/india-africa-2026-10-08/india-city-8120.json",
+        "resultCategory": "official_city_survey_service_provider_failure",
         "freshVerifiedSample": false,
-        "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
-        "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+        "technicalBlocker": "The KDMC public ArcGIS layer endpoint returns an HTTP 200 HTML Web Adaptor error saying no server machines are accessible, reproduced on a second network. The WUP locator may fall in Ulhasnagar, so eventual KDMC geometry also needs explicit coverage qualification.",
+        "nextStep": "Retry the exact city-survey/property services after provider recovery; request geometry and nonpersonal identifiers, validate municipal coverage, and label any accepted partial Kalyan-Dombivli coverage explicitly.",
+        "additionalEvidenceFiles": [
+          "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+        ]
       }
     },
     {
@@ -16289,9 +16668,13 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 160,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/athens.json"
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gr-ktimatologio-active-parcels-arcgis"
+      ],
+      "researchFile": "research/athens-live-2026-10-08.json",
+      "previousResearchFile": "research/athens.json",
+      "note": "Active cadastral parcel geometry verified in central Athens, with complete area paging and exact KAEK lookup. Available in the app; wider geographic coverage remains unconfirmed."
     },
     {
       "cityId": "wup2025:11956",
@@ -24126,6 +24509,2003 @@
           "research/central-asia-capitals-2026-10-08/bishkek-neighborhood-3x3-requests.json"
         ]
       }
+    },
+    {
+      "cityId": "wup2025:556",
+      "name": "Belgrade",
+      "country": "Serbia",
+      "countryCode": "RS",
+      "centerLatLon": [
+        44.810918,
+        20.438859
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "rs-rgz-dkp-imported-belgrade"
+      ],
+      "researchFile": "research/coverage-recheck-2026-10-08.json",
+      "note": "Existing Belgrade parcel import traced to the public RGZ WFS. Current service recheck timed out; nationwide coverage is unconfirmed."
+    },
+    {
+      "cityId": "geonames:3191281",
+      "name": "Sarajevo",
+      "country": "Bosnia and Herzegovina",
+      "countryCode": "BA",
+      "centerLatLon": [
+        43.84864,
+        18.35644
+      ],
+      "citySource": "https://www.geonames.org/3191281/sarajevo.html",
+      "outsideUnQueue": true,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/coverage-recheck-2026-10-08.json",
+      "note": "Sarajevo parcel access remains inconclusive: the advertised FGU service requires sign-in and the separate public canton viewer is unreachable. No existing Sarajevo import was found in the databases checked."
+    },
+    {
+      "cityId": "msda:tbilisi",
+      "name": "Tbilisi",
+      "country": "Georgia",
+      "countryCode": "GE",
+      "centerLatLon": [
+        41.7088867,
+        44.8067283
+      ],
+      "citySource": "https://ms.gov.ge/msmap/#C=44.8067283-41.7088867@Z=20",
+      "outsideUnQueue": true,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ge-msda-napr-registered-land-plots"
+      ],
+      "researchFile": "research/tbilisi-msda-2026-10-08.json",
+      "note": "NAPR parcel map and native cadastral polygons are available in the app through point and exact-code lookup. Complete area enumeration remains unavailable."
+    },
+    {
+      "cityId": "capital:BJ:porto-novo",
+      "name": "Porto-Novo",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "centerLatLon": [
+        6.4969,
+        2.6289
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 253,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "researchFile": "research/africa-capitals-2026-10-08/city-porto-novo.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-porto-novo.json",
+      "aliases": [
+        "capital:BJ:porto-novo",
+        "Porto-Novo"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "ANDF’s official 2 December 2024 notice names Porto-Novo as one of 12 communes whose land-formalization records were integrated into the e-Foncier cadastral database from January 2025. ANDF/TERRA reporting also identifies Porto-Novo among pilot communes. This is city-specific coverage evidence, separately confirmed by the bounded public WFS sample.",
+        "registryEvidenceUrls": [
+          "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/",
+          "https://andf.bj/wp-content/uploads/2026/01/ANDF-TERRA-RF-002-V1.0_EtudeBaselineTerra_RapportDefinitif_V2_30.12.2025.pdf",
+          "https://cadastre.andf.bj/"
+        ],
+        "reason": "Unchanged public geometry includes nine self-intersecting rings and a 25,095.38 m² overlap covering 98.91% of the smaller parcel. No lifecycle/status field explains it; source geometry was not repaired or selectively dropped.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-porto-novo.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "verified_geometry_held_quality_review",
+        "freshVerifiedSample": true
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/africa-capitals-2026-10-08/porto-novo-overlap-followup.json",
+        "technicalBlockers": [
+          "Unchanged public geometry includes nine self-intersecting rings and a 25,095.38 m² overlap covering 98.91% of the smaller parcel. No lifecycle/status field explains it; source geometry was not repaired or selectively dropped."
+        ]
+      }
+    },
+    {
+      "cityId": "capital:BW:gaborone",
+      "name": "Gaborone",
+      "country": "Botswana",
+      "countryCode": "BW",
+      "centerLatLon": [
+        -24.6581,
+        25.9122
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 254,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gaborone-bofinet-plots-provisional"
+      ],
+      "researchFile": "research/africa-capitals-2026-10-08/city-gaborone.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-gaborone.json",
+      "aliases": [
+        "capital:BW:gaborone",
+        "Gaborone"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The public BOFINET Gaborone city-plots polygon layer is a city-scoped parcel dataset. Its tested composite LotId plus OBJECTID_1 identifies source rows, not an official cadastral title identity; legal registry status and complete city coverage are unverified.",
+        "registryEvidenceUrls": [
+          "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0"
+        ],
+        "reason": "The public BOFINET Gaborone city-plots polygon layer is a city-scoped parcel dataset. Its tested composite LotId plus OBJECTID_1 identifies source rows, not an official cadastral title identity; legal registry status and complete city coverage are unverified.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-gaborone.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "verified_sample_partial_coverage",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "gaborone",
+      "liveAcceptanceFile": "research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "checkedAt": "2026-10-08",
+        "sourceId": "gaborone-bofinet-plots-provisional",
+        "appCityId": "gaborone",
+        "evidenceFile": "research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json",
+        "technicalBlockers": [],
+        "limitations": [
+          "Bounded Gaborone city-plot samples in 13 cells. Composite LotId plus OBJECTID_1 is a provisional source-row reference, not an official cadastral title identity. Repeated LotId values and tiny published fragments are retained unchanged. Broader coverage and source-row identifier permanence are unverified."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "capital:BI:gitega",
+      "name": "Gitega",
+      "country": "Burundi",
+      "countryCode": "BI",
+      "centerLatLon": [
+        -3.4264,
+        29.9306
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 255,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-gitega.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-gitega.json",
+      "aliases": [
+        "capital:BI:gitega",
+        "Gitega"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official 2026 property/parcel-owner census in Gitega commune by DTFCN/INSBU and official PMS title/cadastral-number services establish city registry activity.",
+        "registryEvidenceUrls": [
+          "https://primature.gov.bi/le-premier-ministre-lance-le-rppcub-2026-une-reforme-majeure-pour-la-securisation-fonciere-et-la-transformation-numerique-du-burundi/",
+          "https://www.edi.bi/Home",
+          "https://www.igebu.bi/Services/cartographie/",
+          "https://www.insbu.bi/populationDataPageGitegaGitega"
+        ],
+        "reason": "IGEBU lists updated Gitega city cartographic products; these are city maps, not parcel layer endpoints.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-gitega.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_specific_registration_census_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:BI:bujumbura",
+      "name": "Bujumbura",
+      "country": "Burundi",
+      "countryCode": "BI",
+      "centerLatLon": [
+        -3.3614,
+        29.3599
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 256,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-bujumbura.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-bujumbura.json",
+      "aliases": [
+        "capital:BI:bujumbura",
+        "Bujumbura"
+      ],
+      "capitalRole": "economic capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official 2026 census in Bujumbura urban communes and PMS/DTFCN title services establish city-specific registry activity.",
+        "registryEvidenceUrls": [
+          "https://primature.gov.bi/le-premier-ministre-lance-le-rppcub-2026-une-reforme-majeure-pour-la-securisation-fonciere-et-la-transformation-numerique-du-burundi/",
+          "https://www.edi.bi/Home",
+          "https://www.igebu.bi/Services/cartographie/",
+          "https://sp-bcg.gov.bi/index.php/publications/actualites?cal_offset=7n&start=85"
+        ],
+        "reason": "IGEBU and national GIS platform pages list Bujumbura city topographic map/addressing products; no parcel features endpoint identified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-bujumbura.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_specific_registration_census_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CV:praia",
+      "name": "Praia",
+      "country": "Cabo Verde",
+      "countryCode": "CV",
+      "centerLatLon": [
+        14.9177,
+        -23.5092
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 257,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-praia.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-praia.json",
+      "aliases": [
+        "capital:CV:praia",
+        "Praia"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "A 2024 official INGT notice starts the Santiago cadastral operation and explicitly includes Município da Praia, with declarations scheduled through November 2025; it also names Praia service locations. This establishes city-specific cadastral activity, not completion or open vector coverage. The live public portal exposes NIP-based cadastral lookup and cadastral-plan issuance workflows.",
+        "registryEvidenceUrls": [
+          "https://www.mf.gov.cv/documents/20126/0/Edital%2B-%2B%2BCadastro%2BPredial_Aprovado.pdf/b813258a-c6b9-cd7a-a778-d8b810a76fb2?download=true&t=1712681133184&version=1.0",
+          "https://portaldocadastro.ingt.gov.cv/",
+          "https://ingt.gov.cv/ingt/Servi%C3%A7os/cadastro-predial/"
+        ],
+        "reason": "Official portal separates cadastral-plan document service from public browsing; no anonymous point-query vector endpoint located.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-praia.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_cadastre_operation_portal_requires_login_no_public_parcel_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CF:bangui",
+      "name": "Bangui",
+      "country": "Central African Republic",
+      "countryCode": "CF",
+      "centerLatLon": [
+        4.3947,
+        18.5582
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 258,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-bangui.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-bangui.json",
+      "aliases": [
+        "capital:CF:bangui",
+        "Bangui"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Current city registry/parcel-service presence was not established. National plans describe cadastre digitization targets and no public Bangui portal was accessible.",
+        "registryEvidenceUrls": [],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-bangui.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "no_city_registry_or_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:TD:n-djamena",
+      "name": "N'Djamena",
+      "country": "Chad",
+      "countryCode": "TD",
+      "centerLatLon": [
+        12.1348,
+        15.0557
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 259,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-n-djamena.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-n-djamena.json",
+      "aliases": [
+        "capital:TD:n-djamena",
+        "N'Djamena"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Government decree mandates a cadastral directorate to maintain cadastral information for all cities; earlier sector source says operations are concentrated in N’Djamena. Current registry completeness is not verified.",
+        "registryEvidenceUrls": [
+          "https://faolex.fao.org/docs/pdf/cha141674.pdf",
+          "https://www.foncier-developpement.fr/wp-content/uploads/fiche-pays-tchad.pdf"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-n-djamena.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:KM:moroni",
+      "name": "Moroni",
+      "country": "Comoros",
+      "countryCode": "KM",
+      "centerLatLon": [
+        -11.7172,
+        43.2473
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 260,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-moroni.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-moroni.json",
+      "aliases": [
+        "capital:KM:moroni",
+        "Moroni"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official cadastral services in Moroni process plan-croquis requests, and project resettlement documentation reproduces a 2019 cadastral attestation and site parcel-plan determination. Existing plans are fragmented and a comprehensive Moroni cadastre is absent; that limits coverage, not the evidence for partial city cadastral activity.",
+        "registryEvidenceUrls": [
+          "https://eregulations.investcomoros.net/procedure/14/step/96",
+          "https://documents1.worldbank.org/curated/en/874501583296212536/pdf/Plan-dAction-de-Reinstallation.pdf",
+          "https://egouv.km/fr/",
+          "https://documents1.worldbank.org/curated/en/831011468008106525/pdf/NonAsciiFileName0.pdf"
+        ],
+        "reason": "World Bank project appendix documents a service-issued land/cadastre attestation for a Grande Comore parcel; a separate historical project assessment recommends establishing a Moroni city cadastral plan because existing plans were isolated. Thus office exists, target-wide coverage is not established.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-moroni.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:DJ:djibouti",
+      "name": "Djibouti",
+      "country": "Djibouti",
+      "countryCode": "DJ",
+      "centerLatLon": [
+        11.5886,
+        43.1451
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 261,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-djibouti.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-djibouti.json",
+      "aliases": [
+        "capital:DJ:djibouti",
+        "Djibouti"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official Djibouti city parcel decrees identify actual Livre Foncier/title records, including Ambouli title TF 913 in 2024; DDECF administers cadastre and land-title conservation. SIGVD alone establishes city GIS, not cadastral geometry. Neither complete city coverage nor a public parcel API is inferred.",
+        "registryEvidenceUrls": [
+          "https://budget.gouv.dj/ddecf/",
+          "https://www.journalofficiel.dj/texte-juridique/arrete-2024-049-pr-mb-portant-reversement-dune-parcelle-de-terrain-bati/",
+          "https://www.journalofficiel.dj/arabe/texte-juridique/decret-n2015-289-pr-met-portant-mise-en-place-du-systeme-dinformations-geographiques-de-la-ville-de-djibouti-sigvd/",
+          "https://www.ministere-finances.dj/MEFPP/Organisations.html"
+        ],
+        "reason": "Official DDCF/Bureau du Cadastre description lists land registration, cadastral plan maintenance, map reproduction/consultation, survey and GIS cartographic database duties. It does not establish anonymous online parcels.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-djibouti.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:EG:new-capital",
+      "name": "New Capital",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "centerLatLon": [
+        30.018,
+        31.764
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 262,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-new-capital.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-new-capital.json",
+      "aliases": [
+        "capital:EG:new-capital",
+        "New Capital"
+      ],
+      "capitalRole": "administrative government seat",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official NUCA New Capital and land-plot pages document a city plot inventory and land-administration activity. Available/reserved plot records do not by themselves establish a legal title register or public cadastral vector geometry.",
+        "registryEvidenceUrls": [
+          "https://newcapital.nuca.gov.eg/ar/ViewCity.aspx?ID=1",
+          "https://lands.nuca.gov.eg/ar/ViewZone.aspx",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://acud.eg/"
+        ],
+        "reason": "Available plot service is zone/project based; no public GIS endpoint with a spatial point query was found.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-new-capital.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_land_portal_no_open_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GQ:ciudad-de-la-paz",
+      "name": "Ciudad de la Paz",
+      "country": "Equatorial Guinea",
+      "countryCode": "GQ",
+      "centerLatLon": [
+        1.591,
+        10.831
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 263,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-ciudad-de-la-paz.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-ciudad-de-la-paz.json",
+      "aliases": [
+        "capital:GQ:ciudad-de-la-paz",
+        "Ciudad de la Paz"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-specific land registry or parcel plan verified. Government report describes urban master plan still in design/negotiation.",
+        "registryEvidenceUrls": [
+          "https://www.guineaecuatorialpress.com/index.php/noticias/guinea_ecuatorial_e_iccc_ultiman_detalles_antes_de_firmar_un_proyecto_de_dise%C3%B1o_urbanistico"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-ciudad-de-la-paz.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "no_city_registry_or_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GQ:malabo",
+      "name": "Malabo",
+      "country": "Equatorial Guinea",
+      "countryCode": "GQ",
+      "centerLatLon": [
+        3.7504,
+        8.7371
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 264,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-malabo.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-malabo.json",
+      "aliases": [
+        "capital:GQ:malabo",
+        "Malabo"
+      ],
+      "capitalRole": "former capital during 2026 relocation",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Government reports Malabo has road-and-parcel plans, with caveats that plans may be obsolete or incomplete; legal registry openness is not established.",
+        "registryEvidenceUrls": [
+          "https://www.guineaecuatorialpress.com/noticias/comparecencia_del_ministro_delegado_del_interior_y_administracion_local"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-malabo.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:ER:asmara",
+      "name": "Asmara",
+      "country": "Eritrea",
+      "countryCode": "ER",
+      "centerLatLon": [
+        15.3229,
+        38.9251
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 265,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-asmara.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-asmara.json",
+      "aliases": [
+        "capital:ER:asmara",
+        "Asmara"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "A technical paper documents a property-registration study in Asmara in 2022; it does not establish a live city registry or public parcel service today.",
+        "registryEvidenceUrls": [
+          "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+          "https://fig.net/resources/proceedings/fig_proceedings/fig2023/papers/ts09g/TS09G_weldegiorgis_11953.pdf",
+          "https://tiles.arcgis.com/tiles/6A16OGWeO5n9jAWS/arcgis/rest/services/ERI_Asmara_1997/MapServer",
+          "https://www.arcgis.com/home/item.html?id=7ddcaa7bf99c486eabdf988820a79c5c"
+        ],
+        "reason": "Third-party ArcGIS item is a 1997 Asmara tile package (raster map), not cadastral polygons. UNESCO’s public map describes the inscribed heritage property, not parcels.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-asmara.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_registration_study_only_live_registry_unestablished",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:SZ:mbabane",
+      "name": "Mbabane",
+      "country": "Eswatini",
+      "countryCode": "SZ",
+      "centerLatLon": [
+        -26.3054,
+        31.1367
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 266,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-mbabane.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-mbabane.json",
+      "aliases": [
+        "capital:SZ:mbabane",
+        "Mbabane"
+      ],
+      "capitalRole": "administrative capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official Surveyor General lists an explicit Mbabane cadastral map; 2025 parliamentary report confirms digital cadastral database updates.",
+        "registryEvidenceUrls": [
+          "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+          "https://parliament.gov.sz/publications/parliament_reports/docs/ANNUAL%20REPORT%20NATURAL%202025.pdf",
+          "https://openjicareport.jica.go.jp/pdf/11652419_02.pdf",
+          "https://salb.un.org/en/data/swz"
+        ],
+        "reason": "JICA sheet describes Mbabane cadastral cartography, with urban detail limited to urban boundaries on that sheet and final cadastral update March 1999.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-mbabane.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_static_cadastral_map_no_public_vector",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:SZ:lobamba",
+      "name": "Lobamba",
+      "country": "Eswatini",
+      "countryCode": "SZ",
+      "centerLatLon": [
+        -26.4465,
+        31.2064
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 267,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-lobamba.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-lobamba.json",
+      "aliases": [
+        "capital:SZ:lobamba",
+        "Lobamba"
+      ],
+      "capitalRole": "royal and legislative capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Only a national Surveyor General and a Mbabane-specific cadastral map are evidenced; no source establishes Lobamba registry coverage.",
+        "registryEvidenceUrls": [
+          "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+          "https://www.gov.sz/images/MNRE_PICS/MONRE-FINAL-CLIENT-SERVICES-CHARTER-AND-PLEDGE-FINAL.pdf",
+          "https://salb.un.org/en/data/swz"
+        ],
+        "reason": "National Surveyor General handles land-survey/cadastral records and official pages advertise a country cadastral map, but no source found here proves target-specific Lobamba registry coverage or a Lobamba map. The Mbabane-specific map cannot establish Lobamba geometry.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-lobamba.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "national_cadastre_only_city_presence_unestablished",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GA:libreville",
+      "name": "Libreville",
+      "country": "Gabon",
+      "countryCode": "GA",
+      "centerLatLon": [
+        0.3924,
+        9.4536
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 268,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-libreville.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-libreville.json",
+      "aliases": [
+        "capital:GA:libreville",
+        "Libreville"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official municipality has a Cadastre and Habitat office with land-management and subdivision duties; data availability and legal registry operation are separate and not established by that page.",
+        "registryEvidenceUrls": [
+          "https://libreville.ga/vos-demarches/cadastre-et-habitat/"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-libreville.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GM:banjul",
+      "name": "Banjul",
+      "country": "Gambia",
+      "countryCode": "GM",
+      "centerLatLon": [
+        13.4549,
+        -16.579
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 269,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-banjul.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-banjul.json",
+      "aliases": [
+        "capital:GM:banjul",
+        "Banjul"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Ministry of Lands is the national land administration authority. The 2024 Auditor General review says Greater Banjul areas have cadastral mapping, while also describing gaps in functional GIS and digitized geographic referencing. This is city-region cadastre evidence, not a public geometry service.",
+        "registryEvidenceUrls": [
+          "https://molrg.gov.gm/",
+          "https://nao.gm/wp-content/uploads/2024/05/MoLRG_Land-Registration-and-Documentation.pdf"
+        ],
+        "reason": "Government audit documents city-region cadastral mapping but not public digital parcel geometry; no public endpoint identified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-banjul.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "mapped_area_no_public_digital_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GN:conakry",
+      "name": "Conakry",
+      "country": "Guinea",
+      "countryCode": "GN",
+      "centerLatLon": [
+        9.5092,
+        -13.7122
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 270,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-conakry.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-conakry.json",
+      "aliases": [
+        "capital:GN:conakry",
+        "Conakry"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "City-scoped legal evidence includes Guinea’s official urban-land framework referring to the Zone Spéciale de Conakry and cadastral/title documents, plus the public title-registration procedure requiring application to the mayor of the relevant commune and the national Conservation Foncière. This confirms a legal registration mechanism for the Conakry communes, not a current complete or digitized parcel register.",
+        "registryEvidenceUrls": [
+          "https://faolex.fao.org/docs/pdf/gui16265.pdf",
+          "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+          "https://habitat.gov.gn/presentation/"
+        ],
+        "reason": "No anonymous property-parcel endpoint found; SIGMOF/cadastre site reachability has been intermittent and the accessible Landfolio service is for mining rights.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-conakry.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "registry_modernization_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GW:bissau",
+      "name": "Bissau",
+      "country": "Guinea-Bissau",
+      "countryCode": "GW",
+      "centerLatLon": [
+        11.8636,
+        -15.5977
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 271,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-bissau.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-bissau.json",
+      "aliases": [
+        "capital:GW:bissau",
+        "Bissau"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The municipal site describes a Cadastro e Topografia service, records of municipal land, and processes for concession/legalization. The Portuguese-language municipal services portal lists municipal cadastre, land files, and regularization. These demonstrate city registry functions, not accessible parcel polygons.",
+        "registryEvidenceUrls": [
+          "https://www.cmbissau-gb.com/",
+          "https://sigcmb.com/portal/",
+          "https://embaixadaguinebissau-gb.com/wp-content/uploads/2023/02/LEI-DA-TERRA-DA-GUINE-BISSAU.pdf"
+        ],
+        "reason": "Public municipal pages route users to case/file services; no anonymous spatial query was exposed.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-bissau.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "municipal_cadastre_service_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CI:yamoussoukro",
+      "name": "Yamoussoukro",
+      "country": "Côte d’Ivoire",
+      "countryCode": "CI",
+      "centerLatLon": [
+        6.8276,
+        -5.2893
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 272,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-yamoussoukro.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-yamoussoukro.json",
+      "aliases": [
+        "capital:CI:yamoussoukro",
+        "Yamoussoukro"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official IDUFCI explains the unique land-parcel identifier and national parcel-map mission; SIGFU public landing page advertises parcel/lot search and cartography; the city council technical service says it proposes updates to Yamoussoukro's cadastre.",
+        "registryEvidenceUrls": [
+          "https://idufci.gouv.ci/",
+          "https://sigfu.gouv.ci/public",
+          "https://www.mairieyamoussoukro.ci/mairie/service_technique"
+        ],
+        "reason": "SIGFU public UI shell responds HTTP 200, but configured parcel-data API routes return nginx HTTP 502. Secondary SSH route failed TLS verification before HTTP; workspace sandbox DNS failure is local-route-only. No geometry response was obtained.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": null
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-yamoussoukro.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "public_parcel_lookup_api_upstream_502_no_geometry_sample",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:LS:maseru",
+      "name": "Maseru",
+      "country": "Lesotho",
+      "countryCode": "LS",
+      "centerLatLon": [
+        -29.3158,
+        27.486
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 273,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-maseru.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-maseru.json",
+      "aliases": [
+        "capital:LS:maseru",
+        "Maseru"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official Land Administration Authority administers national land registration and cadastral surveying, and its public portal offers registered plot accounts and paid survey/map products; no anonymous geometry is verified.",
+        "registryEvidenceUrls": [
+          "https://laa.org.ls/",
+          "https://portal.laa.landfolio.com/Portal/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-maseru.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:LR:monrovia",
+      "name": "Monrovia",
+      "country": "Liberia",
+      "countryCode": "LR",
+      "centerLatLon": [
+        6.3156,
+        -10.8074
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 274,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-monrovia.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-monrovia.json",
+      "aliases": [
+        "capital:LR:monrovia",
+        "Monrovia"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "City-specific evidence documents a Port of Monrovia resurvey procurement whose scope includes cadastral/parcel mapping. That is a bounded port-site survey, not evidence of a city-wide Monrovia parcel register. The Liberia Land Authority’s national mandate is context only; city-wide registry coverage was not established.",
+        "registryEvidenceUrls": [
+          "https://www.npa.gov.lr/tenders/comprehensive-land-resurvey-monrovia",
+          "https://lla.gov.lr/index.php/about-us/organizational-arrangements/land-administration-department"
+        ],
+        "reason": "No anonymous public parcel endpoint located; one official LLA page is protected by a bot challenge.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-monrovia.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_land_registry_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:LY:tripoli",
+      "name": "Tripoli",
+      "country": "Libya",
+      "countryCode": "LY",
+      "centerLatLon": [
+        32.8872,
+        13.1913
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 275,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-tripoli.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-tripoli.json",
+      "aliases": [
+        "capital:LY:tripoli",
+        "Tripoli"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "A Tripoli-based electronic center archives national real-estate files, and the Libyan SDI catalogue describes national property-boundary raster sheets. The inspected primary sources do not identify a Tripoli parcel-record subset; office location alone is not treated as city coverage. Public city geometry remains unverified.",
+        "registryEvidenceUrls": [
+          "https://portal.lsdi.ly/",
+          "https://lana.gov.ly/post.php?id=165624&lang=ar",
+          "https://lana.gov.ly/post.php?id=255754&lang=ar",
+          "https://lana.gov.ly/post.php?id=327566&lang=ar"
+        ],
+        "reason": "Only raster basemap imagery and registry digitization notices were identified; no anonymous vector query exposed.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-tripoli.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "national_records_city_scope_unestablished",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:MW:lilongwe",
+      "name": "Lilongwe",
+      "country": "Malawi",
+      "countryCode": "MW",
+      "centerLatLon": [
+        -13.9626,
+        33.7741
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 276,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-lilongwe.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-lilongwe.json",
+      "aliases": [
+        "capital:MW:lilongwe",
+        "Lilongwe"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official Ministry in Lilongwe handles digitized land records; city land-ownership map and national LIMS document land parcel registration, although parcel-level city coverage is not independently verified.",
+        "registryEvidenceUrls": [
+          "https://lands.gov.mw/index.php/portfolio",
+          "https://lands.gov.mw/index.php/portfolio/departments-functions",
+          "https://lands.gov.mw/index.php/our-projects/lims",
+          "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=b4ee5d9b-c6da-412f-a78a-2db607d7fa1c",
+          "https://masdap.gov.mw/",
+          "https://openjicareport.jica.go.jp/pdf/12003760_04.pdf"
+        ],
+        "reason": "Public MASDAP catalogue themes reviewed include boundaries, buildings, land cover etc.; no cadastral parcel layer was found. JICA urban-plan report includes a city land-ownership map, not cadastral parcel geometry.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-lilongwe.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "land_records_and_city_ownership_map_no_public_parcels",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:MR:nouakchott",
+      "name": "Nouakchott",
+      "country": "Mauritania",
+      "countryCode": "MR",
+      "centerLatLon": [
+        18.0735,
+        -15.9582
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 277,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-nouakchott.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-nouakchott.json",
+      "aliases": [
+        "capital:MR:nouakchott",
+        "Nouakchott"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "May 2026 official news reports a 12–14 month Nouakchott property census to create a digital database and urban maps with unique parcel IDs; January 2026 official news describes national cadastre digitization reform and AQAAR. This is direct city-specific registry activity, not an open dataset.",
+        "registryEvidenceUrls": [
+          "https://ami.mr/fr/archives/295092",
+          "https://www.ami.mr/archives/259480",
+          "https://ami.mr/fr/archives/287772",
+          "https://habitat.gov.mr/_fr/"
+        ],
+        "reason": "Digital parcel database and urban maps are being produced; no anonymous point-query endpoint identified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-nouakchott.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "citywide_cadastre_in_progress_no_open_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:MU:port-louis",
+      "name": "Port Louis",
+      "country": "Mauritius",
+      "countryCode": "MU",
+      "centerLatLon": [
+        -20.1609,
+        57.5012
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 278,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-port-louis.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-port-louis.json",
+      "aliases": [
+        "capital:MU:port-louis",
+        "Port Louis"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official LAVIMS law and Cadastre Unit establish national digital cadastral records covering land parcels; public catalog does not publish cadastral features.",
+        "registryEvidenceUrls": [
+          "https://housing.govmu.org/Pages/Dept%20and%20Org/Divisions/Survey/The-Cadastre-Unit.aspx",
+          "https://lawsofmauritius.govmu.org/portal/viewlegislationdocument/web/?docnumber=&doctitle=TEFWSU1TIChQcm9qZWN0IEltcGxlbWVudGF0aW9uKSBBY3Q%3D&doctype=act",
+          "https://geoportal.govmu.org/api/datasets/?limit=1000",
+          "https://geoportal.govmu.org/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities"
+        ],
+        "reason": "Direct anonymous WFS GetCapabilities returned HTTP 200, application/xml, 39,140 bytes, 19 feature types: geonode:ATMs, geonode:Fix_speed_cameras, geonode:Reservoirs, geonode:busstops, geonode:bustransport, geonode:dangerous_bathing, geonode:districts, geonode:fads, geonode:hospitals_clinics, geonode:ict_comp, geonode:islet_parks, geonode:metro_stations, geonode:police_stations0, geonode:post_offices, geonode:primary_schools, geonode:railway, geonode:shoppingmall, geonode:social_welfare_centres, geonode:tourist_spots; no parcel feature type.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-port-louis.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "national_cadastre_exists_public_catalog_has_no_parcels",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:MA:rabat",
+      "name": "Rabat",
+      "country": "Morocco",
+      "countryCode": "MA",
+      "centerLatLon": [
+        34.0209,
+        -6.8416
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 279,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-rabat.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-rabat.json",
+      "aliases": [
+        "capital:MA:rabat",
+        "Rabat"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "ANCFCC says it establishes and maintains the national cadastre, publishes digital/analog cadastral information, and offers an online cadastral-plan request; the service requires personal/identity details, title/cadastre, CAPTCHA and payment steps. Rabat-Salé urban agency publishes planning information, not parcel geometry.",
+        "registryEvidenceUrls": [
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://aurs.org.ma/fr/lese-services/geoportail/"
+        ],
+        "reason": "Available parcel-plan delivery is individualized and CAPTCHA/paid; public interactive geometry service not identified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-rabat.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_cadastre_paid_document_service_no_open_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:NA:windhoek",
+      "name": "Windhoek",
+      "country": "Namibia",
+      "countryCode": "NA",
+      "centerLatLon": [
+        -22.5597,
+        17.0832
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 280,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-windhoek.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-windhoek.json",
+      "aliases": [
+        "capital:NA:windhoek",
+        "Windhoek"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official City of Windhoek Geomatics and property services maintain municipal property records, beacon/erf services and cadastral survey diagrams. This is city-specific partial cadastral activity; title-registry operation, complete coverage and open vector geometry are not established.",
+        "registryEvidenceUrls": [
+          "https://www.windhoekcc.org.na/geomatics/",
+          "https://www.windhoekcc.org.na/housing-property-and-human-settlements-services-2/",
+          "https://www.windhoekcc.org.na/wp-content/uploads/2026/03/Council-Meeting-Agenda-of-24-November-2025.pdf"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-windhoek.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:NE:niamey",
+      "name": "Niamey",
+      "country": "Niger",
+      "countryCode": "NE",
+      "centerLatLon": [
+        13.5116,
+        2.1254
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 281,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-niamey.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-niamey.json",
+      "aliases": [
+        "capital:NE:niamey",
+        "Niamey"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Government planning documents record 430 cadastral map sheets for Niamey, while the city portal itself is address-only; legal registry status and present map coverage remain unverified.",
+        "registryEvidenceUrls": [
+          "https://www.stat-niger.org/wp-content/uploads/PDES/2022-2026/NIGER_PDES_2022-2026_VOLUME_1.pdf"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-niamey.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:NG:abuja",
+      "name": "Abuja",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        9.0765,
+        7.3986
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 282,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-abuja.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-abuja.json",
+      "aliases": [
+        "capital:NG:abuja",
+        "Abuja"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official AGIS states FCT cadastral/land registry covers FCC and area councils and serves authorised title records; anonymous geometry is not verified.",
+        "registryEvidenceUrls": [
+          "https://agis.fcta.gov.ng/fctlands/",
+          "https://www.fcta.gov.ng/ova_dep/abuja-geographic-information-systems/"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-abuja.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:ST:sao-tome",
+      "name": "São Tomé",
+      "country": "Sao Tome and Principe",
+      "countryCode": "ST",
+      "centerLatLon": [
+        0.3365,
+        6.7273
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 283,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-sao-tome.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-sao-tome.json",
+      "aliases": [
+        "capital:ST:sao-tome",
+        "São Tomé"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official DGRN property register has jurisdiction over the territory and is seated in São Tomé; public interface does not expose parcel geometry.",
+        "registryEvidenceUrls": [
+          "https://dgrn.gov.st/"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-sao-tome.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:SC:victoria",
+      "name": "Victoria",
+      "country": "Seychelles",
+      "countryCode": "SC",
+      "centerLatLon": [
+        -4.6191,
+        55.4513
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 284,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "sc-mlh-current-parcels-arcgis"
+      ],
+      "researchFile": "research/africa-capitals-2026-10-08/city-victoria.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-victoria.json",
+      "aliases": [
+        "capital:SC:victoria",
+        "Victoria"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official public Seychelles WebGIS links a parcel FeatureServer that returned complete parcel polygons and references around Victoria. Current-subset topology retains unresolved older/newer overlaps, so geometry is verified but runtime is held.",
+        "registryEvidenceUrls": [
+          "https://www.webgis.gov.sc/introduction.phtml",
+          "https://www.webgis.gov.sc/map_default.phtml?config=default",
+          "https://www.gis.gov.sc/portal/apps/experiencebuilder/experience/?id=48aa75ec829048fd942cef4f1cdb2008"
+        ],
+        "reason": "Published open-ended validity still includes an older parcel nearly partitioned by two newer parcels; all three geometries and dates were confirmed by fresh exact reads. No documented category, parent/subdivision or lifecycle rule identifies a safe exclusion.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-victoria.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "verified_geometry_held_quality_review",
+        "freshVerifiedSample": true
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/africa-capitals-2026-10-08/victoria-overlap-review.json",
+        "technicalBlockers": [
+          "Published open-ended validity still includes an older parcel nearly partitioned by two newer parcels; all three geometries and dates were confirmed by fresh exact reads. No documented category, parent/subdivision or lifecycle rule identifies a safe exclusion."
+        ]
+      }
+    },
+    {
+      "cityId": "capital:SL:freetown",
+      "name": "Freetown",
+      "country": "Sierra Leone",
+      "countryCode": "SL",
+      "centerLatLon": [
+        8.4657,
+        -13.2317
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 285,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-freetown.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-freetown.json",
+      "aliases": [
+        "capital:SL:freetown",
+        "Freetown"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "City-specific evidence is a 2019 Freetown City Council property geo-mapping campaign for a tax database; it collected compound GPS/attributes and did not describe cadastral parcel boundaries. Sierra Leone’s land-administration project includes planned registration work in Freetown, while the NLC public digital portal remains in pilot/development. These do not establish a current city-wide parcel register, so registryFound is null.",
+        "registryEvidenceUrls": [
+          "https://fcc.gov.sl/city-wide-property-geo-mapping-is-under-way/",
+          "https://www.nlc.gov.sl/services",
+          "https://documents1.worldbank.org/curated/en/271611654274113098/pdf/Sierra-Leone-Land-Administration-Project.pdf"
+        ],
+        "reason": "Official NLC portal is under development; city property mapping source does not publish parcel vectors.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-freetown.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "registry_and_property_mapping_no_public_parcels",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:ZA:pretoria",
+      "name": "Pretoria",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.7479,
+        28.2293
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 286,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-tshwane-registered-parcels"
+      ],
+      "researchFile": "research/africa-capitals-2026-10-08/city-pretoria.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-pretoria.json",
+      "aliases": [
+        "capital:ZA:pretoria",
+        "Pretoria"
+      ],
+      "capitalRole": "administrative capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official City of Tshwane Land Parcels service returns surveyed parcels in Pretoria with LIS keys and status labels. This establishes a city-scoped cadastral dataset, separately from legal title-registry access and complete city coverage.",
+        "registryEvidenceUrls": [
+          "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1"
+        ],
+        "reason": "The official City of Tshwane Land Parcels service returns surveyed parcels in Pretoria with LIS keys and status labels. This establishes a city-scoped cadastral dataset, separately from legal title-registry access and complete city coverage.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-pretoria.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "verified_sample_partial_coverage",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "pretoria",
+      "liveAcceptanceFile": "research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "checkedAt": "2026-10-08",
+        "sourceId": "za-tshwane-registered-parcels",
+        "appCityId": "pretoria",
+        "evidenceFile": "research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json",
+        "technicalBlockers": [],
+        "limitations": [
+          "Published Registered status only; Now Scheme, Road, Railway and Unregistered records are excluded. Thirteen bounded Pretoria cells and 93 LIS-key geometry rereads passed. Seven sampled boundary slivers are below 2.26 m² and 0.34% of the smaller parcel. Original-survey semantics and legal currentness remain unverified; no citywide completeness claim."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "capital:ZA:bloemfontein",
+      "name": "Bloemfontein",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -29.118,
+        26.214
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 287,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-mangaung-cadastre-2025"
+      ],
+      "researchFile": "research/africa-capitals-2026-10-08/city-bloemfontein.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-bloemfontein.json",
+      "aliases": [
+        "capital:ZA:bloemfontein",
+        "Bloemfontein"
+      ],
+      "capitalRole": "judicial capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Public SG-approved Mangaung Cadastre_2025 service is city-area cadastral data; this does not establish full register openness.",
+        "registryEvidenceUrls": [
+          "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11"
+        ],
+        "reason": "Public SG-approved Mangaung Cadastre_2025 service is city-area cadastral data; this does not establish full register openness.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-bloemfontein.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "verified_sample_partial_coverage",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "bloemfontein",
+      "liveAcceptanceFile": "research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "checkedAt": "2026-10-08",
+        "sourceId": "za-mangaung-cadastre-2025",
+        "appCityId": "bloemfontein",
+        "evidenceFile": "research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json",
+        "technicalBlockers": [],
+        "limitations": [
+          "Public Mangaung Cadastre_2025 layer described as SG Approved. All 53 retained SG_CODE references passed fresh reads in 17 bounded Bloemfontein cells. Municipal publisher metadata is identified, but upstream lineage, current legal registration and citywide completeness are unverified."
+        ],
+        "termsAreInformational": true
+      }
+    },
+    {
+      "cityId": "capital:SS:juba",
+      "name": "Juba",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "centerLatLon": [
+        4.8594,
+        31.5713
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 288,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-juba.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-juba.json",
+      "aliases": [
+        "capital:SS:juba",
+        "Juba"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Juba Strategic Plan states the city has existing cadastre and land-registry records, though inconsistent; proposed integrated digital system is not treated as live.",
+        "registryEvidenceUrls": [
+          "https://www.ssnbss.org/home/geographical-information-system/",
+          "https://unhabitat.org/sites/default/files/2023/01/juba_strategic_plan_digital_2023.pdf",
+          "https://land.igad.int/index.php/documents-1/countries/south-sudan/rural-development-5/1074-southern-sudan-land-policy-2011-draft/file"
+        ],
+        "reason": "South Sudan statistics GIS offers general geospatial information, with no parcel feature layer found.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-juba.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "city_registry_exists_inconsistent_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:TZ:dodoma",
+      "name": "Dodoma",
+      "country": "United Republic of Tanzania",
+      "countryCode": "TZ",
+      "centerLatLon": [
+        -6.163,
+        35.7516
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 289,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-dodoma.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-dodoma.json",
+      "aliases": [
+        "capital:TZ:dodoma",
+        "Dodoma"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official e-Ardhi program explicitly includes Dodoma Region for survey, ownership and registration services; public parcel geometry is not verified.",
+        "registryEvidenceUrls": [
+          "https://eardhi.lands.go.tz/",
+          "https://www.lands.go.tz/uploads/notices/sw1758881264-26%209%202025%20TAARIFA%20KWA%20UMMA%20MFUMO%20WA%20e-Ardhi-2.pdf",
+          "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9?f=pjson",
+          "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9/query?f=geojson&geometry=35.7516%2C-6.1630&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+          "https://www.sdsportal.co.tz/"
+        ],
+        "reason": "Third-party-branded DCC Land Records sign-in claims an internal Dodoma city land register; login required and publisher authority is not established.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-dodoma.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_regional_land_system_account_based_no_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:TG:lome",
+      "name": "Lomé",
+      "country": "Togo",
+      "countryCode": "TG",
+      "centerLatLon": [
+        6.1375,
+        1.2123
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 290,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-lome.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-lome.json",
+      "aliases": [
+        "capital:TG:lome",
+        "Lomé"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official OTR cadastre and Greater Lomé parcel mapping records establish a city-area cadastral dataset; current public geometry query is not verified.",
+        "registryEvidenceUrls": [
+          "https://dadc.gouv.tg/",
+          "https://www.otr.tg/index.php/fr/documentation/generale-otr/170-rapport-du-recensement-fiscal-dans-le-grand-lome-decembre-2018/file.html"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-lome.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:TN:tunis",
+      "name": "Tunis",
+      "country": "Tunisia",
+      "countryCode": "TN",
+      "centerLatLon": [
+        36.8065,
+        10.1815
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 291,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-tunis.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-tunis.json",
+      "aliases": [
+        "capital:TN:tunis",
+        "Tunis"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official OTC mandatory-registration procedures apply to non-registered properties throughout Tunisian territory, with cadastral surveying and final parcel plans. This documents a registration mechanism applicable in Tunis; it does not prove complete city registration. The planned OTC geoportal is not a verified public parcel API.",
+        "registryEvidenceUrls": [
+          "https://www.otc.nat.tn/if/obligatory",
+          "https://www.otc.nat.tn/geoportail",
+          "https://www.otc.nat.tn/mission",
+          "https://www.otc.nat.tn/",
+          "https://www.cpf.gov.tn/"
+        ],
+        "reason": "Official geoportal describes an in-progress system and no publicly callable vector endpoint.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-tunis.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_cadastral_webgis_project_no_open_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:ZW:harare",
+      "name": "Harare",
+      "country": "Zimbabwe",
+      "countryCode": "ZW",
+      "centerLatLon": [
+        -17.8252,
+        31.0335
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 292,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-harare.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-harare.json",
+      "aliases": [
+        "capital:ZW:harare",
+        "Harare"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "City of Harare states City Land Survey maintains city property database and land-information system; no anonymous parcel geometry was exposed by reviewed services/catalogue.",
+        "registryEvidenceUrls": [
+          "https://hararecity.co.zw/departments/about/works-department"
+        ],
+        "reason": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-harare.json",
+        "scopeTier": "national_capital_or_associated_seat",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_registry_or_service_no_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:EH:laayoune",
+      "name": "Laayoune",
+      "country": "Western Sahara",
+      "countryCode": "EH",
+      "centerLatLon": [
+        27.1253,
+        -13.1625
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 293,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-laayoune.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-laayoune.json",
+      "aliases": [
+        "capital:EH:laayoune",
+        "Laayoune"
+      ],
+      "capitalRole": "supplement: claimed capital of SADR, Moroccan-administered",
+      "scopeTier": "supplementary_disputed_or_de_facto",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "ANCFCC's official service-office directory lists separate property-conservation and cadastre offices in Laayoune; its map catalogue includes Laayoune sheets. These establish Moroccan-administered cadastral evidence, not a resolution of territorial status or open geometry.",
+        "registryEvidenceUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf"
+        ],
+        "reason": "Available official cadastral plan delivery is individualized and paid; no public vector query found.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-laayoune.json",
+        "scopeTier": "supplementary_disputed_or_de_facto",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "official_cadastre_map_products_no_open_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:EH:tifariti",
+      "name": "Tifariti",
+      "country": "Western Sahara",
+      "countryCode": "EH",
+      "centerLatLon": [
+        26.1594,
+        -10.5674
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 294,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-tifariti.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-tifariti.json",
+      "aliases": [
+        "capital:EH:tifariti",
+        "Tifariti"
+      ],
+      "capitalRole": "supplement: reported provisional SADR seat",
+      "scopeTier": "supplementary_disputed_or_de_facto",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No registry evidence specific to Tifariti was confirmed. The roster's political-seat description is scope metadata, not cadastral evidence. Search results contained general location records and historical maps only; they do not establish a land registry.",
+        "registryEvidenceUrls": [],
+        "reason": "No plausible official local parcel endpoint surfaced in the bounded search; jurisdictional registry authority remains unconfirmed.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-tifariti.json",
+        "scopeTier": "supplementary_disputed_or_de_facto",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "no_city_parcel_source_identified_limited_search",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:SO:hargeisa",
+      "name": "Hargeisa",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "centerLatLon": [
+        9.5624,
+        44.0775
+      ],
+      "citySource": "African-capital research roster; chosen central-city locator, not an official boundary.",
+      "researchOrder": 295,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/africa-capitals-2026-10-08/city-hargeisa.json",
+      "latestAssessmentFile": "research/africa-capitals-2026-10-08/city-hargeisa.json",
+      "aliases": [
+        "capital:SO:hargeisa",
+        "Hargeisa"
+      ],
+      "capitalRole": "supplement: Somaliland de facto capital",
+      "scopeTier": "supplementary_disputed_or_de_facto",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official municipality describes local land registration for its districts and online parcel registration workflow.",
+        "registryEvidenceUrls": [
+          "https://hargeisamunicipality.com/services/online-land-registration/",
+          "https://www.dhhengineering.org/app/login",
+          "https://eastadvisory.org/projects/municipal-property-registration",
+          "https://spatial.faoswalim.org/",
+          "https://unhabitat.org/sites/default/files/download-manager-files/53%20UN-Habitat%20Model%20Projects.pdf"
+        ],
+        "reason": "Municipal land-registry system is login-only; not accessed past public login.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "africa-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/africa-capitals-2026-10-08/city-hargeisa.json",
+        "scopeTier": "supplementary_disputed_or_de_facto",
+        "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+        "resultCategory": "municipal_land_registration_login_based_no_public_geometry",
+        "freshVerifiedSample": false
+      }
     }
   ],
   "countryProbes": [
@@ -24282,7 +26662,12 @@
       "evidenceFile": "research/countries/BA.json",
       "previousStatus": "subnational_only",
       "europeFile": "research/europe/BA.json",
-      "regionsSampled": []
+      "regionsSampled": [],
+      "latestCheck": {
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+        "scope": "Sarajevo / Federation services and retained database import evidence"
+      }
     },
     {
       "countryCode": "BB",
@@ -24971,16 +27356,21 @@
       "countryCode": "GE",
       "country": "Georgia",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
-      "accessModel": "viewer-only",
-      "checkedAt": "2026-09-29",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "Anonymous parcel geometry by point or exact code",
+      "checkedAt": "2026-10-08",
       "evidenceFile": "research/countries/GE.json",
       "previousStatus": "national_cadastre_viewer_only",
       "retryFile": "research/retry/countries/GE.json",
       "foundViaViewerInspection": true,
       "geoBlockSuspected": false,
       "europeFile": "research/europe/GE.json",
-      "regionsSampled": []
+      "regionsSampled": [],
+      "latestCheck": {
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/tbilisi-msda-2026-10-08.json",
+        "status": "verified_sample_partial_coverage"
+      }
     },
     {
       "countryCode": "GF",
@@ -25087,7 +27477,13 @@
         "Attica"
       ],
       "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/17226281-9e0f-431f-b1a3-c9e807cdd3cd (data.europa.eu; the old inspire-geoportal.ec.europa.eu/srv API now 301-redirects to data.europa.eu). No INSPIRE CP WFS/ATOM record for Greece was found; the bulk vector open dataset is on data.gov.gr.",
-      "mergeNote": "Bulk regional shapefile download read by HTTP Range, no bbox query; Operating Cadastre areas only."
+      "mergeNote": "Bulk regional shapefile download read by HTTP Range, no bbox query; Operating Cadastre areas only.",
+      "latestCheck": {
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/athens-live-2026-10-08.json",
+        "status": "partial_or_unofficial_sample",
+        "note": "Official active-cadastre ArcGIS area query verified in Athens; earlier Attica/Ionian bulk evidence remains valid."
+      }
     },
     {
       "countryCode": "GT",
@@ -25157,7 +27553,12 @@
       "status": "national_online_cadastre_verified_sample",
       "accessModel": "open (public access token published in the app frontend)",
       "checkedAt": "2026-09-30",
-      "evidenceFile": "research/countries/HR.json"
+      "evidenceFile": "research/countries/HR.json",
+      "latestCheck": {
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+        "scope": "Country coverage and current parcel-service access"
+      }
     },
     {
       "countryCode": "HT",
@@ -25682,7 +28083,12 @@
       "foundViaViewerInspection": false,
       "geoBlockSuspected": true,
       "europeFile": "research/europe/MK.json",
-      "regionsSampled": []
+      "regionsSampled": [],
+      "latestCheck": {
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+        "scope": "Country coverage and current parcel-service access"
+      }
     },
     {
       "countryCode": "ML",
@@ -26191,7 +28597,12 @@
       "geoBlockSuspected": false,
       "europeFile": "research/developed/RO.json",
       "regionsSampled": [],
-      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (ATOM download) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (WMS view), as recorded in research/europe/RO.json; not re-verified this pass"
+      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (ATOM download) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (WMS view), as recorded in research/europe/RO.json; not re-verified this pass",
+      "latestCheck": {
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+        "scope": "Country coverage and current parcel-service access"
+      }
     },
     {
       "countryCode": "RS",
@@ -26206,7 +28617,12 @@
       "foundViaViewerInspection": false,
       "geoBlockSuspected": true,
       "europeFile": "research/europe/RS.json",
-      "regionsSampled": []
+      "regionsSampled": [],
+      "latestCheck": {
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+        "scope": "Country coverage and current parcel-service access"
+      }
     },
     {
       "countryCode": "RU",
@@ -30937,6 +33353,21 @@
       "verifiedGeometryCities": 2,
       "runtimeEnabledCities": 1,
       "heldQualityReviewCandidates": 1
+    },
+    "africa": {
+      "scope": "54 African UN member states with separate political, administrative, legislative, royal and associated former/transitional seats; separately labelled Western Sahara/SADR and Somaliland supplement. Overseas territorial and provincial capitals excluded.",
+      "indexFile": "research/africa-capitals-2026-10-08/index.json",
+      "rosterFile": "research/africa-capitals-2026-10-08/roster.json",
+      "queueFile": "research/africa-capitals-2026-10-08/queue.json",
+      "checkedAt": "2026-10-08",
+      "rosterSeats": 66,
+      "previouslyChecked": 23,
+      "newlyChecked": 43,
+      "registryPresenceFound": 35,
+      "registryPresenceUnestablished": 8,
+      "verifiedGeometryCities": 5,
+      "newAppCities": 3,
+      "geometryQualityHeldCities": 2
     }
   },
   "growthResearch": {
@@ -30987,6 +33418,16 @@
       "newConfiguredCohortCities": 1,
       "geometryAndNativeIdentitySamples": 2,
       "anonymousOutlineOnlySamples": 1
+    },
+    "latestDetailedBatchFile": "research/india-africa-batch4-2026-10-08/index.json",
+    "fourthBatchScope": {
+      "checkedAt": "2026-10-08",
+      "cityCount": 10,
+      "india": 5,
+      "africa": 5,
+      "newAppEntries": 0,
+      "verifiedParcelGeometrySamples": 0,
+      "registryPresenceRecorded": 10
     }
   }
 }

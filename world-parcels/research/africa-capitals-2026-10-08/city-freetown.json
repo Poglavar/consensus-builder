@@ -1,0 +1,96 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "freetown",
+  "cityId": "capital:SL:freetown",
+  "name": "Freetown",
+  "country": "Sierra Leone",
+  "code": "SL",
+  "centerLatLon": [
+    8.4657,
+    -13.2317
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Freetown City Council / Western Area Urban; National Land Commission and Ministry of Lands maintain land registration and cadastral records.",
+  "registryFound": null,
+  "registryEvidenceUrls": [
+    "https://fcc.gov.sl/city-wide-property-geo-mapping-is-under-way/",
+    "https://www.nlc.gov.sl/services",
+    "https://documents1.worldbank.org/curated/en/271611654274113098/pdf/Sierra-Leone-Land-Administration-Project.pdf"
+  ],
+  "registryBasis": "City-specific evidence is a 2019 Freetown City Council property geo-mapping campaign for a tax database; it collected compound GPS/attributes and did not describe cadastral parcel boundaries. Sierra Leone’s land-administration project includes planned registration work in Freetown, while the NLC public digital portal remains in pilot/development. These do not establish a current city-wide parcel register, so registryFound is null.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "registry_and_property_mapping_no_public_parcels",
+  "findings": "Freetown City Council documents a city-wide property geocoding campaign for taxation, collecting GPS and compound attributes rather than parcel-boundary polygons. The World Bank land-administration project describes cadastral-index and registration work planned for Freetown; the NLC portal is still in development/pilot. These sources show land-data activity but do not establish a currently accessible, complete city parcel register. No public parcel feature service was verified.",
+  "englishQueries": [
+    "Freetown Sierra Leone cadastre parcels cadastral map land registry GIS spatial data official",
+    "Sierra Leone Freetown kadastral map parcels land registration spatial data survey National Land Commission cadastral maps"
+  ],
+  "localLanguageQueries": [],
+  "searches": [
+    {
+      "query": "Freetown Sierra Leone cadastre parcels cadastral map land registry GIS spatial data official",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Sierra Leone Freetown kadastral map parcels land registration spatial data survey National Land Commission cadastral maps",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Official NLC portal is under development; city property mapping source does not publish parcel vectors.",
+  "nextStep": "Recheck NLC portal after pilot or ask Freetown City Council/NLC for a sanitized public sample of land boundaries.",
+  "coverageAssessment": {
+    "claimedScope": "Freetown property geocoding; planned land-registration/cadastral-index activities under the national project.",
+    "verifiedOpenScope": "No current public cadastral parcel layer; property geocoding and planned land-admin work are distinct from open parcel boundaries.",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": null,
+  "localLanguageQueryNote": "No separate non-English local-language query was executed; official/national administrative language is English.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://fcc.gov.sl/city-wide-property-geo-mapping-is-under-way/",
+      "method": "web.run open and find",
+      "httpStatus": null,
+      "toolOutcome": "Official FCC page content returned; HTTP status not exposed.",
+      "observed": "2019 city-wide mapping collected compound GPS/property attributes for taxation, explicitly not building interiors; it did not state cadastral parcel boundaries."
+    },
+    {
+      "url": "https://documents1.worldbank.org/curated/en/271611654274113098/pdf/Sierra-Leone-Land-Administration-Project.pdf",
+      "method": "web.run open PDF and find for Freetown",
+      "httpStatus": null,
+      "toolOutcome": "71-page project document content returned; HTTP status not exposed.",
+      "observed": "Project plans freehold demarcation/registration and cadastral-index work in Freetown; it describes project activities and gaps, not a current published city register."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "SL",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Freetown Sierra Leone cadastre parcels cadastral map land registry GIS spatial data official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Sierra Leone Freetown kadastral map parcels land registration spatial data survey National Land Commission cadastral maps",
+      "language": "English",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

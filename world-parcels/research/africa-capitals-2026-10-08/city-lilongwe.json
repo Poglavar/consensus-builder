@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:MW:lilongwe",
+  "queueRank": null,
+  "name": "Lilongwe",
+  "country": "Malawi",
+  "countryCode": "MW",
+  "centerLatLon": [
+    -13.9626,
+    33.7741
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lilongwe Malawi cadastral parcels land information system GIS public map",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Chichewa",
+        "query": "mapu a malo a Lilongwe malo cadastral land parcels registry Malawi",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://lands.gov.mw/index.php/portfolio",
+        "observation": "Official Ministry is headquartered in Lilongwe and reports digitized land records; Surveys handles parcel surveys, Lands handles allocation/registration, and LIMS supports parcel adjudication, demarcation and registration."
+      },
+      {
+        "url": "https://lands.gov.mw/index.php/portfolio/departments-functions",
+        "observation": "LIMS terms limit access to authorized persons/agents; this is not a public geometry source."
+      },
+      {
+        "url": "https://lands.gov.mw/index.php/our-projects/lims",
+        "observation": "Public MASDAP catalogue themes reviewed include boundaries, buildings, land cover etc.; no cadastral parcel layer was found. JICA urban-plan report includes a city land-ownership map, not cadastral parcel geometry."
+      },
+      {
+        "url": "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=b4ee5d9b-c6da-412f-a78a-2db607d7fa1c",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      },
+      {
+        "url": "https://masdap.gov.mw/",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      },
+      {
+        "url": "https://openjicareport.jica.go.jp/pdf/12003760_04.pdf",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "Public MASDAP catalogue themes reviewed include boundaries, buildings, land cover etc.; no cadastral parcel layer was found. JICA urban-plan report includes a city land-ownership map, not cadastral parcel geometry.",
+    "nextStep": "Revisit the official map/service after a public, non-personal feature endpoint is identified; validate city coverage and geometry before calling this a sample.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official Ministry in Lilongwe handles digitized land records; city land-ownership map and national LIMS document land parcel registration, although parcel-level city coverage is not independently verified.",
+  "registryEvidenceUrls": [
+    "https://lands.gov.mw/index.php/portfolio",
+    "https://lands.gov.mw/index.php/portfolio/departments-functions",
+    "https://lands.gov.mw/index.php/our-projects/lims",
+    "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=b4ee5d9b-c6da-412f-a78a-2db607d7fa1c",
+    "https://masdap.gov.mw/",
+    "https://openjicareport.jica.go.jp/pdf/12003760_04.pdf"
+  ],
+  "resultCategory": "land_records_and_city_ownership_map_no_public_parcels",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/MW.json",
+    "world-parcels/research/retry/countries/MW.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Lilongwe Malawi cadastral parcels land information system GIS public map",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "Chichewa",
+      "query": "mapu a malo a Lilongwe malo cadastral land parcels registry Malawi",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

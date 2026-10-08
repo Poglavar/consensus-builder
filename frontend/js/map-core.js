@@ -1081,6 +1081,7 @@ function setupMapEventHandlers() {
 function initializeMapCore() {
     // Set up event handlers
     setupMapEventHandlers();
+    window.PointParcelMap?.install(window);
 
     // Update the total spent display
     updateTotalSpentDisplay();

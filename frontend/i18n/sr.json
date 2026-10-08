@@ -3515,6 +3515,11 @@
             "loaded_parcels_from_source": "Učitano {{count}} parcela iz izvora {{source}}.",
             "checking_cadastral_ground": "Provera katastarske podloge…",
             "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",
+            "tap_parcel_to_load": "Dodirnite parcelu da biste učitali njenu granicu. Učitavanje parcela za celo područje nije dostupno.",
+            "looking_up_parcel": "Učitavanje parcele…",
+            "no_parcel_at_point": "Nema registrovane parcele na ovoj tački.",
+            "parcel_lookup_failed": "Parcela nije mogla da se učita. Dodirnite ponovo da pokušate.",
+            "parcel_boundary_loaded": "Granica parcele je učitana.",
             "waiting_for_proposal_before_parcels": "Čeka se učitavanje predloga pre preuzimanja parcela…",
             "debug_mode_enabled": "Režim za otklanjanje grešaka uključen – opasne radnje su sada vidljive",
             "debug_mode_disabled": "Režim za otklanjanje grešaka isključen – opasne radnje su skrivene",
@@ -3563,6 +3568,8 @@
             "birmingham": "Birmingem, Ujedinjeno Kraljevstvo",
             "lusaka": "Lusaka, Zambija",
             "shenzhen": "Šenžen, Kina",
+            "tbilisi": "Tbilisi, Gruzija",
+            "istanbul": "Istanbul, Turska",
             "montreal": "Montreal, Kanada",
             "dortmund": "Dortmund, Nemačka",
             "london": "London, Ujedinjeno Kraljevstvo",
@@ -3639,7 +3646,11 @@
             "ahmedabad": "Ahmedabad, Indija",
             "surat": "Surat, Indija",
             "nairobi": "Nairobi, Kenija",
-            "astana": "Astana, Kazahstan"
+            "astana": "Astana, Kazahstan",
+            "athens": "Atina, Grčka",
+            "gaborone": "Gaborone, Bocvana",
+            "bloemfontein": "Blumfontejn, Južnoafrička Republika",
+            "pretoria": "Pretorija, Južnoafrička Republika"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",
@@ -4219,14 +4230,35 @@
             "placeholder": "Pretražite grad ili državu",
             "label": "Pretraga mesta",
             "country": "Država",
+            "territory": "Teritorija",
             "noResults": "Nema takvog mesta"
         },
         "legend": {
-            "title": "Podaci o parcelama"
+            "title": "Pokrivenost parcelama po državi",
+            "cities": "Grad sa parcelama u aplikaciji"
+        },
+        "coverage": {
+            "full": {
+                "short": "Potvrđeno za celu državu",
+                "text": "Otvoreni podaci o parcelama potvrđeni su za celu državu. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "partial": {
+                "short": "Deo podataka je otvoren",
+                "text": "Otvoreni podaci o parcelama potvrđeni su za najmanje jedan grad ili region. Pokrivenost na ovoj lokaciji ili u celoj državi nije potvrđena. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "none": {
+                "short": "Provereno: ništa nije pronađeno",
+                "text": "Proverili smo da li u ovoj državi postoje otvoreni podaci o parcelama i nismo ih pronašli. To beleži rezultat pretrage, a ne dokazuje da izvor ne postoji."
+            },
+            "unknown": {
+                "short": "Nije provereno / nejasno",
+                "text": "Ova država nije proverena ili rezultat provere nije jasan. Nismo potvrdili da li su otvoreni podaci o parcelama dostupni."
+            }
         },
         "tier": {
             "live": {
                 "short": "U aplikaciji",
+                "pointText": "Dodirnite mapu da učitate i izaberete pojedinačnu parcelu. Ovaj izvor ne omogućava učitavanje svih parcela na području.",
                 "datedStreamText": "Parcele se učitavaju dok približavate i pomerate kartu. Podaci su iz {{version}}; današnje granice mogu se razlikovati.",
                 "streamText": "Parcele se učitavaju iz lokalnog izvora dok približavate i pomerate kartu. Susedne opštine mogu koristiti druge podatke.",
                 "text": "Parcele, predlozi i 3D su ovde spremni."
@@ -4240,13 +4272,14 @@
                 "text": "Tražili smo i nismo našli otvorene podatke o parcelama. Ipak možete nacrtati lokaciju i predložiti; bez parcela se predlog izvršava samo odlukom nadležnog organa."
             },
             "unknown": {
-                "short": "Nije istraženo",
-                "text": "Ovo mesto još niko nije proverio. Ipak možete nacrtati lokaciju i predložiti; bez parcela se predlog izvršava samo odlukom nadležnog organa."
+                "short": "Nije potvrđeno",
+                "text": "Otvoreni podaci o parcelama ovde nisu potvrđeni; mesto nije provereno ili rezultat provere nije jasan. Ipak možete nacrtati lokaciju i predložiti; bez parcela se predlog izvršava samo odlukom nadležnog organa."
             }
         },
         "popup": {
             "ocean": "Otvoreno more",
-            "oceanText": "Ovde nema kopna, pa ni parcela. Mapu ipak možete otvoriti na ovom mestu."
+            "oceanText": "Ovde nema kopna, pa ni parcela. Mapu ipak možete otvoriti na ovom mestu.",
+            "coverageSource": "Izvor podataka o pokrivenosti"
         },
         "action": {
             "open": "Otvori {{city}}",

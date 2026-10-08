@@ -141,6 +141,7 @@ const SAFE_GROUPS = [
             "js/parcels/ground-fallback.js",
             "js/parcels/fetch.js",
             "js/parcels/ground-service.js",
+            "js/parcels/point-map.js",
             "js/parcels/blocks.js",
             "js/parcels/blockchain.js",
             "js/parcels/ownership-ui.js",

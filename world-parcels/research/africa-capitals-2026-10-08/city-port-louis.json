@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:MU:port-louis",
+  "queueRank": null,
+  "name": "Port Louis",
+  "country": "Mauritius",
+  "countryCode": "MU",
+  "centerLatLon": [
+    -20.1609,
+    57.5012
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Port Louis Mauritius cadastre LAVIMS public parcel map GIS datasets",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "French",
+        "query": "cadastre LAVIMS parcelles Port-Louis Maurice carte cadastrale",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://housing.govmu.org/Pages/Dept%20and%20Org/Divisions/Survey/The-Cadastre-Unit.aspx",
+        "observation": "Official Cadastre Unit maintains the national LAVIMS digital cadastral database. Official LAVIMS Act describes digital graphical representation for every land parcel, confirming national registry model but not public release."
+      },
+      {
+        "url": "https://lawsofmauritius.govmu.org/portal/viewlegislationdocument/web/?docnumber=&doctitle=TEFWSU1TIChQcm9qZWN0IEltcGxlbWVudGF0aW9uKSBBY3Q%3D&doctype=act",
+        "observation": "Direct anonymous catalog request: GET /api/datasets/?limit=1000 returned HTTP 200 (20 records). Dataset names: pharmacy, post_offices, tourist_spots, social_welfare_centres, Fix_speed_cameras, metro_stations, railway, hospitals_clinics, primary_schools, islet_parks, ict_comp, police_stations0, Reservoirs, fads, ATMs, dangerous_bathing, districts, shoppingmall, bustransport, busstops. Types were amenity/transport points or lines, reservoir and district polygons; no cadastral parcel dataset."
+      },
+      {
+        "url": "https://geoportal.govmu.org/api/datasets/?limit=1000",
+        "observation": "Direct anonymous WFS GetCapabilities returned HTTP 200, application/xml, 39,140 bytes, 19 feature types: geonode:ATMs, geonode:Fix_speed_cameras, geonode:Reservoirs, geonode:busstops, geonode:bustransport, geonode:dangerous_bathing, geonode:districts, geonode:fads, geonode:hospitals_clinics, geonode:ict_comp, geonode:islet_parks, geonode:metro_stations, geonode:police_stations0, geonode:post_offices, geonode:primary_schools, geonode:railway, geonode:shoppingmall, geonode:social_welfare_centres, geonode:tourist_spots; no parcel feature type."
+      },
+      {
+        "url": "https://geoportal.govmu.org/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [
+      {
+        "url": "https://geoportal.govmu.org/api/datasets/?limit=1000",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "outcome": "20 public dataset records returned; list and geometry types are included in the city evidence and catalog artifact; no cadastral dataset."
+      },
+      {
+        "url": "https://geoportal.govmu.org/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "responseBytes": 39140,
+        "outcome": "19 feature types enumerated; exact qualified names recorded; no parcel/cadastre feature type."
+      }
+    ],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "Direct anonymous WFS GetCapabilities returned HTTP 200, application/xml, 39,140 bytes, 19 feature types: geonode:ATMs, geonode:Fix_speed_cameras, geonode:Reservoirs, geonode:busstops, geonode:bustransport, geonode:dangerous_bathing, geonode:districts, geonode:fads, geonode:hospitals_clinics, geonode:ict_comp, geonode:islet_parks, geonode:metro_stations, geonode:police_stations0, geonode:post_offices, geonode:primary_schools, geonode:railway, geonode:shoppingmall, geonode:social_welfare_centres, geonode:tourist_spots; no parcel feature type.",
+    "nextStep": "Revisit the official map/service after a public, non-personal feature endpoint is identified; validate city coverage and geometry before calling this a sample.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official LAVIMS law and Cadastre Unit establish national digital cadastral records covering land parcels; public catalog does not publish cadastral features.",
+  "registryEvidenceUrls": [
+    "https://housing.govmu.org/Pages/Dept%20and%20Org/Divisions/Survey/The-Cadastre-Unit.aspx",
+    "https://lawsofmauritius.govmu.org/portal/viewlegislationdocument/web/?docnumber=&doctitle=TEFWSU1TIChQcm9qZWN0IEltcGxlbWVudGF0aW9uKSBBY3Q%3D&doctype=act",
+    "https://geoportal.govmu.org/api/datasets/?limit=1000",
+    "https://geoportal.govmu.org/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities"
+  ],
+  "resultCategory": "national_cadastre_exists_public_catalog_has_no_parcels",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/MU.json",
+    "world-parcels/research/retry/countries/MU.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Port Louis Mauritius cadastre LAVIMS public parcel map GIS datasets",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "French",
+      "query": "cadastre LAVIMS parcelles Port-Louis Maurice carte cadastrale",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

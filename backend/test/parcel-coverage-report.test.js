@@ -4,6 +4,21 @@ import { nextSort, sortRows, filterCities, countryCategory, summarizeJurisdictio
 import { buildParcelReport } from '../../scripts/build-parcel-coverage-report.mjs';
 import { reportMessages } from '../../frontend/js/parcel-coverage-report-i18n.mjs';
 
+function buildSmallReport({ registry, liveCities, enrichmentCities = [] }) {
+    const statistics = { landAreaKm2: 10, builtUpAreaKm2: 2, population: 100 };
+    return buildParcelReport({
+        registry,
+        evidence: { cities: [], appCities: [], countries: [], warnings: [] },
+        enrichment: { asOf: '2026-10-08', cities: enrichmentCities },
+        countryData: {
+            countries: [{ code: 'AA', name: 'Testland', stats: statistics }],
+            world: statistics, sources: []
+        },
+        coverage: { liveCities },
+        sourceCatalog: { sources: [] }
+    });
+}
+
 describe('parcel coverage report', () => {
     it('sorts numeric values rather than formatted text, toggles both ways, and leaves missing values last', () => {
         const rows = [{ id: 'missing', population: null }, { id: 'hundred', population: 100 }, { id: 'nine', population: 9 }, { id: 'zero', population: 0 }];
@@ -78,6 +93,51 @@ describe('parcel coverage report', () => {
         expect(report.cities[0].cohorts).toEqual(['growth200', 'registry']);
         expect(original.registryCityIds).toEqual([]);
         expect(original.cohorts).toEqual(['growth200']);
+    });
+
+    it('links a new registry city to its explicitly enabled app source without mutating enrichment', () => {
+        const enrichmentCity = {
+            id: 'demographic:1', name: 'Tbilisi', countryCode: 'AA', registryCityIds: [], appCityIds: [],
+            latitude: 1, longitude: 2, population2025: 100
+        };
+        const report = buildSmallReport({
+            registry: {
+                cities: [{ cityId: 'msda:tbilisi', name: 'Tbilisi', countryCode: 'AA', centerLatLon: [41.7, 44.8] }],
+                sources: [{ sourceId: 'msda-tbilisi', verifiedCityIds: ['msda:tbilisi'], liveIntegration: { status: 'enabled', appCityId: 'tbilisi' } }]
+            },
+            liveCities: [{ id: 'tbilisi', sourceId: 'msda-tbilisi' }],
+            enrichmentCities: [enrichmentCity]
+        });
+
+        expect(report.cities.find(city => city.id === 'msda:tbilisi')).toMatchObject({
+            registryCityIds: ['msda:tbilisi'], appCityIds: ['tbilisi'], sourceIds: ['msda-tbilisi']
+        });
+        expect(enrichmentCity.registryCityIds).toEqual([]);
+        expect(enrichmentCity.appCityIds).toEqual([]);
+    });
+
+    it('does not infer app bindings from multi-city sources, mismatched source IDs, or non-live integrations', () => {
+        const registryCities = ['multi:one', 'multi:two', 'mismatch:one', 'disabled:one', 'not-live:one'].map(cityId => ({
+            cityId, name: cityId, countryCode: 'AA'
+        }));
+        const report = buildSmallReport({
+            registry: {
+                cities: registryCities,
+                sources: [
+                    { sourceId: 'multi-source', verifiedCityIds: ['multi:one', 'multi:two'], liveIntegration: { status: 'enabled', appCityId: 'app-multi' } },
+                    { sourceId: 'registry-source', verifiedCityIds: ['mismatch:one'], liveIntegration: { status: 'enabled', appCityId: 'app-mismatch' } },
+                    { sourceId: 'disabled-source', verifiedCityIds: ['disabled:one'], liveIntegration: { status: 'disabled', appCityId: 'app-disabled' } },
+                    { sourceId: 'not-live-source', verifiedCityIds: ['not-live:one'], liveIntegration: { status: 'enabled', appCityId: 'app-not-live' } }
+                ]
+            },
+            liveCities: [
+                { id: 'app-multi', sourceId: 'multi-source' },
+                { id: 'app-mismatch', sourceId: 'different-source' },
+                { id: 'app-disabled', sourceId: 'disabled-source' }
+            ]
+        });
+
+        expect(report.cities.map(city => city.appCityIds)).toEqual([[], [], [], [], []]);
     });
 
     it('keeps discovery categories separate from territorial completeness', () => {

@@ -1,6 +1,7 @@
 // Read-only access to public agency evidence, coverage, and separately reviewed unit geometry.
 import { coverage } from '../floor-plans/archive.js';
 import { buildingSummary, buildingView, catalogueCounts, sourceView } from '../floor-plan-archive/review-catalogue.js';
+import { currentProcessedCatalogueRows, currentProcessedPlan, currentProcessedPlans, processedBuildingId, processedBuildingView, processedPlanView, processedBuildingSummary } from '../floor-plan-archive/processed-catalogue.js';
 export function setupFloorPlanArchiveRoute(app,pool) {
  const route=(path,handler)=>app.get(`/floor-plan-archive${path}`,async(req,res,next)=>{
   res.set('Cache-Control','no-store');
@@ -43,6 +44,9 @@ export function setupFloorPlanArchiveRoute(app,pool) {
    ORDER BY e.sha256,t.updated_at DESC`)).rows;
   const sources=sourceRows.map(row=>({...sourceView(row),architectureAvailable:Boolean(row.architecture_available)}))
    .sort((a,b)=>a.label.localeCompare(b.label)||a.sha256.localeCompare(b.sha256));
+  const processed=await currentProcessedCatalogueRows(pool),groups=new Map();
+  for(const row of processed) {const id=processedBuildingId(row);if(!groups.has(id)) groups.set(id,[]);groups.get(id).push(row);}
+  buildings.push(...[...groups.values()].map(processedBuildingSummary));
   res.json({buildings,sources,counts:catalogueCounts(buildings,sources)});
  });
  route('/building/:id',async(req,res)=>{
@@ -62,11 +66,27 @@ export function setupFloorPlanArchiveRoute(app,pool) {
      rooms:model.rooms,physicalNetAreaM2:model.physicalNetAreaM2,areaM2:model.areaM2,sourceFloorConflict:model.sourceFloorConflict})),
     wholeBuilding:mesh?.footprint?{type:'landmark',url:'/floor-plan-archive/building/avenue-v/mesh'}:null});
   }
+  if(/^processed-[a-f0-9]{64}$/.test(req.params.id)) {
+   const rows=(await currentProcessedPlans(pool)).filter(row=>processedBuildingId(row)===req.params.id);
+   if(!rows.length) return res.status(404).json({error:'Building not found.'});
+   return res.json(processedBuildingView(rows));
+  }
   const match=/^registered-(\d+)$/.exec(req.params.id);
   if(!match) return res.status(400).json({error:'Invalid building id.'});
   const row=(await pool.query(`SELECT id,owner_id,building_id,footprint,floor_plans FROM consensus.building_floor_model WHERE id=$1 AND current`,[match[1]])).rows[0];
   if(!row) return res.status(404).json({error:'Building not found.'});
   res.json(buildingView(row));
+ });
+ route('/processed/:id',async(req,res)=>{
+  if(!/^[a-f0-9]{64}$/.test(req.params.id)) return res.status(400).json({error:'Invalid processed plan id.'});
+  const row=await currentProcessedPlan(pool,req.params.id);
+  if(!row) return res.status(404).json({error:'Processed plan not found.'});
+  res.json({
+   ...processedPlanView(row),id:row.id,modelHash:row.model_hash,model:row.model,
+   task:{id:row.task_id,processor:row.processor,status:row.task_status,usage:row.usage || null,
+    costUsd:row.cost_usd == null ? null : Number(row.cost_usd),sourceUrl:row.source_url,page:row.page,listingUrl:row.listing_url},
+   reviewNotes:row.model?.quality?.issues || []
+  });
  });
  route('/building/avenue-v/mesh',async(_req,res)=>{
   const rows=(await pool.query(`SELECT ground_z_m,ST_AsGeoJSON(ST_Transform(shape,4326),7) AS geometry,color_hex,material_kind

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 8064,
+  "cityId": "wup2025:8064",
+  "name": "Jaipur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.9128723533915,
+    75.7865606043523
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 142,
+  "stateOrUT": "Rajasthan",
+  "administrativeIdentity": {
+    "district": "जयपुर",
+    "tehsilOrTaluk": "Jaipur Tehsil",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-08",
+    "batch4Summary": "Public JS documents WMS and POST routes rest/Administration/ActiveStateList, rest/Levels/gisinfo, rest/MapInfo/getVVVVExtentGeoref. ActiveStateList returned Rajasthan (08); attempted Jaipur gisinfo/extent did not resolve usable target data. Search-indexed Jaipur-district plot reports were rural/outside WUP target. Parent diagnostic records city urban GIS lead.",
+    "queries": [
+      "जयपुर भू नक्शा राजस्थान भू नक्शा जयपुर तहसील प्लॉट नक्शा"
+    ],
+    "sources": [
+      "https://bhunaksha.rajasthan.gov.in/",
+      "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "https://bhunaksha.rajasthan.gov.in/Viewmap/",
+      "https://bhunaksha.rajasthan.gov.in/plotreport.jsp?giscode=0929513180524819632001&plotno=196%2F192&state=08"
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Jaipur Settlement Department khasra and JDA scheme-plot layers, with actual public geometry extent unverified. Separate state Bhu-Naksha rural reports are not used to infer urban coverage.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_urban_parcel_services_temporarily_unavailable",
+  "registryFound": true,
+  "verifiedSample": false,
+  "technicalBlocker": "Advertised official parcel services are currently unreachable from both checked networks. Certificate bypass cannot cure a pre-TLS TCP timeout.",
+  "remainingUncertainty": "No public, nonempty parcel polygon associated with the exact WUP target point was verified.",
+  "nextStep": "Retry the exact public parcel services when reachable, following the portal’s ordinary anonymous bootstrap if required, then request only geometry and parcel identifiers in a small Jaipur bbox. Confirm location, polygon quality and fresh identity resolution before enabling a provider.",
+  "priorEvidence": [
+    {
+      "file": "world-parcels/research/india-africa-2026-10-08/india-city-8064.json",
+      "summary": "Earlier city assessment retained in referenced file; not duplicated in this batch record."
+    },
+    "research/india-africa-2026-10-08/india-city-8064.json"
+  ],
+  "registryBasis": "The official Rajasthan Urban GIS Portal explicitly attributes khasra/village boundaries to the Settlement Department and advertises Jaipur Settlement_JDA and JDA_Plots services. City-scoped cadastral map publication is documented; live geometry access is not verified.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "जयपुर भू नक्शा राजस्थान भू नक्शा जयपुर तहसील प्लॉट नक्शा",
+      "date": "2026-10-08",
+      "executionMethod": "web search; official portal inspection as listed in requestsAndEndpointChecks",
+      "resultUrls": [
+        "https://bhunaksha.rajasthan.gov.in/",
+        "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+        "https://bhunaksha.rajasthan.gov.in/Viewmap/",
+        "https://bhunaksha.rajasthan.gov.in/plotreport.jsp?giscode=0929513180524819632001&plotno=196%2F192&state=08"
+      ],
+      "summary": "Batch-4 search and follow-up only; prior search history is in priorEvidence."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Public JS documents WMS and POST routes rest/Administration/ActiveStateList, rest/Levels/gisinfo, rest/MapInfo/getVVVVExtentGeoref. ActiveStateList returned Rajasthan (08); attempted Jaipur gisinfo/extent did not resolve usable target data. Search-indexed Jaipur-district plot reports were rural/outside WUP target. Parent diagnostic records city urban GIS lead."
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Public JS documents WMS and POST routes rest/Administration/ActiveStateList, rest/Levels/gisinfo, rest/MapInfo/getVVVVExtentGeoref. ActiveStateList returned Rajasthan (08); attempted Jaipur gisinfo/extent did not resolve usable target data. Search-indexed Jaipur-district plot reports were rural/outside WUP target. Parent diagnostic records city urban GIS lead."
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/Viewmap/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Public JS documents WMS and POST routes rest/Administration/ActiveStateList, rest/Levels/gisinfo, rest/MapInfo/getVVVVExtentGeoref. ActiveStateList returned Rajasthan (08); attempted Jaipur gisinfo/extent did not resolve usable target data. Search-indexed Jaipur-district plot reports were rural/outside WUP target. Parent diagnostic records city urban GIS lead."
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/plotreport.jsp?giscode=0929513180524819632001&plotno=196%2F192&state=08",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Public JS documents WMS and POST routes rest/Administration/ActiveStateList, rest/Levels/gisinfo, rest/MapInfo/getVVVVExtentGeoref. ActiveStateList returned Rajasthan (08); attempted Jaipur gisinfo/extent did not resolve usable target data. Search-indexed Jaipur-district plot reports were rural/outside WUP target. Parent diagnostic records city urban GIS lead."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public viewer HTML; linked georef_gmaps.js inspected for endpoint names."
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/rest/Administration/ActiveStateList",
+      "method": "POST",
+      "payload": {},
+      "status": "HTTP 200",
+      "summary": "Returned Rajasthan state code 08."
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/Viewmap/",
+      "method": "GET",
+      "status": "redirect to /Viewmap/captcha.jsp",
+      "summary": "Current interactive viewer route is CAPTCHA-gated."
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/plotreport.jsp?giscode=0929513180524819632001&plotno=196%2F192&state=08",
+      "method": "GET",
+      "status": "portal error response",
+      "summary": "No target-city parcel record returned."
+    }
+  ],
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js"
+  ],
+  "blocker": "Advertised official parcel services are currently unreachable from both checked networks. Certificate bypass cannot cure a pre-TLS TCP timeout.",
+  "supplementalEvidenceFiles": [
+    "research/india-africa-batch4-2026-10-08/jaipur-urban-gis-diagnostic.json"
+  ]
+}

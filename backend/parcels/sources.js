@@ -14,6 +14,8 @@ import { createDlrsSheetParcelSource } from './dlrs-sheet-source.js';
 import { createKeralaParcelSource } from './kerala-source.js';
 import { createNairobiOutlineSource } from './nairobi-outline-source.js';
 import { createKazakhstanPkkSource } from './kazakhstan-pkk-source.js';
+import { createMsdaPointSource } from './msda-point-source.js';
+import { createTkgmPointSource } from './tkgm-point-source.js';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
@@ -46,7 +48,8 @@ export function withSourceCooldown(adapter, { now = Date.now } = {}) {
             throw error;
         }
     };
-    return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry') });
+    return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry'),
+        ...(typeof adapter.queryPoint === 'function' ? { queryPoint: invoke('queryPoint') } : {}) });
 }
 
 // Share a FIFO request budget across every query method used for one provider. A released slot is
@@ -79,7 +82,8 @@ export function withSourceConcurrency(adapter, { limit = 2 } = {}) {
         try { return await adapter[method](...args); }
         finally { release(); }
     };
-    return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry') });
+    return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry'),
+        ...(typeof adapter.queryPoint === 'function' ? { queryPoint: invoke('queryPoint') } : {}) });
 }
 
 function validateCityMetrics(descriptor) {
@@ -106,6 +110,8 @@ export function createParcelSource(descriptor, options = {}) {
         'kerala-entebhoomi': createKeralaParcelSource,
         'nairobi-outlines': createNairobiOutlineSource,
         'kazakhstan-pkk': createKazakhstanPkkSource,
+        'msda-point': createMsdaPointSource,
+        'tkgm-point': createTkgmPointSource,
         socrata: createSocrataParcelSource }[descriptor.adapter];
     if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {

@@ -3,6 +3,68 @@
   "description": "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.",
   "sources": [
     {
+      "id": "ge-msda-napr-registered-land-plots",
+      "name": "NAPR registered land plots (MSDA)",
+      "adapter": "msda-point",
+      "endpoint": "https://ms.gov.ge/core-api/v1/search",
+      "idField": "cadCode",
+      "parcelNumberField": "cadCode",
+      "idPrefix": "GE-NAPR-",
+      "outFields": [
+        "cadCode"
+      ],
+      "queryMode": "point",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "areaEnumeration": false,
+        "geometry": "full-wgs84"
+      },
+      "countryCode": "GE",
+      "metricSrid": 32638,
+      "maxConcurrentQueries": 2,
+      "scope": "NAPR registered land plots returned for a clicked point or exact cadastral code; no area-wide parcel enumeration.",
+      "cityIds": [
+        "tbilisi"
+      ],
+      "evidenceFile": "research/tbilisi-msda-2026-10-08.json",
+      "operator": "National Agency of Public Registry (NAPR), via MSDA",
+      "attribution": "NAPR · MSDA. Parcel lookup on click.",
+      "licenceNote": "Public viewer-backed point/exact lookup; no area enumeration is available."
+    },
+    {
+      "id": "tr-tkgm-parselsorgu-api",
+      "name": "TKGM Parsel Sorgu (MEGSIS) backing API",
+      "adapter": "tkgm-point",
+      "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+      "idField": "nativeId",
+      "parcelNumberField": "parselNo",
+      "idPrefix": "TR-TKGM-",
+      "outFields": [
+        "mahalleId",
+        "adaNo",
+        "parselNo"
+      ],
+      "queryMode": "point",
+      "capabilities": {
+        "point": true,
+        "exactId": false,
+        "bbox": false,
+        "areaEnumeration": false
+      },
+      "countryCode": "TR",
+      "metricSrid": 32635,
+      "maxConcurrentQueries": 2,
+      "scope": "Point lookup verified for one parcel in Fatih, Istanbul; broader Istanbul and Turkey coverage are unverified. Bbox queries and area enumeration are unavailable.",
+      "cityIds": [
+        "istanbul"
+      ],
+      "evidenceFile": "research/istanbul-live-2026-10-08.json",
+      "operator": "General Directorate of Land Registry and Cadastre (TKGM)",
+      "attribution": "TKGM · parcel lookup on click",
+      "licenceNote": "Public viewer-backed point lookup; terms for programmatic reuse are undocumented."
+    },
+    {
       "id": "ca-on-toronto-property-boundary",
       "name": "City of Toronto Property Boundary",
       "adapter": "arcgis",
@@ -4015,6 +4077,151 @@
         "Up to 80 requested IDs are read in filters of at most 20 terms under a single 15-second deadline and shared response-byte budget; an unchunked 80-term filter returned HTTP 414.",
         "All 154 locally sampled parcels were valid. Five source-boundary overlaps were retained unchanged; the two largest measure 0.451 m² and 0.382 m², with minimum oriented widths about 9.8 mm and 12.1 mm. No global geometry repair or tolerance is applied."
       ]
+    },
+    {
+      "id": "gr-ktimatologio-active-parcels-arcgis",
+      "name": "Hellenic Cadastre active cadastral parcels — Athens entry",
+      "adapter": "arcgis",
+      "endpoint": "https://services-eu1.arcgis.com/40tFGWzosjaLJpmn/arcgis/rest/services/GEOTEMAXIA_LEITOURGOUN_ON_gdb/FeatureServer/0",
+      "idField": "KAEK",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "GR-ATHENS-KAEK-",
+      "parcelNumberField": "KAEK",
+      "outFields": [
+        "OBJECTID",
+        "KAEK"
+      ],
+      "pageSize": 250,
+      "maxFeatures": 2500,
+      "maxBboxKm2": 0.25,
+      "maxConcurrentQueries": 2,
+      "countryCode": "GR",
+      "metricSrid": 32634,
+      "cityIds": [
+        "athens"
+      ],
+      "scope": "Athens entry centered on the verified city-center sample. The active cadastral layer returned 27 distinct KAEKs in a roughly 0.01 km² neighborhood; wider Athens, Greece-wide coverage and currentness have not been established.",
+      "evidenceFile": "research/athens-live-2026-10-08.json",
+      "attribution": "Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.",
+      "catalogueUrl": "https://maps.ktimatologio.gr/",
+      "licenceNote": "The public map exposes a queryable ArcGIS layer; no named reuse licence was identified in the inspected viewer or layer metadata. Publisher terms remain informational."
+    },
+    {
+      "id": "gaborone-bofinet-plots-provisional",
+      "idPrefix": "gaborone:bofinet:",
+      "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+      "idFields": [
+        "LotId",
+        "OBJECTID_1"
+      ],
+      "idFieldTypes": {
+        "LotId": "string",
+        "OBJECTID_1": "integer"
+      },
+      "objectIdField": "FID",
+      "outFields": [
+        "FID",
+        "LotId",
+        "OBJECTID_1",
+        "OBJECTID",
+        "Town_Lot_I",
+        "Extension_",
+        "SR_No",
+        "Diagram_No"
+      ],
+      "parcelNumberField": "LotId",
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "adapter": "arcgis",
+      "name": "BOFINET Gaborone city plots",
+      "cityIds": [
+        "gaborone"
+      ],
+      "countryCode": "BW",
+      "metricSrid": 32735,
+      "maxConcurrentQueries": 2,
+      "scope": "Bounded Gaborone city-plot samples in 13 cells. Composite LotId plus OBJECTID_1 is a provisional source-row reference, not an official cadastral title identity. Repeated LotId values and tiny published fragments are retained unchanged. Broader coverage and source-row identifier permanence are unverified.",
+      "evidenceFile": "research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json",
+      "catalogueUrl": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+      "attribution": "BOFINET Gaborone city plots; adapted to WGS84. Bounded samples only.",
+      "licenceNote": "Public anonymous query access verified. Publisher conditions remain informational; a named reuse licence was not established."
+    },
+    {
+      "id": "za-mangaung-cadastre-2025",
+      "endpoint": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11",
+      "idField": "SG_CODE",
+      "idType": "string",
+      "idPrefix": "za-mangaung-sgcode:",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "SG_CODE",
+        "PARCEL_NR"
+      ],
+      "parcelNumberField": "PARCEL_NR",
+      "pageSize": 10,
+      "idBatchSize": 10,
+      "maxFeatures": 2500,
+      "maxBboxKm2": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "adapter": "arcgis",
+      "name": "Mangaung Cadastre 2025 — Bloemfontein",
+      "cityIds": [
+        "bloemfontein"
+      ],
+      "countryCode": "ZA",
+      "metricSrid": 32735,
+      "maxConcurrentQueries": 2,
+      "scope": "Public Mangaung Cadastre_2025 layer described as SG Approved. All 53 retained SG_CODE references passed fresh reads in 17 bounded Bloemfontein cells. Municipal publisher metadata is identified, but upstream lineage, current legal registration and citywide completeness are unverified.",
+      "evidenceFile": "research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json",
+      "catalogueUrl": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11",
+      "attribution": "Mangaung Cadastre 2025 — Bloemfontein; adapted to WGS84. Bounded samples only.",
+      "licenceNote": "Public anonymous query access verified. Publisher conditions remain informational; a named reuse licence was not established."
+    },
+    {
+      "id": "za-tshwane-registered-parcels",
+      "idPrefix": "tshwane:lis-key:",
+      "endpoint": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1",
+      "idField": "lis_key",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "lis_key",
+      "outFields": [
+        "OBJECTID",
+        "lis_key",
+        "parcel_label",
+        "status_lu_text",
+        "type_lu_text"
+      ],
+      "pageSize": 10,
+      "idBatchSize": 1,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "single-equality",
+      "attributeFilters": {
+        "status_lu_text": "Registered"
+      },
+      "adapter": "arcgis",
+      "name": "City of Tshwane registered surveyed parcels — Pretoria",
+      "cityIds": [
+        "pretoria"
+      ],
+      "countryCode": "ZA",
+      "metricSrid": 32735,
+      "maxConcurrentQueries": 2,
+      "scope": "Published Registered status only; Now Scheme, Road, Railway and Unregistered records are excluded. Thirteen bounded Pretoria cells and 93 LIS-key geometry rereads passed. Seven sampled boundary slivers are below 2.26 m² and 0.34% of the smaller parcel. Original-survey semantics and legal currentness remain unverified; no citywide completeness claim.",
+      "evidenceFile": "research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json",
+      "catalogueUrl": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1",
+      "attribution": "City of Tshwane registered surveyed parcels — Pretoria; adapted to WGS84. Bounded samples only.",
+      "licenceNote": "Public anonymous query access verified. Publisher conditions remain informational; a named reuse licence was not established.",
+      "caCertificate": "./certificates/geotrust-tls-rsa-ca-g1.pem"
     }
   ]
 }

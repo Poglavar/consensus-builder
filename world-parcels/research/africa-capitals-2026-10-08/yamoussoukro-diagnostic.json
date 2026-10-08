@@ -1,0 +1,176 @@
+{
+  "purpose": "Bounded read-only diagnosis of the public SIGFU Yamoussoukro parcel-search lead; no authentication, CAPTCHA bypass, personal query, or geometry was used.",
+  "schemaVersion": 1,
+  "kind": "public_portal_diagnostic",
+  "checkedAt": "2026-10-08T15:19:41Z",
+  "cityId": "capital:CI:yamoussoukro",
+  "portal": "SIGFU public lot/cartography lookup",
+  "provenance": {
+    "pageSource": "https://sigfu.gouv.ci/public",
+    "observedLinkedScripts": [
+      "https://sigfu.gouv.ci/runtime.js",
+      "https://sigfu.gouv.ci/polyfills.js",
+      "https://sigfu.gouv.ci/vendor.js",
+      "https://sigfu.gouv.ci/main.js"
+    ],
+    "configObservedIn": "https://sigfu.gouv.ci/main.js",
+    "configuredApiBases": [
+      "https://sigfu.gouv.ci/api-sigfu-portail",
+      "https://sigfu.gouv.ci/api-sigfu-portail-data"
+    ],
+    "queryRoutesObservedInCompiledPublicApp": [
+      {
+        "method": "GET",
+        "path": "/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+        "purpose": "locality list"
+      },
+      {
+        "method": "GET",
+        "path": "/api-sigfu-portail-data/query-parcelle/query-parcelle/AllLots",
+        "purpose": "all-lots lookup"
+      },
+      {
+        "method": "GET",
+        "path": "/api-sigfu-portail-data/query-parcelle/query-commune",
+        "purpose": "commune lookup"
+      },
+      {
+        "method": "POST",
+        "path": "/api-sigfu-portail-data/query-parcelle/query-parcelle/allLotissements",
+        "purpose": "lot/subdivision lookup; generated client requires a GetLotissementDto"
+      }
+    ],
+    "methodNote": "Routes and methods were read from the publicly linked production JavaScript bundle; no guessed POST payload was sent."
+  },
+  "requests": [
+    {
+      "url": "https://sigfu.gouv.ci/public",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.864,
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "responseBytes": 2701,
+      "toolOutcome": "SPA shell returned."
+    },
+    {
+      "url": "https://www.sigfu.gouv.ci/parcelles",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.777,
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "responseBytes": 2701,
+      "toolOutcome": "Same SPA shell returned; does not demonstrate parcel data availability."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail/api-sigfu-portail",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.705,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.701,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway on the compiled public locality-list route."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/AllLots",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.733,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway on the compiled all-lots route."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-commune",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.697,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway on the compiled commune-list route."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.879,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway at the configured data API base."
+    }
+  ],
+  "linkedAssets": [
+    {
+      "url": "https://sigfu.gouv.ci/runtime.js",
+      "httpStatus": 200,
+      "responseBytes": 17619,
+      "elapsedSeconds": 0.872
+    },
+    {
+      "url": "https://sigfu.gouv.ci/polyfills.js",
+      "httpStatus": 200,
+      "responseBytes": 174383,
+      "elapsedSeconds": 1.458
+    },
+    {
+      "url": "https://sigfu.gouv.ci/vendor.js",
+      "httpStatus": 200,
+      "responseBytes": 5558209,
+      "elapsedSeconds": 2.761
+    },
+    {
+      "url": "https://sigfu.gouv.ci/main.js",
+      "httpStatus": 200,
+      "responseBytes": 1325429,
+      "elapsedSeconds": 2.011
+    },
+    {
+      "url": "https://sigfu.gouv.ci/manifest.webmanifest",
+      "httpStatus": 200,
+      "responseBytes": 1334,
+      "elapsedSeconds": 0.698
+    }
+  ],
+  "secondaryNetworkCheck": {
+    "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+    "method": "GET",
+    "route": "configured ssh valhalla, curl TLS verification enabled",
+    "elapsedSeconds": 2.524,
+    "curlExitCode": 60,
+    "httpStatus": null,
+    "error": "SSL certificate problem: unable to get local issuer certificate",
+    "toolOutcome": "TLS validation failed before an HTTP response; no certificate-verification bypass was attempted."
+  },
+  "sandboxNetworkCheck": {
+    "urls": [
+      "https://sigfu.gouv.ci/public",
+      "https://www.sigfu.gouv.ci/parcelles",
+      "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites"
+    ],
+    "method": "GET via workspace sandbox curl",
+    "elapsedSecondsRange": [
+      0.012,
+      0.016
+    ],
+    "curlExitCode": 6,
+    "httpStatus": null,
+    "error": "Could not resolve host; failed before connecting and is not evidence of remote downtime."
+  },
+  "outcome": "The public site and parcel path return the Angular application shell (HTTP 200). Its linked production bundle configures parcel/locality APIs and exposes the routes above, but every bounded API GET tested from the primary network returns HTTP 502 in under 0.9 seconds. No API payload or geometry was returned; do not infer that parcel geometry is absent. The one secondary-network check failed TLS validation before HTTP. This is a concrete upstream/API availability blocker, not a sandbox DNS failure.",
+  "geometrySample": null
+}

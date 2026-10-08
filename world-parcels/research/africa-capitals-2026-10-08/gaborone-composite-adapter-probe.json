@@ -1,0 +1,753 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Probe candidate composite parcel identity [LotId, OBJECTID_1] through the existing ArcGIS adapter across the exact five previously retained viewports, then fresh exact reads.",
+  "checkedAt": "2026-10-08T15:18:51.009Z",
+  "descriptor": {
+    "id": "gaborone-bofinet-composite-probe",
+    "idPrefix": "gaborone:bofinet:",
+    "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+    "idFields": [
+      "LotId",
+      "OBJECTID_1"
+    ],
+    "idFieldTypes": {
+      "LotId": "string",
+      "OBJECTID_1": "integer"
+    },
+    "objectIdField": "FID",
+    "outFields": [
+      "FID",
+      "OBJECTID",
+      "OBJECTID_1",
+      "LotId",
+      "Extension_",
+      "Town_Lot_I",
+      "SR_No",
+      "Diagram_No"
+    ],
+    "parcelNumberField": "LotId",
+    "pageSize": 3,
+    "idBatchSize": 3,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "requests": [
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.66%2C25.912%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:18:51.011Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.66%2C25.912%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:18:52.027Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 44
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.66%2C25.913%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:18:52.395Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.66%2C25.913%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:18:52.731Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 65
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=46241%2C46242%2C46531",
+      "checkedAt": "2026-10-08T15:18:53.068Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2189
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=46532",
+      "checkedAt": "2026-10-08T15:18:53.402Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 833
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.913%2C-24.66%2C25.914%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:18:53.755Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.913%2C-24.66%2C25.914%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:18:54.099Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 123
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=3178%2C9102%2C11157",
+      "checkedAt": "2026-10-08T15:18:54.440Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1586
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=16169%2C16529%2C17776",
+      "checkedAt": "2026-10-08T15:18:54.787Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1450
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=19648%2C34245%2C34360",
+      "checkedAt": "2026-10-08T15:18:55.125Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1544
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=46241%2C46242%2C46243",
+      "checkedAt": "2026-10-08T15:18:55.460Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1563
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=46531%2C46532",
+      "checkedAt": "2026-10-08T15:18:55.797Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1967
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.659%2C25.912%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:18:56.131Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.659%2C25.912%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:18:56.467Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 44
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.659%2C25.913%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:18:56.808Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.659%2C25.913%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:18:57.147Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 58
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=9103%2C24192%2C46531",
+      "checkedAt": "2026-10-08T15:18:57.489Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2209
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%276036%27+AND+OBJECTID_1+%3D+47323%29+OR+%28LotId+%3D+%276035%27+AND+OBJECTID_1+%3D+47324%29+OR+%28LotId+%3D+%27REM+OF+LOT+681%27+AND+OBJECTID_1+%3D+47613%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:18:57.824Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%276036%27+AND+OBJECTID_1+%3D+47323%29+OR+%28LotId+%3D+%276035%27+AND+OBJECTID_1+%3D+47324%29+OR+%28LotId+%3D+%27REM+OF+LOT+681%27+AND+OBJECTID_1+%3D+47613%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:18:58.514Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 59
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=46241%2C46242%2C46531",
+      "checkedAt": "2026-10-08T15:18:59.203Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2189
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%2728551%27+AND+OBJECTID_1+%3D+47614%29+OR+%28LotId+%3D+%27683%27+AND+OBJECTID_1+%3D+3276%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9340%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:18:59.536Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%2728551%27+AND+OBJECTID_1+%3D+47614%29+OR+%28LotId+%3D+%27683%27+AND+OBJECTID_1+%3D+3276%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9340%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:19:00.292Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 57
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=3178%2C9102%2C46532",
+      "checkedAt": "2026-10-08T15:19:00.944Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1910
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27698%27+AND+OBJECTID_1+%3D+11439%29+OR+%28LotId+%3D+%27691%27+AND+OBJECTID_1+%3D+16577%29+OR+%28LotId+%3D+%27695%27+AND+OBJECTID_1+%3D+16943%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:19:01.274Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27698%27+AND+OBJECTID_1+%3D+11439%29+OR+%28LotId+%3D+%27691%27+AND+OBJECTID_1+%3D+16577%29+OR+%28LotId+%3D+%27695%27+AND+OBJECTID_1+%3D+16943%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:19:01.916Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 59
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=11157%2C16169%2C16529",
+      "checkedAt": "2026-10-08T15:19:02.595Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1448
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27692%27+AND+OBJECTID_1+%3D+18218%29+OR+%28LotId+%3D+%27696%27+AND+OBJECTID_1+%3D+20128%29+OR+%28LotId+%3D+%27697%27+AND+OBJECTID_1+%3D+35059%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:19:02.925Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27692%27+AND+OBJECTID_1+%3D+18218%29+OR+%28LotId+%3D+%27696%27+AND+OBJECTID_1+%3D+20128%29+OR+%28LotId+%3D+%27697%27+AND+OBJECTID_1+%3D+35059%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:19:03.605Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 59
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=17776%2C19648%2C34245",
+      "checkedAt": "2026-10-08T15:19:04.331Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1544
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27682%27+AND+OBJECTID_1+%3D+35178%29+OR+%28LotId+%3D+%276034%27+AND+OBJECTID_1+%3D+47325%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9341%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:19:04.688Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27682%27+AND+OBJECTID_1+%3D+35178%29+OR+%28LotId+%3D+%276034%27+AND+OBJECTID_1+%3D+47325%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9341%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:19:05.359Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 58
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=9103%2C34360%2C46243",
+      "checkedAt": "2026-10-08T15:19:06.005Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1486
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%271197%27+AND+OBJECTID_1+%3D+24779%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:19:06.341Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%271197%27+AND+OBJECTID_1+%3D+24779%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:19:06.938Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 47
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=24192",
+      "checkedAt": "2026-10-08T15:19:07.533Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 608
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        25.911,
+        -24.66,
+        25.912,
+        -24.659
+      ],
+      "count": 0,
+      "complete": true,
+      "compositeIds": []
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        25.912,
+        -24.66,
+        25.913,
+        -24.659
+      ],
+      "count": 4,
+      "complete": true,
+      "compositeIds": [
+        "gaborone:bofinet:6036~47323",
+        "gaborone:bofinet:6035~47324",
+        "gaborone:bofinet:REM%20OF%20LOT%20681~47613",
+        "gaborone:bofinet:28551~47614"
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        25.913,
+        -24.66,
+        25.914,
+        -24.659
+      ],
+      "count": 14,
+      "complete": true,
+      "compositeIds": [
+        "gaborone:bofinet:683~3276",
+        "gaborone:bofinet:681~9340",
+        "gaborone:bofinet:698~11439",
+        "gaborone:bofinet:691~16577",
+        "gaborone:bofinet:695~16943",
+        "gaborone:bofinet:692~18218",
+        "gaborone:bofinet:696~20128",
+        "gaborone:bofinet:697~35059",
+        "gaborone:bofinet:682~35178",
+        "gaborone:bofinet:6036~47323",
+        "gaborone:bofinet:6035~47324",
+        "gaborone:bofinet:6034~47325",
+        "gaborone:bofinet:REM%20OF%20LOT%20681~47613",
+        "gaborone:bofinet:28551~47614"
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        25.911,
+        -24.659,
+        25.912,
+        -24.658
+      ],
+      "count": 0,
+      "complete": true,
+      "compositeIds": []
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        25.912,
+        -24.659,
+        25.913,
+        -24.658
+      ],
+      "count": 3,
+      "complete": true,
+      "compositeIds": [
+        "gaborone:bofinet:681~9341",
+        "gaborone:bofinet:1197~24779",
+        "gaborone:bofinet:REM%20OF%20LOT%20681~47613"
+      ]
+    },
+    {
+      "name": "fresh-exact-0",
+      "count": 16,
+      "allGeometriesMatch": true,
+      "compositeIds": [
+        "gaborone:bofinet:6036~47323",
+        "gaborone:bofinet:6035~47324",
+        "gaborone:bofinet:REM%20OF%20LOT%20681~47613",
+        "gaborone:bofinet:28551~47614",
+        "gaborone:bofinet:683~3276",
+        "gaborone:bofinet:681~9340",
+        "gaborone:bofinet:698~11439",
+        "gaborone:bofinet:691~16577",
+        "gaborone:bofinet:695~16943",
+        "gaborone:bofinet:692~18218",
+        "gaborone:bofinet:696~20128",
+        "gaborone:bofinet:697~35059",
+        "gaborone:bofinet:682~35178",
+        "gaborone:bofinet:6034~47325",
+        "gaborone:bofinet:681~9341",
+        "gaborone:bofinet:1197~24779"
+      ]
+    }
+  ],
+  "privacy": "Only safe cadastral fields and geometry requested; no owner-like fields.",
+  "result": "passed",
+  "uniqueCompositeIds": 16,
+  "safeSample": [
+    {
+      "type": "Feature",
+      "id": "gaborone:bofinet:6036~47323",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              25.91327960961084,
+              -24.659943365277872,
+              0,
+              null
+            ],
+            [
+              25.912988999168988,
+              -24.65987408979202,
+              0,
+              null
+            ],
+            [
+              25.912954369660724,
+              -24.659993683729382,
+              0,
+              null
+            ],
+            [
+              25.91291675428009,
+              -24.660127035060704,
+              0,
+              null
+            ],
+            [
+              25.9132074068358,
+              -24.66019632034541,
+              0,
+              null
+            ],
+            [
+              25.91327960961084,
+              -24.659943365277872,
+              0,
+              null
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "gaborone:bofinet:6036~47323",
+        "id": "gaborone:bofinet:6036~47323",
+        "sourceId": "gaborone-bofinet-composite-probe",
+        "sourceParcelId": "6036~47323",
+        "parcelNumber": "6036",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "FID": 46241,
+          "OBJECTID": 126587,
+          "OBJECTID_1": 47323,
+          "LotId": "6036",
+          "Extension_": " ",
+          "Town_Lot_I": 6036,
+          "SR_No": " ",
+          "Diagram_No": " "
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gaborone:bofinet:6035~47324",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              25.913351812117845,
+              -24.659690411078323,
+              0,
+              null
+            ],
+            [
+              25.91306124576518,
+              -24.65962114537929,
+              0,
+              null
+            ],
+            [
+              25.91301390138924,
+              -24.65977969906432,
+              0,
+              null
+            ],
+            [
+              25.912988999168988,
+              -24.65987408979202,
+              0,
+              null
+            ],
+            [
+              25.91327960961084,
+              -24.659943365277872,
+              0,
+              null
+            ],
+            [
+              25.913351812117845,
+              -24.659690411078323,
+              0,
+              null
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "gaborone:bofinet:6035~47324",
+        "id": "gaborone:bofinet:6035~47324",
+        "sourceId": "gaborone-bofinet-composite-probe",
+        "sourceParcelId": "6035~47324",
+        "parcelNumber": "6035",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "FID": 46242,
+          "OBJECTID": 126588,
+          "OBJECTID_1": 47324,
+          "LotId": "6035",
+          "Extension_": " ",
+          "Town_Lot_I": 6035,
+          "SR_No": " ",
+          "Diagram_No": " "
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gaborone:bofinet:REM%20OF%20LOT%20681~47613",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              25.91313392166854,
+              -24.65936669259929,
+              0,
+              null
+            ],
+            [
+              25.912990597682168,
+              -24.659367563507246,
+              0,
+              null
+            ],
+            [
+              25.912988383201004,
+              -24.659063181886193,
+              0,
+              null
+            ],
+            [
+              25.913085982973776,
+              -24.65895413171755,
+              0,
+              null
+            ],
+            [
+              25.913038475174453,
+              -24.658954422200466,
+              0,
+              null
+            ],
+            [
+              25.913022929745186,
+              -24.658954622275008,
+              0,
+              null
+            ],
+            [
+              25.91295327997731,
+              -24.65895551306646,
+              0,
+              null
+            ],
+            [
+              25.912884829694512,
+              -24.65900967545128,
+              0,
+              null
+            ],
+            [
+              25.912875541557348,
+              -24.65906156013456,
+              0,
+              null
+            ],
+            [
+              25.912821963352794,
+              -24.659384592203157,
+              0,
+              null
+            ],
+            [
+              25.912662861749872,
+              -24.659941983432187,
+              0,
+              null
+            ],
+            [
+              25.912547956410336,
+              -24.660222302381495,
+              0,
+              null
+            ],
+            [
+              25.912853612013755,
+              -24.660348108041685,
+              0,
+              null
+            ],
+            [
+              25.91291675428009,
+              -24.660127035060704,
+              0,
+              null
+            ],
+            [
+              25.912954369660724,
+              -24.659993683729382,
+              0,
+              null
+            ],
+            [
+              25.912988999168988,
+              -24.65987408979202,
+              0,
+              null
+            ],
+            [
+              25.91301390138924,
+              -24.65977969906432,
+              0,
+              null
+            ],
+            [
+              25.91306124576518,
+              -24.65962114537929,
+              0,
+              null
+            ],
+            [
+              25.91313392166854,
+              -24.65936669259929,
+              0,
+              null
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "gaborone:bofinet:REM%20OF%20LOT%20681~47613",
+        "id": "gaborone:bofinet:REM%20OF%20LOT%20681~47613",
+        "sourceId": "gaborone-bofinet-composite-probe",
+        "sourceParcelId": "REM%20OF%20LOT%20681~47613",
+        "parcelNumber": "REM OF LOT 681",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "FID": 46531,
+          "OBJECTID": 126887,
+          "OBJECTID_1": 47613,
+          "LotId": "REM OF LOT 681",
+          "Extension_": " ",
+          "Town_Lot_I": 0,
+          "SR_No": " ",
+          "Diagram_No": " "
+        }
+      }
+    }
+  ],
+  "completedAt": "2026-10-08T15:19:07.869Z"
+}

@@ -68,7 +68,15 @@ export function setupParcelSourcesRoute(app, { sources = catalog.sources, fetchI
     app.get('/parcel-sources/:sourceId', handle((adapter, req) => {
         const bbox = queryString(req.query, 'bbox');
         const ids = queryString(req.query, 'ids');
-        if (Boolean(bbox) === Boolean(ids)) throw new HttpError(400, 'Provide either bbox or ids.');
+        const point = queryString(req.query, 'point');
+        if ([bbox, ids, point].filter(Boolean).length !== 1) throw new HttpError(400, 'Provide one of bbox, ids, or point.');
+        if (point) {
+            const coordinates = point.split(',');
+            if (coordinates.length !== 2 || coordinates.some(value => !value.trim() || !Number.isFinite(Number(value)))
+                || Math.abs(Number(coordinates[0])) > 180 || Math.abs(Number(coordinates[1])) > 90) throw new HttpError(400, 'Invalid WGS84 point.');
+            if (typeof adapter.queryPoint !== 'function') throw new HttpError(422, 'This parcel source does not support point queries.');
+            return adapter.queryPoint(coordinates.map(Number));
+        }
         if (ids) return adapter.queryIds(ids.split(','));
         if (bbox.split(',').some(part => !part.trim())) throw new HttpError(400, 'Invalid bbox.');
         return adapter.queryBounds(bbox.split(',').map(Number));

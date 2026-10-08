@@ -1,0 +1,123 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "tripoli",
+  "cityId": "capital:LY:tripoli",
+  "name": "Tripoli",
+  "country": "Libya",
+  "code": "LY",
+  "centerLatLon": [
+    32.8872,
+    13.1913
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Tripoli municipality and wider Tripoli region; Real Estate Registration Authority and Survey Department hold cadastral functions. The Libyan Spatial Data Infrastructure portal lists property-boundary mapping products.",
+  "registryFound": null,
+  "registryEvidenceUrls": [
+    "https://portal.lsdi.ly/",
+    "https://lana.gov.ly/post.php?id=165624&lang=ar",
+    "https://lana.gov.ly/post.php?id=255754&lang=ar",
+    "https://lana.gov.ly/post.php?id=327566&lang=ar"
+  ],
+  "registryBasis": "A Tripoli-based electronic center archives national real-estate files, and the Libyan SDI catalogue describes national property-boundary raster sheets. The inspected primary sources do not identify a Tripoli parcel-record subset; office location alone is not treated as city coverage. Public city geometry remains unverified.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "national_records_city_scope_unestablished",
+  "findings": "A fresh open of the official Libyan SDI portal returned an empty search view with an Arabic error message; HTTP status was not exposed and no current catalogue results appeared. The indexed search snippet had listed property-boundary basemap images (not vector polygons), so that remains discovery-only. A directly opened 2020 LANA report documents the Real Estate Registration Authority’s central electronic archive in Tripoli for nationwide files, but does not expose parcels. No public parcel-vector service or point query was verified.",
+  "englishQueries": [
+    "Libya Tripoli cadastral registry land survey authority cadastre parcels official map"
+  ],
+  "localLanguageQueries": [
+    "Tripoli ليبيا السجل العقاري مسح الأراضي خريطة قطع الأراضي طرابلس GIS cadastre parcels",
+    "المنظومة العقارية المسح العقاري طرابلس ليبيا مصلحة التسجيل العقاري ليبيا خريطة قطع أراضي طرابلس GIS"
+  ],
+  "searches": [
+    {
+      "query": "Libya Tripoli cadastral registry land survey authority cadastre parcels official map",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Tripoli ليبيا السجل العقاري مسح الأراضي خريطة قطع الأراضي طرابلس GIS cadastre parcels",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "المنظومة العقارية المسح العقاري طرابلس ليبيا مصلحة التسجيل العقاري ليبيا خريطة قطع أراضي طرابلس GIS",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Only raster basemap imagery and registry digitization notices were identified; no anonymous vector query exposed.",
+  "nextStep": "Ask the Libyan SDI or Real Estate Registration Authority whether its property-boundary image sheets can be provided as a licensed vector parcel layer.",
+  "coverageAssessment": {
+    "claimedScope": "Tripoli registry jurisdiction and Libyan SDI property-boundary basemap catalogue",
+    "verifiedOpenScope": "Map imagery exists; no parcel polygons accessible",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "Arabic",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://portal.lsdi.ly/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Page content returned with zero visible search results and an Arabic load/error message; HTTP status not exposed.",
+      "observed": "No catalogue item or geometry endpoint loaded in this inspection. Earlier property-boundary basemap finding is a search-result snippet only."
+    },
+    {
+      "url": "https://lana.gov.ly/post.php?id=165624&lang=ar",
+      "method": "web.run open and find for طرابلس/data center",
+      "httpStatus": null,
+      "toolOutcome": "Official news page content returned; HTTP status not exposed.",
+      "observed": "2020 report says a central electronic archive/data center for the nationwide Real Estate Registration Authority was opened in Tripoli; it reports nationwide files and digitization, not open parcel geometry."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "LY",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Libya Tripoli cadastral registry land survey authority cadastre parcels official map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Tripoli ليبيا السجل العقاري مسح الأراضي خريطة قطع الأراضي طرابلس GIS cadastre parcels",
+      "language": "Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "المنظومة العقارية المسح العقاري طرابلس ليبيا مصلحة التسجيل العقاري ليبيا خريطة قطع أراضي طرابلس GIS",
+      "language": "Arabic",
+      "method": "web.run search_query"
+    }
+  ],
+  "previousRegistryAssessment": {
+    "registryFound": true,
+    "registryBasis": "City-specific evidence includes the Real Estate Registration Authority’s electronic data center opening in Tripoli for a unified national archive of property files; the report describes a national record digitization project, not city parcel geometry. The Libyan SDI search catalogue has discovery snippets for property-boundary basemap images, but the fresh portal open currently displayed a search error and no catalogue result.",
+    "resultCategory": "cadastral_raster_catalogue_no_vector_sample"
+  },
+  "registryReview": {
+    "checkedAt": "2026-10-08",
+    "basis": "A Tripoli-based electronic center archives national real-estate files, and the Libyan SDI catalogue describes national property-boundary raster sheets. The inspected primary sources do not identify a Tripoli parcel-record subset; office location alone is not treated as city coverage. Public city geometry remains unverified.",
+    "evidenceUrls": [
+      "https://portal.lsdi.ly/"
+    ],
+    "interpretation": "Registry activity and partial cadastral records can establish presence; citywide completeness is not required."
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

@@ -7,14 +7,16 @@
 //   WorldCoverage.load(url?) -> Promise<coverage>       fetches the JSON (default 'data/world-coverage.json')
 //   WorldCoverage.create(data) -> coverage              wraps already-parsed JSON
 //   coverage.tierAt(lat, lon) -> Place                  see below
-//   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'ocean'|'world', name, cc }  the chip name
+//   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'territory'|'ocean'|'world', name, cc }  the chip name
 //   coverage.searchPlaces(query, { limit }) -> Place[]  diacritic-insensitive, best first
 //   coverage.tierColors / WorldCoverage.TIERS
 //
-// Place: { kind: 'live-city' | 'city' | 'country' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
-//          name, country, cc, note, lat, lon, placeKey, cityId? }
+// Place: { kind: 'live-city' | 'city' | 'country' | 'territory' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
+//          name, country, cc, note, lat, lon, placeKey, cityId?, coverage?, coverageSources? }
+//   Countries carry geographic coverage (full/partial/none/unknown), independently of app routing.
+//   WorldCoverage.statusKey(place) selects the matching localized label/description prefix.
 //   cityId is set when tier is 'live' (the configured app city to open). placeKey is a stable id for
-//   city requests: registry city id, 'country:<ISO2>' or 'point:<lat>,<lon>'.
+//   city requests: registry city id, 'country:<ISO2>', 'territory:<source-id>' or 'point:<lat>,<lon>'.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -23,6 +25,7 @@
     'use strict';
 
     const TIERS = ['live', 'source', 'none', 'unknown'];
+    const COVERAGE_LEVELS = ['full', 'partial', 'none', 'unknown'];
     const TIER_RANK = { live: 3, source: 2, none: 1, unknown: 0 };
     const LIVE_RADIUS_KM = 60;
     const CITY_RADIUS_KM = 40;
@@ -30,6 +33,10 @@
     const NAME_CITY_RADIUS_KM = 25;
     const NAME_MIN_ZOOM = 5;
     const EARTH_RADIUS_KM = 6371.0088;
+
+    function statusKey(place) {
+        return place.kind === 'country' ? 'world.coverage.' + place.coverage : 'world.tier.' + place.tier;
+    }
 
     function haversineKm(lat1, lon1, lat2, lon2) {
         const toRad = Math.PI / 180;
@@ -91,6 +98,7 @@
             throw new Error('world-coverage: malformed data');
         }
         const countries = data.countries.map(c => Object.assign({}, c, { bbox: c.rings.length ? ringsBbox(c.rings) : null }));
+        const territories = (data.territories || []).map(c => Object.assign({}, c, { bbox: c.rings.length ? ringsBbox(c.rings) : null }));
         const countryByCc = new Map(countries.map(c => [c.cc, c]));
         const liveCities = data.liveCities;
         // Registry cities that a configured city already covers are the same place under another name.
@@ -106,12 +114,18 @@
             return best;
         }
 
-        function countryAt(lat, lon) {
-            for (const c of countries) {
+        function outlineAt(areas, lat, lon) {
+            for (const c of areas) {
                 const b = c.bbox;
                 if (!b || lat < b.minLat || lat > b.maxLat || lon < b.minLon || lon > b.maxLon) continue;
                 if (pointInRings(lat, lon, c.rings)) return c;
             }
+            return null;
+        }
+
+        function countryAt(lat, lon) {
+            const country = outlineAt(countries, lat, lon);
+            if (country) return country;
             const ringless = countries.filter(c => !c.rings.length && c.center)
                 .map(c => ({ c, lat: c.center[0], lon: c.center[1] }));
             const hit = nearest(ringless, lat, lon, RINGLESS_COUNTRY_RADIUS_KM);
@@ -122,8 +136,14 @@
             return {
                 kind: 'live-city', tier: 'live', cityId: live.id, name: live.name, country: countryName(live.cc), cc: live.cc,
                 note: '', lat, lon, placeKey: 'live:' + live.id, ...(live.sourceId ? { sourceId: live.sourceId } : {}),
+                ...(live.queryMode ? { queryMode: live.queryMode } : {}),
                 ...(live.dataVersion ? { dataVersion: live.dataVersion } : {})
             };
+        }
+
+        function territoryPlace(territory, lat, lon) {
+            return { kind: 'territory', tier: 'unknown', coverage: 'unknown', name: territory.name,
+                country: '', cc: null, note: '', lat, lon, placeKey: 'territory:' + territory.id };
         }
 
         function tierAt(lat, lon) {
@@ -134,13 +154,14 @@
             if (city) {
                 return {
                     kind: 'city', tier: city.tier, name: city.name, country: countryName(city.cc), cc: city.cc,
-                    note: city.note, lat, lon, placeKey: city.id
+                    note: city.note, coverageSources: city.coverageSources, lat, lon, placeKey: city.id
                 };
             }
             const country = countryAt(lat, lon);
             if (country) {
                 const place = {
-                    kind: 'country', tier: country.tier, name: country.name, country: country.name, cc: country.cc,
+                    kind: 'country', tier: country.tier, coverage: country.coverage, coverageSources: country.coverageSources,
+                    name: country.name, country: country.name, cc: country.cc,
                     note: country.note, lat, lon, placeKey: 'country:' + country.cc
                 };
                 if (country.tier === 'live') {
@@ -151,6 +172,8 @@
                 }
                 return place;
             }
+            const territory = outlineAt(territories, lat, lon);
+            if (territory) return territoryPlace(territory, lat, lon);
             return { kind: 'ocean', tier: 'unknown', name: '', country: '', cc: null, note: '', lat, lon, placeKey: 'point:' + roundKey(lat) + ',' + roundKey(lon) };
         }
 
@@ -165,6 +188,8 @@
             if (city) return { kind: 'city', name: city.name, cc: city.cc || null };
             const country = countryAt(lat, lon);
             if (country) return { kind: 'country', name: country.name, cc: country.cc };
+            const territory = outlineAt(territories, lat, lon);
+            if (territory) return { kind: 'territory', name: territory.name, cc: null };
             return { kind: 'ocean', name: '', cc: null };
         }
 
@@ -172,15 +197,19 @@
             liveCities.map(l => ({
                 kind: 'live-city', priority: 0, tier: 'live', cityId: l.id, name: l.name, country: countryName(l.cc), cc: l.cc,
                 lat: l.lat, lon: l.lon, placeKey: 'live:' + l.id, keys: [normalizeText(l.name), normalizeText(l.label)],
-                ...(l.sourceId ? { sourceId: l.sourceId } : {}), ...(l.dataVersion ? { dataVersion: l.dataVersion } : {})
+                ...(l.sourceId ? { sourceId: l.sourceId } : {}), ...(l.queryMode ? { queryMode: l.queryMode } : {}), ...(l.dataVersion ? { dataVersion: l.dataVersion } : {})
             })),
             cities.map(c => ({
-                kind: 'city', priority: 1, tier: c.tier, name: c.name, country: countryName(c.cc), cc: c.cc, note: c.note,
+                kind: 'city', priority: 1, tier: c.tier, name: c.name, country: countryName(c.cc), cc: c.cc, note: c.note, coverageSources: c.coverageSources,
                 lat: c.lat, lon: c.lon, placeKey: c.id, keys: [normalizeText(c.name)]
             })),
             countries.filter(c => c.center).map(c => ({
-                kind: 'country', priority: 2, tier: c.tier, name: c.name, country: c.name, cc: c.cc, note: c.note,
+                kind: 'country', priority: 2, tier: c.tier, coverage: c.coverage, coverageSources: c.coverageSources,
+                name: c.name, country: c.name, cc: c.cc, note: c.note,
                 lat: c.center[0], lon: c.center[1], placeKey: 'country:' + c.cc, keys: [normalizeText(c.name), c.cc.toLowerCase()]
+            })),
+            territories.filter(c => c.center).map(c => Object.assign(territoryPlace(c, c.center[0], c.center[1]), {
+                priority: 2, keys: [normalizeText(c.name)]
             }))
         );
 
@@ -209,7 +238,7 @@
             });
         }
 
-        return { data, tierAt, nameAt, searchPlaces, countries, cities, liveCities };
+        return { data, tierAt, nameAt, searchPlaces, countries, territories, cities, liveCities };
     }
 
     function load(url) {
@@ -221,5 +250,5 @@
             .then(create);
     }
 
-    return { TIERS, TIER_RANK, LIVE_RADIUS_KM, CITY_RADIUS_KM, create, load, haversineKm, normalizeText, pointInRings };
+    return { TIERS, COVERAGE_LEVELS, TIER_RANK, LIVE_RADIUS_KM, CITY_RADIUS_KM, statusKey, create, load, haversineKm, normalizeText, pointInRings };
 });

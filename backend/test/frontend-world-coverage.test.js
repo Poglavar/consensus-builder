@@ -64,12 +64,34 @@ describe('tierAt', () => {
         expect(place).toMatchObject({ kind: 'live-city', tier: 'live', cityId: 'zagreb', cc: 'HR', country: 'Croatia' });
     });
 
-    it('treats all of Croatia as live, opening the nearest Croatian city', () => {
+    it('treats Croatia as live and full coverage, opening the nearest Croatian city', () => {
         const osijek = coverage.tierAt(45.55, 18.69);
         expect(osijek).toMatchObject({ kind: 'country', tier: 'live', cc: 'HR', cityId: 'zagreb' });
         const dubrovnik = coverage.tierAt(42.65, 18.09);
         expect(dubrovnik.tier).toBe('live');
         expect(['split', 'sibenik']).toContain(dubrovnik.cityId);
+        expect(coverage.searchPlaces('Croatia')[0]).toMatchObject({
+            kind: 'country', cc: 'HR', tier: 'live', coverage: 'full',
+            coverageSources: expect.arrayContaining([expect.objectContaining({
+                url: 'https://catalog.uredjenazemlja.hr/katalogpodataka/atom-usluga-preuzimanja-dkp-a'
+            })])
+        });
+    });
+
+    it('keeps Serbia partial while Belgrade still resolves to its single configured live entry', () => {
+        expect(coverage.searchPlaces('Serbia')[0]).toMatchObject({
+            kind: 'country', cc: 'RS', tier: 'source', coverage: 'partial'
+        });
+        const belgradeHits = coverage.searchPlaces('Belgrade');
+        expect(belgradeHits).toHaveLength(1);
+        expect(belgradeHits[0]).toMatchObject({ kind: 'live-city', cityId: 'belgrade', cc: 'RS' });
+    });
+
+    it('shows Sarajevo as unknown with the city-specific access note', () => {
+        expect(coverage.searchPlaces('Sarajevo')).toMatchObject([{
+            kind: 'city', tier: 'unknown', cc: 'BA', placeKey: 'geonames:3191281', lat: 43.8486, lon: 18.3564,
+            note: expect.stringMatching(/sign-in.*inconclusive|inconclusive.*sign-in/i)
+        }]);
     });
 
     it('opens Tokyo through its configured partial-ward entry', () => {
@@ -98,6 +120,34 @@ describe('tierAt', () => {
     it('rejects non-numeric input rather than returning a real-looking place', () => {
         expect(() => coverage.tierAt(null, 10)).toThrow();
         expect(() => coverage.tierAt(Number.NaN, 10)).toThrow();
+    });
+});
+
+describe('country coverage axis', () => {
+    const scopeSources = [{ title: 'National parcel scope', url: 'https://scope.example.test/national' }];
+    const sample = WorldCoverage.create({
+        schemaVersion: 1,
+        countries: [{
+            cc: 'AA', name: 'Sampleland', tier: 'live', coverage: 'partial', note: 'Verified in some regions',
+            coverageSources: scopeSources, center: [0.5, 0.5], rings: [[0, 0, 1, 0, 1, 1, 0, 1, 0, 0]]
+        }],
+        cities: [], liveCities: []
+    });
+
+    it('carries geographic coverage and its evidence into country point hits and search results', () => {
+        const point = sample.tierAt(0.5, 0.5);
+        const search = sample.searchPlaces('Sampleland')[0];
+        expect(point).toMatchObject({ kind: 'country', tier: 'live', coverage: 'partial', coverageSources: scopeSources });
+        expect(search).toMatchObject({ kind: 'country', tier: 'live', coverage: 'partial', coverageSources: scopeSources });
+    });
+
+    it.each(['full', 'partial', 'none', 'unknown'])('uses the %s coverage label for country places', coverageLevel => {
+        expect(WorldCoverage.statusKey({ kind: 'country', tier: 'live', coverage: coverageLevel })).toBe(`world.coverage.${coverageLevel}`);
+    });
+
+    it('keeps city and live-city labels on their operational tier', () => {
+        expect(WorldCoverage.statusKey({ kind: 'city', tier: 'source', coverage: 'full' })).toBe('world.tier.source');
+        expect(WorldCoverage.statusKey({ kind: 'live-city', tier: 'live', coverage: 'unknown' })).toBe('world.tier.live');
     });
 });
 

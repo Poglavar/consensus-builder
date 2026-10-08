@@ -195,9 +195,13 @@ describe('a register link the visitor knows of', () => {
 
 describe('the wiring', () => {
     it('loads the grid and the fallback before the transport, with their stylesheet', () => {
-        const grid = html.indexOf("'js/parcels/schelling-grid.js'");
-        const fallback = html.indexOf("'js/parcels/ground-fallback.js'");
-        const fetch = html.indexOf("'js/parcels/fetch.js'");
+        const scriptIndex = path => {
+            const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return html.search(new RegExp(`[\"']${escapedPath}(?:\\?[^\"']*)?[\"']`));
+        };
+        const grid = scriptIndex('js/parcels/schelling-grid.js');
+        const fallback = scriptIndex('js/parcels/ground-fallback.js');
+        const fetch = scriptIndex('js/parcels/fetch.js');
         expect(grid).toBeGreaterThan(-1);
         expect(fallback).toBeGreaterThan(grid);
         expect(fetch).toBeGreaterThan(fallback);

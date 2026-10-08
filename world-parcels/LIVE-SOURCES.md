@@ -5,6 +5,65 @@ The source evidence is saved in `registry.json` and `research/`: endpoints, oper
 sample requests and responses, native identifiers, paging observations and uncertainties.
 The globe's `source` tier means a verified sample exists; it does not enable a runtime provider.
 
+## Remaining African capitals — 8 October 2026
+
+The [completed batch](research/africa-capitals-2026-10-08/index.json) investigates **43 previously unchecked capitals and associated seats**. The [roster](research/africa-capitals-2026-10-08/roster.json) separates 23 previously checked entries from this pass: 63 national-capital/associated-seat entries across 54 African UN members, plus a separately labelled three-city disputed/de facto supplement. Research locators are chosen points, not official city boundaries. All records retain executed English and local-language searches and distinguish city registry activity from public geometry.
+
+This pass records registry/cadastral evidence in **35 cities**, leaves presence unestablished in **eight**, verifies polygon samples in **five**, and enables **three** app entries. With concurrent additions from other work preserved, the generated catalogue contains **120 app entries / 107 executable providers**. No countrywide coverage is inferred from this batch.
+
+| City | Result and tested scope |
+| --- | --- |
+| Gaborone | Enabled: 76 source-row references in 13 cells; all valid, no duplicate geometry or positive-area overlap. Repeated `LotId` values require the tested `LotId` + `OBJECTID_1` composite; it is not an official title identity. Tiny source fragments remain unchanged. |
+| Bloemfontein | Enabled: public Mangaung `Cadastre_2025`, 53 `SG_CODE` references in 17 cells; all valid, no duplicates or overlaps. Municipal publisher metadata is identified; upstream lineage, current legal registration and citywide completeness remain unverified. |
+| Pretoria | Enabled: official Tshwane `Registered` subset, 93 LIS references in 13 cells. All valid; seven boundary slivers remain below 2.26 m² and 0.34% of the smaller parcel. Other status values are excluded; original-survey semantics and wider coverage remain unverified. |
+| Porto-Novo | Verified geometry, held from runtime: protocol and exact rereads pass for 2,126 NUPs in 17 cells, but nine polygons self-intersect and one overlap covers 98.91% of the smaller parcel. Fresh reads reproduce the defects; the schema has no lifecycle field to resolve them. Cotonou's existing runtime configuration is unchanged. |
+| Victoria | Verified geometry, held from runtime: 496 parcel references in 13 cells pass protocol and exact rereads. Excluding ended records still leaves an older polygon almost partitioned by two newer polygons, all with open-ended validity. No documented parent/subdivision or category rule supplies a safe exclusion. |
+
+The [Gaborone acceptance](research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json), [Bloemfontein acceptance](research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json), and [Pretoria acceptance](research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json) exercise complete paging, fresh exact reads, absence, footprint queries and source binding. Independent projected GEOS audits retain source geometry without repair. [Porto-Novo follow-up](research/africa-capitals-2026-10-08/porto-novo-overlap-followup.json) and [Victoria follow-up](research/africa-capitals-2026-10-08/victoria-overlap-review.json) explain the quality holds; missing native IDs are not a rejection criterion.
+
+Tshwane rejects `IN` and combined native-key/status predicates, including ordinary POST requests. Its configured single-equality mode resolves one native key to a complete object-ID manifest, then fetches those object IDs with the normal status filter and validates every returned row. A missing or out-of-scope row fails explicitly. A published GeoTrust intermediate completes the server's omitted chain while preserving certificate and hostname verification. Victoria qualification uses a typed ArcGIS date predicate with matching epoch validation; it does not silently accept ended or omitted lifecycle values. The [headless verification](research/africa-capitals-2026-10-08/final-headless-tests.json) records 233 passing tests.
+
+## Athens and coverage reconciliation — 8 October 2026
+
+Athens now uses the official active-cadastre ArcGIS layer with native `KAEK` identifiers.
+The [source check](research/athens-live-2026-10-08.json) verified complete pagination for
+27 parcels in a small central area and exact native-ID retrieval. Headed Chrome loaded
+3,107 parcels and opened a selected lot's details. Wider geographic completeness remains
+unconfirmed. This addition brings the catalogue to 115 app entries and 102 providers.
+
+[Tbilisi](research/tbilisi-msda-2026-10-08.json) and
+[Istanbul](research/istanbul-live-2026-10-08.json) now have runtime adapters for parcel
+lookup on click and by exact native ID, bringing the catalogue to 117 app entries and
+104 providers. Tbilisi also displays the official NAPR cadastral map. Istanbul follows
+the TKGM viewer's selected-parcel behavior over the basemap. The repository retains
+the returned polygons without marking any viewport cell complete. Area queries fail
+explicitly; operations requiring complete intersecting cadastre remain unavailable.
+The globe describes this point-lookup mode separately from loading parcels on pan.
+
+The [coverage audit](research/coverage-audit-2026-10-08.json) records the evidence gaps
+behind the Croatia/Serbia errors and corrects New Zealand and Singapore to full country
+coverage using official scope statements. It leaves 44 older multi-region records
+pending national-scope review; positive samples alone do not establish completeness.
+
+## Fourth India and Africa batch — 8 October 2026
+
+The [fourth ten-city pass](research/india-africa-batch4-2026-10-08/index.json) checked five Indian and five African cities. **No additional source qualified for live display.** The catalogue remains at **114 app entries / 101 executable providers**. This pass updates research and the coverage report; it adds no runtime provider or database parcel import and remains uncommitted and undeployed.
+
+| City | Recorded result |
+| --- | --- |
+| Jaipur | The official Urban GIS viewer advertises Settlement Department khasra and JDA plot layers. Its anonymous map bootstrap succeeds, but the actual layer hosts time out before TLS from two networks. |
+| Varanasi | UP BhuNaksha now returns village extents, parcel codes and bounding boxes near the city, and a public WMS renders plot boundaries. The discovered full-shape routes return HTTP 401; a raster or bounding box is not a verified vector parcel. |
+| Indore | The official municipal GIS times out from two networks. An independent public demo publishes colony/layout shapes, but deliberately rotates and shifts them into a private coordinate frame without a geographic transform. |
+| Nagpur | Official city-survey/property-map services are documented. The Maharashtra viewer times out from both checked networks; an indexed rural Jamtha report does not establish urban parcel coverage. |
+| Kalyan-Dombivli | KDMC advertises city-survey and property polygon layers. Actual requests return the same ArcGIS Web Adaptor failure from two networks. The WUP centre's relationship to KDMC and neighbouring Ulhasnagar also needs resolution. |
+| Onitsha | Anambra land-administration services are documented; no anonymous Onitsha parcel geometry was verified. |
+| Yaoundé | A public ArcGIS Urban candidate contains only 32 tiny polygons in a 36.8 × 36.2 m cluster about 11.1 km from the WUP centre. Their undocumented origin and implausible parcel scale prevent qualification. |
+| Kampala | KCCA confirms cadastral information exists, but its verified anonymous app configuration lists only boundaries, divisions, buildings, parishes and villages. |
+| Kano | KANGIS documents land registration and map services, but no anonymous parcel layer was verified. The tested ArcGIS service requires a token. |
+| Casablanca | ANCFCC confirms local cadastral services. Its plan-ordering workflow and AUC sign-in do not provide an anonymous parcel feed; the public forestry-layer lead is not urban cadastral data. |
+
+The [Jaipur service diagnostic](research/india-africa-batch4-2026-10-08/jaipur-urban-gis-diagnostic.json), [Indore coordinate assessment](research/india-africa-batch4-2026-10-08/indore-municipal-diagnostic.json), [Varanasi sample record](research/india-africa-batch4-2026-10-08/india-varanasi-10447-map-sample.json) and [Yaoundé geometry audit](research/india-africa-batch4-2026-10-08/africa-west-yaounde7-parcels-all32-geometry.json) retain the evidence. Missing native identifiers were not a rejection criterion: usable, georeferenced boundaries may use source-scoped geometry references. Registry presence, public viewing, geometric plausibility and runtime access remain separate findings.
+
 ## Central Asian republic capitals — 8 October 2026
 
 The [five-capital check](research/central-asia-capitals-2026-10-08/index.json) qualifies **Astana — Esil district** locally. The catalogue now contains **114 app entries / 101 executable providers**. Bishkek has verified public parcel data but remains unconfigured for geometry quality; Dushanbe, Tashkent and Ashgabat have documented official registry or portal evidence without a verified public geometry response in this pass.

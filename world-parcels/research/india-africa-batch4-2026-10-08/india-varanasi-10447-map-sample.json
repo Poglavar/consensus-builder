@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:10447",
+  "wupCityCode": 10447,
+  "checkedAt": "2026-10-08",
+  "status": "nearby_public_hit_test_envelopes_only",
+  "verifiedSample": false,
+  "targetCenterLatLon": [
+    25.3130953149596,
+    83.0050363443188
+  ],
+  "crs": "EPSG:32644",
+  "targetCenterProjectedApprox": [
+    701838.217,
+    2801127.481
+  ],
+  "samples": [
+    {
+      "village": "Shivpur",
+      "gisCode": "19700996219307",
+      "plotCode": "89",
+      "publicId": "V7r73JTET66b8nzjIoNeyw",
+      "extent": [
+        698417.53,
+        2800294.2306,
+        700520.4608,
+        2801530.0953
+      ],
+      "plotEnvelope": [
+        699395.0847,
+        2800831.4775,
+        699578.4278,
+        2800989.3677
+      ],
+      "geometryType": "bounding_box_only",
+      "distanceFromTargetCenterMetersApprox": 2360
+    },
+    {
+      "village": "Domari",
+      "gisCode": "19700996209728",
+      "plotCode": "163",
+      "publicId": "tgD_uq0pRYqK9x_IB763Cg",
+      "extent": [
+        702899.2299,
+        2799634.2221,
+        705751.01,
+        2802359.4699
+      ],
+      "plotEnvelope": [
+        704230.9163,
+        2800853.678,
+        704408.271,
+        2801059.6952
+      ],
+      "geometryType": "bounding_box_only",
+      "distanceFromTargetCenterMetersApprox": 2480
+    }
+  ],
+  "rasterEvidence": "india-varanasi-sadar-shivpur-plot89-wms.png",
+  "accessNotes": "WMS rendered public parcel lines as raster. Full-shape plot and GeoJSON endpoints returned HTTP 401. No access control bypass attempted. Bounding boxes are not polygons; villages do not contain target center. WUP target center is outside both documented village extents. Full hit-test x/y values and complete WMS query were not retained; see the city record request summaries for the limits of reproducibility."
+}

@@ -587,3 +587,100 @@ describe('explicit current lifecycle scope', () => {
         expect(() => createArcgisParcelSource({ ...scoped, attributeNotNull: ['ENDDATE'] })).toThrow(/attribute filter/);
     });
 });
+
+describe('ArcGIS date equality scope', () => {
+    const instant = '9999-12-31T23:59:59.000Z';
+    const predicate = "ENDDATE = TIMESTAMP '9999-12-31 23:59:59'";
+    const scoped = { ...descriptor, outFields: [...descriptor.outFields, 'ENDDATE'],
+        attributeDateEquals: { ENDDATE: instant } };
+    const current = () => ({ ...feature(1, 12345), properties: {
+        OBJECTID: 1, PARCELID: 12345, ENDDATE: Date.parse(instant)
+    } });
+    it.each(['offset', 'object-ids'])('keeps the date scope on %s bounds, exact IDs and footprint reads', async mode => {
+        const row = current();
+        const json = payload => ({ ok: true, status: 200, json: async () => payload });
+        const pages = mode === 'object-ids'
+            ? Array.from({ length: 3 }, () => [json({ count: 1 }), json({ objectIds: [1] }), response([row])]).flat()
+            : [response([row]), response([row]), response([row])];
+        const { fetchImpl, calls } = makeFetch(pages);
+        const source = createArcgisParcelSource({ ...scoped, boundsQueryMode: mode, idsQueryMode: mode }, { fetchImpl });
+        const bounds = await source.queryBounds([-79.384, 43.652, -79.383, 43.653]);
+        const exact = await source.queryIds(['CA-ON-TORONTO-12345']);
+        const footprint = await source.queryGeometry(row.geometry);
+        expect(bounds.features).toHaveLength(1);
+        expect(exact).toMatchObject({ complete: true, absentIds: [], features: bounds.features });
+        expect(footprint.features).toEqual(bounds.features);
+        const exactWhere = `(${predicate}) AND (PARCELID IN (12345))`;
+        expect(calls.map(call => call.searchParams.get('where'))).toEqual(mode === 'object-ids'
+            ? [predicate, predicate, predicate, exactWhere, exactWhere, predicate, predicate, predicate, predicate]
+            : [predicate, exactWhere, predicate]);
+    });
+    it.each([null, undefined, 0, 1720000000000, '9999-12-31T23:59:59.000Z', '253402300799000'])
+        ('rejects ended, omitted or wrongly typed dates if the provider ignores scope: %s', async value => {
+            const row = current();
+            if (value === undefined) delete row.properties.ENDDATE;
+            else row.properties.ENDDATE = value;
+            const { fetchImpl } = makeFetch([response([row])]);
+            await expect(createArcgisParcelSource(scoped, { fetchImpl })
+                .queryBounds([-79.384, 43.652, -79.383, 43.653])).rejects.toThrow(/configured ground status/);
+        });
+    it('combines the date scope with existing status filters', async () => {
+        const row = current();
+        row.properties.STATUS = 'Current';
+        const { fetchImpl, calls } = makeFetch([response([row])]);
+        await createArcgisParcelSource({ ...scoped, outFields: [...scoped.outFields, 'STATUS'],
+            attributeFilters: { STATUS: 'Current' } }, { fetchImpl })
+            .queryBounds([-79.384, 43.652, -79.383, 43.653]);
+        expect(calls[0].searchParams.get('where')).toBe(`STATUS = 'Current' AND ${predicate}`);
+    });
+    it.each([null, [], 'ENDDATE', { unpublished: instant }, { 'ENDDATE) OR 1=1': instant },
+        { ENDDATE: 253402300799000 }, { ENDDATE: '9999-12-31' }, { ENDDATE: '2026-02-30T00:00:00.000Z' },
+        { ENDDATE: "9999-12-31T23:59:59.000Z' OR 1=1" }, { ENDDATE: '2026-10-08T00:00:00.001Z' }])
+        ('rejects unsafe or ambiguous date declarations: %j', attributeDateEquals => {
+            expect(() => createArcgisParcelSource({ ...scoped, attributeDateEquals })).toThrow(/date attribute filter/);
+        });
+    it('rejects a date equality combined with a null requirement on the same field', () => {
+        expect(() => createArcgisParcelSource({ ...scoped, attributeNull: ['ENDDATE'] })).toThrow(/date attribute filter/);
+    });
+});
+
+describe('native key equality with scoped OID geometry', () => {
+    const scoped = { ...descriptor, idType: 'string', idsQueryMode: 'single-equality',
+        outFields: [...descriptor.outFields, 'STATUS'], attributeFilters: { STATUS: 'Registered' } };
+    const json = payload => ({ ok: true, status: 200, json: async () => payload });
+    it('resolves each key independently and keeps status on geometry reads', async () => {
+        const row = feature(1, "O'Brien"); row.properties.STATUS = 'Registered';
+        const { fetchImpl, calls } = makeFetch([
+            json({ count: 1 }), json({ objectIds: [1] }), response([row]),
+            json({ count: 0 }), json({ objectIds: null })
+        ]);
+        const result = await createArcgisParcelSource(scoped, { fetchImpl })
+            .queryIds(["CA-ON-TORONTO-O'Brien", 'CA-ON-TORONTO-absent']);
+        expect(result).toMatchObject({ complete: true, absentIds: ['CA-ON-TORONTO-absent'] });
+        expect(result.features.map(f => f.id)).toEqual(["CA-ON-TORONTO-O'Brien"]);
+        expect(calls.map(call => call.searchParams.get('where'))).toEqual([
+            "PARCELID = 'O''Brien'", "PARCELID = 'O''Brien'", "STATUS = 'Registered'",
+            "PARCELID = 'absent'", "PARCELID = 'absent'"
+        ]);
+        expect(calls[2].searchParams.get('objectIds')).toBe('1');
+    });
+    it.each(['filtered', 'ignored'])('rejects a key whose record has left the source scope (%s)', async behavior => {
+        const ended = feature(1, '12345'); ended.properties.STATUS = 'Historic';
+        const { fetchImpl } = makeFetch([json({ count: 1 }), json({ objectIds: [1] }),
+            response(behavior === 'filtered' ? [] : [ended])]);
+        await expect(createArcgisParcelSource(scoped, { fetchImpl }).queryIds(['CA-ON-TORONTO-12345']))
+            .rejects.toThrow(/ground status|incomplete object-ID/);
+    });
+    it('requires a single native-key predicate', () => {
+        expect(() => createArcgisParcelSource({ ...scoped, idBatchSize: 2 })).toThrow(/descriptor/);
+        expect(() => createArcgisParcelSource({ ...scoped, idField: undefined, idType: undefined,
+            idFields: ['PARCELID', 'OBJECTID'], idFieldTypes: { PARCELID: 'string', OBJECTID: 'integer' } })).toThrow(/descriptor/);
+    });
+    it('rejects different polygons sharing a native key even when their OID manifest is complete', async () => {
+        const rows = [feature(1, '12345'), feature(2, '12345', polygon(-79.38, 43.65, -79.379, 43.651))];
+        rows.forEach(row => { row.properties.STATUS = 'Registered'; });
+        const { fetchImpl } = makeFetch([json({ count: 2 }), json({ objectIds: [1, 2] }), response(rows)]);
+        await expect(createArcgisParcelSource(scoped, { fetchImpl }).queryIds(['CA-ON-TORONTO-12345']))
+            .rejects.toThrow(/conflicting geometry/);
+    });
+});

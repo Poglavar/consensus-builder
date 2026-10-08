@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2076",
+  "queueRank": 94,
+  "wupCityCode": 2076,
+  "name": "Casablanca",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "centerLatLon": [
+    33.5818411354042,
+    -7.54260580529481
+  ],
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "priorEvidence": [
+    "world-parcels/research/india-africa-2026-10-08/africa-ne-city-casablanca.json",
+    "world-parcels/research/casablanca.json",
+    "world-parcels/research/retry/cities/casablanca.json",
+    "research/india-africa-2026-10-08/africa-ne-city-casablanca.json"
+  ],
+  "research": {
+    "queries": [
+      {
+        "language": "Arabic and French",
+        "script": "Arabic and Latin",
+        "query": "الدار البيضاء المغرب المسح العقاري خريطة القطع parcelles cadastre",
+        "method": "web search",
+        "checkedAt": "2026-10-08",
+        "resultUrls": [
+          "https://www.ancfcc.gov.ma/ProduitsCartographieAr/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+          "https://www.casablancacity.ma/ar/casa-maps"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Agence urbaine Casablanca Géoportail parcellaire cadastral open data parcelles",
+        "method": "web search",
+        "checkedAt": "2026-10-08",
+        "resultUrls": [
+          "https://www.auc.ma/e-services-2/geoportail/",
+          "https://www.auc.ma/e-services-2/open-data/",
+          "https://www.casablancacity.ma/fr/casa-maps"
+        ]
+      },
+      {
+        "language": "French and English",
+        "query": "Casablanca parcelles open data ANCFCC GIS FeatureServer",
+        "method": "web search",
+        "checkedAt": "2026-10-08",
+        "resultUrls": [
+          "https://sigdef.eauxetforets.gov.ma/server/rest/services/Hosted/Parcellaire_view_cs/FeatureServer/11",
+          "https://www.ancfcc.gov.ma/cadastre/"
+        ]
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.ancfcc.gov.ma/cadastre/",
+        "observation": "ANCFCC is the national land registry/cadastre/cartography authority and describes maintaining the national cadastre and providing digital or analogue cadastral products. This establishes cadastral registry existence, not a public vector feed.",
+        "coverage": "National; city-specific polygon feed not stated"
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+        "observation": "Arabic product page describes parcel plans and repérage maps (urban map scales 1:2,000 or 1:1,000); these are products/documents, not an identified open API.",
+        "coverage": "National product catalogue"
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "observation": "Online plan-cadastral request form asks for personal identity/contact and land-title identifiers, CAPTCHA, SMS verification and payment. No bypass or record-level query was attempted.",
+        "coverage": "Request by known title; not city-wide open geometry"
+      },
+      {
+        "url": "https://www.auc.ma/e-services-2/geoportail/",
+        "observation": "AUC's official geoportal entry currently presents account sign-in, including emailed security code; no anonymous parcel layer endpoint was exposed on the page.",
+        "coverage": "AUC planning-area portal; public parcel access unverified"
+      },
+      {
+        "url": "https://www.auc.ma/e-services-2/open-data/",
+        "observation": "Official Open Data page loaded, but its public content contains no dataset or download links. It does not establish parcel geometry publication.",
+        "coverage": "AUC portal"
+      },
+      {
+        "url": "https://www.casablancacity.ma/fr/casa-maps",
+        "observation": "Official municipal Casa Maps page describes an Esri-powered map focused on points of interest and city districts. Page scripts do not advertise cadastral parcel polygons or a public feature service.",
+        "coverage": "Citywide points of interest and districts"
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ServicesExterieursAr/",
+        "observation": "Official office directory lists the CASA ANFA external cadastre/conservation office in Casablanca, supporting local registry presence.",
+        "coverage": "Casablanca office; no open geometry endpoint"
+      }
+    ],
+    "candidateServiceAudit": {
+      "url": "https://sigdef.eauxetforets.gov.ma/server/rest/services/Hosted/Parcellaire_view_cs/FeatureServer/11",
+      "ownerScope": "Moroccan Eaux et Forêts public ArcGIS host; forestry inventory, not ANCFCC",
+      "layerName": "DBO.Parcellaire_Bab_Azehar",
+      "geometryType": "esriGeometryPolygon",
+      "nativeCrs": "Lambert Conformal Conic, Merchich datum; meters; central meridian -5.4, standard parallels 31.7239256667 and 34.8664576667",
+      "nativeExtent": {
+        "xmin": 583989.6115,
+        "ymin": 361703.5709,
+        "xmax": 615484.5551,
+        "ymax": 403402.9872
+      },
+      "definitionQuery": "dranef = 'Casablanca-Settat'",
+      "fields": [
+        "objectid",
+        "dranef",
+        "dpanef",
+        "ccdrf",
+        "sf",
+        "code_parcelle",
+        "numéro_pl",
+        "sup_parcel",
+        "groupe",
+        "foret",
+        "canton"
+      ],
+      "semantics": "The `foret`, `canton`, `groupe`, `dpanef`, `dranef`, `ccdrf` fields and Bab Azehar layer name identify forest-management parcels/compartments, not urban cadastral parcels. Its published extent excludes the WUP Casablanca coordinate.",
+      "metadataRequest": {
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "url": "https://sigdef.eauxetforets.gov.ma/server/rest/services/Hosted/Parcellaire_view_cs/FeatureServer/11?f=pjson"
+      },
+      "boundedQuery": {
+        "method": "GET",
+        "url": "https://sigdef.eauxetforets.gov.ma/server/rest/services/Hosted/Parcellaire_view_cs/FeatureServer/11/query?where=1%3D1&outFields=objectid%2Cdranef%2Cdpanef%2Cccdrf%2Ccode_parcelle%2Cforet%2Ccanton%2Cnum%C3%A9ro_pl%2Csup_parcel&returnGeometry=true&outSR=4326&inSR=4326&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&geometry=%7B%22x%22%3A-7.54260580529481%2C%22y%22%3A33.5818411354042%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&distance=500&units=esriSRUnit_Meter&f=geojson&resultRecordCount=5",
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "queryScope": "500 m radius around saved WUP point; return at most 5 geometries; only geometry and source parcel codes/management fields requested",
+        "featureCount": 0,
+        "sampledFeatures": 0,
+        "observation": "Empty FeatureCollection; no target geometry, parcel code or ownership data returned. One request used a source-specific TLS verification exception because the host certificate chain was not trusted by the local runtime."
+      },
+      "assessment": "Preserved as a public forest-compartment lead only; it is not qualifying cadastral evidence for urban Casablanca."
+    },
+    "additionalCatalog": {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Casablanca%22+Morocco+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "httpStatus": 200,
+      "resultTotal": 0,
+      "observation": "Supplementary ArcGIS Online search for a Casablanca parcel/cadastre Feature Service returned no candidate."
+    },
+    "requestOutcomes": [
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "method": "GET",
+        "httpStatus": 403,
+        "observation": "Returned ANCFCC maintenance page. The web-indexed form currently indicates title/identity fields, CAPTCHA, SMS verification and payment; no request was submitted."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/cadastre/",
+        "method": "GET",
+        "httpStatus": 403,
+        "observation": "Returned ANCFCC maintenance page; official page content was independently indexed and accessible through search."
+      },
+      {
+        "url": "https://www.casablancacity.ma/fr/casa-maps",
+        "method": "GET",
+        "httpStatus": 200,
+        "observation": "Public municipal map page loaded; only district/POI search and Esri map are described."
+      },
+      {
+        "url": "https://www.auc.ma/e-services-2/geoportail/",
+        "method": "GET",
+        "httpStatus": 200,
+        "observation": "Page loaded but requires an AUC account and emailed security code to continue."
+      },
+      {
+        "url": "https://www.auc.ma/e-services-2/open-data/",
+        "method": "GET",
+        "httpStatus": 200,
+        "observation": "Page loaded without public dataset listings or vector download links."
+      },
+      {
+        "url": "https://data.gov.ma/data/api/3/action/package_search?q=parcelle&rows=5",
+        "method": "GET",
+        "httpStatus": 200,
+        "observation": "Prior evidence records CKAN search success with zero datasets for `parcelle`; no parcel dataset surfaced in the national portal."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Casablanca cadastral records exist under the national ANCFCC mandate and local office; no anonymous city-wide polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "registryExistenceScope": "National official cadastre plus named Casablanca external office/product catalogue; no public target parcel geometry verified."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "no target urban parcel geometry retrieved",
+    "identityReadiness": "not ready; title plan service is request-based and the only public feature-layer candidate is a forest inventory layer outside the target bbox",
+    "attributesRequested": "parcel codes/forest management attributes only; no owner or address values requested"
+  },
+  "blocker": "ANCFCC exposes products and a title-specific request workflow rather than an anonymous city-wide geometry endpoint; the AUC geoportal requires account/security-code access, its Open Data page lists no vector dataset, and Casa Maps is a city-district/POI map. The public Eaux et Forêts parcel layer is forest inventory outside the target point.",
+  "remainingUncertainty": "ANCFCC or the AUC may provide a geometry-only extract on request; gated authenticated data were not accessed. The negative search results do not prove no open service exists.",
+  "nextStep": "Ask ANCFCC/AUC for an anonymous WFS, public parcel layer, or bounded geometry-only extract around the WUP point; validate its CRS, parcel semantics, coverage, native IDs or source-scoped geometry hashes before integration.",
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryBasis": "National official cadastre plus named Casablanca external office/product catalogue; no public target parcel geometry verified.",
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/ServicesExterieursAr/",
+    "https://www.ancfcc.gov.ma/ProduitsCadastreAr/"
+  ],
+  "resultCategory": "no_verified_open_endpoint_after_attempts",
+  "technicalBlocker": "ANCFCC exposes products and a title-specific request workflow rather than an anonymous city-wide geometry endpoint; the AUC geoportal requires account/security-code access, its Open Data page lists no vector dataset, and Casa Maps is a city-district/POI map. The public Eaux et Forêts parcel layer is forest inventory outside the target point."
+}

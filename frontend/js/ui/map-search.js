@@ -55,6 +55,7 @@
     // ---- city data ----
     const manager = () => win.CityConfigManager || null;
     const currentCityId = () => (manager() ? manager().getCurrentCityId() : null);
+    const parcelQueryOptions = () => ({ parcelIdPrefix: manager()?.getCurrentCityConfig?.()?.parcels?.idPrefix });
     const shortCityLabel = label => String(label || '').split(',')[0].trim();
     const cityLabel = (id, fallback) => (id ? t(`city.labels.${id}`, fallback) : fallback);
 
@@ -170,7 +171,7 @@
                     rank: (Model.matchRank(place.name, query) ?? 3) + 0.5,
                     icon: place.kind === 'country' ? 'fas fa-flag' : 'fas fa-earth-europe',
                     label: place.name,
-                    sublabel: [place.kind === 'country' ? '' : place.country, t(`world.tier.${place.tier}.short`, place.tier)]
+                    sublabel: [place.kind === 'country' ? '' : place.country, t(win.WorldCoverage.statusKey(place) + '.short', place.coverage || place.tier)]
                         .filter(Boolean).join(' · '),
                     run: () => runWorldPlace(place)
                 })));
@@ -202,6 +203,7 @@
         const candidates = Model.parcelIdCandidates(query, {
             cityId: currentCityId(),
             parcelSource: config && config.parcels ? config.parcels.source : null,
+            parcelIdPrefix: config?.parcels?.idPrefix,
             loadedIds
         });
         const items = candidates.ids.map(id => item({
@@ -296,9 +298,8 @@
             if (where.kind === 'other-city') {
                 sublabel = [t('mapSearch.openIn', 'Open in {{city}}', { city: shortCityLabel(where.city.label) }), place.context].filter(Boolean).join(' · ');
             } else if (where.kind === 'world') {
-                const tier = coverageTier ? coverageTier.tier : null;
                 sublabel = [place.context, t('mapSearch.outsideCities', 'Outside the app\'s cities'),
-                    tier ? t(`world.tier.${tier}.short`, tier) : ''].filter(Boolean).join(' · ');
+                    coverageTier ? t(win.WorldCoverage.statusKey(coverageTier) + '.short', coverageTier.coverage || coverageTier.tier) : ''].filter(Boolean).join(' · ');
             }
             return item({
                 key: `place:${place.key}`,
@@ -366,7 +367,7 @@
     }
 
     function buildGroups() {
-        const cls = Model.classifyQuery(state.query);
+        const cls = Model.classifyQuery(state.query, parcelQueryOptions());
         let groups;
         if (state.mode === 'cities') {
             groups = [citiesGroup('', true)];
@@ -389,7 +390,7 @@
 
     // ---- fetching (debounced, aborted when superseded) ----
     function scheduleFetches() {
-        const cls = Model.classifyQuery(state.query);
+        const cls = Model.classifyQuery(state.query, parcelQueryOptions());
         const wantsProposals = state.mode === 'search' && cls.kinds.includes('proposal');
         const wantsPlaces = state.mode === 'search' && cls.kinds.includes('address');
         schedule(state.proposals, wantsProposals ? cls.text : '', PROPOSAL_DEBOUNCE_MS, fetchProposals);
@@ -503,7 +504,7 @@
 
     function runWorldPlace(place) {
         if (openWorldView({ focus: place })) return;
-        setNote(`world:${place.placeKey}`, { kind: 'info', text: t(`world.tier.${place.tier}.text`, '') });
+        setNote(`world:${place.placeKey}`, { kind: 'info', text: t(win.WorldCoverage.statusKey(place) + '.text', '') });
     }
 
     async function runParcel(id) {

@@ -17,6 +17,8 @@
 //   easeInOutCubic(t), easeOutCubic(t)
 //   altitudeToLeafletZoom(altitudeKm, latitude, viewportPx, fovDeg=40) -> fractional zoom
 //   leafletZoomToAltitude(zoom, latitude, viewportPx, fovDeg=40) -> km (inverse)
+//   wheelDeltaPixels(deltaY, deltaMode, viewportPx) -> pixel-equivalent wheel distance
+//   dampAltitude(current, target, dtSeconds) -> altitude, easing geometrically toward the target
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -83,6 +85,17 @@
     const easeInOutCubic = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
     const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
 
+    function wheelDeltaPixels(deltaY, deltaMode, viewportPx) {
+        return deltaY * (deltaMode === 1 ? 30 : deltaMode === 2 ? viewportPx : 1);
+    }
+
+    // A wheel notch changes the target, not the camera in one jump. Damping in log space keeps
+    // the apparent zoom speed consistent at every altitude and across display refresh rates.
+    function dampAltitude(current, target, dtSeconds) {
+        const remaining = Math.log(target / current) * Math.exp(-Math.max(0, dtSeconds) / 0.065);
+        return Math.abs(remaining) < 0.0001 ? target : target * Math.exp(-remaining);
+    }
+
     // Camera state along a flight from `from` to `to` ({lat, lon, altitudeKm}) at t in [0, 1].
     // The look direction follows the great circle with ease-in-out; altitude interpolates
     // geometrically (so a dive slows as it nears the ground) plus a "hop" that lifts long flights so
@@ -125,6 +138,7 @@
 
     return {
         EARTH_RADIUS_KM, clamp, wrapLon, latLonToVector, vectorToLatLon, raySphere, angularDistance, slerpLatLon,
-        easeInOutCubic, easeOutCubic, flyInterpolate, visibleGroundKm, altitudeToLeafletZoom, leafletZoomToAltitude
+        easeInOutCubic, easeOutCubic, wheelDeltaPixels, dampAltitude,
+        flyInterpolate, visibleGroundKm, altitudeToLeafletZoom, leafletZoomToAltitude
     };
 });

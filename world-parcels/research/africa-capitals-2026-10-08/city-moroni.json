@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:KM:moroni",
+  "queueRank": null,
+  "name": "Moroni",
+  "country": "Comoros",
+  "countryCode": "KM",
+  "centerLatLon": [
+    -11.7172,
+    43.2473
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Moroni Comoros cadastral parcel map land registry GIS",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "French",
+        "query": "cadastre foncier parcelles Moroni Comores plan cadastral public",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://egouv.km/fr/",
+        "observation": "Comoros e-government portal documents land/title e-archiving but does not expose public map features."
+      },
+      {
+        "url": "https://eregulations.investcomoros.net/procedure/14/step/96",
+        "observation": "Government investment eRegulations describes cadastral-plan/land-title steps through Moroni’s Service Topographique et du Cadastre; this is a city-based records office, not public geometry."
+      },
+      {
+        "url": "https://documents1.worldbank.org/curated/en/831011468008106525/pdf/NonAsciiFileName0.pdf",
+        "observation": "World Bank project appendix documents a service-issued land/cadastre attestation for a Grande Comore parcel; a separate historical project assessment recommends establishing a Moroni city cadastral plan because existing plans were isolated. Thus office exists, target-wide coverage is not established."
+      },
+      {
+        "url": "https://documents1.worldbank.org/curated/en/874501583296212536/pdf/Plan-dAction-de-Reinstallation.pdf",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "World Bank project appendix documents a service-issued land/cadastre attestation for a Grande Comore parcel; a separate historical project assessment recommends establishing a Moroni city cadastral plan because existing plans were isolated. Thus office exists, target-wide coverage is not established.",
+    "nextStep": "Find a city-specific active registry or cadastral-coverage source before changing registryFound from null.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official cadastral services in Moroni process plan-croquis requests, and project resettlement documentation reproduces a 2019 cadastral attestation and site parcel-plan determination. Existing plans are fragmented and a comprehensive Moroni cadastre is absent; that limits coverage, not the evidence for partial city cadastral activity.",
+  "registryEvidenceUrls": [
+    "https://eregulations.investcomoros.net/procedure/14/step/96",
+    "https://documents1.worldbank.org/curated/en/874501583296212536/pdf/Plan-dAction-de-Reinstallation.pdf",
+    "https://egouv.km/fr/",
+    "https://documents1.worldbank.org/curated/en/831011468008106525/pdf/NonAsciiFileName0.pdf"
+  ],
+  "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/KM.json",
+    "world-parcels/research/retry/countries/KM.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Moroni Comoros cadastral parcel map land registry GIS",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "French",
+      "query": "cadastre foncier parcelles Moroni Comores plan cadastral public",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "previousRegistryAssessment": {
+    "registryFound": null,
+    "registryBasis": "The Service Topographique et du Cadastre is located in Moroni and provides official cadastral services, but the reviewed source explicitly describes fragmented plans and calls for creating a Moroni city cadastral plan; current target-wide registry coverage is unestablished.",
+    "resultCategory": "registry_presence_unestablished_fragments_of_cadastral_plan_reported"
+  },
+  "registryReview": {
+    "checkedAt": "2026-10-08",
+    "basis": "Official cadastral services in Moroni process plan-croquis requests, and project resettlement documentation reproduces a 2019 cadastral attestation and site parcel-plan determination. Existing plans are fragmented and a comprehensive Moroni cadastre is absent; that limits coverage, not the evidence for partial city cadastral activity.",
+    "evidenceUrls": [
+      "https://eregulations.investcomoros.net/procedure/14/step/96",
+      "https://documents1.worldbank.org/curated/en/874501583296212536/pdf/Plan-dAction-de-Reinstallation.pdf"
+    ],
+    "interpretation": "Registry activity and partial cadastral records can establish presence; citywide completeness is not required."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

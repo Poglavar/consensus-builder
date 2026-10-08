@@ -98,3 +98,39 @@ describe('altitudeToLeafletZoom', () => {
         expect(GM.altitudeToLeafletZoom(20, 0, 800)).toBeGreaterThan(GM.altitudeToLeafletZoom(20, 60, 800));
     });
 });
+
+describe('wheel zoom math', () => {
+    it('normalizes wheel pixel, line, and page deltas', () => {
+        expect(GM.wheelDeltaPixels(-12, 0, 800)).toBe(-12);
+        expect(GM.wheelDeltaPixels(2, 1, 800)).toBe(60);
+        expect(GM.wheelDeltaPixels(-2, 2, 800)).toBe(-1600);
+    });
+
+    it('damps geometrically at the same rate at 60 and 120 Hz', () => {
+        const step = (frames, totalSeconds) => {
+            let altitude = 10000;
+            for (let i = 0; i < frames; i += 1) {
+                altitude = GM.dampAltitude(altitude, 1500, totalSeconds / frames);
+            }
+            return altitude;
+        };
+        expect(step(12, 0.2)).toBeCloseTo(step(24, 0.2), 8);
+        expect(GM.dampAltitude(10000, 1500, 0.2)).toBeCloseTo(step(12, 0.2), 8);
+    });
+
+    it('moves monotonically without overshooting, then settles exactly at the target', () => {
+        let altitude = 10000;
+        for (let i = 0; i < 200; i += 1) {
+            const next = GM.dampAltitude(altitude, 1500, 1 / 120);
+            expect(next).toBeLessThanOrEqual(altitude);
+            expect(next).toBeGreaterThanOrEqual(1500);
+            altitude = next;
+        }
+        expect(altitude).toBe(1500);
+    });
+
+    it('snaps when the remaining logarithmic distance is below the settling threshold', () => {
+        const target = 1500 * Math.exp(0.00009);
+        expect(GM.dampAltitude(1500, target, 0)).toBe(target);
+    });
+});

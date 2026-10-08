@@ -1,0 +1,112 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "banjul",
+  "cityId": "capital:GM:banjul",
+  "name": "Banjul",
+  "country": "Gambia",
+  "code": "GM",
+  "centerLatLon": [
+    13.4549,
+    -16.579
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "City of Banjul is within the mapped Greater Banjul area; national land policy and registry fall under the Ministry of Lands, Regional Government and Religious Affairs.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://molrg.gov.gm/",
+    "https://nao.gm/wp-content/uploads/2024/05/MoLRG_Land-Registration-and-Documentation.pdf"
+  ],
+  "registryBasis": "Ministry of Lands is the national land administration authority. The 2024 Auditor General review says Greater Banjul areas have cadastral mapping, while also describing gaps in functional GIS and digitized geographic referencing. This is city-region cadastre evidence, not a public geometry service.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "mapped_area_no_public_digital_geometry",
+  "findings": "Direct inspection of the Gambia National Audit Office’s 2023 land-registration audit confirms that cadastral maps exist for the Greater Banjul Area, which includes Banjul, but that only parts of the country are cadastrally mapped. The same audit reports the geographical-referencing system is underdeveloped, land records are mostly paper-based, and there is no public digital access. The documented map is not a public parcel-vector service.",
+  "englishQueries": [
+    "Banjul Gambia land registry cadastral map parcels GIS cadastre",
+    "Banjul Gambia cadastral parcel map cadastre GIS Ministry of Lands parcels land registry",
+    "Banjul Gambia cadastral maps plots parcel GIS Greater Banjul mapping land registration city",
+    "Banjul Gambia land registration cadastral map Banjul parcels GIS local map"
+  ],
+  "localLanguageQueries": [],
+  "searches": [
+    {
+      "query": "Banjul Gambia land registry cadastral map parcels GIS cadastre",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Banjul Gambia cadastral parcel map cadastre GIS Ministry of Lands parcels land registry",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Banjul Gambia cadastral maps plots parcel GIS Greater Banjul mapping land registration city",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Banjul Gambia land registration cadastral map Banjul parcels GIS local map",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Government audit documents city-region cadastral mapping but not public digital parcel geometry; no public endpoint identified.",
+  "nextStep": "Request the Greater Banjul cadastral layer from the Ministry of Lands or relevant survey office with a public-use licence.",
+  "coverageAssessment": {
+    "claimedScope": "Greater Banjul cadastral mapping; this includes Banjul and wider municipal areas",
+    "verifiedOpenScope": "Mapping documented, but no open geometry",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": null,
+  "localLanguageQueryNote": "No separate non-English local-language query was executed; official/national administrative language is English.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://nao.gm/wp-content/uploads/2024/05/MoLRG_Land-Registration-and-Documentation.pdf",
+      "method": "web.run open PDF, followed by find for Greater Banjul and cadastral mapping",
+      "httpStatus": null,
+      "toolOutcome": "73-page audit content returned; HTTP status not exposed.",
+      "observed": "Audit says cadastral maps are available for Greater Banjul/Kombo Saint Mary, but records are largely paper/manual, no national GIS exists, and only parts of the country are cadastral-mapped."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "GM",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Banjul Gambia land registry cadastral map parcels GIS cadastre",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Banjul Gambia cadastral parcel map cadastre GIS Ministry of Lands parcels land registry",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Banjul Gambia cadastral maps plots parcel GIS Greater Banjul mapping land registration city",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Banjul Gambia land registration cadastral map Banjul parcels GIS local map",
+      "language": "English",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

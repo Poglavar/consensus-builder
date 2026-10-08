@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Small complete-bbox check of LotId native identity versus FID transport OID; safe fields and geometry only.",
+  "checkedAt": "2026-10-08T15:13:25.424Z",
+  "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+  "bbox": [
+    25.9112,
+    -24.6591,
+    25.9132,
+    -24.6571
+  ],
+  "requests": [
+    {
+      "operation": "count",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.9112%2C-24.6591%2C25.9132%2C-24.6571&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+      "method": "GET",
+      "checkedAt": "2026-10-08T15:13:25.426Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8"
+    },
+    {
+      "operation": "object-id-manifest",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.9112%2C-24.6591%2C25.9132%2C-24.6571&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "method": "GET",
+      "checkedAt": "2026-10-08T15:13:26.454Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8"
+    },
+    {
+      "operation": "geometry-by-oids",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?objectIds=9103%2C23004%2C24192%2C25117%2C27567%2C46531%2C46532&outFields=FID%2CLotId&returnGeometry=true&outSR=4326&f=geojson",
+      "method": "GET",
+      "checkedAt": "2026-10-08T15:13:26.809Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8"
+    }
+  ],
+  "result": {
+    "count": 7,
+    "manifestCount": 7,
+    "objectIdFieldName": "FID",
+    "oids": [
+      9103,
+      23004,
+      24192,
+      25117,
+      27567,
+      46531,
+      46532
+    ],
+    "featureCount": 7,
+    "missingLotIdCount": 0,
+    "distinctNonemptyLotIds": 7,
+    "duplicateLotIdCount": 0,
+    "duplicateLotIds": [],
+    "geometryTypes": {
+      "Polygon": 7
+    },
+    "identities": [
+      {
+        "fid": 9103,
+        "lotId": "681",
+        "geometryType": "Polygon",
+        "coordinatesCount": 1
+      },
+      {
+        "fid": 23004,
+        "lotId": "22",
+        "geometryType": "Polygon",
+        "coordinatesCount": 1
+      },
+      {
+        "fid": 24192,
+        "lotId": "1197",
+        "geometryType": "Polygon",
+        "coordinatesCount": 1
+      },
+      {
+        "fid": 25117,
+        "lotId": "21",
+        "geometryType": "Polygon",
+        "coordinatesCount": 1
+      },
+      {
+        "fid": 27567,
+        "lotId": "1078",
+        "geometryType": "Polygon",
+        "coordinatesCount": 1
+      },
+      {
+        "fid": 46531,
+        "lotId": "REM OF LOT 681",
+        "geometryType": "Polygon",
+        "coordinatesCount": 1
+      },
+      {
+        "fid": 46532,
+        "lotId": "28551",
+        "geometryType": "Polygon",
+        "coordinatesCount": 1
+      }
+    ],
+    "safeSample": [
+      {
+        "type": "Feature",
+        "id": 9103,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                25.91295327997731,
+                -24.65895551306646,
+                0,
+                null
+              ],
+              [
+                25.913022929745186,
+                -24.658954622275008,
+                0,
+                null
+              ],
+              [
+                25.913038475174453,
+                -24.658954422200466,
+                0,
+                null
+              ],
+              [
+                25.912954002837328,
+                -24.658954941772,
+                0,
+                null
+              ],
+              [
+                25.91295327997731,
+                -24.65895551306646,
+                0,
+                null
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "FID": 9103,
+          "LotId": "681"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 23004,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                25.91334738370183,
+                -24.656928130235993,
+                0,
+                null
+              ],
+              [
+                25.91329216376762,
+                -24.656653228269956,
+                0,
+                null
+              ],
+              [
+                25.912713984642014,
+                -24.656789666219346,
+                0,
+                null
+              ],
+              [
+                25.91280594855641,
+                -24.65709509789617,
+                0,
+                null
+              ],
+              [
+                25.912828575767353,
+                -24.657220198105943,
+                0,
+                null
+              ],
+              [
+                25.913374564399263,
+                -24.65706345296489,
+                0,
+                null
+              ],
+              [
+                25.91334738370183,
+                -24.656928130235993,
+                0,
+                null
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "FID": 23004,
+          "LotId": "22"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 24192,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                25.913263201672347,
+                -24.658787941653344,
+                0,
+                null
+              ],
+              [
+                25.913293102033332,
+                -24.6587602371661,
+                0,
+                null
+              ],
+              [
+                25.913292501312522,
+                -24.658677693305208,
+                0,
+                null
+              ],
+              [
+                25.913262186633908,
+                -24.658650362917818,
+                0,
+                null
+              ],
+              [
+                25.91297761365537,
+                -24.658652102127007,
+                0,
+                null
+              ],
+              [
+                25.912978626413015,
+                -24.658789681788132,
+                0,
+                null
+              ],
+              [
+                25.913263201672347,
+                -24.658787941653344,
+                0,
+                null
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "FID": 24192,
+          "LotId": "1197"
+        }
+      }
+    ]
+  },
+  "completedAt": "2026-10-08T15:13:27.133Z"
+}

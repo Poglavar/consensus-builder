@@ -36,6 +36,31 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
         }
         inputCities.push({ id: city.cityId, name: city.name, countryCode: city.countryCode, latitude: city.centerLatLon?.[0], longitude: city.centerLatLon?.[1], registryCityIds: [city.cityId], appCityIds: [], cohorts: ['registry'] });
     }
+    // Registry source integrations are explicit links when a source verifies exactly one registry
+    // city and the configured app city points back to that same source. Ambiguous or stale links
+    // stay unbound; provider/country membership and similar names are not sufficient evidence.
+    const appCityByRegistryCity = new Map();
+    const ambiguousRegistryCities = new Set();
+    for (const source of registry.sources) {
+        const integration = source.liveIntegration;
+        const appCityId = integration?.appCityId;
+        if (integration?.status !== 'enabled' || typeof appCityId !== 'string'
+            || !Array.isArray(source.verifiedCityIds) || source.verifiedCityIds.length !== 1) continue;
+        const liveCity = liveById.get(appCityId);
+        if (!liveCity || liveCity.sourceId !== source.sourceId) continue;
+        const [registryCityId] = source.verifiedCityIds;
+        if (typeof registryCityId !== 'string' || !registryCityId) continue;
+        if (appCityByRegistryCity.has(registryCityId)) ambiguousRegistryCities.add(registryCityId);
+        else appCityByRegistryCity.set(registryCityId, appCityId);
+    }
+    for (const city of inputCities) {
+        for (const registryCityId of city.registryCityIds) {
+            const appCityId = appCityByRegistryCity.get(registryCityId);
+            if (appCityId && !ambiguousRegistryCities.has(registryCityId) && !city.appCityIds.includes(appCityId)) {
+                city.appCityIds.push(appCityId);
+            }
+        }
+    }
     const cities = inputCities.map(city => {
         if (!countryNames.has(city.countryCode)) throw new Error(`City ${city.id} has no country/territory roster entry: ${city.countryCode}`);
         const checks = [...city.registryCityIds, ...city.appCityIds.map(id => `app:${id}`)].map(id => checkedById.get(id)).filter(Boolean);

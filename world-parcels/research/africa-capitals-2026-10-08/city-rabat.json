@@ -1,0 +1,122 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "rabat",
+  "cityId": "capital:MA:rabat",
+  "name": "Rabat",
+  "country": "Morocco",
+  "code": "MA",
+  "centerLatLon": [
+    34.0209,
+    -6.8416
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Rabat urban area and Rabat-Salé region; ANCFCC is Morocco's national land registry, cadastre, and mapping agency with local service offices.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/cadastre/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage",
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "https://aurs.org.ma/fr/lese-services/geoportail/"
+  ],
+  "registryBasis": "ANCFCC says it establishes and maintains the national cadastre, publishes digital/analog cadastral information, and offers an online cadastral-plan request; the service requires personal/identity details, title/cadastre, CAPTCHA and payment steps. Rabat-Salé urban agency publishes planning information, not parcel geometry.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_cadastre_paid_document_service_no_open_geometry",
+  "findings": "Rabat's official national cadastre authority is established and local offices are documented. The available plan-cadastral service is a document-order workflow requiring identity information, title number, CAPTCHA, phone/SMS verification, and payment, so it is not an anonymous geometry service; I did not enter or bypass those controls. A Rabat urban-planning geoportal is not evidence of property parcel polygons. No open WFS/feature service was found.",
+  "englishQueries": [
+    "Rabat Morocco public cadastral parcel map GIS feature service ANCFCC"
+  ],
+  "localLanguageQueries": [
+    "Rabat Maroc cadastre parcelles géoportail ANCFCC WMS parcellaire registre foncier",
+    "الرباط المغرب المحافظة العقارية المسح العقاري الخريطة التأريفية قطع الأراضي GIS",
+    "الرباط المغرب المسح العقاري خرائط القطع العقارية المحافظة العقارية"
+  ],
+  "searches": [
+    {
+      "query": "Rabat Morocco public cadastral parcel map GIS feature service ANCFCC",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Rabat Maroc cadastre parcelles géoportail ANCFCC WMS parcellaire registre foncier",
+      "language": "French and Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "الرباط المغرب المحافظة العقارية المسح العقاري الخريطة التأريفية قطع الأراضي GIS",
+      "language": "French and Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "الرباط المغرب المسح العقاري خرائط القطع العقارية المحافظة العقارية",
+      "language": "French and Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Available parcel-plan delivery is individualized and CAPTCHA/paid; public interactive geometry service not identified.",
+  "nextStep": "Ask ANCFCC whether an open, non-owner parcel boundary service exists for Rabat; otherwise treat plan requests as non-public individual documents.",
+  "coverageAssessment": {
+    "claimedScope": "Morocco national cadastre, with local Rabat offices",
+    "verifiedOpenScope": "Registry and paid document service confirmed; no public geometry",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "French and Arabic",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "method": "web.run open and find for RABAT",
+      "httpStatus": null,
+      "toolOutcome": "Official ANCFCC office-directory page content returned; HTTP status not exposed.",
+      "observed": "Lists Rabat Agdal Ryad cadastre and conservation services, and Rabat Hassan conservation service."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Official cadastral-plan request page content returned; HTTP status not exposed.",
+      "observed": "Request requires personal and title/cadastre information and CAPTCHA; no request was submitted."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "MA",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Rabat Morocco public cadastral parcel map GIS feature service ANCFCC",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Rabat Maroc cadastre parcelles géoportail ANCFCC WMS parcellaire registre foncier",
+      "language": "French and Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "الرباط المغرب المحافظة العقارية المسح العقاري الخريطة التأريفية قطع الأراضي GIS",
+      "language": "French and Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "الرباط المغرب المسح العقاري خرائط القطع العقارية المحافظة العقارية",
+      "language": "French and Arabic",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

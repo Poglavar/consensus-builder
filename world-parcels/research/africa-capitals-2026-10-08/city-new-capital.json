@@ -1,0 +1,153 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "new-capital",
+  "cityId": "capital:EG:new-capital",
+  "name": "New Capital",
+  "country": "Egypt",
+  "code": "EG",
+  "centerLatLon": [
+    30.018,
+    31.764
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "New Urban Communities Authority and Administrative Capital for Urban Development oversee city development and plot allocation; Egyptian Survey Authority is national mapping/cadastre institution.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://newcapital.nuca.gov.eg/ar/ViewCity.aspx?ID=1",
+    "https://lands.nuca.gov.eg/ar/ViewZone.aspx",
+    "https://www.esa.gov.eg/main.aspx",
+    "https://acud.eg/"
+  ],
+  "registryBasis": "Official NUCA New Capital and land-plot pages document a city plot inventory and land-administration activity. Available/reserved plot records do not by themselves establish a legal title register or public cadastral vector geometry.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_land_portal_no_open_geometry",
+  "findings": "Official NUCA pages identify the New Administrative Capital and its land-plot/zone portal. Search results describe the portal as a buyer-facing plot-detail service. Fresh web.open of the unparameterized zone page returned an Invalid Zone ID page; no city/zone identifier or point query was available. This is not evidence that data are absent. No open parcel polygon endpoint or returned geometry was verified, and no private buyer information was entered.",
+  "englishQueries": [
+    "New Administrative Capital Egypt land parcels public map GIS ACUD plot map cadastre",
+    "site:lands.nuca.gov.eg \"New Administrative Capital\" plots"
+  ],
+  "localLanguageQueries": [
+    "العاصمة الإدارية الجديدة سجل الأراضي قطع الأراضي خريطة هيئة المجتمعات العمرانية GIS cadastral map",
+    "site:lands.nuca.gov.eg/ar/ViewZone.aspx \"العاصمة الإدارية الجديدة\"",
+    "site:lands.nuca.gov.eg \"العاصمة الإدارية\" \"تفاصيل قطع الأراضي\"",
+    "site:newcapital.nuca.gov.eg \"قطع الأراضي\" خريطة العاصمة"
+  ],
+  "searches": [
+    {
+      "query": "New Administrative Capital Egypt land parcels public map GIS ACUD plot map cadastre",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:lands.nuca.gov.eg \"New Administrative Capital\" plots",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "العاصمة الإدارية الجديدة سجل الأراضي قطع الأراضي خريطة هيئة المجتمعات العمرانية GIS cadastral map",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:lands.nuca.gov.eg/ar/ViewZone.aspx \"العاصمة الإدارية الجديدة\"",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:lands.nuca.gov.eg \"العاصمة الإدارية\" \"تفاصيل قطع الأراضي\"",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:newcapital.nuca.gov.eg \"قطع الأراضي\" خريطة العاصمة",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Available plot service is zone/project based; no public GIS endpoint with a spatial point query was found.",
+  "nextStep": "Ask NUCA/ACUD for a public city base parcel layer or a no-owner bounded sample around the locator.",
+  "coverageAssessment": {
+    "claimedScope": "NUCA/ACUD New Capital plots and districts",
+    "verifiedOpenScope": "City management and plot allocation confirmed, no parcel vector geometry verified",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "Arabic",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://lands.nuca.gov.eg/ar/ViewZone.aspx",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Page content returned an Invalid Zone ID message; HTTP status was not exposed.",
+      "observed": "No zone identifier or point-based geometry query was supplied."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "EG",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "administrative government seat",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "New Administrative Capital Egypt land parcels public map GIS ACUD plot map cadastre",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:lands.nuca.gov.eg \"New Administrative Capital\" plots",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "العاصمة الإدارية الجديدة سجل الأراضي قطع الأراضي خريطة هيئة المجتمعات العمرانية GIS cadastral map",
+      "language": "Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:lands.nuca.gov.eg/ar/ViewZone.aspx \"العاصمة الإدارية الجديدة\"",
+      "language": "Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:lands.nuca.gov.eg \"العاصمة الإدارية\" \"تفاصيل قطع الأراضي\"",
+      "language": "Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:newcapital.nuca.gov.eg \"قطع الأراضي\" خريطة العاصمة",
+      "language": "Arabic",
+      "method": "web.run search_query"
+    }
+  ],
+  "previousRegistryAssessment": {
+    "registryFound": true,
+    "registryBasis": "Official NUCA page identifies the New Administrative Capital as a planned city and describes its development; NUCA's land portal provides city and zone pages with plot-detail services. ESA describes its historical role in maps and ownership records. These establish a land/cadastral administration, separately from geometry access.",
+    "resultCategory": "official_land_portal_no_open_geometry"
+  },
+  "registryReview": {
+    "checkedAt": "2026-10-08",
+    "basis": "Official NUCA New Capital and land-plot pages document a city plot inventory and land-administration activity. Available/reserved plot records do not by themselves establish a legal title register or public cadastral vector geometry.",
+    "evidenceUrls": [
+      "https://newcapital.nuca.gov.eg/ar/ViewCity.aspx?ID=1",
+      "https://lands.nuca.gov.eg/ar/ViewZone.aspx"
+    ],
+    "interpretation": "Registry activity and partial cadastral records can establish presence; citywide completeness is not required."
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

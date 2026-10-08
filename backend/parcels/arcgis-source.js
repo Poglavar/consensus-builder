@@ -12,7 +12,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const pageSize = descriptor.pageSize || 2000;
     const maxFeatures = descriptor.maxFeatures || 10000;
     const maxBboxKm2 = descriptor.maxBboxKm2 || 25;
-    const idBatchSize = descriptor.idBatchSize ?? 80;
+    const idBatchSize = descriptor.idBatchSize ?? (descriptor.idsQueryMode === 'single-equality' ? 1 : 80);
     const idType = descriptor.idType || 'integer';
     const idPattern = descriptor.idPattern ? new RegExp(descriptor.idPattern) : null;
     const idQueryBraces = descriptor.idQueryBraces === true;
@@ -34,7 +34,8 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || (descriptor.idQueryBraces !== undefined && typeof descriptor.idQueryBraces !== 'boolean')
         || (idQueryBraces && idType !== 'string')
         || ![undefined, 'offset', 'object-ids'].includes(descriptor.boundsQueryMode)
-        || ![undefined, 'offset', 'object-ids'].includes(descriptor.idsQueryMode)
+        || ![undefined, 'offset', 'object-ids', 'single-equality'].includes(descriptor.idsQueryMode)
+        || (descriptor.idsQueryMode === 'single-equality' && (composite || idBatchSize !== 1))
         || ![undefined, 'parts'].includes(descriptor.nativeGeometryMode)
         || (descriptor.nativeGeometryMode === 'parts' && (descriptor.boundsQueryMode !== 'object-ids' || descriptor.idsQueryMode !== 'object-ids'))
         || (descriptor.disjointParts !== undefined && (typeof descriptor.disjointParts !== 'boolean' || descriptor.nativeGeometryMode !== 'parts'))
@@ -76,7 +77,26 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     }
 
     // Fixed catalogue filters keep planned/versioned records out of authoritative ground.
-    const attributeFilter = createParcelAttributeFilter(descriptor);
+    const valuesFilter = createParcelAttributeFilter(descriptor);
+    // ArcGIS date fields use TIMESTAMP literals in SQL and epoch milliseconds in JSON.
+    // Keep this typed scope fixed in the catalogue, and verify it on every returned row.
+    const dateEquals = descriptor.attributeDateEquals ?? {};
+    if (descriptor.attributeDateEquals === null || typeof dateEquals !== 'object'
+        || Object.getPrototypeOf(dateEquals) !== Object.prototype) throw new Error('Invalid ArcGIS date attribute filter.');
+    const dateEntries = Object.entries(dateEquals);
+    if (dateEntries.length > 8 || dateEntries.some(([field, value]) => !identifier.test(field)
+        || !outFields.includes(field) || descriptor.attributeNull?.includes(field)
+        || typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.000Z$/.test(value)
+        || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString() !== value)) {
+        throw new Error('Invalid ArcGIS date attribute filter.');
+    }
+    const dateScope = dateEntries.map(([field, value]) =>
+        `${field} = TIMESTAMP '${value.slice(0, 19).replace('T', ' ')}'`).join(' AND ');
+    const attributeFilter = {
+        where: [valuesFilter.where, dateScope].filter(Boolean).join(' AND '),
+        matches: props => valuesFilter.matches(props) && dateEntries.every(([field, value]) =>
+            typeof props[field] === 'number' && props[field] === Date.parse(value))
+    };
     const baseWhere = attributeFilter.where || '1=1';
 
     async function request(search) {
@@ -191,9 +211,9 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
 
     // Resolve complete OID manifests for spatial or native-key queries on older/slow layers.
     // OIDs are transport tokens, never canonical IDs.
-    async function queryObjectIds(params) {
+    async function queryObjectIds(params, combineScope = true) {
         const base = { where: baseWhere, ...params, f: 'json' };
-        if (attributeFilter.where && params.where) base.where = `(${baseWhere}) AND (${params.where})`;
+        if (combineScope && attributeFilter.where && params.where) base.where = `(${baseWhere}) AND (${params.where})`;
         const countResult = await request(new URLSearchParams({ ...base, returnCountOnly: 'true' }));
         if (!Number.isSafeInteger(countResult.count) || countResult.count < 0) throw upstreamError('Parcel provider returned an invalid count.');
         if (countResult.count > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
@@ -248,9 +268,15 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         for (let start = 0; start < native.length; start += idBatchSize) {
             const values = native.slice(start, start + idBatchSize);
             const expected = new Set(unique.slice(start, start + idBatchSize));
-            const params = { where: composite ? values.join(' OR ') : `${idField} IN (${values.join(',')})` };
+            const equalityOnly = descriptor.idsQueryMode === 'single-equality';
+            const params = { where: composite ? values.join(' OR ') : equalityOnly
+                ? `${idField} = ${values[0]}` : `${idField} IN (${values.join(',')})` };
             // Older ArcGIS servers support native-key filters and OID reads but reject offsets/order.
-            const batch = descriptor.idsQueryMode === 'object-ids' ? await queryObjectIds(params) : await query(params);
+            // Equality-only servers reject combined SQL predicates. Resolve one native key's OIDs,
+            // then fetch those OIDs with the normal source scope and validate every returned row.
+            // An out-of-scope record fails completeness; it never becomes valid ground or absence.
+            const batch = equalityOnly ? await queryObjectIds(params, false)
+                : descriptor.idsQueryMode === 'object-ids' ? await queryObjectIds(params) : await query(params);
             if (batch.features.some(feature => !expected.has(feature.properties.parcelId))) throw upstreamError('Parcel ID query returned unexpected parcels.');
             sourceRows += batch.sourceRows ?? batch.features.length;
             if (sourceRows > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use fewer IDs.');

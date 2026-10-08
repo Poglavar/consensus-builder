@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:SZ:mbabane",
+  "queueRank": null,
+  "name": "Mbabane",
+  "country": "Eswatini",
+  "countryCode": "SZ",
+  "centerLatLon": [
+    -26.3054,
+    31.1367
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Eswatini Mbabane Lobamba cadastral map GIS spatial data portal Surveyor General",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "English",
+        "query": "Eswatini Surveyor General public cadastral GIS web map NDDC",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+        "observation": "Official Surveyor General page names a cadastral map of the capital city (Mbabane) and country map, and describes survey-record/map products."
+      },
+      {
+        "url": "https://parliament.gov.sz/publications/parliament_reports/docs/ANNUAL%20REPORT%20NATURAL%202025.pdf",
+        "observation": "2025 government parliamentary report says the digital cadastral database is being updated and cadastral maps are supplied on request; confirms city registry/data maintenance, but not a public feature service."
+      },
+      {
+        "url": "https://openjicareport.jica.go.jp/pdf/11652419_02.pdf",
+        "observation": "JICA sheet describes Mbabane cadastral cartography, with urban detail limited to urban boundaries on that sheet and final cadastral update March 1999."
+      },
+      {
+        "url": "https://salb.un.org/en/data/swz",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [
+      {
+        "url": "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+        "method": "GET",
+        "httpStatus": 0,
+        "contentType": "",
+        "outcome": "Direct bounded HTTPS read timed out after 8 seconds; indexed official page content identifies Mbabane cadastral map. No bypass or alternate origin attempted."
+      }
+    ],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "JICA sheet describes Mbabane cadastral cartography, with urban detail limited to urban boundaries on that sheet and final cadastral update March 1999.",
+    "nextStep": "Revisit the official map/service after a public, non-personal feature endpoint is identified; validate city coverage and geometry before calling this a sample.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official Surveyor General lists an explicit Mbabane cadastral map; 2025 parliamentary report confirms digital cadastral database updates.",
+  "registryEvidenceUrls": [
+    "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+    "https://parliament.gov.sz/publications/parliament_reports/docs/ANNUAL%20REPORT%20NATURAL%202025.pdf",
+    "https://openjicareport.jica.go.jp/pdf/11652419_02.pdf",
+    "https://salb.un.org/en/data/swz"
+  ],
+  "resultCategory": "official_static_cadastral_map_no_public_vector",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/SZ.json",
+    "world-parcels/research/retry/countries/SZ.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "administrative capital",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Eswatini Mbabane Lobamba cadastral map GIS spatial data portal Surveyor General",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "English",
+      "query": "Eswatini Surveyor General public cadastral GIS web map NDDC",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

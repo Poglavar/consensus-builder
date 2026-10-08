@@ -1,0 +1,30 @@
+{
+  "purpose": "Check whether Eswatini public geospatial services expose parcel features for Mbabane or Lobamba, and distinguish paper/map evidence from GIS feature access.",
+  "checkedAt": "2026-10-08",
+  "officialSurveyorGeneralPage": {
+    "url": "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+    "discovery": "Indexed official page describes cadastral survey control/records and names Cadastral Map of the Capital City - Mbabane plus Cadastral Map of the entire country.",
+    "directRequest": {
+      "method": "GET",
+      "url": "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+      "outcome": "HTTPS connection timed out after 8 seconds; direct HTML and child links were not available to inspect."
+    }
+  },
+  "currentDatabaseEvidence": {
+    "url": "https://parliament.gov.sz/publications/parliament_reports/docs/ANNUAL%20REPORT%20NATURAL%202025.pdf",
+    "observation": "2025 Natural Resources annual report says Surveyor General continued updating the digital cadastral database, planned more cadastral survey work, and would provide maps to the public on request. Does not advertise an anonymous GIS endpoint."
+  },
+  "historicCityMapEvidence": {
+    "url": "https://openjicareport.jica.go.jp/pdf/11652419_02.pdf",
+    "observation": "JICA PDF provides map-sheet information for Mbabane; the reproduced metadata says final cadastral update March 1999 and urban coverage depicts urban boundaries only on the sheet."
+  },
+  "publicNationalGISCatalogue": {
+    "url": "https://salb.un.org/en/data/swz",
+    "observation": "UN SALB catalogue exposes validated administrative-unit polygon datasets and map/download services for Eswatini; it does not list cadastral parcels."
+  },
+  "otherGISEvidence": {
+    "url": "https://www.gov.sz/images/MNRE_PICS/MONRE-FINAL-CLIENT-SERVICES-CHARTER-AND-PLEDGE-FINAL.pdf",
+    "observation": "Official Surveyor General client charter describes a National Development Data Center GIS and survey/mapping/numerical-data services for land ownership/transfer, but provides no public parcel service URL."
+  },
+  "conclusion": "Official cadastre and map products are evidenced, including an Mbabane map lead and a national database. No open parcel-feature endpoint or Lobamba-specific geometry source was identified; the linked city map was not fetched or treated as geometry."
+}

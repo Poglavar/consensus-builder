@@ -1,0 +1,109 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "bissau",
+  "cityId": "capital:GW:bissau",
+  "name": "Bissau",
+  "country": "Guinea-Bissau",
+  "code": "GW",
+  "centerLatLon": [
+    11.8636,
+    -15.5977
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Municipal cadastral and land-service responsibilities are described by the Câmara Municipal de Bissau; national geospatial/cadastral functions also exist under the state geography and cadastre service.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.cmbissau-gb.com/",
+    "https://sigcmb.com/portal/",
+    "https://embaixadaguinebissau-gb.com/wp-content/uploads/2023/02/LEI-DA-TERRA-DA-GUINE-BISSAU.pdf"
+  ],
+  "registryBasis": "The municipal site describes a Cadastro e Topografia service, records of municipal land, and processes for concession/legalization. The Portuguese-language municipal services portal lists municipal cadastre, land files, and regularization. These demonstrate city registry functions, not accessible parcel polygons.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "municipal_cadastre_service_no_public_geometry",
+  "findings": "Direct inspection of the Bissau municipality website confirms its municipal cadastro/topography service processes land legalization/concessions, location plans, technical inspection, cadastral records, and final registration. The municipal services portal also categorizes municipal cadastre/land services. These are administrative, identity/payment-based workflows; neither page exposed anonymous parcel geometry or a public feature endpoint.",
+  "englishQueries": [
+    "Bissau Guinea-Bissau public cadastral parcel map GIS official municipal cadastre"
+  ],
+  "localLanguageQueries": [
+    "Bissau cadastro predial parcelas geográfica cartografia cadastro Guiné-Bissau",
+    "Bissau cadastro municipal terreno cadastro geográfico governo Guiné-Bissau cadastro parcelário"
+  ],
+  "searches": [
+    {
+      "query": "Bissau Guinea-Bissau public cadastral parcel map GIS official municipal cadastre",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Bissau cadastro predial parcelas geográfica cartografia cadastro Guiné-Bissau",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Bissau cadastro municipal terreno cadastro geográfico governo Guiné-Bissau cadastro parcelário",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Public municipal pages route users to case/file services; no anonymous spatial query was exposed.",
+  "nextStep": "Ask Câmara Municipal de Bissau or Direção-Geral de Geografia e Cadastro for a public municipal parcel export or OGC endpoint.",
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastre and land-service records in Bissau",
+    "verifiedOpenScope": "Administrative registry services confirmed; no open parcel geometry found",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "Portuguese",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://www.cmbissau-gb.com/",
+      "method": "web.run open and find for Cadastro e Topografia",
+      "httpStatus": null,
+      "toolOutcome": "Municipal page content returned; HTTP status not exposed.",
+      "observed": "City service routes land legalization through the municipal Urbanism/Cadastre/Topography departments, may require applicant ID and fees, and records approved files; no public map or API shown."
+    },
+    {
+      "url": "https://sigcmb.com/portal/",
+      "method": "web.run open and find for Cadastro",
+      "httpStatus": null,
+      "toolOutcome": "Municipal services portal content returned; HTTP status not exposed.",
+      "observed": "Lists Topografia, cadastro e terrenos (municipal cadastre, land files, regularization) as administrative service category; no public geometry shown."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "GW",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Bissau Guinea-Bissau public cadastral parcel map GIS official municipal cadastre",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Bissau cadastro predial parcelas geográfica cartografia cadastro Guiné-Bissau",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Bissau cadastro municipal terreno cadastro geográfico governo Guiné-Bissau cadastro parcelário",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

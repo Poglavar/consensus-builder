@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "kind": "africa_west_batch4_outcome_index",
+  "checkedAt": "2026-10-08",
+  "cityCount": 3,
+  "verifiedTargetGeometryCount": 0,
+  "cities": [
+    {
+      "cityId": "wup2025:7330",
+      "name": "Onitsha",
+      "registryFound": true,
+      "verifiedSample": false,
+      "resultCategory": "official_cadastre_online_services_no_geometry",
+      "evidenceFile": "research/india-africa-batch4-2026-10-08/city-7330.json",
+      "summary": "No anonymous Onitsha parcel polygons. Official services expose land records, but the linked printout concerns owner/history data and was not queried.",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": []
+    },
+    {
+      "cityId": "wup2025:8435",
+      "name": "Kano",
+      "registryFound": true,
+      "verifiedSample": false,
+      "resultCategory": "official_registry_and_public_catalog_limited_no_geometry",
+      "evidenceFile": "research/india-africa-batch4-2026-10-08/city-8435.json",
+      "summary": "No anonymous parcel geometry was verified. The tested KANGIS Buildings FeatureServer root returned ArcGIS JSON error 499 Token Required; this finding applies only to that endpoint. The ministry land host linked by KANGIS was inaccessible (Cloudflare 403); other services were not established as token-gated.",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": []
+    },
+    {
+      "cityId": "wup2025:2324",
+      "name": "Yaoundé",
+      "registryFound": true,
+      "verifiedSample": false,
+      "resultCategory": "third_party_urban_model_microcluster_rejected_for_coverage_scale_and_provenance",
+      "evidenceFile": "research/india-africa-batch4-2026-10-08/city-2324.json",
+      "summary": "No credible anonymous parcel geometry; third-party Urban model contains a 32-shape sub-100m² microcluster, not usable city coverage.",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": []
+    }
+  ],
+  "limitations": "Bounded public-source search; registry existence does not imply open geometry or full coverage."
+}

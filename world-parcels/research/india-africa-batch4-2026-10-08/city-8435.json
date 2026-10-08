@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_source",
+  "coverageAssessment": {
+    "countrywideVerified": false
+  },
+  "cityId": "wup2025:8435",
+  "wupCityCode": 8435,
+  "name": "Kano",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [
+    11.9851852836313,
+    8.50931812932348
+  ],
+  "registryFound": true,
+  "resultCategory": "official_registry_and_public_catalog_limited_no_geometry",
+  "sources": [
+    {
+      "url": "https://kangis.gov.ng/index.html",
+      "evidence": "KANGIS says it is state geospatial-data custodian; maps provided on request."
+    },
+    {
+      "url": "https://kangis.gov.ng/maps.html",
+      "evidence": "Public Maps page has no map/service links."
+    },
+    {
+      "url": "https://kangis.gov.ng/sltr.html",
+      "evidence": "SLTR documents field parcel demarcation, digitization and registry custody."
+    },
+    {
+      "url": "https://land.kn.gov.ng/",
+      "evidence": "Official linked lands host returned Cloudflare 403 interstitial; no challenge bypass."
+    }
+  ],
+  "exactQueries": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Kano%20parcels&f=json&num=100",
+      "status": "200; 0 results"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=owner%3AGISAdmin_kangis&f=json&num=100",
+      "status": "200; 48 items, including 27 Feature Services; none titled parcel"
+    },
+    {
+      "url": "https://services.arcgis.com/1D6fPUXAJ2SFlTrP/arcgis/rest/services/Buildings/FeatureServer?f=json",
+      "status": "200 JSON error 499 Token Required; no features queried"
+    }
+  ],
+  "sourceFields": null,
+  "crs": null,
+  "verifiedOpenScope": null,
+  "blocker": "No anonymous parcel geometry was verified. The tested KANGIS Buildings FeatureServer root returned ArcGIS JSON error 499 Token Required; this finding applies only to that endpoint. The ministry land host linked by KANGIS was inaccessible (Cloudflare 403); other services were not established as token-gated.",
+  "registryBasis": "Kano city lies within Kano State; KANGIS publicly identifies itself as the state geospatial-data custodian and describes Kano-area SLTR parcel demarcation, data processing and official title registration. This establishes a relevant official land registry, not an open geometry service.",
+  "priorEvidence": [
+    "world-parcels/research/kano.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-city-8435.json",
+    "world-parcels/research/native-language-2026-10-04/cities-kano.json",
+    "research/india-africa-2026-10-08/africa-ws-city-8435.json"
+  ],
+  "freshSearches": [
+    {
+      "language": "English",
+      "script": "Latin",
+      "query": "Kano KANGIS office Kano land registry official parcel land registry",
+      "date": "2026-10-08",
+      "observedUrls": [
+        "https://www.kangis.gov.ng/sltr.html",
+        "https://www.kangis.gov.ng/",
+        "https://knmlpponline.kangis.gov.ng/cofo"
+      ]
+    },
+    {
+      "language": "Hausa",
+      "script": "Latin",
+      "query": "Kano Hausa \"rajistar filaye\" GIS cadastral parcels",
+      "date": "2026-10-08",
+      "observedUrls": [
+        "https://hausa.leadership.ng/tsawaita-rajistar-sabunta-shaidar-mallakar-fili-gwamnatin-kano-ta-yi-barazanar-kwace-filaye/"
+      ]
+    }
+  ],
+  "nextStep": "Find a documented public KANGIS parcel service or geometry-only extract, then validate a bounded Kano-area sample and fresh native-ID or source-scoped geometry-reference lookups.",
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://www.kangis.gov.ng/",
+    "https://www.kangis.gov.ng/sltr.html"
+  ],
+  "status": "no_verified_open_endpoint_after_attempts",
+  "technicalBlocker": "No anonymous parcel geometry was verified. The tested KANGIS Buildings FeatureServer root returned ArcGIS JSON error 499 Token Required; this finding applies only to that endpoint. The ministry land host linked by KANGIS was inaccessible (Cloudflare 403); other services were not established as token-gated."
+}

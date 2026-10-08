@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reviewed geographic scope for globe country colors. Full coverage requires official nationwide scope evidence and a separately verified parcel source; regional samples alone remain partial.",
+  "reviews": [
+    {
+      "countryCode": "BA",
+      "coverage": "unknown",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [],
+      "note": "Sarajevo check: FGU advertises parcel WFS services but requires sign-in; the separate public canton viewer is unreachable. No retained Sarajevo import was found in the three databases checked. Access remains inconclusive.",
+      "evidence": [
+        {
+          "title": "FGU: cadastral services and covered Sarajevo municipalities",
+          "url": "https://katastar.ba/servisi"
+        },
+        {
+          "title": "Sarajevo Canton: WebCity public viewer",
+          "url": "https://zpr.ks.gov.ba/webcity"
+        }
+      ]
+    },
+    {
+      "countryCode": "ES",
+      "coverage": "partial",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "es-catastro-inspire-cadastral-parcels-atom",
+        "es-dgc-inspire-cp-wfs"
+      ],
+      "exclusions": [
+        "Basque Country",
+        "Navarre"
+      ],
+      "note": "The verified national Catastro source excludes the Basque Country and Navarre. Their separate cadastres have not been verified here, so full country coverage is not confirmed.",
+      "evidence": [
+        {
+          "title": "Datos.gob.es: cadastral parcels and geographic exclusions",
+          "url": "https://datos.gob.es/es/catalogo/e05250001-servicio-de-parcelas-catastrales-inspire"
+        }
+      ]
+    },
+    {
+      "countryCode": "GE",
+      "coverage": "partial",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "ge-msda-napr-registered-land-plots"
+      ],
+      "note": "Registered parcel geometry is verified in Tbilisi through the public MSDA map. Point and cadastral-code lookup work; complete area queries for app integration and nationwide completeness remain unverified.",
+      "evidence": [
+        {
+          "title": "MSDA public map: registered land plots",
+          "url": "https://ms.gov.ge/msmap/#C=44.8067283-41.7088867@Z=20"
+        }
+      ]
+    },
+    {
+      "countryCode": "HR",
+      "coverage": "full",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "hr-dgu-oss-dkp-cestice"
+      ],
+      "exclusions": [],
+      "note": "DGU explicitly publishes the cadastral plan for the Republic of Croatia. Its public national download index is reachable, and parcel geometry is already verified. Individual municipality downloads were not all rechecked.",
+      "evidence": [
+        {
+          "title": "DGU: national scope and unrestricted DKP download access",
+          "url": "https://catalog.uredjenazemlja.hr/katalogpodataka/atom-usluga-preuzimanja-dkp-a"
+        },
+        {
+          "title": "DGU: public cadastral download index",
+          "url": "https://oss.uredjenazemlja.hr/oss/public/atom/atom_feed.xml"
+        }
+      ]
+    },
+    {
+      "countryCode": "MK",
+      "coverage": "unknown",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [],
+      "note": "AREC describes cadastral data services, but the cadastre and NSDI portal checks failed before returning parcel geometry. Checks from a second network also failed. Access remains inconclusive.",
+      "evidence": [
+        {
+          "title": "AREC: official cadastre portal",
+          "url": "https://www.katastar.gov.mk/"
+        },
+        {
+          "title": "AREC: official online cadastre service",
+          "url": "https://ossp.katastar.gov.mk/OSSP/"
+        }
+      ]
+    },
+    {
+      "countryCode": "NL",
+      "coverage": "full",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "nl-pdok-brk-kadastrale-kaart"
+      ],
+      "exclusions": [],
+      "note": "PDOK offers the cadastral parcel dataset for the whole Netherlands (NL). Caribbean Netherlands (BQ) is assessed separately. App city entries cover smaller areas.",
+      "evidence": [
+        {
+          "title": "PDOK: nationwide cadastral map download",
+          "url": "https://app.pdok.nl/kadaster/kadastralekaart/download-viewer/"
+        }
+      ]
+    },
+    {
+      "countryCode": "NZ",
+      "coverage": "full",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "nz-linz-primary-parcels-arcgis"
+      ],
+      "exclusions": [],
+      "note": "LINZ defines a nationwide primary land-parcel fabric. This covers base land parcels, including roads and waterways; non-primary interests and historical/pending parcels are separate datasets. App integration is separate from this scope finding.",
+      "evidence": [
+        {
+          "title": "LINZ: current primary parcel dataset",
+          "url": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/"
+        },
+        {
+          "title": "LINZ: primary parcel layer topology",
+          "url": "https://www.linz.govt.nz/guidance/landonline-support/survey-support/new-parcels/parcel-layers"
+        }
+      ]
+    },
+    {
+      "countryCode": "RO",
+      "coverage": "unknown",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [],
+      "note": "ANCPI documents a parcel vector service, but the Geoportal hostname does not resolve from either network checked. ANCPI reports a staged restart. Access remains inconclusive; this is not a no-data finding.",
+      "evidence": [
+        {
+          "title": "ANCPI: official service-restoration announcements",
+          "url": "https://www.ancpi.ro/"
+        },
+        {
+          "title": "EU data catalogue: ANCPI parcel download service",
+          "url": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88-"
+        }
+      ]
+    },
+    {
+      "countryCode": "RS",
+      "coverage": "partial",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "rs-rgz-dkp-imported-belgrade"
+      ],
+      "note": "Belgrade parcel geometry is confirmed by an existing import from the public RGZ WFS and its archived response. A current service check timed out; nationwide completeness is unconfirmed.",
+      "evidence": [
+        {
+          "title": "RGZ: public cadastral portal used by the existing importer",
+          "url": "https://portal.rgz.gov.rs/"
+        }
+      ]
+    },
+    {
+      "countryCode": "SG",
+      "coverage": "full",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "sg-sla-cadastral-land-parcel"
+      ],
+      "exclusions": [],
+      "note": "SLA describes this dataset as the entire cadastral map of Singapore's surveyed land lots. Airspace and strata products are separate. The weekly GeoJSON snapshot still needs indexing for app use.",
+      "evidence": [
+        {
+          "title": "SLA: entire Singapore cadastral land-lot dataset",
+          "url": "https://data.gov.sg/collections/1593/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view"
+        }
+      ]
+    },
+    {
+      "countryCode": "SI",
+      "coverage": "full",
+      "checkedAt": "2026-10-08",
+      "sourceIds": [
+        "si-gurs-kn-parcele-wfs"
+      ],
+      "exclusions": [],
+      "note": "GURS publishes official parcel geometries and identifiers for Slovenia through public WFS services. The official catalog identifies national coverage and unrestricted access.",
+      "evidence": [
+        {
+          "title": "OPSI / GURS: national real estate cadastre",
+          "url": "https://podatki.gov.si/dataset/kataster-nepremicnin"
+        }
+      ]
+    }
+  ]
+}

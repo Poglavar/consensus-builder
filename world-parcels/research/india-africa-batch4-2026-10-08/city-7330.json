@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_source",
+  "coverageAssessment": {
+    "countrywideVerified": false
+  },
+  "cityId": "wup2025:7330",
+  "wupCityCode": 7330,
+  "name": "Onitsha",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [
+    6.17349813029485,
+    6.82053185724296
+  ],
+  "registryFound": true,
+  "resultCategory": "official_cadastre_online_services_no_geometry",
+  "sources": [
+    {
+      "url": "https://www.mol.anambrastate.gov.ng/anamgis/",
+      "operator": "Anambra Ministry of Lands",
+      "evidence": "Current ministry page says ANAMGIS is a state geospatial data repository for land administration; no anonymous map/API linked."
+    },
+    {
+      "url": "https://smart.anambrastate.gov.ng/services/anamgis",
+      "evidence": "Official Smart Anambra page explicitly says informational page, not online application."
+    },
+    {
+      "url": "https://onlineservices.mol.anambrastate.gov.ng/home",
+      "evidence": "Official online services page advertises Land Register Printout including owner(s) and historical register; no parcel geometry queried."
+    },
+    {
+      "url": "https://www.mol.anambrastate.gov.ng/october-2024-newsletter/",
+      "evidence": "Official ministry notice names Onitsha layouts, describes review/update of land records and plot-holder information; application form is from ANAMGIS Service Center, Ministry of Lands, Awka."
+    },
+    {
+      "url": "https://documents1.worldbank.org/curated/en/642301468100158784/pdf/ACS129090WP0P14521000PUBLIC00Box391431B.pdf",
+      "date": "2014",
+      "evidence": "World Bank Doing Business procedure for Onitsha says title searches occur in Awka and that there was no Land Registry in Onitsha at report date; historical, not proof of current office status."
+    }
+  ],
+  "exactQueries": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Onitsha&f=json&num=100",
+      "status": "200; 4 results, none parcels"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Anambra&f=json&num=100",
+      "status": "200; 83 results, none parcel layers"
+    },
+    {
+      "url": "https://overpass-api.de/api/interpreter",
+      "method": "POST",
+      "query": "[out:json][timeout:25];(way[\"boundary\"=\"parcel\"](6.171498,6.818532,6.175498,6.822532);relation[\"boundary\"=\"parcel\"](6.171498,6.818532,6.175498,6.822532);way[\"place\"=\"plot\"](6.171498,6.818532,6.175498,6.822532);relation[\"place\"=\"plot\"](6.171498,6.818532,6.175498,6.822532);way[\"landuse\"=\"parcel\"](6.171498,6.818532,6.175498,6.822532);relation[\"landuse\"=\"parcel\"](6.171498,6.818532,6.175498,6.822532););out count;",
+      "status": "504 timeout; no empty-result inference"
+    }
+  ],
+  "sourceFields": null,
+  "crs": null,
+  "verifiedOpenScope": null,
+  "blocker": "No anonymous Onitsha parcel polygons. Official services expose land records, but the linked printout concerns owner/history data and was not queried.",
+  "registryBasis": "Onitsha-specific land records administered through Anambra State Ministry of Lands; official notice identifies Onitsha layouts and says ANAMGIS service center/application is in Awka. A 2014 World Bank procedure report explicitly says title searches were conducted in Awka because there was no Land Registry in Onitsha. This supports city-scoped records, not a local Onitsha registry office.",
+  "priorEvidence": [
+    "world-parcels/research/onitsha.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-city-7330.json",
+    "world-parcels/research/native-language-2026-10-04/cities-onitsha.json",
+    "research/india-africa-2026-10-08/africa-ws-city-7330.json"
+  ],
+  "freshSearches": [
+    {
+      "language": "English",
+      "script": "Latin",
+      "query": "Onitsha Anambra land registry records official",
+      "date": "2026-10-08",
+      "observedUrls": [
+        "https://anambrastate.gov.ng/wp-content/uploads/Ministry-of-Lands-Property-Registration-Guideline.pdf",
+        "https://www.mol.anambrastate.gov.ng/category/uncategorized/",
+        "https://documents1.worldbank.org/curated/en/642301468100158784/pdf/ACS129090WP0P14521000PUBLIC00Box391431B.pdf"
+      ]
+    },
+    {
+      "language": "English query including Igbo term “ala”",
+      "script": "Latin",
+      "query": "\"Onitsha\" Igbo ala cadastral parcels GIS land registry",
+      "date": "2026-10-08",
+      "observedUrls": [
+        "https://www.mol.anambrastate.gov.ng/october-2024-newsletter/",
+        "https://www.mol.anambrastate.gov.ng/author/admin/"
+      ]
+    }
+  ],
+  "nextStep": "If an anonymous geometry source is found, verify a bounded Onitsha bbox with a count-only request, then read only ID+geometry for a small sample; do not use paid owner/history register workflows.",
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://www.mol.anambrastate.gov.ng/october-2024-newsletter/",
+    "https://documents1.worldbank.org/curated/en/642301468100158784/pdf/ACS129090WP0P14521000PUBLIC00Box391431B.pdf"
+  ],
+  "status": "no_verified_open_endpoint_after_attempts",
+  "technicalBlocker": "No anonymous Onitsha parcel polygons. Official services expose land records, but the linked printout concerns owner/history data and was not queried."
+}

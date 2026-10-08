@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded follow-up on the three current Victoria parcels with the strongest positive-area overlap. No source rows were excluded or repaired.",
+  "checkedAt": "2026-10-08T15:52:10.364Z",
+  "exactRead": {
+    "endpoint": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0",
+    "httpStatuses": [
+      200,
+      200,
+      200
+    ],
+    "requestCount": 3,
+    "outFields": [
+      "objectid",
+      "id",
+      "category",
+      "island",
+      "area",
+      "validfrom",
+      "validtill"
+    ],
+    "geometryRequested": true,
+    "currentScopeFilter": "validtill = TIMESTAMP 9999-12-31 23:59:59",
+    "ids": [
+      "V20239",
+      "V21619",
+      "V21618"
+    ],
+    "complete": true,
+    "absentIds": [],
+    "features": [
+      {
+        "parcelId": "SC-MLH-V20239",
+        "sourceParcelId": "V20239",
+        "category": null,
+        "island": null,
+        "publishedArea": 2382.7,
+        "validFromEpochMs": 1508443200000,
+        "validFromUtc": "2017-10-19T20:00:00Z",
+        "validTillEpochMs": 253402300799000,
+        "validTillUtc": "9999-12-31T23:59:59Z",
+        "geometrySha256": "3e9d3153d435571ff8a2eca0bedc2f4f13819611a8270fa9a13fda3cda9622d1",
+        "matchesPreviouslyAcceptedGeometry": true,
+        "projectedGeometryAreaM2": 2382.6978784931994,
+        "validFromSeychellesLocal": "2017-10-20T00:00:00+04:00",
+        "validTillSeychellesLocal": "9999-12-31T23:59:59+04:00 (sentinel; beyond Python datetime range)"
+      },
+      {
+        "parcelId": "SC-MLH-V21618",
+        "sourceParcelId": "V21618",
+        "category": null,
+        "island": null,
+        "publishedArea": 137.05,
+        "validFromEpochMs": 1716408000000,
+        "validFromUtc": "2024-05-22T20:00:00Z",
+        "validTillEpochMs": 253402300799000,
+        "validTillUtc": "9999-12-31T23:59:59Z",
+        "geometrySha256": "b51e0de890c28c9060a27424e4eabc55240c279193c821ff1e2dcdfae0aae4dd",
+        "matchesPreviouslyAcceptedGeometry": true,
+        "projectedGeometryAreaM2": 137.0538000162096,
+        "validFromSeychellesLocal": "2024-05-23T00:00:00+04:00",
+        "validTillSeychellesLocal": "9999-12-31T23:59:59+04:00 (sentinel; beyond Python datetime range)"
+      },
+      {
+        "parcelId": "SC-MLH-V21619",
+        "sourceParcelId": "V21619",
+        "category": null,
+        "island": null,
+        "publishedArea": 2245.71,
+        "validFromEpochMs": 1716408000000,
+        "validFromUtc": "2024-05-22T20:00:00Z",
+        "validTillEpochMs": 253402300799000,
+        "validTillUtc": "9999-12-31T23:59:59Z",
+        "geometrySha256": "d4fd5085ff468428f6a4478fc6d82fdb251e4bea37e8c8f185fa778b1a069103",
+        "matchesPreviouslyAcceptedGeometry": true,
+        "projectedGeometryAreaM2": 2245.7120534904343,
+        "validFromSeychellesLocal": "2024-05-23T00:00:00+04:00",
+        "validTillSeychellesLocal": "9999-12-31T23:59:59+04:00 (sentinel; beyond Python datetime range)"
+      }
+    ]
+  },
+  "overlapMeasurement": {
+    "metricCRS": "EPSG:32740",
+    "projection": "Repository proj4 from EPSG:4326; Shapely 2.1.2 / GEOS exact overlays",
+    "pairs": [
+      {
+        "parcelIds": [
+          "SC-MLH-V20239",
+          "SC-MLH-V21618"
+        ],
+        "intersectionAreaM2": 137.01048235428993,
+        "ratioOfFirstParcel": 0.057502247175766304,
+        "ratioOfSecondParcel": 0.9996839368050024,
+        "firstMinusSecondAreaM2": 2245.6873961374968,
+        "secondMinusFirstAreaM2": 0.043317661407027766,
+        "equalGeometry": false,
+        "intersectionType": "Polygon"
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V20239",
+          "SC-MLH-V21619"
+        ],
+        "intersectionAreaM2": 2245.687396137497,
+        "ratioOfFirstParcel": 0.942497752823641,
+        "ratioOfSecondParcel": 0.9999890202517733,
+        "firstMinusSecondAreaM2": 137.01048235428993,
+        "secondMinusFirstAreaM2": 0.024657353449582243,
+        "equalGeometry": false,
+        "intersectionType": "Polygon"
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V21618",
+          "SC-MLH-V21619"
+        ],
+        "intersectionAreaM2": 0.0,
+        "ratioOfFirstParcel": 0.0,
+        "ratioOfSecondParcel": 0.0,
+        "firstMinusSecondAreaM2": 137.0538000162096,
+        "secondMinusFirstAreaM2": 2245.712053490434,
+        "equalGeometry": false,
+        "intersectionType": "MultiLineString"
+      }
+    ]
+  },
+  "metadataReview": {
+    "layerName": "survey.sv_parcel",
+    "layerDescription": "",
+    "itemTitle": "survey_sv_parcel",
+    "itemSnippet": "Cadastral layer for the Seychelles islands.",
+    "itemUrl": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer",
+    "itemId": "188e00befe0d40ea987a689cbf60150f",
+    "sourceSchemaFields": [
+      {
+        "name": "objectid",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "fid",
+        "type": "esriFieldTypeInteger",
+        "alias": "fid",
+        "domain": null
+      },
+      {
+        "name": "id",
+        "type": "esriFieldTypeString",
+        "alias": "id",
+        "domain": null
+      },
+      {
+        "name": "island",
+        "type": "esriFieldTypeInteger",
+        "alias": "island",
+        "domain": null
+      },
+      {
+        "name": "category",
+        "type": "esriFieldTypeInteger",
+        "alias": "category",
+        "domain": null
+      },
+      {
+        "name": "perimeter",
+        "type": "esriFieldTypeDouble",
+        "alias": "perimeter",
+        "domain": null
+      },
+      {
+        "name": "area",
+        "type": "esriFieldTypeDouble",
+        "alias": "area",
+        "domain": null
+      },
+      {
+        "name": "geometry",
+        "type": "esriFieldTypeString",
+        "alias": "geometry",
+        "domain": null
+      },
+      {
+        "name": "validfrom",
+        "type": "esriFieldTypeDate",
+        "alias": "validfrom",
+        "domain": null
+      },
+      {
+        "name": "validtill",
+        "type": "esriFieldTypeDate",
+        "alias": "validtill",
+        "domain": null
+      },
+      {
+        "name": "SHAPE__Length",
+        "type": "esriFieldTypeDouble",
+        "alias": "SHAPE__Length",
+        "domain": null
+      },
+      {
+        "name": "SHAPE__Area",
+        "type": "esriFieldTypeDouble",
+        "alias": "SHAPE__Area",
+        "domain": null
+      },
+      {
+        "name": "globalid",
+        "type": "esriFieldTypeGlobalID",
+        "alias": "globalid",
+        "domain": null
+      }
+    ],
+    "categoryDefinition": "No coded domain; integer field, null on all three exact-read rows.",
+    "typeSemantics": "typeIdField is empty; no feature types/subtypes; one generic polygon template with null prototype values.",
+    "renderer": "Single simple renderer (one fill symbol), not category-driven.",
+    "relationships": [],
+    "parentOrSubdivisionReferenceFields": []
+  },
+  "officialViewerNote": {
+    "url": "https://www.webgis.gov.sc/map_default.phtml?config=default",
+    "disclaimer": "The Ministry WebGIS says its map is compiled for information purposes, is not live data, and does not replace licensed surveys or other primary source documents; derived maps are not official documents for court use.",
+    "relevance": "This cautions against treating the public viewer as authoritative lineage evidence."
+  },
+  "assessment": {
+    "observation": "V20239 has a validfrom timestamp of 2017-10-19T20:00:00Z (2017-10-20 00:00 Seychelles time); V21618 and V21619 share a later timestamp of 2024-05-22T20:00:00Z (2024-05-23 00:00 Seychelles time). All three exact reads have the open-ended validtill sentinel used by the current-parcel scope. In geometry, the two newer parcels are mutually non-overlapping and nearly partition the older parcel: V21618 intersects the older polygon by 137.0105 m\u00b2, V21619 by 2245.6874 m\u00b2, and their combined intersection equals the older polygon area to rounding; each newer polygon extends beyond the older by a small sliver.",
+    "inference": "The timestamps and geometry are consistent with a later subdivision of V20239 into V21618/V21619, but the service exposes no documented category meaning, parent identifier, or retirement/version status that confirms this. category is null on all three, so it cannot distinguish original from subdivided records.",
+    "decisionEvidence": "The exact rereads confirm the geometries are unchanged from the earlier accepted sample. Current-scope membership alone does not resolve the parent/subdivision ambiguity because all three rows retain the open-ended validtill value. Do not remove any row or alter geometry based on this evidence alone."
+  }
+}

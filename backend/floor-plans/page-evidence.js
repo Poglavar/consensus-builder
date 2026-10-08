@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio';
 
 const TRACKING = /^(utm_|fbclid$|gclid$|mc_cid$|mc_eid$|ref$|source$)/i;
 const PLAN_WORD = /(tlocrt|floor[._ -]?plans?|ground[._ -]?plans?|blueprints?|etažni|etazni|tlocrti)/i;
+const PLAN_LABEL = /\b(?:plan|tlocrt)\b/i;
 const BLOCKED = /(captcha|cloudflare|access denied|verify you are human|robot check|too many requests|temporarily blocked|just a moment|checking your browser)/i;
 const first = (...values) => values.find(value => value !== undefined && value !== null && String(value).trim() !== '') ?? null;
 const number = value => { if (value === null || value === undefined || value === '') return null; const match = String(value).replace(',', '.').match(/-?\d+(?:\.\d+)?/); return match ? Number(match[0]) : null; };
@@ -18,7 +19,7 @@ export function normalizeUrl(raw, base) {
 
 function jsonScripts($) { const out = []; $('script[type="application/ld+json"]').each((_, el) => { try { const value = JSON.parse($(el).contents().text()); (Array.isArray(value) ? value : [value]).forEach(item => out.push(item)); } catch (_) {} }); return out; }
 function kindFor(url, text) { const parsed=new URL(url); const value = `${parsed.pathname} ${parsed.search} ${text}`; if (/page=|pagina|stranica|next|sljede/i.test(value)) return 'pagination'; if (/kontakt|contact|agent|office/i.test(value)) return 'contact'; if (/projekt|project|development|residence/i.test(value)) return 'project'; if (/oglas|listing|nekretn|property|stan|apartment/i.test(value)) return 'listing'; return 'other'; }
-function imageKind(url, text) { return PLAN_WORD.test(`${url} ${text}`) ? 'floor-plan' : 'image'; }
+function imageKind(url, text) { return PLAN_WORD.test(`${url} ${text}`) || PLAN_LABEL.test(`${url} ${text}`) ? 'floor-plan' : 'image'; }
 
 function sameDocumentUrl(a, b, base) {
     const key = raw => {
@@ -31,7 +32,7 @@ function sameDocumentUrl(a, b, base) {
 
 // A page may embed whole project tables and recommendation cards. Discovery is
 // page-wide, but a plan belongs to the main listing only when its local owner agrees.
-function assetOwnership($, el, listing, pageUrl) {
+function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null) {
     const element = $(el), row = element.closest('#property-project-items-table tr');
     let ownerSourceId = null, ownerListingUrl = null;
     if (row.length) {
@@ -46,11 +47,27 @@ function assetOwnership($, el, listing, pageUrl) {
         const card = element.closest('.item-wrap');
         if (card.length) ownerListingUrl = normalizeUrl(card.find('a.listing-featured-thumb[href],a.btn-item[href]').first().attr('href'), pageUrl);
     }
-    if (!ownerSourceId && !ownerListingUrl) {
+    if (!ownerSourceId && !ownerListingUrl && !row.length) {
         const owner = element.closest('[data-propertyid],[data-property-id]');
         ownerSourceId = first(owner.attr('data-propertyid'), owner.attr('data-property-id'));
     }
-    const listingOwned = Boolean(listing) && (ownerSourceId ? String(ownerSourceId) === String(listing.sourceId) : !ownerListingUrl || sameDocumentUrl(ownerListingUrl, pageUrl, pageUrl));
+    const context = `${url} ${label}`.toLowerCase();
+    const globalArtifact = element.closest(`header,footer,nav,[role="contentinfo"],[role="navigation"],
+        .agent,.agent-card,.agent-profile,.agent-photo,.agent-portrait,.broker-card,.advisor-card,
+        .consultant-card,.avatar,.portrait,.staff-card,.privacy-policy,.cookie-banner`).length > 0
+        || /(?:^|\/)(?:regionalphotos?|regional-photos?|agent-photos?|agents?|staff-photos?|team-photos?|avatars?|portraits?)(?:\/|$)/i.test(new URL(url).pathname)
+        || /(?:privacy|privatnost|datenschutz|gdpr|cookie|osobni-podaci)/i.test(context);
+    const recommendation = element.closest(`.item-wrap,.property-project-items-table tr,
+        [class*="related-property" i],[class*="similar-property" i],[class*="recommendation" i]`).length > 0;
+    const gallery = element.closest(`[class*=gallery],[class*=Gallery],[class*=carousel],[class*=Carousel],
+        [class*=swiper],[class*=Swiper],[class*=slider],[class*=Slider]`).length > 0;
+    const floorPlan = forcedKind === 'floor-plan' || PLAN_WORD.test(context) || PLAN_LABEL.test(context);
+    const explicitMatch = ownerSourceId ? String(ownerSourceId) === String(listing?.sourceId)
+        : ownerListingUrl ? sameDocumentUrl(ownerListingUrl, pageUrl, pageUrl)
+            : false;
+    const hasConflictingOwner = Boolean(ownerSourceId || ownerListingUrl) && !explicitMatch;
+    const listingOwned = Boolean(listing) && !globalArtifact && !hasConflictingOwner
+        && (explicitMatch || (!recommendation && !row.length && (gallery || floorPlan)));
     return { listingOwned, ...(ownerSourceId ? { ownerSourceId } : {}), ...(ownerListingUrl ? { ownerListingUrl } : {}) };
 }
 
@@ -78,7 +95,9 @@ export function extractPageEvidence(html, pageUrl) {
         unitId: first(record.unitId, record.unitNumber, $('[data-unit-id]').first().attr('data-unit-id')),
         areaM2: number(first(record.floorSize?.value, record.floorSize, record.floorArea, record.size, record.floorSpace, $('[data-area]').first().attr('data-area'))),
         newBuild: /novograd|new\s*build|new\s*construction/i.test(`${listingTitle || ''} ${$('meta[name=description]').attr('content') || ''}`) ? true : null,
-        projectName: first(record.isPartOf?.name, record.projectName, $('[data-project-name]').first().attr('data-project-name'))
+        projectName: first(record.isPartOf?.name, record.projectName, $('[data-project-name]').first().attr('data-project-name')),
+        projectUrl: normalizeUrl(record.isPartOf?.url, pageUrl),
+        locality: first(record.address?.addressLocality, record.address?.addressRegion)
     } : null;
     const links = [], assets = [];
     $('a[href]').each((_, el) => { const url = normalizeUrl($(el).attr('href'), pageUrl); if (url) links.push({ url, text: $(el).text().replace(/\s+/g, ' ').trim(), kind: kindFor(url, $(el).text()) }); });
@@ -90,8 +109,10 @@ export function extractPageEvidence(html, pageUrl) {
         if (!forcedKind && !/\.(?:pdf|png|jpe?g|webp|avif)(?:$|[?#])/i.test(url) && !PLAN_WORD.test(`${url} ${label}`)) return;
         const pdf = /\.pdf(?:$|[?#])/i.test(url);
         const gallery = element.closest('[class*=gallery],[class*=Gallery],[class*=carousel],[class*=swiper],[class*=slider]').length > 0;
-        const asset = { url, kind: forcedKind || (pdf ? (PLAN_WORD.test(`${url} ${label}`) ? 'floor-plan' : 'document') : imageKind(url, label)), evidence: label || null,
-            ...assetOwnership($, el, listing, pageUrl), ...(gallery ? { listingGallery: true } : {}) };
+        const planAsset = PLAN_WORD.test(`${url} ${label}`) || PLAN_LABEL.test(`${url} ${label}`);
+        const kind = forcedKind || (pdf ? (planAsset ? 'floor-plan' : 'document') : imageKind(url, label));
+        const asset = { url, kind, evidence: label || null,
+            ...assetOwnership($, el, listing, pageUrl, url, label, forcedKind), ...(gallery ? { listingGallery: true } : {}) };
         const previous = assetsByUrl.get(url);
         // The same image can appear in both a card and the main gallery.
         if (!previous || asset.listingOwned && !previous.listingOwned) assetsByUrl.set(url, asset);
@@ -112,5 +133,16 @@ export function extractPageEvidence(html, pageUrl) {
         });
     }
     assets.push(...assetsByUrl.values());
-    return { title: first($('title').text(), listingTitle), canonicalUrl, text: bodyText, links, assets, listing, blocked: false, blockedReason: null };
+    // Membership is taken only from the project's own unit table, never recommendation cards.
+    const projectListings=[];
+    if (/\/(?:projekt|project)\//i.test(new URL(pageUrl).pathname)) {
+        $('#property-project-items-table tr a[href]').each((_, link) => {
+            const url=normalizeUrl($(link).attr('href'),pageUrl);
+            if(url && new URL(url).hostname===new URL(pageUrl).hostname && /\/(?:nekretnina|property)\//i.test(new URL(url).pathname)) {
+                if(!projectListings.some(item=>item.url===url)) projectListings.push({url});
+            }
+        });
+    }
+    return { title: first($('title').text(), listingTitle), canonicalUrl, text: bodyText, links, assets, listing,
+        ...(projectListings.length?{projectListings}:{}), blocked: false, blockedReason: null };
 }

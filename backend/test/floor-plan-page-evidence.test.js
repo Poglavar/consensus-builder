@@ -56,6 +56,28 @@ describe('listing asset ownership', () => {
         expect(result.listing.sourceId).toBe('main');
         expect(result.assets[0].listingOwned).toBe(true);
     });
+
+    it('keeps unlabeled listing gallery photos and plans while excluding global, regional, agent and legal assets', () => {
+        const html = `<script type="application/ld+json">{"@type":"Apartment","identifier":"577161","url":"https://eurovilla.hr/nekretnina/577161/"}</script>
+          <div id="property-view" data-propertyid="577161">
+            <div class="swiper"><img src="/property-photos/577161/livingroom.jpg"></div>
+            <a href="/media/tlocrt-577161.pdf">Plan</a>
+            <img src="/regionalphotos/zagreb-office.jpg" alt="">
+            <div class="agent-profile"><img src="/media/team/jane-portrait.jpg"></div>
+            <a href="/documents/privacy.pdf">Privacy</a>
+          </div>
+          <footer><img src="/media/agents/office-portrait.jpg"></footer>`;
+        const result = extractPageEvidence(html, 'https://eurovilla.hr/nekretnina/577161/');
+        const owned = result.assets.filter(asset => asset.listingOwned);
+        expect(owned.map(asset => asset.url)).toEqual([
+            'https://eurovilla.hr/property-photos/577161/livingroom.jpg',
+            'https://eurovilla.hr/media/tlocrt-577161.pdf',
+        ]);
+        expect(result.assets.find(asset => asset.url.includes('privacy.pdf'))).toMatchObject({ kind: 'document', listingOwned: false });
+        expect(result.assets.find(asset => asset.url.includes('regionalphotos'))).toMatchObject({ listingOwned: false });
+        expect(result.assets.find(asset => asset.url.includes('jane-portrait'))).toMatchObject({ listingOwned: false });
+        expect(result.assets.find(asset => asset.url.includes('office-portrait'))).toMatchObject({ listingOwned: false });
+    });
 });
 
 

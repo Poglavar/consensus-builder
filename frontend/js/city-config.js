@@ -563,6 +563,49 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['areaMonitor'] },
             parcelBuilder: null
         },
+        tbilisi: {
+            id: 'tbilisi',
+            label: translateCityText('city.labels.tbilisi', 'Tbilisi, Georgia'),
+            currency: { locale: 'en-US', code: 'GEL' },
+            map: { initialView: { type: 'center', zoom: 19 },
+                defaultCenter: [41.7088867, 44.8067283], defaultZoom: 19,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', metricCrs: 'EPSG:32638',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricDefinition: '+proj=utm +zone=38 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [41.7088867, 44.8067283], fallbackDataset: [44.8067283, 41.7088867] },
+            parcels: {
+                strategy: 'point', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'ge-msda-napr-registered-land-plots', idPrefix: 'GE-NAPR-',
+                parcelNumberField: 'cadCode', requiresBackend: true, ownership: false,
+                liveRadiusKm: 0.1,
+                raster: { url: 'https://nv.napr.gov.ge/geoserver/wms', layers: 'NG_REG_LAYER', version: '1.3.0',
+                    params: { LR_ID: 261415 }, attribution: '<a href="https://ms.gov.ge/msmap/">NAPR · MSDA</a>' },
+                attribution: '<a href="https://ms.gov.ge/msmap/">NAPR · MSDA</a> · Parcel lookup on click'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: null
+        },
+        istanbul: {
+            id: 'istanbul',
+            label: translateCityText('city.labels.istanbul', 'Istanbul, Turkey'),
+            currency: { locale: 'tr-TR', code: 'TRY' },
+            map: { initialView: { type: 'center', zoom: 19 },
+                defaultCenter: [41.0139, 28.9497], defaultZoom: 19,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', metricCrs: 'EPSG:32635',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricDefinition: '+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [41.0139, 28.9497], fallbackDataset: [28.9497, 41.0139] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'tr-tkgm-parselsorgu-api', idPrefix: 'TR-TKGM-',
+                parcelNumberField: 'parselNo', requiresBackend: true, ownership: false, liveRadiusKm: 0.1,
+                attribution: 'TKGM · parcel lookup on click' },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: null
+        },
         toronto: {
             id: 'toronto',
             label: 'Toronto, Canada',
@@ -3340,6 +3383,130 @@
                 sourceId: 'ke-nairobi-maps-outlines', idPrefix: 'KE-NAIROBI-NM-',
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://nairobimaps.com/">Nairobi Maps</a> · <a href="https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html">parcel outlines</a>. Public commercial outlines are for geometry references only; source registry numbers and ownership are unavailable.'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        athens: {
+            id: 'athens',
+            label: 'Athens, Greece',
+            currency: { locale: 'el-GR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: 18 },
+                defaultCenter: [37.99008, 23.72948],
+                defaultZoom: 18,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32634',
+                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [37.99008, 23.72948],
+                fallbackDataset: [23.72948, 37.99008]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.0025,
+                source: 'parcel-source',
+                sourceId: 'gr-ktimatologio-active-parcels-arcgis',
+                idPrefix: 'GR-ATHENS-KAEK-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 0.1,
+                attribution: '<a href="https://maps.ktimatologio.gr/">Hellenic Cadastre (Ktimatologio) active cadastral layer</a> · Athens-center sample only; broader coverage and currentness unverified'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gaborone: {
+            id: 'gaborone',
+            label: translateCityText('city.labels.gaborone', 'Gaborone, Botswana'),
+            currency: { locale: 'en-BW', code: 'BWP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-24.6581, 25.9122],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-24.6581, 25.9122],
+                fallbackDataset: [25.9122, -24.6581]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'gaborone-bofinet-plots-provisional',
+                idPrefix: 'gaborone:bofinet:', requiresBackend: true, ownership: false,
+                liveRadiusKm: 3,
+                attribution: '<a href="https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0">BOFINET Gaborone city plots</a> · verified bounded samples · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bloemfontein: {
+            id: 'bloemfontein',
+            label: translateCityText('city.labels.bloemfontein', 'Bloemfontein, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-29.118, 26.214],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-29.118, 26.214],
+                fallbackDataset: [26.214, -29.118]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'za-mangaung-cadastre-2025',
+                idPrefix: 'za-mangaung-sgcode:', requiresBackend: true, ownership: false,
+                liveRadiusKm: 3,
+                attribution: '<a href="https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11">Mangaung Cadastre 2025 — Bloemfontein</a> · verified bounded samples · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        pretoria: {
+            id: 'pretoria',
+            label: translateCityText('city.labels.pretoria', 'Pretoria, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.7479, 28.2293],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-25.7479, 28.2293],
+                fallbackDataset: [28.2293, -25.7479]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'za-tshwane-registered-parcels',
+                idPrefix: 'tshwane:lis-key:', requiresBackend: true, ownership: false,
+                liveRadiusKm: 3,
+                attribution: '<a href="https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1">City of Tshwane registered surveyed parcels — Pretoria</a> · verified bounded samples · adapted'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },

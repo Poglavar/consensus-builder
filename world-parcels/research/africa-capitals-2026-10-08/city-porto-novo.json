@@ -1,0 +1,204 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "porto-novo",
+  "cityId": "capital:BJ:porto-novo",
+  "name": "Porto-Novo",
+  "country": "Benin",
+  "code": "BJ",
+  "centerLatLon": [
+    6.4969,
+    2.6289
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Benin national cadastre; ANDF and the e-Foncier national platform cover pilot communes including Porto-Novo.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/",
+    "https://andf.bj/wp-content/uploads/2026/01/ANDF-TERRA-RF-002-V1.0_EtudeBaselineTerra_RapportDefinitif_V2_30.12.2025.pdf",
+    "https://cadastre.andf.bj/"
+  ],
+  "registryBasis": "ANDF’s official 2 December 2024 notice names Porto-Novo as one of 12 communes whose land-formalization records were integrated into the e-Foncier cadastral database from January 2025. ANDF/TERRA reporting also identifies Porto-Novo among pilot communes. This is city-specific coverage evidence, separately confirmed by the bounded public WFS sample.",
+  "publicParcelGeometryFound": true,
+  "resultCategory": "verified_geometry_held_quality_review",
+  "findings": "A bounded public WFS GetFeature request by the parent/root agent returned three closed Polygon features around the Porto-Novo locator. All three are attributed to commune PORTO-NOVO. The bounded request matched 304 records and returned 3 (1,799-byte response). A separate local curl attempt in this subagent could not resolve the host; that local DNS failure did not imply endpoint unavailability. The sample proves geometry at this small locator window only, not complete city coverage.",
+  "englishQueries": [
+    "Porto-Novo Benin public cadastral parcel polygons GIS official ANDF GeoServer WFS",
+    "https://geoserver.andf.bj/geoserver/efb/wfs efb:efb_parcel",
+    "site:geoserver.andf.bj/geoserver/efb/wfs efb:efb_parcel"
+  ],
+  "localLanguageQueries": [
+    "Porto-Novo Benin cadastre parcelle données géographiques ANDF cadastre WFS"
+  ],
+  "searches": [
+    {
+      "query": "Porto-Novo Benin public cadastral parcel polygons GIS official ANDF GeoServer WFS",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "https://geoserver.andf.bj/geoserver/efb/wfs efb:efb_parcel",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:geoserver.andf.bj/geoserver/efb/wfs efb:efb_parcel",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Porto-Novo Benin cadastre parcelle données géographiques ANDF cadastre WFS",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=efb:efb_parcel&outputFormat=application/json&srsName=CRS:84&bbox=2.6269,6.4949,2.6309,6.4989,CRS:84&count=25&startIndex=0",
+      "method": "GET WFS 2.0 via curl, local subagent attempt",
+      "httpStatus": null,
+      "transportError": "Could not resolve geoserver.andf.bj from this execution environment; no HTTP response. This is a local DNS/access failure, not server unavailability.",
+      "queryCoordinatesLatLon": [
+        6.4969,
+        2.6289
+      ],
+      "bbox": [
+        2.6269,
+        6.4949,
+        2.6309,
+        6.4989
+      ],
+      "bboxCRS": "CRS:84",
+      "count": 25,
+      "startIndex": 0
+    },
+    {
+      "url": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=efb:efb_parcel&bbox=2.6269,6.4949,2.6309,6.4989,EPSG:4326&propertyName=boundary,nup,commune_name&count=3&outputFormat=application/json&srsName=EPSG:4326",
+      "method": "GET WFS 2.0; executed by parent/root agent",
+      "httpStatus": 200,
+      "responseBytes": 1799,
+      "matched": 304,
+      "returned": 3,
+      "bbox": [
+        2.6269,
+        6.4949,
+        2.6309,
+        6.4989
+      ],
+      "bboxCRS": "EPSG:4326",
+      "queryCoordinatesLatLon": [
+        6.4969,
+        2.6289
+      ],
+      "propertyName": [
+        "boundary",
+        "nup",
+        "commune_name"
+      ],
+      "count": 3,
+      "geometryField": "boundary",
+      "result": "Returned three closed Polygon features; all have commune_name PORTO-NOVO and nup values 100266536, 100266538, and 100266539. No personal information is included."
+    }
+  ],
+  "verifiedSample": true,
+  "technicalBlocker": "Unchanged public geometry includes nine self-intersecting rings and a 25,095.38 m² overlap covering 98.91% of the smaller parcel. No lifecycle/status field explains it; source geometry was not repaired or selectively dropped.",
+  "nextStep": "Resolve the source overlap and self-intersections using publisher corrections or documented source semantics before enabling the Porto-Novo entry.",
+  "coverageAssessment": {
+    "claimedScope": "National ANDF e-Foncier; official report identifies Porto-Novo as a pilot commune.",
+    "verifiedOpenScope": "Three closed parcel polygons returned for a small bbox around the chosen Porto-Novo locator.",
+    "wholeCityCoverageVerified": false,
+    "sampleProvesCityPresence": true
+  },
+  "localLanguage": "French",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://cadastre.andf.bj/",
+      "method": "web.run search result discovery",
+      "httpStatus": null,
+      "toolOutcome": "Search output was a result snippet crawled four months earlier, showing parcel-layer categories and a map UI. It is not a fresh raw HTTP fetch; the fresh WFS geometry result is recorded in requests."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "BJ",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "verifiedParcelResponse": {
+    "source": "ANDF e-Foncier GeoServer WFS, efb:efb_parcel",
+    "verifiedBy": "parent/root agent",
+    "httpStatus": 200,
+    "responseBytes": 1799,
+    "matched": 304,
+    "returned": 3,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "closedPolygons": true,
+    "communeNames": [
+      "PORTO-NOVO"
+    ],
+    "parcelIds": [
+      "100266536",
+      "100266538",
+      "100266539"
+    ],
+    "geometryField": "boundary",
+    "bbox": [
+      2.6269,
+      6.4949,
+      2.6309,
+      6.4989
+    ],
+    "bboxCRS": "EPSG:4326",
+    "sampleCoordinatesLatLon": [
+      6.4969,
+      2.6289
+    ],
+    "coverageLimit": "Small point-bounded sample; not whole-city coverage."
+  },
+  "executedQueries": [
+    {
+      "query": "Porto-Novo Benin public cadastral parcel polygons GIS official ANDF GeoServer WFS",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "https://geoserver.andf.bj/geoserver/efb/wfs efb:efb_parcel",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:geoserver.andf.bj/geoserver/efb/wfs efb:efb_parcel",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Porto-Novo Benin cadastre parcelle données géographiques ANDF cadastre WFS",
+      "language": "French",
+      "method": "web.run search_query"
+    }
+  ],
+  "runtimeReadiness": "held_quality_review",
+  "sourceIds": [
+    "bj-andf-efoncier-geoserver"
+  ],
+  "acceptance": {
+    "protocolFile": "porto-novo-acceptance.json",
+    "geometryQualityFile": "porto-novo-shapely-quality.json",
+    "followupFile": "porto-novo-overlap-followup.json",
+    "protocolPassed": true,
+    "geometryQualityPassed": false,
+    "runtimeEnabled": false
+  },
+  "parcelStatus": "verified_sample_partial_coverage"
+}

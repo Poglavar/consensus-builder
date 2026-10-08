@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T14:26:04.877253+00:00",
+  "scope": "Read-only public endpoint checks on a secondary network; no user account or privileged endpoint used",
+  "requests": [
+    {
+      "key": "maharashtra-bhunaksha-secondary",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "checkedAt": "2026-10-08T14:23:36.048875+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 28,
+      "httpStatus": "000",
+      "effectiveUrl": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "contentType": "",
+      "error": "curl: (28) Failed to connect to mahabhunakasha.mahabhumi.gov.in port 443 after 8001 ms: Timeout was reached",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "certificateException": false
+    },
+    {
+      "key": "kdmc-cadastral-secondary",
+      "url": "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer/15?f=pjson",
+      "checkedAt": "2026-10-08T14:23:32.174691+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 0,
+      "httpStatus": "200",
+      "effectiveUrl": "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer/15?f=pjson",
+      "contentType": "text/html; charset=utf-8",
+      "error": "",
+      "bytes": 7062,
+      "sha256": "0002a23f1a4dfa5795bd549aadc539eab9627a3086734b216009d5696d1feb6c",
+      "certificateException": false,
+      "applicationOutcome": "ArcGIS Web Adaptor error: Could not access any server machines. HTTP 200 was HTML, not layer metadata or a parcel response."
+    },
+    {
+      "key": "indore-municipal-secondary",
+      "url": "https://indoregis.mp.gov.in/",
+      "checkedAt": "2026-10-08T14:22:52.853784+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 28,
+      "httpStatus": "000",
+      "effectiveUrl": "https://indoregis.mp.gov.in/",
+      "contentType": "",
+      "error": "curl: (28) Failed to connect to indoregis.mp.gov.in port 443 after 8001 ms: Timeout was reached",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "certificateException": false
+    }
+  ],
+  "assessment": "Maharashtra and Indore connection timeouts persist; KDMC returns the same provider-side Web Adaptor error. No geometry sample was obtained and no certificate error was encountered."
+}

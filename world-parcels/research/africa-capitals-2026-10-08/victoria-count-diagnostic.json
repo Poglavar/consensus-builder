@@ -1,0 +1,25 @@
+{
+  "purpose": "Compare native and WGS84 public bounded count requests after intermittent 15 second count timeouts; no authentication, raw personal properties or geometry requested.",
+  "results": [
+    {
+      "checkedAt": "2026-10-08T15:38:53.277Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328115.1168129903%2C9488986.978656417%2C328281.9120620453%2C9489153.20725612&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "sr": 32740,
+      "httpStatus": 200,
+      "response": {
+        "count": 34
+      },
+      "elapsedMs": 1502
+    },
+    {
+      "checkedAt": "2026-10-08T15:38:54.796Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=55.4505%2C-4.6215%2C55.452%2C-4.62&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "sr": 4326,
+      "httpStatus": 200,
+      "response": {
+        "count": 34
+      },
+      "elapsedMs": 585
+    }
+  ]
+}

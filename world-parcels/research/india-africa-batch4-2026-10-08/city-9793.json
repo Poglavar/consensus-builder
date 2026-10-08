@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9793,
+  "cityId": "wup2025:9793",
+  "name": "Nagpur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    21.1403108339582,
+    79.0798475250127
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 152,
+  "stateOrUT": "Maharashtra",
+  "administrativeIdentity": {
+    "district": "नागपुर जिला",
+    "tehsilOrTaluk": "Nagpur Urban Taluka",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-08",
+    "batch4Summary": "Nagpur Urban taluka code 0 in DILRMP context; rural digitization is not proof of urban CTS coverage. Parent has already completed secondary retry; wait for parent diagnostic integration.",
+    "queries": [
+      "नागपुर भू नक्शा शहर सर्वे सिटी सर्वे प्लॉट मैप महाभूमि"
+    ],
+    "sources": [
+      "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "https://bhumiabhilekh.maharashtra.gov.in/Pages/AboutUsDetail?pageId=59",
+      "https://nagpur.gov.in/district-superintendent-land-records/",
+      "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "https://mahabhunakasha.mahabhumi.gov.in/signplotreportpublic.jsp?giscode=RVM0909270900090108700000&plotno=186&state=27",
+      "https://nmcnagpur.gov.in/assets/300/2025/06/Public-Notices/Intention_map.pdf"
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra documents eMaps for village, city-survey and plot maps and property-card access. Nagpur rural Jamtha report indexed by public search is outside Dhantoli target; urban parcel coverage remains unverified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_city_survey_viewer_temporarily_unavailable",
+  "registryFound": true,
+  "verifiedSample": false,
+  "technicalBlocker": "Maharashtra BhuNaksha viewer timed out on direct requests. Official NMC map PDF is a static survey-boundary/number map rather than machine-readable parcel geometry. DILRMP Nagpur Urban tehsil code 0 does not support assuming rural digitization covers urban CTS records.",
+  "remainingUncertainty": "No usable parcel polygon was retrieved. The saved WUP point is a research locator; correctly scoped nearby urban coverage could qualify separately if geometry becomes available.",
+  "nextStep": "Retry the documented Maharashtra viewer after service recovery, then verify geographically scoped Nagpur city-survey parcel geometry. The secondary-network timeout is already recorded; the rural Jamtha report does not establish urban coverage.",
+  "priorEvidence": [
+    {
+      "file": "world-parcels/research/india-africa-2026-10-08/india-city-9793.json",
+      "summary": "Earlier city assessment retained in referenced file; not duplicated in this batch record."
+    },
+    "research/india-africa-2026-10-08/india-city-9793.json"
+  ],
+  "registryBasis": "Official Nagpur District Superintendent of Land Records page identifies the city district land-records authority; Maharashtra Bhumi Abhilekh officially documents eMaps for city-survey/plot maps and property-card access.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "नागपुर भू नक्शा शहर सर्वे सिटी सर्वे प्लॉट मैप महाभूमि",
+      "date": "2026-10-08",
+      "executionMethod": "web search; official portal inspection as listed in requestsAndEndpointChecks",
+      "resultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/Services",
+        "https://bhumiabhilekh.maharashtra.gov.in/Pages/AboutUsDetail?pageId=59",
+        "https://nagpur.gov.in/district-superintendent-land-records/",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+        "https://mahabhunakasha.mahabhumi.gov.in/signplotreportpublic.jsp?giscode=RVM0909270900090108700000&plotno=186&state=27",
+        "https://nmcnagpur.gov.in/assets/300/2025/06/Public-Notices/Intention_map.pdf"
+      ],
+      "summary": "Batch-4 search and follow-up only; prior search history is in priorEvidence."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Nagpur Urban taluka code 0 in DILRMP context; rural digitization is not proof of urban CTS coverage. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Pages/AboutUsDetail?pageId=59",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Nagpur Urban taluka code 0 in DILRMP context; rural digitization is not proof of urban CTS coverage. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    },
+    {
+      "url": "https://nagpur.gov.in/district-superintendent-land-records/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Nagpur Urban taluka code 0 in DILRMP context; rural digitization is not proof of urban CTS coverage. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Nagpur Urban taluka code 0 in DILRMP context; rural digitization is not proof of urban CTS coverage. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/signplotreportpublic.jsp?giscode=RVM0909270900090108700000&plotno=186&state=27",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Nagpur Urban taluka code 0 in DILRMP context; rural digitization is not proof of urban CTS coverage. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    },
+    {
+      "url": "https://nmcnagpur.gov.in/assets/300/2025/06/Public-Notices/Intention_map.pdf",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Nagpur Urban taluka code 0 in DILRMP context; rural digitization is not proof of urban CTS coverage. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "method": "GET (web search/open)",
+      "status": "official page found",
+      "summary": "Documents eMaps viewer/download for village, city-survey and plot maps."
+    },
+    {
+      "url": "https://nagpur.gov.in/district-superintendent-land-records/",
+      "method": "GET (web search/open)",
+      "status": "official page found",
+      "summary": "Nagpur local land-records office and property-card viewing information."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "method": "GET",
+      "status": "timeout on primary and secondary network (parent check)",
+      "summary": "Official viewer unavailable during bounded retries."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/signplotreportpublic.jsp?giscode=RVM0909270900090108700000&plotno=186&state=27",
+      "method": "GET (indexed URL; direct open timed out)",
+      "status": "not reached",
+      "summary": "URL denotes rural Jamtha report, not central Dhantoli target."
+    },
+    {
+      "url": "https://nmcnagpur.gov.in/assets/300/2025/06/Public-Notices/Intention_map.pdf",
+      "method": "GET (web indexed official PDF)",
+      "status": "document found",
+      "summary": "Static survey boundary/number map; not machine-readable parcel features."
+    }
+  ],
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://nagpur.gov.in/district-superintendent-land-records/",
+    "https://bhumiabhilekh.maharashtra.gov.in/Services"
+  ],
+  "blocker": "Maharashtra BhuNaksha viewer timed out on direct requests. Official NMC map PDF is a static survey-boundary/number map rather than machine-readable parcel geometry. DILRMP Nagpur Urban tehsil code 0 does not support assuming rural digitization covers urban CTS records.",
+  "supplementalEvidenceFiles": [
+    "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+  ]
+}

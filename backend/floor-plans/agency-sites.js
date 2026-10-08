@@ -18,6 +18,36 @@ export async function importSites(db,records) {
  }
  return {sites:imported,queued};
 }
+
+// Revisit every known agency-owned domain so daily crawls discover newly posted listings.
+export async function seedKnownSites(db) {
+ const rows=(await db.query(`SELECT url,agency_id FROM floor_plan.site
+  WHERE verification_status IS DISTINCT FROM 'social-profile'
+  UNION
+  SELECT website AS url,registry_id AS agency_id FROM floor_plan.agency
+  WHERE website IS NOT NULL AND in_scope`)).rows;
+ const unique=new Map();
+ for(const row of rows) {
+  const url=normalizeUrl(row.url);
+  if(!url || social.test(new URL(url).hostname)) continue;
+  if(!unique.has(url) || (!unique.get(url).agencyId && row.agency_id)) unique.set(url,{url,agencyId:row.agency_id || null});
+ }
+ for(const {url,agencyId} of unique.values()) {
+  await db.query(`INSERT INTO floor_plan.target AS t(url,agency_id,kind,priority,discovered_from,next_check_at)
+   VALUES($1,$2,'home',60,$1,now()) ON CONFLICT(url) DO UPDATE SET
+   kind='home',priority=GREATEST(t.priority,excluded.priority),
+   agency_id=COALESCE(t.agency_id,excluded.agency_id),
+   discovered_from=excluded.discovered_from,
+   next_check_at=LEAST(t.next_check_at,now()),updated_at=now()`,[url,agencyId]);
+  await db.query(`INSERT INTO floor_plan.target AS t(url,agency_id,kind,priority,discovered_from,next_check_at)
+   VALUES($1,$2,'sitemap',40,$1,now()) ON CONFLICT(url) DO UPDATE SET
+   kind='sitemap',priority=GREATEST(t.priority,excluded.priority),
+   agency_id=COALESCE(t.agency_id,excluded.agency_id),
+   discovered_from=excluded.discovered_from,
+   next_check_at=LEAST(t.next_check_at,now()),updated_at=now()`,[new URL('/sitemap.xml',url).href,agencyId]);
+ }
+ return {sites:unique.size};
+}
 export function agencyIdentityEvidence(html) {
  const $=cheerio.load(html);$('script,style,noscript').remove();
  const visible=$('body').text().replace(/\s+/g,' '),matches=[];

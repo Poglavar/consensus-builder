@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "method": "Shapely 2.1.2 / GEOS 3.13.1 on repo-proj4 projected EPSG:32735 geometry; no repair. OGC validity via Shapely is_valid; exact intersections on all bbox-overlapping feature pairs. Normalized duplicate check uses Shapely normalize + 2D WKB. Area quantiles use nearest-index floor((n-1)*q).",
+  "sourceFile": "bloemfontein-quality-input-epsg32735.geojson",
+  "sourceAcceptanceFile": "bloemfontein-adapter-acceptance-initial.json",
+  "featureCount": 53,
+  "metricCRS": "EPSG:32735",
+  "validity": {
+    "validCount": 53,
+    "invalidCount": 0,
+    "invalidExamples": []
+  },
+  "areaM2": {
+    "min": 12.319120271392737,
+    "p10": 314.15294703244564,
+    "median": 2269.2623650536398,
+    "p90": 17792.311220238236,
+    "max": 145609.0548511086,
+    "below1m2Count": 0,
+    "below25m2Count": 2,
+    "below1m2Fraction": 0.0,
+    "below25m2Fraction": 0.03773584905660377,
+    "below1m2Examples": [],
+    "below25m2Examples": [
+      {
+        "id": "za-mangaung-sgcode:F00300030002479700007",
+        "areaM2": 16.97711463330051
+      },
+      {
+        "id": "za-mangaung-sgcode:F00300030002472200003",
+        "areaM2": 12.319120271392737
+      }
+    ]
+  },
+  "duplicateGeometry": {
+    "normalizedDuplicateGroupCount": 0,
+    "groups": []
+  },
+  "positiveAreaOverlap": {
+    "pairCount": 0,
+    "maximumIntersectionAreaM2": 0.0,
+    "maximumRatioOfSmallerParcel": 0.0,
+    "examples": [],
+    "overlayErrorCount": 0,
+    "overlayErrors": [],
+    "allUniqueFeaturePairs": 1378,
+    "bboxCandidatePairs": 123,
+    "bboxRejectedPairs": 1255,
+    "exactGEOSIntersectionsEvaluated": 123
+  },
+  "parcelAudit": [
+    {
+      "id": "za-mangaung-sgcode:F00300030002479700000",
+      "sourceParcelId": "F00300030002479700000",
+      "areaM2": 17053.71981170782,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479600000",
+      "sourceParcelId": "F00300030002479600000",
+      "areaM2": 6659.665631606389,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479700001",
+      "sourceParcelId": "F00300030002479700001",
+      "areaM2": 4124.120741108504,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479800000",
+      "sourceParcelId": "F00300030002479800000",
+      "areaM2": 7251.0414015216775,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "74f94606b0c0d8548dd0904eeac83441d30ad8c3225837e4b918959173cafcd1"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002507200000",
+      "sourceParcelId": "F00300030002507200000",
+      "areaM2": 13314.24059772112,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030003710300000",
+      "sourceParcelId": "F00300030003710300000",
+      "areaM2": 13762.868639851624,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002472200001",
+      "sourceParcelId": "F00300030002472200001",
+      "areaM2": 131.53531819055598,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "46c0d8ecbd2520a86f42592eab238b46f541824c10416750770557d68fc48592"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002472200002",
+      "sourceParcelId": "F00300030002472200002",
+      "areaM2": 17792.311220238236,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "18f5ad53dfc29d140ca359316be11d0569345b8802c60f785735079632c8c096"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000482300000",
+      "sourceParcelId": "F00300030000482300000",
+      "areaM2": 1245.3437577992722,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "19dd3f2c3be8ad10f12adf53f6f6be6fd467ca614b5d4626001ba69254312949"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000759500000",
+      "sourceParcelId": "F00300030000759500000",
+      "areaM2": 1746.529976464065,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "c93447b07441c7cc04db4c6944886f9ae44d5cd71a3fee6fc664fe3242142e18"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000229000001",
+      "sourceParcelId": "F00300030000229000001",
+      "areaM2": 1933.3839598214713,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8d33fc56895bddb9c754cdaa57c307c94be2b06e2dec3ee586f2a0908e16bafe"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000229000000",
+      "sourceParcelId": "F00300030000229000000",
+      "areaM2": 2240.4460429155624,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "3aa7ba1babdba93d7ef57f3823dca4201eba454c4ee534f77439bc8d47b08e7f"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300000000065400090",
+      "sourceParcelId": "F00300000000065400090",
+      "areaM2": 2317.7530120407882,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "f00a356203e83ae8de9ab9af0aaad187d09d92eadc8b7cf6ca96b854efbbbd72"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000213200000",
+      "sourceParcelId": "F00300030000213200000",
+      "areaM2": 5152.685761374595,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "f2ee55f758d939ff3050f89b16ba2ed895da3772ed68700356da892cdd6b70f4"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000213000000",
+      "sourceParcelId": "F00300030000213000000",
+      "areaM2": 2269.2623650536398,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ac089b81c483e7188e3fb938c54dc31f45636f68097e0994bfb5193594280eb4"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002504400000",
+      "sourceParcelId": "F00300030002504400000",
+      "areaM2": 2408.8123771844703,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "91cefe6c050455fd285b061540b0344337ddc7f99d4419d7a943b4faf9e07e57"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000382300000",
+      "sourceParcelId": "F00300030000382300000",
+      "areaM2": 177.11588556395054,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "df439c28313fc5cc87aaf845c3c6fea2cabac10de440379067a15ad5593a2390"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000326400000",
+      "sourceParcelId": "F00300030000326400000",
+      "areaM2": 2537.8806800182815,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "aa5dc6bd226d0f1790cc6dab4bf54203b9af15a9328199f8e198ba445d6ae6b8"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000212900000",
+      "sourceParcelId": "F00300030000212900000",
+      "areaM2": 2345.779805498706,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "347cf73f9915f7ddf99c64c25e8c6119ace2695cca731fff667f289c94d3a9cc"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002489000000",
+      "sourceParcelId": "F00300030002489000000",
+      "areaM2": 2462.4721682246595,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "f75b1f75d69d964da6ad71d8c1accbf37e55dc96c320df3d9cbd6c1b76855e4c"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000074400000",
+      "sourceParcelId": "F00300030000074400000",
+      "areaM2": 1138.3690346659907,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "d47374b961c61bc8964a643ef7e6767d8b924ffeab0e0a5c1a73865e54fa22ad"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030001404700000",
+      "sourceParcelId": "F00300030001404700000",
+      "areaM2": 28060.20417184115,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "4315e6c59f050be9cbb99f34cf4edf81b2a6765ce749782ba332536c4b63e771"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000192800000",
+      "sourceParcelId": "F00300030000192800000",
+      "areaM2": 32007.270733313286,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "6612fac63be59f5da2b049d7bbb5e56ff026d67196251ac53c27cd85c29c9eaa"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479700006",
+      "sourceParcelId": "F00300030002479700006",
+      "areaM2": 4291.356321550317,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "61f482e6942a73c1eab8045bbf340a17e7d13edfc711dd32dee945c0be938ad1"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000325100003",
+      "sourceParcelId": "F00300030000325100003",
+      "areaM2": 1635.9565891006332,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e0bb43d58ca98b33779705219e6b0809e91ccd2c8591fb3773803d46bf5a2911"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000292400000",
+      "sourceParcelId": "F00300030000292400000",
+      "areaM2": 3006.6026354441983,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "9274631a6d47416a6a16b2db0490a0ee91f802835fb760308aa817944440cc6f"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002640800002",
+      "sourceParcelId": "F00300030002640800002",
+      "areaM2": 114398.76303217611,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "f3dad039adebca16ae899a49d65fd8514f70ed2efbb6442de79c5bd53112f116"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030004061900000",
+      "sourceParcelId": "F00300030004061900000",
+      "areaM2": 1206.0656852850125,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "5ac60e1382f252773f693250ad36c20565d86e3e427a1b06d13bb242b9ee6ed8"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002489200000",
+      "sourceParcelId": "F00300030002489200000",
+      "areaM2": 1781.4548177166707,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "4eb59978862adcb237d67a00e3d699ce8ff3a43aedded18db3a2dcb07587af78"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002489100000",
+      "sourceParcelId": "F00300030002489100000",
+      "areaM2": 1408.654297778351,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8f5cf44c95a8019dcdef582e338509af23254ad6b4d6711917d424742aa2b581"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000074700000",
+      "sourceParcelId": "F00300030000074700000",
+      "areaM2": 1198.9795705946492,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "cf9eccfacd13844d5097cc9709e1e62329f55c5f81f570e3710f23c4362da2b0"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000322800000",
+      "sourceParcelId": "F00300030000322800000",
+      "areaM2": 3763.8178751529276,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "94e3744f068dad7611ba4813d3695d07b6e5cf92bb6e98ede6aa671874a4f6bf"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479700008",
+      "sourceParcelId": "F00300030002479700008",
+      "areaM2": 190.8594065211967,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "6b4f45f0059550ff5d44efe3b58d04b67cc6ae84acdf01ed05f6ef620687af38"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000194200003",
+      "sourceParcelId": "F00300030000194200003",
+      "areaM2": 752.8687728009759,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "42f8cbbdf45a04f59f1d91b6c76303b39f1762df3b37ec50a5366b92ce94a25f"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479700004",
+      "sourceParcelId": "F00300030002479700004",
+      "areaM2": 314.15294703244564,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "aa461b7bf789c5368831fb20755d000436fa100746c5479b4a5c3e11fd6b8b85"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002664200000",
+      "sourceParcelId": "F00300030002664200000",
+      "areaM2": 145609.0548511086,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "3817fe1e020d622f89700aca77ba0b172660de95de10e5237965c7ba58950072"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479700007",
+      "sourceParcelId": "F00300030002479700007",
+      "areaM2": 16.97711463330051,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "72ca1a56105141a89840ad2a7be389899ee8148d25de9065d02d92ef426f8359"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002472200003",
+      "sourceParcelId": "F00300030002472200003",
+      "areaM2": 12.319120271392737,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "f62664be3726df1e8bea23c65f8bb04ebd8dff06172c45ae4e55e80935b3852d"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030001573500000",
+      "sourceParcelId": "F00300030001573500000",
+      "areaM2": 10197.897923305052,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "aa0df71aca629542a8c5d519e0330494be9f7e2b4d448fec3424a07f5c94aecb"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000325600000",
+      "sourceParcelId": "F00300030000325600000",
+      "areaM2": 33681.941134433124,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "598e2ffdf3355c5b96570792db06d9c7abf8c7f0105f3377bf6a0cb5d48f594a"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002479700003",
+      "sourceParcelId": "F00300030002479700003",
+      "areaM2": 5194.8552262278845,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ac41d4ba80435e9c17613f12736c59420dc56c2fad4520164ead5a0f4d82c075"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002640800021",
+      "sourceParcelId": "F00300030002640800021",
+      "areaM2": 323.25309812554826,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "84c64577425fe7346edfb348e1f567d0df356a05000f1ead9804d19b0366b237"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002640800023",
+      "sourceParcelId": "F00300030002640800023",
+      "areaM2": 1284.8365972231104,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e279a715360fccc13b0b51e486a863f906adfa127998789dd3d05f344ae364df"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002640800024",
+      "sourceParcelId": "F00300030002640800024",
+      "areaM2": 54633.71544675846,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8248681efce00d5c45328fff8e2ffc53324f78ff58f2de31964e331da0aaa65f"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000191700001",
+      "sourceParcelId": "F00300030000191700001",
+      "areaM2": 1101.305067534678,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e4271f2acbf7b65502d4ed316b38865f61d2ca18ebe04a564a17a04e81b80f55"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000073800000",
+      "sourceParcelId": "F00300030000073800000",
+      "areaM2": 568.6238750725948,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e970267d36cd6a477831c5554110a927b70dc58fb9641ce9d357a15afef2a61c"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000073800001",
+      "sourceParcelId": "F00300030000073800001",
+      "areaM2": 568.6634001465369,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "483282558c70ec2f4aabc3c7ace3c7acc58668c449222ffeed00151418014160"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000073500000",
+      "sourceParcelId": "F00300030000073500000",
+      "areaM2": 1250.0431330238741,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "b00244d0234fe5d3f324141576fa1c8c6353fb2e15e4ed5db67e6b9b755202b4"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000072900001",
+      "sourceParcelId": "F00300030000072900001",
+      "areaM2": 569.9230268638933,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "3970af5b0799b55d898f16449e072375a464d406d7781359fa18665f68ff73b3"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002488300001",
+      "sourceParcelId": "F00300030002488300001",
+      "areaM2": 1466.8248457790369,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8d1cf466f93a33591bc49656268036fab857677e16eb1eb6ef6f3d88ebe8730f"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002488300000",
+      "sourceParcelId": "F00300030002488300000",
+      "areaM2": 3754.739731572924,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "974eaf256410bacc810356018c9786c1c6df54ca50faadf6c609ea1a025c6e09"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030000072600000",
+      "sourceParcelId": "F00300030000072600000",
+      "areaM2": 1250.4326950022696,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "c4ba340b61a4e0ed15f33bce9b7d61f35f3ce2f8fc59be67495bc98e50df4112"
+    },
+    {
+      "id": "za-mangaung-sgcode:F00300030002488500000",
+      "sourceParcelId": "F00300030002488500000",
+      "areaM2": 4986.82575653853,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "c11b951469cc51aaace6eb783c2d2616c979e9c3b1da4bc5b444e5f0bb96dd83"
+    }
+  ],
+  "qualityHold": false,
+  "qualityHoldReasons": []
+}

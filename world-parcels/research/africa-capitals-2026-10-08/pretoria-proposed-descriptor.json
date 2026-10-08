@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Proposed public, read-only Pretoria/Tshwane parcel source descriptor, matching bounded adapter qualification.",
+  "checkedAt": "2026-10-08T15:45:50.514Z",
+  "proposedDescriptor": {
+    "id": "za-tshwane-registered-parcels",
+    "idPrefix": "tshwane:lis-key:",
+    "endpoint": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1",
+    "idField": "lis_key",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "parcelNumberField": "lis_key",
+    "outFields": [
+      "OBJECTID",
+      "lis_key",
+      "parcel_label",
+      "status_lu_text",
+      "type_lu_text"
+    ],
+    "pageSize": 10,
+    "idBatchSize": 1,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "single-equality",
+    "attributeFilters": {
+      "status_lu_text": "Registered"
+    }
+  },
+  "identityNotes": {
+    "nativeKey": "lis_key",
+    "displayField": "parcel_label",
+    "transportOnly": "OBJECTID",
+    "nativeKeyIndexUnique": false,
+    "nativeKeySpatialSampleUnique": true,
+    "testedExactReadMode": "single-equality native key OID resolution followed by scoped ObjectID geometry read",
+    "testedNativeKeys": 93,
+    "scopeStatusCollisionCount": 0
+  },
+  "scopeNotes": {
+    "requestedStatuses": [
+      "Registered"
+    ],
+    "excludedStatusValues": [
+      "Now Scheme",
+      "Railway",
+      "Road",
+      "Unregistered"
+    ],
+    "statusMetadataDomainPresent": false,
+    "warning": "Only Registered equality scope was qualified; other values lack service coded-value definitions and provider rejects necessary multi-value / combined predicates."
+  }
+}

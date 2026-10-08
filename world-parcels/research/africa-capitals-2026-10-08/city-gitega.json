@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:BI:gitega",
+  "queueRank": null,
+  "name": "Gitega",
+  "country": "Burundi",
+  "countryCode": "BI",
+  "centerLatLon": [
+    -3.4264,
+    29.9306
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gitega Burundi cadastral parcels GIS property registry",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "French",
+        "query": "cadastre parcellaire Gitega Burundi recensement foncier parcelles",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://primature.gov.bi/le-premier-ministre-lance-le-rppcub-2026-une-reforme-majeure-pour-la-securisation-fonciere-et-la-transformation-numerique-du-burundi/",
+        "observation": "Official PM 2026 release says land/property parcel-owner census has started in Gitega commune with DTFCN/INSBU; establishes ongoing city-specific cadastral/registration activity, but records are field-collected and no public parcel viewer is described."
+      },
+      {
+        "url": "https://www.edi.bi/Home",
+        "observation": "Official PMS presents a property-title transfer system, cadastral-number and subdivision services, and sign-in workflow; public page confirms administrative registry functions, not anonymous geometry."
+      },
+      {
+        "url": "https://www.igebu.bi/Services/cartographie/",
+        "observation": "IGEBU lists updated Gitega city cartographic products; these are city maps, not parcel layer endpoints."
+      },
+      {
+        "url": "https://www.insbu.bi/populationDataPageGitegaGitega",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "IGEBU lists updated Gitega city cartographic products; these are city maps, not parcel layer endpoints.",
+    "nextStep": "Revisit the official map/service after a public, non-personal feature endpoint is identified; validate city coverage and geometry before calling this a sample.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official 2026 property/parcel-owner census in Gitega commune by DTFCN/INSBU and official PMS title/cadastral-number services establish city registry activity.",
+  "registryEvidenceUrls": [
+    "https://primature.gov.bi/le-premier-ministre-lance-le-rppcub-2026-une-reforme-majeure-pour-la-securisation-fonciere-et-la-transformation-numerique-du-burundi/",
+    "https://www.edi.bi/Home",
+    "https://www.igebu.bi/Services/cartographie/",
+    "https://www.insbu.bi/populationDataPageGitegaGitega"
+  ],
+  "resultCategory": "city_specific_registration_census_no_public_geometry",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/BI.json",
+    "world-parcels/research/retry/countries/BI.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Gitega Burundi cadastral parcels GIS property registry",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "French",
+      "query": "cadastre parcellaire Gitega Burundi recensement foncier parcelles",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

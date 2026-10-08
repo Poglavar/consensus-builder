@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "cityId": "capital:ZA:pretoria",
+  "name": "Pretoria",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "centerLatLon": [
+    -25.7479,
+    28.2293
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "capitalRole": "administrative capital",
+  "priorEvidence": [],
+  "registryFound": true,
+  "officialRegistryOrPortalFound": null,
+  "publicEndpointVerified": true,
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "targetGeometryEvidence": "sampled polygons",
+  "resultCategory": "verified_sample_partial_coverage",
+  "source": {
+    "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1",
+    "operator": "public ArcGIS service; municipality/operator as stated in service metadata",
+    "observation": "Official City of Tshwane Land Parcel polygon layer; SSL certificate chain failed normal verification, then host-specific TLS exception was used for this anonymous query.",
+    "geometryType": "polygon",
+    "nativeIdField": "OBJECTID",
+    "sampleFile": "sample-pretoria-bounded.geojson"
+  },
+  "verifiedParcelResponse": {
+    "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1/query?where=1%3D1&geometry=28.2283%2C-25.7489%2C28.2303%2C-25.7469&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+    "method": "GET anonymous ArcGIS REST query",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "featureCount": 34,
+    "coordinateReferenceSystem": "EPSG:4326 input and output",
+    "sampleFile": "sample-pretoria-bounded.geojson",
+    "pagination": "Omitted; bounded response returned below service transfer limits."
+  },
+  "englishQueries": [
+    {
+      "languageScript": "English",
+      "exactQuery": "Pretoria Bloemfontein cadastral parcels GIS official City of Tshwane Mangaung GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "English (official language)",
+      "exactQuery": "Pretoria Bloemfontein cadastral parcels GIS official City of Tshwane Mangaung GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1",
+      "observation": "Official municipal Land Parcel polygon layer; bounded public query returned 34 polygons. A separate city registry remains unverified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1/query?where=1%3D1&geometry=28.2283%2C-25.7489%2C28.2303%2C-25.7469&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+      "method": "GET with bounded envelope; returnGeometry=true; safe identifier fields only",
+      "httpStatus": 200,
+      "assessment": "Nonempty polygon FeatureCollection, 34 features; saved first three only.",
+      "contentType": "application/json; charset=utf-8",
+      "bboxWgs84": {
+        "west": 28.228299999999997,
+        "south": -25.748900000000003,
+        "east": 28.2303,
+        "north": -25.7469
+      },
+      "pagination": "Omitted; this service did not require pagination for bounded query."
+    }
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "Published Registered status only; Now Scheme, Road, Railway and Unregistered records are excluded. Thirteen bounded Pretoria cells and 93 LIS-key geometry rereads passed. Seven sampled boundary slivers are below 2.26 m² and 0.34% of the smaller parcel. Original-survey semantics and legal currentness remain unverified; no citywide completeness claim.",
+    "wholeCityCoverageVerified": false,
+    "countrywideVerified": false
+  },
+  "blocker": null,
+  "remainingUncertainty": "Citywide completeness and cadastral validity remain unverified.",
+  "nextStep": "Monitor source availability and retain the documented scope; wider coverage and legal currentness remain unverified.",
+  "purpose": "City-specific research into parcel geometry and presence of a city-level registry or cadastre. Registry evidence is assessed separately from publicly retrievable geometry.",
+  "registryEvidenceUrls": [
+    "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1"
+  ],
+  "registryBasis": "The official City of Tshwane Land Parcels service returns surveyed parcels in Pretoria with LIS keys and status labels. This establishes a city-scoped cadastral dataset, separately from legal title-registry access and complete city coverage.",
+  "status": "complete",
+  "portalInspectionComplete": true,
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Pretoria Bloemfontein cadastral parcels GIS official City of Tshwane Mangaung GIS",
+      "language": "English",
+      "method": "web.run search_query"
+    }
+  ],
+  "previousRegistryAssessment": {
+    "registryFound": null,
+    "registryBasis": "Official municipal parcel GIS layer is confirmed, but separate registry presence is unknown.",
+    "resultCategory": "verified_geometry"
+  },
+  "registryReview": {
+    "checkedAt": "2026-10-08",
+    "basis": "The official City of Tshwane Land Parcels service returns surveyed parcels in Pretoria with LIS keys and status labels. This establishes a city-scoped cadastral dataset, separately from legal title-registry access and complete city coverage.",
+    "evidenceUrls": [],
+    "interpretation": "Registry activity and partial cadastral records can establish presence; citywide completeness is not required."
+  },
+  "sourceIds": [
+    "za-tshwane-registered-parcels"
+  ],
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "acceptance": {
+    "protocolFile": "pretoria-equality-acceptance.json",
+    "geometryQualityFile": "pretoria-overlap-assessment.json",
+    "protocolPassed": true,
+    "runtimeEnabled": true,
+    "distinctParcelReferences": 93
+  },
+  "parcelStatus": "verified_sample_partial_coverage"
+}

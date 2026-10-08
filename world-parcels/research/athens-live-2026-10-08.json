@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Verified Athens parcel geometry and live ArcGIS adapter evidence. Only geometry and cadastral identifiers were retained.",
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:833",
+  "countryCode": "GR",
+  "status": "verified_sample_partial_coverage",
+  "sourceId": "gr-ktimatologio-active-parcels-arcgis",
+  "viewer": "https://maps.ktimatologio.gr/",
+  "webMapConfig": "https://www.arcgis.com/sharing/rest/content/items/15dcc0f7a7d744ac9dffb90cb1a6d6b1/data?f=json",
+  "endpoint": "https://services-eu1.arcgis.com/40tFGWzosjaLJpmn/arcgis/rest/services/GEOTEMAXIA_LEITOURGOUN_ON_gdb/FeatureServer/0",
+  "layerName": "LEITOURGOUN",
+  "crs": "EPSG:3857; output requested as EPSG:4326",
+  "nativeIdField": "KAEK",
+  "objectIdField": "OBJECTID",
+  "retainedFields": [
+    "OBJECTID",
+    "KAEK"
+  ],
+  "maxRecordCount": 2000,
+  "supportsPagination": true,
+  "boundedQuery": {
+    "bbox": [
+      23.72898,
+      37.98958,
+      23.72998,
+      37.99058
+    ],
+    "adapter": "backend/parcels/arcgis-source.js",
+    "pageSize": 20,
+    "features": 27,
+    "distinctKAEKs": 27,
+    "distinctObjectIds": 27,
+    "complete": true
+  },
+  "exactQuery": {
+    "nativeId": "050096064001",
+    "features": 1,
+    "complete": true
+  },
+  "sampleFile": "research/athens-live-2026-10-08-sample.geojson",
+  "scopeNote": "Operating Cadastre areas only. Athens center was verified; neither whole Athens nor all Greece is inferred from this neighborhood. Large road/common-land geometries coexist with ordinary lot polygons.",
+  "previousResearchFile": "research/athens.json",
+  "termsAreInformational": true
+}

@@ -1,0 +1,116 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:16:12Z",
+  "date": "2026-10-08",
+  "slug": "laayoune",
+  "cityId": "capital:EH:laayoune",
+  "name": "Laayoune",
+  "country": "Western Sahara",
+  "code": "EH",
+  "centerLatLon": [
+    27.1253,
+    -13.1625
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Laayoune is administered by Morocco; queue separately labels it as SADR's claimed-capital seat. ANCFCC lists a Laayoune conservation and cadastre office; political status remains disputed.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage",
+    "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf"
+  ],
+  "registryBasis": "ANCFCC's official service-office directory lists separate property-conservation and cadastre offices in Laayoune; its map catalogue includes Laayoune sheets. These establish Moroccan-administered cadastral evidence, not a resolution of territorial status or open geometry.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_cadastre_map_products_no_open_geometry",
+  "findings": "City-specific evidence supports Moroccan-administered cadastre coverage: the ANCFCC directory lists Laayoune conservation and cadastre offices, and its catalogue names Laayoune urban map sheets. The catalogue product is a map sheet, not an open parcel-vector service. The online plan request is an individualized identity/title/CAPTCHA workflow; it was inspected but not submitted. This record preserves Western Sahara jurisdictional status separately and does not assess SADR land administration.",
+  "englishQueries": [
+    "Laayoune Western Sahara cadastral parcels public GIS official ANCFCC"
+  ],
+  "localLanguageQueries": [
+    "Laayoune Maroc cadastre ANCFCC العيون المسح العقاري خريطة العقارات",
+    "العيون الصحراء الغربية المسح العقاري قطع الأراضي خريطة السجل العقاري"
+  ],
+  "searches": [
+    {
+      "query": "Laayoune Western Sahara cadastral parcels public GIS official ANCFCC",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Laayoune Maroc cadastre ANCFCC العيون المسح العقاري خريطة العقارات",
+      "language": "French and Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "العيون الصحراء الغربية المسح العقاري قطع الأراضي خريطة السجل العقاري",
+      "language": "French and Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Available official cadastral plan delivery is individualized and paid; no public vector query found.",
+  "nextStep": "Ask ANCFCC Laayoune office whether a public parcel-boundary service exists; ask SADR administration separately only if a de facto jurisdiction source is within scope.",
+  "coverageAssessment": {
+    "claimedScope": "Moroccan-administered Laayoune cadastral district; city is separately tagged as SADR claimed-capital seat",
+    "verifiedOpenScope": "Local office/map catalog confirmed; no public polygons found",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "French and Arabic",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "method": "web.run open and find for LAAYOUNE",
+      "httpStatus": null,
+      "toolOutcome": "Official ANCFCC office-directory page content returned; HTTP status not exposed.",
+      "observed": "Lists separate Laayoune conservation and cadastre offices."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Official plan-request page content returned; HTTP status not exposed.",
+      "observed": "Identity, title/cadastre details, and CAPTCHA required; not submitted."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+      "method": "web.run open PDF; find for Laâyoune",
+      "httpStatus": null,
+      "toolOutcome": "Direct fetch timed out; no PDF content or HTTP status was returned.",
+      "observed": "No direct confirmation of a Laayoune map sheet from this fetch; retain the city-office evidence from the ANCFCC directory and treat this catalogue as an unverified lead."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "EH",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "supplement: claimed capital of SADR, Moroccan-administered",
+  "scopeTier": "supplementary_disputed_or_de_facto",
+  "executedQueries": [
+    {
+      "query": "Laayoune Western Sahara cadastral parcels public GIS official ANCFCC",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Laayoune Maroc cadastre ANCFCC العيون المسح العقاري خريطة العقارات",
+      "language": "French and Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "العيون الصحراء الغربية المسح العقاري قطع الأراضي خريطة السجل العقاري",
+      "language": "French and Arabic",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

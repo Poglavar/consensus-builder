@@ -3478,6 +3478,11 @@
             "loaded_parcels_from_source": "Loaded {{count}} parcels from {{source}}.",
             "checking_cadastral_ground": "Checking cadastral ground…",
             "loading_cadastral_ground": "Loading cadastral ground {{done}}/{{total}}…",
+            "tap_parcel_to_load": "Tap a parcel to load its boundary. Area-wide parcel loading is unavailable.",
+            "looking_up_parcel": "Loading parcel…",
+            "no_parcel_at_point": "No registered parcel returned at this point.",
+            "parcel_lookup_failed": "Parcel could not be loaded. Tap again to retry.",
+            "parcel_boundary_loaded": "Parcel boundary loaded.",
             "waiting_for_proposal_before_parcels": "Waiting for proposal to load before fetching parcels…",
             "debug_mode_enabled": "Debug mode enabled - dangerous actions are now visible",
             "debug_mode_disabled": "Debug mode disabled - dangerous actions are hidden",
@@ -3526,6 +3531,8 @@
             "birmingham": "Birmingham, United Kingdom",
             "lusaka": "Lusaka, Zambia",
             "shenzhen": "Shenzhen, China",
+            "tbilisi": "Tbilisi, Georgia",
+            "istanbul": "Istanbul, Turkey",
             "montreal": "Montreal, Canada",
             "dortmund": "Dortmund, Germany",
             "london": "London, United Kingdom",
@@ -3602,7 +3609,11 @@
             "ahmedabad": "Ahmedabad, India",
             "surat": "Surat, India",
             "nairobi": "Nairobi, Kenya",
-            "astana": "Astana, Kazakhstan"
+            "astana": "Astana, Kazakhstan",
+            "athens": "Athens, Greece",
+            "gaborone": "Gaborone, Botswana",
+            "bloemfontein": "Bloemfontein, South Africa",
+            "pretoria": "Pretoria, South Africa"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",
@@ -4182,14 +4193,35 @@
             "placeholder": "Search a city or country",
             "label": "Search places",
             "country": "Country",
+            "territory": "Territory",
             "noResults": "No matching place"
         },
         "legend": {
-            "title": "Parcel data"
+            "title": "Country parcel coverage",
+            "cities": "City with parcels in the app"
+        },
+        "coverage": {
+            "full": {
+                "short": "Full country coverage",
+                "text": "Open parcel data is confirmed for the whole country. Cities available in the app are marked separately."
+            },
+            "partial": {
+                "short": "Some open data",
+                "text": "Open parcel data is confirmed in at least one city or region. Coverage at this specific location, or across the whole country, is not confirmed. Cities available in the app are marked separately."
+            },
+            "none": {
+                "short": "Checked: none found",
+                "text": "We checked for open parcel data in this country and found none. This records the result of our search, not proof that no source exists."
+            },
+            "unknown": {
+                "short": "Unchecked / inconclusive",
+                "text": "This country has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available."
+            }
         },
         "tier": {
             "live": {
                 "short": "In the app",
+                "pointText": "Tap the map to load and select an individual parcel. Loading every parcel in an area is unavailable for this source.",
                 "datedStreamText": "Parcels load as you zoom in and pan. This source is a {{version}} dataset; current boundaries may differ.",
                 "streamText": "Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.",
                 "text": "Parcels, proposals and 3D are ready here."
@@ -4203,13 +4235,14 @@
                 "text": "We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a proposal executes only through an authority's verdict."
             },
             "unknown": {
-                "short": "Not researched",
-                "text": "Nobody has checked this place for open parcel data yet. You can still draw a site and propose here; without parcels, a proposal executes only through an authority's verdict."
+                "short": "Unconfirmed",
+                "text": "Open parcel data has not been confirmed here; this place is unchecked or the check was inconclusive. You can still draw a site and propose here; without parcels, a proposal executes only through an authority's verdict."
             }
         },
         "popup": {
             "ocean": "Open water",
-            "oceanText": "No land here, so no parcels. You can still open the map at this spot."
+            "oceanText": "No land here, so no parcels. You can still open the map at this spot.",
+            "coverageSource": "Coverage source"
         },
         "action": {
             "open": "Open {{city}}",

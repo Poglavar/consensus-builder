@@ -1,0 +1,2754 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Identity audit of repeated Gaborone LotId=681 and safe cadastral references across the first five cells of the existing adapter run.",
+  "checkedAt": "2026-10-08T15:17:13.304Z",
+  "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+  "coordinateReferenceSystem": {
+    "query": "EPSG:4326",
+    "metric": "EPSG:32735 (WGS84 / UTM zone 35S)",
+    "metricMethod": "proj4 coordinate transformation then planar polygon area and Turf intersection in meters"
+  },
+  "requestedFields": [
+    "FID",
+    "OBJECTID",
+    "OBJECTID_1",
+    "LotId",
+    "Extension_",
+    "Town_Lot_I",
+    "SR_No",
+    "Diagram_No"
+  ],
+  "privacy": "No owner-like Name, ExecutingO, Responsibl, or other contact fields requested.",
+  "cells": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        25.911,
+        -24.66,
+        25.912,
+        -24.659
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        25.912,
+        -24.66,
+        25.913,
+        -24.659
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        25.913,
+        -24.66,
+        25.914,
+        -24.659
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        25.911,
+        -24.659,
+        25.912,
+        -24.658
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        25.912,
+        -24.659,
+        25.913,
+        -24.658
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T15:17:13.305Z",
+      "operation": "lotid-681-count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=LotId+%3D+%27681%27&returnCountOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:14.561Z",
+      "operation": "lotid-681-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=LotId+%3D+%27681%27&returnIdsOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 62
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:15.198Z",
+      "operation": "lotid-681-geometry",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?objectIds=9102%2C9103%2C9645%2C47651&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1994
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:15.525Z",
+      "operation": "viewport-0-count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.66%2C25.912%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:15.873Z",
+      "operation": "viewport-0-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.66%2C25.912%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 44
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:16.213Z",
+      "operation": "viewport-1-count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.66%2C25.913%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:16.554Z",
+      "operation": "viewport-1-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.66%2C25.913%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 65
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:16.891Z",
+      "operation": "viewport-1-geometry",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?objectIds=46241%2C46242%2C46531%2C46532&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2981
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:17.217Z",
+      "operation": "viewport-2-count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.913%2C-24.66%2C25.914%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:17.554Z",
+      "operation": "viewport-2-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.913%2C-24.66%2C25.914%2C-24.659&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 123
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:17.891Z",
+      "operation": "viewport-2-geometry",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?objectIds=3178%2C9102%2C11157%2C16169%2C16529%2C17776%2C19648%2C34245%2C34360%2C46241%2C46242%2C46243%2C46531%2C46532&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7946
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:18.225Z",
+      "operation": "viewport-3-count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.659%2C25.912%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:18.552Z",
+      "operation": "viewport-3-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.911%2C-24.659%2C25.912%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 44
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:18.887Z",
+      "operation": "viewport-4-count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.659%2C25.913%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:19.226Z",
+      "operation": "viewport-4-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&geometry=25.912%2C-24.659%2C25.913%2C-24.658&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 58
+    },
+    {
+      "checkedAt": "2026-10-08T15:17:19.567Z",
+      "operation": "viewport-4-geometry",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?objectIds=9103%2C24192%2C46531&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2209
+    }
+  ],
+  "responses": {
+    "lotId681": {
+      "count": 4,
+      "objectIds": [
+        9102,
+        9103,
+        9645,
+        47651
+      ],
+      "fields": [
+        "FID",
+        "OBJECTID",
+        "OBJECTID_1",
+        "LotId",
+        "Extension_",
+        "Town_Lot_I",
+        "SR_No",
+        "Diagram_No"
+      ],
+      "features": [
+        {
+          "type": "Feature",
+          "id": 9102,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  25.913187019790094,
+                  -24.660267750286934,
+                  0,
+                  null
+                ],
+                [
+                  25.91318784041595,
+                  -24.660267310192925,
+                  0,
+                  null
+                ],
+                [
+                  25.91336670816112,
+                  -24.65964047193046,
+                  0,
+                  null
+                ],
+                [
+                  25.913366403932482,
+                  -24.65964047377973,
+                  0,
+                  null
+                ],
+                [
+                  25.913351812117845,
+                  -24.659690411078323,
+                  0,
+                  null
+                ],
+                [
+                  25.91327960961084,
+                  -24.659943365277872,
+                  0,
+                  null
+                ],
+                [
+                  25.9132074068358,
+                  -24.66019632034541,
+                  0,
+                  null
+                ],
+                [
+                  25.913187019790094,
+                  -24.660267750286934,
+                  0,
+                  null
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "FID": 9102,
+            "OBJECTID": 88539,
+            "OBJECTID_1": 9340,
+            "LotId": "681",
+            "Extension_": " ",
+            "Town_Lot_I": 681,
+            "SR_No": "11/1963",
+            "Diagram_No": "48/1963"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": 9103,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  25.91295327997731,
+                  -24.65895551306646,
+                  0,
+                  null
+                ],
+                [
+                  25.913022929745186,
+                  -24.658954622275008,
+                  0,
+                  null
+                ],
+                [
+                  25.913038475174453,
+                  -24.658954422200466,
+                  0,
+                  null
+                ],
+                [
+                  25.912954002837328,
+                  -24.658954941772,
+                  0,
+                  null
+                ],
+                [
+                  25.91295327997731,
+                  -24.65895551306646,
+                  0,
+                  null
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "FID": 9103,
+            "OBJECTID": 88540,
+            "OBJECTID_1": 9341,
+            "LotId": "681",
+            "Extension_": " ",
+            "Town_Lot_I": 681,
+            "SR_No": "11/1963",
+            "Diagram_No": "48/1963"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": 9645,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  25.913595635901,
+                  -24.658951256875508,
+                  0,
+                  null
+                ],
+                [
+                  25.913595634047827,
+                  -24.658951002322265,
+                  0,
+                  null
+                ],
+                [
+                  25.91332369674503,
+                  -24.658952671696426,
+                  0,
+                  null
+                ],
+                [
+                  25.913595635901,
+                  -24.658951256875508,
+                  0,
+                  null
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "FID": 9645,
+            "OBJECTID": 89096,
+            "OBJECTID_1": 9897,
+            "LotId": "681",
+            "Extension_": " ",
+            "Town_Lot_I": 681,
+            "SR_No": "11/1963",
+            "Diagram_No": "48/1963"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": 47651,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  25.86077562010033,
+                  -24.671604480975034,
+                  0,
+                  null
+                ],
+                [
+                  25.860904791269476,
+                  -24.671716157966735,
+                  0,
+                  null
+                ],
+                [
+                  25.8610745315713,
+                  -24.671552225470567,
+                  0,
+                  null
+                ],
+                [
+                  25.860945361460654,
+                  -24.67144055493506,
+                  0,
+                  null
+                ],
+                [
+                  25.86077562010033,
+                  -24.671604480975034,
+                  0,
+                  null
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "FID": 47651,
+            "OBJECTID": 0,
+            "OBJECTID_1": 48733,
+            "LotId": "681",
+            "Extension_": " ",
+            "Town_Lot_I": 681,
+            "SR_No": "11/1963",
+            "Diagram_No": "48/1963"
+          }
+        }
+      ]
+    },
+    "cells": [
+      {
+        "name": "viewport-0",
+        "bbox": [
+          25.911,
+          -24.66,
+          25.912,
+          -24.659
+        ],
+        "count": 0,
+        "objectIds": [],
+        "features": []
+      },
+      {
+        "name": "viewport-1",
+        "bbox": [
+          25.912,
+          -24.66,
+          25.913,
+          -24.659
+        ],
+        "count": 4,
+        "objectIds": [
+          46241,
+          46242,
+          46531,
+          46532
+        ],
+        "features": [
+          {
+            "type": "Feature",
+            "id": 46241,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91327960961084,
+                    -24.659943365277872,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988999168988,
+                    -24.65987408979202,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912954369660724,
+                    -24.659993683729382,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91291675428009,
+                    -24.660127035060704,
+                    0,
+                    null
+                  ],
+                  [
+                    25.9132074068358,
+                    -24.66019632034541,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91327960961084,
+                    -24.659943365277872,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46241,
+              "OBJECTID": 126587,
+              "OBJECTID_1": 47323,
+              "LotId": "6036",
+              "Extension_": " ",
+              "Town_Lot_I": 6036,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46242,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913351812117845,
+                    -24.659690411078323,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91306124576518,
+                    -24.65962114537929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91301390138924,
+                    -24.65977969906432,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988999168988,
+                    -24.65987408979202,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91327960961084,
+                    -24.659943365277872,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913351812117845,
+                    -24.659690411078323,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46242,
+              "OBJECTID": 126588,
+              "OBJECTID_1": 47324,
+              "LotId": "6035",
+              "Extension_": " ",
+              "Town_Lot_I": 6035,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46531,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912990597682168,
+                    -24.659367563507246,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988383201004,
+                    -24.659063181886193,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913085982973776,
+                    -24.65895413171755,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913038475174453,
+                    -24.658954422200466,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913022929745186,
+                    -24.658954622275008,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91295327997731,
+                    -24.65895551306646,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912884829694512,
+                    -24.65900967545128,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912875541557348,
+                    -24.65906156013456,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912821963352794,
+                    -24.659384592203157,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912662861749872,
+                    -24.659941983432187,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912547956410336,
+                    -24.660222302381495,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912853612013755,
+                    -24.660348108041685,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91291675428009,
+                    -24.660127035060704,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912954369660724,
+                    -24.659993683729382,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988999168988,
+                    -24.65987408979202,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91301390138924,
+                    -24.65977969906432,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91306124576518,
+                    -24.65962114537929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46531,
+              "OBJECTID": 126887,
+              "OBJECTID_1": 47613,
+              "LotId": "REM OF LOT 681",
+              "Extension_": " ",
+              "Town_Lot_I": 0,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46532,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913595635901,
+                    -24.658951256875508,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91332369674503,
+                    -24.658952671696426,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913085982973776,
+                    -24.65895413171755,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988383201004,
+                    -24.659063181886193,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912990597682168,
+                    -24.659367563507246,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913237536981747,
+                    -24.659366062895874,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913366403932482,
+                    -24.65964047377973,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91336670816112,
+                    -24.65964047193046,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913600858159235,
+                    -24.659638727987428,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913595853205962,
+                    -24.658951255554307,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913595635901,
+                    -24.658951256875508,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46532,
+              "OBJECTID": 126888,
+              "OBJECTID_1": 47614,
+              "LotId": "28551",
+              "Extension_": " ",
+              "Town_Lot_I": 28551,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          }
+        ]
+      },
+      {
+        "name": "viewport-2",
+        "bbox": [
+          25.913,
+          -24.66,
+          25.914,
+          -24.659
+        ],
+        "count": 14,
+        "objectIds": [
+          3178,
+          9102,
+          11157,
+          16169,
+          16529,
+          17776,
+          19648,
+          34245,
+          34360,
+          46241,
+          46242,
+          46243,
+          46531,
+          46532
+        ],
+        "features": [
+          {
+            "type": "Feature",
+            "id": 3178,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.914110037833982,
+                    -24.659291435718874,
+                    0,
+                    null
+                  ],
+                  [
+                    25.914107511430764,
+                    -24.658947858557646,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91386662903276,
+                    -24.6589493408951,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913869155764452,
+                    -24.659292918073444,
+                    0,
+                    null
+                  ],
+                  [
+                    25.914110037833982,
+                    -24.659291435718874,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 3178,
+              "OBJECTID": 82241,
+              "OBJECTID_1": 3276,
+              "LotId": "683",
+              "Extension_": " ",
+              "Town_Lot_I": 683,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 9102,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913187019790094,
+                    -24.660267750286934,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91318784041595,
+                    -24.660267310192925,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91336670816112,
+                    -24.65964047193046,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913366403932482,
+                    -24.65964047377973,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913351812117845,
+                    -24.659690411078323,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91327960961084,
+                    -24.659943365277872,
+                    0,
+                    null
+                  ],
+                  [
+                    25.9132074068358,
+                    -24.66019632034541,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913187019790094,
+                    -24.660267750286934,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 9102,
+              "OBJECTID": 88539,
+              "OBJECTID_1": 9340,
+              "LotId": "681",
+              "Extension_": " ",
+              "Town_Lot_I": 681,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 11157,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91414680437855,
+                    -24.66019598285199,
+                    0,
+                    null
+                  ],
+                  [
+                    25.914145291049763,
+                    -24.659989602585437,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913758831899813,
+                    -24.659991973998896,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91373642304396,
+                    -24.660198501565265,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91414680437855,
+                    -24.66019598285199,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 11157,
+              "OBJECTID": 90639,
+              "OBJECTID_1": 11439,
+              "LotId": "698",
+              "Extension_": " ",
+              "Town_Lot_I": 698,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 16169,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91411256614314,
+                    -24.65963540372661,
+                    0,
+                    null
+                  ],
+                  [
+                    25.914110037833982,
+                    -24.659291435718874,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913869155764452,
+                    -24.659292918073444,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913871683354408,
+                    -24.65963687798028,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91411256614314,
+                    -24.65963540372661,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 16169,
+              "OBJECTID": 95643,
+              "OBJECTID_1": 16577,
+              "LotId": "691",
+              "Extension_": " ",
+              "Town_Lot_I": 691,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 16529,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913758831899813,
+                    -24.659991973998896,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913369821038174,
+                    -24.659956728619267,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913311806383742,
+                    -24.66016002692264,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91373642304396,
+                    -24.660198501565265,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913758831899813,
+                    -24.659991973998896,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 16529,
+              "OBJECTID": 96055,
+              "OBJECTID_1": 16943,
+              "LotId": "695",
+              "Extension_": " ",
+              "Town_Lot_I": 695,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 17776,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913871683354408,
+                    -24.65963687798028,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913869155764452,
+                    -24.659292918073444,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913628266761553,
+                    -24.659294400084004,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913630802581267,
+                    -24.65963835995993,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913871683354408,
+                    -24.65963687798028,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 17776,
+              "OBJECTID": 97333,
+              "OBJECTID_1": 18218,
+              "LotId": "692",
+              "Extension_": " ",
+              "Town_Lot_I": 692,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 19648,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913758831899813,
+                    -24.659991973998896,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91378236493092,
+                    -24.659775017791763,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91348125940651,
+                    -24.6597768675798,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913405840006387,
+                    -24.659830489417747,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913369821038174,
+                    -24.659956728619267,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913758831899813,
+                    -24.659991973998896,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 19648,
+              "OBJECTID": 99291,
+              "OBJECTID_1": 20128,
+              "LotId": "696",
+              "Extension_": " ",
+              "Town_Lot_I": 696,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 34245,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.914145291049763,
+                    -24.659989602585437,
+                    0,
+                    null
+                  ],
+                  [
+                    25.914144097751603,
+                    -24.659827829626447,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91408346945089,
+                    -24.659773169211867,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91378236493092,
+                    -24.659775017791763,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913758831899813,
+                    -24.659991973998896,
+                    0,
+                    null
+                  ],
+                  [
+                    25.914145291049763,
+                    -24.659989602585437,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 34245,
+              "OBJECTID": 114217,
+              "OBJECTID_1": 35059,
+              "LotId": "697",
+              "Extension_": " ",
+              "Town_Lot_I": 697,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 34360,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913869155764452,
+                    -24.659292918073444,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91386662903276,
+                    -24.6589493408951,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913625738713638,
+                    -24.65895082289456,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913628266761553,
+                    -24.659294400084004,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913869155764452,
+                    -24.659292918073444,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 34360,
+              "OBJECTID": 114336,
+              "OBJECTID_1": 35178,
+              "LotId": "682",
+              "Extension_": " ",
+              "Town_Lot_I": 682,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46241,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91327960961084,
+                    -24.659943365277872,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988999168988,
+                    -24.65987408979202,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912954369660724,
+                    -24.659993683729382,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91291675428009,
+                    -24.660127035060704,
+                    0,
+                    null
+                  ],
+                  [
+                    25.9132074068358,
+                    -24.66019632034541,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91327960961084,
+                    -24.659943365277872,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46241,
+              "OBJECTID": 126587,
+              "OBJECTID_1": 47323,
+              "LotId": "6036",
+              "Extension_": " ",
+              "Town_Lot_I": 6036,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46242,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913351812117845,
+                    -24.659690411078323,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91306124576518,
+                    -24.65962114537929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91301390138924,
+                    -24.65977969906432,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988999168988,
+                    -24.65987408979202,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91327960961084,
+                    -24.659943365277872,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913351812117845,
+                    -24.659690411078323,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46242,
+              "OBJECTID": 126588,
+              "OBJECTID_1": 47324,
+              "LotId": "6035",
+              "Extension_": " ",
+              "Town_Lot_I": 6035,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46243,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913366403932482,
+                    -24.65964047377973,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913237536981747,
+                    -24.659366062895874,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91306124576518,
+                    -24.65962114537929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913351812117845,
+                    -24.659690411078323,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913366403932482,
+                    -24.65964047377973,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46243,
+              "OBJECTID": 126589,
+              "OBJECTID_1": 47325,
+              "LotId": "6034",
+              "Extension_": " ",
+              "Town_Lot_I": 6034,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46531,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912990597682168,
+                    -24.659367563507246,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988383201004,
+                    -24.659063181886193,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913085982973776,
+                    -24.65895413171755,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913038475174453,
+                    -24.658954422200466,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913022929745186,
+                    -24.658954622275008,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91295327997731,
+                    -24.65895551306646,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912884829694512,
+                    -24.65900967545128,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912875541557348,
+                    -24.65906156013456,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912821963352794,
+                    -24.659384592203157,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912662861749872,
+                    -24.659941983432187,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912547956410336,
+                    -24.660222302381495,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912853612013755,
+                    -24.660348108041685,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91291675428009,
+                    -24.660127035060704,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912954369660724,
+                    -24.659993683729382,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988999168988,
+                    -24.65987408979202,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91301390138924,
+                    -24.65977969906432,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91306124576518,
+                    -24.65962114537929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46531,
+              "OBJECTID": 126887,
+              "OBJECTID_1": 47613,
+              "LotId": "REM OF LOT 681",
+              "Extension_": " ",
+              "Town_Lot_I": 0,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46532,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913595635901,
+                    -24.658951256875508,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91332369674503,
+                    -24.658952671696426,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913085982973776,
+                    -24.65895413171755,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988383201004,
+                    -24.659063181886193,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912990597682168,
+                    -24.659367563507246,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913237536981747,
+                    -24.659366062895874,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913366403932482,
+                    -24.65964047377973,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91336670816112,
+                    -24.65964047193046,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913600858159235,
+                    -24.659638727987428,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913595853205962,
+                    -24.658951255554307,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913595635901,
+                    -24.658951256875508,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46532,
+              "OBJECTID": 126888,
+              "OBJECTID_1": 47614,
+              "LotId": "28551",
+              "Extension_": " ",
+              "Town_Lot_I": 28551,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          }
+        ]
+      },
+      {
+        "name": "viewport-3",
+        "bbox": [
+          25.911,
+          -24.659,
+          25.912,
+          -24.658
+        ],
+        "count": 0,
+        "objectIds": [],
+        "features": []
+      },
+      {
+        "name": "viewport-4",
+        "bbox": [
+          25.912,
+          -24.659,
+          25.913,
+          -24.658
+        ],
+        "count": 3,
+        "objectIds": [
+          9103,
+          24192,
+          46531
+        ],
+        "features": [
+          {
+            "type": "Feature",
+            "id": 9103,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91295327997731,
+                    -24.65895551306646,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913022929745186,
+                    -24.658954622275008,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913038475174453,
+                    -24.658954422200466,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912954002837328,
+                    -24.658954941772,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91295327997731,
+                    -24.65895551306646,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 9103,
+              "OBJECTID": 88540,
+              "OBJECTID_1": 9341,
+              "LotId": "681",
+              "Extension_": " ",
+              "Town_Lot_I": 681,
+              "SR_No": "11/1963",
+              "Diagram_No": "48/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 24192,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.913263201672347,
+                    -24.658787941653344,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913293102033332,
+                    -24.6587602371661,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913292501312522,
+                    -24.658677693305208,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913262186633908,
+                    -24.658650362917818,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91297761365537,
+                    -24.658652102127007,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912978626413015,
+                    -24.658789681788132,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913263201672347,
+                    -24.658787941653344,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 24192,
+              "OBJECTID": 103820,
+              "OBJECTID_1": 24779,
+              "LotId": "1197",
+              "Extension_": " ",
+              "Town_Lot_I": 1197,
+              "SR_No": "12/63",
+              "Diagram_No": "46/1963"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 46531,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912990597682168,
+                    -24.659367563507246,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988383201004,
+                    -24.659063181886193,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913085982973776,
+                    -24.65895413171755,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913038475174453,
+                    -24.658954422200466,
+                    0,
+                    null
+                  ],
+                  [
+                    25.913022929745186,
+                    -24.658954622275008,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91295327997731,
+                    -24.65895551306646,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912884829694512,
+                    -24.65900967545128,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912875541557348,
+                    -24.65906156013456,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912821963352794,
+                    -24.659384592203157,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912662861749872,
+                    -24.659941983432187,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912547956410336,
+                    -24.660222302381495,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912853612013755,
+                    -24.660348108041685,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91291675428009,
+                    -24.660127035060704,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912954369660724,
+                    -24.659993683729382,
+                    0,
+                    null
+                  ],
+                  [
+                    25.912988999168988,
+                    -24.65987408979202,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91301390138924,
+                    -24.65977969906432,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91306124576518,
+                    -24.65962114537929,
+                    0,
+                    null
+                  ],
+                  [
+                    25.91313392166854,
+                    -24.65936669259929,
+                    0,
+                    null
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "FID": 46531,
+              "OBJECTID": 126887,
+              "OBJECTID_1": 47613,
+              "LotId": "REM OF LOT 681",
+              "Extension_": " ",
+              "Town_Lot_I": 0,
+              "SR_No": " ",
+              "Diagram_No": " "
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "analysis": {
+    "uniqueFidCount": 16,
+    "fieldStats": {
+      "FID": {
+        "nonemptyCount": 16,
+        "distinctNonemptyCount": 16,
+        "zeroCount": 0
+      },
+      "OBJECTID": {
+        "nonemptyCount": 16,
+        "distinctNonemptyCount": 16,
+        "zeroCount": 0
+      },
+      "OBJECTID_1": {
+        "nonemptyCount": 16,
+        "distinctNonemptyCount": 16,
+        "zeroCount": 0
+      },
+      "LotId": {
+        "nonemptyCount": 16,
+        "distinctNonemptyCount": 15,
+        "zeroCount": 0
+      },
+      "Extension_": {
+        "nonemptyCount": 0,
+        "distinctNonemptyCount": 0,
+        "zeroCount": 0
+      },
+      "Town_Lot_I": {
+        "nonemptyCount": 16,
+        "distinctNonemptyCount": 15,
+        "zeroCount": 1
+      },
+      "SR_No": {
+        "nonemptyCount": 11,
+        "distinctNonemptyCount": 2,
+        "zeroCount": 0
+      },
+      "Diagram_No": {
+        "nonemptyCount": 11,
+        "distinctNonemptyCount": 2,
+        "zeroCount": 0
+      }
+    },
+    "keyCandidates": [
+      {
+        "fields": [
+          "LotId"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681"
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "OBJECTID"
+        ],
+        "distinctKeyCount": 16,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "OBJECTID_1"
+        ],
+        "distinctKeyCount": 16,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "LotId",
+          "OBJECTID"
+        ],
+        "distinctKeyCount": 16,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "LotId",
+          "OBJECTID_1"
+        ],
+        "distinctKeyCount": 16,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "LotId",
+          "Town_Lot_I"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "681"
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Extension_"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 16,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              " "
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "SR_No"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 5,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "11/1963"
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 5,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "48/1963"
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Town_Lot_I",
+          "Extension_"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 16,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "681",
+              " "
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "SR_No",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 5,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "11/1963",
+              "48/1963"
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Town_Lot_I",
+          "SR_No",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 15,
+        "missingRowCount": 5,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "681",
+              "11/1963",
+              "48/1963"
+            ],
+            "fids": [
+              9102,
+              9103
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "OBJECTID_1",
+          "Town_Lot_I",
+          "SR_No",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 16,
+        "missingRowCount": 5,
+        "duplicateKeys": []
+      }
+    ],
+    "lotId681Candidates": [
+      {
+        "fields": [
+          "LotId"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681"
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "OBJECTID"
+        ],
+        "distinctKeyCount": 4,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "OBJECTID_1"
+        ],
+        "distinctKeyCount": 4,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "LotId",
+          "OBJECTID"
+        ],
+        "distinctKeyCount": 4,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "LotId",
+          "OBJECTID_1"
+        ],
+        "distinctKeyCount": 4,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      },
+      {
+        "fields": [
+          "LotId",
+          "Town_Lot_I"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "681"
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Extension_"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 4,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              " "
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "SR_No"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "11/1963"
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "48/1963"
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Town_Lot_I",
+          "Extension_"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 4,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "681",
+              " "
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "SR_No",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "11/1963",
+              "48/1963"
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "Town_Lot_I",
+          "SR_No",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 1,
+        "missingRowCount": 0,
+        "duplicateKeys": [
+          {
+            "key": [
+              "681",
+              "681",
+              "11/1963",
+              "48/1963"
+            ],
+            "fids": [
+              9102,
+              9103,
+              9645,
+              47651
+            ]
+          }
+        ]
+      },
+      {
+        "fields": [
+          "LotId",
+          "OBJECTID_1",
+          "Town_Lot_I",
+          "SR_No",
+          "Diagram_No"
+        ],
+        "distinctKeyCount": 4,
+        "missingRowCount": 0,
+        "duplicateKeys": []
+      }
+    ],
+    "lotId681Geometry": {
+      "metricCRS": "EPSG:32735",
+      "pairs": [
+        {
+          "fids": [
+            9102,
+            9103
+          ],
+          "lotIds": [
+            "681",
+            "681"
+          ],
+          "intersectionExists": false,
+          "intersectionAreaM2": 0,
+          "boundaryDistanceM": 82.906,
+          "areasM2": [
+            4.61,
+            0.27
+          ],
+          "sameTownLotI": true,
+          "sameExtension": true,
+          "sameSRNo": true,
+          "sameDiagramNo": true
+        },
+        {
+          "fids": [
+            9102,
+            9645
+          ],
+          "lotIds": [
+            "681",
+            "681"
+          ],
+          "intersectionExists": false,
+          "intersectionAreaM2": 0,
+          "boundaryDistanceM": 76.191,
+          "areasM2": [
+            4.61,
+            0.39
+          ],
+          "sameTownLotI": true,
+          "sameExtension": true,
+          "sameSRNo": true,
+          "sameDiagramNo": true
+        },
+        {
+          "fids": [
+            9102,
+            47651
+          ],
+          "lotIds": [
+            "681",
+            "681"
+          ],
+          "intersectionExists": false,
+          "intersectionAreaM2": 0,
+          "boundaryDistanceM": 5419.652,
+          "areasM2": [
+            4.61,
+            449.71
+          ],
+          "sameTownLotI": true,
+          "sameExtension": true,
+          "sameSRNo": true,
+          "sameDiagramNo": true
+        },
+        {
+          "fids": [
+            9103,
+            9645
+          ],
+          "lotIds": [
+            "681",
+            "681"
+          ],
+          "intersectionExists": false,
+          "intersectionAreaM2": 0,
+          "boundaryDistanceM": 28.866,
+          "areasM2": [
+            0.27,
+            0.39
+          ],
+          "sameTownLotI": true,
+          "sameExtension": true,
+          "sameSRNo": true,
+          "sameDiagramNo": true
+        },
+        {
+          "fids": [
+            9103,
+            47651
+          ],
+          "lotIds": [
+            "681",
+            "681"
+          ],
+          "intersectionExists": false,
+          "intersectionAreaM2": 0,
+          "boundaryDistanceM": 5432.155,
+          "areasM2": [
+            0.27,
+            449.71
+          ],
+          "sameTownLotI": true,
+          "sameExtension": true,
+          "sameSRNo": true,
+          "sameDiagramNo": true
+        },
+        {
+          "fids": [
+            9645,
+            47651
+          ],
+          "lotIds": [
+            "681",
+            "681"
+          ],
+          "intersectionExists": false,
+          "intersectionAreaM2": 0,
+          "boundaryDistanceM": 5468.471,
+          "areasM2": [
+            0.39,
+            449.71
+          ],
+          "sameTownLotI": true,
+          "sameExtension": true,
+          "sameSRNo": true,
+          "sameDiagramNo": true
+        }
+      ]
+    },
+    "retainedCellEvidence": {
+      "uniqueFeatureCountByFid": 16,
+      "uniqueFids": [
+        3178,
+        9102,
+        9103,
+        11157,
+        16169,
+        16529,
+        17776,
+        19648,
+        24192,
+        34245,
+        34360,
+        46241,
+        46242,
+        46243,
+        46531,
+        46532
+      ],
+      "lotIds": 2,
+      "objectIdZeroFeatureFids": []
+    },
+    "interpretation": {
+      "lotId681GroupCount": 4,
+      "lotId681Rows": [
+        {
+          "fid": 9102,
+          "OBJECTID": 88539,
+          "OBJECTID_1": 9340,
+          "Town_Lot_I": 681,
+          "Extension_": " ",
+          "SR_No": "11/1963",
+          "Diagram_No": "48/1963"
+        },
+        {
+          "fid": 9103,
+          "OBJECTID": 88540,
+          "OBJECTID_1": 9341,
+          "Town_Lot_I": 681,
+          "Extension_": " ",
+          "SR_No": "11/1963",
+          "Diagram_No": "48/1963"
+        },
+        {
+          "fid": 9645,
+          "OBJECTID": 89096,
+          "OBJECTID_1": 9897,
+          "Town_Lot_I": 681,
+          "Extension_": " ",
+          "SR_No": "11/1963",
+          "Diagram_No": "48/1963"
+        },
+        {
+          "fid": 47651,
+          "OBJECTID": 0,
+          "OBJECTID_1": 48733,
+          "Town_Lot_I": 681,
+          "Extension_": " ",
+          "SR_No": "11/1963",
+          "Diagram_No": "48/1963"
+        }
+      ],
+      "geometryFinding": "The four returned polygons do not overlap in EPSG:32735. FID 9102 and FID 9103 are disjoint and 82.906 m apart. All four rows carry the same LotId, Town_Lot_I, Extension_, SR_No, and Diagram_No, so geometry and these survey references alone cannot distinguish separate parcels from disconnected components of one surveyed plot. FID 47651 is about 5.42 km from FID 9102; areas range from 0.27 m2 to 449.71 m2. This leaves the legal multipart interpretation unresolved.",
+      "bestTestedIdentity": "[LotId, OBJECTID_1] is the best candidate among fields tested in these bounded samples: nonempty and unique on 16 unique FID rows across five retained cells, it separates all four complete LotId=681 matches, and the existing adapter returned all 16 viewport features and passed fresh exact rereads with geometry hashes equal. A fresh exact adapter reread of all four LotId=681 rows also passed.",
+      "identityLimit": "Uniqueness/stability is demonstrated only in this bounded sample and the complete LotId=681 match set. The service metadata does not state that OBJECTID_1 is a persistent cadastral identifier, so the pair remains a candidate, not a citywide guarantee.",
+      "notRecommended": "LotId alone and [LotId, Town_Lot_I] fail uniqueness. [LotId, SR_No], [LotId, Diagram_No], and [LotId, Town_Lot_I, SR_No, Diagram_No] fail or have missing values. OBJECTID was unique in this sample but returned zero for FID 47651; FID is the transport OID and must not be elevated to parcel identity solely to suppress the LotId conflict.",
+      "fallback": "If OBJECTID_1 cannot be established as stable, use a source-scoped geometry-hash identity path rather than presenting FID as native parcel identity."
+    },
+    "compositeAdapterProbe": {
+      "result": "passed",
+      "viewportFeatureCounts": [
+        0,
+        4,
+        14,
+        0,
+        3
+      ],
+      "uniqueCompositeIds": 16,
+      "freshExactReadCount": 16,
+      "allGeometriesMatched": true,
+      "httpStatuses": [
+        200
+      ],
+      "requestCount": 36
+    },
+    "lotId681ExactAdapterProbe": {
+      "result": "passed",
+      "sourceFids": [
+        9102,
+        9103,
+        9645,
+        47651
+      ],
+      "count": 4,
+      "allGeometriesMatched": true,
+      "httpStatuses": [
+        200
+      ],
+      "requestCount": 6
+    }
+  },
+  "sampleFile": "gaborone-identity-audit-sample.geojson",
+  "safeSampleFeatureCount": 18,
+  "completedAt": "2026-10-08T15:17:19.910Z",
+  "evidenceFiles": {
+    "initialIdentityScreen": "gaborone-identity-screen.json",
+    "priorRuntimeAcceptance": "gaborone-runtime-acceptance.json",
+    "candidateCompositeAdapterProbe": "gaborone-composite-adapter-probe.json",
+    "lotId681ExactAdapterReread": "gaborone-composite-lot681-exact.json",
+    "safeGeometryAndCadastralSample": "gaborone-identity-audit-sample.geojson"
+  },
+  "priorRuntimeAcceptanceResult": "failed on LotId-only identity as expected; see gaborone-runtime-acceptance.json"
+}

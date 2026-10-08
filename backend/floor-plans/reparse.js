@@ -18,24 +18,30 @@ export async function reparseListings(db,{log=console.log}={}) {
     const evidence=extractPageEvidence(row.data.toString(),row.url);
     const assets=evidence.assets.filter(asset=>asset.listingOwned===true);
     const facts=evidence.listing || {...row.facts,sourceEvidenceStatus:'not-a-listing'};
-    let match=row.match_status,buildingId=row.building_id,buildingSource=row.building_source,buildingEvidence=row.building_evidence;
+    let match=row.match_status,buildingCity=row.building_city,buildingSource=row.building_source,
+     buildingOwnerId=row.building_owner_id||'',buildingId=row.building_id,buildingEvidence=row.building_evidence,
+     matchCheckedAt=row.match_checked_at;
     const importedLink=buildingEvidence?.basis==='Explicit agency project and unit sheet inset';
     if(importedLink) {
      const model=evidence.listing && models.find(m=>row.url===m.source.listingUrl || assets.some(a=>a.url===m.source.url));
      if(model) buildingEvidence={basis:'Explicit agency project and unit sheet inset',sourceUrl:model.source.url,unitId:model.unitId,floorConflict:model.sourceFloorConflict || null};
      else {
-      match='unresolved';buildingId=null;buildingSource=null;
+      match='unresolved';buildingCity=null;buildingOwnerId='';buildingId=null;buildingSource=null;matchCheckedAt=null;
       buildingEvidence={basis:'Previous association withdrawn after listing ownership review',previous:row.building_evidence};
       result.buildingLinksWithdrawn++;
      }
     } else if(!evidence.listing && match==='candidate') {
-     match='unresolved';buildingId=null;buildingSource=null;
+     match='unresolved';buildingCity=null;buildingOwnerId='';buildingId=null;buildingSource=null;matchCheckedAt=null;
      buildingEvidence={basis:'Page is not a single listing',previous:row.building_evidence};
      result.buildingLinksWithdrawn++;
     }
     await db.query('BEGIN');
     try {
-     const saved=await db.query(`UPDATE floor_plan.listing SET source_id=$2,facts=$3,asset_urls=$4,match_status=$5,building_id=$6,building_source=$7,building_evidence=$8,updated_at=now() WHERE url=$1 AND (source_id,facts,asset_urls,match_status,building_id,building_source,building_evidence) IS DISTINCT FROM ($2::text,$3::jsonb,$4::jsonb,$5::text,$6::text,$7::text,$8::jsonb)`,[row.url,evidence.listing?.sourceId || null,JSON.stringify(facts),JSON.stringify(assets),match,buildingId,buildingSource,buildingEvidence===null?null:JSON.stringify(buildingEvidence)]);
+     const saved=await db.query(`UPDATE floor_plan.listing SET source_id=$2,facts=$3,asset_urls=$4,match_status=$5,
+      building_city=$6,building_source=$7,building_owner_id=$8,building_id=$9,building_evidence=$10,match_checked_at=$11,updated_at=now()
+      WHERE url=$1 AND (source_id,facts,asset_urls,match_status,building_city,building_source,building_owner_id,building_id,building_evidence,match_checked_at)
+      IS DISTINCT FROM ($2::text,$3::jsonb,$4::jsonb,$5::text,$6::text,$7::text,$8::text,$9::text,$10::jsonb,$11::timestamptz)`,
+     [row.url,evidence.listing?.sourceId || null,JSON.stringify(facts),JSON.stringify(assets),match,buildingCity,buildingSource,buildingOwnerId,buildingId,buildingEvidence===null?null:JSON.stringify(buildingEvidence),matchCheckedAt]);
      result.changed+=saved.rowCount;
      for(const item of discoverTargets({kind:'page',url:row.url},{headers:{contentType:row.media_type},body:row.data,finalUrl:row.url},evidence).filter(t=>t.kind==='asset')) {
       if(await enqueue(db,item.url,{agencyId:row.agency_id,kind:'asset',priority:item.priority,from:row.url})) result.enqueued++;

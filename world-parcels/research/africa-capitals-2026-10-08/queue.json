@@ -1,0 +1,1139 @@
+{
+  "purpose": "Auditable inventory of African capitals and related seats, separating prior city-level research from this batch.",
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-08T14:54:01.156145+00:00",
+  "scope": "54 African UN member states with separate political, administrative, legislative, royal and associated former/transitional seats; separately labelled Western Sahara/SADR and Somaliland supplement. Overseas territorial and provincial capitals excluded.",
+  "scopeNotes": [
+    "Principal roster contains 63 city seats across 54 states; disputed/de facto supplement has three cities.",
+    "Previously checked means an actual city-specific investigation or city-region geometry request; country-only evidence does not satisfy it.",
+    "Roles and chosen points are research locators, not official boundaries or a statement about political recognition."
+  ],
+  "scopeSources": [
+    {
+      "url": "https://au.int/en/member_states/countryprofiles2",
+      "purpose": "African Union member-state roster; current capital changes separately checked."
+    },
+    {
+      "url": "https://www.gov.za/about-sa/south-africas-provinces",
+      "purpose": "Three capital roles"
+    },
+    {
+      "url": "https://www.sadc.int/member-states/kingdom-eswatini",
+      "purpose": "Mbabane and Lobamba roles"
+    },
+    {
+      "url": "https://www.guineaecuatorialpress.com/index.php/noticias/el_presidente_de_la_republica_proclama_la_ciudad_de_la_paz_como_capital_de_la_republica_de_guinea_ecuatorial_con_la_firma_de_un_decreto_ley",
+      "purpose": "January 2026 Ciudad de la Paz designation and transition from Malabo"
+    },
+    {
+      "url": "https://sis.gov.eg/en/media-center/news/pm-follows-up-implementation-status-of-operation-of-projects-in-new-capital/",
+      "purpose": "Egypt government headquarters in New Capital, May 2026"
+    },
+    {
+      "url": "https://pap.au.int/en/member-states/sahrawi",
+      "purpose": "AU-listed claimed capital El Aaiun/Laayoune"
+    },
+    {
+      "url": "https://www.euaa.europa.eu/coi/somalia/2025/country-focus/22-hargeisa/221-overview",
+      "purpose": "Hargeisa de facto capital"
+    },
+    {
+      "url": "https://primature.gov.bi/presentation-generale/",
+      "purpose": "Official Burundi political capital Gitega and economic capital Bujumbura."
+    },
+    {
+      "url": "https://www.decentralisation.gouv.bj/commune/62/porto-novo/",
+      "purpose": "Official Porto-Novo national capital status."
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Tifariti",
+      "purpose": "Reported provisional SADR seat, retained in the separately labelled supplement, not the national-capital count."
+    }
+  ],
+  "cityCount": 43,
+  "status": "completed",
+  "cities": [
+    {
+      "cityId": "capital:BJ:porto-novo",
+      "slug": "porto-novo",
+      "name": "Porto-Novo",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "centerLatLon": [
+        6.4969,
+        2.6289
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/BJ.json",
+        "research/retry/countries/BJ.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-porto-novo.json",
+      "resultCategory": "verified_geometry_held_quality_review",
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "cityId": "capital:BW:gaborone",
+      "slug": "gaborone",
+      "name": "Gaborone",
+      "country": "Botswana",
+      "countryCode": "BW",
+      "centerLatLon": [
+        -24.6581,
+        25.9122
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/BW.json",
+        "research/retry/countries/BW.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-gaborone.json",
+      "resultCategory": "verified_sample_partial_coverage",
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "cityId": "capital:BI:gitega",
+      "slug": "gitega",
+      "name": "Gitega",
+      "country": "Burundi",
+      "countryCode": "BI",
+      "centerLatLon": [
+        -3.4264,
+        29.9306
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/BI.json",
+        "research/retry/countries/BI.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-gitega.json",
+      "resultCategory": "city_specific_registration_census_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:BI:bujumbura",
+      "slug": "bujumbura",
+      "name": "Bujumbura",
+      "country": "Burundi",
+      "countryCode": "BI",
+      "centerLatLon": [
+        -3.3614,
+        29.3599
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "economic capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/BI.json",
+        "research/retry/countries/BI.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-bujumbura.json",
+      "resultCategory": "city_specific_registration_census_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:CV:praia",
+      "slug": "praia",
+      "name": "Praia",
+      "country": "Cabo Verde",
+      "countryCode": "CV",
+      "centerLatLon": [
+        14.9177,
+        -23.5092
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/CV.json",
+        "research/retry/countries/CV.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-praia.json",
+      "resultCategory": "city_cadastre_operation_portal_requires_login_no_public_parcel_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:CF:bangui",
+      "slug": "bangui",
+      "name": "Bangui",
+      "country": "Central African Republic",
+      "countryCode": "CF",
+      "centerLatLon": [
+        4.3947,
+        18.5582
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/CF.json",
+        "research/retry/countries/CF.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-bangui.json",
+      "resultCategory": "no_city_registry_or_geometry_verified",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:TD:n-djamena",
+      "slug": "n-djamena",
+      "name": "N'Djamena",
+      "country": "Chad",
+      "countryCode": "TD",
+      "centerLatLon": [
+        12.1348,
+        15.0557
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/TD.json",
+        "research/retry/countries/TD.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-n-djamena.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:KM:moroni",
+      "slug": "moroni",
+      "name": "Moroni",
+      "country": "Comoros",
+      "countryCode": "KM",
+      "centerLatLon": [
+        -11.7172,
+        43.2473
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/KM.json",
+        "research/retry/countries/KM.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-moroni.json",
+      "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:DJ:djibouti",
+      "slug": "djibouti",
+      "name": "Djibouti",
+      "country": "Djibouti",
+      "countryCode": "DJ",
+      "centerLatLon": [
+        11.5886,
+        43.1451
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/DJ.json",
+        "research/retry/countries/DJ.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-djibouti.json",
+      "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:EG:new-capital",
+      "slug": "new-capital",
+      "name": "New Capital",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "centerLatLon": [
+        30.018,
+        31.764
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "administrative government seat",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/EG.json",
+        "research/retry/countries/EG.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-new-capital.json",
+      "resultCategory": "official_land_portal_no_open_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:GQ:ciudad-de-la-paz",
+      "slug": "ciudad-de-la-paz",
+      "name": "Ciudad de la Paz",
+      "country": "Equatorial Guinea",
+      "countryCode": "GQ",
+      "centerLatLon": [
+        1.591,
+        10.831
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/GQ.json",
+        "research/retry/countries/GQ.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-ciudad-de-la-paz.json",
+      "resultCategory": "no_city_registry_or_geometry_verified",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:GQ:malabo",
+      "slug": "malabo",
+      "name": "Malabo",
+      "country": "Equatorial Guinea",
+      "countryCode": "GQ",
+      "centerLatLon": [
+        3.7504,
+        8.7371
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "former capital during 2026 relocation",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/GQ.json",
+        "research/retry/countries/GQ.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-malabo.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:ER:asmara",
+      "slug": "asmara",
+      "name": "Asmara",
+      "country": "Eritrea",
+      "countryCode": "ER",
+      "centerLatLon": [
+        15.3229,
+        38.9251
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/ER.json",
+        "research/retry/countries/ER.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-asmara.json",
+      "resultCategory": "city_registration_study_only_live_registry_unestablished",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:SZ:mbabane",
+      "slug": "mbabane",
+      "name": "Mbabane",
+      "country": "Eswatini",
+      "countryCode": "SZ",
+      "centerLatLon": [
+        -26.3054,
+        31.1367
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "administrative capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/SZ.json",
+        "research/retry/countries/SZ.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-mbabane.json",
+      "resultCategory": "official_static_cadastral_map_no_public_vector",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:SZ:lobamba",
+      "slug": "lobamba",
+      "name": "Lobamba",
+      "country": "Eswatini",
+      "countryCode": "SZ",
+      "centerLatLon": [
+        -26.4465,
+        31.2064
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "royal and legislative capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/SZ.json",
+        "research/retry/countries/SZ.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-lobamba.json",
+      "resultCategory": "national_cadastre_only_city_presence_unestablished",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:GA:libreville",
+      "slug": "libreville",
+      "name": "Libreville",
+      "country": "Gabon",
+      "countryCode": "GA",
+      "centerLatLon": [
+        0.3924,
+        9.4536
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/GA.json",
+        "research/retry/countries/GA.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-libreville.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:GM:banjul",
+      "slug": "banjul",
+      "name": "Banjul",
+      "country": "Gambia",
+      "countryCode": "GM",
+      "centerLatLon": [
+        13.4549,
+        -16.579
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/GM.json",
+        "research/retry/countries/GM.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-banjul.json",
+      "resultCategory": "mapped_area_no_public_digital_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:GN:conakry",
+      "slug": "conakry",
+      "name": "Conakry",
+      "country": "Guinea",
+      "countryCode": "GN",
+      "centerLatLon": [
+        9.5092,
+        -13.7122
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/GN.json",
+        "research/retry/countries/GN.json"
+      ],
+      "scopeNote": "Prior Coyah (Conacry) record sampled Coyah at about 9.6483,-13.565; it does not count as a capital-specific Conakry investigation.",
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-conakry.json",
+      "resultCategory": "registry_modernization_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:GW:bissau",
+      "slug": "bissau",
+      "name": "Bissau",
+      "country": "Guinea-Bissau",
+      "countryCode": "GW",
+      "centerLatLon": [
+        11.8636,
+        -15.5977
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/GW.json",
+        "research/retry/countries/GW.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-bissau.json",
+      "resultCategory": "municipal_cadastre_service_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:CI:yamoussoukro",
+      "slug": "yamoussoukro",
+      "name": "Yamoussoukro",
+      "country": "Côte d’Ivoire",
+      "countryCode": "CI",
+      "centerLatLon": [
+        6.8276,
+        -5.2893
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/CI.json",
+        "research/retry/countries/CI.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-yamoussoukro.json",
+      "resultCategory": "public_parcel_lookup_api_upstream_502_no_geometry_sample",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:LS:maseru",
+      "slug": "maseru",
+      "name": "Maseru",
+      "country": "Lesotho",
+      "countryCode": "LS",
+      "centerLatLon": [
+        -29.3158,
+        27.486
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/LS.json",
+        "research/retry/countries/LS.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-maseru.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:LR:monrovia",
+      "slug": "monrovia",
+      "name": "Monrovia",
+      "country": "Liberia",
+      "countryCode": "LR",
+      "centerLatLon": [
+        6.3156,
+        -10.8074
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/LR.json",
+        "research/retry/countries/LR.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-monrovia.json",
+      "resultCategory": "official_land_registry_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:LY:tripoli",
+      "slug": "tripoli",
+      "name": "Tripoli",
+      "country": "Libya",
+      "countryCode": "LY",
+      "centerLatLon": [
+        32.8872,
+        13.1913
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/LY.json",
+        "research/retry/countries/LY.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-tripoli.json",
+      "resultCategory": "national_records_city_scope_unestablished",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:MW:lilongwe",
+      "slug": "lilongwe",
+      "name": "Lilongwe",
+      "country": "Malawi",
+      "countryCode": "MW",
+      "centerLatLon": [
+        -13.9626,
+        33.7741
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/MW.json",
+        "research/retry/countries/MW.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-lilongwe.json",
+      "resultCategory": "land_records_and_city_ownership_map_no_public_parcels",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:MR:nouakchott",
+      "slug": "nouakchott",
+      "name": "Nouakchott",
+      "country": "Mauritania",
+      "countryCode": "MR",
+      "centerLatLon": [
+        18.0735,
+        -15.9582
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/MR.json",
+        "research/retry/countries/MR.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-nouakchott.json",
+      "resultCategory": "citywide_cadastre_in_progress_no_open_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:MU:port-louis",
+      "slug": "port-louis",
+      "name": "Port Louis",
+      "country": "Mauritius",
+      "countryCode": "MU",
+      "centerLatLon": [
+        -20.1609,
+        57.5012
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/MU.json",
+        "research/retry/countries/MU.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-port-louis.json",
+      "resultCategory": "national_cadastre_exists_public_catalog_has_no_parcels",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:MA:rabat",
+      "slug": "rabat",
+      "name": "Rabat",
+      "country": "Morocco",
+      "countryCode": "MA",
+      "centerLatLon": [
+        34.0209,
+        -6.8416
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/MA.json",
+        "research/retry/countries/MA.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-rabat.json",
+      "resultCategory": "official_cadastre_paid_document_service_no_open_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:NA:windhoek",
+      "slug": "windhoek",
+      "name": "Windhoek",
+      "country": "Namibia",
+      "countryCode": "NA",
+      "centerLatLon": [
+        -22.5597,
+        17.0832
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/NA.json",
+        "research/retry/countries/NA.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-windhoek.json",
+      "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:NE:niamey",
+      "slug": "niamey",
+      "name": "Niamey",
+      "country": "Niger",
+      "countryCode": "NE",
+      "centerLatLon": [
+        13.5116,
+        2.1254
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/NE.json",
+        "research/retry/countries/NE.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-niamey.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:NG:abuja",
+      "slug": "abuja",
+      "name": "Abuja",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        9.0765,
+        7.3986
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/NG.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-abuja.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:ST:sao-tome",
+      "slug": "sao-tome",
+      "name": "São Tomé",
+      "country": "Sao Tome and Principe",
+      "countryCode": "ST",
+      "centerLatLon": [
+        0.3365,
+        6.7273
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/ST.json",
+        "research/retry/countries/ST.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-sao-tome.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:SC:victoria",
+      "slug": "victoria",
+      "name": "Victoria",
+      "country": "Seychelles",
+      "countryCode": "SC",
+      "centerLatLon": [
+        -4.6191,
+        55.4513
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-victoria.json",
+      "resultCategory": "verified_geometry_held_quality_review",
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "cityId": "capital:SL:freetown",
+      "slug": "freetown",
+      "name": "Freetown",
+      "country": "Sierra Leone",
+      "countryCode": "SL",
+      "centerLatLon": [
+        8.4657,
+        -13.2317
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/SL.json",
+        "research/retry/countries/SL.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-freetown.json",
+      "resultCategory": "registry_and_property_mapping_no_public_parcels",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:ZA:pretoria",
+      "slug": "pretoria",
+      "name": "Pretoria",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.7479,
+        28.2293
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "administrative capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/ZA.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-pretoria.json",
+      "resultCategory": "verified_sample_partial_coverage",
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "cityId": "capital:ZA:bloemfontein",
+      "slug": "bloemfontein",
+      "name": "Bloemfontein",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -29.118,
+        26.214
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "judicial capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/ZA.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-bloemfontein.json",
+      "resultCategory": "verified_sample_partial_coverage",
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "cityId": "capital:SS:juba",
+      "slug": "juba",
+      "name": "Juba",
+      "country": "South Sudan",
+      "countryCode": "SS",
+      "centerLatLon": [
+        4.8594,
+        31.5713
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/SS.json",
+        "research/retry/countries/SS.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-juba.json",
+      "resultCategory": "city_registry_exists_inconsistent_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:TZ:dodoma",
+      "slug": "dodoma",
+      "name": "Dodoma",
+      "country": "United Republic of Tanzania",
+      "countryCode": "TZ",
+      "centerLatLon": [
+        -6.163,
+        35.7516
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/TZ.json",
+        "research/retry/countries/TZ.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-dodoma.json",
+      "resultCategory": "official_regional_land_system_account_based_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:TG:lome",
+      "slug": "lome",
+      "name": "Lomé",
+      "country": "Togo",
+      "countryCode": "TG",
+      "centerLatLon": [
+        6.1375,
+        1.2123
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/TG.json",
+        "research/retry/countries/TG.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-lome.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:TN:tunis",
+      "slug": "tunis",
+      "name": "Tunis",
+      "country": "Tunisia",
+      "countryCode": "TN",
+      "centerLatLon": [
+        36.8065,
+        10.1815
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/TN.json",
+        "research/retry/countries/TN.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-tunis.json",
+      "resultCategory": "official_cadastral_webgis_project_no_open_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:ZW:harare",
+      "slug": "harare",
+      "name": "Harare",
+      "country": "Zimbabwe",
+      "countryCode": "ZW",
+      "centerLatLon": [
+        -17.8252,
+        31.0335
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "central-south",
+      "priorCountryEvidenceFiles": [
+        "research/countries/ZW.json",
+        "research/retry/countries/ZW.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-harare.json",
+      "resultCategory": "official_registry_or_service_no_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:EH:laayoune",
+      "slug": "laayoune",
+      "name": "Laayoune",
+      "country": "Western Sahara",
+      "countryCode": "EH",
+      "centerLatLon": [
+        27.1253,
+        -13.1625
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "supplement: claimed capital of SADR, Moroccan-administered",
+      "scopeTier": "supplementary_disputed_or_de_facto",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/EH.json",
+        "research/retry/countries/EH.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-laayoune.json",
+      "resultCategory": "official_cadastre_map_products_no_open_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:EH:tifariti",
+      "slug": "tifariti",
+      "name": "Tifariti",
+      "country": "Western Sahara",
+      "countryCode": "EH",
+      "centerLatLon": [
+        26.1594,
+        -10.5674
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "supplement: reported provisional SADR seat",
+      "scopeTier": "supplementary_disputed_or_de_facto",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "west-north",
+      "priorCountryEvidenceFiles": [
+        "research/countries/EH.json",
+        "research/retry/countries/EH.json"
+      ],
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-tifariti.json",
+      "resultCategory": "no_city_parcel_source_identified_limited_search",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "cityId": "capital:SO:hargeisa",
+      "slug": "hargeisa",
+      "name": "Hargeisa",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "centerLatLon": [
+        9.5624,
+        44.0775
+      ],
+      "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+      "capitalRole": "supplement: Somaliland de facto capital",
+      "scopeTier": "supplementary_disputed_or_de_facto",
+      "previouslyChecked": false,
+      "priorCityEvidenceFiles": [],
+      "status": "complete",
+      "workstream": "east-islands",
+      "priorCountryEvidenceFiles": [
+        "research/countries/SO.json",
+        "research/retry/countries/SO.json"
+      ],
+      "scopeNote": "Somaliland is tracked as a separately labelled de facto capital; SO is the geographic country code used by the existing project, not a conclusion about recognition.",
+      "evidenceFile": "research/africa-capitals-2026-10-08/city-hargeisa.json",
+      "resultCategory": "municipal_land_registration_login_based_no_public_geometry",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    }
+  ],
+  "completedAt": "2026-10-08T15:54:57.996889+00:00",
+  "summary": {
+    "rosterSeats": 66,
+    "previouslyChecked": 23,
+    "newlyChecked": 43,
+    "registryPresenceFound": 35,
+    "registryPresenceUnestablished": 8,
+    "verifiedGeometryCities": 5,
+    "newAppCities": 3,
+    "geometryQualityHeldCities": 2
+  }
+}

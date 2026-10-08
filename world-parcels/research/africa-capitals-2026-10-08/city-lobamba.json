@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:SZ:lobamba",
+  "queueRank": null,
+  "name": "Lobamba",
+  "country": "Eswatini",
+  "countryCode": "SZ",
+  "centerLatLon": [
+    -26.4465,
+    31.2064
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Eswatini Mbabane Lobamba cadastral map GIS spatial data portal Surveyor General",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "English",
+        "query": "Eswatini Surveyor General public cadastral GIS web map NDDC",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+        "observation": "National Surveyor General handles land-survey/cadastral records and official pages advertise a country cadastral map, but no source found here proves target-specific Lobamba registry coverage or a Lobamba map. The Mbabane-specific map cannot establish Lobamba geometry."
+      },
+      {
+        "url": "https://www.gov.sz/images/MNRE_PICS/MONRE-FINAL-CLIENT-SERVICES-CHARTER-AND-PLEDGE-FINAL.pdf",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      },
+      {
+        "url": "https://salb.un.org/en/data/swz",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "National Surveyor General handles land-survey/cadastral records and official pages advertise a country cadastral map, but no source found here proves target-specific Lobamba registry coverage or a Lobamba map. The Mbabane-specific map cannot establish Lobamba geometry.",
+    "nextStep": "Find a city-specific active registry or cadastral-coverage source before changing registryFound from null.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Only a national Surveyor General and a Mbabane-specific cadastral map are evidenced; no source establishes Lobamba registry coverage.",
+  "registryEvidenceUrls": [
+    "https://www.gov.sz/index.php/departments-sp-623334762/surveyor-general",
+    "https://www.gov.sz/images/MNRE_PICS/MONRE-FINAL-CLIENT-SERVICES-CHARTER-AND-PLEDGE-FINAL.pdf",
+    "https://salb.un.org/en/data/swz"
+  ],
+  "resultCategory": "national_cadastre_only_city_presence_unestablished",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/SZ.json",
+    "world-parcels/research/retry/countries/SZ.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "royal and legislative capital",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Eswatini Mbabane Lobamba cadastral map GIS spatial data portal Surveyor General",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "English",
+      "query": "Eswatini Surveyor General public cadastral GIS web map NDDC",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

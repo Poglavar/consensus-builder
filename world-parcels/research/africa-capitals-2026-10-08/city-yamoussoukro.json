@@ -1,0 +1,220 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:19:41Z",
+  "date": "2026-10-08",
+  "slug": "yamoussoukro",
+  "cityId": "capital:CI:yamoussoukro",
+  "name": "Yamoussoukro",
+  "country": "Côte d’Ivoire",
+  "code": "CI",
+  "centerLatLon": [
+    6.8276,
+    -5.2893
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Yamoussoukro District/city municipality; national IDUFCI and SIGFU platforms cover urban land parcels, with municipal technical services responsible for the local cadastre.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://idufci.gouv.ci/",
+    "https://sigfu.gouv.ci/public",
+    "https://www.mairieyamoussoukro.ci/mairie/service_technique"
+  ],
+  "registryBasis": "Official IDUFCI explains the unique land-parcel identifier and national parcel-map mission; SIGFU public landing page advertises parcel/lot search and cartography; the city council technical service says it proposes updates to Yamoussoukro's cadastre.",
+  "publicParcelGeometryFound": null,
+  "resultCategory": "public_parcel_lookup_api_upstream_502_no_geometry_sample",
+  "findings": "Official IDUFCI explains the unique land-parcel identifier and national parcel-map mission; SIGFU public landing material advertises parcel/lot search and cartography; the city council technical service describes Yamoussoukro cadastre updates. Direct anonymous GET confirms the SIGFU site and /parcelles route return an HTTP 200 Angular shell, not data. The publicly linked production JavaScript configures the parcel-data API and identifies public locality, commune, and lot lookup routes. Bounded GETs to the configured API base and three read-only lookup routes returned HTTP 502 (166-byte nginx error pages). No API response or polygon was confirmed. A single secondary-network check failed TLS certificate validation before HTTP. Preserve the source lead; do not interpret the 502 or network errors as geometry absence.",
+  "englishQueries": [
+    "Yamoussoukro Côte d’Ivoire parcel map public geospatial GIS SIGFU official"
+  ],
+  "localLanguageQueries": [
+    "Yamoussoukro cadastre parcelles foncier cartographie Côte d'Ivoire données géographiques",
+    "Yamoussoukro parcelles cartographie foncière SIGFU IDUFCI cadastre géospatial",
+    "site:sigfu.gouv.ci/api-sigfu-portail/api-sigfu-portail parcelles",
+    "site:sigfu.gouv.ci \"localité\" \"Rechercher\" \"parcelles\" API",
+    "\"api-sigfu-portail\" \"parcelles\"",
+    "\"SIGFU\" Côte d'Ivoire API lotissement"
+  ],
+  "searches": [
+    {
+      "query": "Yamoussoukro Côte d’Ivoire parcel map public geospatial GIS SIGFU official",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Yamoussoukro cadastre parcelles foncier cartographie Côte d'Ivoire données géographiques",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Yamoussoukro parcelles cartographie foncière SIGFU IDUFCI cadastre géospatial",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:sigfu.gouv.ci/api-sigfu-portail/api-sigfu-portail parcelles",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:sigfu.gouv.ci \"localité\" \"Rechercher\" \"parcelles\" API",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "\"api-sigfu-portail\" \"parcelles\"",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "\"SIGFU\" Côte d'Ivoire API lotissement",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail/api-sigfu-portail",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.705,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.701,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway on the compiled public locality-list route."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/AllLots",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.733,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway on the compiled all-lots route."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-commune",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.697,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway on the compiled commune-list route."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data",
+      "method": "GET",
+      "authentication": "none; no cookies or authorization header",
+      "elapsedSeconds": 0.879,
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "responseBytes": 166,
+      "toolOutcome": "Nginx 502 Bad Gateway at the configured data API base."
+    }
+  ],
+  "verifiedSample": false,
+  "technicalBlocker": "SIGFU public UI shell responds HTTP 200, but configured parcel-data API routes return nginx HTTP 502. Secondary SSH route failed TLS verification before HTTP; workspace sandbox DNS failure is local-route-only. No geometry response was obtained.",
+  "nextStep": "Retry the observed public parcel/locality API routes when the upstream service recovers; retain geometry only after an actual nonpersonal polygon response is validated.",
+  "coverageAssessment": {
+    "claimedScope": "Official urban-land lot/parcel cartography; municipal cadastre update function",
+    "verifiedOpenScope": "Portal existence confirmed; city-point geometry and public access state unverified",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "French",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://sigfu.gouv.ci/public",
+      "method": "bounded anonymous curl GET; followed page-linked JS/config",
+      "httpStatus": 200,
+      "elapsedSeconds": 0.864,
+      "responseBytes": 2701,
+      "toolOutcome": "Angular SPA shell returned. Compiled bundle sets configured API bases; detailed endpoint and request outcomes are in yamoussoukro-diagnostic.json."
+    },
+    {
+      "url": "https://www.sigfu.gouv.ci/parcelles",
+      "method": "bounded anonymous curl GET",
+      "httpStatus": 200,
+      "elapsedSeconds": 0.777,
+      "responseBytes": 2701,
+      "toolOutcome": "Same Angular SPA shell returned; HTML route itself contains no parcel geometry."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/main.js",
+      "method": "bounded anonymous curl GET of observed linked script",
+      "httpStatus": 200,
+      "elapsedSeconds": 2.011,
+      "responseBytes": 1325429,
+      "toolOutcome": "Production JS configures parcel-data API and compiled parcel lookup methods; details in yamoussoukro-diagnostic.json."
+    }
+  ],
+  "apiInvestigation": "Inspected the public SPA shell and linked runtime.js, polyfills.js, vendor.js, main.js, and manifest. The production bundle sets apiDataBasePath=https://sigfu.gouv.ci/api-sigfu-portail-data and exposes GET /query-parcelle/query-parcelle/localites, GET /query-parcelle/query-parcelle/AllLots, GET /query-parcelle/query-commune, and POST /query-parcelle/query-parcelle/allLotissements under that base. Anonymous GETs to the base and first three routes each returned HTTP 502; no guessed POST body was sent. Exact URLs, status, response size, elapsed time, and network errors are in yamoussoukro-diagnostic.json.",
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "diagnosticFile": "yamoussoukro-diagnostic.json",
+  "countryCode": "CI",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Yamoussoukro Côte d’Ivoire parcel map public geospatial GIS SIGFU official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Yamoussoukro cadastre parcelles foncier cartographie Côte d'Ivoire données géographiques",
+      "language": "French",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Yamoussoukro parcelles cartographie foncière SIGFU IDUFCI cadastre géospatial",
+      "language": "French",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:sigfu.gouv.ci/api-sigfu-portail/api-sigfu-portail parcelles",
+      "language": "French",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:sigfu.gouv.ci \"localité\" \"Rechercher\" \"parcelles\" API",
+      "language": "French",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"api-sigfu-portail\" \"parcelles\"",
+      "language": "French",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"SIGFU\" Côte d'Ivoire API lotissement",
+      "language": "French",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "temporarily_unavailable"
+}

@@ -46,6 +46,11 @@
     --cb-info-soft: #f0f9ff;
     --cb-info-soft-ink: #075985;
 
+    /* Country coverage and source evidence on the world globe. */
+    --cb-world-coverage-full: #71bc91;
+    --cb-world-city-glow: rgba(67, 230, 166, 0.42);
+    --cb-world-source-underline: rgba(169, 186, 216, 0.65);
+
     --cb-inverse: #1f2937;          /* active pills, dark toasts */
     --cb-inverse-ink: #ffffff;
     --cb-focus: #2563eb;
@@ -96,6 +101,7 @@
     --cb-control-height-lg: 44px;
 
     /* ---- Stacking ladder (the only z-index values new CSS may use) ---- */
+    --cb-z-world-overview: 3;      /* legend and activity inside the globe stacking context */
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */
     --cb-z-popover: 1050;           /* parcel menu, dropdowns over the map */
     --cb-z-panel: 1500;             /* right-dock panels (parcel, proposal, road) */

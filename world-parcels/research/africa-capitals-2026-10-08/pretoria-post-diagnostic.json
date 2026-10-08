@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-10-08T15:39:33.733Z",
+  "purpose": "Ordinary anonymous ArcGIS documented POST /query diagnostic; form-encoded, same verified TLS helper, safe fields only; no login/auth bypass.",
+  "source": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1/query",
+  "tls": "repository createHttpsJsonFetch with verified official intermediate; rejectUnauthorized=true",
+  "requests": [
+    {
+      "name": "registered-equality-count",
+      "method": "POST",
+      "contentType": "application/x-www-form-urlencoded",
+      "where": "status_lu_text='Registered'",
+      "httpStatus": 200,
+      "elapsedMs": 1663,
+      "responseBytes": 16,
+      "count": 552904,
+      "features": [],
+      "error": null,
+      "bodyPreview": "{\"count\":552904}"
+    },
+    {
+      "name": "single-key-equality",
+      "method": "POST",
+      "contentType": "application/x-www-form-urlencoded",
+      "where": "lis_key='002000504/R'",
+      "httpStatus": 200,
+      "elapsedMs": 320,
+      "responseBytes": 449,
+      "count": null,
+      "features": [
+        {
+          "OBJECTID": 80,
+          "lis_key": "002000504/R",
+          "status_lu_text": "Registered"
+        }
+      ],
+      "error": null,
+      "bodyPreview": "{\"displayFieldName\":\"CLASS\",\"fieldAliases\":{\"OBJECTID\":\"ObjectID\",\"lis_key\":\"LIS Key\",\"status_lu_text\":\"Status\"},\"fields"
+    },
+    {
+      "name": "single-key-IN",
+      "method": "POST",
+      "contentType": "application/x-www-form-urlencoded",
+      "where": "lis_key IN ('002000504/R')",
+      "httpStatus": 403,
+      "elapsedMs": 248,
+      "responseBytes": 0,
+      "count": null,
+      "features": [],
+      "error": null,
+      "bodyPreview": ""
+    },
+    {
+      "name": "registered-plus-key-equality",
+      "method": "POST",
+      "contentType": "application/x-www-form-urlencoded",
+      "where": "status_lu_text='Registered' AND lis_key='002000504/R'",
+      "httpStatus": 403,
+      "elapsedMs": 762,
+      "responseBytes": 0,
+      "count": null,
+      "features": [],
+      "error": null,
+      "bodyPreview": ""
+    },
+    {
+      "name": "registered-plus-key-IN",
+      "method": "POST",
+      "contentType": "application/x-www-form-urlencoded",
+      "where": "status_lu_text='Registered' AND lis_key IN ('002000504/R')",
+      "httpStatus": 403,
+      "elapsedMs": 250,
+      "responseBytes": 0,
+      "count": null,
+      "features": [],
+      "error": null,
+      "bodyPreview": ""
+    }
+  ],
+  "recommendation": "Compare POST outcomes to GET. Do not use POST unless the WAF accepts both the request and the adapter contract supports it.",
+  "comparisonAndInterpretation": {
+    "restrictedSandboxDnsAttempts": "Earlier ENOTFOUND results were from restricted execution and are superseded.",
+    "observed": {
+      "registeredStatusEqualityCount": 552904,
+      "singleNativeKeyEquality": {
+        "httpStatus": 200,
+        "features": 1,
+        "status": "Registered",
+        "OBJECTID": 80
+      },
+      "singleKeyIN": 403,
+      "registeredPlusSingleKeyEquality": 403,
+      "registeredPlusSingleKeyIN": 403
+    },
+    "interpretation": "Ordinary POST accepts the registered status equality and one native lis_key equality alone, but the single-key IN and combined status+key predicates still receive HTTP 403. POST does not resolve the adapter queryIds predicate limitation or prove URI-only WAF parsing."
+  }
+}

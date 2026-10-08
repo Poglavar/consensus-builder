@@ -37,8 +37,11 @@
     const IDLE_DELAY_MS = 3500;
     const TAP_MAX_PX = 7;
     const TAP_MAX_MS = 600;
-    // Legend palette: each tier must read on the deep-blue ocean and against its neighbours.
-    const TIER_COLORS = { live: '#43e6a6', source: '#ffc24b', none: '#f2766e', unknown: '#cfc7b3' };
+    // Country extent and app city availability are separate dimensions, including in the legend.
+    const COVERAGE_COLORS = { full: '#71bc91', partial: '#ffc24b', none: '#d8918c', unknown: '#a4acb8' };
+    const TIER_COLORS = { live: '#43e6a6', source: COVERAGE_COLORS.partial, none: COVERAGE_COLORS.none, unknown: COVERAGE_COLORS.unknown };
+    const COVERAGE_LABELS = { full: 'Full country coverage', partial: 'Some open data', none: 'Checked: none found', unknown: 'Unchecked / inconclusive' };
+    const TIER_LABELS = { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Unconfirmed' };
     const LIVE_LABEL_ORDER = ['new_york', 'zagreb', 'buenos_aires', 'belgrade', 'ljubljana', 'colorado', 'split', 'sibenik'];
 
     let coveragePromise = null;
@@ -123,14 +126,14 @@
         ocean.addColorStop(0.5, '#124596'); ocean.addColorStop(0.72, '#0d3170'); ocean.addColorStop(1, '#081a3d');
         ctx.fillStyle = ocean; ctx.fillRect(0, 0, W, H);
 
-        const countries = coverage.countries.filter(c => c.rings.length);
+        const landAreas = [...coverage.countries, ...(coverage.territories || [])].filter(c => c.rings.length);
 
         // Continental shelf: a soft cyan halo hugging every coast.
         ctx.save();
         ctx.fillStyle = 'rgba(64, 170, 235, 0.55)';
         ctx.shadowColor = 'rgba(90, 200, 255, 0.9)';
         ctx.shadowBlur = 26 * s;
-        for (const c of countries) { traceRings(ctx, c.rings, W, H); ctx.fill('evenodd'); }
+        for (const c of landAreas) { traceRings(ctx, c.rings, W, H); ctx.fill('evenodd'); }
         ctx.restore();
 
         // Graticule every 15°, faint, with the equator a touch stronger.
@@ -151,8 +154,8 @@
         // Land on its own layer so grain and inner shading stay on land.
         const land = document.createElement('canvas'); land.width = W; land.height = H;
         const lctx = land.getContext('2d');
-        for (const c of countries) {
-            lctx.fillStyle = TIER_COLORS[c.tier] || TIER_COLORS.unknown;
+        for (const c of landAreas) {
+            lctx.fillStyle = COVERAGE_COLORS[c.coverage];
             traceRings(lctx, c.rings, W, H); lctx.fill('evenodd');
         }
         lctx.save();
@@ -169,18 +172,18 @@
         lctx.lineJoin = 'round';
         lctx.strokeStyle = 'rgba(12, 30, 62, 0.45)';
         lctx.lineWidth = Math.max(1, 1.8 * s);
-        for (const c of countries) { traceRings(lctx, c.rings, W, H); lctx.stroke(); }
+        for (const c of landAreas) { traceRings(lctx, c.rings, W, H); lctx.stroke(); }
         ctx.drawImage(land, 0, 0);
         // Coastline highlight.
         ctx.strokeStyle = 'rgba(225, 245, 255, 0.35)';
         ctx.lineWidth = Math.max(1, 1.2 * s);
-        for (const c of countries) { traceRings(ctx, c.rings, W, H); ctx.stroke(); }
+        for (const c of landAreas) { traceRings(ctx, c.rings, W, H); ctx.stroke(); }
 
         const mask = document.createElement('canvas'); mask.width = 1024; mask.height = 512;
         const mctx = mask.getContext('2d');
         mctx.fillStyle = '#fff'; mctx.fillRect(0, 0, 1024, 512);
         mctx.fillStyle = '#000';
-        for (const c of countries) { traceRings(mctx, c.rings, 1024, 512); mctx.fill('evenodd'); }
+        for (const c of landAreas) { traceRings(mctx, c.rings, 1024, 512); mctx.fill('evenodd'); }
         return { color, mask };
     }
 
@@ -398,12 +401,15 @@
         }
         if (opts.closable !== false) root.appendChild(closeBtn);
 
+        const overview = el('div', 'world-view__overview');
+        root.appendChild(overview);
         const legend = el('div', 'world-legend');
         const legendTitle = el('p', 'world-legend__title');
         const legendList = el('ul', 'world-legend__list');
-        legend.append(legendTitle, legendList);
-        root.appendChild(legend);
-        const activity = global.WorldActivity.mount(root, { t, reducedMotion: reduce, coverage });
+        const legendCities = el('p', 'world-legend__cities');
+        legend.append(legendTitle, legendList, legendCities);
+        overview.appendChild(legend);
+        const activity = global.WorldActivity.mount(overview, { t, reducedMotion: reduce, coverage });
 
         const labelLayer = el('div', 'world-view__labels');
         root.appendChild(labelLayer);
@@ -431,13 +437,15 @@
             closeBtn.textContent = opts.closeLabel ? closeLabel : '×';
             closeBtn.setAttribute('aria-label', closeLabel);
             closeBtn.title = closeLabel;
-            legendTitle.textContent = t('world.legend.title', 'Parcel data');
+            legendTitle.textContent = t('world.legend.title', 'Country parcel coverage');
             legendList.textContent = '';
-            ['live', 'source', 'none', 'unknown'].forEach(tier => {
+            global.WorldCoverage.COVERAGE_LEVELS.forEach(level => {
                 const li = el('li', 'world-legend__item');
-                li.append(el('span', 'world-tier-dot world-tier-dot--' + tier), el('span', '', { text: t('world.tier.' + tier + '.short', { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Not researched' }[tier]) }));
+                li.append(el('span', 'world-tier-dot world-tier-dot--' + level), el('span', '', { text: t('world.coverage.' + level + '.short', COVERAGE_LABELS[level]) }));
                 legendList.appendChild(li);
             });
+            legendCities.textContent = '';
+            legendCities.append(el('span', 'world-tier-dot world-tier-dot--city'), el('span', '', { text: t('world.legend.cities', 'City with parcels in the app') }));
             activity.render();
             if (selected) renderPopup();
         }
@@ -452,6 +460,7 @@
         const vel = { lat: 0, lon: 0 };
         let lastInteraction = -Infinity;
         let flight = null;
+        let zoomTarget = null;
         let selected = null;
         let dirty = true;
         let raf = 0;
@@ -508,6 +517,7 @@
 
         function onPointerDown(ev) {
             if (flight) return;
+            zoomTarget = null;
             renderer.domElement.setPointerCapture(ev.pointerId);
             pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
             vel.lat = vel.lon = 0;
@@ -562,10 +572,18 @@
         }
 
         function onWheel(ev) {
-            if (flight) return;
+            // Labels cross the pointer during zoom. Handle their bubbling wheel events on the
+            // globe root too, while leaving the overlay controls and scrollable panels alone.
+            if (ev.target.closest('.world-search, .world-activity, .world-popup, .world-view__close')) return;
             ev.preventDefault();
-            const delta = ev.deltaMode === 1 ? ev.deltaY * 30 : ev.deltaY;
-            cam.altitudeKm = GM.clamp(cam.altitudeKm * Math.exp(delta * 0.0014), MIN_USER_ALT_KM, MAX_ALT_KM);
+            if (flight) return;
+            const delta = GM.wheelDeltaPixels(ev.deltaY, ev.deltaMode, viewport.h);
+            zoomTo((zoomTarget === null ? cam.altitudeKm : zoomTarget) * Math.exp(delta * 0.0014));
+        }
+
+        function zoomTo(altitudeKm) {
+            zoomTarget = GM.clamp(altitudeKm, MIN_USER_ALT_KM, MAX_ALT_KM);
+            if (reduce) { cam.altitudeKm = zoomTarget; zoomTarget = null; }
             touch();
         }
 
@@ -573,8 +591,8 @@
             const step = 12 * degPerPx() * 10;
             const moves = { ArrowLeft: [0, -step], ArrowRight: [0, step], ArrowUp: [step, 0], ArrowDown: [-step, 0] };
             if (moves[ev.key]) { cam.lat += moves[ev.key][0]; cam.lon += moves[ev.key][1]; touch(); ev.preventDefault(); }
-            else if (ev.key === '+' || ev.key === '=') { cam.altitudeKm = GM.clamp(cam.altitudeKm / 1.3, MIN_USER_ALT_KM, MAX_ALT_KM); touch(); }
-            else if (ev.key === '-' || ev.key === '_') { cam.altitudeKm = GM.clamp(cam.altitudeKm * 1.3, MIN_USER_ALT_KM, MAX_ALT_KM); touch(); }
+            else if (ev.key === '+' || ev.key === '=') { zoomTo((zoomTarget === null ? cam.altitudeKm : zoomTarget) / 1.3); }
+            else if (ev.key === '-' || ev.key === '_') { zoomTo((zoomTarget === null ? cam.altitudeKm : zoomTarget) * 1.3); }
         }
 
         function onRootKey(ev) {
@@ -644,12 +662,15 @@
             if (!selected) return;
             const place = selected;
             const tier = place.tier;
+            const country = place.kind === 'country';
+            const status = country ? place.coverage : tier;
+            const statusKey = global.WorldCoverage.statusKey(place);
             popup.textContent = '';
-            popup.className = 'world-popup world-popup--' + tier;
+            popup.className = 'world-popup world-popup--' + status;
             const close = el('button', 'world-popup__close', { type: 'button', 'aria-label': t('world.close', 'Close'), text: '×' });
             close.addEventListener('click', deselect);
             const badge = el('p', 'world-popup__tier');
-            badge.append(el('span', 'world-tier-dot world-tier-dot--' + tier), el('span', '', { text: t('world.tier.' + tier + '.short', { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Not researched' }[tier]) }));
+            badge.append(el('span', 'world-tier-dot world-tier-dot--' + status), el('span', '', { text: t(statusKey + '.short', country ? COVERAGE_LABELS[status] : TIER_LABELS[status]) }));
             const heading = place.kind === 'ocean' ? t('world.popup.ocean', 'Open water') : place.name;
             const titleNode = el('h2', 'world-popup__title', { text: heading });
             const subtitleParts = [];
@@ -660,19 +681,34 @@
                 live: 'Parcels, proposals and 3D are ready here.',
                 source: 'Open parcel data exists here, but it is not in the app yet. You can still draw a site and propose here — without parcels, a proposal executes only through an authority\'s verdict — or ask for this place to be added.',
                 none: 'We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.',
-                unknown: 'Nobody has checked this place for open parcel data yet. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.'
+                unknown: 'Open parcel data has not been confirmed here; this place is unchecked or the check was inconclusive. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.'
+            };
+            const countryTexts = {
+                full: 'Open parcel data is confirmed for the whole country. Cities available in the app are marked separately.',
+                partial: 'Open parcel data is confirmed in at least one city or region. Coverage at this specific location, or across the whole country, is not confirmed. Cities available in the app are marked separately.',
+                none: 'We checked for open parcel data in this country and found none. This records the result of our search, not proof that no source exists.',
+                unknown: 'This country has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
             };
             const text = el('p', 'world-popup__text', {
                 text: place.kind === 'ocean'
                     ? t('world.popup.oceanText', 'No land here, so no parcels. You can still open the map at this spot.')
                     : place.sourceId
-                        ? (place.dataVersion
+                        ? (place.queryMode === 'point'
+                            ? t('world.tier.live.pointText', 'Tap the map to load and select an individual parcel. Loading every parcel in an area is unavailable for this source.')
+                            : place.dataVersion
                             ? t('world.tier.live.datedStreamText', 'Parcels load as you zoom in and pan. This source is a {{version}} dataset; current boundaries may differ.', { version: place.dataVersion })
                             : t('world.tier.live.streamText', 'Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.'))
-                    : t('world.tier.' + tier + '.text', texts[tier])
+                    : t(statusKey + '.text', country ? countryTexts[status] : texts[tier])
             });
             popup.append(close, badge, titleNode, subtitle, text);
-            if (place.note && tier !== 'live') popup.appendChild(el('p', 'world-popup__note', { text: place.note }));
+            if (place.note && (country || tier !== 'live')) popup.appendChild(el('p', 'world-popup__note', { text: place.note }));
+            for (const source of place.coverageSources || []) {
+                if (!/^https:\/\//.test(source.url)) continue;
+                popup.appendChild(el('a', 'world-popup__source', {
+                    href: source.url, target: '_blank', rel: 'noopener noreferrer',
+                    text: t('world.popup.coverageSource', 'Coverage source') + ': ' + source.title
+                }));
+            }
             const actions = el('div', 'world-popup__actions');
             const point = { lat: place.lat, lon: place.lon, place };
             const liveCityId = tier === 'live' && place.cityId
@@ -774,10 +810,13 @@
                 const li = el('li', 'world-search__result' + (i === activeIndex ? ' world-search__result--active' : ''), {
                     role: 'option', id: 'world-search-opt-' + i, 'aria-selected': i === activeIndex ? 'true' : 'false'
                 });
-                li.append(el('span', 'world-tier-dot world-tier-dot--' + place.tier));
+                li.append(el('span', 'world-tier-dot world-tier-dot--' + (place.kind === 'country' ? place.coverage : place.tier)));
                 const textWrap = el('span', 'world-search__text');
                 textWrap.append(el('span', 'world-search__name', { text: place.name }),
-                    el('span', 'world-search__meta', { text: place.kind === 'country' ? t('world.search.country', 'Country') : place.country }));
+                    el('span', 'world-search__meta', { text: place.kind === 'country'
+                        ? t('world.search.country', 'Country') + ' · ' + t(global.WorldCoverage.statusKey(place) + '.short', COVERAGE_LABELS[place.coverage])
+                        : place.kind === 'territory' ? t('world.search.territory', 'Territory')
+                        : place.country }));
                 li.append(textWrap);
                 li.addEventListener('pointerdown', ev => ev.preventDefault());
                 li.addEventListener('click', () => choose(place));
@@ -820,14 +859,16 @@
             results.hidden = true; searchInput.setAttribute('aria-expanded', 'false');
             searchInput.blur();
             deselect();
-            const altitudeKm = place.kind === 'country' ? Math.max(11000, Math.min(cam.altitudeKm, 16000)) : 8500;
-            const popupPlace = place.kind === 'country' ? Object.assign({}, place) : coverage.tierAt(place.lat, place.lon);
+            const area = place.kind === 'country' || place.kind === 'territory';
+            const altitudeKm = area ? Math.max(11000, Math.min(cam.altitudeKm, 16000)) : 8500;
+            const popupPlace = area ? Object.assign({}, place) : coverage.tierAt(place.lat, place.lon);
             fly({ lat: place.lat, lon: place.lon, altitudeKm }, { hop: 0.6 }).then(() => select(popupPlace));
         }
 
         // ---- flights ----
         function fly(target, options) {
             vel.lat = vel.lon = 0;
+            zoomTarget = null;
             const from = { lat: cam.lat, lon: cam.lon, altitudeKm: cam.altitudeKm };
             const to = { lat: GM.clamp(target.lat, -80, 80), lon: target.lon, altitudeKm: target.altitudeKm };
             return new Promise(resolve => {
@@ -872,6 +913,11 @@
             let moving = false;
             if (flight) { stepFlight(now); moving = true; }
             else {
+                if (zoomTarget !== null) {
+                    cam.altitudeKm = GM.dampAltitude(cam.altitudeKm, zoomTarget, dt);
+                    if (cam.altitudeKm === zoomTarget) zoomTarget = null;
+                    moving = true;
+                }
                 if (Math.abs(vel.lon) > 0.01 || Math.abs(vel.lat) > 0.01) {
                     cam.lon += vel.lon * dt; cam.lat += vel.lat * dt;
                     const decay = Math.exp(-dt * 2.6);
@@ -904,7 +950,7 @@
         canvas.addEventListener('pointermove', onPointerMove);
         canvas.addEventListener('pointerup', onPointerUp);
         canvas.addEventListener('pointercancel', onPointerUp);
-        canvas.addEventListener('wheel', onWheel, { passive: false });
+        root.addEventListener('wheel', onWheel, { passive: false });
         canvas.addEventListener('keydown', onCanvasKey);
         root.addEventListener('keydown', onRootKey);
         searchInput.addEventListener('input', onSearchInput);
@@ -996,6 +1042,7 @@
 
     const WorldView = {
         TIER_COLORS,
+        COVERAGE_COLORS,
         async open(opts) {
             if (view) return;
             const options = opts || {};

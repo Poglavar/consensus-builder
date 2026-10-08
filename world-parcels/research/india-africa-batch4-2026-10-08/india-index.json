@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "batch": "india-africa-batch4-2026-10-08",
+  "workstream": "india",
+  "cityCount": 5,
+  "verifiedSampleCount": 0,
+  "registryFoundCount": 5,
+  "status": "research_checkpoint_target_geometry_unverified",
+  "cities": [
+    {
+      "wupCityCode": 8064,
+      "cityId": "wup2025:8064",
+      "name": "Jaipur",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "evidenceFile": "city-8064.json",
+      "registryBasis": "Rajasthan Bhu-Naksha is an official state cadastral service, but this batch did not verify a Jaipur-target revenue record. The city-scoped lead is JDA urban GIS, documented in jaipur-urban-gis-diagnostic.json; it is a municipal GIS source, not yet a verified cadastral registry response.",
+      "priorEvidence": "world-parcels/research/india-africa-2026-10-08/india-city-8064.json",
+      "resultCategory": "official_urban_parcel_services_temporarily_unavailable",
+      "sourceIds": []
+    },
+    {
+      "wupCityCode": 10447,
+      "cityId": "wup2025:10447",
+      "name": "Varanasi",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "evidenceFile": "city-10447.json",
+      "registryBasis": "Official UP BhuNaksha resolves district 197 वाराणसी, Sadar tehsil 00996 and real nearby revenue-village maps/plots (Shivpur, Domari); these are city-region registry records, though neither nearby sample contains the WUP center.",
+      "priorEvidence": "world-parcels/research/india-africa-2026-10-08/india-city-10447.json",
+      "resultCategory": "public_cadastral_raster_and_hit_test_no_open_vector_geometry",
+      "sourceIds": []
+    },
+    {
+      "wupCityCode": 8886,
+      "cityId": "wup2025:8886",
+      "name": "Indore",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "evidenceFile": "city-8886.json",
+      "registryBasis": "Official Indore district Revenue Department page identifies local revenue administration and its online directory of patwari/revenue inspectors/tehsildars; official Indore district officers page lists the भू-अभिलेख (land records) office. Sources: https://indore.nic.in/en/departments/revenue-department/ and https://indore.nic.in/en/district-officers-contacts-directory/.",
+      "priorEvidence": "world-parcels/research/india-africa-2026-10-08/india-city-8886.json",
+      "resultCategory": "official_gis_unavailable_and_public_demo_not_georeferenced",
+      "sourceIds": []
+    },
+    {
+      "wupCityCode": 9793,
+      "cityId": "wup2025:9793",
+      "name": "Nagpur",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "evidenceFile": "city-9793.json",
+      "registryBasis": "Official Nagpur District Superintendent of Land Records page identifies the city district land-records authority; Maharashtra Bhumi Abhilekh officially documents eMaps for city-survey/plot maps and property-card access.",
+      "priorEvidence": "world-parcels/research/india-africa-2026-10-08/india-city-9793.json",
+      "resultCategory": "official_city_survey_viewer_temporarily_unavailable",
+      "sourceIds": []
+    },
+    {
+      "wupCityCode": 8120,
+      "cityId": "wup2025:8120",
+      "name": "Kalyan-Dombivli",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "evidenceFile": "city-8120.json",
+      "registryBasis": "KDMC official ArcGIS service metadata exposes city-survey boundary layer (survey_no, ward_id, village_name); a municipal parcel registry layer is documented, but WUP center may lie outside KDMC in Ulhasnagar.",
+      "priorEvidence": "world-parcels/research/india-africa-2026-10-08/india-city-8120.json",
+      "resultCategory": "official_city_survey_service_provider_failure",
+      "sourceIds": []
+    }
+  ]
+}

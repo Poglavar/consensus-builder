@@ -3515,6 +3515,11 @@
             "loaded_parcels_from_source": "Učitano {{count}} čestica iz izvora {{source}}.",
             "checking_cadastral_ground": "Provjera katastarske podloge…",
             "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",
+            "tap_parcel_to_load": "Dodirnite česticu kako biste učitali njezinu granicu. Učitavanje čestica za cijelo područje nije dostupno.",
+            "looking_up_parcel": "Učitavanje čestice…",
+            "no_parcel_at_point": "Na ovoj lokaciji nije pronađena registrirana čestica.",
+            "parcel_lookup_failed": "Česticu nije moguće učitati. Dodirnite ponovno za novi pokušaj.",
+            "parcel_boundary_loaded": "Granica čestice je učitana.",
             "waiting_for_proposal_before_parcels": "Čeka se učitavanje prijedloga prije dohvaćanja čestica…",
             "debug_mode_enabled": "Debug način uključen – opasne radnje su sada vidljive",
             "debug_mode_disabled": "Debug način isključen – opasne radnje su skrivene",
@@ -3563,6 +3568,8 @@
             "birmingham": "Birmingham, Ujedinjeno Kraljevstvo",
             "lusaka": "Lusaka, Zambija",
             "shenzhen": "Shenzhen, Kina",
+            "tbilisi": "Tbilisi, Gruzija",
+            "istanbul": "Istanbul, Turska",
             "montreal": "Montreal, Kanada",
             "dortmund": "Dortmund, Njemačka",
             "london": "London, Ujedinjeno Kraljevstvo",
@@ -3639,7 +3646,11 @@
             "ahmedabad": "Ahmedabad, Indija",
             "surat": "Surat, Indija",
             "nairobi": "Nairobi, Kenija",
-            "astana": "Astana, Kazahstan"
+            "astana": "Astana, Kazahstan",
+            "athens": "Atena, Grčka",
+            "gaborone": "Gaborone, Bocvana",
+            "bloemfontein": "Bloemfontein, Južnoafrička Republika",
+            "pretoria": "Pretoria, Južnoafrička Republika"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",
@@ -4219,14 +4230,35 @@
             "placeholder": "Tražite grad ili državu",
             "label": "Pretraga mjesta",
             "country": "Država",
+            "territory": "Područje",
             "noResults": "Nema takvog mjesta"
         },
         "legend": {
-            "title": "Podaci o česticama"
+            "title": "Pokrivenost česticama po državi",
+            "cities": "Grad s česticama u aplikaciji"
+        },
+        "coverage": {
+            "full": {
+                "short": "Potvrđeno za cijelu državu",
+                "text": "Otvoreni podaci o česticama potvrđeni su za cijelu državu. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "partial": {
+                "short": "Dio podataka je otvoren",
+                "text": "Otvoreni podaci o česticama potvrđeni su za barem jedan grad ili regiju. Pokrivenost na ovoj lokaciji ili u cijeloj državi nije potvrđena. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "none": {
+                "short": "Provjereno: ništa nije pronađeno",
+                "text": "Provjerili smo postoje li otvoreni podaci o česticama u ovoj državi i nismo ih pronašli. To bilježi rezultat pretrage, a ne dokazuje da izvor ne postoji."
+            },
+            "unknown": {
+                "short": "Nije provjereno / nejasno",
+                "text": "Ova država nije provjerena ili rezultat provjere nije jasan. Nismo potvrdili jesu li otvoreni podaci o česticama dostupni."
+            }
         },
         "tier": {
             "live": {
                 "short": "U aplikaciji",
+                "pointText": "Dodirnite kartu za učitavanje i odabir pojedinačne čestice. Ovaj izvor ne omogućuje učitavanje svih čestica na području.",
                 "datedStreamText": "Čestice se učitavaju dok približavate i pomičete kartu. Podaci su iz {{version}}; današnje granice mogu se razlikovati.",
                 "streamText": "Čestice se učitavaju iz lokalnog izvora dok približavate i pomičete kartu. Susjedne općine mogu koristiti druge podatke.",
                 "text": "Čestice, prijedlozi i 3D ovdje su spremni."
@@ -4240,13 +4272,14 @@
                 "text": "Tražili smo i nismo našli otvorene podatke o česticama. Ipak možete nacrtati lokaciju i predložiti; bez čestica se prijedlog izvršava samo odlukom nadležnog tijela."
             },
             "unknown": {
-                "short": "Nije istraženo",
-                "text": "Ovo mjesto još nitko nije provjerio. Ipak možete nacrtati lokaciju i predložiti; bez čestica se prijedlog izvršava samo odlukom nadležnog tijela."
+                "short": "Nije potvrđeno",
+                "text": "Otvoreni podaci o česticama ovdje nisu potvrđeni; mjesto nije provjereno ili rezultat provjere nije jasan. Ipak možete nacrtati lokaciju i predložiti; bez čestica se prijedlog izvršava samo odlukom nadležnog tijela."
             }
         },
         "popup": {
             "ocean": "Otvoreno more",
-            "oceanText": "Ovdje nema kopna, pa ni čestica. Kartu ipak možete otvoriti na ovom mjestu."
+            "oceanText": "Ovdje nema kopna, pa ni čestica. Kartu ipak možete otvoriti na ovom mjestu.",
+            "coverageSource": "Izvor podataka o pokrivenosti"
         },
         "action": {
             "open": "Otvori {{city}}",

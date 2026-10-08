@@ -24,8 +24,9 @@ describe('archived listing ownership repair',()=>{
   expect(result).toMatchObject({processed:2,changed:2,notListing:1,buildingLinksWithdrawn:2});
   const updates=db.query.mock.calls.filter(([sql])=>sql.startsWith('UPDATE floor_plan.listing')).map(([,args])=>args);
   expect(JSON.parse(updates[0][3])).toEqual([]);
-  expect(updates[0].slice(4,7)).toEqual(['unresolved',null,null]);
-  expect(JSON.parse(updates[0][7]).previous.unitId).toBe('other-unit');
+  expect(updates[0].slice(4,9)).toEqual(['unresolved',null,null,'',null]);
+  expect(JSON.parse(updates[0][9]).previous.unitId).toBe('other-unit');
+  expect(updates[0][10]).toBeNull();
   expect(JSON.parse(updates[1][2]).sourceEvidenceStatus).toBe('not-a-listing');
   expect(db.query.mock.calls.some(([sql])=>/UPDATE floor_plan\.(blob|observation|model_revision)|DELETE FROM/i.test(sql))).toBe(false);
  });

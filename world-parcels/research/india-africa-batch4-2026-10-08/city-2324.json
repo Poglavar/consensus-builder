@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "CustomID_nonnull_count_0; only Esri OBJECTID/GlobalID metadata; geometry hashes reproducible but do not solve data quality",
+  "coverageAssessment": {
+    "countrywideVerified": false
+  },
+  "cityId": "wup2025:2324",
+  "wupCityCode": 2324,
+  "name": "Yaoundé",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "centerLatLon": [
+    3.84966629078637,
+    11.5177122171369
+  ],
+  "registryFound": true,
+  "resultCategory": "third_party_urban_model_microcluster_rejected_for_coverage_scale_and_provenance",
+  "candidateGeometrySampleAvailable": true,
+  "candidateSource": {
+    "url": "https://www.arcgis.com/home/item.html?id=2314f3ed664744458d96b76cadf1fd28",
+    "owner": "Roby_F",
+    "created": "2022",
+    "modified": "2023",
+    "description": "ArcGIS Urban Database View; no origin/license/source noted",
+    "layer": "Parcels",
+    "crs": "EPSG:3857",
+    "serviceExtent3857": [
+      1270393.3666,
+      426497.2449,
+      1278573.1543,
+      435012.108
+    ],
+    "count": 32,
+    "actualFootprint3857": [
+      1271092.6391,
+      430640.9837,
+      1271129.453,
+      430677.2193
+    ],
+    "actualFootprintWgs84": [
+      11.41841945,
+      3.86557788,
+      11.41875016,
+      3.86590265
+    ],
+    "distanceFromWupCenterKm": 11.142,
+    "dataAudit": "32/32 closed single rings, no self-intersections; area 0.157–60.778 m², median 0.698; 31/32 ≤25 m². All in 36.8×36.2 m microcluster inside same-owner Yaoundé 7 boundary. CustomID nonnull count 0. WUP-center 200m bbox count 0; cluster 200m bbox count 32. Exact OBJECTID=2401 geometry hash reread matched. Not credible parcel coverage.",
+    "verificationQueries": {
+      "countOnly200m": [
+        {
+          "purpose": "WUP center",
+          "httpStatus": 200,
+          "count": 0,
+          "bbox3857": [
+            1282045.859,
+            428765.692,
+            1282245.859,
+            428965.692
+          ],
+          "url": "https://services8.arcgis.com/JWv4kG2sK54O8y2n/arcgis/rest/services/urban_database_view_28bb9709eeb84fe982d66cecbd1e2814/FeatureServer/4/query?where=1%3D1&geometry=%7B%22xmin%22%3A1282045.8591151456%2C%22ymin%22%3A428765.69190916413%2C%22xmax%22%3A1282245.8591151456%2C%22ymax%22%3A428965.69190916413%2C%22spatialReference%22%3A%7B%22wkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json"
+        },
+        {
+          "purpose": "observed geometry cluster",
+          "httpStatus": 200,
+          "count": 32,
+          "bbox3857": [
+            1271011.046,
+            430559.101,
+            1271211.046,
+            430759.101
+          ],
+          "url": "https://services8.arcgis.com/JWv4kG2sK54O8y2n/arcgis/rest/services/urban_database_view_28bb9709eeb84fe982d66cecbd1e2814/FeatureServer/4/query?where=1%3D1&geometry=%7B%22xmin%22%3A1271011.04605%2C%22ymin%22%3A430559.1015%2C%22xmax%22%3A1271211.04605%2C%22ymax%22%3A430759.1015%2C%22spatialReference%22%3A%7B%22wkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json"
+        }
+      ],
+      "exactGeometryLookup": {
+        "httpStatus": 200,
+        "objectId": 2401,
+        "url": "https://services8.arcgis.com/JWv4kG2sK54O8y2n/arcgis/rest/services/urban_database_view_28bb9709eeb84fe982d66cecbd1e2814/FeatureServer/4/query?where=OBJECTID%3D2401&outFields=OBJECTID&returnGeometry=true&outSR=3857&f=json",
+        "result": "1 geometry returned; canonical geometry SHA-256 matched saved OID 2401 geometry"
+      },
+      "customIdNonNullCount": {
+        "httpStatus": 200,
+        "count": 0,
+        "url": "https://services8.arcgis.com/JWv4kG2sK54O8y2n/arcgis/rest/services/urban_database_view_28bb9709eeb84fe982d66cecbd1e2814/FeatureServer/4/query?where=CustomID+IS+NOT+NULL&returnCountOnly=true&f=json",
+        "query": "CustomID IS NOT NULL",
+        "attributesRead": false
+      }
+    },
+    "auditMetrics": {
+      "featuresReturned": 32,
+      "closedRings": 32,
+      "selfIntersecting": 0,
+      "areaM2": {
+        "min": 0.157,
+        "median": 0.698364,
+        "max": 60.778
+      },
+      "featuresAreaAtMost25m2": 31,
+      "footprintWidthHeightM": [
+        36.8,
+        36.2
+      ],
+      "distanceFromWupCenterKm": 11.142,
+      "boundaryCheck": "all vertices of all 32 shapes inside the same-owner Yaounde7 boundary",
+      "interpretation": "microcluster too small, distant, and unprovenanced to represent city parcel coverage"
+    }
+  },
+  "geometryArtifact": "research/india-africa-batch4-2026-10-08/africa-west-yaounde7-parcels-all32-geometry.json",
+  "sources": [
+    {
+      "url": "https://www.mindcaf.gov.cm/",
+      "evidence": "Official ministry, no open parcel endpoint linked."
+    },
+    {
+      "url": "https://www.armp.cm/details?id_publication=6404&type_publication=AMI",
+      "date": "2026-06-04",
+      "evidence": "Official tender for new SIF in Yaoundé/Douala and digitization/vectorization of 510,000 cadastral/land files; 36-month implementation."
+    },
+    {
+      "url": "https://geocameroun.cm/",
+      "evidence": "Direct DNS failure; no parcel endpoint tested."
+    },
+    {
+      "url": "https://mindcaf.gov.cm/fr/docs/",
+      "evidence": "Current official MINDCAF documents identify the three Conservation Foncières of Mfoundi and their Yaoundé arrondissement coverage, plus departmental cadastre responsibilities."
+    }
+  ],
+  "blocker": "No credible anonymous parcel geometry; third-party Urban model contains a 32-shape sub-100m² microcluster, not usable city coverage.",
+  "registryBasis": "Official MINDCAF documents identify land-conservation services for the Mfoundi department covering Yaoundé I–VII (including separate A/B/C conservation units with Yaoundé offices) and department-level cadastre functions. This establishes an official city-scoped registry/cadastre basis, not anonymous access.",
+  "priorEvidence": [
+    "world-parcels/research/yaounde.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-city-2324.json",
+    "world-parcels/research/native-language-2026-10-04/cities-yaounde.json",
+    "research/india-africa-2026-10-08/africa-ws-city-2324.json"
+  ],
+  "freshSearches": [
+    {
+      "language": "English",
+      "script": "Latin",
+      "query": "Yaounde MINDCAF cadastre office Yaoundé cadastre parcelles official Cameroon",
+      "date": "2026-10-08",
+      "observedUrls": [
+        "https://mindcaf.gov.cm/fr/contact/",
+        "https://www.mindcaf.gov.cm/media/filer_public/5a/23/5a234f08-0ccc-4b44-9887-d314c27dd70b/annuaire_statistique_2023.pdf"
+      ]
+    },
+    {
+      "language": "French",
+      "script": "Latin",
+      "query": "\"Yaoundé\" \"parcelles cadastrales\" SIG cadastre Cameroun",
+      "date": "2026-10-08",
+      "observedUrls": [
+        "https://mindcaf.gov.cm/fr/docs/",
+        "https://new.armp.cm/filtres?type=projets_montants&val=1",
+        "https://fr.scribd.com/document/582227289/Cameroon-Diagnostic-Study-for-Modernization-of-the-Lands-and-Surveys-Sectors-FR"
+      ]
+    }
+  ],
+  "nextStep": "Find a credible public MINDCAF/CUY or other documented city parcel source, then validate geographic placement, parcel scale and fresh native-ID or geometry-reference reads. The retained Urban microcluster does not qualify.",
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://mindcaf.gov.cm/fr/docs/"
+  ],
+  "status": "no_verified_open_endpoint_after_attempts",
+  "technicalBlocker": "No credible anonymous parcel geometry; third-party Urban model contains a 32-shape sub-100m² microcluster, not usable city coverage."
+}

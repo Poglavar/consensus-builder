@@ -3529,6 +3529,11 @@
             "loaded_parcels_from_source": "Se cargaron {{count}} parcelas de {{source}}.",
             "checking_cadastral_ground": "Comprobando el catastro…",
             "loading_cadastral_ground": "Cargando el catastro {{done}}/{{total}}…",
+            "tap_parcel_to_load": "Toca una parcela para cargar su límite. No está disponible la carga de parcelas de toda el área.",
+            "looking_up_parcel": "Cargando parcela…",
+            "no_parcel_at_point": "No se encontró una parcela registrada en este punto.",
+            "parcel_lookup_failed": "No se pudo cargar la parcela. Toca de nuevo para reintentarlo.",
+            "parcel_boundary_loaded": "Límite de la parcela cargado.",
             "waiting_for_proposal_before_parcels": "Esperando a que cargue la propuesta antes de obtener las parcelas…",
             "debug_mode_enabled": "Modo depuración activado: las acciones peligrosas ahora son visibles",
             "debug_mode_disabled": "Modo depuración desactivado: las acciones peligrosas están ocultas",
@@ -3577,6 +3582,8 @@
             "birmingham": "Birmingham, Reino Unido",
             "lusaka": "Lusaka, Zambia",
             "shenzhen": "Shenzhen, China",
+            "tbilisi": "Tiflis, Georgia",
+            "istanbul": "Estambul, Turquía",
             "montreal": "Montreal, Canadá",
             "dortmund": "Dortmund, Alemania",
             "london": "Londres, Reino Unido",
@@ -3653,7 +3660,11 @@
             "ahmedabad": "Ahmedabad, India",
             "surat": "Surat, India",
             "nairobi": "Nairobi, Kenia",
-            "astana": "Astaná, Kazajistán"
+            "astana": "Astaná, Kazajistán",
+            "athens": "Atenas, Grecia",
+            "gaborone": "Gaborone, Botsuana",
+            "bloemfontein": "Bloemfontein, Sudáfrica",
+            "pretoria": "Pretoria, Sudáfrica"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",
@@ -4233,14 +4244,35 @@
             "placeholder": "Busca una ciudad o un país",
             "label": "Buscar lugares",
             "country": "País",
+            "territory": "Territorio",
             "noResults": "Ningún lugar coincide"
         },
         "legend": {
-            "title": "Datos de parcelas"
+            "title": "Cobertura catastral por país",
+            "cities": "Ciudad con parcelas en la app"
+        },
+        "coverage": {
+            "full": {
+                "short": "Cobertura completa del país",
+                "text": "Los datos abiertos de parcelas están confirmados para todo el país. Las ciudades disponibles en la app se marcan por separado."
+            },
+            "partial": {
+                "short": "Algunos datos abiertos",
+                "text": "Los datos abiertos de parcelas están confirmados en al menos una ciudad o región. No se confirma la cobertura en este lugar concreto ni en todo el país. Las ciudades disponibles en la app se marcan por separado."
+            },
+            "none": {
+                "short": "Revisado: no se encontró nada",
+                "text": "Buscamos datos abiertos de parcelas en este país y no encontramos ninguno. Esto registra el resultado de la búsqueda, no demuestra que no exista ninguna fuente."
+            },
+            "unknown": {
+                "short": "Sin revisar / resultado incierto",
+                "text": "Este país no se ha revisado o la comprobación no fue concluyente. No hemos confirmado si hay datos abiertos de parcelas disponibles."
+            }
         },
         "tier": {
             "live": {
                 "short": "En la app",
+                "pointText": "Toca el mapa para cargar y seleccionar una parcela. Esta fuente no permite cargar todas las parcelas de una zona.",
                 "datedStreamText": "Las parcelas se cargan al acercar y mover el mapa. Esta fuente corresponde a {{version}}; los límites actuales pueden ser distintos.",
                 "streamText": "Las parcelas se cargan desde la fuente local al acercar y mover el mapa. Los municipios cercanos pueden usar datos diferentes.",
                 "text": "Parcelas, propuestas y 3D están listos aquí."
@@ -4254,13 +4286,14 @@
                 "text": "Buscamos y no encontramos datos abiertos de parcelas aquí. Aun así puedes dibujar un sitio y proponer; sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad."
             },
             "unknown": {
-                "short": "Sin investigar",
-                "text": "Nadie ha revisado todavía este lugar. Aun así puedes dibujar un sitio y proponer; sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad."
+                "short": "Sin confirmar",
+                "text": "No se han confirmado datos abiertos de parcelas aquí; este lugar no se ha revisado o la comprobación no fue concluyente. Aun así puedes dibujar un sitio y proponer; sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad."
             }
         },
         "popup": {
             "ocean": "Mar abierto",
-            "oceanText": "Aquí no hay tierra, así que no hay parcelas. Aun así puedes abrir el mapa en este punto."
+            "oceanText": "Aquí no hay tierra, así que no hay parcelas. Aun así puedes abrir el mapa en este punto.",
+            "coverageSource": "Fuente de cobertura"
         },
         "action": {
             "open": "Abrir {{city}}",

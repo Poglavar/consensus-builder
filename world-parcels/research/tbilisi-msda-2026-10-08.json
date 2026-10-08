@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Tbilisi public parcel map and exact point/native-ID runtime integration.",
+  "checkedAt": "2026-10-08",
+  "countryCode": "GE",
+  "cityId": "msda:tbilisi",
+  "status": "verified_sample_partial_coverage",
+  "sourceId": "ge-msda-napr-registered-land-plots",
+  "viewer": "https://ms.gov.ge/msmap/#C=44.8067283-41.7088867@Z=20",
+  "layer": {
+    "id": 261415,
+    "name": "Registered Land Plots",
+    "upstream": "National Agency of Public Registry",
+    "wms": "https://nv.napr.gov.ge/geoserver/wms",
+    "wmsLayer": "NG_REG_LAYER"
+  },
+  "requests": [
+    {
+      "endpoint": "https://ms.gov.ge/core-api/v1/search/unified-search",
+      "method": "POST",
+      "body": {
+        "searchText": "01.16.06.023.021"
+      },
+      "httpStatus": 200,
+      "resultPath": "naprSearchResult",
+      "nativeIdField": "cadCode",
+      "geometryField": "wktShape",
+      "crs": "EPSG:4326",
+      "browserAndAnonymousTerminalVerified": true
+    },
+    {
+      "endpoint": "https://ms.gov.ge/core-api/v1/search/search-by-xy",
+      "method": "POST",
+      "body": {
+        "lrIds": [
+          261415
+        ],
+        "x": 44.80665,
+        "y": 41.70893,
+        "zoom": 20
+      },
+      "httpStatus": 200,
+      "resultPath": "naprTchParcel.layerRecords",
+      "resultCount": 1
+    }
+  ],
+  "sampleFile": "research/tbilisi-msda-2026-10-08-sample.geojson",
+  "runtimeStatus": "enabled_point_lookup",
+  "scopeNote": "One registered parcel near the user-provided Tbilisi location is verified. Citywide and nationwide completeness are not inferred.",
+  "termsAreInformational": true,
+  "appCityId": "tbilisi",
+  "runtimeCapabilities": {
+    "pointLookup": true,
+    "exactNativeId": true,
+    "cadastralRaster": true,
+    "completeAreaEnumeration": false
+  },
+  "areaQueryEvidence": [
+    "The verified public search returns parcel geometry by point or exact cadastral code; no complete bbox enumeration endpoint was verified.",
+    "NAPR WFS reports disabled. The published WMS parcel layers are marked non-queryable; a single-feature query restricted to CADCODE returned HTTP 403.",
+    "A fresh exact viewer GetMap request returned PNG tiles successfully; attribute-free KML for NG_REG_LAYER returned a GeoServer NullPointerException. The published cite:LR_PARCELS KML request timed out.",
+    "The separate MSDA geometry-by-location route returned HTTP 401; no authenticated access was attempted."
+  ],
+  "runtimeVerification": {
+    "checkedAt": "2026-10-08",
+    "freshAdapterPointAndIdQueries": true,
+    "headedBrowserParcelSelection": true,
+    "selectedParcelId": "GE-NAPR-01.16.06.023.021",
+    "repositoryFeatureCountAfterClick": 1,
+    "loadedViewportCellCountAfterClick": 0,
+    "unavailableAreaQueries": "HTTP 422 parcel-source-area-unsupported; no provider request",
+    "mobileViewport": {
+      "width": 360,
+      "height": 780,
+      "documentWidth": 360,
+      "selectionAndMenuVerified": true
+    },
+    "headedBrowserNativeCodeSearch": true
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "cityId": "capital:NE:niamey",
+  "name": "Niamey",
+  "country": "Niger",
+  "countryCode": "NE",
+  "centerLatLon": [
+    13.5116,
+    2.1254
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/NE.json"
+  ],
+  "registryFound": true,
+  "officialRegistryOrPortalFound": true,
+  "publicEndpointVerified": false,
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "resultCategory": "official_registry_or_service_no_geometry",
+  "source": null,
+  "verifiedParcelResponse": null,
+  "englishQueries": [
+    {
+      "languageScript": "English",
+      "exactQuery": "Niamey Niger official city parcel cadastre GIS land registry parcel map",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.modernisation-villes.ne/geoportail/",
+        "https://www.modernisation-villes.ne/geoportail/pages/about.html",
+        "https://www.stat-niger.org/wp-content/uploads/PDES/2022-2026/NIGER_PDES_2022-2026_VOLUME_1.pdf"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "French",
+      "exactQuery": "Niamey Niger cadastre parcelles carte SIG registre foncier officiel mairie",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.modernisation-villes.ne/geoportail/",
+        "https://www.modernisation-villes.ne/geoportail/pages/about.html",
+        "https://www.stat-niger.org/wp-content/uploads/PDES/2022-2026/NIGER_PDES_2022-2026_VOLUME_1.pdf"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.modernisation-villes.ne/geoportail/",
+      "observation": "Official city address portal publishes street/avenue/boulevard, POI, quarter and arrondissement layers, not parcels."
+    },
+    {
+      "url": "https://www.modernisation-villes.ne/geoportail/pages/about.html",
+      "observation": "AMV page identifies City of Niamey as local partner validating city addressing data; public scope is address system."
+    },
+    {
+      "url": "https://www.stat-niger.org/wp-content/uploads/PDES/2022-2026/NIGER_PDES_2022-2026_VOLUME_1.pdf",
+      "observation": "Government planning source records 430 Niamey cadastral map sheets produced/updated by Aug 2020; no public vector endpoint."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.modernisation-villes.ne/geoportail/",
+      "method": "web.run open official Agence de Modernisation des Villes portal",
+      "httpStatus": "not exposed; page retrieved",
+      "assessment": "Portal describes city address search and shows roads, POIs, quarters and arrondissements, with no cadastral parcel layer."
+    },
+    {
+      "url": "https://www.modernisation-villes.ne/geoportail/pages/about.html",
+      "method": "web.run click portal About page",
+      "httpStatus": "not exposed; page retrieved",
+      "assessment": "About page describes a Niamey address-system initiative by AMV with City of Niamey as local partner and address data validator; confirms address scope, not cadastral coverage."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City-level coverage not established.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+  "remainingUncertainty": "Current data coverage, freshness, legal completeness and anonymous geometry access remain unverified.",
+  "nextStep": "If source access terms and public services change, recheck the official portal for an anonymous bounded geometry service; otherwise retain as a documented non-geometry research result.",
+  "status": "complete",
+  "purpose": "City-specific research into parcel geometry and presence of a city-level registry or cadastre. Registry evidence is assessed separately from publicly retrievable geometry.",
+  "registryEvidenceUrls": [
+    "https://www.stat-niger.org/wp-content/uploads/PDES/2022-2026/NIGER_PDES_2022-2026_VOLUME_1.pdf"
+  ],
+  "registryBasis": "Government planning documents record 430 cadastral map sheets for Niamey, while the city portal itself is address-only; legal registry status and present map coverage remain unverified.",
+  "portalInspectionComplete": true,
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Niamey Niger official city parcel cadastre GIS land registry parcel map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Niamey Niger cadastre parcelles carte SIG registre foncier officiel mairie",
+      "language": "French",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

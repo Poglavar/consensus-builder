@@ -562,8 +562,8 @@ describe('the ground service is the only parcel transport consumer', () => {
 
     it('captures the private transport before any feature consumer loads', () => {
         const html = readFileSync(join(frontendRoot, 'index.html'), 'utf8');
-        const fetchIndex = html.indexOf("'js/parcels/fetch.js'");
-        const serviceIndex = html.indexOf("'js/parcels/ground-service.js'");
+        const fetchIndex = html.search(/'js\/parcels\/fetch\.js(?:\?[^']*)?'/);
+        const serviceIndex = html.search(/'js\/parcels\/ground-service\.js(?:\?[^']*)?'/);
         const managerIndex = html.indexOf("'js/proposal-manager.js'");
         expect(fetchIndex).toBeGreaterThanOrEqual(0);
         expect(serviceIndex).toBeGreaterThan(fetchIndex);

@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 8886,
+  "cityId": "wup2025:8886",
+  "name": "Indore",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    22.6991756014844,
+    75.8556700061169
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 150,
+  "stateOrUT": "Madhya Pradesh",
+  "administrativeIdentity": {
+    "district": "इन्दौर ज़िला",
+    "tehsilOrTaluk": "Juni Indore Tahsil",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-08",
+    "batch4Summary": "Parent diagnostic found a municipal plot showcase with deliberately displaced/rotated parcel numbering and no CRS, so it is not georeferenced parcel evidence. No owner data copied.",
+    "queries": [
+      "Indore GIS portal land records city survey parcel boundaries official Indore"
+    ],
+    "sources": [
+      "https://indore.nic.in/en/indore-gis/",
+      "https://indoregis.mp.gov.in/",
+      "https://indore.nic.in/en/departments/revenue-department/",
+      "https://indore.nic.in/en/district-officers-contacts-directory/",
+      "https://mpbhulekh.gov.in/"
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Indore GIS is an official city planning and utility map portal; MP Bhulekh is the state land-record portal. No public cadastral parcel layer or target parcel geometry verified in this pass.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_gis_unavailable_and_public_demo_not_georeferenced",
+  "registryFound": true,
+  "verifiedSample": false,
+  "technicalBlocker": "The official municipal GIS times out before TLS from two networks. Public commercial demo shapes are rotated and shifted into an undocumented private frame, so they are not verified georeferenced parcel geometry.",
+  "remainingUncertainty": "No public, nonempty parcel polygon associated with the exact WUP target point was verified.",
+  "nextStep": "Recheck the official municipal WebGIS when reachable, or obtain the publisher’s documented georeferenced public layout feed. The demonstration-coordinate shapes are not a runtime substitute.",
+  "priorEvidence": [
+    {
+      "file": "world-parcels/research/india-africa-2026-10-08/india-city-8886.json",
+      "summary": "Earlier city assessment retained in referenced file; not duplicated in this batch record."
+    },
+    "research/india-africa-2026-10-08/india-city-8886.json"
+  ],
+  "registryBasis": "Official Indore district Revenue Department page identifies local revenue administration and its online directory of patwari/revenue inspectors/tehsildars; official Indore district officers page lists the भू-अभिलेख (land records) office. Sources: https://indore.nic.in/en/departments/revenue-department/ and https://indore.nic.in/en/district-officers-contacts-directory/.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "Indore GIS portal land records city survey parcel boundaries official Indore",
+      "date": "2026-10-08",
+      "executionMethod": "web search; official portal inspection as listed in requestsAndEndpointChecks",
+      "resultUrls": [
+        "https://indore.nic.in/en/indore-gis/",
+        "https://indoregis.mp.gov.in/",
+        "https://indore.nic.in/en/departments/revenue-department/",
+        "https://indore.nic.in/en/district-officers-contacts-directory/",
+        "https://mpbhulekh.gov.in/"
+      ],
+      "summary": "Batch-4 search and follow-up only; prior search history is in priorEvidence."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://indore.nic.in/en/indore-gis/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Parent diagnostic found a municipal plot showcase with deliberately displaced/rotated parcel numbering and no CRS, so it is not georeferenced parcel evidence. No owner data copied."
+    },
+    {
+      "url": "https://indoregis.mp.gov.in/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Parent diagnostic found a municipal plot showcase with deliberately displaced/rotated parcel numbering and no CRS, so it is not georeferenced parcel evidence. No owner data copied."
+    },
+    {
+      "url": "https://indore.nic.in/en/departments/revenue-department/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Parent diagnostic found a municipal plot showcase with deliberately displaced/rotated parcel numbering and no CRS, so it is not georeferenced parcel evidence. No owner data copied."
+    },
+    {
+      "url": "https://indore.nic.in/en/district-officers-contacts-directory/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Parent diagnostic found a municipal plot showcase with deliberately displaced/rotated parcel numbering and no CRS, so it is not georeferenced parcel evidence. No owner data copied."
+    },
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Parent diagnostic found a municipal plot showcase with deliberately displaced/rotated parcel numbering and no CRS, so it is not georeferenced parcel evidence. No owner data copied."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://indore.nic.in/en/indore-gis/",
+      "method": "GET (web search/open)",
+      "status": "official page found",
+      "summary": "Links Indore GIS portal and describes planning/utility/land-use maps."
+    },
+    {
+      "url": "https://indoregis.mp.gov.in/",
+      "method": "GET",
+      "status": "portal documented; no cadastral layer verified",
+      "summary": "No public parcel feature response established in this pass."
+    },
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "method": "GET",
+      "status": "timed out",
+      "summary": "State record portal; timeout not treated as evidence of no coverage."
+    },
+    {
+      "url": "https://indore.nic.in/en/departments/revenue-department/",
+      "method": "GET (web search/open)",
+      "status": "official page found",
+      "summary": "Local Indore Revenue Department page documents ten sub-divisions and online revenue contact directory."
+    },
+    {
+      "url": "https://indore.nic.in/en/district-officers-contacts-directory/",
+      "method": "GET (web search/open)",
+      "status": "official page found",
+      "summary": "Lists district land-records office (भू-अभिलेख). No personal contact details copied."
+    }
+  ],
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://indore.nic.in/en/departments/revenue-department/",
+    "https://indore.nic.in/en/district-officers-contacts-directory/",
+    "https://indore.nic.in/en/indore-gis/"
+  ],
+  "blocker": "The official municipal GIS times out before TLS from two networks. Public commercial demo shapes are rotated and shifted into an undocumented private frame, so they are not verified georeferenced parcel geometry.",
+  "supplementalEvidenceFiles": [
+    "research/india-africa-batch4-2026-10-08/indore-municipal-diagnostic.json",
+    "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+  ]
+}

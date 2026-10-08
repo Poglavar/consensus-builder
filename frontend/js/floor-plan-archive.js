@@ -52,12 +52,20 @@ function renderPlan(plan){
  el('rooms').replaceChildren();for(const room of rooms){const row=document.createElement('tr');row.append(textNode('td',room.name),textNode('td',`${room.areaM2??'—'} m²`));el('rooms').append(row);}if(!rooms.length){const row=document.createElement('tr'),cell=textNode('td',tr('noRooms'));cell.colSpan=2;row.append(cell);el('rooms').append(row);}
  el('areas').replaceChildren(textNode('dt',tr('physical')),textNode('dd',`${plan.physicalNetAreaM2??'—'} m²`),textNode('dt',tr('marketed')),textNode('dd',`${plan.areaM2??'—'} m²`));
  el('dimensions').textContent=plan.architecture?`${tr('dimensions')}: ${plan.architecture.dimensionsM.map(v=>v.toFixed(2)).join(' × ')} m`:'';
- el('conflict').hidden=!plan.sourceFloorConflict;el('conflict').textContent=plan.sourceFloorConflict?`${tr('conflict')}: ${JSON.stringify(plan.sourceFloorConflict)}`:'';
+ const reviewNotes=[...(plan.reviewNotes||[])];
+ if(plan.sourceFloorConflict)reviewNotes.unshift(`${tr('conflict')}: ${JSON.stringify(plan.sourceFloorConflict)}`);
+ el('conflict').hidden=!reviewNotes.length;el('conflict').textContent=reviewNotes.join(' · ');
+ el('processing-note').replaceChildren();
+ if(plan.processing){
+  el('processing-note').append(textNode('p',tr('interpretedNote')));
+  if(plan.verticalDimensionsBasis)el('processing-note').append(textNode('p',plan.verticalDimensionsBasis));
+  if(plan.processing.costUsd!==null&&Number.isFinite(Number(plan.processing.costUsd)))el('processing-note').append(textNode('p',`${tr('processingCost')}: $${Number(plan.processing.costUsd).toFixed(4)}`));
+ }
  el('geometry-note').textContent=tr(!plan.architecture?'noGeometry':building?.kind==='registered'?'registeredNote':'localNote');
  drawPlan(plan);status(plan.sourceFloorConflict?'conflict':plan.reviewStatus==='needs_review'?'needs_review':'ready');
 }
 async function choosePlan(){
- const plan=selected(),token=++selectionGeneration;stopPlan();el('asset').replaceChildren();el('plan-details').hidden=true;el('conflict').hidden=true;el('geometry-note').textContent='';
+ const plan=selected(),token=++selectionGeneration;stopPlan();el('asset').replaceChildren();el('plan-details').hidden=true;el('conflict').hidden=true;el('geometry-note').textContent='';el('processing-note').replaceChildren();
  el('previous').disabled=Number(el('unit').value)<=0;el('next').disabled=Number(el('unit').value)>=plans.length-1;
  updateURL();if(!plan){empty('asset','noResults');empty('plan','noResults');return;}
  if(building){renderPlan(plan);return;}

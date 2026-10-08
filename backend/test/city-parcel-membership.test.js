@@ -149,6 +149,23 @@ describe('isInCity covers every configured city', () => {
             raleigh: "US-NC-WAKE-1703678831",
             new_hope: "US-NC-WAKE-1706681938",
             venjaramoodu: "IN-KL-ENTEBHOOMI-010309-ce0688a8-8689-41b8-8d14-1edd191a86ee",
+            tbilisi: 'GE-NAPR-01.16.06.023.021',
+            istanbul: 'TR-TKGM-147986-1065-16',
+            athens: 'GR-ATHENS-KAEK-050096064001',
+            gaborone: 'gaborone:bofinet:6036~47323',
+            bloemfontein: 'za-mangaung-sgcode:F00300030002479700000',
+            pretoria: 'tshwane:lis-key:002000504/R',
+            kochi: 'IN-KL-ENTEBHOOMI-070211-1258826f-a7fd-44ca-a97b-fe50b78c001e',
+            iravipuram: 'IN-KL-ENTEBHOOMI-020301-77211068-4399-433e-8433-fa8299ad5e0a',
+            ahmedabad: 'IN-GJ-TPVD-Sarangpur 18 10',
+            surat: 'IN-GJ-SURAT-Umra_North 5 1',
+            astana: 'KZ-ASTANA-PKK-213200721012',
+            johannesburg: 'ZA-JOBURG-T0IQ0156012000020710000000',
+            ennerdale: 'ZA-JOBURG-T0IQ0104001000013730000000',
+            cosmo_city: 'ZA-JOBURG-T0IQ0724008000204950000000',
+            accra: 'GH-AMA-AMAAW67819',
+            mboloko: 'ZA-CGS-NW-N372T0JQ005400000732000000',
+            nairobi: 'KE-NAIROBI-NM-g1~368450797~-12658433~da3346393f9072e27a714160a14a3b5bba650f8059bd29b108d63a11b0470eb2',
             bismarck: "US-ND-BURLEIGH-1-064-005",
             columbus: "US-OH-FRANKLIN-010-007484",
             salem: "US-OR-MARION-073W22DC04500",
@@ -172,9 +189,10 @@ describe('isInCity covers every configured city', () => {
             recife: 'BR-RECIFE-0100100010010001',
             durban: 'ZA-ETHEKWINI-{11111111-2222-3333-4444-555555555555}'
         };
-        // These values exercise membership only. Muscat, Curitiba, and Frankfort use observed
-        // native-format examples; the other new values are synthetic strings shaped from the
-        // configured prefix/native field type and are not claims of source verification.
+        // Live-source values above match saved sample features for the newly configured cities.
+        // Nairobi is a synthetic membership fixture ID derived from a geometry-version sample,
+        // not a native or observed parcel ID. The other added values mirror native IDs in saved
+        // adapter artifacts. Older fixtures remain illustrative.
         configuredCityIds().forEach(city => {
             expect(sample[city], `no sample parcel id for configured city ${city}`).toBeTruthy();
             expect(isInCity(sample[city], city), `${city} refuses its own parcel`).toBe(true);

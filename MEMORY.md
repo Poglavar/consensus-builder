@@ -536,6 +536,11 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 
 - 2026-10-08: Controlled parcel SAM 3 learning-rate runs (96 training tiles, four epochs each) selected epoch one: validation prefers 3e-6 (F1 0.168), but reused-test F1 is 0.172 versus 0.180 at 1e-5, 0.163 before further training and 0.195 for OSM. The gains mainly remove false positives; retain the OSM baseline and treat these four test blocks as diagnostic, with a fresh geographic test needed for future confirmation.
 - 2026-10-08: A qualitative review of 60 stratified training parcels found 13 strongly visible outlines, 31 partial, 15 weak and one uncertain; no common alignment shift was confirmed. Perfect reproduction of the 128-pixel training-mask representation scores about 0.993 parcel F1, so representation loss alone does not explain poor model predictions; the audit does not establish a visual accuracy ceiling. Artifacts remain ignored under `world-parcels/guess-spike/output/parcel-learning-rate-check/`, with the report at `/learning-rate/` in the existing comparison viewer.
+
 - 2026-10-08: High-quality public parcel polygons do not require published native parcel IDs to be shown. When IDs are absent, use clearly labelled source-scoped application references from versioned canonical geometry hashes, with fresh spatial lookup and full-hash verification. Changed boundaries receive new references; these are not official registry numbers or proof of ownership. This supersedes the earlier native-identity-only eligibility wording.
 
 - 2026-10-08: Certificate validation remains the default, but an individual public parcel-source adapter may use a narrowly scoped certificate-verification exception when needed; an expired certificate alone does not make the data unusable.
+
+- 2026-10-08: Globe land geometry is independent of ISO registry joins: retain uncoded Natural Earth territories with stable source IDs and unknown parcel coverage, so missing country metadata never turns land into ocean.
+
+- 2026-10-08: Tbilisi and Istanbul load exact cadastral polygons on map clicks without completing viewport cells; their public services do not provide verified complete area enumeration.

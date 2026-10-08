@@ -286,6 +286,22 @@
             return { ...result, ids };
         }
 
+        // An identify response supplies exact parcel facts, never completeness for a viewport cell.
+        // No-hit points are deliberately not cached: they say nothing about nearby ground.
+        async function ensurePoint(point, options = {}) {
+            if (!Array.isArray(point) || point.length !== 2 || !point.every(Number.isFinite)
+                || Math.abs(point[0]) > 180 || Math.abs(point[1]) > 90) throw new Error('Invalid cadastral point.');
+            const city = normalizeId(options.city) || cityKey();
+            const fetchPoint = transport()?.fetchPoint;
+            if (typeof fetchPoint !== 'function') throw new Error('Cadastral point transport is unavailable.');
+            const raw = await fetchPoint(point, { city });
+            if (raw?.complete !== true || raw?.queryType !== 'point') throw new Error('Cadastral point response is incomplete.');
+            const result = await acceptTransportResult(raw, { city, skipConversion: raw.returnsWGS84 === true });
+            const features = result.ids.map(id => clone(featureStore(city).get(id)));
+            if (options.retainOnly !== true) await provideFeatures(features, { city });
+            return { status: 'ready', queryType: 'point', ids: result.ids, features };
+        }
+
         async function ensureIds(parcelIds, options = {}) {
             const started = now();
             const city = normalizeId(options.city) || cityKey();
@@ -916,6 +932,7 @@
 
         return Object.freeze({
             ensureIds,
+            ensurePoint,
             // Routing may inspect another city's immutable source facts without seeding live ground.
             locateIds: (ids, options = {}) => ensureIds(ids, { ...options, mutation: null, retainOnly: true }),
             ensureProposalGround,

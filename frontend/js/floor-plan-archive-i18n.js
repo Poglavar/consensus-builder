@@ -77,7 +77,9 @@ window.__floorPlanArchiveTranslations = {
     "page": "Page",
     "noDrawing": "No source drawing URL is available.",
     "resetView": "Reset view",
-    "unitCollectionNote": "Apartment positions inside the building remain unresolved."
+    "unitCollectionNote": "Apartment positions inside the building remain unresolved.",
+    "interpretedNote": "AI-interpreted drawing. Compare the geometry with its source; this is not a surveyed model.",
+    "processingCost": "Processing cost (USD)"
   },
   "hr": {
     "eyebrow": "Arhiva i rekonstrukcija",
@@ -156,7 +158,9 @@ window.__floorPlanArchiveTranslations = {
     "page": "Stranica",
     "noDrawing": "Poveznica na izvorni nacrt nije dostupna.",
     "resetView": "Vrati pogled",
-    "unitCollectionNote": "Položaji stanova unutar zgrade još nisu potvrđeni."
+    "unitCollectionNote": "Položaji stanova unutar zgrade još nisu potvrđeni.",
+    "interpretedNote": "Nacrt obrađen umjetnom inteligencijom. Usporedite geometriju s izvornikom; model nije geodetski izmjeren.",
+    "processingCost": "Trošak obrade (USD)"
   },
   "es": {
     "eyebrow": "Archivo y reconstrucción",
@@ -235,7 +239,9 @@ window.__floorPlanArchiveTranslations = {
     "page": "Página",
     "noDrawing": "No hay enlace al plano original.",
     "resetView": "Restablecer vista",
-    "unitCollectionNote": "La posición de los apartamentos dentro del edificio sigue sin verificar."
+    "unitCollectionNote": "La posición de los apartamentos dentro del edificio sigue sin verificar.",
+    "interpretedNote": "Plano interpretado con IA. Compare la geometría con el original; no es un modelo topográfico medido.",
+    "processingCost": "Coste de procesamiento (USD)"
   },
   "sr": {
     "eyebrow": "Arhiva i rekonstrukcija",
@@ -314,6 +320,8 @@ window.__floorPlanArchiveTranslations = {
     "page": "Stranica",
     "noDrawing": "Veza do izvornog nacrta nije dostupna.",
     "resetView": "Vrati pogled",
-    "unitCollectionNote": "Položaji stanova unutar zgrade još nisu potvrđeni."
+    "unitCollectionNote": "Položaji stanova unutar zgrade još nisu potvrđeni.",
+    "interpretedNote": "Crtež obrađen veštačkom inteligencijom. Uporedite geometriju sa izvornikom; model nije geodetski izmeren.",
+    "processingCost": "Trošak obrade (USD)"
   }
 };

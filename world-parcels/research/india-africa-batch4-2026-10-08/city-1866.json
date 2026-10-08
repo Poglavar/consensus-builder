@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1866",
+  "queueRank": 85,
+  "wupCityCode": 1866,
+  "name": "Kampala",
+  "country": "Uganda",
+  "countryCode": "UG",
+  "centerLatLon": [
+    0.321224889410938,
+    32.5794981900445
+  ],
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "priorEvidence": [
+    "world-parcels/research/india-africa-2026-10-08/africa-ne-city-kampala.json",
+    "world-parcels/research/kampala.json",
+    "research/india-africa-2026-10-08/africa-ne-city-kampala.json"
+  ],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "script": "Latin",
+        "query": "Kampala Uganda viwanja vya ardhi ramani ya cadastral parcels GIS",
+        "method": "web search",
+        "checkedAt": "2026-10-08",
+        "resultUrls": [
+          "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+          "https://kcca.go.ug/gis",
+          "https://mlhud.go.ug/ugnlis/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Kampala Uganda land parcel open data GeoServer cadastre map",
+        "method": "web search",
+        "checkedAt": "2026-10-08",
+        "resultUrls": [
+          "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+          "https://www.kcca.go.ug/faqs-gis",
+          "https://www.kcca.go.ug/surveys-and-mapping"
+        ]
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.kcca.go.ug/gis",
+        "observation": "KCCA states its GIS database includes cadastre information supplied by MoLHUD, and says public map/data access is available; this confirms cadastral data exists for the target city, not an open parcel geometry layer.",
+        "coverage": "Kampala Capital City Authority"
+      },
+      {
+        "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+        "observation": "Official KCCA GIS web app exposes map-layer, property-search and survey interfaces. Its public HTML identifies an anonymous GeoServer WFS and separate application REST routes; the app has property and plot-number search interfaces, but search results/records were not requested.",
+        "coverage": "KCCA map app"
+      },
+      {
+        "url": "https://mlhud.go.ug/ugnlis/",
+        "observation": "MoLHUD describes UgNLIS as a spatially referenced land registration, valuation, planning and administration system. Published guidance describes locating parcels by title or county/block/plot identifiers; no anonymous city-wide parcel geometry endpoint was found.",
+        "coverage": "National land system; Kampala-specific feature coverage not established"
+      }
+    ],
+    "observedServices": [
+      {
+        "url": "https://camcamv.kcca.go.ug/geoserver/wfs?service=WFS&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "Anonymous WFS 2.0 capabilities returned. Advertised KCCA layers include Common-Data-GID-MultiPolygon, Common-Data-MultiPolygon, Common-Division-MultiPolygon, Common-Parishe-MultiPolygon, Common-Village(s)-MultiPolygon, Common-Navigation-MultiPolygon, survey-proximity layers, and generic attribute tables. No named parcel, plot, cadastral or land-boundary layer is advertised. The remaining advertised tiger/sf/topp layers are GeoServer demos.",
+        "serverResponseDate": "2026-10-08T14:05:18Z",
+        "checkedAt": "2026-10-08",
+        "dateEvidenceNote": "Timestamp came from the HTTP Date response header; it is not the local request start or batch preparation time."
+      },
+      {
+        "url": "https://camcamv.kcca.go.ug/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=KCCA%3ACommon-Data-MultiPolygon",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "Schema describes a generic MultiPolygon feature with source_layer, layer_name, det_tablename, division, parish, village, x/y/z, status, geom_type, geom_multipolygon and survey_status; it does not establish these as cadastral parcels."
+      },
+      {
+        "url": "https://camcamv.kcca.go.ug/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=KCCA%3ACommon-Data-MultiPolygon&outputFormat=application%2Fjson&maxFeatures=5&bbox=32.578%2C0.320%2C32.581%2C0.323%2CEPSG%3A4326",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bbox": [
+          32.578,
+          0.32,
+          32.581,
+          0.323
+        ],
+        "bboxCrs": "EPSG:4326; WFS 1.0 lon,lat order",
+        "maxFeatures": 5,
+        "featureCount": 0,
+        "observation": "Empty FeatureCollection at the WUP coordinate. A wider 1 km bbox and 1.1/CRS:84 axis-order variants were also empty. No feature geometry or fields sampled."
+      },
+      {
+        "url": "https://camcamv.kcca.go.ug/GisWebApp/rest/layer/KCCA",
+        "method": "GET",
+        "httpStatus": 500,
+        "contentType": "text/html",
+        "observation": "A first standalone request returned a Tomcat NullPointerException. Follow-up using a normal anonymous session after loading the public app returned HTTP 200 and a JSON layer configuration; the successful same-session result below supersedes that initial request."
+      },
+      {
+        "url": "https://camcamv.kcca.go.ug/GisWebApp/rest/layer/json/layers/KCCA/",
+        "method": "GET",
+        "httpStatus": 404,
+        "contentType": "text/html",
+        "observation": "Advertised app route was not independently callable as an anonymous catalogue endpoint."
+      },
+      {
+        "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home then https://camcamv.kcca.go.ug/GisWebApp/rest/layer/KCCA (same anonymous session)",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "The actual public app configuration returned its five master layers: Boundary (SDCV), Divisions (DIV), Buildings (BUL), Parishes (PAR), and Villages (VIL). `customLayers` and `thematicLayers` were empty. No CAD/cadastre/parcel layer is in the anonymous map layer list. The only polygon layer with a property/building purpose is Buildings; it is not parcel geometry. No feature/owner records were requested."
+      }
+    ],
+    "additionalCatalog": {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Kampala%22+Uganda+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "httpStatus": 200,
+      "resultTotal": 0,
+      "observation": "Supplementary ArcGIS Online catalogue search returned no candidate Feature Services."
+    }
+  },
+  "coverageAssessment": {
+    "claimedScope": "KCCA GIS is city-wide and KCCA describes MoLHUD cadastre information as included.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "registryExistenceScope": "Kampala cadastral information is confirmed by the official KCCA description; open geometry access remains unverified."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "identityReadiness": "not ready; no public response with parcel-boundary geometry was identified from which source-scoped geometry references could be established; native parcel IDs are not required by project policy",
+    "attributesRequested": "none; no owner/address data requested"
+  },
+  "blocker": "The official KCCA GIS confirms city cadastre information exists, but the actual anonymous app layer configuration lists only Boundary, Divisions, Buildings, Parishes and Villages (no CAD layer), while its anonymous WFS advertises no parcel-named layer and the bounded generic polygon query returned zero features.",
+  "remainingUncertainty": "KCCA's public page says its broader GIS database includes MoLHUD cadastre information, but that dataset is not part of the anonymous five-layer app configuration verified here. It may be available through separate request-only or contextual services. No absence of cadastral records is inferred.",
+  "nextStep": "Ask KCCA GIS or MoLHUD whether a public WFS/ArcGIS layer or a small geometry-only parcel extract is available, and test that source with the saved point before integration.",
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryBasis": "Kampala cadastral information is confirmed by the official KCCA description; open geometry access remains unverified.",
+  "registryEvidenceUrls": [
+    "https://www.kcca.go.ug/gis",
+    "https://camcamv.kcca.go.ug/GisWebApp/gis/home"
+  ],
+  "resultCategory": "no_verified_open_endpoint_after_attempts",
+  "technicalBlocker": "The official KCCA GIS confirms city cadastre information exists, but the actual anonymous app layer configuration lists only Boundary, Divisions, Buildings, Parishes and Villages (no CAD layer), while its anonymous WFS advertises no parcel-named layer and the bounded generic polygon query returned zero features."
+}

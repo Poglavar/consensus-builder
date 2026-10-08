@@ -92,6 +92,18 @@ describe('parcel id candidates', () => {
     it('offers nothing for text that is not an id', () => {
         expect(Model.parcelIdCandidates('Ilica 1', { cityId: 'zagreb', parcelSource: 'oss-wfs', loadedIds: loaded }).ids).toEqual([]);
     });
+
+    it('routes native and canonical IDs using the configured point source prefix', () => {
+        for (const [native, prefix] of [['01.16.06.023.021', 'GE-NAPR-'], ['147986-1065-16', 'TR-TKGM-']]) {
+            const options = { parcelSource: 'parcel-source', parcelIdPrefix: prefix };
+            expect(Model.parcelIdCandidates(native, options).ids).toEqual([prefix + native]);
+            expect(Model.parcelIdCandidates(prefix + native, options).ids).toEqual([prefix + native]);
+            expect(Model.parcelIdCandidates(prefix.toLowerCase() + native, options).ids).toEqual([prefix + native]);
+            expect(Model.classifyQuery(prefix + native, options).kinds).toContain('parcel');
+            expect(Model.classifyQuery(prefix + native, options).kinds).not.toContain('address');
+            expect(Model.parcelIdCandidates(prefix, options).ids).toEqual([]);
+        }
+    });
 });
 
 describe('ranking', () => {
@@ -291,7 +303,7 @@ describe('recent searches and keyboard state', () => {
 });
 
 describe('index.html wiring', () => {
-    const scriptIndex = name => indexHtml.indexOf(`'${name}'`);
+    const scriptIndex = name => indexHtml.search(new RegExp(`'${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\?[^']*)?'`));
 
     it('loads the model, the world coverage lookup and the commands before the search box and the palette', () => {
         for (const name of ['js/ui/search-model.js', 'js/world/world-coverage.js', 'js/ui/map-search.js', 'js/ui/command-palette.js']) {

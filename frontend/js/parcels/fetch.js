@@ -247,6 +247,21 @@
         };
     }
 
+    async function fetchPoint(point, options = {}) {
+        const city = String(options.city || currentCity());
+        const provider = cityConfig(city)?.parcels;
+        if (provider?.strategy !== 'point' || provider.source !== 'parcel-source') throw new Error('Parcel point lookup is unavailable.');
+        if (!Array.isArray(point) || point.length !== 2 || !point.every(Number.isFinite)
+            || Math.abs(point[0]) > 180 || Math.abs(point[1]) > 90) throw new Error('Invalid parcel lookup point.');
+        const payload = await responseJson(`${backendBase()}/parcel-sources/${encodeURIComponent(provider.sourceId)}?${new URLSearchParams({ point: point.join(',') })}`, {
+            headers: { Accept: 'application/json' }, cache: 'no-store'
+        });
+        if (payload.complete !== true || payload.queryType !== 'point' || payload.sourceId !== provider.sourceId || !Array.isArray(payload.features)) {
+            throw new Error('Parcel source returned an incomplete point response.');
+        }
+        return { status: 'ready', complete: true, queryType: 'point', features: payload.features, absentIds: [], returnsWGS84: true };
+    }
+
     function datasetToLatLng(easting, northing, city) {
         const manager = global.CityConfigManager;
         if (manager && typeof manager.datasetToLatLng === 'function') {
@@ -420,6 +435,11 @@
     }
 
     async function fetchParcelData(customBounds) {
+        if (cityConfig(currentCity())?.parcels?.strategy === 'point' && !groundOverride(currentCity())) {
+            global.PointParcelMap?.sync?.();
+            global.updateStatus?.(statusText('tap_parcel_to_load', 'Tap a parcel to load its boundary. Area-wide parcel loading is unavailable.'));
+            return null;
+        }
         if (!cityHasParcels() && !groundOverride(currentCity())) {
             global.ParcelGroundFallback?.onGroundUnavailable?.({
                 error: noRegisterError(currentCity()),
@@ -540,6 +560,7 @@
     global.escapeXmlValue = escapeXmlValue;
     global.__cadastralGroundTransport = Object.freeze({
         fetchByIds,
+        fetchPoint,
         fetchBounds,
         fetchUnderGeometry,
         supportsRoadIds,
