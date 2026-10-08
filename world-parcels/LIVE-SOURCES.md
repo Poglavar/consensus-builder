@@ -5,6 +5,35 @@ The source evidence is saved in `registry.json` and `research/`: endpoints, oper
 sample requests and responses, native identifiers, paging observations and uncertainties.
 The globe's `source` tier means a verified sample exists; it does not enable a runtime provider.
 
+## Remaining world capitals — 8 October 2026
+
+The [completed batch](research/world-capitals-2026-10-08/index.json) checks **69 previously unchecked capitals and associated seats**. The [roster](research/world-capitals-2026-10-08/roster.json) contains 225 seats: 156 had earlier city-specific evidence, including failed attempts; all 69 remaining entries now have dated research. Scope covers all 193 UN members and the two observer states, separate government/royal/transitional seats, and a labelled supplementary group. Overseas dependencies and ordinary provincial capitals are excluded. Inclusion and source jurisdiction do not express political recognition or boundary claims.
+
+The batch establishes city-level registry/land-mapping activity in **32 cities**, leaves it unestablished in **37**, verifies public polygon samples in **20**, and enables **10 app entries**. The generated catalogue now contains **130 configured cities / 115 executable providers**. The new evidence does not establish countrywide completeness.
+
+| Enabled city | Verified scope and limits |
+| --- | --- |
+| Vienna | 51 complete cadastral references in 13 cells plus cross-tile landmarks. A new BEV adapter reconstructs full parcels from maximum-resolution vector tiles; the API rectangles are locators only. Public display coordinates are not legally binding survey coordinates. |
+| Cetinje | 283 valid source-row references across 13 cells with no sampled overlaps. Podgorica remains held on the same publisher; a Cetinje pass does not clear its separate defects. |
+| San Marino | 221 complete FOG_MAP land-parcel references in 13 cells. Published land-class filters exclude roads, water and cartographic objects; all parts are retained. |
+| The Hague | 139 current PDOK cadastral references in 13 cells, using the existing Amsterdam/Rotterdam provider and namespace. |
+| Wellington | 174 current primary-parcel references in 13 cells. Final catalogue identity also passed a fresh exact lookup and binding check. |
+| Beirut | 89 parcel PID references from the publisher's 2019-survey basemap. The earlier district-boundary candidate was rejected. Two unchanged boundary slivers are under 0.31 m² and 4.3 cm wide. |
+| Thimphu — Taba | 112 valid public municipal plot polygons in 13 cells, all inside the published Thromde boundary. Legal registration, lifecycle, vintage and planning status are undocumented. The earlier national cadastral sample lies outside the city and is explicitly superseded. |
+| Bandar Seri Begawan | 357 valid source-row references in 13 cells. Nine narrow overlaps remain unchanged; the largest native overlap is 26.87 m², 0.02151% of the smaller parcel, with maximum inscribed diameter 0.297 m. |
+| Jerusalem | 123 source-row references in 13 cells. Govmap OBJECTID supplies identity because PARCEL_ID is nonunique. A 40-ID exact lookup took 85 seconds; transient timeouts and successful retries remain recorded. |
+| East Jerusalem | Separate 13-cell check, six grid rows and ten rows in the grid/footprint union audit, all valid without sampled overlaps. Uses the same Govmap source namespace, while the explicit city record preserves its own roster jurisdiction. |
+
+Govmap browser ID requests use the tested three-ID size, so each gateway request retains the existing 15-second deadline; the entire multi-batch operation can still take longer.
+
+All enabled sources passed actual adapter checks for complete viewport retrieval, forced pagination where applicable, fresh exact-ID geometry hashes, explicit absence, footprint lookup and source binding. Vienna instead exercises complete cross-tile reconstruction. Independent GEOS audits retain provider geometry without repair. These bounded samples do not establish citywide coverage, legal title or survey accuracy.
+
+**Nine geometry candidates remain held:** Andorra la Vella, Bratislava, Skopje, Podgorica, Chișinău, Ramallah, North Nicosia, Malé/Hulhumalé and Paramaribo. Their city records retain self-intersections, duplicates or material overlaps and any native-coordinate follow-up. **La Paz remains on retrieval hold:** its initial polygon sample succeeded, but all thirteen subsequent adapter cells and the absence probe returned HTTP 502. The other 49 cities have no verified public polygon response in this pass. A failed public search is not evidence that a registry does not exist.
+
+The [sample-retention record](research/world-capitals-2026-10-08/sample-retention.json) limits repository examples to three safe polygons per city; surplus historical geometry is represented by hashes and audit metadata. Owner and contact attributes are excluded. Missing legal parcel identifiers and reuse notices are not eligibility gates. No database import was performed.
+
+[Headless verification](research/world-capitals-2026-10-08/final-headless-tests.json) passed 237 scoped tests in 11 files; 32 overlapping report/integration tests passed again after the final evidence update. Two additional history-metadata checks still fail on gaps confirmed unchanged from the preceding commit. [Manual headed-browser checks](research/world-capitals-2026-10-08/browser-check.json) loaded and selected real parcels in all ten entries, opened their details, verified the report's Vienna and East Jerusalem rows, and recorded no uncaught page errors. The dedicated browser was closed. This batch is local, uncommitted and undeployed.
+
 ## Remaining African capitals — 8 October 2026
 
 The [completed batch](research/africa-capitals-2026-10-08/index.json) investigates **43 previously unchecked capitals and associated seats**. The [roster](research/africa-capitals-2026-10-08/roster.json) separates 23 previously checked entries from this pass: 63 national-capital/associated-seat entries across 54 African UN members, plus a separately labelled three-city disputed/de facto supplement. Research locators are chosen points, not official city boundaries. All records retain executed English and local-language searches and distinguish city registry activity from public geometry.

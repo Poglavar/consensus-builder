@@ -1,0 +1,59 @@
+{
+  "purpose": "Records scoped headless verification and distinguishes preexisting global history metadata failures.",
+  "checkedAt": "2026-10-08",
+  "scopedHeadless": {
+    "files": 11,
+    "passed": 237,
+    "failed": 0,
+    "testFiles": [
+      "bev-parcel-adapter",
+      "wfs-parcel-adapter",
+      "parcel-coverage-report",
+      "world-coverage-build",
+      "parcel-report-evidence",
+      "shared-live-parcel-sources",
+      "parcel-source-binding",
+      "live-source-binding-wiring",
+      "live-parcel-source-transport",
+      "arcgis-parcel-adapter",
+      "world-capitals-batch"
+    ],
+    "browserSuitesRun": false
+  },
+  "additionalHistoryCheck": {
+    "testFile": "backend/test/parcel-research-history.test.js",
+    "passed": 2,
+    "failed": 2,
+    "baselineComparison": "Same gaps in HEAD and current registry. All 21 new integration attempts have endpoint, operation and detail.",
+    "baselineGaps": {
+      "attemptsMissingEndpoint": 28,
+      "attemptsMissingDetail": 7,
+      "attemptsMissingOperation": 0,
+      "heldSourcesMissingReason": 2
+    },
+    "newBatchGaps": 0
+  },
+  "initialDiagnostics": [
+    "The first world-coverage check expected North Macedonia to remain unknown; its new bounded Skopje polygon evidence now correctly yields partial/source with updated country scope evidence.",
+    "The restricted route-test run could not open a loopback listener (EPERM). The same headless subset passed with local-listener access."
+  ],
+  "generatedReport": {
+    "cityCount": 579,
+    "configuredAppCityCount": 130,
+    "providerCount": 115,
+    "newlyCheckedCities": 69,
+    "missingEvidenceWarnings": []
+  },
+  "finalEvidenceSyncRetest": {
+    "purpose": "Rebuilt report after final primary-source descriptions and checked the changed city-opening data.",
+    "files": 3,
+    "passed": 32,
+    "failed": 0,
+    "overlapsScopedTests": true,
+    "testFiles": [
+      "world-capitals-batch",
+      "world-coverage-build",
+      "parcel-coverage-report"
+    ]
+  }
+}

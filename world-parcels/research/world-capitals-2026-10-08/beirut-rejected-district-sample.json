@@ -1,0 +1,6 @@
+{
+  "purpose": "Rejected candidate: these are cadastral district polygons, not parcel polygons. Geometry removed after semantic review.",
+  "originalFile": "beirut-safe-sample.geojson",
+  "featureCount": 3,
+  "reason": "Place-level cadastral district attributes and city-scale polygons; replaced by publisher-linked forDameg individual parcels."
+}

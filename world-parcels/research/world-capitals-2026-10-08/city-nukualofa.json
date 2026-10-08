@@ -1,0 +1,69 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:TO:nukualofa",
+  "name": "Nuku'alofa",
+  "country": "Tonga",
+  "countryCode": "TO",
+  "centerLatLon": [
+    -21.133333,
+    -175.2
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/TO.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/TO.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Nuku'alofa Tonga cadastral parcels map GIS land registry official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"Nuku’alofa\" \"map\" parcels cadastral survey land allotment Tonga",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Nukuʻalofa kelekele cadastral land parcels map Tonga",
+      "language": "Tongan-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.lands.gov.to/programs/land-survey",
+      "observation": "Official Ministry page states cadastral survey demarcates town and tax allotments; Land GIS division provides cadastral mapping services. No public data viewer/service link was exposed in the official portal inspected."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lands.gov.to/programs/land-survey",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "outcome": "Official Ministry of Lands page inspected; cadastral division describes town/tax allotment work, no public query service linked."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-nukualofa.json"
+}

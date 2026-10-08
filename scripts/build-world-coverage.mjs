@@ -315,7 +315,14 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
 
     const liveCities = parseCityConfigs(cityConfigSource).map(city => {
         const country = [...byCode.values()].find(e => e.rings.length && pointInRings(city.lat, city.lon, e.rings));
-        return { id: city.id, name: city.name, label: city.label, cc: sourcesById.get(city.sourceId)?.countryCode || (country ? country.cc : null), lat: city.lat, lon: city.lon,
+        const source = sourcesById.get(city.sourceId);
+        // One publisher can serve city records in different jurisdictions. Use an explicit,
+        // source-validated city association instead of assigning every city the publisher's country.
+        const cityCountries = new Set(registry.cities.filter(row => row.appCityId === city.id
+            && row.sourceIds?.includes(city.sourceId) && source?.liveIntegration?.status === 'enabled'
+            && source.liveIntegration.cityIds?.includes(city.id)).map(row => row.countryCode).filter(Boolean));
+        const cc = cityCountries.size === 1 ? [...cityCountries][0] : source?.countryCode || country?.cc || null;
+        return { id: city.id, name: city.name, label: city.label, cc, lat: city.lat, lon: city.lon,
             ...(city.sourceId ? { sourceId: city.sourceId } : {}), ...(city.dataVersion ? { dataVersion: city.dataVersion } : {}),
             ...(city.queryMode ? { queryMode: city.queryMode } : {}),
             ...(city.radiusKm ? { radiusKm: city.radiusKm } : {}) };

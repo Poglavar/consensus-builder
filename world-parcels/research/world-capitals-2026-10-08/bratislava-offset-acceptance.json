@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Alternative offset-pagination check for the official Bratislava register C ArcGIS layer after count and object-ID manifest disagreements.",
+  "checkedAt": "2026-10-08T18:27:56.820Z",
+  "descriptor": {
+    "id": "sk-bratislava-register-c-offset",
+    "adapter": "arcgis",
+    "idPrefix": "bratislava-register-c:",
+    "endpoint": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1",
+    "idFields": [
+      "ku",
+      "cpa_text"
+    ],
+    "idFieldTypes": {
+      "ku": "string",
+      "cpa_text": "string"
+    },
+    "objectIdField": "objectid",
+    "outFields": [
+      "objectid",
+      "find_pc",
+      "ku",
+      "cpa_text",
+      "cpa",
+      "pec",
+      "drp",
+      "ump"
+    ],
+    "pageSize": 3,
+    "idBatchSize": 1,
+    "idsQueryMode": "offset",
+    "maxFeatures": 1500,
+    "maxBboxKm2": 1
+  },
+  "bbox": [
+    17.1085,
+    48.1435,
+    17.109,
+    48.144
+  ],
+  "projectedEnvelope3857": [
+    1904509.5082367207,
+    6130761.411264591,
+    1904565.1679821175,
+    6130844.82614067
+  ],
+  "tests": [
+    {
+      "name": "service-count-vs-id-manifest-wgs84",
+      "passed": true,
+      "bboxSpace": "wgs84",
+      "inSR": 4326,
+      "countOnly": 17,
+      "objectIdManifestCount": 9,
+      "objectIds": [
+        "198198",
+        "198241",
+        "198265",
+        "198191",
+        "198192",
+        "198261",
+        "198195",
+        "198197",
+        "198196"
+      ],
+      "countManifestAgree": false
+    },
+    {
+      "name": "service-count-vs-id-manifest-web-mercator",
+      "passed": true,
+      "bboxSpace": "web-mercator",
+      "inSR": 3857,
+      "countOnly": 17,
+      "objectIdManifestCount": 9,
+      "objectIds": [
+        "198198",
+        "198241",
+        "198265",
+        "198191",
+        "198192",
+        "198261",
+        "198195",
+        "198197",
+        "198196"
+      ],
+      "countManifestAgree": false
+    },
+    {
+      "name": "offset-bounds-page-size-3",
+      "passed": true,
+      "featureCount": 9,
+      "uniqueObjectIds": 9,
+      "pageSize": 3,
+      "pageRequestCount": 4,
+      "oids": [
+        "198191",
+        "198192",
+        "198195",
+        "198196",
+        "198197",
+        "198198",
+        "198241",
+        "198261",
+        "198265"
+      ],
+      "returnsSameIdsAsWgsManifest": true,
+      "manifestOids": [
+        "198198",
+        "198241",
+        "198265",
+        "198191",
+        "198192",
+        "198261",
+        "198195",
+        "198197",
+        "198196"
+      ]
+    },
+    {
+      "name": "offset-mode-fresh-exact",
+      "passed": true,
+      "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~7",
+      "objectId": "198191",
+      "geometryHash": "5d142606b0dbe0c272d13e2ea6b43a84b25be92c1da452ad1f87b3e3bd62eccf",
+      "complete": true
+    },
+    {
+      "name": "offset-mode-footprint",
+      "passed": false,
+      "failure": "Parcel provider pagination repeated or omitted an object ID."
+    },
+    {
+      "name": "offset-mode-source-binding",
+      "passed": false,
+      "failure": "Parcel provider pagination repeated or omitted an object ID."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:27:56.822Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "count": 17
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:57.027Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "manifestCount": 9,
+      "objectIds": [
+        "198198",
+        "198241",
+        "198265",
+        "198191",
+        "198192",
+        "198261",
+        "198195",
+        "198197",
+        "198196"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:57.162Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&geometry=1904509.5082367207%2C6130761.411264591%2C1904565.1679821175%2C6130844.82614067&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "count": 17
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:57.310Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&geometry=1904509.5082367207%2C6130761.411264591%2C1904565.1679821175%2C6130844.82614067&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "manifestCount": 9,
+      "objectIds": [
+        "198198",
+        "198241",
+        "198265",
+        "198191",
+        "198192",
+        "198261",
+        "198195",
+        "198197",
+        "198196"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:57.478Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=0&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 3,
+      "oids": [
+        "198191",
+        "198192",
+        "198195"
+      ],
+      "rows": [
+        {
+          "oid": "198191",
+          "ku": "Staré Mesto",
+          "cpa_text": "7",
+          "find_pc": "Staré Mesto: 7",
+          "hash": "5d142606b0dbe0c272d13e2ea6b43a84b25be92c1da452ad1f87b3e3bd62eccf"
+        },
+        {
+          "oid": "198192",
+          "ku": "Staré Mesto",
+          "cpa_text": "1",
+          "find_pc": "Staré Mesto: 1",
+          "hash": "68c4d387264e18f2944d439c34dcbb22e31dc23e6f69b663e20f535b9b26c429"
+        },
+        {
+          "oid": "198195",
+          "ku": "Staré Mesto",
+          "cpa_text": "21399",
+          "find_pc": "Staré Mesto: 21399",
+          "hash": "998147874fa28332ae729b2929ec13a56fc2a811dc2371825fb40e28abf01452"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:57.623Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=3&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 3,
+      "oids": [
+        "198196",
+        "198197",
+        "198198"
+      ],
+      "rows": [
+        {
+          "oid": "198196",
+          "ku": "Staré Mesto",
+          "cpa_text": "21401",
+          "find_pc": "Staré Mesto: 21401",
+          "hash": "6f16ba44aaa045fe0dbacab4d439f7c029fe3215f8cd9fe97d56012cdcfc4b79"
+        },
+        {
+          "oid": "198197",
+          "ku": "Staré Mesto",
+          "cpa_text": "21402",
+          "find_pc": "Staré Mesto: 21402",
+          "hash": "e26714ac455387c673035cd3035fd9c0fc840b5ee81351058979bd05a916de3b"
+        },
+        {
+          "oid": "198198",
+          "ku": "Staré Mesto",
+          "cpa_text": "21403",
+          "find_pc": "Staré Mesto: 21403",
+          "hash": "3ff6b1070607fed63166011b56f56b66e7082519b060e04956f1ff9d6029036e"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:57.776Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=6&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 3,
+      "oids": [
+        "198241",
+        "198261",
+        "198265"
+      ],
+      "rows": [
+        {
+          "oid": "198241",
+          "ku": "Staré Mesto",
+          "cpa_text": "67",
+          "find_pc": "Staré Mesto: 67",
+          "hash": "6768f090d484a0e7b743f0b2126d1356a1877353aa3ffdb0c4ea90c8e94a8182"
+        },
+        {
+          "oid": "198261",
+          "ku": "Staré Mesto",
+          "cpa_text": "21398",
+          "find_pc": "Staré Mesto: 21398",
+          "hash": "7869c31dcd6695b2de9a79bdde8974aa28d911f175b24270ade6c78f030c268c"
+        },
+        {
+          "oid": "198265",
+          "ku": "Staré Mesto",
+          "cpa_text": "21396",
+          "find_pc": "Staré Mesto: 21396",
+          "hash": "9c407a9c80a5d745329c80e3563c5b79ebdf752db7efe7e1d501eae99d9ff27d"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:57.925Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=9&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 0,
+      "oids": [],
+      "rows": []
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:58.079Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=%28ku+%3D+%27Star%C3%A9+Mesto%27+AND+cpa_text+%3D+%277%27%29&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=0",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 1,
+      "oids": [
+        "198191"
+      ],
+      "rows": [
+        {
+          "oid": "198191",
+          "ku": "Staré Mesto",
+          "cpa_text": "7",
+          "find_pc": "Staré Mesto: 7",
+          "hash": "5d142606b0dbe0c272d13e2ea6b43a84b25be92c1da452ad1f87b3e3bd62eccf"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:58.368Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=0&geometry=17.108936714113188%2C48.143269889030734%2C17.109392413614437%2C48.14366216365946&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 2,
+      "oids": [
+        "198179",
+        "198184"
+      ],
+      "rows": [
+        {
+          "oid": "198179",
+          "ku": "Staré Mesto",
+          "cpa_text": "13",
+          "find_pc": "Staré Mesto: 13",
+          "hash": "b4dc9e4e29143bc6da360c03242bb8dd8320c2b4442cfa1c24f63023afa4aced"
+        },
+        {
+          "oid": "198184",
+          "ku": "Staré Mesto",
+          "cpa_text": "8",
+          "find_pc": "Staré Mesto: 8",
+          "hash": "afda80906af8a99fe3e12bc9e6854426a2a8407f2ac723ec5070610dae233607"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:58.510Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=2&geometry=17.108936714113188%2C48.143269889030734%2C17.109392413614437%2C48.14366216365946&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 2,
+      "oids": [
+        "198184",
+        "198185"
+      ],
+      "rows": [
+        {
+          "oid": "198184",
+          "ku": "Staré Mesto",
+          "cpa_text": "8",
+          "find_pc": "Staré Mesto: 8",
+          "hash": "afda80906af8a99fe3e12bc9e6854426a2a8407f2ac723ec5070610dae233607"
+        },
+        {
+          "oid": "198185",
+          "ku": "Staré Mesto",
+          "cpa_text": "6",
+          "find_pc": "Staré Mesto: 6",
+          "hash": "7552aa6fbe9b5d264bad2304913c48e15b7e482b23e443803e67b7709db2f921"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:58.690Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=0&geometry=17.108936714113188%2C48.143269889030734%2C17.109392413614437%2C48.14366216365946&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 2,
+      "oids": [
+        "198179",
+        "198184"
+      ],
+      "rows": [
+        {
+          "oid": "198179",
+          "ku": "Staré Mesto",
+          "cpa_text": "13",
+          "find_pc": "Staré Mesto: 13",
+          "hash": "b4dc9e4e29143bc6da360c03242bb8dd8320c2b4442cfa1c24f63023afa4aced"
+        },
+        {
+          "oid": "198184",
+          "ku": "Staré Mesto",
+          "cpa_text": "8",
+          "find_pc": "Staré Mesto: 8",
+          "hash": "afda80906af8a99fe3e12bc9e6854426a2a8407f2ac723ec5070610dae233607"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:27:58.831Z",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=3&resultOffset=2&geometry=17.108936714113188%2C48.143269889030734%2C17.109392413614437%2C48.14366216365946&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "operation": "offset-geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "featureCount": 2,
+      "oids": [
+        "198184",
+        "198185"
+      ],
+      "rows": [
+        {
+          "oid": "198184",
+          "ku": "Staré Mesto",
+          "cpa_text": "8",
+          "find_pc": "Staré Mesto: 8",
+          "hash": "afda80906af8a99fe3e12bc9e6854426a2a8407f2ac723ec5070610dae233607"
+        },
+        {
+          "oid": "198185",
+          "ku": "Staré Mesto",
+          "cpa_text": "6",
+          "find_pc": "Staré Mesto: 6",
+          "hash": "7552aa6fbe9b5d264bad2304913c48e15b7e482b23e443803e67b7709db2f921"
+        }
+      ]
+    }
+  ],
+  "scope": "Register C only; no register E inference, no person/owner fields. The service disagrees between count-only and object-ID/feature queries; this addendum tests, but does not conceal, that limitation.",
+  "result": "partial",
+  "completedAt": "2026-10-08T18:27:58.986Z"
+}

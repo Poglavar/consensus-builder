@@ -97,10 +97,13 @@ describe('buildCoverage', () => {
             coverage: 'partial', tier: 'source',
             coverageSources: expect.arrayContaining([expect.objectContaining({ url: 'https://portal.rgz.gov.rs/' })])
         });
-        for (const cc of ['RO', 'MK', 'BA']) {
+        for (const cc of ['RO', 'BA']) {
             expect(byCode[cc]).toMatchObject({ coverage: 'unknown', tier: 'unknown' });
             expect(byCode[cc].note).toBeTruthy();
         }
+        // Skopje now has a verified Old Bazaar parcel sample; source geometry defects keep it
+        // outside the runtime catalog, while the bounded sample establishes partial coverage.
+        expect(byCode.MK).toMatchObject({ coverage: 'partial', tier: 'source' });
         for (const cc of ['HR', 'RS', 'RO', 'MK', 'BA']) {
             expect(byCode[cc].coverageSources.length).toBeGreaterThan(0);
             expect(byCode[cc].coverageSources.every(source => /^https:\/\//.test(source.url))).toBe(true);
@@ -163,6 +166,23 @@ describe('buildCoverage', () => {
             const result = compile({ sourceRows: [source('bb-parcels', 'BB')], reviews: [review('AA', ['bb-parcels'])] });
             expect(find(result, 'AA').coverage).toBe('unknown');
             expect(find(result, 'BB').coverage).toBe('partial');
+        });
+
+        it('keeps a shared publisher separate from each explicitly associated city jurisdiction', () => {
+            const provider = { ...source('shared', 'AA'), liveIntegration: { status: 'enabled', cityIds: ['first', 'second'] } };
+            const config = `const CITY_CONFIGS = {
+                first: { id: 'first', label: 'First', map: { defaultCenter: [0.5, 0.5] }, parcels: { sourceId: 'shared' } },
+                second: { id: 'second', label: 'Second', map: { defaultCenter: [0.5, 0.5] }, parcels: { sourceId: 'shared' } }
+            };`;
+            const cities = [
+                { cityId: 'registry:first', appCityId: 'first', sourceIds: ['shared'], countryCode: 'BB', centerLatLon: [0.5, 0.5] },
+                { cityId: 'registry:second', appCityId: 'second', sourceIds: ['unrelated'], countryCode: 'BB', centerLatLon: [0.5, 0.5] }
+            ];
+            const result = compile({ sourceRows: [provider], cities, cityConfigSource: config });
+            expect(result.liveCities.find(city => city.id === 'first').cc).toBe('BB');
+            expect(result.liveCities.find(city => city.id === 'second').cc).toBe('AA');
+            provider.liveIntegration.status = 'held';
+            expect(compile({ sourceRows: [provider], cities, cityConfigSource: config }).liveCities.find(city => city.id === 'first').cc).toBe('AA');
         });
 
         it('keeps legacy two-region countrywide samples partial', () => {

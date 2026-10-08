@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-08",
+  "updatedAt": "2026-10-08T19:16:41.807840+00:00",
   "queueSource": "https://population.un.org/wup/",
   "sources": [
     {
@@ -2938,24 +2938,28 @@
       "name": "Netherlands Kadaster / PDOK cadastral map",
       "operator": "Netherlands Kadaster / PDOK cadastral map",
       "countryCode": "NL",
-      "scope": "National Dutch cadastral map; only the bounded Amsterdam globe entry is enabled. Valid (G) records only. Boundaries are indicative and unsuitable for survey measurements or establishing legal title.",
+      "scope": "Current Dutch cadastral map, bounded Amsterdam, Rotterdam and The Hague city entries. Indicative boundaries; wider coverage requires the separate national review.",
       "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
       "method": "GET",
       "responseFormat": "canonical GeoJSON through ogc-api",
       "crs": "EPSG:4326",
       "verificationStatus": "verified_live_city_adapter",
       "reuseStatus": "https://creativecommons.org/licenses/by/4.0/",
-      "verifiedCityIds": [],
+      "verifiedCityIds": [
+        "capital:NL:the-hague"
+      ],
       "evidenceFile": "research/amsterdam-live.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
           "amsterdam",
-          "rotterdam"
+          "rotterdam",
+          "thehague"
         ],
         "evidenceFile": "research/amsterdam-live.json",
         "additionalCityEvidence": {
-          "rotterdam": "research/rotterdam-live.json"
+          "rotterdam": "research/rotterdam-live.json",
+          "thehague": "research/world-capitals-2026-10-08/the-hague-acceptance.json"
         }
       },
       "integrationAttempts": [
@@ -2984,8 +2988,19 @@
           "outcome": "success",
           "detail": "7 complete parcels; all resolved by exact ID, no absences. Reuses existing verified licence and identity contract.",
           "evidenceFile": "research/rotterdam-live.json"
+        },
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+          "operation": "thehague complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee.",
+          "evidenceFile": "research/world-capitals-2026-10-08/the-hague-acceptance.json"
         }
-      ]
+      ],
+      "cityScopes": {
+        "capital:NL:the-hague": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee."
+      }
     },
     {
       "sourceId": "be-vlaanderen-grb-adp",
@@ -11270,7 +11285,7 @@
       "method": "Anonymous ArcGIS FeatureServer bounded query (provider page also links standard APIs; LINZ Data Service WFS requires a free API key)",
       "responseFormat": "GeoJSON Polygon features",
       "crs": "NZGD2000 / EPSG:4167 in source; sample query requested WGS84",
-      "verificationStatus": "verified_nonempty_sample",
+      "verificationStatus": "verified_live_city_adapter",
       "reuseStatus": "CC BY 4.0; attribution required; commercial use permitted",
       "evidenceFile": "research/countries/NZ.json",
       "verifiedRegions": [
@@ -11279,7 +11294,32 @@
       ],
       "nativeIdField": "id",
       "scopeReviewFile": "country-coverage-reviews.json",
-      "verifiedCityIds": []
+      "verifiedCityIds": [
+        "capital:NZ:wellington"
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "wellington"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/wellington-acceptance.json",
+        "additionalCityEvidence": {
+          "wellington": "research/world-capitals-2026-10-08/wellington-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:NZ:wellington": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+          "operation": "wellington complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
+          "evidenceFile": "research/world-capitals-2026-10-08/wellington-acceptance.json"
+        }
+      ]
     },
     {
       "sourceId": "gr-ktimatologio-active-parcels-arcgis",
@@ -11480,6 +11520,673 @@
         "evidenceFile": "research/africa-capitals-2026-10-08/victoria-overlap-review.json",
         "reason": "Material parent/subdivision-like overlap remains in open-ended validity records; no documented safe exclusion."
       }
+    },
+    {
+      "sourceId": "at-bev-kataster-vector-tiles",
+      "name": "BEV cadastral vector tiles",
+      "operator": "Bundesamt für Eich- und Vermessungswesen (BEV)",
+      "countryCode": "AT",
+      "endpoint": "https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter queries, complete paging and exact reference rereads.",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; local metric audit EPSG:32633",
+      "scope": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+      "reuseStatus": "BEV, CC BY 4.0; adapted from public cadastral vector tiles. Display coordinates are not legally binding survey coordinates.",
+      "evidenceFile": "research/world-capitals-2026-10-08/vienna-acceptance.json",
+      "verifiedCityIds": [
+        "capital:AT:vienna"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "vienna"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/vienna-acceptance.json",
+        "additionalCityEvidence": {
+          "vienna": "research/world-capitals-2026-10-08/vienna-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:AT:vienna": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf",
+          "operation": "vienna complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+          "evidenceFile": "research/world-capitals-2026-10-08/vienna-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "me-water-cadastral-parcels",
+      "name": "Montenegro Water Administration cadastral parcels",
+      "operator": "Montenegro Water Administration public GIS",
+      "countryCode": "ME",
+      "endpoint": "https://wis.gov.me/geoserver/wfs",
+      "method": "Public bounded real-adapter queries, complete paging and exact reference rereads.",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; local metric audit EPSG:32634",
+      "scope": "283 complete parcel references in 13 Cetinje cells, all valid with no sampled overlaps. Source-row id is a stable read reference, not proof of title; native district/parcel labels are retained. Podgorica remains unconfigured because its separate sample has material defects.",
+      "reuseStatus": "Montenegro Water Administration cadastral layer; public access verified, named reuse licence unestablished. Publisher conditions are informational.",
+      "evidenceFile": "research/world-capitals-2026-10-08/cetinje-acceptance.json",
+      "verifiedCityIds": [
+        "capital:ME:cetinje",
+        "capital:ME:podgorica"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "cetinje"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/cetinje-acceptance.json",
+        "additionalCityEvidence": {
+          "cetinje": "research/world-capitals-2026-10-08/cetinje-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:ME:cetinje": "283 complete parcel references in 13 Cetinje cells, all valid with no sampled overlaps. Source-row id is a stable read reference, not proof of title; native district/parcel labels are retained. Podgorica remains unconfigured because its separate sample has material defects."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://wis.gov.me/geoserver/wfs",
+          "operation": "cetinje complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "283 complete parcel references in 13 Cetinje cells, all valid with no sampled overlaps. Source-row id is a stable read reference, not proof of title; native district/parcel labels are retained. Podgorica remains unconfigured because its separate sample has material defects.",
+          "evidenceFile": "research/world-capitals-2026-10-08/cetinje-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://wis.gov.me/geoserver/wfs",
+          "operation": "podgorica runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Two sampled source polygons self-intersect and material overlaps persist. Cetinje qualifies separately on the same provider; its qualification does not clear Podgorica.",
+          "evidenceFile": "research/world-capitals-2026-10-08/podgorica-quality.json"
+        }
+      ],
+      "cityAssessments": {
+        "capital:ME:podgorica": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/podgorica-quality.json",
+          "reason": "Two sampled source polygons self-intersect and material overlaps persist. Cetinje qualifies separately on the same provider; its qualification does not clear Podgorica."
+        }
+      }
+    },
+    {
+      "sourceId": "sm-public-cadastral-ground",
+      "name": "San Marino public cadastral land",
+      "operator": "San Marino territorial information system",
+      "countryCode": "SM",
+      "endpoint": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17",
+      "method": "Public bounded real-adapter queries, complete paging and exact reference rereads.",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; local metric audit EPSG:32633",
+      "scope": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified.",
+      "reuseStatus": "San Marino public PRG cadastral layer; public query access verified. Separate paid cadastral services do not gate this map source. Publisher conditions informational.",
+      "evidenceFile": "research/world-capitals-2026-10-08/san-marino-acceptance.json",
+      "verifiedCityIds": [
+        "capital:SM:san-marino"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "sanmarino"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/san-marino-acceptance.json",
+        "additionalCityEvidence": {
+          "sanmarino": "research/world-capitals-2026-10-08/san-marino-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:SM:san-marino": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17",
+          "operation": "sanmarino complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified.",
+          "evidenceFile": "research/world-capitals-2026-10-08/san-marino-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "lb-bbed-beirut-parcels",
+      "name": "Beirut Urban Lab municipal parcel basemap",
+      "operator": "Beirut Urban Lab / American University of Beirut, with CNRS",
+      "countryCode": "LB",
+      "endpoint": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+      "method": "Public bounded real-adapter queries, complete paging and exact reference rereads.",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; local metric audit EPSG:32636",
+      "scope": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide.",
+      "reuseStatus": "The Beirut Built Environment Database, Beirut Urban Lab (American University of Beirut) and CNRS; ODbL. Adapted to WGS84; research basemap, not legal title data.",
+      "evidenceFile": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json",
+      "verifiedCityIds": [
+        "capital:LB:beirut"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "beirut"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json",
+        "additionalCityEvidence": {
+          "beirut": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:LB:beirut": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+          "operation": "beirut complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide.",
+          "evidenceFile": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "bt-thimphu-taba-plots",
+      "name": "Thimphu Thromde Taba plot polygons (status unverified)",
+      "operator": "Bhutan NSDI / Thimphu Thromde",
+      "countryCode": "BT",
+      "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+      "method": "Public bounded real-adapter queries, complete paging and exact reference rereads.",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; local metric audit EPSG:32645",
+      "scope": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+      "reuseStatus": "Bhutan NSDI / Thimphu Thromde Taba plots. Parcel registration, lifecycle and planning status unverified. Public access; publisher conditions informational.",
+      "evidenceFile": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json",
+      "verifiedCityIds": [
+        "capital:BT:thimphu"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "thimphu"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json",
+        "additionalCityEvidence": {
+          "thimphu": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:BT:thimphu": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+          "operation": "thimphu complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+          "evidenceFile": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "ad-andorra-la-vella-cadastre",
+      "name": "Andorra la Vella public parcel candidate",
+      "operator": "Comú d’Andorra la Vella",
+      "countryCode": "AD",
+      "scope": "Bounded city-area polygon sample; wider coverage unverified.",
+      "endpoint": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0",
+      "method": "Public geometry query",
+      "responseFormat": "Polygon/MultiPolygon sample",
+      "crs": "EPSG:4326 sample",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:AD:andorra-la-vella"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+      "cityAssessments": {
+        "capital:AD:andorra-la-vella": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/andorra-la-vella-acceptance.json",
+          "reason": "Current DATA_BAIXA-null parcels still overlap materially in native coordinates: largest 67.713 m², 37.92% of the smaller parcel. No documented safe exclusion."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/andorra-la-vella-acceptance.json",
+        "reason": "Current DATA_BAIXA-null parcels still overlap materially in native coordinates: largest 67.713 m², 37.92% of the smaller parcel. No documented safe exclusion."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0",
+          "operation": "andorra-la-vella runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Current DATA_BAIXA-null parcels still overlap materially in native coordinates: largest 67.713 m², 37.92% of the smaller parcel. No documented safe exclusion.",
+          "evidenceFile": "research/world-capitals-2026-10-08/andorra-la-vella-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "sk-bratislava-register-c",
+      "name": "Bratislava public parcel candidate",
+      "operator": "City of Bratislava geoportal",
+      "countryCode": "SK",
+      "scope": "Bounded city-area polygon sample; wider coverage unverified.",
+      "endpoint": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1",
+      "method": "Public geometry query",
+      "responseFormat": "Polygon/MultiPolygon sample",
+      "crs": "EPSG:4326 sample",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:SK:bratislava"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-bratislava.json",
+      "cityAssessments": {
+        "capital:SK:bratislava": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/bratislava-acceptance.json",
+          "reason": "C-register parcel Staré Mesto 61/1 self-intersects in native coordinates on both municipal services. Original MapServer counts are also inconsistent; the alternate FeatureServer passes protocol but retains the invalid shape."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/bratislava-acceptance.json",
+        "reason": "C-register parcel Staré Mesto 61/1 self-intersects in native coordinates on both municipal services. Original MapServer counts are also inconsistent; the alternate FeatureServer passes protocol but retains the invalid shape."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1",
+          "operation": "bratislava runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "C-register parcel Staré Mesto 61/1 self-intersects in native coordinates on both municipal services. Original MapServer counts are also inconsistent; the alternate FeatureServer passes protocol but retains the invalid shape.",
+          "evidenceFile": "research/world-capitals-2026-10-08/bratislava-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "mk-skopje-old-bazaar-parcels",
+      "name": "Skopje public parcel candidate",
+      "operator": "City of Skopje",
+      "countryCode": "MK",
+      "scope": "Bounded city-area polygon sample; wider coverage unverified.",
+      "endpoint": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3",
+      "method": "Public geometry query",
+      "responseFormat": "Polygon/MultiPolygon sample",
+      "crs": "EPSG:4326 sample",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:MK:skopje"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-skopje.json",
+      "cityAssessments": {
+        "capital:MK:skopje": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/skopje-old-bazaar-acceptance.json",
+          "reason": "Old Bazaar OIDs 449 and 464 have coincident 5.872 m² shapes, both contained by OID 452. Native-coordinate rereads reproduce the duplicate/containment; no lifecycle field resolves it."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/skopje-old-bazaar-acceptance.json",
+        "reason": "Old Bazaar OIDs 449 and 464 have coincident 5.872 m² shapes, both contained by OID 452. Native-coordinate rereads reproduce the duplicate/containment; no lifecycle field resolves it."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3",
+          "operation": "skopje runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Old Bazaar OIDs 449 and 464 have coincident 5.872 m² shapes, both contained by OID 452. Native-coordinate rereads reproduce the duplicate/containment; no lifecycle field resolves it.",
+          "evidenceFile": "research/world-capitals-2026-10-08/skopje-old-bazaar-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "md-geodata-cadastral-parcels",
+      "name": "Chisinau public parcel candidate",
+      "operator": "Moldova cadastral authority / Geodata",
+      "countryCode": "MD",
+      "scope": "Bounded city-area polygon sample; wider coverage unverified.",
+      "endpoint": "https://geodata.gov.md/geoserver/cadastru_data/wfs",
+      "method": "Public geometry query",
+      "responseFormat": "Polygon/MultiPolygon sample",
+      "crs": "EPSG:4326 sample",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:MD:chisinau"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-chisinau.json",
+      "cityAssessments": {
+        "capital:MD:chisinau": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/chisinau-overlap-review.json",
+          "reason": "Fresh native-coordinate reads reproduce a material overlap of 5.36% of the smaller parcel, about 55.6 m² on the ground. No documented lifecycle rule resolves it."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/chisinau-overlap-review.json",
+        "reason": "Fresh native-coordinate reads reproduce a material overlap of 5.36% of the smaller parcel, about 55.6 m² on the ground. No documented lifecycle rule resolves it."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://geodata.gov.md/geoserver/cadastru_data/wfs",
+          "operation": "chisinau runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Fresh native-coordinate reads reproduce a material overlap of 5.36% of the smaller parcel, about 55.6 m² on the ground. No documented lifecycle rule resolves it.",
+          "evidenceFile": "research/world-capitals-2026-10-08/chisinau-overlap-review.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "ps-ramallah-municipal-parcels",
+      "name": "Ramallah public parcel candidate",
+      "operator": "Ramallah Municipality GIS",
+      "countryCode": "PS",
+      "scope": "City-area bounded request only; no completeness claim.",
+      "endpoint": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0",
+      "method": "ArcGIS MapServer polygon feature layer",
+      "responseFormat": "Polygon/MultiPolygon sample",
+      "crs": "EPSG:4326 sample",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:PS:ramallah"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-ramallah.json",
+      "cityAssessments": {
+        "capital:PS:ramallah": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/ramallah-quality.json",
+          "reason": "38 sampled overlaps; the largest native-coordinate reread covers 47.76% of the smaller parcel. No repair or unsupported row exclusion applied."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/ramallah-quality.json",
+        "reason": "38 sampled overlaps; the largest native-coordinate reread covers 47.76% of the smaller parcel. No repair or unsupported row exclusion applied."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0",
+          "operation": "ramallah runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "38 sampled overlaps; the largest native-coordinate reread covers 47.76% of the smaller parcel. No repair or unsupported row exclusion applied.",
+          "evidenceFile": "research/world-capitals-2026-10-08/ramallah-quality.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "cy-dls-north-nicosia-parcels",
+      "name": "North Nicosia public parcel candidate",
+      "operator": "Cyprus Department of Lands and Surveys",
+      "countryCode": "CY",
+      "scope": "City-area bounded request only; no completeness claim.",
+      "endpoint": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+      "method": "ArcGIS MapServer polygon feature layer",
+      "responseFormat": "Polygon/MultiPolygon sample",
+      "crs": "EPSG:4326 sample",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:CY:north-nicosia"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-north-nicosia.json",
+      "cityAssessments": {
+        "capital:CY:north-nicosia": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/north-nicosia-quality.json",
+          "reason": "Two sampled parcel polygons self-intersect; two additional positive-area overlaps are recorded. No source repair applied."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/north-nicosia-quality.json",
+        "reason": "Two sampled parcel polygons self-intersect; two additional positive-area overlaps are recorded. No source repair applied."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+          "operation": "north-nicosia runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Two sampled parcel polygons self-intersect; two additional positive-area overlaps are recorded. No source repair applied.",
+          "evidenceFile": "research/world-capitals-2026-10-08/north-nicosia-quality.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "mv-hdc-parcels-public-view",
+      "name": "Male public parcel candidate",
+      "operator": "Hulhumalé Development Corporation",
+      "countryCode": "MV",
+      "scope": "Hulhumalé public parcels; official Male City Council sources include Hulhumalé within Malé City. Bounded geometry verified only in this extent.",
+      "endpoint": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0",
+      "method": "ArcGIS FeatureServer polygon layer",
+      "responseFormat": "Polygon/MultiPolygon sample",
+      "crs": "EPSG:4326 sample",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:MV:male"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-male.json",
+      "cityAssessments": {
+        "capital:MV:male": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/male-quality.json",
+          "reason": "Hulhumalé sample contains a 2,445.58 m² near-duplicate overlap covering nearly all of the smaller parcel. Nullable development STATUS is not a documented parcel-lifecycle rule."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/male-quality.json",
+        "reason": "Hulhumalé sample contains a 2,445.58 m² near-duplicate overlap covering nearly all of the smaller parcel. Nullable development STATUS is not a documented parcel-lifecycle rule."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0",
+          "operation": "male runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Hulhumalé sample contains a 2,445.58 m² near-duplicate overlap covering nearly all of the smaller parcel. Nullable development STATUS is not a documented parcel-lifecycle rule.",
+          "evidenceFile": "research/world-capitals-2026-10-08/male-quality.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "sr-miglis-paramaribo-fs",
+      "name": "MI-GLIS Percelen Online - Paramaribo",
+      "operator": "Management Instituut voor Grondregistratie en Land Informatie Systeem (MI-GLIS)",
+      "countryCode": "SR",
+      "scope": "Paramaribo district parcel polygons; sample is central only and does not establish complete city coverage.",
+      "endpoint": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6",
+      "method": "ArcGIS FeatureServer query",
+      "responseFormat": "GeoJSON",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:SR:paramaribo"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-paramaribo.json",
+      "cityAssessments": {
+        "capital:SR:paramaribo": {
+          "status": "held_quality_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/paramaribo-adapter-qualification.json",
+          "reason": "Material parcel overlaps remain: 212 intersecting pairs, including near/full containment. Stable FID lookup passes; missing or repeated legal parcel numbers are not the hold reason."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/paramaribo-adapter-qualification.json",
+        "reason": "Material parcel overlaps remain: 212 intersecting pairs, including near/full containment. Stable FID lookup passes; missing or repeated legal parcel numbers are not the hold reason."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6",
+          "operation": "paramaribo runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Material parcel overlaps remain: 212 intersecting pairs, including near/full containment. Stable FID lookup passes; missing or repeated legal parcel numbers are not the hold reason.",
+          "evidenceFile": "research/world-capitals-2026-10-08/paramaribo-adapter-qualification.json"
+        },
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6",
+          "operation": "paramaribo runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Material parcel overlaps remain: 212 intersecting pairs, including near/full containment. Stable FID lookup passes; missing or repeated legal parcel numbers are not the hold reason.",
+          "evidenceFile": "research/world-capitals-2026-10-08/paramaribo-adapter-qualification.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "bo-gamlp-lapaz-wfs",
+      "name": "Municipal cadastral lots — certified lots",
+      "operator": "Gobierno Autónomo Municipal de La Paz, Autoridad Catastral Municipal (GAMLP)",
+      "countryCode": "BO",
+      "scope": "Municipal lot polygons; this sample establishes activity only near the city centre, not complete municipal coverage.",
+      "endpoint": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs",
+      "method": "OGC WFS 1.1.0",
+      "responseFormat": "application/json",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public access verified; source notices informational.",
+      "verifiedCityIds": [
+        "capital:BO:la-paz"
+      ],
+      "evidenceFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+      "cityAssessments": {
+        "capital:BO:la-paz": {
+          "status": "held_access_review",
+          "evidenceFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+          "reason": "Initial bounded geometry sample succeeded, but all 13 real-adapter cell queries and absence query returned HTTP 502 in the follow-up. Runtime retrieval is not reliable."
+        }
+      },
+      "liveIntegration": {
+        "status": "held_access_review",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+        "reason": "Initial bounded geometry sample succeeded, but all 13 real-adapter cell queries and absence query returned HTTP 502 in the follow-up. Runtime retrieval is not reliable."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs",
+          "operation": "la-paz runtime qualification and quality review",
+          "outcome": "held",
+          "detail": "Initial bounded geometry sample succeeded, but all 13 real-adapter cell queries and absence query returned HTTP 502 in the follow-up. Runtime retrieval is not reliable.",
+          "evidenceFile": "research/world-capitals-2026-10-08/city-la-paz.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "bn-survey-cadas-bsb",
+      "name": "Brunei Survey Department G1_GDBD CADAS",
+      "operator": "Brunei Survey Department, Ministry of Development",
+      "countryCode": "BN",
+      "endpoint": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3",
+      "method": "Public bounded real-adapter queries, complete paging and exact reference rereads.",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; local metric audit EPSG:32650",
+      "scope": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+      "reuseStatus": "Brunei Survey Department G1_GDBD CADAS; public geometry, publisher conditions informational. 357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+      "evidenceFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json",
+      "verifiedCityIds": [
+        "capital:BN:bandar-seri-begawan"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "bandarseribegawan"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json",
+        "additionalCityEvidence": {
+          "bandarseribegawan": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:BN:bandar-seri-begawan": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3",
+          "operation": "bandarseribegawan complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+          "evidenceFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json"
+        }
+      ]
+    },
+    {
+      "sourceId": "il-govmap-cadastral-parcel-rows",
+      "name": "Govmap public cadastral parcel rows",
+      "operator": "Israel Mapping Center / Govmap Open Data",
+      "countryCode": "IL",
+      "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+      "method": "Public bounded real-adapter queries, complete paging and exact reference rereads.",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; local metric audit EPSG:32636",
+      "scope": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "reuseStatus": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "evidenceFile": "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+      "verifiedCityIds": [
+        "capital:IL:jerusalem",
+        "capital:PS:east-jerusalem"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "jerusalem",
+          "eastjerusalem"
+        ],
+        "evidenceFile": "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+        "additionalCityEvidence": {
+          "jerusalem": "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+          "eastjerusalem": "research/world-capitals-2026-10-08/east-jerusalem-acceptance.json"
+        }
+      },
+      "cityScopes": {
+        "capital:IL:jerusalem": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+        "capital:PS:east-jerusalem": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
+      },
+      "integrationAttempts": [
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+          "operation": "jerusalem complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+          "evidenceFile": "research/world-capitals-2026-10-08/jerusalem-acceptance.json"
+        },
+        {
+          "checkedAt": "2026-10-08",
+          "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+          "operation": "eastjerusalem complete viewport, exact reads, absence, footprint and binding",
+          "outcome": "success",
+          "detail": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+          "evidenceFile": "research/world-capitals-2026-10-08/east-jerusalem-acceptance.json"
+        }
+      ]
     }
   ],
   "countryCoverage": [
@@ -26506,6 +27213,2917 @@
         "resultCategory": "municipal_land_registration_login_based_no_public_geometry",
         "freshVerifiedSample": false
       }
+    },
+    {
+      "cityId": "capital:BH:manama",
+      "name": "Manama",
+      "country": "Bahrain",
+      "countryCode": "BH",
+      "centerLatLon": [
+        26.233333333333334,
+        50.566667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 296,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-manama.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-manama.json",
+      "aliases": [
+        "capital:BH:manama",
+        "Manama"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The Survey and Land Registration Bureau offers cadastral map services nationally; the inspected pages did not establish Manama-specific parcel coverage or an open city geometry service.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-manama.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "national_registry_candidate_city_scope_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:BT:thimphu",
+      "name": "Thimphu",
+      "country": "Bhutan",
+      "countryCode": "BT",
+      "centerLatLon": [
+        27.466666666666665,
+        89.633333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 297,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bt-thimphu-taba-plots"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-thimphu.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-thimphu.json",
+      "aliases": [
+        "capital:BT:thimphu",
+        "Thimphu"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Public municipal Taba plot records establish city-level land mapping activity. Their legal registration, lifecycle and planning status are undocumented; the original national cadastral sample lies outside the municipal boundary.",
+        "registryEvidenceUrls": [
+          "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3"
+        ],
+        "reason": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-thimphu.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "thimphu"
+    },
+    {
+      "cityId": "capital:BN:bandar-seri-begawan",
+      "name": "Bandar Seri Begawan",
+      "country": "Brunei Darussalam",
+      "countryCode": "BN",
+      "centerLatLon": [
+        4.883333333333333,
+        114.933333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 298,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bn-survey-cadas-bsb"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-bandar-seri-begawan.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-bandar-seri-begawan.json",
+      "aliases": [
+        "capital:BN:bandar-seri-begawan",
+        "Bandar Seri Begawan"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Brunei Survey Department’s official lot-boundary survey service identifies its Geomatics Information Centre in Bandar Seri Begawan, and the official national CADAS polygon layer returned three bounded features at the city locator.",
+        "registryEvidenceUrls": [
+          "https://www.survey.gov.bn/pengukuran-tanah/",
+          "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3?f=pjson"
+        ],
+        "reason": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-bandar-seri-begawan.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "bandarseribegawan"
+    },
+    {
+      "cityId": "capital:KH:phnom-penh",
+      "name": "Phnom Penh",
+      "country": "Cambodia",
+      "countryCode": "KH",
+      "centerLatLon": [
+        11.55,
+        104.916667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 299,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-phnom-penh.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-phnom-penh.json",
+      "aliases": [
+        "capital:KH:phnom-penh",
+        "Phnom Penh"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The national land ministry lists cadastral services, but the inspected evidence does not establish Phnom Penh-specific registry coverage or public parcel geometry.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-phnom-penh.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "national_registry_candidate_city_scope_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CY:north-nicosia",
+      "name": "North Nicosia",
+      "country": "Cyprus",
+      "countryCode": "CY",
+      "centerLatLon": [
+        35.1856,
+        33.3823
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 300,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "cy-dls-north-nicosia-parcels"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-north-nicosia.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-north-nicosia.json",
+      "aliases": [
+        "capital:CY:north-nicosia",
+        "North Nicosia"
+      ],
+      "capitalRole": "de facto seat of Northern Cyprus; supplemental disputed-status seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official Cyprus cadastral service returned two Polygon features in a bounded envelope covering North Nicosia. The query establishes geometry within the envelope, not political status or full northern coverage.",
+        "registryEvidenceUrls": [
+          "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+          "https://www.tkgm.gov.tr/projeler/gelecek-odakli-projeler/kktc"
+        ],
+        "reason": "Two sampled parcel polygons self-intersect; two additional positive-area overlaps are recorded. No source repair applied.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-north-nicosia.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:ID:nusantara",
+      "name": "Nusantara",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -0.975,
+        116.707
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 301,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-nusantara.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-nusantara.json",
+      "aliases": [
+        "capital:ID:nusantara",
+        "Nusantara",
+        "IKN"
+      ],
+      "capitalRole": "planned/transitional national-capital seat; current legal and operational status requires verification",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Official IKN geospatial catalog and service platform found, but cadastral parcel coverage or accessible parcel features not verified.",
+        "registryEvidenceUrls": [
+          "https://geoportal.ikn.go.id/catalog?type=dataset",
+          "https://geodata.ikn.go.id/developer/"
+        ],
+        "reason": "No bounded city parcel feature query with safe fields was verified; the listed source may be a viewer, planning dataset, nonpublic service or national registry.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-nusantara.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "official_geospatial_portal_no_city_parcel_layer_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:IL:jerusalem",
+      "name": "Jerusalem",
+      "country": "Israel",
+      "countryCode": "IL",
+      "centerLatLon": [
+        31.766666666666666,
+        35.233333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 302,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "il-govmap-cadastral-parcel-rows"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-jerusalem.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-jerusalem.json",
+      "aliases": [
+        "capital:IL:jerusalem",
+        "Jerusalem"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official Israel Mapping Center/Govmap public parcel layer provides national cadastral polygons. The layer is not a legal title record; city-area geometry is verified independently.",
+        "registryEvidenceUrls": [
+          "https://data.gov.il/datasets/israel_mapping_center/shape",
+          "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem",
+          "https://data.gov.il/dataset/israel_mapping_center/shape",
+          "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&request=GetCapabilities",
+          "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=opendata%3APARCEL_ALL",
+          "https://www.govmap.gov.il/",
+          "https://jerusalem.datacity.org.il/dataset/plots"
+        ],
+        "reason": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-jerusalem.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "jerusalem"
+    },
+    {
+      "cityId": "capital:LA:vientiane",
+      "name": "Vientiane",
+      "country": "Laos",
+      "countryCode": "LA",
+      "centerLatLon": [
+        17.966666666666665,
+        102.6
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 303,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-vientiane.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-vientiane.json",
+      "aliases": [
+        "capital:LA:vientiane",
+        "Vientiane"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "VIRGO is an urban open-data GeoNode/MapStore portal and Lao geospatial/land-use sources exist, but no city parcel registry or cadastral boundary dataset was established.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-vientiane.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "urban_geospatial_portal_parcel_registry_scope_unknown",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:LB:beirut",
+      "name": "Beirut",
+      "country": "Lebanon",
+      "countryCode": "LB",
+      "centerLatLon": [
+        33.86666666666667,
+        35.5
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 304,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "lb-bbed-beirut-parcels"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-beirut.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-beirut.json",
+      "aliases": [
+        "capital:LB:beirut",
+        "Beirut"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The publisher-linked municipal Beirut cadastral basemap returns individual parcel polygons and district/lot references. This establishes local cadastral geometry; legal registration, ownership, and currentness are not established by the research copy.",
+        "registryEvidenceUrls": [
+          "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+          "https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download"
+        ],
+        "reason": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-beirut.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "beirut"
+    },
+    {
+      "cityId": "capital:MY:putrajaya",
+      "name": "Putrajaya",
+      "country": "Malaysia",
+      "countryCode": "MY",
+      "centerLatLon": [
+        2.9264,
+        101.6964
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 305,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-putrajaya.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-putrajaya.json",
+      "aliases": [
+        "capital:MY:putrajaya",
+        "Putrajaya"
+      ],
+      "capitalRole": "administrative seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "JUPEM/MyGeoServe describe national cadastral products, but the inspected sources do not establish Putrajaya-specific registry coverage or a public parcel feature query.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-putrajaya.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "national_registry_candidate_city_scope_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:MV:male",
+      "name": "Male",
+      "country": "Maldives",
+      "countryCode": "MV",
+      "centerLatLon": [
+        4.166666666666667,
+        73.5
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 306,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "mv-hdc-parcels-public-view"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-male.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-male.json",
+      "aliases": [
+        "capital:MV:male",
+        "Male"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "National Geomatics Department sources establish cadastral survey and land-registry functions, and the public HDC lot service covers Hulhumalé within Malé City; the Dhivehi/English follow-up found no Malé-island layer. Geometry is verified only for the documented bounded sample, not comprehensive Malé-island coverage.",
+        "registryEvidenceUrls": [
+          "https://geomatics.gov.mv/index.php",
+          "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/MapServer/1",
+          "https://presidency.gov.mv/Press/Article/29127",
+          "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/FeatureServer/2",
+          "https://gis.hdc.mv/server/rest/services?f=json",
+          "https://gis.hdc.mv/portal/sharing/rest/search?q=type%3A%22Web+Map%22&f=json"
+        ],
+        "reason": "Hulhumalé sample contains a 2,445.58 m² near-duplicate overlap covering nearly all of the smaller parcel. Nullable development STATUS is not a documented parcel-lifecycle rule.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-male.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:MM:naypyidaw",
+      "name": "Naypyidaw",
+      "country": "Myanmar",
+      "countryCode": "MM",
+      "centerLatLon": [
+        19.7633,
+        96.0785
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 307,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-naypyidaw.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-naypyidaw.json",
+      "aliases": [
+        "capital:MM:naypyidaw",
+        "Naypyidaw",
+        "Nay Pyi Taw"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The Settlement and Land Records Department is a national authority and the NPTDC page is a city map, but no city-specific cadastral layer or parcel registry coverage was established.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-naypyidaw.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_map_evidence_registry_scope_unknown",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:KR:sejong",
+      "name": "Sejong",
+      "country": "South Korea",
+      "countryCode": "KR",
+      "centerLatLon": [
+        36.4801,
+        127.289
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 308,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-sejong.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-sejong.json",
+      "aliases": [
+        "capital:KR:sejong",
+        "Sejong"
+      ],
+      "capitalRole": "administrative government seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official city lot-query viewer confirms parcel-aware property information in Sejong, but no public geometry API/feature response was verified.",
+        "registryEvidenceUrls": [
+          "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+          "https://www.kgeop.go.kr/"
+        ],
+        "reason": "No bounded city parcel feature query with safe fields was verified; the listed source may be a viewer, planning dataset, nonpublic service or national registry.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-sejong.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "official_city_parcel_viewer_no_geometry_response",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:PS:east-jerusalem",
+      "name": "East Jerusalem",
+      "country": "State of Palestine",
+      "countryCode": "PS",
+      "centerLatLon": [
+        31.7833,
+        35.2333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 309,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "il-govmap-cadastral-parcel-rows"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-east-jerusalem.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-east-jerusalem.json",
+      "aliases": [
+        "capital:PS:east-jerusalem",
+        "East Jerusalem",
+        "Jerusalem"
+      ],
+      "capitalRole": "claimed capital",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official Israel Mapping Center/Govmap public parcel layer provides national cadastral polygons. The layer is not a legal title record; city-area geometry is verified independently.",
+        "registryEvidenceUrls": [
+          "https://data.gov.il/datasets/israel_mapping_center/shape",
+          "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem",
+          "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&request=GetCapabilities",
+          "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=opendata%3APARCEL_ALL",
+          "https://www.govmap.gov.il/",
+          "https://www.gov.il/ar/service/information-cadastre-unregulated-area-jerusalem"
+        ],
+        "reason": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-east-jerusalem.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "eastjerusalem"
+    },
+    {
+      "cityId": "capital:PS:ramallah",
+      "name": "Ramallah",
+      "country": "State of Palestine",
+      "countryCode": "PS",
+      "centerLatLon": [
+        31.9038,
+        35.2034
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 310,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ps-ramallah-municipal-parcels"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-ramallah.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-ramallah.json",
+      "aliases": [
+        "capital:PS:ramallah",
+        "Ramallah"
+      ],
+      "capitalRole": "Palestinian Authority administrative seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The exact municipal parcel layer returned two Polygon features for a bounded area around Ramallah in a public query. This verifies partial city geometry only, not complete parcel coverage or land-title scope.",
+        "registryEvidenceUrls": [
+          "https://ramallah-gis.ps/",
+          "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0",
+          "https://ramallah.ps/ar/Article/3140/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D9%80GIS",
+          "https://www.arcgis.com/home/item.html?id=0fd256a1448b492298fce0ec238f1f39"
+        ],
+        "reason": "38 sampled overlaps; the largest native-coordinate reread covers 47.76% of the smaller parcel. No repair or unsupported row exclusion applied.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-ramallah.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:TL:dili",
+      "name": "Dili",
+      "country": "Timor-Leste",
+      "countryCode": "TL",
+      "centerLatLon": [
+        -8.583333333333334,
+        125.6
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 311,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-dili.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-dili.json",
+      "aliases": [
+        "capital:TL:dili",
+        "Dili"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "National cadastral services and published Dili land maps exist, but no public polygon service/feature query verified.",
+        "registryEvidenceUrls": [
+          "https://www.mj.gov.tl/?q=node%2F489",
+          "https://www.mj.gov.tl/?q=node%2F1939",
+          "https://timor-leste.gov.tl/?lang=pt&n=1&p=6431"
+        ],
+        "reason": "No bounded city parcel feature query with safe fields was verified; the listed source may be a viewer, planning dataset, nonpublic service or national registry.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-dili.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "registry_found_city_maps_nonvector_no_geometry_response",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:YE:aden",
+      "name": "Aden",
+      "country": "Yemen",
+      "countryCode": "YE",
+      "centerLatLon": [
+        12.7855,
+        45.0187
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 312,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-aden.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-aden.json",
+      "aliases": [
+        "capital:YE:aden",
+        "Aden"
+      ],
+      "capitalRole": "temporary seat of internationally recognized government; current status requires verification",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "An indexed first-party notice from the General Authority for Lands, Survey and Urban Planning, Real Estate Registry Affairs / Aden, directs registry applicants to its Al-Mualla branch. The notice is hosted in the state 14 October newspaper; the Presidency confirms that publisher is a state press institution. Direct PDF retrieval was blocked (HTTP 403), so this supports a local registry office with lower confidence and does not establish public parcel geometry.",
+        "registryEvidenceUrls": [
+          "https://agoye.gov.ye/page.php?id=374",
+          "https://presidentalalimi.net/news799.html",
+          "https://14october.com/uploads/content/2412/A1L727YD-HD02U1-E9BD/4.pdf"
+        ],
+        "reason": "City-specific registry-office evidence was found, but no public Aden parcel feature service or bounded geometry response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-aden.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_branch_evidence_public_geometry_not_found",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:AD:andorra-la-vella",
+      "name": "Andorra la Vella",
+      "country": "Andorra",
+      "countryCode": "AD",
+      "centerLatLon": [
+        42.5,
+        1.516667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 313,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ad-andorra-la-vella-cadastre"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+      "aliases": [
+        "capital:AD:andorra-la-vella",
+        "Andorra la Vella"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Public municipal parcel layer returned three Polygon records with REF_CADASTRAL_TEXT inside Andorra la Vella.",
+        "registryEvidenceUrls": [
+          "https://sit.andorralavella.ad/cadastre/",
+          "https://sit.andorralavella.ad/arcgis/sharing/rest/content/items/3a3e1929ddc44e01a20db703f9a4b0fd/data?f=json"
+        ],
+        "reason": "Current DATA_BAIXA-null parcels still overlap materially in native coordinates: largest 67.713 m², 37.92% of the smaller parcel. No documented safe exclusion.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:AT:vienna",
+      "name": "Vienna",
+      "country": "Austria",
+      "countryCode": "AT",
+      "centerLatLon": [
+        48.2082,
+        16.3738
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 314,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "at-bev-kataster-vector-tiles"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-vienna.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-vienna.json",
+      "aliases": [
+        "capital:AT:vienna",
+        "Vienna"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official cadastral service returned cadastral references and polygon features inside central Vienna.",
+        "registryEvidenceUrls": [
+          "https://www.bev.gv.at/Services/Geoinformationsdienste/Services/Katasterservice.html",
+          "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf"
+        ],
+        "reason": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-vienna.json",
+        "pointBasis": "Chosen central-city research locator, not an official boundary.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "vienna"
+    },
+    {
+      "cityId": "capital:AZ:baku",
+      "name": "Baku",
+      "country": "Azerbaijan",
+      "countryCode": "AZ",
+      "centerLatLon": [
+        40.38333333333333,
+        49.866667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 315,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-baku.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-baku.json",
+      "aliases": [
+        "capital:AZ:baku",
+        "Baku"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Azerbaijan State Property Service operates national cadastre and map services, but no city-specific basis established that registry coverage or the inspected parcel viewer returns Baku cadastral features.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-baku.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "national_registry_candidate_city_scope_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:MK:skopje",
+      "name": "Skopje",
+      "country": "North Macedonia",
+      "countryCode": "MK",
+      "centerLatLon": [
+        42,
+        21.433333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 316,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "mk-skopje-old-bazaar-parcels"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-skopje.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-skopje.json",
+      "aliases": [
+        "capital:MK:skopje",
+        "Skopje"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "City-published cadastral parcel polygons were retrieved in the Old Bazaar.",
+        "registryEvidenceUrls": [
+          "https://gisportal.skopje.gov.mk/GisZaGragjani/",
+          "https://starportal.skopje.gov.mk/DesktopDefault.aspx?tabid=564"
+        ],
+        "reason": "Old Bazaar OIDs 449 and 464 have coincident 5.872 m² shapes, both contained by OID 452. Native-coordinate rereads reproduce the duplicate/containment; no lifecycle field resolves it.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-skopje.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:MD:chisinau",
+      "name": "Chisinau",
+      "country": "Moldova",
+      "countryCode": "MD",
+      "centerLatLon": [
+        47,
+        28.85
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 317,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "md-geodata-cadastral-parcels"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-chisinau.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-chisinau.json",
+      "aliases": [
+        "capital:MD:chisinau",
+        "Chisinau",
+        "Tiraspol"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official public WFS returned three Polygon features in central Chișinău, each with codcadastral and cod_parcel.",
+        "registryEvidenceUrls": [
+          "https://www.ipcbi.gov.md/ro",
+          "https://geodata.gov.md/?locale=ro#/",
+          "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer"
+        ],
+        "reason": "Fresh native-coordinate reads reproduce a material overlap of 5.36% of the smaller parcel, about 55.6 m² on the ground. No documented lifecycle rule resolves it.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-chisinau.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:MD:tiraspol",
+      "name": "Tiraspol",
+      "country": "Moldova",
+      "countryCode": "MD",
+      "centerLatLon": [
+        46.8403,
+        29.6433
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 318,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-tiraspol.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-tiraspol.json",
+      "aliases": [
+        "capital:MD:tiraspol",
+        "Tiraspol"
+      ],
+      "capitalRole": "de facto seat of Transnistria; supplemental disputed-status seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Regional cadastral GIS and Tiraspol land-plot listings exist, but no city parcel-registration extract or cadastral vector sample was verified.",
+        "registryEvidenceUrls": [
+          "https://kadastr.gospmr.org/",
+          "https://government.gospmr.org/gosudarstvennyj-zemelnyj-kadastr-tekushhaya-rabota-i-perspektivy/",
+          "https://idapmr.com/ploshadki/"
+        ],
+        "reason": "Cadastral GIS landing page and official news endpoint timed out over unrestricted network; investment listings are not a cadastral polygon service.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-tiraspol.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_and_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:ME:cetinje",
+      "name": "Cetinje",
+      "country": "Montenegro",
+      "countryCode": "ME",
+      "centerLatLon": [
+        42.3931,
+        18.9116
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 319,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "me-water-cadastral-parcels"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-cetinje.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-cetinje.json",
+      "aliases": [
+        "capital:ME:cetinje",
+        "Cetinje"
+      ],
+      "capitalRole": "constitutional Old Royal Capital",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Public government parcel WFS returned three MultiPolygon features with cadastral district CETINJE I.",
+        "registryEvidenceUrls": [
+          "https://wis.gov.me/geoportal",
+          "https://geoportal.co.me/geoportal/geoportal.html"
+        ],
+        "reason": "283 complete parcel references in 13 Cetinje cells, all valid with no sampled overlaps. Source-row id is a stable read reference, not proof of title; native district/parcel labels are retained. Podgorica remains unconfigured because its separate sample has material defects.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-cetinje.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "cetinje"
+    },
+    {
+      "cityId": "capital:ME:podgorica",
+      "name": "Podgorica",
+      "country": "Montenegro",
+      "countryCode": "ME",
+      "centerLatLon": [
+        42.43333333333333,
+        19.266667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 320,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "me-water-cadastral-parcels"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-podgorica.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-podgorica.json",
+      "aliases": [
+        "capital:ME:podgorica",
+        "Podgorica",
+        "Cetinje"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Public government parcel WFS returned three MultiPolygon features with cadastral district names PODGORICA II/III.",
+        "registryEvidenceUrls": [
+          "https://wis.gov.me/geoportal",
+          "https://geoportal.co.me/geoportal/geoportal.html"
+        ],
+        "reason": "Two sampled source polygons self-intersect and material overlaps persist. Cetinje qualifies separately on the same provider; its qualification does not clear Podgorica.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-podgorica.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:NL:the-hague",
+      "name": "The Hague",
+      "country": "Netherlands",
+      "countryCode": "NL",
+      "centerLatLon": [
+        52.0705,
+        4.3007
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 321,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "nl-pdok-brk-kadastrale-kaart"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-the-hague.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-the-hague.json",
+      "aliases": [
+        "capital:NL:the-hague",
+        "The Hague",
+        "Den Haag"
+      ],
+      "capitalRole": "executive seat of government",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Current cadastral polygons returned with 14-digit identifiers and cadastral municipality ’s-Gravenhage.",
+        "registryEvidenceUrls": [
+          "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart"
+        ],
+        "reason": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-the-hague.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "thehague"
+    },
+    {
+      "cityId": "capital:PT:lisbon",
+      "name": "Lisbon",
+      "country": "Portugal",
+      "countryCode": "PT",
+      "centerLatLon": [
+        38.71666666666667,
+        -9.133333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 322,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-lisbon.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-lisbon.json",
+      "aliases": [
+        "capital:PT:lisbon",
+        "Lisbon"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official municipal cadastral application and BUPi Lisbon participation establish a local cadastral/registration service.",
+        "registryEvidenceUrls": [
+          "https://lxcadastro.cm-lisboa.pt/",
+          "https://bupi.gov.pt/pt/publicacoes/municpio-de-lisboa-adere-ao-bupi",
+          "https://ogcapi.dgterritorio.gov.pt/collections/cadastro"
+        ],
+        "reason": "National data availability and neighboring municipality parcels do not establish Lisbon coverage. Direct municipal portal access returned HTTP403; no authenticated retrieval was attempted.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-lisbon.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_found_no_verified_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:RO:bucharest",
+      "name": "Bucharest",
+      "country": "Romania",
+      "countryCode": "RO",
+      "centerLatLon": [
+        44.43333333333333,
+        26.1
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 323,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-bucharest.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-bucharest.json",
+      "aliases": [
+        "capital:RO:bucharest",
+        "Bucharest"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official ANCPI indexed information says the agency has a subordinate cadastral and property-publicity office for the Municipality of Bucharest; the Bucharest office page is also indexed with land-book and cadastral-plan services. Direct opens of relevant ANCPI pages failed (HTTP 502 or hostname resolution), and the public geometry endpoint could not be queried, so registry existence is supported by indexed primary claims while city parcel geometry remains unverified.",
+        "registryEvidenceUrls": [
+          "https://b.ancpi.ro/",
+          "https://geoportal.ancpi.ro/imobile.html",
+          "https://geoportal.gov.ro/",
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://www.ancpi.ro/epay/AboutUs.action"
+        ],
+        "reason": "Unrestricted direct reads failed DNS resolution on the legacy hostname; replacement portal timed out. A city-bounded query also failed. Cached search metadata is not a live Polygon response.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-bucharest.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_found_no_verified_public_geometry",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:SM:san-marino",
+      "name": "San Marino",
+      "country": "San Marino",
+      "countryCode": "SM",
+      "centerLatLon": [
+        43.93333333333333,
+        12.416667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 324,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "sm-public-cadastral-ground"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-san-marino.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-san-marino.json",
+      "aliases": [
+        "capital:SM:san-marino",
+        "San Marino"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Public cadastral map returns polygon ground records with sheet/parcel FOG_MAP references inside Città di San Marino.",
+        "registryEvidenceUrls": [
+          "https://www.territorio.sm/pub2/TerritorioSM/Mappe-online.html",
+          "https://mappeonline.pa.sm/maps/prgmobile/",
+          "https://gov.sm/pub2/GovSM/Territorio/Catasto/Visure-Catastali.html"
+        ],
+        "reason": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-san-marino.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "sanmarino"
+    },
+    {
+      "cityId": "capital:SK:bratislava",
+      "name": "Bratislava",
+      "country": "Slovakia",
+      "countryCode": "SK",
+      "centerLatLon": [
+        48.15,
+        17.116667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 325,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "sk-bratislava-register-c"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-bratislava.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-bratislava.json",
+      "aliases": [
+        "capital:SK:bratislava",
+        "Bratislava"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "C-register cadastral polygons with cadastral district and parcel numbers returned in central Bratislava.",
+        "registryEvidenceUrls": [
+          "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer",
+          "https://bratislava.sk/en/mesto-bratislava/transparentne-mesto/majetok-mesta/nehnutelny-majetok"
+        ],
+        "reason": "C-register parcel Staré Mesto 61/1 self-intersects in native coordinates on both municipal services. Original MapServer counts are also inconsistent; the alternate FeatureServer passes protocol but retains the invalid shape.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-bratislava.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:GE:sukhumi",
+      "name": "Sukhumi",
+      "country": "Georgia",
+      "countryCode": "GE",
+      "centerLatLon": [
+        43.0015,
+        41.0234
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 326,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-sukhumi.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-sukhumi.json",
+      "aliases": [
+        "capital:GE:sukhumi",
+        "Sukhumi",
+        "Tskhinvali"
+      ],
+      "capitalRole": "de facto seat of Abkhazia; supplemental disputed-status seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Georgia NSDI/NAPR describe national parcel services, but the inspected evidence does not establish Sukhumi coverage; de facto local registry or cadastral coverage remains unknown.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-sukhumi.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "national_registry_candidate_city_scope_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GE:tskhinvali",
+      "name": "Tskhinvali",
+      "country": "Georgia",
+      "countryCode": "GE",
+      "centerLatLon": [
+        42.2257,
+        43.9709
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 327,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-tskhinvali.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-tskhinvali.json",
+      "aliases": [
+        "capital:GE:tskhinvali",
+        "Tskhinvali",
+        "Sukhumi"
+      ],
+      "capitalRole": "de facto seat of South Ossetia; supplemental disputed-status seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Georgia NSDI/NAPR describe national parcel services, but the inspected evidence does not establish Tskhinvali coverage; de facto local registry or cadastral coverage remains unknown.",
+        "registryEvidenceUrls": [],
+        "reason": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-tskhinvali.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "national_registry_candidate_city_scope_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:AG:saint-johns",
+      "name": "Saint John's",
+      "country": "Antigua and Barbuda",
+      "countryCode": "AG",
+      "centerLatLon": [
+        17.116666666666667,
+        -61.85
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 328,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-saint-johns.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-saint-johns.json",
+      "aliases": [
+        "capital:AG:saint-johns",
+        "Saint John's"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Antigua's registry records exist, but the evidence reviewed describes a national records repository and does not establish registry coverage or parcel mapping for Saint John's specifically.",
+        "registryEvidenceUrls": [
+          "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-saint-johns.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:BS:nassau",
+      "name": "Nassau",
+      "country": "Bahamas",
+      "countryCode": "BS",
+      "centerLatLon": [
+        25.083333333333332,
+        -77.35
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 329,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-nassau.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-nassau.json",
+      "aliases": [
+        "capital:BS:nassau",
+        "Nassau"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The national Registrar General portal provides a registry search, but the evidence does not establish Nassau-specific registry coverage or parcel geometry.",
+        "registryEvidenceUrls": [
+          "https://rgd-civreg.bahamas.gov.bs/"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-nassau.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:BB:bridgetown",
+      "name": "Bridgetown",
+      "country": "Barbados",
+      "countryCode": "BB",
+      "centerLatLon": [
+        13.1,
+        -59.616667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 330,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-bridgetown.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-bridgetown.json",
+      "aliases": [
+        "capital:BB:bridgetown",
+        "Bridgetown"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The national mapping agency offers vector layers for purchase, but no Bridgetown-specific parcel dataset or service was verified.",
+        "registryEvidenceUrls": [
+          "https://landsandsurveys.gov.bb/",
+          "https://landsandsurveys.gov.bb/pages/LandRegistration.html"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-bridgetown.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:BZ:belmopan",
+      "name": "Belmopan",
+      "country": "Belize",
+      "countryCode": "BZ",
+      "centerLatLon": [
+        17.25,
+        -88.766667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 331,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-belmopan.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-belmopan.json",
+      "aliases": [
+        "capital:BZ:belmopan",
+        "Belmopan"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Belize Land Registry describes its interactive parcel-boundary map and lists a Belmopan City office; BNSDI identifies parcel database/boundary datasets. No public vector endpoint or feature response was reached.",
+        "registryEvidenceUrls": [
+          "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+          "https://portal.bnsdi.gov.bz/lic"
+        ],
+        "reason": "city_registry_or_map_evidence_geometry_unverified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-belmopan.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CA:ottawa",
+      "name": "Ottawa",
+      "country": "Canada",
+      "countryCode": "CA",
+      "centerLatLon": [
+        45.416666666666664,
+        -75.7
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 332,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-ottawa.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-ottawa.json",
+      "aliases": [
+        "capital:CA:ottawa",
+        "Ottawa"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The City of Ottawa identifies GeoOttawa property-parcel mapping and a Property_Parcels REST service. Unauthenticated feature calls returned login HTML/token errors, so geometry was not verified.",
+        "registryEvidenceUrls": [
+          "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa",
+          "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer"
+        ],
+        "reason": "city_registry_or_map_evidence_geometry_unverified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-ottawa.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CR:san-jose",
+      "name": "San Jose",
+      "country": "Costa Rica",
+      "countryCode": "CR",
+      "centerLatLon": [
+        9.933333333333334,
+        -84.083333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 333,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-san-jose.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-san-jose.json",
+      "aliases": [
+        "capital:CR:san-jose",
+        "San Jose"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Municipal cadastral pages and the official San José MapServer identify layer 2 Predios as polygon geometry. Bounded calls timed out locally; no remote outage is inferred.",
+        "registryEvidenceUrls": [
+          "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+          "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer"
+        ],
+        "reason": "city_registry_or_map_evidence_geometry_unverified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-san-jose.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CU:havana",
+      "name": "Havana",
+      "country": "Cuba",
+      "countryCode": "CU",
+      "centerLatLon": [
+        23.116666666666667,
+        -82.35
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 334,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-havana.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-havana.json",
+      "aliases": [
+        "capital:CU:havana",
+        "Havana"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Official Havana and MINJUS homepages were inspected, with separate English and Spanish searches. The city portal geographic-search link led to CubaMaps, whose homepage describes tourist points of interest; no city parcel registry or geometry source was verified.",
+        "registryEvidenceUrls": [
+          "https://www.lahabana.gob.cu/",
+          "https://www.minjus.gob.cu/es/",
+          "https://cubamaps.travel/",
+          "https://www.gacetaoficial.gob.cu/es"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-havana.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:DM:roseau",
+      "name": "Roseau",
+      "country": "Dominica",
+      "countryCode": "DM",
+      "centerLatLon": [
+        15.3,
+        -61.4
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 335,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-roseau.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-roseau.json",
+      "aliases": [
+        "capital:DM:roseau",
+        "Roseau"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The national Lands and Surveys Division is the survey-map custodian; the inspected evidence did not identify Roseau-specific cadastral coverage or a parcel service.",
+        "registryEvidenceUrls": [
+          "https://housing.gov.dm/en/lands-and-surveys-division"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-roseau.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GD:saint-georges",
+      "name": "Saint George's",
+      "country": "Grenada",
+      "countryCode": "GD",
+      "centerLatLon": [
+        12.05,
+        -61.75
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 336,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-saint-georges.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-saint-georges.json",
+      "aliases": [
+        "capital:GD:saint-georges",
+        "Saint George's"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The national eLandRegistry portal describes online land-record services but presents a login/search page; the evidence does not establish Saint George's-specific coverage or public parcel geometry.",
+        "registryEvidenceUrls": [
+          "https://elandregistry.gov.gd/Default.aspx"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-saint-georges.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:HT:port-au-prince",
+      "name": "Port-au-Prince",
+      "country": "Haiti",
+      "countryCode": "HT",
+      "centerLatLon": [
+        18.533333333333335,
+        -72.333333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 337,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-port-au-prince.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-port-au-prince.json",
+      "aliases": [
+        "capital:HT:port-au-prince",
+        "Port-au-Prince"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The national CNIGS identifies the geospatial-information center, but no Port-au-Prince parcel registry or public parcel layer was established.",
+        "registryEvidenceUrls": [
+          "https://cnigs.ht/"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-port-au-prince.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:HN:tegucigalpa",
+      "name": "Tegucigalpa",
+      "country": "Honduras",
+      "countryCode": "HN",
+      "centerLatLon": [
+        14.1,
+        -87.216667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 338,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-tegucigalpa.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-tegucigalpa.json",
+      "aliases": [
+        "capital:HN:tegucigalpa",
+        "Tegucigalpa"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The Distrito Central municipal atlas documents an official cadastral base map with parcel divisions, cadastral keys, and property limits. The associated public catalogue did not provide parcel data during inspection.",
+        "registryEvidenceUrls": [
+          "https://atlasmunicipal.amdc.hn/atlas-mapas/",
+          "https://mapas.simet.amdc.hn/catalogue/",
+          "https://amdc-gobgeo.electrosoftware.net/"
+        ],
+        "reason": "city_registry_or_map_evidence_geometry_unverified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-tegucigalpa.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:NI:managua",
+      "name": "Managua",
+      "country": "Nicaragua",
+      "countryCode": "NI",
+      "centerLatLon": [
+        12.133333333333333,
+        -86.25
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 339,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-managua.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-managua.json",
+      "aliases": [
+        "capital:NI:managua",
+        "Managua"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "INETER directly documents a Managua Parcelas map layer showing cadastral lots and numbers, and warns that the integrated cadastral database is incomplete. The historic viewer and catalog could not be queried for geometry during this pass.",
+        "registryEvidenceUrls": [
+          "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+          "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+          "https://consultacf.ineter.gob.ni/"
+        ],
+        "reason": "city_registry_or_map_evidence_geometry_unverified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-managua.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:PA:panama-city",
+      "name": "Panama City",
+      "country": "Panama",
+      "countryCode": "PA",
+      "centerLatLon": [
+        8.966666666666667,
+        -79.533333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 340,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-panama-city.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-panama-city.json",
+      "aliases": [
+        "capital:PA:panama-city",
+        "Panama City"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "MIVIOT documents its public geoportal and thematic layers, but no city parcel layer or registry coverage specific to Panama City was verified.",
+        "registryEvidenceUrls": [
+          "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-panama-city.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:KN:basseterre",
+      "name": "Basseterre",
+      "country": "Saint Kitts and Nevis",
+      "countryCode": "KN",
+      "centerLatLon": [
+        17.3,
+        -62.716667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 341,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-basseterre.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-basseterre.json",
+      "aliases": [
+        "capital:KN:basseterre",
+        "Basseterre"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The Land Registry is in Basseterre and maintains records for Saint Christopher and Nevis; available evidence describes in-person/e-search access, not Basseterre-specific coverage or parcel geometry.",
+        "registryEvidenceUrls": [
+          "https://www.legal.gov.kn/land-registry/"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-basseterre.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:LC:castries",
+      "name": "Castries",
+      "country": "Saint Lucia",
+      "countryCode": "LC",
+      "centerLatLon": [
+        14,
+        -61
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 342,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-castries.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-castries.json",
+      "aliases": [
+        "capital:LC:castries",
+        "Castries"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The official Land Registry office is in Castries and an experimental, non-authoritative parcel-boundary map exists. The inspected WFS capabilities listed no parcel/cadastre/lot layers, and coverage of Castries itself was not established.",
+        "registryEvidenceUrls": [
+          "https://www.govt.lc/ministries/physical-development/land-registry-section",
+          "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+          "https://geoservices.govt.lc/geoserver/wfs?service=WFS&request=GetCapabilities"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-castries.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:VC:kingstown",
+      "name": "Kingstown",
+      "country": "Saint Vincent and the Grenadines",
+      "countryCode": "VC",
+      "centerLatLon": [
+        13.133333333333333,
+        -61.216667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 343,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-kingstown.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-kingstown.json",
+      "aliases": [
+        "capital:VC:kingstown",
+        "Kingstown"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Official statistical maps identify Kingstown census divisions and suburbs, not cadastral parcels; no city parcel registry coverage was established.",
+        "registryEvidenceUrls": [
+          "https://stats.gov.vc/data/maps/"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-kingstown.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CK:avarua",
+      "name": "Avarua",
+      "country": "Cook Islands",
+      "countryCode": "CK",
+      "centerLatLon": [
+        -21.207,
+        -159.775
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 344,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-avarua.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-avarua.json",
+      "aliases": [
+        "capital:CK:avarua",
+        "Avarua"
+      ],
+      "capitalRole": "supplemental self-governing associated state",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The official cadastre is confirmed to exist and its ministry is the primary boundary custodian. The public CookGeo catalog contains no Avarua parcel vector layer; the ministry instead offers an individual land-map request form. No bounded parcel response captured, so city query availability/geometry remains unknown.",
+        "registryEvidenceUrls": [],
+        "reason": "official_cadastre_confirmed_public_city_parcel_geometry_not_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": null
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-avarua.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "official_cadastre_confirmed_public_city_parcel_geometry_not_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:FM:palikir",
+      "name": "Palikir",
+      "country": "Federated States of Micronesia",
+      "countryCode": "FM",
+      "centerLatLon": [
+        6.916667,
+        158.15
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 345,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-palikir.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-palikir.json",
+      "aliases": [
+        "capital:FM:palikir",
+        "Palikir"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-palikir.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:FJ:suva",
+      "name": "Suva",
+      "country": "Fiji",
+      "countryCode": "FJ",
+      "centerLatLon": [
+        -18.133333,
+        178.416667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 346,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-suva.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-suva.json",
+      "aliases": [
+        "capital:FJ:suva",
+        "Suva"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Official VanuaView Online and Approved Survey Plan portals identify a capital-applicable national cadastre/service, but both direct endpoints timed out from this network. The public ArcGIS fragments were queried on a bounded Suva extent and returned zero for their limited contents only; the Suva parcel result remains unknown.",
+        "registryEvidenceUrls": [],
+        "reason": "official_city_applicable_cadastre_portals_present_city_geometry_unavailable",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": null
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-suva.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "official_city_applicable_cadastre_portals_present_city_geometry_unavailable",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:KI:south-tarawa",
+      "name": "South Tarawa",
+      "country": "Kiribati",
+      "countryCode": "KI",
+      "centerLatLon": [
+        -0.883333,
+        169.533333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 347,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-south-tarawa.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-south-tarawa.json",
+      "aliases": [
+        "capital:KI:south-tarawa",
+        "South Tarawa",
+        "Tarawa",
+        "Bairiki",
+        "Betio"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-south-tarawa.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:MH:majuro",
+      "name": "Majuro",
+      "country": "Marshall Islands",
+      "countryCode": "MH",
+      "centerLatLon": [
+        7.1,
+        171.383333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 348,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-majuro.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-majuro.json",
+      "aliases": [
+        "capital:MH:majuro",
+        "Majuro"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-majuro.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:NR:yaren",
+      "name": "Yaren",
+      "country": "Nauru",
+      "countryCode": "NR",
+      "centerLatLon": [
+        -0.5477,
+        166.920867
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 349,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-yaren.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-yaren.json",
+      "aliases": [
+        "capital:NR:yaren",
+        "Yaren"
+      ],
+      "capitalRole": "de facto government seat; Nauru has no formally designated capital",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-yaren.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:NZ:wellington",
+      "name": "Wellington",
+      "country": "New Zealand",
+      "countryCode": "NZ",
+      "centerLatLon": [
+        -41.2865,
+        174.7762
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 350,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "nz-linz-primary-parcels-arcgis"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-wellington.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-wellington.json",
+      "aliases": [
+        "capital:NZ:wellington",
+        "Wellington"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "LINZ primary cadastre feature service returned polygon parcels in the Wellington central-city bbox.",
+        "registryEvidenceUrls": [],
+        "reason": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-wellington.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "verified_public_geometry_runtime_enabled",
+        "freshVerifiedSample": true
+      },
+      "appCityId": "wellington"
+    },
+    {
+      "cityId": "capital:NU:alofi",
+      "name": "Alofi",
+      "country": "Niue",
+      "countryCode": "NU",
+      "centerLatLon": [
+        -19.0554,
+        -169.9179
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 351,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-alofi.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-alofi.json",
+      "aliases": [
+        "capital:NU:alofi",
+        "Alofi"
+      ],
+      "capitalRole": "supplemental self-governing associated state",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-alofi.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:PW:ngerulmud",
+      "name": "Ngerulmud",
+      "country": "Palau",
+      "countryCode": "PW",
+      "centerLatLon": [
+        7.5006,
+        134.6242
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 352,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-ngerulmud.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-ngerulmud.json",
+      "aliases": [
+        "capital:PW:ngerulmud",
+        "Ngerulmud",
+        "Melekeok"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No parcel layer appears in the public PALARIS Experience web maps or PalauGIS parcel-name catalog results. A bounded Ngerulmud-area query to the published building layer returned polygon footprints only; no parcel/cadastre query was available from the traced app sources.",
+        "registryEvidenceUrls": [],
+        "reason": "official_public_gis_investigated_no_parcel_layer_found_in_traced_app_sources",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-ngerulmud.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "official_public_gis_investigated_no_parcel_layer_found_in_traced_app_sources",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:PG:port-moresby",
+      "name": "Port Moresby",
+      "country": "Papua New Guinea",
+      "countryCode": "PG",
+      "centerLatLon": [
+        -9.45,
+        147.183333
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 353,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-port-moresby.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-port-moresby.json",
+      "aliases": [
+        "capital:PG:port-moresby",
+        "Port Moresby"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-port-moresby.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:WS:apia",
+      "name": "Apia",
+      "country": "Samoa",
+      "countryCode": "WS",
+      "centerLatLon": [
+        -13.816667,
+        -171.766667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 354,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-apia.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-apia.json",
+      "aliases": [
+        "capital:WS:apia",
+        "Apia"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-apia.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:SB:honiara",
+      "name": "Honiara",
+      "country": "Solomon Islands",
+      "countryCode": "SB",
+      "centerLatLon": [
+        -9.433333,
+        159.95
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 355,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-honiara.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-honiara.json",
+      "aliases": [
+        "capital:SB:honiara",
+        "Honiara"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-honiara.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:TO:nukualofa",
+      "name": "Nuku'alofa",
+      "country": "Tonga",
+      "countryCode": "TO",
+      "centerLatLon": [
+        -21.133333,
+        -175.2
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 356,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-nukualofa.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-nukualofa.json",
+      "aliases": [
+        "capital:TO:nukualofa",
+        "Nuku'alofa"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-nukualofa.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:TV:funafuti",
+      "name": "Funafuti",
+      "country": "Tuvalu",
+      "countryCode": "TV",
+      "centerLatLon": [
+        -8.516667,
+        179.216667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 357,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-funafuti.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-funafuti.json",
+      "aliases": [
+        "capital:TV:funafuti",
+        "Funafuti"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-funafuti.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:VU:port-vila",
+      "name": "Port Vila",
+      "country": "Vanuatu",
+      "countryCode": "VU",
+      "centerLatLon": [
+        -17.733333,
+        168.316667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 358,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-port-vila.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-port-vila.json",
+      "aliases": [
+        "capital:VU:port-vila",
+        "Port Vila"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+        "registryEvidenceUrls": [],
+        "reason": "primary_source_investigated_no_city_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-port-vila.json",
+        "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+        "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:BO:la-paz",
+      "name": "La Paz",
+      "country": "Bolivia",
+      "countryCode": "BO",
+      "centerLatLon": [
+        -16.5,
+        -68.15
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 359,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bo-gamlp-lapaz-wfs"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+      "aliases": [
+        "capital:BO:la-paz",
+        "La Paz",
+        "Sucre"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_access_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The municipal government identifies the Autoridad Catastral Municipal, city cadastral map and lookup by cadastral code; municipal GeoServer exposes lot feature types and a bounded central-city query returned three polygons.",
+        "registryEvidenceUrls": [
+          "https://sitservicios.lapaz.bo/sit/catastro/",
+          "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&request=GetCapabilities",
+          "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+        ],
+        "reason": "Initial bounded geometry sample succeeded, but all 13 real-adapter cell queries and absence query returned HTTP 502 in the follow-up. Runtime retrieval is not reliable.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
+    },
+    {
+      "cityId": "capital:BO:sucre",
+      "name": "Sucre",
+      "country": "Bolivia",
+      "countryCode": "BO",
+      "centerLatLon": [
+        -19.0196,
+        -65.2619
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 360,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-sucre.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-sucre.json",
+      "aliases": [
+        "capital:BO:sucre",
+        "Sucre",
+        "La Plata"
+      ],
+      "capitalRole": "constitutional capital",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official government cadastral-certification procedure names the Gobierno Autónomo Municipal de Sucre and cites its municipal cadastral law. No public city polygon service was identified.",
+        "registryEvidenceUrls": [
+          "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos"
+        ],
+        "reason": "city_registry_or_map_evidence_geometry_unverified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-sucre.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:CL:valparaiso",
+      "name": "Valparaiso",
+      "country": "Chile",
+      "countryCode": "CL",
+      "centerLatLon": [
+        -33.0472,
+        -71.6127
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 361,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-valparaiso.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-valparaiso.json",
+      "aliases": [
+        "capital:CL:valparaiso",
+        "Valparaiso"
+      ],
+      "capitalRole": "legislative seat",
+      "scopeTier": "supplemental_functioning_or_claimed_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The municipal GIS department offers a digital map and urban-planning geodata, but the official portal and separate English/Spanish searches did not identify a city parcel/cadastral layer.",
+        "registryEvidenceUrls": [
+          "https://departamentosig.munivalpo.cl/"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-valparaiso.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:GY:georgetown",
+      "name": "Georgetown",
+      "country": "Guyana",
+      "countryCode": "GY",
+      "centerLatLon": [
+        6.8,
+        -58.15
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 362,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-georgetown.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-georgetown.json",
+      "aliases": [
+        "capital:GY:georgetown",
+        "Georgetown"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "The national Lands and Surveys Commission provides mapping and survey services and the national Land Registry offers title searches; no Georgetown-specific parcel coverage or public geometry service was established.",
+        "registryEvidenceUrls": [
+          "https://glsc.gov.gy/survey/",
+          "https://landregistry.gov.gy/"
+        ],
+        "reason": "no_city_specific_public_parcel_geometry_verified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-georgetown.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:PY:asuncion",
+      "name": "Asuncion",
+      "country": "Paraguay",
+      "countryCode": "PY",
+      "centerLatLon": [
+        -25.266666666666666,
+        -57.666667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 363,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/world-capitals-2026-10-08/city-asuncion.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-asuncion.json",
+      "aliases": [
+        "capital:PY:asuncion",
+        "Asuncion"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official municipal services expose a Datos Catastrales polygon layer and a downloadable city cadastral map. Bounded public queries did not return geometry.",
+        "registryEvidenceUrls": [
+          "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+          "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion"
+        ],
+        "reason": "city_registry_or_map_evidence_geometry_unverified",
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-asuncion.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+        "freshVerifiedSample": false
+      }
+    },
+    {
+      "cityId": "capital:SR:paramaribo",
+      "name": "Paramaribo",
+      "country": "Suriname",
+      "countryCode": "SR",
+      "centerLatLon": [
+        5.833333333333333,
+        -55.166667
+      ],
+      "citySource": "World-capital research roster; chosen locator, not an official boundary.",
+      "researchOrder": 364,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "sr-miglis-paramaribo-fs"
+      ],
+      "researchFile": "research/world-capitals-2026-10-08/city-paramaribo.json",
+      "latestAssessmentFile": "research/world-capitals-2026-10-08/city-paramaribo.json",
+      "aliases": [
+        "capital:SR:paramaribo",
+        "Paramaribo"
+      ],
+      "capitalRole": "primary",
+      "scopeTier": "national_capital_or_associated_seat",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "MI-GLIS advertises a public parcel viewer searchable by place and its public web map exposes the Paramaribo polygon layer; a bounded central sample returned three polygons.",
+        "registryEvidenceUrls": [
+          "https://miglis.sr/diensten/",
+          "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+        ],
+        "reason": "Material parcel overlaps remain: 212 intersecting pairs, including near/full containment. Stable FID lookup passes; missing or repeated legal parcel numbers are not the hold reason.",
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true
+      },
+      "capitalResearch": {
+        "cohort": "world-capitals",
+        "checkedAt": "2026-10-08",
+        "evidenceFile": "research/world-capitals-2026-10-08/city-paramaribo.json",
+        "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+        "resultCategory": "verified_public_geometry_runtime_held",
+        "freshVerifiedSample": true
+      }
     }
   ],
   "countryProbes": [
@@ -33368,6 +36986,22 @@
       "verifiedGeometryCities": 5,
       "newAppCities": 3,
       "geometryQualityHeldCities": 2
+    },
+    "world": {
+      "scope": "193 UN member states and the two UN observer states, separate established or transitional government seats, and clearly labelled associated/disputed/de facto supplementary seats. Overseas dependencies and ordinary subnational capitals excluded.",
+      "indexFile": "research/world-capitals-2026-10-08/index.json",
+      "rosterFile": "research/world-capitals-2026-10-08/roster.json",
+      "queueFile": "research/world-capitals-2026-10-08/queue.json",
+      "checkedAt": "2026-10-08",
+      "rosterSeats": 225,
+      "previouslyChecked": 156,
+      "newlyChecked": 69,
+      "registryPresenceFound": 32,
+      "registryPresenceUnestablished": 37,
+      "verifiedGeometryCities": 20,
+      "newAppCities": 10,
+      "geometryQualityHeldCities": 9,
+      "geometryAccessHeldCities": 1
     }
   },
   "growthResearch": {

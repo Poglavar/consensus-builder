@@ -6,6 +6,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
     const TYPES = ['create', 'execute', 'accept', 'cancel', 'createMarket', 'resolve', 'donate', 'pledge', 'fulfillPledge', 'claim'];
+    function proposalTypeKey(event = {}) {
+        const goal = typeof event.proposalType === 'string' ? event.proposalType.trim() : '';
+        const primary = typeof event.proposalPrimaryType === 'string' ? event.proposalPrimaryType.trim() : '';
+        if (goal.toLowerCase() === 'road-track' && ['road', 'track'].includes(primary.toLowerCase())) return primary.toLowerCase();
+        const key = goal || primary || 'other';
+        if (key === 'parcelBased') return key;
+        return key.toLowerCase().replace(/[\s_]+/g, '-');
+    }
     function prepare(events, limit = 12) {
         const seen = new Set();
         return (Array.isArray(events) ? events : []).flatMap(event => {
@@ -21,6 +29,8 @@
                 && Number.isFinite(location.lat) && Number.isFinite(location.lon)
                 && Math.abs(location.lat) <= 90 && Math.abs(location.lon) <= 180 ? { lat: location.lat, lon: location.lon } : null;
             return [{ cityId: event.cityId || null, location: point, id: String(event.id), type: event.action.type, proposalId: String(proposalId),
+                proposalType: typeof event.proposalType === 'string' && event.proposalType.trim() ? event.proposalType.trim() : null,
+                proposalPrimaryType: typeof event.proposalPrimaryType === 'string' && event.proposalPrimaryType.trim() ? event.proposalPrimaryType.trim() : null,
                 subject: event.proposalName || String(proposalId), date, href: '/?' + query }];
         }).sort((a, b) => b.date - a.date).slice(0, Math.max(0, Math.min(30, limit)));
     }
@@ -40,5 +50,5 @@
             + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin((b.lon - a.lon) * rad / 2) ** 2;
         return 12742 * Math.asin(Math.min(1, Math.sqrt(h)));
     }
-    return { TYPES, prepare, locationOf };
+    return { TYPES, prepare, locationOf, proposalTypeKey };
 });

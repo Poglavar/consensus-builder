@@ -5,23 +5,23 @@
     "asOf": "2026-10-08",
     "demographicSnapshotDate": "2026-10-07",
     "statisticsYear": 2025,
-    "cityCount": 510,
+    "cityCount": 579,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 427,
+    "checkedCityCount": 496,
     "uncheckedCityCount": 83,
-    "cityRegistryFoundCount": 205,
-    "verifiedCitySampleCount": 151,
+    "cityRegistryFoundCount": 237,
+    "verifiedCitySampleCount": 171,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 431,
     "growthMatchedCount": 430,
     "checkedCitiesMissingDate": 0,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 120,
+    "configuredAppCityCount": 130,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
-      "builtUpAreaKm2": 0.003000000026077032,
+      "builtUpAreaKm2": 0.003000000084284693,
       "population": 2
     },
     "warnings": []
@@ -44,33 +44,33 @@
     },
     {
       "id": "local",
-      "jurisdictions": 77,
-      "landAreaKm2": 74434834,
-      "builtUpAreaKm2": 262389.505,
-      "population": 4347531504,
-      "landAreaKm2Pct": 55.245009733897774,
-      "builtUpAreaKm2Pct": 50.87005513520585,
-      "populationPct": 52.8150614834475
+      "jurisdictions": 92,
+      "landAreaKm2": 75751965,
+      "builtUpAreaKm2": 271226.27499999997,
+      "population": 4492521263,
+      "landAreaKm2Pct": 56.22257508879356,
+      "builtUpAreaKm2Pct": 52.58326000259233,
+      "populationPct": 54.57643872223454
     },
     {
       "id": "none",
-      "jurisdictions": 12,
-      "landAreaKm2": 1847579,
-      "builtUpAreaKm2": 1907.879,
-      "population": 68081498,
-      "landAreaKm2Pct": 1.3712601258591524,
-      "builtUpAreaKm2Pct": 0.3698848775270238,
-      "populationPct": 0.8270735932441005
+      "jurisdictions": 9,
+      "landAreaKm2": 1701211,
+      "builtUpAreaKm2": 1822.5970000000002,
+      "population": 67325170,
+      "landAreaKm2Pct": 1.2626268267678808,
+      "builtUpAreaKm2Pct": 0.35335106058933563,
+      "populationPct": 0.8178855034545496
     },
     {
       "id": "unknown",
-      "jurisdictions": 94,
-      "landAreaKm2": 37082626,
-      "builtUpAreaKm2": 64206.97600000002,
-      "population": 1217645979,
-      "landAreaKm2Pct": 27.522463935749364,
-      "builtUpAreaKm2Pct": 12.447953698395214,
-      "populationPct": 14.792313106135829
+      "jurisdictions": 82,
+      "landAreaKm2": 35911863,
+      "builtUpAreaKm2": 55455.48800000008,
+      "population": 1073412548,
+      "landAreaKm2Pct": 26.653531879944858,
+      "builtUpAreaKm2Pct": 10.75128264794642,
+      "populationPct": 13.04012395713833
     }
   ],
   "cities": [
@@ -276,6 +276,56 @@
         "distanceKm": 6.081,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:YE:aden",
+      "name": "Aden",
+      "country": "Yemen",
+      "countryCode": "YE",
+      "latitude": 12.7855,
+      "longitude": 45.0187,
+      "registryCityIds": [
+        "capital:YE:aden"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-aden.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "An indexed first-party notice from the General Authority for Lands, Survey and Urban Planning, Real Estate Registry Affairs / Aden, directs registry applicants to its Al-Mualla branch. The notice is hosted in the state 14 October newspaper; the Presidency confirms that publisher is a state press institution. Direct PDF retrieval was blocked (HTTP 403), so this supports a local registry office with lower confidence and does not establish public parcel geometry.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://agoye.gov.ye/page.php?id=374",
+        "https://presidentalalimi.net/news799.html",
+        "https://14october.com/uploads/content/2412/A1L727YD-HD02U1-E9BD/4.pdf"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-aden.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=12.78550&mlon=45.01870#map=12/12.78550/45.01870",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=12.78550%2C45.01870",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:6353",
@@ -1280,6 +1330,52 @@
       }
     },
     {
+      "id": "capital:NU:alofi",
+      "name": "Alofi",
+      "country": "Niue",
+      "countryCode": "NU",
+      "latitude": -19.0554,
+      "longitude": -169.9179,
+      "registryCityIds": [
+        "capital:NU:alofi"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-alofi.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-alofi.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-19.05540&mlon=-169.91790#map=12/-19.05540/-169.91790",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-19.05540%2C-169.91790",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6556",
       "name": "Altamira",
       "country": "Mexico",
@@ -1570,6 +1666,59 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.50910&mlon=125.49440#map=12/38.50910/125.49440",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.50910%2C125.49440",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:AD:andorra-la-vella",
+      "name": "Andorra la Vella",
+      "country": "Andorra",
+      "countryCode": "AD",
+      "latitude": 42.5,
+      "longitude": 1.516667,
+      "registryCityIds": [
+        "capital:AD:andorra-la-vella"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Public municipal parcel layer returned three Polygon records with REF_CADASTRAL_TEXT inside Andorra la Vella.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ad-andorra-la-vella-cadastre"
+      ],
+      "evidenceUrls": [
+        "https://sit.andorralavella.ad/cadastre/",
+        "https://sit.andorralavella.ad/arcgis/sharing/rest/content/items/3a3e1929ddc44e01a20db703f9a4b0fd/data?f=json",
+        "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+        "research/world-capitals-2026-10-08/andorra-la-vella-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.50000&mlon=1.51667#map=12/42.50000/1.51667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.50000%2C1.51667",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -1971,6 +2120,52 @@
         "distanceKm": 0.755,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:WS:apia",
+      "name": "Apia",
+      "country": "Samoa",
+      "countryCode": "WS",
+      "latitude": -13.816667,
+      "longitude": -171.766667,
+      "registryCityIds": [
+        "capital:WS:apia"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-apia.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-apia.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-13.81667&mlon=-171.76667#map=12/-13.81667/-171.76667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-13.81667%2C-171.76667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:2961",
@@ -2464,6 +2659,55 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:PY:asuncion",
+      "name": "Asuncion",
+      "country": "Paraguay",
+      "countryCode": "PY",
+      "latitude": -25.266666666666666,
+      "longitude": -57.666667,
+      "registryCityIds": [
+        "capital:PY:asuncion"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-asuncion.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official municipal services expose a Datos Catastrales polygon layer and a downloadable city cadastral map. Bounded public queries did not return geometry.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+        "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-asuncion.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-25.26667&mlon=-57.66667#map=12/-25.26667/-57.66667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.26667%2C-57.66667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:833",
       "name": "Athína (Athens)",
       "country": "Greece",
@@ -2747,6 +2991,52 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:CK:avarua",
+      "name": "Avarua",
+      "country": "Cook Islands",
+      "countryCode": "CK",
+      "latitude": -21.207,
+      "longitude": -159.775,
+      "registryCityIds": [
+        "capital:CK:avarua"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-avarua.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The official cadastre is confirmed to exist and its ministry is the primary boundary custodian. The public CookGeo catalog contains no Avarua parcel vector layer; the ministry instead offers an individual land-map request form. No bounded parcel response captured, so city query availability/geometry remains unknown.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-avarua.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-21.20700&mlon=-159.77500#map=12/-21.20700/-159.77500",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-21.20700%2C-159.77500",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3303",
       "name": "Baghdād (Baghdad)",
       "country": "Iraq",
@@ -3005,6 +3295,52 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:AZ:baku",
+      "name": "Baku",
+      "country": "Azerbaijan",
+      "countryCode": "AZ",
+      "latitude": 40.38333333333333,
+      "longitude": 49.866667,
+      "registryCityIds": [
+        "capital:AZ:baku"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-baku.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Azerbaijan State Property Service operates national cadastre and map services, but no city-specific basis established that registry coverage or the inspected parcel viewer returns Baku cadastral features.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-baku.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=40.38333&mlon=49.86667#map=12/40.38333/49.86667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=40.38333%2C49.86667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3252",
       "name": "Balcad",
       "country": "Somalia",
@@ -3134,6 +3470,61 @@
         "distanceKm": 1.801,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:BN:bandar-seri-begawan",
+      "name": "Bandar Seri Begawan",
+      "country": "Brunei Darussalam",
+      "countryCode": "BN",
+      "latitude": 4.883333333333333,
+      "longitude": 114.933333,
+      "registryCityIds": [
+        "capital:BN:bandar-seri-begawan"
+      ],
+      "appCityIds": [
+        "bandarseribegawan"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-bandar-seri-begawan.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Brunei Survey Department’s official lot-boundary survey service identifies its Geomatics Information Centre in Bandar Seri Begawan, and the official national CADAS polygon layer returned three bounded features at the city locator.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "bn-survey-cadas-bsb"
+      ],
+      "evidenceUrls": [
+        "https://www.survey.gov.bn/pengukuran-tanah/",
+        "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3?f=pjson",
+        "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-bandar-seri-begawan.json",
+        "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=4.88333&mlon=114.93333#map=12/4.88333/114.93333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=4.88333%2C114.93333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:5991",
@@ -3438,6 +3829,54 @@
       }
     },
     {
+      "id": "capital:KN:basseterre",
+      "name": "Basseterre",
+      "country": "Saint Kitts and Nevis",
+      "countryCode": "KN",
+      "latitude": 17.3,
+      "longitude": -62.716667,
+      "registryCityIds": [
+        "capital:KN:basseterre"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-basseterre.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The Land Registry is in Basseterre and maintains records for Saint Christopher and Nevis; available evidence describes in-person/e-search access, not Basseterre-specific coverage or parcel geometry.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.legal.gov.kn/land-registry/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-basseterre.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=17.30000&mlon=-62.71667#map=12/17.30000/-62.71667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.30000%2C-62.71667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:239",
       "name": "Bata",
       "country": "Equatorial Guinea",
@@ -3686,6 +4125,60 @@
       }
     },
     {
+      "id": "capital:LB:beirut",
+      "name": "Beirut",
+      "country": "Lebanon",
+      "countryCode": "LB",
+      "latitude": 33.86666666666667,
+      "longitude": 35.5,
+      "registryCityIds": [
+        "capital:LB:beirut"
+      ],
+      "appCityIds": [
+        "beirut"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-beirut.json",
+        "field": "$.requests[0].checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The publisher-linked municipal Beirut cadastral basemap returns individual parcel polygons and district/lot references. This establishes local cadastral geometry; legal registration, ownership, and currentness are not established by the research copy.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "lb-bbed-beirut-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+        "https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-beirut.json",
+        "research/world-capitals-2026-10-08/beirut-plots-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=33.86667&mlon=35.50000#map=12/33.86667/35.50000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=33.86667%2C35.50000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:556",
       "name": "Belgrade",
       "country": "Serbia",
@@ -3763,6 +4256,55 @@
         "distanceKm": 1.618,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:BZ:belmopan",
+      "name": "Belmopan",
+      "country": "Belize",
+      "countryCode": "BZ",
+      "latitude": 17.25,
+      "longitude": -88.766667,
+      "registryCityIds": [
+        "capital:BZ:belmopan"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-belmopan.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Belize Land Registry describes its interactive parcel-boundary map and lists a Belmopan City office; BNSDI identifies parcel database/boundary datasets. No public vector endpoint or feature response was reached.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+        "https://portal.bnsdi.gov.bz/lic"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-belmopan.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=17.25000&mlon=-88.76667#map=12/17.25000/-88.76667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.25000%2C-88.76667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:7802",
@@ -4965,6 +5507,59 @@
       }
     },
     {
+      "id": "capital:SK:bratislava",
+      "name": "Bratislava",
+      "country": "Slovakia",
+      "countryCode": "SK",
+      "latitude": 48.15,
+      "longitude": 17.116667,
+      "registryCityIds": [
+        "capital:SK:bratislava"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-bratislava.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "C-register cadastral polygons with cadastral district and parcel numbers returned in central Bratislava.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "sk-bratislava-register-c"
+      ],
+      "evidenceUrls": [
+        "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer",
+        "https://bratislava.sk/en/mesto-bratislava/transparentne-mesto/majetok-mesta/nehnutelny-majetok",
+        "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-bratislava.json",
+        "research/world-capitals-2026-10-08/bratislava-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=48.15000&mlon=17.11667#map=12/48.15000/17.11667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=48.15000%2C17.11667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:554",
       "name": "Brazzaville",
       "country": "Congo",
@@ -5034,6 +5629,107 @@
         "distanceKm": 2.539,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:BB:bridgetown",
+      "name": "Bridgetown",
+      "country": "Barbados",
+      "countryCode": "BB",
+      "latitude": 13.1,
+      "longitude": -59.616667,
+      "registryCityIds": [
+        "capital:BB:bridgetown"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-bridgetown.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The national mapping agency offers vector layers for purchase, but no Bridgetown-specific parcel dataset or service was verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://landsandsurveys.gov.bb/",
+        "https://landsandsurveys.gov.bb/pages/LandRegistration.html"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-bridgetown.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=13.10000&mlon=-59.61667#map=12/13.10000/-59.61667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.10000%2C-59.61667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:RO:bucharest",
+      "name": "Bucharest",
+      "country": "Romania",
+      "countryCode": "RO",
+      "latitude": 44.43333333333333,
+      "longitude": 26.1,
+      "registryCityIds": [
+        "capital:RO:bucharest"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-bucharest.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official ANCPI indexed information says the agency has a subordinate cadastral and property-publicity office for the Municipality of Bucharest; the Bucharest office page is also indexed with land-book and cadastral-plan services. Direct opens of relevant ANCPI pages failed (HTTP 502 or hostname resolution), and the public geometry endpoint could not be queried, so registry existence is supported by indexed primary claims while city parcel geometry remains unverified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://b.ancpi.ro/",
+        "https://geoportal.ancpi.ro/imobile.html",
+        "https://geoportal.gov.ro/",
+        "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+        "https://www.ancpi.ro/epay/AboutUs.action"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-bucharest.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=44.43333&mlon=26.10000#map=12/44.43333/26.10000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.43333%2C26.10000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:4459",
@@ -5763,6 +6459,56 @@
       }
     },
     {
+      "id": "capital:LC:castries",
+      "name": "Castries",
+      "country": "Saint Lucia",
+      "countryCode": "LC",
+      "latitude": 14,
+      "longitude": -61,
+      "registryCityIds": [
+        "capital:LC:castries"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-castries.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The official Land Registry office is in Castries and an experimental, non-authoritative parcel-boundary map exists. The inspected WFS capabilities listed no parcel/cadastre/lot layers, and coverage of Castries itself was not established.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.govt.lc/ministries/physical-development/land-registry-section",
+        "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+        "https://geoservices.govt.lc/geoserver/wfs?service=WFS&request=GetCapabilities"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-castries.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=14.00000&mlon=-61.00000#map=12/14.00000/-61.00000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=14.00000%2C-61.00000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5062",
       "name": "Cebu City",
       "country": "Philippines",
@@ -5831,6 +6577,62 @@
         "distanceKm": 16.766,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:ME:cetinje",
+      "name": "Cetinje",
+      "country": "Montenegro",
+      "countryCode": "ME",
+      "latitude": 42.3931,
+      "longitude": 18.9116,
+      "registryCityIds": [
+        "capital:ME:cetinje"
+      ],
+      "appCityIds": [
+        "cetinje"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-cetinje.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Public government parcel WFS returned three MultiPolygon features with cadastral district CETINJE I.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "me-water-cadastral-parcels"
+      ],
+      "evidenceUrls": [
+        "https://wis.gov.me/geoportal",
+        "https://geoportal.co.me/geoportal/geoportal.html",
+        "https://wis.gov.me/geoserver/wfs"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-cetinje.json",
+        "research/world-capitals-2026-10-08/cetinje-acceptance.json",
+        "research/world-capitals-2026-10-08/podgorica-quality.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.39310&mlon=18.91160#map=12/42.39310/18.91160",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.39310%2C18.91160",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:10933",
@@ -6814,6 +7616,60 @@
         "distanceKm": 6.846,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:MD:chisinau",
+      "name": "Chisinau",
+      "country": "Republic of Moldova",
+      "countryCode": "MD",
+      "latitude": 47,
+      "longitude": 28.85,
+      "registryCityIds": [
+        "capital:MD:chisinau"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-chisinau.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official public WFS returned three Polygon features in central Chișinău, each with codcadastral and cod_parcel.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "md-geodata-cadastral-parcels"
+      ],
+      "evidenceUrls": [
+        "https://www.ipcbi.gov.md/ro",
+        "https://geodata.gov.md/?locale=ro#/",
+        "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer",
+        "https://geodata.gov.md/geoserver/cadastru_data/wfs"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-chisinau.json",
+        "research/world-capitals-2026-10-08/chisinau-overlap-review.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=47.00000&mlon=28.85000#map=12/47.00000/28.85000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=47.00000%2C28.85000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:8833",
@@ -8806,6 +9662,56 @@
       }
     },
     {
+      "id": "capital:TL:dili",
+      "name": "Dili",
+      "country": "Timor-Leste",
+      "countryCode": "TL",
+      "latitude": -8.583333333333334,
+      "longitude": 125.6,
+      "registryCityIds": [
+        "capital:TL:dili"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-dili.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "National cadastral services and published Dili land maps exist, but no public polygon service/feature query verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.mj.gov.tl/?q=node%2F489",
+        "https://www.mj.gov.tl/?q=node%2F1939",
+        "https://timor-leste.gov.tl/?lang=pt&n=1&p=6431"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-dili.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-8.58333&mlon=125.60000#map=12/-8.58333/125.60000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.58333%2C125.60000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6097",
       "name": "Dilla",
       "country": "Ethiopia",
@@ -9821,6 +10727,66 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:PS:east-jerusalem",
+      "name": "East Jerusalem",
+      "country": "State of Palestine",
+      "countryCode": "PS",
+      "latitude": 31.7833,
+      "longitude": 35.2333,
+      "registryCityIds": [
+        "capital:PS:east-jerusalem"
+      ],
+      "appCityIds": [
+        "eastjerusalem"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-east-jerusalem.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official Israel Mapping Center/Govmap public parcel layer provides national cadastral polygons. The layer is not a legal title record; city-area geometry is verified independently.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "il-govmap-cadastral-parcel-rows"
+      ],
+      "evidenceUrls": [
+        "https://data.gov.il/datasets/israel_mapping_center/shape",
+        "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem",
+        "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&request=GetCapabilities",
+        "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=opendata%3APARCEL_ALL",
+        "https://www.govmap.gov.il/",
+        "https://www.gov.il/ar/service/information-cadastre-unregulated-area-jerusalem",
+        "https://open.govmap.gov.il/geoserver/opendata/wfs"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-east-jerusalem.json",
+        "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+        "research/world-capitals-2026-10-08/east-jerusalem-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=31.78330&mlon=35.23330#map=12/31.78330/35.23330",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.78330%2C35.23330",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11117",
       "name": "Ekangar Sarai",
       "country": "India",
@@ -10632,6 +11598,52 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:TV:funafuti",
+      "name": "Funafuti",
+      "country": "Tuvalu",
+      "countryCode": "TV",
+      "latitude": -8.516667,
+      "longitude": 179.216667,
+      "registryCityIds": [
+        "capital:TV:funafuti"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-funafuti.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-funafuti.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-8.51667&mlon=179.21667#map=12/-8.51667/179.21667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.51667%2C179.21667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:12022",
       "name": "Fuzhou",
       "country": "China",
@@ -10929,6 +11941,55 @@
         "distanceKm": 1.322,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:GY:georgetown",
+      "name": "Georgetown",
+      "country": "Guyana",
+      "countryCode": "GY",
+      "latitude": 6.8,
+      "longitude": -58.15,
+      "registryCityIds": [
+        "capital:GY:georgetown"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-georgetown.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The national Lands and Surveys Commission provides mapping and survey services and the national Land Registry offers title searches; no Georgetown-specific parcel coverage or public geometry service was established.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://glsc.gov.gy/survey/",
+        "https://landregistry.gov.gy/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-georgetown.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.80000&mlon=-58.15000#map=12/6.80000/-58.15000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.80000%2C-58.15000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:10035",
@@ -12167,6 +13228,57 @@
       }
     },
     {
+      "id": "capital:CU:havana",
+      "name": "Havana",
+      "country": "Cuba",
+      "countryCode": "CU",
+      "latitude": 23.116666666666667,
+      "longitude": -82.35,
+      "registryCityIds": [
+        "capital:CU:havana"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-havana.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Official Havana and MINJUS homepages were inspected, with separate English and Spanish searches. The city portal geographic-search link led to CubaMaps, whose homepage describes tourist points of interest; no city parcel registry or geometry source was verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.lahabana.gob.cu/",
+        "https://www.minjus.gob.cu/es/",
+        "https://cubamaps.travel/",
+        "https://www.gacetaoficial.gob.cu/es"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-havana.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=23.11667&mlon=-82.35000#map=12/23.11667/-82.35000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.11667%2C-82.35000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4948",
       "name": "Hayfan",
       "country": "Yemen",
@@ -12558,6 +13670,52 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=9.05946&mlon=38.48531#map=12/9.05946/38.48531",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.05946%2C38.48531",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:SB:honiara",
+      "name": "Honiara",
+      "country": "Solomon Islands",
+      "countryCode": "SB",
+      "latitude": -9.433333,
+      "longitude": 159.95,
+      "registryCityIds": [
+        "capital:SB:honiara"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-honiara.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-honiara.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-9.43333&mlon=159.95000#map=12/-9.43333/159.95000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-9.43333%2C159.95000",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -14001,6 +15159,67 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.57670&mlon=-92.17350#map=12/38.57670/-92.17350",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.57670%2C-92.17350",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:IL:jerusalem",
+      "name": "Jerusalem",
+      "country": "Israel",
+      "countryCode": "IL",
+      "latitude": 31.766666666666666,
+      "longitude": 35.233333,
+      "registryCityIds": [
+        "capital:IL:jerusalem"
+      ],
+      "appCityIds": [
+        "jerusalem"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-jerusalem.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official Israel Mapping Center/Govmap public parcel layer provides national cadastral polygons. The layer is not a legal title record; city-area geometry is verified independently.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "il-govmap-cadastral-parcel-rows"
+      ],
+      "evidenceUrls": [
+        "https://data.gov.il/datasets/israel_mapping_center/shape",
+        "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem",
+        "https://data.gov.il/dataset/israel_mapping_center/shape",
+        "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&request=GetCapabilities",
+        "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=opendata%3APARCEL_ALL",
+        "https://www.govmap.gov.il/",
+        "https://jerusalem.datacity.org.il/dataset/plots",
+        "https://open.govmap.gov.il/geoserver/opendata/wfs"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-jerusalem.json",
+        "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+        "research/world-capitals-2026-10-08/east-jerusalem-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=31.76667&mlon=35.23333#map=12/31.76667/35.23333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.76667%2C35.23333",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -15623,6 +16842,54 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:VC:kingstown",
+      "name": "Kingstown",
+      "country": "Saint Vincent and the Grenadines",
+      "countryCode": "VC",
+      "latitude": 13.133333333333333,
+      "longitude": -61.216667,
+      "registryCityIds": [
+        "capital:VC:kingstown"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-kingstown.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Official statistical maps identify Kingstown census divisions and suburbs, not cadastral parcels; no city parcel registry coverage was established.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://stats.gov.vc/data/maps/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-kingstown.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=13.13333&mlon=-61.21667#map=12/13.13333/-61.21667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.13333%2C-61.21667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1854",
       "name": "Kinshasa",
       "country": "Democratic Republic of the Congo",
@@ -16505,6 +17772,59 @@
         "distanceKm": 0.279,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:BO:la-paz",
+      "name": "La Paz",
+      "country": "Bolivia (Plurinational State of)",
+      "countryCode": "BO",
+      "latitude": -16.5,
+      "longitude": -68.15,
+      "registryCityIds": [
+        "capital:BO:la-paz"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-la-paz.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The municipal government identifies the Autoridad Catastral Municipal, city cadastral map and lookup by cadastral code; municipal GeoServer exposes lot feature types and a bounded central-city query returned three polygons.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "bo-gamlp-lapaz-wfs"
+      ],
+      "evidenceUrls": [
+        "https://sitservicios.lapaz.bo/sit/catastro/",
+        "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&request=GetCapabilities",
+        "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6",
+        "https://sitservicios.lapaz.bo/geoserver/catastro/wfs"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-la-paz.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-16.50000&mlon=-68.15000#map=12/-16.50000/-68.15000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-16.50000%2C-68.15000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "capital:EH:laayoune",
@@ -17410,6 +18730,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=40.81360&mlon=-96.70260#map=12/40.81360/-96.70260",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=40.81360%2C-96.70260",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:PT:lisbon",
+      "name": "Lisbon",
+      "country": "Portugal",
+      "countryCode": "PT",
+      "latitude": 38.71666666666667,
+      "longitude": -9.133333,
+      "registryCityIds": [
+        "capital:PT:lisbon"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-lisbon.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official municipal cadastral application and BUPi Lisbon participation establish a local cadastral/registration service.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://lxcadastro.cm-lisboa.pt/",
+        "https://bupi.gov.pt/pt/publicacoes/municpio-de-lisboa-adere-ao-bupi",
+        "https://ogcapi.dgterritorio.gov.pt/collections/cadastro"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-lisbon.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=38.71667&mlon=-9.13333#map=12/38.71667/-9.13333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.71667%2C-9.13333",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -18868,6 +20238,52 @@
       }
     },
     {
+      "id": "capital:MH:majuro",
+      "name": "Majuro",
+      "country": "Marshall Islands",
+      "countryCode": "MH",
+      "latitude": 7.1,
+      "longitude": 171.383333,
+      "registryCityIds": [
+        "capital:MH:majuro"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-majuro.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-majuro.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=7.10000&mlon=171.38333#map=12/7.10000/171.38333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=7.10000%2C171.38333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:GQ:malabo",
       "name": "Malabo",
       "country": "Equatorial Guinea",
@@ -18986,6 +20402,159 @@
         "distanceKm": 1.146,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:MV:male",
+      "name": "Male",
+      "country": "Maldives",
+      "countryCode": "MV",
+      "latitude": 4.166666666666667,
+      "longitude": 73.5,
+      "registryCityIds": [
+        "capital:MV:male"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-male.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "National Geomatics Department sources establish cadastral survey and land-registry functions, and the public HDC lot service covers Hulhumalé within Malé City; the Dhivehi/English follow-up found no Malé-island layer. Geometry is verified only for the documented bounded sample, not comprehensive Malé-island coverage.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "mv-hdc-parcels-public-view"
+      ],
+      "evidenceUrls": [
+        "https://geomatics.gov.mv/index.php",
+        "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/MapServer/1",
+        "https://presidency.gov.mv/Press/Article/29127",
+        "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/FeatureServer/2",
+        "https://gis.hdc.mv/server/rest/services?f=json",
+        "https://gis.hdc.mv/portal/sharing/rest/search?q=type%3A%22Web+Map%22&f=json",
+        "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-male.json",
+        "research/world-capitals-2026-10-08/male-quality.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=4.16667&mlon=73.50000#map=12/4.16667/73.50000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=4.16667%2C73.50000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:NI:managua",
+      "name": "Managua",
+      "country": "Nicaragua",
+      "countryCode": "NI",
+      "latitude": 12.133333333333333,
+      "longitude": -86.25,
+      "registryCityIds": [
+        "capital:NI:managua"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-managua.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "INETER directly documents a Managua Parcelas map layer showing cadastral lots and numbers, and warns that the integrated cadastral database is incomplete. The historic viewer and catalog could not be queried for geometry during this pass.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+        "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+        "https://consultacf.ineter.gob.ni/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-managua.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=12.13333&mlon=-86.25000#map=12/12.13333/-86.25000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=12.13333%2C-86.25000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:BH:manama",
+      "name": "Manama",
+      "country": "Bahrain",
+      "countryCode": "BH",
+      "latitude": 26.233333333333334,
+      "longitude": 50.566667,
+      "registryCityIds": [
+        "capital:BH:manama"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-manama.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The Survey and Land Registration Bureau offers cadastral map services nationally; the inspected pages did not establish Manama-specific parcel coverage or an open city geometry service.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-manama.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=26.23333&mlon=50.56667#map=12/26.23333/50.56667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.23333%2C50.56667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:4693",
@@ -22759,6 +24328,54 @@
       }
     },
     {
+      "id": "capital:BS:nassau",
+      "name": "Nassau",
+      "country": "Bahamas",
+      "countryCode": "BS",
+      "latitude": 25.083333333333332,
+      "longitude": -77.35,
+      "registryCityIds": [
+        "capital:BS:nassau"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-nassau.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The national Registrar General portal provides a registry search, but the evidence does not establish Nassau-specific registry coverage or parcel geometry.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://rgd-civreg.bahamas.gov.bs/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-nassau.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=25.08333&mlon=-77.35000#map=12/25.08333/-77.35000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.08333%2C-77.35000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11029",
       "name": "Naubatpur",
       "country": "India",
@@ -22877,6 +24494,52 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.20016&mlon=86.43439#map=12/26.20016/86.43439",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.20016%2C86.43439",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:MM:naypyidaw",
+      "name": "Naypyidaw",
+      "country": "Myanmar",
+      "countryCode": "MM",
+      "latitude": 19.7633,
+      "longitude": 96.0785,
+      "registryCityIds": [
+        "capital:MM:naypyidaw"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-naypyidaw.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The Settlement and Land Records Department is a national authority and the NPTDC page is a city map, but no city-specific cadastral layer or parcel registry coverage was established.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-naypyidaw.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=19.76330&mlon=96.07850#map=12/19.76330/96.07850",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=19.76330%2C96.07850",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -23221,6 +24884,52 @@
       }
     },
     {
+      "id": "capital:PW:ngerulmud",
+      "name": "Ngerulmud",
+      "country": "Palau",
+      "countryCode": "PW",
+      "latitude": 7.5006,
+      "longitude": 134.6242,
+      "registryCityIds": [
+        "capital:PW:ngerulmud"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-ngerulmud.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No parcel layer appears in the public PALARIS Experience web maps or PalauGIS parcel-name catalog results. A bounded Ngerulmud-area query to the published building layer returned polygon footprints only; no parcel/cadastre query was available from the traced app sources.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-ngerulmud.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=7.50060&mlon=134.62420#map=12/7.50060/134.62420",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=7.50060%2C134.62420",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:NE:niamey",
       "name": "Niamey",
       "country": "Niger",
@@ -23384,6 +25093,58 @@
       }
     },
     {
+      "id": "capital:CY:north-nicosia",
+      "name": "North Nicosia",
+      "country": "Cyprus",
+      "countryCode": "CY",
+      "latitude": 35.1856,
+      "longitude": 33.3823,
+      "registryCityIds": [
+        "capital:CY:north-nicosia"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-north-nicosia.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official Cyprus cadastral service returned two Polygon features in a bounded envelope covering North Nicosia. The query establishes geometry within the envelope, not political status or full northern coverage.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "cy-dls-north-nicosia-parcels"
+      ],
+      "evidenceUrls": [
+        "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+        "https://www.tkgm.gov.tr/projeler/gelecek-odakli-projeler/kktc"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-north-nicosia.json",
+        "research/world-capitals-2026-10-08/north-nicosia-quality.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=35.18560&mlon=33.38230#map=12/35.18560/33.38230",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=35.18560%2C33.38230",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:MR:nouakchott",
       "name": "Nouakchott",
       "country": "Mauritania",
@@ -23497,6 +25258,52 @@
       }
     },
     {
+      "id": "capital:TO:nukualofa",
+      "name": "Nuku'alofa",
+      "country": "Tonga",
+      "countryCode": "TO",
+      "latitude": -21.133333,
+      "longitude": -175.2,
+      "registryCityIds": [
+        "capital:TO:nukualofa"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-nukualofa.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-nukualofa.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-21.13333&mlon=-175.20000#map=12/-21.13333/-175.20000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-21.13333%2C-175.20000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3311",
       "name": "Nurrār",
       "country": "Pakistan",
@@ -23536,6 +25343,55 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.93074&mlon=70.52160#map=12/32.93074/70.52160",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.93074%2C70.52160",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:ID:nusantara",
+      "name": "Nusantara",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "latitude": -0.975,
+      "longitude": 116.707,
+      "registryCityIds": [
+        "capital:ID:nusantara"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-nusantara.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Official IKN geospatial catalog and service platform found, but cadastral parcel coverage or accessible parcel features not verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://geoportal.ikn.go.id/catalog?type=dataset",
+        "https://geodata.ikn.go.id/developer/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-nusantara.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-0.97500&mlon=116.70700#map=12/-0.97500/116.70700",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-0.97500%2C116.70700",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -23954,6 +25810,55 @@
       }
     },
     {
+      "id": "capital:CA:ottawa",
+      "name": "Ottawa",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 45.416666666666664,
+      "longitude": -75.7,
+      "registryCityIds": [
+        "capital:CA:ottawa"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-ottawa.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The City of Ottawa identifies GeoOttawa property-parcel mapping and a Property_Parcels REST service. Unauthenticated feature calls returned login HTML/token errors, so geometry was not verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa",
+        "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-ottawa.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=45.41667&mlon=-75.70000#map=12/45.41667/-75.70000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.41667%2C-75.70000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1748",
       "name": "Ouagadougou",
       "country": "Burkina Faso",
@@ -24167,6 +26072,52 @@
       }
     },
     {
+      "id": "capital:FM:palikir",
+      "name": "Palikir",
+      "country": "Micronesia (Federated States of)",
+      "countryCode": "FM",
+      "latitude": 6.916667,
+      "longitude": 158.15,
+      "registryCityIds": [
+        "capital:FM:palikir"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-palikir.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-palikir.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.91667&mlon=158.15000#map=12/6.91667/158.15000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.91667%2C158.15000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5873",
       "name": "Panabo",
       "country": "Philippines",
@@ -24226,6 +26177,106 @@
         "distanceKm": 1.667,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:PA:panama-city",
+      "name": "Panama City",
+      "country": "Panama",
+      "countryCode": "PA",
+      "latitude": 8.966666666666667,
+      "longitude": -79.533333,
+      "registryCityIds": [
+        "capital:PA:panama-city"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-panama-city.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "MIVIOT documents its public geoportal and thematic layers, but no city parcel layer or registry coverage specific to Panama City was verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-panama-city.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=8.96667&mlon=-79.53333#map=12/8.96667/-79.53333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=8.96667%2C-79.53333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:SR:paramaribo",
+      "name": "Paramaribo",
+      "country": "Suriname",
+      "countryCode": "SR",
+      "latitude": 5.833333333333333,
+      "longitude": -55.166667,
+      "registryCityIds": [
+        "capital:SR:paramaribo"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-paramaribo.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "MI-GLIS advertises a public parcel viewer searchable by place and its public web map exposes the Paramaribo polygon layer; a bounded central sample returned three polygons.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "sr-miglis-paramaribo-fs"
+      ],
+      "evidenceUrls": [
+        "https://miglis.sr/diensten/",
+        "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-paramaribo.json",
+        "research/world-capitals-2026-10-08/paramaribo-adapter-qualification.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=5.83333&mlon=-55.16667#map=12/5.83333/-55.16667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=5.83333%2C-55.16667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:11779",
@@ -24605,6 +26656,52 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:KH:phnom-penh",
+      "name": "Phnom Penh",
+      "country": "Cambodia",
+      "countryCode": "KH",
+      "latitude": 11.55,
+      "longitude": 104.916667,
+      "registryCityIds": [
+        "capital:KH:phnom-penh"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-phnom-penh.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The national land ministry lists cadastral services, but the inspected evidence does not establish Phnom Penh-specific registry coverage or public parcel geometry.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-phnom-penh.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=11.55000&mlon=104.91667#map=12/11.55000/104.91667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.55000%2C104.91667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4858",
       "name": "Phoenix",
       "country": "United States of America",
@@ -24730,6 +26827,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:ME:podgorica",
+      "name": "Podgorica",
+      "country": "Montenegro",
+      "countryCode": "ME",
+      "latitude": 42.43333333333333,
+      "longitude": 19.266667,
+      "registryCityIds": [
+        "capital:ME:podgorica"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-podgorica.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Public government parcel WFS returned three MultiPolygon features with cadastral district names PODGORICA II/III.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "me-water-cadastral-parcels"
+      ],
+      "evidenceUrls": [
+        "https://wis.gov.me/geoportal",
+        "https://geoportal.co.me/geoportal/geoportal.html",
+        "https://wis.gov.me/geoserver/wfs"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-podgorica.json",
+        "research/world-capitals-2026-10-08/cetinje-acceptance.json",
+        "research/world-capitals-2026-10-08/podgorica-quality.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.43333&mlon=19.26667#map=12/42.43333/19.26667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.43333%2C19.26667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:MU:port-louis",
       "name": "Port Louis",
       "country": "Mauritius",
@@ -24778,6 +26929,146 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-20.16090&mlon=57.50120#map=12/-20.16090/57.50120",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-20.16090%2C57.50120",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:PG:port-moresby",
+      "name": "Port Moresby",
+      "country": "Papua New Guinea",
+      "countryCode": "PG",
+      "latitude": -9.45,
+      "longitude": 147.183333,
+      "registryCityIds": [
+        "capital:PG:port-moresby"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-port-moresby.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-port-moresby.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-9.45000&mlon=147.18333#map=12/-9.45000/147.18333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-9.45000%2C147.18333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:VU:port-vila",
+      "name": "Port Vila",
+      "country": "Vanuatu",
+      "countryCode": "VU",
+      "latitude": -17.733333,
+      "longitude": 168.316667,
+      "registryCityIds": [
+        "capital:VU:port-vila"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-port-vila.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-port-vila.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-17.73333&mlon=168.31667#map=12/-17.73333/168.31667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-17.73333%2C168.31667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:HT:port-au-prince",
+      "name": "Port-au-Prince",
+      "country": "Haiti",
+      "countryCode": "HT",
+      "latitude": 18.533333333333335,
+      "longitude": -72.333333,
+      "registryCityIds": [
+        "capital:HT:port-au-prince"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-port-au-prince.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The national CNIGS identifies the geospatial-information center, but no Port-au-Prince parcel registry or public parcel layer was established.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://cnigs.ht/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-port-au-prince.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=18.53333&mlon=-72.33333#map=12/18.53333/-72.33333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=18.53333%2C-72.33333",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -25229,6 +27520,52 @@
         "distanceKm": 23.754,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:MY:putrajaya",
+      "name": "Putrajaya",
+      "country": "Malaysia",
+      "countryCode": "MY",
+      "latitude": 2.9264,
+      "longitude": 101.6964,
+      "registryCityIds": [
+        "capital:MY:putrajaya"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-putrajaya.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "JUPEM/MyGeoServe describe national cadastral products, but the inspected sources do not establish Putrajaya-specific registry coverage or a public parcel feature query.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-putrajaya.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=2.92640&mlon=101.69640#map=12/2.92640/101.69640",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=2.92640%2C101.69640",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:1305",
@@ -25739,6 +28076,60 @@
       }
     },
     {
+      "id": "capital:PS:ramallah",
+      "name": "Ramallah",
+      "country": "State of Palestine",
+      "countryCode": "PS",
+      "latitude": 31.9038,
+      "longitude": 35.2034,
+      "registryCityIds": [
+        "capital:PS:ramallah"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-ramallah.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The exact municipal parcel layer returned two Polygon features for a bounded area around Ramallah in a public query. This verifies partial city geometry only, not complete parcel coverage or land-title scope.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ps-ramallah-municipal-parcels"
+      ],
+      "evidenceUrls": [
+        "https://ramallah-gis.ps/",
+        "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0",
+        "https://ramallah.ps/ar/Article/3140/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D9%80GIS",
+        "https://www.arcgis.com/home/item.html?id=0fd256a1448b492298fce0ec238f1f39"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-ramallah.json",
+        "research/world-capitals-2026-10-08/ramallah-quality.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=31.90380&mlon=35.20340#map=12/31.90380/35.20340",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.90380%2C35.20340",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1719",
       "name": "Rawang",
       "country": "Malaysia",
@@ -26086,6 +28477,54 @@
       }
     },
     {
+      "id": "capital:DM:roseau",
+      "name": "Roseau",
+      "country": "Dominica",
+      "countryCode": "DM",
+      "latitude": 15.3,
+      "longitude": -61.4,
+      "registryCityIds": [
+        "capital:DM:roseau"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-roseau.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The national Lands and Surveys Division is the survey-map custodian; the inspected evidence did not identify Roseau-specific cadastral coverage or a parcel service.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://housing.gov.dm/en/lands-and-surveys-division"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-roseau.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=15.30000&mlon=-61.40000#map=12/15.30000/-61.40000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=15.30000%2C-61.40000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:387",
       "name": "Rotterdam",
       "country": "Netherlands (Kingdom of the)",
@@ -26343,6 +28782,102 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.54088&mlon=83.21689#map=12/25.54088/83.21689",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.54088%2C83.21689",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:GD:saint-georges",
+      "name": "Saint George's",
+      "country": "Grenada",
+      "countryCode": "GD",
+      "latitude": 12.05,
+      "longitude": -61.75,
+      "registryCityIds": [
+        "capital:GD:saint-georges"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-saint-georges.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The national eLandRegistry portal describes online land-record services but presents a login/search page; the evidence does not establish Saint George's-specific coverage or public parcel geometry.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://elandregistry.gov.gd/Default.aspx"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-saint-georges.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=12.05000&mlon=-61.75000#map=12/12.05000/-61.75000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=12.05000%2C-61.75000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:AG:saint-johns",
+      "name": "Saint John's",
+      "country": "Antigua and Barbuda",
+      "countryCode": "AG",
+      "latitude": 17.116666666666667,
+      "longitude": -61.85,
+      "registryCityIds": [
+        "capital:AG:saint-johns"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-saint-johns.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Antigua's registry records exist, but the evidence reviewed describes a national records repository and does not establish registry coverage or parcel mapping for Saint John's specifically.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-saint-johns.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=17.11667&mlon=-61.85000#map=12/17.11667/-61.85000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.11667%2C-61.85000",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -27023,6 +29558,55 @@
       }
     },
     {
+      "id": "capital:CR:san-jose",
+      "name": "San Jose",
+      "country": "Costa Rica",
+      "countryCode": "CR",
+      "latitude": 9.933333333333334,
+      "longitude": -84.083333,
+      "registryCityIds": [
+        "capital:CR:san-jose"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-san-jose.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Municipal cadastral pages and the official San José MapServer identify layer 2 Predios as polygon geometry. Bounded calls timed out locally; no remote outage is inferred.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+        "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-san-jose.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=9.93333&mlon=-84.08333#map=12/9.93333/-84.08333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.93333%2C-84.08333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1234",
       "name": "San José del Cabo",
       "country": "Mexico",
@@ -27062,6 +29646,62 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.09335&mlon=-109.71624#map=12/23.09335/-109.71624",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.09335%2C-109.71624",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:SM:san-marino",
+      "name": "San Marino",
+      "country": "San Marino",
+      "countryCode": "SM",
+      "latitude": 43.93333333333333,
+      "longitude": 12.416667,
+      "registryCityIds": [
+        "capital:SM:san-marino"
+      ],
+      "appCityIds": [
+        "sanmarino"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-san-marino.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Public cadastral map returns polygon ground records with sheet/parcel FOG_MAP references inside Città di San Marino.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "sm-public-cadastral-ground"
+      ],
+      "evidenceUrls": [
+        "https://www.territorio.sm/pub2/TerritorioSM/Mappe-online.html",
+        "https://mappeonline.pa.sm/maps/prgmobile/",
+        "https://gov.sm/pub2/GovSM/Territorio/Catasto/Visure-Catastali.html",
+        "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-san-marino.json",
+        "research/world-capitals-2026-10-08/san-marino-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.93333&mlon=12.41667#map=12/43.93333/12.41667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.93333%2C12.41667",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -27782,6 +30422,55 @@
         "distanceKm": 0.561,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:KR:sejong",
+      "name": "Sejong",
+      "country": "Republic of Korea",
+      "countryCode": "KR",
+      "latitude": 36.4801,
+      "longitude": 127.289,
+      "registryCityIds": [
+        "capital:KR:sejong"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-sejong.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official city lot-query viewer confirms parcel-aware property information in Sejong, but no public geometry API/feature response was verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+        "https://www.kgeop.go.kr/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-sejong.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=36.48010&mlon=127.28900#map=12/36.48010/127.28900",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.48010%2C127.28900",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:11511",
@@ -28873,6 +31562,105 @@
       }
     },
     {
+      "id": "capital:MK:skopje",
+      "name": "Skopje",
+      "country": "North Macedonia",
+      "countryCode": "MK",
+      "latitude": 42,
+      "longitude": 21.433333,
+      "registryCityIds": [
+        "capital:MK:skopje"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-skopje.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "City-published cadastral parcel polygons were retrieved in the Old Bazaar.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "mk-skopje-old-bazaar-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gisportal.skopje.gov.mk/GisZaGragjani/",
+        "https://starportal.skopje.gov.mk/DesktopDefault.aspx?tabid=564",
+        "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-skopje.json",
+        "research/world-capitals-2026-10-08/skopje-old-bazaar-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.00000&mlon=21.43333#map=12/42.00000/21.43333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.00000%2C21.43333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:KI:south-tarawa",
+      "name": "South Tarawa",
+      "country": "Kiribati",
+      "countryCode": "KI",
+      "latitude": -0.883333,
+      "longitude": 169.533333,
+      "registryCityIds": [
+        "capital:KI:south-tarawa"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-south-tarawa.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-south-tarawa.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-0.88333&mlon=169.53333#map=12/-0.88333/169.53333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-0.88333%2C169.53333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:686",
       "name": "Soyo",
       "country": "Angola",
@@ -29117,6 +31905,100 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:BO:sucre",
+      "name": "Sucre",
+      "country": "Bolivia (Plurinational State of)",
+      "countryCode": "BO",
+      "latitude": -19.0196,
+      "longitude": -65.2619,
+      "registryCityIds": [
+        "capital:BO:sucre"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-sucre.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official government cadastral-certification procedure names the Gobierno Autónomo Municipal de Sucre and cites its municipal cadastral law. No public city polygon service was identified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-sucre.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-19.01960&mlon=-65.26190#map=12/-19.01960/-65.26190",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-19.01960%2C-65.26190",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:GE:sukhumi",
+      "name": "Sukhumi",
+      "country": "Georgia",
+      "countryCode": "GE",
+      "latitude": 43.0015,
+      "longitude": 41.0234,
+      "registryCityIds": [
+        "capital:GE:sukhumi"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-sukhumi.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Georgia NSDI/NAPR describe national parcel services, but the inspected evidence does not establish Sukhumi coverage; de facto local registry or cadastral coverage remains unknown.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-sukhumi.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.00150&mlon=41.02340#map=12/43.00150/41.02340",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.00150%2C41.02340",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1890",
       "name": "Suphan Buri",
       "country": "Thailand",
@@ -29314,6 +32196,52 @@
         "distanceKm": 7.026,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:FJ:suva",
+      "name": "Suva",
+      "country": "Fiji",
+      "countryCode": "FJ",
+      "latitude": -18.133333,
+      "longitude": 178.416667,
+      "registryCityIds": [
+        "capital:FJ:suva"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-suva.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Official VanuaView Online and Approved Survey Plan portals identify a capital-applicable national cadastre/service, but both direct endpoints timed out from this network. The public ArcGIS fragments were queried on a bounded Suva extent and returned zero for their limited contents only; the Suva parcel result remains unknown.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-suva.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-18.13333&mlon=178.41667#map=12/-18.13333/178.41667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-18.13333%2C178.41667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:11632",
@@ -30120,6 +33048,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:HN:tegucigalpa",
+      "name": "Tegucigalpa",
+      "country": "Honduras",
+      "countryCode": "HN",
+      "latitude": 14.1,
+      "longitude": -87.216667,
+      "registryCityIds": [
+        "capital:HN:tegucigalpa"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-tegucigalpa.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The Distrito Central municipal atlas documents an official cadastral base map with parcel divisions, cadastral keys, and property limits. The associated public catalogue did not provide parcel data during inspection.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://atlasmunicipal.amdc.hn/atlas-mapas/",
+        "https://mapas.simet.amdc.hn/catalogue/",
+        "https://amdc-gobgeo.electrosoftware.net/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-tegucigalpa.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=14.10000&mlon=-87.21667#map=12/14.10000/-87.21667",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=14.10000%2C-87.21667",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5264",
       "name": "Tehrān (Tehran)",
       "country": "Iran (Islamic Republic of)",
@@ -30356,6 +33334,115 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=8.00115&mlon=98.34229#map=12/8.00115/98.34229",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=8.00115%2C98.34229",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:NL:the-hague",
+      "name": "The Hague",
+      "country": "Netherlands (Kingdom of the)",
+      "countryCode": "NL",
+      "latitude": 52.0705,
+      "longitude": 4.3007,
+      "registryCityIds": [
+        "capital:NL:the-hague"
+      ],
+      "appCityIds": [
+        "thehague"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-the-hague.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Current cadastral polygons returned with 14-digit identifiers and cadastral municipality ’s-Gravenhage.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "nl-pdok-brk-kadastrale-kaart"
+      ],
+      "evidenceUrls": [
+        "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+        "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-the-hague.json",
+        "research/amsterdam-live.json",
+        "research/rotterdam-live.json",
+        "research/world-capitals-2026-10-08/the-hague-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.07050&mlon=4.30070#map=12/52.07050/4.30070",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.07050%2C4.30070",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:BT:thimphu",
+      "name": "Thimphu",
+      "country": "Bhutan",
+      "countryCode": "BT",
+      "latitude": 27.466666666666665,
+      "longitude": 89.633333,
+      "registryCityIds": [
+        "capital:BT:thimphu"
+      ],
+      "appCityIds": [
+        "thimphu"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-thimphu.json",
+        "field": "$.requests[0].checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Public municipal Taba plot records establish city-level land mapping activity. Their legal registration, lifecycle and planning status are undocumented; the original national cadastral sample lies outside the municipal boundary.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "bt-thimphu-taba-plots"
+      ],
+      "evidenceUrls": [
+        "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-thimphu.json",
+        "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=27.46667&mlon=89.63333#map=12/27.46667/89.63333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=27.46667%2C89.63333",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -30604,6 +33691,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.02562&mlon=36.45322#map=12/17.02562/36.45322",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.02562%2C36.45322",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:MD:tiraspol",
+      "name": "Tiraspol",
+      "country": "Republic of Moldova",
+      "countryCode": "MD",
+      "latitude": 46.8403,
+      "longitude": 29.6433,
+      "registryCityIds": [
+        "capital:MD:tiraspol"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-tiraspol.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Regional cadastral GIS and Tiraspol land-plot listings exist, but no city parcel-registration extract or cadastral vector sample was verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://kadastr.gospmr.org/",
+        "https://government.gospmr.org/gosudarstvennyj-zemelnyj-kadastr-tekushhaya-rabota-i-perspektivy/",
+        "https://idapmr.com/ploshadki/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-tiraspol.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=46.84030&mlon=29.64330#map=12/46.84030/29.64330",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=46.84030%2C29.64330",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -31197,6 +34334,52 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:GE:tskhinvali",
+      "name": "Tskhinvali",
+      "country": "Georgia",
+      "countryCode": "GE",
+      "latitude": 42.2257,
+      "longitude": 43.9709,
+      "registryCityIds": [
+        "capital:GE:tskhinvali"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-tskhinvali.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Georgia NSDI/NAPR describe national parcel services, but the inspected evidence does not establish Tskhinvali coverage; de facto local registry or cadastral coverage remains unknown.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-tskhinvali.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.22570&mlon=43.97090#map=12/42.22570/43.97090",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.22570%2C43.97090",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:TN:tunis",
       "name": "Tunis",
       "country": "Tunisia",
@@ -31413,6 +34596,54 @@
         "distanceKm": 1.75,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:CL:valparaiso",
+      "name": "Valparaiso",
+      "country": "Chile",
+      "countryCode": "CL",
+      "latitude": -33.0472,
+      "longitude": -71.6127,
+      "registryCityIds": [
+        "capital:CL:valparaiso"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-valparaiso.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "The municipal GIS department offers a digital map and urban-planning geodata, but the official portal and separate English/Spanish searches did not identify a city parcel/cadastral layer.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://departamentosig.munivalpo.cl/"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-valparaiso.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-33.04720&mlon=-71.61270#map=12/-33.04720/-71.61270",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.04720%2C-71.61270",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:10447",
@@ -31638,6 +34869,107 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:AT:vienna",
+      "name": "Vienna",
+      "country": "Austria",
+      "countryCode": "AT",
+      "latitude": 48.2082,
+      "longitude": 16.3738,
+      "registryCityIds": [
+        "capital:AT:vienna"
+      ],
+      "appCityIds": [
+        "vienna"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-vienna.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official cadastral service returned cadastral references and polygon features inside central Vienna.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "at-bev-kataster-vector-tiles"
+      ],
+      "evidenceUrls": [
+        "https://www.bev.gv.at/Services/Geoinformationsdienste/Services/Katasterservice.html",
+        "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+        "https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-vienna.json",
+        "research/world-capitals-2026-10-08/vienna-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=48.20820&mlon=16.37380#map=12/48.20820/16.37380",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=48.20820%2C16.37380",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:LA:vientiane",
+      "name": "Vientiane",
+      "country": "Lao People's Democratic Republic",
+      "countryCode": "LA",
+      "latitude": 17.966666666666665,
+      "longitude": 102.6,
+      "registryCityIds": [
+        "capital:LA:vientiane"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-vientiane.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "VIRGO is an urban open-data GeoNode/MapStore portal and Lao geospatial/land-use sources exist, but no city parcel registry or cadastral boundary dataset was established.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-vientiane.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=17.96667&mlon=102.60000#map=12/17.96667/102.60000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.96667%2C102.60000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2962",
       "name": "Wanlaweyn",
       "country": "Somalia",
@@ -31766,6 +35098,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.90714&mlon=-77.07434#map=12/38.90714/-77.07434",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.90714%2C-77.07434",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:NZ:wellington",
+      "name": "Wellington",
+      "country": "New Zealand",
+      "countryCode": "NZ",
+      "latitude": -41.2865,
+      "longitude": 174.7762,
+      "registryCityIds": [
+        "capital:NZ:wellington"
+      ],
+      "appCityIds": [
+        "wellington"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-wellington.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "LINZ primary cadastre feature service returned polygon parcels in the Wellington central-city bbox.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "nz-linz-primary-parcels-arcgis"
+      ],
+      "evidenceUrls": [
+        "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-wellington.json",
+        "research/countries/NZ.json",
+        "research/world-capitals-2026-10-08/wellington-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-41.28650&mlon=174.77620#map=12/-41.28650/174.77620",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-41.28650%2C174.77620",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -32294,6 +35680,52 @@
         "distanceKm": 1.893,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:NR:yaren",
+      "name": "Yaren",
+      "country": "Naoero",
+      "countryCode": "NR",
+      "latitude": -0.5477,
+      "longitude": 166.920867,
+      "registryCityIds": [
+        "capital:NR:yaren"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/world-capitals-2026-10-08/city-yaren.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [],
+      "evidenceFiles": [
+        "research/world-capitals-2026-10-08/city-yaren.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-0.54770&mlon=166.92087#map=12/-0.54770/166.92087",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-0.54770%2C166.92087",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:7035",
@@ -32842,8 +36274,8 @@
       "population": 82905,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -32856,7 +36288,7 @@
         "research/europe/AD.json"
       ],
       "evidenceUrls": [],
-      "category": "none"
+      "category": "local"
     },
     {
       "code": "AO",
@@ -32955,7 +36387,7 @@
       "population": 94208,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -33336,8 +36768,8 @@
       "population": 9113574,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -33365,7 +36797,7 @@
       "population": 10397713,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -33396,7 +36828,7 @@
       "population": 403032,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -33426,7 +36858,7 @@
       "population": 1643332,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -33485,7 +36917,7 @@
       "population": 282624,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-29",
@@ -33602,8 +37034,8 @@
       "population": 422924,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -33689,8 +37121,8 @@
       "population": 796681,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -33704,7 +37136,7 @@
         "research/retry/countries/BT.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "BO",
@@ -33719,8 +37151,8 @@
       "population": 12581842,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -34142,8 +37574,8 @@
       "population": 466330,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -34157,7 +37589,7 @@
         "research/retry/countries/BN.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "BG",
@@ -34291,7 +37723,7 @@
       "population": 17847981,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -34351,8 +37783,8 @@
       "population": 40126723,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 2,
-      "citiesWithRegistry": 2,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -34565,7 +37997,7 @@
       "population": 19859921,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
+      "citiesChecked": 2,
       "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -34829,7 +38261,7 @@
       "population": 13263,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -34856,8 +38288,8 @@
       "population": 5152950,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -34946,7 +38378,7 @@
       "population": 10937203,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -35006,8 +38438,8 @@
       "population": 1370754,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -35184,7 +38616,7 @@
       "population": 65872,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -35535,7 +38967,7 @@
       "population": 933154,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -35769,7 +39201,7 @@
       "population": 3806671,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
+      "citiesChecked": 3,
       "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-10-08",
@@ -36072,7 +39504,7 @@
       "population": 117304,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -36274,7 +39706,7 @@
       "population": 835986,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -36304,7 +39736,7 @@
       "population": 11906096,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -36390,8 +39822,8 @@
       "population": 11005850,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -36405,7 +39837,7 @@
         "research/retry/countries/HN.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "HU",
@@ -36512,7 +39944,7 @@
       "population": 285721235,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 7,
+      "citiesChecked": 8,
       "citiesWithRegistry": 4,
       "checked": true,
       "checkedDate": "2026-09-29",
@@ -36932,8 +40364,8 @@
       "population": 9517180,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -37172,7 +40604,7 @@
       "population": 136489,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -37293,7 +40725,7 @@
       "population": 7873046,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -37355,8 +40787,8 @@
       "population": 5849420,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -37370,7 +40802,7 @@
         "research/retry/countries/LB.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "LS",
@@ -37623,7 +41055,7 @@
       "population": 35977838,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
+      "citiesChecked": 2,
       "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -37772,8 +41204,8 @@
       "population": 529676,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -37787,7 +41219,7 @@
         "research/retry/countries/MV.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "ML",
@@ -37864,7 +41296,7 @@
       "population": 36282,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -38270,7 +41702,7 @@
       "population": 113683,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -38357,8 +41789,8 @@
       "population": 632729,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -38475,7 +41907,7 @@
       "population": 54850648,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
+      "citiesChecked": 2,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -38535,7 +41967,7 @@
       "population": 12026,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -38592,8 +42024,8 @@
       "population": 18346819,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 2,
-      "citiesWithRegistry": 2,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -38651,8 +42083,8 @@
       "population": 5251899,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -38680,8 +42112,8 @@
       "population": 7007502,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -38695,7 +42127,7 @@
         "research/retry/countries/NI.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "NE",
@@ -38769,7 +42201,7 @@
       "population": 1820,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -38823,8 +42255,8 @@
       "population": 1813791,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -38839,7 +42271,7 @@
         "research/europe/MK.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "XNC",
@@ -38996,7 +42428,7 @@
       "population": 17662,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -39023,7 +42455,7 @@
       "population": 4571189,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -39054,7 +42486,7 @@
       "population": 10762817,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -39084,8 +42516,8 @@
       "population": 7013078,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -39230,8 +42662,8 @@
       "population": 10411833,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -39320,8 +42752,8 @@
       "population": 51667030,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 2,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -39336,7 +42768,7 @@
         "research/developed/KR.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "MD",
@@ -39351,8 +42783,8 @@
       "population": 2996105,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -39367,7 +42799,7 @@
         "research/europe/MD.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "RE",
@@ -39411,8 +42843,8 @@
       "population": 18908650,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -39429,7 +42861,7 @@
       "evidenceUrls": [
         "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (ATOM download) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (WMS view), as recorded in research/europe/RO.json; not re-verified this pass"
       ],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "RU",
@@ -39776,7 +43208,7 @@
       "population": 46922,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -39803,7 +43235,7 @@
       "population": 180149,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -39884,7 +43316,7 @@
       "population": 99924,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -39911,7 +43343,7 @@
       "population": 219306,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -39941,8 +43373,8 @@
       "population": 33573,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -39955,7 +43387,7 @@
         "research/europe/SM.json"
       ],
       "evidenceUrls": [],
-      "category": "none"
+      "category": "local"
     },
     {
       "code": "ST",
@@ -40206,8 +43638,8 @@
       "population": 5474881,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -40268,7 +43700,7 @@
       "population": 838646,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -40526,8 +43958,8 @@
       "population": 5589623,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -40586,8 +44018,8 @@
       "population": 639850,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -40601,7 +44033,7 @@
         "research/retry/countries/SR.json"
       ],
       "evidenceUrls": [],
-      "category": "none"
+      "category": "local"
     },
     {
       "code": "SJ",
@@ -41012,8 +44444,8 @@
       "population": 1418518,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -41027,7 +44459,7 @@
         "research/retry/countries/TL.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "TG",
@@ -41099,7 +44531,7 @@
       "population": 103742,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -41299,7 +44731,7 @@
       "population": 9492,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": false,
       "checkedDate": null,
@@ -41988,7 +45420,7 @@
       "population": 335169,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
+      "citiesChecked": 1,
       "citiesWithRegistry": 0,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -42135,8 +45567,8 @@
       "population": 41773878,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -42150,7 +45582,7 @@
         "research/retry/countries/YE.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "ZM",

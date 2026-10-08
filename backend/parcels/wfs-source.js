@@ -1,5 +1,6 @@
 // Adapts fixed WFS 1.1/2.0 GeoJSON layers to complete WGS84 parcels, with optional provider pacing.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
+import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 
@@ -28,14 +29,25 @@ function queueSourceRequest(key, minRequestIntervalMs, request) {
 export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, featureType, idField, idPrefix, outFields } = descriptor;
     const version = descriptor.version ?? '2.0.0';
+    const responseSrid = descriptor.responseSrid;
+    const responseCoordinatePrecision = descriptor.responseCoordinatePrecision;
+    const requestProperties = descriptor.requestProperties;
+    const idBatchSize = descriptor.idBatchSize ?? 80;
     const idType = descriptor.idType;
     const minRequestIntervalMs = descriptor.minRequestIntervalMs;
     const identifier = /^[A-Za-z_][A-Za-z0-9_]*$/;
     if (!id || !idPrefix || !identifier.test(idField) || !['string', 'integer'].includes(idType)
         || !['1.1.0', '2.0.0'].includes(version)
+        || (responseSrid !== undefined && responseSrid !== 3857)
+        || (responseCoordinatePrecision !== undefined && (responseSrid !== 3857
+            || !Number.isInteger(responseCoordinatePrecision) || responseCoordinatePrecision < 0 || responseCoordinatePrecision > 8))
+        || (requestProperties !== undefined && typeof requestProperties !== 'boolean')
+        || !Number.isSafeInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
         || (minRequestIntervalMs !== undefined && (!Number.isSafeInteger(minRequestIntervalMs) || minRequestIntervalMs < 100 || minRequestIntervalMs > 5000))
         || !/^[A-Za-z0-9_.]+:[A-Za-z0-9_]+$/.test(featureType)
         || !Array.isArray(outFields) || !outFields.includes(idField)
+        || (requestProperties && (typeof descriptor.geometryField !== 'string' || !identifier.test(descriptor.geometryField)
+            || outFields.some(field => typeof field !== 'string' || !identifier.test(field))))
         || (descriptor.parcelNumberField && !outFields.includes(descriptor.parcelNumberField))
         || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid WFS parcel source descriptor.');
     const attributeFilter = createParcelAttributeFilter(descriptor);
@@ -47,6 +59,28 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const pageSize = descriptor.pageSize || 1000;
     const maxFeatures = descriptor.maxFeatures || 10000;
     const maxBboxKm2 = descriptor.maxBboxKm2 || 25;
+    // A few GeoServer deployments round GeoJSON to four decimal places. Asking for
+    // metres preserves their source precision; transform only an explicitly tagged CRS.
+    const toWgs84 = responseSrid === 3857 ? proj4('EPSG:3857', 'EPSG:4326') : null;
+    function wgs84Geometry(geometry) {
+        if (!toWgs84) return geometry;
+        try {
+            if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type)) throw new Error();
+            const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+            const coordinates = polygons.map(polygon => polygon.map(ring => ring.map(point => {
+                if (!Array.isArray(point) || point.length < 2 || point.slice(0, 2).some(value =>
+                    typeof value !== 'number' || !Number.isFinite(value) || Math.abs(value) > 20037508.34278925)) throw new Error();
+                // Mixed upstream serializers can alternate between full precision and a
+                // fixed decimal limit. Normalize in metres at the documented read precision.
+                const xy = responseCoordinatePrecision === undefined ? point.slice(0, 2)
+                    : point.slice(0, 2).map(value => Number(value.toFixed(responseCoordinatePrecision)));
+                return toWgs84.forward(xy);
+            })));
+            return { type: geometry.type, coordinates: geometry.type === 'Polygon' ? coordinates[0] : coordinates };
+        } catch (_) {
+            throw upstreamError('WFS parcel provider returned invalid projected polygon geometry.');
+        }
+    }
     const validId = value => idType === 'integer'
         ? typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
         : typeof value === 'string' && value.length > 0 && value.length <= 256
@@ -64,7 +98,8 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             const search = new URLSearchParams({
                 service: 'WFS', version, request: 'GetFeature',
                 ...(version === '1.1.0' ? { typeName: featureType } : { typeNames: featureType }),
-                outputFormat: 'application/json', srsName: 'CRS:84', sortBy: idField,
+                outputFormat: 'application/json', srsName: responseSrid === 3857 ? 'EPSG:3857' : 'CRS:84', sortBy: idField,
+                ...(requestProperties ? { propertyName: [...new Set([descriptor.geometryField, ...outFields])].join(',') } : {}),
                 ...(version === '1.1.0' ? { maxFeatures: String(pageSize) } : { count: String(pageSize) }),
                 startIndex: String(offset), ...params
             });
@@ -88,6 +123,11 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 throw upstreamError('Parcel provider is unavailable.');
             }
             if (payload?.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstreamError('WFS parcel provider returned an invalid FeatureCollection.');
+            if (toWgs84 && payload.features.length && (payload.crs?.type !== 'name' || ![
+                'EPSG:3857', 'urn:ogc:def:crs:EPSG::3857', 'http://www.opengis.net/def/crs/EPSG/0/3857'
+            ].includes(payload.crs?.properties?.name))) {
+                throw upstreamError('WFS parcel provider omitted or changed its projected response CRS.');
+            }
             const page = payload.features;
             if (page.length > pageSize) throw upstreamError('WFS parcel provider returned more features than the configured page limit.');
             const pageMatched = version === '1.1.0' ? payload.totalFeatures : payload.numberMatched;
@@ -107,11 +147,12 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 }
                 const nativeId = feature?.properties?.[idField];
                 if (!validId(nativeId)) throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
-                if (!validateGeometry(feature.geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
+                const geometry = wgs84Geometry(feature.geometry);
+                if (!validateGeometry(geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
                 // WFS feature IDs are pagination evidence only; durable cadastral IDs come from idField.
                 if (typeof feature.id !== 'string' || !feature.id || seenObjects.has(feature.id)) throw upstreamError('WFS parcel provider repeated or omitted a feature ID.');
                 seenObjects.add(feature.id);
-                const canonical = canonicalParcelFeature(descriptor, feature, nativeId);
+                const canonical = canonicalParcelFeature(descriptor, { ...feature, geometry }, nativeId);
                 const previous = byId.get(canonical.id);
                 if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(canonical.geometry)) throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
                 byId.set(canonical.id, canonical);
@@ -146,12 +187,22 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             }
             return `'${tail.replaceAll("'", "''")}'`;
         });
-        const idFilter = `${idField} IN (${native.join(',')})`;
-        const filter = hasFixedAttributeFilter ? `(${attributeFilter.where}) AND (${idFilter})` : idFilter;
-        const result = await query({ cql_filter: filter });
-        if (result.features.some(feature => !unique.includes(feature.id))) throw upstreamError('Parcel ID query returned unexpected parcels.');
-        const present = new Set(result.features.map(feature => feature.id));
-        return { ...result, absentIds: unique.filter(value => !present.has(value)) };
+        // GeoTools treats bare ID IN (...) as feature-ID syntax, not the attribute
+        // called "id". Quote that reserved identifier to query the published row key.
+        const nativeField = /^id$/i.test(idField) ? `"${idField}"` : idField;
+        const features = [];
+        for (let offset = 0; offset < native.length; offset += idBatchSize) {
+            const batchIds = unique.slice(offset, offset + idBatchSize);
+            const idFilter = `${nativeField} IN (${native.slice(offset, offset + idBatchSize).join(',')})`;
+            const filter = hasFixedAttributeFilter ? `(${attributeFilter.where}) AND (${idFilter})` : idFilter;
+            const result = await query({ cql_filter: filter });
+            if (result.features.some(feature => !batchIds.includes(feature.id))) throw upstreamError('Parcel ID query returned unexpected parcels.');
+            features.push(...result.features);
+        }
+        // Publish absence only after every batch completed; a failed later request is not a partial answer.
+        const present = new Set(features.map(feature => feature.id));
+        return { type: 'FeatureCollection', features, complete: true, sourceId: id, returnsWGS84: true,
+            absentIds: unique.filter(value => !present.has(value)) };
     }
 
     async function queryGeometry(geometry) {

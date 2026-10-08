@@ -3512,6 +3512,258 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        vienna: {
+            id: 'vienna',
+            label: translateCityText('city.labels.vienna', 'Vienna, Austria'),
+            currency: { locale: 'en-AT', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.2092, 16.37], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32633',
+                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [48.2092, 16.37], fallbackDataset: [16.37, 48.2092]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0005,
+                source: 'parcel-source', sourceId: 'at-bev-kataster-vector-tiles', idPrefix: 'AT-BEV-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://kataster.bev.gv.at/">BEV cadastral vector tiles</a> · CC BY 4.0 · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cetinje: {
+            id: 'cetinje',
+            label: translateCityText('city.labels.cetinje', 'Cetinje, Montenegro'),
+            currency: { locale: 'sr-ME', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [42.3908, 18.9215], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32634',
+                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [42.3908, 18.9215], fallbackDataset: [18.9215, 42.3908]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'me-water-cadastral-parcels', idPrefix: 'me-water:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://wis.gov.me/geoportal">Montenegro Water Administration cadastral parcels</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sanmarino: {
+            id: 'sanmarino',
+            label: translateCityText('city.labels.sanmarino', 'San Marino, San Marino'),
+            currency: { locale: 'it-SM', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.936, 12.446], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32633',
+                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.936, 12.446], fallbackDataset: [12.446, 43.936]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'sm-public-cadastral-ground', idPrefix: 'sm-cadastre:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://mappeonline.pa.sm/maps/prgmobile/">San Marino public cadastral land</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        thehague: {
+            id: 'thehague',
+            label: translateCityText('city.labels.thehague', 'The Hague, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [52.08, 4.311], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [52.08, 4.311], fallbackDataset: [4.311, 52.08]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK cadastral map</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wellington: {
+            id: 'wellington',
+            label: translateCityText('city.labels.wellington', 'Wellington, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-41.2865, 174.7762], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32760',
+                metricDefinition: '+proj=utm +zone=60 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-41.2865, 174.7762], fallbackDataset: [174.7762, -41.2865]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.linz.govt.nz/layer/50823-nz-primary-parcels/">LINZ primary parcels — public ArcGIS publication</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        beirut: {
+            id: 'beirut',
+            label: translateCityText('city.labels.beirut', 'Beirut, Lebanon'),
+            currency: { locale: 'ar-LB', code: 'LBP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.896, 35.5], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32636',
+                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [33.896, 35.5], fallbackDataset: [35.5, 33.896]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'lb-bbed-beirut-parcels', idPrefix: 'LB-BBED-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download">Beirut Urban Lab municipal parcel basemap</a> · ODbL · 2019 research basemap'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        thimphu: {
+            id: 'thimphu',
+            label: translateCityText('city.labels.thimphu', 'Thimphu — Taba, Bhutan'),
+            currency: { locale: 'en-BT', code: 'BTN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [27.515, 89.642], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32645',
+                metricDefinition: '+proj=utm +zone=45 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [27.515, 89.642], fallbackDataset: [89.642, 27.515]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'bt-thimphu-taba-plots', idPrefix: 'bt-thimphu-taba:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3">Thimphu Thromde Taba plot polygons (status unverified)</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bandarseribegawan: {
+            id: 'bandarseribegawan',
+            label: translateCityText('city.labels.bandarseribegawan', 'Bandar Seri Begawan, Brunei'),
+            currency: { locale: 'en-BN', code: 'BND' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [4.894, 114.946], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32650',
+                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [4.894, 114.946], fallbackDataset: [114.946, 4.894]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.004,
+                source: 'parcel-source', sourceId: 'bn-survey-cadas-bsb', idPrefix: 'BN-SD-BSB-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://survey.gov.bn/">Brunei Survey Department G1_GDBD CADAS</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jerusalem: {
+            id: 'jerusalem',
+            label: translateCityText('city.labels.jerusalem', 'Jerusalem, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [31.782, 35.214], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32636',
+                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [31.782, 35.214], fallbackDataset: [35.214, 31.782]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:',
+                idBatchSize: 3,
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.govmap.gov.il/">Govmap public cadastral parcel rows</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        eastjerusalem: {
+            id: 'eastjerusalem',
+            label: translateCityText('city.labels.eastjerusalem', 'East Jerusalem, Palestine'),
+            currency: { locale: 'ar-PS', code: 'ILS' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [31.794, 35.25], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32636',
+                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [31.794, 35.25], fallbackDataset: [35.25, 31.794]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001,
+                source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:',
+                idBatchSize: 3,
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.govmap.gov.il/">Govmap public cadastral parcel rows</a> · bounded public sample · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Single fresh catalog-selected LINZ exact-ID and source-binding check against the preserved three-feature Wellington sample.",
+  "checkedAt": "2026-10-08T19:15:58.841Z",
+  "cityId": "wellington",
+  "catalogSelection": {
+    "sourceId": "nz-linz-primary-parcels-arcgis",
+    "adapter": "arcgis",
+    "endpoint": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+    "idPrefix": "nz-linz:",
+    "nativeIdField": "id"
+  },
+  "exactIdCheck": {
+    "parcelId": "nz-linz:3821633",
+    "complete": true,
+    "absentIds": [],
+    "returnedCount": 1,
+    "geometryType": "Polygon",
+    "currentGeometrySha256": "2aaee45de7d0eb4d1926fa3f497dac55706bffa5a7526c64b5d3564be4349075",
+    "preservedSampleGeometrySha256": "2aaee45de7d0eb4d1926fa3f497dac55706bffa5a7526c64b5d3564be4349075",
+    "hashMatchesPreservedSample": true
+  },
+  "sourceBinding": {
+    "completed": true,
+    "source": "server:nz-linz-primary-parcels-arcgis",
+    "coverage": "complete",
+    "parcelCount": 1,
+    "siteM2": 373.92,
+    "unknownM2": 0,
+    "computedAt": "2026-10-08T19:15:58.839Z"
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "query": {
+        "where": "id = 3821633",
+        "f": "json",
+        "returnCountOnly": "true"
+      },
+      "featureCount": null
+    },
+    {
+      "method": "GET",
+      "path": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "query": {
+        "where": "id = 3821633",
+        "f": "json",
+        "returnIdsOnly": "true"
+      },
+      "featureCount": null
+    },
+    {
+      "method": "GET",
+      "path": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "query": {
+        "where": "1=1",
+        "outFields": "OBJECTID,id,appellation,topology_type",
+        "returnGeometry": "true",
+        "outSR": "4326",
+        "f": "geojson",
+        "objectIds": "3181141"
+      },
+      "featureCount": 1
+    },
+    {
+      "method": "GET",
+      "path": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "query": {
+        "where": "1=1",
+        "f": "json",
+        "returnCountOnly": "true"
+      },
+      "featureCount": null
+    },
+    {
+      "method": "GET",
+      "path": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "query": {
+        "where": "1=1",
+        "f": "json",
+        "returnIdsOnly": "true"
+      },
+      "featureCount": null
+    },
+    {
+      "method": "GET",
+      "path": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "query": {
+        "where": "1=1",
+        "outFields": "OBJECTID,id,appellation,topology_type",
+        "returnGeometry": "true",
+        "outSR": "4326",
+        "f": "geojson",
+        "objectIds": "4163692,3181141,5428703,3181234,4505582,5428062"
+      },
+      "featureCount": 6
+    }
+  ]
+}

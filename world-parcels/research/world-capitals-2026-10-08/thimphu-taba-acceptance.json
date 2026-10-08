@@ -1,0 +1,4468 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T19:06:04.290Z",
+  "city": "thimphu-taba",
+  "descriptor": {
+    "id": "bt-thimphu-taba-plots",
+    "name": "Thimphu Thromde Taba plot polygons (status unverified)",
+    "adapter": "arcgis",
+    "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+    "idField": "fid",
+    "idType": "integer",
+    "idPrefix": "bt-thimphu-taba:",
+    "objectIdField": "fid",
+    "outFields": [
+      "fid"
+    ],
+    "pageSize": 100,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        89.641,
+        27.514,
+        89.642,
+        27.515
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        89.642,
+        27.514,
+        89.643,
+        27.515
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        89.643,
+        27.514,
+        89.644,
+        27.515
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        89.641,
+        27.515,
+        89.642,
+        27.516
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        89.642,
+        27.515,
+        89.643,
+        27.516
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        89.643,
+        27.515,
+        89.644,
+        27.516
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        89.641,
+        27.516,
+        89.642,
+        27.517
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        89.642,
+        27.516,
+        89.643,
+        27.517
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        89.643,
+        27.516,
+        89.644,
+        27.517
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        89.642,
+        27.513,
+        89.643,
+        27.514
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        89.642,
+        27.517,
+        89.643,
+        27.518
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        89.64,
+        27.515,
+        89.641,
+        27.516
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        89.644,
+        27.515,
+        89.645,
+        27.516
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1520,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        89.641,
+        27.514,
+        89.642,
+        27.515
+      ],
+      "complete": true,
+      "count": 21,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:61",
+          "geometrySha256": "85cb0d8bda4913380ef509846a675dcc296f679fa780f2cf836dbf666a478d24"
+        },
+        {
+          "id": "bt-thimphu-taba:145",
+          "geometrySha256": "c6b47ea5383cf3ceb517647ea272cb02d7e508eb423f6ddf26ca4a00b20ebada"
+        },
+        {
+          "id": "bt-thimphu-taba:179",
+          "geometrySha256": "243a640051b253d7a06882eeedf247e2049691dbdca988c1c928e20378afcb1d"
+        },
+        {
+          "id": "bt-thimphu-taba:213",
+          "geometrySha256": "8d84bbd580ef0d7343bc4ecada0e99ce811dcfb7b9ffb8906eda34c89a11ee74"
+        },
+        {
+          "id": "bt-thimphu-taba:438",
+          "geometrySha256": "eef595f97c6e4d4b394f1a39cc17b57f85e2dd474a3edb0b1ddd20aa0691c6e7"
+        },
+        {
+          "id": "bt-thimphu-taba:440",
+          "geometrySha256": "f71cf6742947cff16c93d796225c2d4f98c0227a4ed4b7629f5c404aad3d62e5"
+        },
+        {
+          "id": "bt-thimphu-taba:445",
+          "geometrySha256": "ab201833f9687763db0d924b89811a95a4f376df13bb4715ea3ab2ed4d492a25"
+        },
+        {
+          "id": "bt-thimphu-taba:446",
+          "geometrySha256": "33dc16945e2def613e546eda7ca3160a1a07a46dca1ca057072fbc85ab4004bd"
+        },
+        {
+          "id": "bt-thimphu-taba:466",
+          "geometrySha256": "8df995cf7af0a6c43448b29d7c1b48a92d078e62cbc90c870db8c24416cc6a55"
+        },
+        {
+          "id": "bt-thimphu-taba:470",
+          "geometrySha256": "075430e101693815207c69b0cfa448e315286fb125d600bcf46dec1000832ed7"
+        },
+        {
+          "id": "bt-thimphu-taba:472",
+          "geometrySha256": "7707399a55cbeb19fe1a7249595cfb767dc0967cdf750c8fd9cde1e3d6bba324"
+        },
+        {
+          "id": "bt-thimphu-taba:498",
+          "geometrySha256": "15ea82e0c95e841de02d63c1216ed1038eac327f0e07d44d9f88fa9a7bc52a76"
+        },
+        {
+          "id": "bt-thimphu-taba:505",
+          "geometrySha256": "f8d6fc582cc69009f31db3a30ff3c7a53b498b2b2d1958590361626eebfe9c47"
+        },
+        {
+          "id": "bt-thimphu-taba:513",
+          "geometrySha256": "ca97935fdebb5fc3cc90e5f2739a28a3a14295a1f47c1fd6cad685045b17bac5"
+        },
+        {
+          "id": "bt-thimphu-taba:517",
+          "geometrySha256": "6b0661e434ff55822de164fb512f77a691a28fed9d8aab31795087c05b5daab6"
+        },
+        {
+          "id": "bt-thimphu-taba:546",
+          "geometrySha256": "a672307daecde2a2db33dd6cd424ddd60b37bfcf6faf5ab11a9570cff0989c29"
+        },
+        {
+          "id": "bt-thimphu-taba:583",
+          "geometrySha256": "987d7c6e49b6fc6b0fe7f16cb810ed0e047cae2f18393ac2bab81d914aa4ba7e"
+        },
+        {
+          "id": "bt-thimphu-taba:588",
+          "geometrySha256": "b8b1657781c43516dec722f076394130cf0a9f59d660cca6f7576c690a8e200e"
+        },
+        {
+          "id": "bt-thimphu-taba:596",
+          "geometrySha256": "2df9ffa69ba5fe34386444e2071b94535e278bd5f317a69762858d87cb2ea67e"
+        },
+        {
+          "id": "bt-thimphu-taba:598",
+          "geometrySha256": "9006ea89bd4039df90464a4d1ccaf23dcccee46eea1012f71f1b95ed4ffb0d1c"
+        },
+        {
+          "id": "bt-thimphu-taba:677",
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 871,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        89.642,
+        27.514,
+        89.643,
+        27.515
+      ],
+      "complete": true,
+      "count": 19,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:61",
+          "geometrySha256": "85cb0d8bda4913380ef509846a675dcc296f679fa780f2cf836dbf666a478d24"
+        },
+        {
+          "id": "bt-thimphu-taba:120",
+          "geometrySha256": "18e99c2fc0084ce166716043bfb85ccb60c939b55463a9ca1fdecf0c3d54e99b"
+        },
+        {
+          "id": "bt-thimphu-taba:138",
+          "geometrySha256": "bf996cf901aa7d4c35d54697d1b9df6a8e8d0c925ad428bf2392210e37edf3ca"
+        },
+        {
+          "id": "bt-thimphu-taba:139",
+          "geometrySha256": "5cdfb5c2c2ffd496837967d375d9ab088044db05e6cedd9bace894b2bdaa4c3e"
+        },
+        {
+          "id": "bt-thimphu-taba:141",
+          "geometrySha256": "a63037da720c4004a3db925052bd2cdc166b97a7c93cd74621c9739913f970ae"
+        },
+        {
+          "id": "bt-thimphu-taba:179",
+          "geometrySha256": "243a640051b253d7a06882eeedf247e2049691dbdca988c1c928e20378afcb1d"
+        },
+        {
+          "id": "bt-thimphu-taba:206",
+          "geometrySha256": "9e67ef7fa8da50e9d761ea91655f4ab85cea7be670ee41a61baa6704d5c2d987"
+        },
+        {
+          "id": "bt-thimphu-taba:256",
+          "geometrySha256": "279dbfdf0da4e5478c394cd6bcef2ca11a17b3fb00efae51f461af8f0ce95226"
+        },
+        {
+          "id": "bt-thimphu-taba:280",
+          "geometrySha256": "47e484244eca5ae5349c3239c579b86c0ec8ea92ed55206366899552ff99e589"
+        },
+        {
+          "id": "bt-thimphu-taba:281",
+          "geometrySha256": "e7fe6b7a0a77093f7b9dfc85c908578747e36992afa2e2378bf54a65d5fb9edc"
+        },
+        {
+          "id": "bt-thimphu-taba:334",
+          "geometrySha256": "77214f6ada1305a98b690e6ae5f0494f0491ab891f3e86bdaa9cb33d29e7d4c3"
+        },
+        {
+          "id": "bt-thimphu-taba:469",
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "id": "bt-thimphu-taba:502",
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "id": "bt-thimphu-taba:504",
+          "geometrySha256": "126e728e168f40c1b45703f419294a0bba5dddf7ddb17008f09cf5790db57854"
+        },
+        {
+          "id": "bt-thimphu-taba:507",
+          "geometrySha256": "c86ec144ddaa318e1e2a973d653851edc876284bf18e3561261f3583795b9d5d"
+        },
+        {
+          "id": "bt-thimphu-taba:513",
+          "geometrySha256": "ca97935fdebb5fc3cc90e5f2739a28a3a14295a1f47c1fd6cad685045b17bac5"
+        },
+        {
+          "id": "bt-thimphu-taba:514",
+          "geometrySha256": "7555d3bb7bb42ee9953a46f34cee51d7d72bd96c16b7ccc5b93144e94e196c8d"
+        },
+        {
+          "id": "bt-thimphu-taba:567",
+          "geometrySha256": "19ddaaf6232f56a4cce5f14332fe9e240a4ff3595422c0d76b09a14dedd95270"
+        },
+        {
+          "id": "bt-thimphu-taba:583",
+          "geometrySha256": "987d7c6e49b6fc6b0fe7f16cb810ed0e047cae2f18393ac2bab81d914aa4ba7e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 898,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        89.643,
+        27.514,
+        89.644,
+        27.515
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:469",
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "id": "bt-thimphu-taba:494",
+          "geometrySha256": "03e72fe3698e718b80ea7952da3a1cb3e023ba03943fa2e0d67c1ff63e6c09ad"
+        },
+        {
+          "id": "bt-thimphu-taba:502",
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "id": "bt-thimphu-taba:518",
+          "geometrySha256": "5b72ad60ebc82d3f86350fe78e1901bbf486b00db500e61b3b5b53a40614d596"
+        },
+        {
+          "id": "bt-thimphu-taba:530",
+          "geometrySha256": "2544f609dc201a5389592a2a2c47acde904121cd1cee750bcd987d2d1c01e1e7"
+        },
+        {
+          "id": "bt-thimphu-taba:534",
+          "geometrySha256": "d35f7751779c0818de836face1b9d3f84ae728f6013263ecac06c9d9389c4278"
+        },
+        {
+          "id": "bt-thimphu-taba:540",
+          "geometrySha256": "605c89412d8a5c06c1060f751a8833ce11ede32b3dd63727af77ef043f52af6f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 899,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        89.641,
+        27.515,
+        89.642,
+        27.516
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:213",
+          "geometrySha256": "8d84bbd580ef0d7343bc4ecada0e99ce811dcfb7b9ffb8906eda34c89a11ee74"
+        },
+        {
+          "id": "bt-thimphu-taba:287",
+          "geometrySha256": "00af49aa5dae094b5e3bf3c87dbddc7ad8f9b4ab5802b08603f7cbf33f4b45bf"
+        },
+        {
+          "id": "bt-thimphu-taba:289",
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "id": "bt-thimphu-taba:588",
+          "geometrySha256": "b8b1657781c43516dec722f076394130cf0a9f59d660cca6f7576c690a8e200e"
+        },
+        {
+          "id": "bt-thimphu-taba:596",
+          "geometrySha256": "2df9ffa69ba5fe34386444e2071b94535e278bd5f317a69762858d87cb2ea67e"
+        },
+        {
+          "id": "bt-thimphu-taba:598",
+          "geometrySha256": "9006ea89bd4039df90464a4d1ccaf23dcccee46eea1012f71f1b95ed4ffb0d1c"
+        },
+        {
+          "id": "bt-thimphu-taba:674",
+          "geometrySha256": "60307dcc4c117eb730c659f85bd409b1e3891c276aaf8dbbec70284511b5320f"
+        },
+        {
+          "id": "bt-thimphu-taba:677",
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 900,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        89.642,
+        27.515,
+        89.643,
+        27.516
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:206",
+          "geometrySha256": "9e67ef7fa8da50e9d761ea91655f4ab85cea7be670ee41a61baa6704d5c2d987"
+        },
+        {
+          "id": "bt-thimphu-taba:245",
+          "geometrySha256": "b094d2f8bcdb09271c3100c16caf0f8a53de621d542bef3653ca1890f2aba710"
+        },
+        {
+          "id": "bt-thimphu-taba:287",
+          "geometrySha256": "00af49aa5dae094b5e3bf3c87dbddc7ad8f9b4ab5802b08603f7cbf33f4b45bf"
+        },
+        {
+          "id": "bt-thimphu-taba:289",
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "id": "bt-thimphu-taba:502",
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "id": "bt-thimphu-taba:567",
+          "geometrySha256": "19ddaaf6232f56a4cce5f14332fe9e240a4ff3595422c0d76b09a14dedd95270"
+        },
+        {
+          "id": "bt-thimphu-taba:583",
+          "geometrySha256": "987d7c6e49b6fc6b0fe7f16cb810ed0e047cae2f18393ac2bab81d914aa4ba7e"
+        },
+        {
+          "id": "bt-thimphu-taba:633",
+          "geometrySha256": "72dd3f62384db25a95f0b3e809250eb9b1856042ca80774bdc345332c499252d"
+        },
+        {
+          "id": "bt-thimphu-taba:677",
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1475,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        89.643,
+        27.515,
+        89.644,
+        27.516
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:206",
+          "geometrySha256": "9e67ef7fa8da50e9d761ea91655f4ab85cea7be670ee41a61baa6704d5c2d987"
+        },
+        {
+          "id": "bt-thimphu-taba:235",
+          "geometrySha256": "21c3e9a8a0761424f9161b47219ad935ca429558bbefa92745880ee758d0e0da"
+        },
+        {
+          "id": "bt-thimphu-taba:236",
+          "geometrySha256": "3b6f35a31b00fc4a2b5a15abadcfe611b4ea5e56e0fc4bad8853c65e742a7f8c"
+        },
+        {
+          "id": "bt-thimphu-taba:245",
+          "geometrySha256": "b094d2f8bcdb09271c3100c16caf0f8a53de621d542bef3653ca1890f2aba710"
+        },
+        {
+          "id": "bt-thimphu-taba:502",
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "id": "bt-thimphu-taba:516",
+          "geometrySha256": "fe28f2db47f23fb3b521079c70f79a6416caa5bd8b727e2a1421d605c75e69c7"
+        },
+        {
+          "id": "bt-thimphu-taba:540",
+          "geometrySha256": "605c89412d8a5c06c1060f751a8833ce11ede32b3dd63727af77ef043f52af6f"
+        },
+        {
+          "id": "bt-thimphu-taba:641",
+          "geometrySha256": "7566e23859bfc95efd591c75788e9e186b967b4fd0cc838033fbb24b85f39c8e"
+        },
+        {
+          "id": "bt-thimphu-taba:647",
+          "geometrySha256": "e674ab20dc14e584940459df8dfdd3826436b8f847072e6798c8e53159d43893"
+        },
+        {
+          "id": "bt-thimphu-taba:663",
+          "geometrySha256": "9c910086c652f9f802c1808dde30cf8c8f8acf5dba3341d73ee584d90c9c3453"
+        },
+        {
+          "id": "bt-thimphu-taba:675",
+          "geometrySha256": "df33f958b1a645e0768e6b9611f08170661cfdb7e6719d972fbdd86ed5851aae"
+        },
+        {
+          "id": "bt-thimphu-taba:680",
+          "geometrySha256": "8bd568ac0eec8b8b979c599bf2f2bb5d75e1373a8cf7fd58b3f88679fdbb32a0"
+        },
+        {
+          "id": "bt-thimphu-taba:683",
+          "geometrySha256": "9517886f3b3a035ff73a25dfc87d2d4dd62c0307771594c92f768374b089a205"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 844,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        89.641,
+        27.516,
+        89.642,
+        27.517
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:287",
+          "geometrySha256": "00af49aa5dae094b5e3bf3c87dbddc7ad8f9b4ab5802b08603f7cbf33f4b45bf"
+        },
+        {
+          "id": "bt-thimphu-taba:289",
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "id": "bt-thimphu-taba:329",
+          "geometrySha256": "c279632abe30ca111a2dc0a6cba027e587c957eb9105ae7826b8841c35a3e240"
+        },
+        {
+          "id": "bt-thimphu-taba:648",
+          "geometrySha256": "c39baffbbda87efc88e433ea3eae07b930db1a40900e3db062687cbd7f05a19e"
+        },
+        {
+          "id": "bt-thimphu-taba:674",
+          "geometrySha256": "60307dcc4c117eb730c659f85bd409b1e3891c276aaf8dbbec70284511b5320f"
+        },
+        {
+          "id": "bt-thimphu-taba:677",
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 880,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        89.642,
+        27.516,
+        89.643,
+        27.517
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:289",
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "id": "bt-thimphu-taba:329",
+          "geometrySha256": "c279632abe30ca111a2dc0a6cba027e587c957eb9105ae7826b8841c35a3e240"
+        },
+        {
+          "id": "bt-thimphu-taba:345",
+          "geometrySha256": "4f58dda95564d700d78794bf7630bd355d15c9b45e3ef2b160937bf371a06834"
+        },
+        {
+          "id": "bt-thimphu-taba:398",
+          "geometrySha256": "af0d9e76ae27e415b62a6b83ea64b4f495c3aa6ff1c7a6394fa657c6adfdca26"
+        },
+        {
+          "id": "bt-thimphu-taba:402",
+          "geometrySha256": "81f307fa3446c0be7d8a733941b8c05dfc25a95bff7fa6200c6b368e3bc494d3"
+        },
+        {
+          "id": "bt-thimphu-taba:404",
+          "geometrySha256": "9c57eec034ce9e65cb8ae3d84c3521c5a0ad2df4e9c08c82a7b8b7b0424d00ee"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 848,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        89.643,
+        27.516,
+        89.644,
+        27.517
+      ],
+      "complete": true,
+      "count": 19,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:121",
+          "geometrySha256": "d05373936ac8febe601daa9245e0ce5a82167d4a1b40401680084eae0d352127"
+        },
+        {
+          "id": "bt-thimphu-taba:233",
+          "geometrySha256": "1ec2d56da5864bb7936346bc72b542786b300c2520bc992b9cec517d18cf2b60"
+        },
+        {
+          "id": "bt-thimphu-taba:345",
+          "geometrySha256": "4f58dda95564d700d78794bf7630bd355d15c9b45e3ef2b160937bf371a06834"
+        },
+        {
+          "id": "bt-thimphu-taba:351",
+          "geometrySha256": "0b8b157133161ef37bd1f8d4e3175b70cce26db08afd34c29361241686720f56"
+        },
+        {
+          "id": "bt-thimphu-taba:361",
+          "geometrySha256": "b12eb793073a04c45143e8db14075a0b724f0dde70eac5ab4ad81324416595fc"
+        },
+        {
+          "id": "bt-thimphu-taba:362",
+          "geometrySha256": "165c86bae87e836abf978a86164d78634490f8a95cf267282b1679c31d824994"
+        },
+        {
+          "id": "bt-thimphu-taba:400",
+          "geometrySha256": "016c8ee7b8f8a43d754e1ca0ad4ec2dd186ec5fba286dc1aa834aeb0146e97e1"
+        },
+        {
+          "id": "bt-thimphu-taba:401",
+          "geometrySha256": "a0a4cf42a7055f89fa97a47dbae3a18cc34918f5e7951be07ce73757bc1d4de2"
+        },
+        {
+          "id": "bt-thimphu-taba:402",
+          "geometrySha256": "81f307fa3446c0be7d8a733941b8c05dfc25a95bff7fa6200c6b368e3bc494d3"
+        },
+        {
+          "id": "bt-thimphu-taba:404",
+          "geometrySha256": "9c57eec034ce9e65cb8ae3d84c3521c5a0ad2df4e9c08c82a7b8b7b0424d00ee"
+        },
+        {
+          "id": "bt-thimphu-taba:475",
+          "geometrySha256": "8b93df5dce58aebe1705e2639c15257c5d697494d43d761122e7f69ee3bb8044"
+        },
+        {
+          "id": "bt-thimphu-taba:542",
+          "geometrySha256": "b39899cc134160594591ebe690d95122eb41aa4fd77fed30e69db2c1be9e7c9e"
+        },
+        {
+          "id": "bt-thimphu-taba:629",
+          "geometrySha256": "b0451166bc1345381c73bc49f839c2d2da0548754a58013f2482848155608864"
+        },
+        {
+          "id": "bt-thimphu-taba:641",
+          "geometrySha256": "7566e23859bfc95efd591c75788e9e186b967b4fd0cc838033fbb24b85f39c8e"
+        },
+        {
+          "id": "bt-thimphu-taba:652",
+          "geometrySha256": "ee2d1030daf6ced1efb94c71dce6d9b0ba4165108cdde82ed90e370140fa2501"
+        },
+        {
+          "id": "bt-thimphu-taba:653",
+          "geometrySha256": "87b7d3f26cfca609ae6baf8ac92b1013dcd78f5f903548d518f6f89cbbe4f508"
+        },
+        {
+          "id": "bt-thimphu-taba:654",
+          "geometrySha256": "bebaa55dc6dfeb2a7c422645815a528c2ed1864e22ae2beb5b27509a62b414a5"
+        },
+        {
+          "id": "bt-thimphu-taba:670",
+          "geometrySha256": "de2327c46671e56f6aa94f3b0d19c71e3fd3e1f2c12a6c3fe819cf6ef005da5d"
+        },
+        {
+          "id": "bt-thimphu-taba:680",
+          "geometrySha256": "8bd568ac0eec8b8b979c599bf2f2bb5d75e1373a8cf7fd58b3f88679fdbb32a0"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 849,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        89.642,
+        27.513,
+        89.643,
+        27.514
+      ],
+      "complete": true,
+      "count": 22,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:48",
+          "geometrySha256": "c7707d0a33be46010215d1018f925c3b52756bed98cbce870950d5ddab4fb216"
+        },
+        {
+          "id": "bt-thimphu-taba:112",
+          "geometrySha256": "815c2772980d8be6d83aa42a8ae2f8f83f206d1c14a44610cf04f986fd1303f9"
+        },
+        {
+          "id": "bt-thimphu-taba:124",
+          "geometrySha256": "90bd8e1ffea315469bbef409fe67dffde04f09aa46c7e092f38487f4153067ac"
+        },
+        {
+          "id": "bt-thimphu-taba:181",
+          "geometrySha256": "b406aee94e213b83ccb146f5918e51e7a7f2516707db4552be1edf6600330312"
+        },
+        {
+          "id": "bt-thimphu-taba:199",
+          "geometrySha256": "593da794b35bd6fdc853ccad3a8974bff066547c718522a6713034c703f5adb0"
+        },
+        {
+          "id": "bt-thimphu-taba:212",
+          "geometrySha256": "94a2dffff7e78cc16c2e3f8cd4aa4e209970ab05ada64cd76534ceb4071161e3"
+        },
+        {
+          "id": "bt-thimphu-taba:232",
+          "geometrySha256": "ac5a23a6098611802542018f049fe29a07461022fe3f7da2d41ff22f865a8817"
+        },
+        {
+          "id": "bt-thimphu-taba:258",
+          "geometrySha256": "2c9d54bd317f7ebfb3947a35c88f49c38731caa9665f8e75ef2b3002d34d65f1"
+        },
+        {
+          "id": "bt-thimphu-taba:281",
+          "geometrySha256": "e7fe6b7a0a77093f7b9dfc85c908578747e36992afa2e2378bf54a65d5fb9edc"
+        },
+        {
+          "id": "bt-thimphu-taba:320",
+          "geometrySha256": "a8b4f28800423ce158a4597c66c83cbcf58f42322cf4ca5e040d61d472cb03eb"
+        },
+        {
+          "id": "bt-thimphu-taba:467",
+          "geometrySha256": "c95bb4d070e63eaae4d6e852bd8a440f2ab9cc3f9c53f3a11525cc73d0707192"
+        },
+        {
+          "id": "bt-thimphu-taba:468",
+          "geometrySha256": "0a7ef32cda98495932e3a2dace863d81c72b536a60682a46dab8cd9857c3f4de"
+        },
+        {
+          "id": "bt-thimphu-taba:469",
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "id": "bt-thimphu-taba:484",
+          "geometrySha256": "b5ddb71a42f2e021338afef3273d1a2c7f287da1fb2bf7e1a5d2ee5b78215937"
+        },
+        {
+          "id": "bt-thimphu-taba:493",
+          "geometrySha256": "fb7bcbd1d37b22c739098dad622a5f1f04780ee35aab3cb3c9c9b939b4aca674"
+        },
+        {
+          "id": "bt-thimphu-taba:497",
+          "geometrySha256": "98ba9ccb762743b72c0a90133c54a0bfbb3a937ae1d9de495dd9cde32f6f12ff"
+        },
+        {
+          "id": "bt-thimphu-taba:503",
+          "geometrySha256": "6938effccbee73c3c7729516a2704e5167fc76e0d948635533e3302d9ed86084"
+        },
+        {
+          "id": "bt-thimphu-taba:507",
+          "geometrySha256": "c86ec144ddaa318e1e2a973d653851edc876284bf18e3561261f3583795b9d5d"
+        },
+        {
+          "id": "bt-thimphu-taba:511",
+          "geometrySha256": "8b6a46c38b013df58a36830cc90b576ca2886edfb6bf29f467875afca8a8c891"
+        },
+        {
+          "id": "bt-thimphu-taba:512",
+          "geometrySha256": "4e2ca5762686d7635a41eb8bb367b6cb356b3920c78453ecb31211a455d0d91e"
+        },
+        {
+          "id": "bt-thimphu-taba:514",
+          "geometrySha256": "7555d3bb7bb42ee9953a46f34cee51d7d72bd96c16b7ccc5b93144e94e196c8d"
+        },
+        {
+          "id": "bt-thimphu-taba:547",
+          "geometrySha256": "93cb90bf06f31be19aa08fad183c080e10bf4667bcdec98597e4a8340c1c43e5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 848,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        89.642,
+        27.517,
+        89.643,
+        27.518
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:329",
+          "geometrySha256": "c279632abe30ca111a2dc0a6cba027e587c957eb9105ae7826b8841c35a3e240"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 1480,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        89.64,
+        27.515,
+        89.641,
+        27.516
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:350",
+          "geometrySha256": "7a4af4e765c7309346eefd38f7648a1fe997cf1399421181c8e6d251219bad7f"
+        },
+        {
+          "id": "bt-thimphu-taba:428",
+          "geometrySha256": "e93325cb95a1f1f18c65cdf5e7c56a080981be1fa485bedc56e175160b117fc5"
+        },
+        {
+          "id": "bt-thimphu-taba:429",
+          "geometrySha256": "c0bb1c643e2ab7a22260263e234a334fad1bb671f10635e3263d78c5758c74a2"
+        },
+        {
+          "id": "bt-thimphu-taba:430",
+          "geometrySha256": "bb5457af6aa7362069967e681901f991385ba05153d28e31aaafb1a11c9e7450"
+        },
+        {
+          "id": "bt-thimphu-taba:592",
+          "geometrySha256": "5cb1a561be82f684008e969aaeca42f40397bd0fba0125102dd2b78a9ca39729"
+        },
+        {
+          "id": "bt-thimphu-taba:594",
+          "geometrySha256": "8368b82bf06718e03c2c5937386ec8a3b4954640f27a84ec8132590b0965114e"
+        },
+        {
+          "id": "bt-thimphu-taba:595",
+          "geometrySha256": "ee8cc4980fa487ec17a18239480f3830774a9d50afdfb4e1ab9311e741faa1b2"
+        },
+        {
+          "id": "bt-thimphu-taba:596",
+          "geometrySha256": "2df9ffa69ba5fe34386444e2071b94535e278bd5f317a69762858d87cb2ea67e"
+        },
+        {
+          "id": "bt-thimphu-taba:599",
+          "geometrySha256": "e74b2267121c7541f3f9323c13257b0cb5e04e5465fab9b6af93bce8d925df49"
+        },
+        {
+          "id": "bt-thimphu-taba:616",
+          "geometrySha256": "76b7d44c9866dac3a34ad0dab895f3ebbc4da3eaa9b932cf6f53c00ba4ad748e"
+        },
+        {
+          "id": "bt-thimphu-taba:630",
+          "geometrySha256": "6f275a60b63d969b64846a784d6bbf15996d0efb19ce3803a5ba60b948c614a2"
+        },
+        {
+          "id": "bt-thimphu-taba:643",
+          "geometrySha256": "8f797ad486aaaf44f47ee4f13084b21887d3b329767cc96fbeb3a33cf0003a3b"
+        },
+        {
+          "id": "bt-thimphu-taba:648",
+          "geometrySha256": "c39baffbbda87efc88e433ea3eae07b930db1a40900e3db062687cbd7f05a19e"
+        },
+        {
+          "id": "bt-thimphu-taba:677",
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 1315,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        89.644,
+        27.515,
+        89.645,
+        27.516
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "bt-thimphu-taba:172",
+          "geometrySha256": "67432fe04119c99853ed35dcd93fb804dfcadbf1a32266bb3a6d6a6c830420f7"
+        },
+        {
+          "id": "bt-thimphu-taba:186",
+          "geometrySha256": "6d8f61f8b6f6ed3bf2a578587340b051f6833a6c011d1c75a3ad572baa3bf000"
+        },
+        {
+          "id": "bt-thimphu-taba:264",
+          "geometrySha256": "cad9dc2b3ceb9d9ec3328df4fa198a4bd9dd07b605c41777c9480e6723347c4e"
+        },
+        {
+          "id": "bt-thimphu-taba:515",
+          "geometrySha256": "e9fd88834190d25bbae90eaac5fade021e9ad59f9b03e3669f099a1a2a1a57b2"
+        },
+        {
+          "id": "bt-thimphu-taba:516",
+          "geometrySha256": "fe28f2db47f23fb3b521079c70f79a6416caa5bd8b727e2a1421d605c75e69c7"
+        },
+        {
+          "id": "bt-thimphu-taba:563",
+          "geometrySha256": "ca0804b8760ac92cc63520f50eed287672632d56104c7553e984c535038706f9"
+        },
+        {
+          "id": "bt-thimphu-taba:641",
+          "geometrySha256": "7566e23859bfc95efd591c75788e9e186b967b4fd0cc838033fbb24b85f39c8e"
+        },
+        {
+          "id": "bt-thimphu-taba:647",
+          "geometrySha256": "e674ab20dc14e584940459df8dfdd3826436b8f847072e6798c8e53159d43893"
+        },
+        {
+          "id": "bt-thimphu-taba:652",
+          "geometrySha256": "ee2d1030daf6ced1efb94c71dce6d9b0ba4165108cdde82ed90e370140fa2501"
+        },
+        {
+          "id": "bt-thimphu-taba:655",
+          "geometrySha256": "6959326312a23709e3b40d84387cd545a754d4cb82558f78cafecbff66b7bc94"
+        },
+        {
+          "id": "bt-thimphu-taba:656",
+          "geometrySha256": "7f63a0214c4a4994dec096b57c4e15bb5c57bccd6c664d90235b9412d4b61c90"
+        },
+        {
+          "id": "bt-thimphu-taba:657",
+          "geometrySha256": "d8e800ea79e6c339038bacc6d7e2a4340f4c3af6c80ab148a2fd813ea4142316"
+        },
+        {
+          "id": "bt-thimphu-taba:675",
+          "geometrySha256": "df33f958b1a645e0768e6b9611f08170661cfdb7e6719d972fbdd86ed5851aae"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 5328,
+      "requestIndexes": [
+        39,
+        48
+      ],
+      "count": 22,
+      "geometryPages": 8,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 871,
+      "requestIndexes": [
+        49,
+        51
+      ],
+      "count": 40,
+      "ids": [
+        "bt-thimphu-taba:112",
+        "bt-thimphu-taba:120",
+        "bt-thimphu-taba:121",
+        "bt-thimphu-taba:124",
+        "bt-thimphu-taba:138",
+        "bt-thimphu-taba:139",
+        "bt-thimphu-taba:141",
+        "bt-thimphu-taba:145",
+        "bt-thimphu-taba:172",
+        "bt-thimphu-taba:179",
+        "bt-thimphu-taba:181",
+        "bt-thimphu-taba:186",
+        "bt-thimphu-taba:199",
+        "bt-thimphu-taba:206",
+        "bt-thimphu-taba:212",
+        "bt-thimphu-taba:213",
+        "bt-thimphu-taba:232",
+        "bt-thimphu-taba:233",
+        "bt-thimphu-taba:235",
+        "bt-thimphu-taba:236",
+        "bt-thimphu-taba:245",
+        "bt-thimphu-taba:256",
+        "bt-thimphu-taba:258",
+        "bt-thimphu-taba:264",
+        "bt-thimphu-taba:280",
+        "bt-thimphu-taba:281",
+        "bt-thimphu-taba:287",
+        "bt-thimphu-taba:289",
+        "bt-thimphu-taba:320",
+        "bt-thimphu-taba:329",
+        "bt-thimphu-taba:334",
+        "bt-thimphu-taba:345",
+        "bt-thimphu-taba:350",
+        "bt-thimphu-taba:351",
+        "bt-thimphu-taba:361",
+        "bt-thimphu-taba:362",
+        "bt-thimphu-taba:398",
+        "bt-thimphu-taba:400",
+        "bt-thimphu-taba:401",
+        "bt-thimphu-taba:402"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 857,
+      "requestIndexes": [
+        52,
+        54
+      ],
+      "count": 40,
+      "ids": [
+        "bt-thimphu-taba:404",
+        "bt-thimphu-taba:428",
+        "bt-thimphu-taba:429",
+        "bt-thimphu-taba:430",
+        "bt-thimphu-taba:438",
+        "bt-thimphu-taba:440",
+        "bt-thimphu-taba:445",
+        "bt-thimphu-taba:446",
+        "bt-thimphu-taba:466",
+        "bt-thimphu-taba:467",
+        "bt-thimphu-taba:468",
+        "bt-thimphu-taba:469",
+        "bt-thimphu-taba:470",
+        "bt-thimphu-taba:472",
+        "bt-thimphu-taba:475",
+        "bt-thimphu-taba:48",
+        "bt-thimphu-taba:484",
+        "bt-thimphu-taba:493",
+        "bt-thimphu-taba:494",
+        "bt-thimphu-taba:497",
+        "bt-thimphu-taba:498",
+        "bt-thimphu-taba:502",
+        "bt-thimphu-taba:503",
+        "bt-thimphu-taba:504",
+        "bt-thimphu-taba:505",
+        "bt-thimphu-taba:507",
+        "bt-thimphu-taba:511",
+        "bt-thimphu-taba:512",
+        "bt-thimphu-taba:513",
+        "bt-thimphu-taba:514",
+        "bt-thimphu-taba:515",
+        "bt-thimphu-taba:516",
+        "bt-thimphu-taba:517",
+        "bt-thimphu-taba:518",
+        "bt-thimphu-taba:530",
+        "bt-thimphu-taba:534",
+        "bt-thimphu-taba:540",
+        "bt-thimphu-taba:542",
+        "bt-thimphu-taba:546",
+        "bt-thimphu-taba:547"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 874,
+      "requestIndexes": [
+        55,
+        57
+      ],
+      "count": 32,
+      "ids": [
+        "bt-thimphu-taba:563",
+        "bt-thimphu-taba:567",
+        "bt-thimphu-taba:583",
+        "bt-thimphu-taba:588",
+        "bt-thimphu-taba:592",
+        "bt-thimphu-taba:594",
+        "bt-thimphu-taba:595",
+        "bt-thimphu-taba:596",
+        "bt-thimphu-taba:598",
+        "bt-thimphu-taba:599",
+        "bt-thimphu-taba:61",
+        "bt-thimphu-taba:616",
+        "bt-thimphu-taba:629",
+        "bt-thimphu-taba:630",
+        "bt-thimphu-taba:633",
+        "bt-thimphu-taba:641",
+        "bt-thimphu-taba:643",
+        "bt-thimphu-taba:647",
+        "bt-thimphu-taba:648",
+        "bt-thimphu-taba:652",
+        "bt-thimphu-taba:653",
+        "bt-thimphu-taba:654",
+        "bt-thimphu-taba:655",
+        "bt-thimphu-taba:656",
+        "bt-thimphu-taba:657",
+        "bt-thimphu-taba:663",
+        "bt-thimphu-taba:670",
+        "bt-thimphu-taba:674",
+        "bt-thimphu-taba:675",
+        "bt-thimphu-taba:677",
+        "bt-thimphu-taba:680",
+        "bt-thimphu-taba:683"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 594,
+      "requestIndexes": [
+        58,
+        59
+      ],
+      "absentIds": [
+        "bt-thimphu-taba:9876543210"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1971,
+      "requestIndexes": [
+        60,
+        62
+      ],
+      "selectedParcelId": "bt-thimphu-taba:402",
+      "count": 7,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 1411,
+      "requestIndexes": [
+        63,
+        65
+      ],
+      "selectedParcelId": "bt-thimphu-taba:402",
+      "coverage": "complete",
+      "siteM2": 608.3,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.641%2C27.514%2C89.642%2C27.515&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:04.292Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 21
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.641%2C27.514%2C89.642%2C27.515&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:05.243Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 124,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        61,
+        145,
+        179,
+        213,
+        438,
+        440,
+        445,
+        446,
+        466,
+        470,
+        472,
+        498,
+        505,
+        513,
+        517,
+        546,
+        583,
+        588,
+        596,
+        598,
+        677
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=61%2C145%2C179%2C213%2C438%2C440%2C445%2C446%2C466%2C470%2C472%2C498%2C505%2C513%2C517%2C546%2C583%2C588%2C596%2C598%2C677",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:05.526Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 10722,
+      "features": [
+        {
+          "transportId": 61,
+          "properties": {
+            "fid": 61
+          },
+          "geometrySha256": "85cb0d8bda4913380ef509846a675dcc296f679fa780f2cf836dbf666a478d24"
+        },
+        {
+          "transportId": 145,
+          "properties": {
+            "fid": 145
+          },
+          "geometrySha256": "c6b47ea5383cf3ceb517647ea272cb02d7e508eb423f6ddf26ca4a00b20ebada"
+        },
+        {
+          "transportId": 179,
+          "properties": {
+            "fid": 179
+          },
+          "geometrySha256": "243a640051b253d7a06882eeedf247e2049691dbdca988c1c928e20378afcb1d"
+        },
+        {
+          "transportId": 213,
+          "properties": {
+            "fid": 213
+          },
+          "geometrySha256": "8d84bbd580ef0d7343bc4ecada0e99ce811dcfb7b9ffb8906eda34c89a11ee74"
+        },
+        {
+          "transportId": 438,
+          "properties": {
+            "fid": 438
+          },
+          "geometrySha256": "eef595f97c6e4d4b394f1a39cc17b57f85e2dd474a3edb0b1ddd20aa0691c6e7"
+        },
+        {
+          "transportId": 440,
+          "properties": {
+            "fid": 440
+          },
+          "geometrySha256": "f71cf6742947cff16c93d796225c2d4f98c0227a4ed4b7629f5c404aad3d62e5"
+        },
+        {
+          "transportId": 445,
+          "properties": {
+            "fid": 445
+          },
+          "geometrySha256": "ab201833f9687763db0d924b89811a95a4f376df13bb4715ea3ab2ed4d492a25"
+        },
+        {
+          "transportId": 446,
+          "properties": {
+            "fid": 446
+          },
+          "geometrySha256": "33dc16945e2def613e546eda7ca3160a1a07a46dca1ca057072fbc85ab4004bd"
+        },
+        {
+          "transportId": 466,
+          "properties": {
+            "fid": 466
+          },
+          "geometrySha256": "8df995cf7af0a6c43448b29d7c1b48a92d078e62cbc90c870db8c24416cc6a55"
+        },
+        {
+          "transportId": 470,
+          "properties": {
+            "fid": 470
+          },
+          "geometrySha256": "075430e101693815207c69b0cfa448e315286fb125d600bcf46dec1000832ed7"
+        },
+        {
+          "transportId": 472,
+          "properties": {
+            "fid": 472
+          },
+          "geometrySha256": "7707399a55cbeb19fe1a7249595cfb767dc0967cdf750c8fd9cde1e3d6bba324"
+        },
+        {
+          "transportId": 498,
+          "properties": {
+            "fid": 498
+          },
+          "geometrySha256": "15ea82e0c95e841de02d63c1216ed1038eac327f0e07d44d9f88fa9a7bc52a76"
+        },
+        {
+          "transportId": 505,
+          "properties": {
+            "fid": 505
+          },
+          "geometrySha256": "f8d6fc582cc69009f31db3a30ff3c7a53b498b2b2d1958590361626eebfe9c47"
+        },
+        {
+          "transportId": 513,
+          "properties": {
+            "fid": 513
+          },
+          "geometrySha256": "ca97935fdebb5fc3cc90e5f2739a28a3a14295a1f47c1fd6cad685045b17bac5"
+        },
+        {
+          "transportId": 517,
+          "properties": {
+            "fid": 517
+          },
+          "geometrySha256": "6b0661e434ff55822de164fb512f77a691a28fed9d8aab31795087c05b5daab6"
+        },
+        {
+          "transportId": 546,
+          "properties": {
+            "fid": 546
+          },
+          "geometrySha256": "a672307daecde2a2db33dd6cd424ddd60b37bfcf6faf5ab11a9570cff0989c29"
+        },
+        {
+          "transportId": 583,
+          "properties": {
+            "fid": 583
+          },
+          "geometrySha256": "987d7c6e49b6fc6b0fe7f16cb810ed0e047cae2f18393ac2bab81d914aa4ba7e"
+        },
+        {
+          "transportId": 588,
+          "properties": {
+            "fid": 588
+          },
+          "geometrySha256": "b8b1657781c43516dec722f076394130cf0a9f59d660cca6f7576c690a8e200e"
+        },
+        {
+          "transportId": 596,
+          "properties": {
+            "fid": 596
+          },
+          "geometrySha256": "2df9ffa69ba5fe34386444e2071b94535e278bd5f317a69762858d87cb2ea67e"
+        },
+        {
+          "transportId": 598,
+          "properties": {
+            "fid": 598
+          },
+          "geometrySha256": "9006ea89bd4039df90464a4d1ccaf23dcccee46eea1012f71f1b95ed4ffb0d1c"
+        },
+        {
+          "transportId": 677,
+          "properties": {
+            "fid": 677
+          },
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.514%2C89.643%2C27.515&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:05.811Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 19
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.514%2C89.643%2C27.515&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:06.092Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 116,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        61,
+        120,
+        138,
+        139,
+        141,
+        179,
+        206,
+        256,
+        280,
+        281,
+        334,
+        469,
+        502,
+        504,
+        507,
+        513,
+        514,
+        567,
+        583
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=61%2C120%2C138%2C139%2C141%2C179%2C206%2C256%2C280%2C281%2C334%2C469%2C502%2C504%2C507%2C513%2C514%2C567%2C583",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:06.379Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 10028,
+      "features": [
+        {
+          "transportId": 61,
+          "properties": {
+            "fid": 61
+          },
+          "geometrySha256": "85cb0d8bda4913380ef509846a675dcc296f679fa780f2cf836dbf666a478d24"
+        },
+        {
+          "transportId": 120,
+          "properties": {
+            "fid": 120
+          },
+          "geometrySha256": "18e99c2fc0084ce166716043bfb85ccb60c939b55463a9ca1fdecf0c3d54e99b"
+        },
+        {
+          "transportId": 138,
+          "properties": {
+            "fid": 138
+          },
+          "geometrySha256": "bf996cf901aa7d4c35d54697d1b9df6a8e8d0c925ad428bf2392210e37edf3ca"
+        },
+        {
+          "transportId": 139,
+          "properties": {
+            "fid": 139
+          },
+          "geometrySha256": "5cdfb5c2c2ffd496837967d375d9ab088044db05e6cedd9bace894b2bdaa4c3e"
+        },
+        {
+          "transportId": 141,
+          "properties": {
+            "fid": 141
+          },
+          "geometrySha256": "a63037da720c4004a3db925052bd2cdc166b97a7c93cd74621c9739913f970ae"
+        },
+        {
+          "transportId": 179,
+          "properties": {
+            "fid": 179
+          },
+          "geometrySha256": "243a640051b253d7a06882eeedf247e2049691dbdca988c1c928e20378afcb1d"
+        },
+        {
+          "transportId": 206,
+          "properties": {
+            "fid": 206
+          },
+          "geometrySha256": "9e67ef7fa8da50e9d761ea91655f4ab85cea7be670ee41a61baa6704d5c2d987"
+        },
+        {
+          "transportId": 256,
+          "properties": {
+            "fid": 256
+          },
+          "geometrySha256": "279dbfdf0da4e5478c394cd6bcef2ca11a17b3fb00efae51f461af8f0ce95226"
+        },
+        {
+          "transportId": 280,
+          "properties": {
+            "fid": 280
+          },
+          "geometrySha256": "47e484244eca5ae5349c3239c579b86c0ec8ea92ed55206366899552ff99e589"
+        },
+        {
+          "transportId": 281,
+          "properties": {
+            "fid": 281
+          },
+          "geometrySha256": "e7fe6b7a0a77093f7b9dfc85c908578747e36992afa2e2378bf54a65d5fb9edc"
+        },
+        {
+          "transportId": 334,
+          "properties": {
+            "fid": 334
+          },
+          "geometrySha256": "77214f6ada1305a98b690e6ae5f0494f0491ab891f3e86bdaa9cb33d29e7d4c3"
+        },
+        {
+          "transportId": 469,
+          "properties": {
+            "fid": 469
+          },
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "transportId": 502,
+          "properties": {
+            "fid": 502
+          },
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "transportId": 504,
+          "properties": {
+            "fid": 504
+          },
+          "geometrySha256": "126e728e168f40c1b45703f419294a0bba5dddf7ddb17008f09cf5790db57854"
+        },
+        {
+          "transportId": 507,
+          "properties": {
+            "fid": 507
+          },
+          "geometrySha256": "c86ec144ddaa318e1e2a973d653851edc876284bf18e3561261f3583795b9d5d"
+        },
+        {
+          "transportId": 513,
+          "properties": {
+            "fid": 513
+          },
+          "geometrySha256": "ca97935fdebb5fc3cc90e5f2739a28a3a14295a1f47c1fd6cad685045b17bac5"
+        },
+        {
+          "transportId": 514,
+          "properties": {
+            "fid": 514
+          },
+          "geometrySha256": "7555d3bb7bb42ee9953a46f34cee51d7d72bd96c16b7ccc5b93144e94e196c8d"
+        },
+        {
+          "transportId": 567,
+          "properties": {
+            "fid": 567
+          },
+          "geometrySha256": "19ddaaf6232f56a4cce5f14332fe9e240a4ff3595422c0d76b09a14dedd95270"
+        },
+        {
+          "transportId": 583,
+          "properties": {
+            "fid": 583
+          },
+          "geometrySha256": "987d7c6e49b6fc6b0fe7f16cb810ed0e047cae2f18393ac2bab81d914aa4ba7e"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.643%2C27.514%2C89.644%2C27.515&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:06.683Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.643%2C27.514%2C89.644%2C27.515&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:06.978Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 69,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        469,
+        494,
+        502,
+        518,
+        530,
+        534,
+        540
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=469%2C494%2C502%2C518%2C530%2C534%2C540",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:07.270Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5825,
+      "features": [
+        {
+          "transportId": 469,
+          "properties": {
+            "fid": 469
+          },
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "transportId": 494,
+          "properties": {
+            "fid": 494
+          },
+          "geometrySha256": "03e72fe3698e718b80ea7952da3a1cb3e023ba03943fa2e0d67c1ff63e6c09ad"
+        },
+        {
+          "transportId": 502,
+          "properties": {
+            "fid": 502
+          },
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "transportId": 518,
+          "properties": {
+            "fid": 518
+          },
+          "geometrySha256": "5b72ad60ebc82d3f86350fe78e1901bbf486b00db500e61b3b5b53a40614d596"
+        },
+        {
+          "transportId": 530,
+          "properties": {
+            "fid": 530
+          },
+          "geometrySha256": "2544f609dc201a5389592a2a2c47acde904121cd1cee750bcd987d2d1c01e1e7"
+        },
+        {
+          "transportId": 534,
+          "properties": {
+            "fid": 534
+          },
+          "geometrySha256": "d35f7751779c0818de836face1b9d3f84ae728f6013263ecac06c9d9389c4278"
+        },
+        {
+          "transportId": 540,
+          "properties": {
+            "fid": 540
+          },
+          "geometrySha256": "605c89412d8a5c06c1060f751a8833ce11ede32b3dd63727af77ef043f52af6f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.641%2C27.515%2C89.642%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:07.581Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.641%2C27.515%2C89.642%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:07.879Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 73,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        213,
+        287,
+        289,
+        588,
+        596,
+        598,
+        674,
+        677
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=213%2C287%2C289%2C588%2C596%2C598%2C674%2C677",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:08.173Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4137,
+      "features": [
+        {
+          "transportId": 213,
+          "properties": {
+            "fid": 213
+          },
+          "geometrySha256": "8d84bbd580ef0d7343bc4ecada0e99ce811dcfb7b9ffb8906eda34c89a11ee74"
+        },
+        {
+          "transportId": 287,
+          "properties": {
+            "fid": 287
+          },
+          "geometrySha256": "00af49aa5dae094b5e3bf3c87dbddc7ad8f9b4ab5802b08603f7cbf33f4b45bf"
+        },
+        {
+          "transportId": 289,
+          "properties": {
+            "fid": 289
+          },
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "transportId": 588,
+          "properties": {
+            "fid": 588
+          },
+          "geometrySha256": "b8b1657781c43516dec722f076394130cf0a9f59d660cca6f7576c690a8e200e"
+        },
+        {
+          "transportId": 596,
+          "properties": {
+            "fid": 596
+          },
+          "geometrySha256": "2df9ffa69ba5fe34386444e2071b94535e278bd5f317a69762858d87cb2ea67e"
+        },
+        {
+          "transportId": 598,
+          "properties": {
+            "fid": 598
+          },
+          "geometrySha256": "9006ea89bd4039df90464a4d1ccaf23dcccee46eea1012f71f1b95ed4ffb0d1c"
+        },
+        {
+          "transportId": 674,
+          "properties": {
+            "fid": 674
+          },
+          "geometrySha256": "60307dcc4c117eb730c659f85bd409b1e3891c276aaf8dbbec70284511b5320f"
+        },
+        {
+          "transportId": 677,
+          "properties": {
+            "fid": 677
+          },
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.515%2C89.643%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:08.480Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 9
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.515%2C89.643%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:08.780Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 77,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        206,
+        245,
+        287,
+        289,
+        502,
+        567,
+        583,
+        633,
+        677
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=206%2C245%2C287%2C289%2C502%2C567%2C583%2C633%2C677",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:09.081Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6460,
+      "features": [
+        {
+          "transportId": 206,
+          "properties": {
+            "fid": 206
+          },
+          "geometrySha256": "9e67ef7fa8da50e9d761ea91655f4ab85cea7be670ee41a61baa6704d5c2d987"
+        },
+        {
+          "transportId": 245,
+          "properties": {
+            "fid": 245
+          },
+          "geometrySha256": "b094d2f8bcdb09271c3100c16caf0f8a53de621d542bef3653ca1890f2aba710"
+        },
+        {
+          "transportId": 287,
+          "properties": {
+            "fid": 287
+          },
+          "geometrySha256": "00af49aa5dae094b5e3bf3c87dbddc7ad8f9b4ab5802b08603f7cbf33f4b45bf"
+        },
+        {
+          "transportId": 289,
+          "properties": {
+            "fid": 289
+          },
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "transportId": 502,
+          "properties": {
+            "fid": 502
+          },
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "transportId": 567,
+          "properties": {
+            "fid": 567
+          },
+          "geometrySha256": "19ddaaf6232f56a4cce5f14332fe9e240a4ff3595422c0d76b09a14dedd95270"
+        },
+        {
+          "transportId": 583,
+          "properties": {
+            "fid": 583
+          },
+          "geometrySha256": "987d7c6e49b6fc6b0fe7f16cb810ed0e047cae2f18393ac2bab81d914aa4ba7e"
+        },
+        {
+          "transportId": 633,
+          "properties": {
+            "fid": 633
+          },
+          "geometrySha256": "72dd3f62384db25a95f0b3e809250eb9b1856042ca80774bdc345332c499252d"
+        },
+        {
+          "transportId": 677,
+          "properties": {
+            "fid": 677
+          },
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.643%2C27.515%2C89.644%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:09.380Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 13
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.643%2C27.515%2C89.644%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:09.670Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 93,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        206,
+        235,
+        236,
+        245,
+        502,
+        516,
+        540,
+        641,
+        647,
+        663,
+        675,
+        680,
+        683
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=206%2C235%2C236%2C245%2C502%2C516%2C540%2C641%2C647%2C663%2C675%2C680%2C683",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:09.979Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 11031,
+      "features": [
+        {
+          "transportId": 206,
+          "properties": {
+            "fid": 206
+          },
+          "geometrySha256": "9e67ef7fa8da50e9d761ea91655f4ab85cea7be670ee41a61baa6704d5c2d987"
+        },
+        {
+          "transportId": 235,
+          "properties": {
+            "fid": 235
+          },
+          "geometrySha256": "21c3e9a8a0761424f9161b47219ad935ca429558bbefa92745880ee758d0e0da"
+        },
+        {
+          "transportId": 236,
+          "properties": {
+            "fid": 236
+          },
+          "geometrySha256": "3b6f35a31b00fc4a2b5a15abadcfe611b4ea5e56e0fc4bad8853c65e742a7f8c"
+        },
+        {
+          "transportId": 245,
+          "properties": {
+            "fid": 245
+          },
+          "geometrySha256": "b094d2f8bcdb09271c3100c16caf0f8a53de621d542bef3653ca1890f2aba710"
+        },
+        {
+          "transportId": 502,
+          "properties": {
+            "fid": 502
+          },
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "transportId": 516,
+          "properties": {
+            "fid": 516
+          },
+          "geometrySha256": "fe28f2db47f23fb3b521079c70f79a6416caa5bd8b727e2a1421d605c75e69c7"
+        },
+        {
+          "transportId": 540,
+          "properties": {
+            "fid": 540
+          },
+          "geometrySha256": "605c89412d8a5c06c1060f751a8833ce11ede32b3dd63727af77ef043f52af6f"
+        },
+        {
+          "transportId": 641,
+          "properties": {
+            "fid": 641
+          },
+          "geometrySha256": "7566e23859bfc95efd591c75788e9e186b967b4fd0cc838033fbb24b85f39c8e"
+        },
+        {
+          "transportId": 647,
+          "properties": {
+            "fid": 647
+          },
+          "geometrySha256": "e674ab20dc14e584940459df8dfdd3826436b8f847072e6798c8e53159d43893"
+        },
+        {
+          "transportId": 663,
+          "properties": {
+            "fid": 663
+          },
+          "geometrySha256": "9c910086c652f9f802c1808dde30cf8c8f8acf5dba3341d73ee584d90c9c3453"
+        },
+        {
+          "transportId": 675,
+          "properties": {
+            "fid": 675
+          },
+          "geometrySha256": "df33f958b1a645e0768e6b9611f08170661cfdb7e6719d972fbdd86ed5851aae"
+        },
+        {
+          "transportId": 680,
+          "properties": {
+            "fid": 680
+          },
+          "geometrySha256": "8bd568ac0eec8b8b979c599bf2f2bb5d75e1373a8cf7fd58b3f88679fdbb32a0"
+        },
+        {
+          "transportId": 683,
+          "properties": {
+            "fid": 683
+          },
+          "geometrySha256": "9517886f3b3a035ff73a25dfc87d2d4dd62c0307771594c92f768374b089a205"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.641%2C27.516%2C89.642%2C27.517&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:10.856Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.641%2C27.516%2C89.642%2C27.517&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:11.136Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 65,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        287,
+        289,
+        329,
+        648,
+        674,
+        677
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=287%2C289%2C329%2C648%2C674%2C677",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:11.417Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6940,
+      "features": [
+        {
+          "transportId": 287,
+          "properties": {
+            "fid": 287
+          },
+          "geometrySha256": "00af49aa5dae094b5e3bf3c87dbddc7ad8f9b4ab5802b08603f7cbf33f4b45bf"
+        },
+        {
+          "transportId": 289,
+          "properties": {
+            "fid": 289
+          },
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "transportId": 329,
+          "properties": {
+            "fid": 329
+          },
+          "geometrySha256": "c279632abe30ca111a2dc0a6cba027e587c957eb9105ae7826b8841c35a3e240"
+        },
+        {
+          "transportId": 648,
+          "properties": {
+            "fid": 648
+          },
+          "geometrySha256": "c39baffbbda87efc88e433ea3eae07b930db1a40900e3db062687cbd7f05a19e"
+        },
+        {
+          "transportId": 674,
+          "properties": {
+            "fid": 674
+          },
+          "geometrySha256": "60307dcc4c117eb730c659f85bd409b1e3891c276aaf8dbbec70284511b5320f"
+        },
+        {
+          "transportId": 677,
+          "properties": {
+            "fid": 677
+          },
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.516%2C89.643%2C27.517&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:11.701Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.516%2C89.643%2C27.517&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:11.991Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 65,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        289,
+        329,
+        345,
+        398,
+        402,
+        404
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=289%2C329%2C345%2C398%2C402%2C404",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:12.294Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6983,
+      "features": [
+        {
+          "transportId": 289,
+          "properties": {
+            "fid": 289
+          },
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "transportId": 329,
+          "properties": {
+            "fid": 329
+          },
+          "geometrySha256": "c279632abe30ca111a2dc0a6cba027e587c957eb9105ae7826b8841c35a3e240"
+        },
+        {
+          "transportId": 345,
+          "properties": {
+            "fid": 345
+          },
+          "geometrySha256": "4f58dda95564d700d78794bf7630bd355d15c9b45e3ef2b160937bf371a06834"
+        },
+        {
+          "transportId": 398,
+          "properties": {
+            "fid": 398
+          },
+          "geometrySha256": "af0d9e76ae27e415b62a6b83ea64b4f495c3aa6ff1c7a6394fa657c6adfdca26"
+        },
+        {
+          "transportId": 402,
+          "properties": {
+            "fid": 402
+          },
+          "geometrySha256": "81f307fa3446c0be7d8a733941b8c05dfc25a95bff7fa6200c6b368e3bc494d3"
+        },
+        {
+          "transportId": 404,
+          "properties": {
+            "fid": 404
+          },
+          "geometrySha256": "9c57eec034ce9e65cb8ae3d84c3521c5a0ad2df4e9c08c82a7b8b7b0424d00ee"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.643%2C27.516%2C89.644%2C27.517&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:12.582Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 19
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.643%2C27.516%2C89.644%2C27.517&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:12.868Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 117,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        121,
+        233,
+        345,
+        351,
+        361,
+        362,
+        400,
+        401,
+        402,
+        404,
+        475,
+        542,
+        629,
+        641,
+        652,
+        653,
+        654,
+        670,
+        680
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=121%2C233%2C345%2C351%2C361%2C362%2C400%2C401%2C402%2C404%2C475%2C542%2C629%2C641%2C652%2C653%2C654%2C670%2C680",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:13.148Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 10715,
+      "features": [
+        {
+          "transportId": 121,
+          "properties": {
+            "fid": 121
+          },
+          "geometrySha256": "d05373936ac8febe601daa9245e0ce5a82167d4a1b40401680084eae0d352127"
+        },
+        {
+          "transportId": 233,
+          "properties": {
+            "fid": 233
+          },
+          "geometrySha256": "1ec2d56da5864bb7936346bc72b542786b300c2520bc992b9cec517d18cf2b60"
+        },
+        {
+          "transportId": 345,
+          "properties": {
+            "fid": 345
+          },
+          "geometrySha256": "4f58dda95564d700d78794bf7630bd355d15c9b45e3ef2b160937bf371a06834"
+        },
+        {
+          "transportId": 351,
+          "properties": {
+            "fid": 351
+          },
+          "geometrySha256": "0b8b157133161ef37bd1f8d4e3175b70cce26db08afd34c29361241686720f56"
+        },
+        {
+          "transportId": 361,
+          "properties": {
+            "fid": 361
+          },
+          "geometrySha256": "b12eb793073a04c45143e8db14075a0b724f0dde70eac5ab4ad81324416595fc"
+        },
+        {
+          "transportId": 362,
+          "properties": {
+            "fid": 362
+          },
+          "geometrySha256": "165c86bae87e836abf978a86164d78634490f8a95cf267282b1679c31d824994"
+        },
+        {
+          "transportId": 400,
+          "properties": {
+            "fid": 400
+          },
+          "geometrySha256": "016c8ee7b8f8a43d754e1ca0ad4ec2dd186ec5fba286dc1aa834aeb0146e97e1"
+        },
+        {
+          "transportId": 401,
+          "properties": {
+            "fid": 401
+          },
+          "geometrySha256": "a0a4cf42a7055f89fa97a47dbae3a18cc34918f5e7951be07ce73757bc1d4de2"
+        },
+        {
+          "transportId": 402,
+          "properties": {
+            "fid": 402
+          },
+          "geometrySha256": "81f307fa3446c0be7d8a733941b8c05dfc25a95bff7fa6200c6b368e3bc494d3"
+        },
+        {
+          "transportId": 404,
+          "properties": {
+            "fid": 404
+          },
+          "geometrySha256": "9c57eec034ce9e65cb8ae3d84c3521c5a0ad2df4e9c08c82a7b8b7b0424d00ee"
+        },
+        {
+          "transportId": 475,
+          "properties": {
+            "fid": 475
+          },
+          "geometrySha256": "8b93df5dce58aebe1705e2639c15257c5d697494d43d761122e7f69ee3bb8044"
+        },
+        {
+          "transportId": 542,
+          "properties": {
+            "fid": 542
+          },
+          "geometrySha256": "b39899cc134160594591ebe690d95122eb41aa4fd77fed30e69db2c1be9e7c9e"
+        },
+        {
+          "transportId": 629,
+          "properties": {
+            "fid": 629
+          },
+          "geometrySha256": "b0451166bc1345381c73bc49f839c2d2da0548754a58013f2482848155608864"
+        },
+        {
+          "transportId": 641,
+          "properties": {
+            "fid": 641
+          },
+          "geometrySha256": "7566e23859bfc95efd591c75788e9e186b967b4fd0cc838033fbb24b85f39c8e"
+        },
+        {
+          "transportId": 652,
+          "properties": {
+            "fid": 652
+          },
+          "geometrySha256": "ee2d1030daf6ced1efb94c71dce6d9b0ba4165108cdde82ed90e370140fa2501"
+        },
+        {
+          "transportId": 653,
+          "properties": {
+            "fid": 653
+          },
+          "geometrySha256": "87b7d3f26cfca609ae6baf8ac92b1013dcd78f5f903548d518f6f89cbbe4f508"
+        },
+        {
+          "transportId": 654,
+          "properties": {
+            "fid": 654
+          },
+          "geometrySha256": "bebaa55dc6dfeb2a7c422645815a528c2ed1864e22ae2beb5b27509a62b414a5"
+        },
+        {
+          "transportId": 670,
+          "properties": {
+            "fid": 670
+          },
+          "geometrySha256": "de2327c46671e56f6aa94f3b0d19c71e3fd3e1f2c12a6c3fe819cf6ef005da5d"
+        },
+        {
+          "transportId": 680,
+          "properties": {
+            "fid": 680
+          },
+          "geometrySha256": "8bd568ac0eec8b8b979c599bf2f2bb5d75e1373a8cf7fd58b3f88679fdbb32a0"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.513%2C89.643%2C27.514&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:13.431Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 22
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.513%2C89.643%2C27.514&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:13.711Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 128,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        467,
+        469,
+        512,
+        48,
+        112,
+        124,
+        181,
+        199,
+        212,
+        232,
+        258,
+        281,
+        320,
+        468,
+        484,
+        493,
+        497,
+        503,
+        507,
+        511,
+        514,
+        547
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=467%2C469%2C512%2C48%2C112%2C124%2C181%2C199%2C212%2C232%2C258%2C281%2C320%2C468%2C484%2C493%2C497%2C503%2C507%2C511%2C514%2C547",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:13.996Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 10633,
+      "features": [
+        {
+          "transportId": 48,
+          "properties": {
+            "fid": 48
+          },
+          "geometrySha256": "c7707d0a33be46010215d1018f925c3b52756bed98cbce870950d5ddab4fb216"
+        },
+        {
+          "transportId": 112,
+          "properties": {
+            "fid": 112
+          },
+          "geometrySha256": "815c2772980d8be6d83aa42a8ae2f8f83f206d1c14a44610cf04f986fd1303f9"
+        },
+        {
+          "transportId": 124,
+          "properties": {
+            "fid": 124
+          },
+          "geometrySha256": "90bd8e1ffea315469bbef409fe67dffde04f09aa46c7e092f38487f4153067ac"
+        },
+        {
+          "transportId": 181,
+          "properties": {
+            "fid": 181
+          },
+          "geometrySha256": "b406aee94e213b83ccb146f5918e51e7a7f2516707db4552be1edf6600330312"
+        },
+        {
+          "transportId": 199,
+          "properties": {
+            "fid": 199
+          },
+          "geometrySha256": "593da794b35bd6fdc853ccad3a8974bff066547c718522a6713034c703f5adb0"
+        },
+        {
+          "transportId": 212,
+          "properties": {
+            "fid": 212
+          },
+          "geometrySha256": "94a2dffff7e78cc16c2e3f8cd4aa4e209970ab05ada64cd76534ceb4071161e3"
+        },
+        {
+          "transportId": 232,
+          "properties": {
+            "fid": 232
+          },
+          "geometrySha256": "ac5a23a6098611802542018f049fe29a07461022fe3f7da2d41ff22f865a8817"
+        },
+        {
+          "transportId": 258,
+          "properties": {
+            "fid": 258
+          },
+          "geometrySha256": "2c9d54bd317f7ebfb3947a35c88f49c38731caa9665f8e75ef2b3002d34d65f1"
+        },
+        {
+          "transportId": 281,
+          "properties": {
+            "fid": 281
+          },
+          "geometrySha256": "e7fe6b7a0a77093f7b9dfc85c908578747e36992afa2e2378bf54a65d5fb9edc"
+        },
+        {
+          "transportId": 320,
+          "properties": {
+            "fid": 320
+          },
+          "geometrySha256": "a8b4f28800423ce158a4597c66c83cbcf58f42322cf4ca5e040d61d472cb03eb"
+        },
+        {
+          "transportId": 467,
+          "properties": {
+            "fid": 467
+          },
+          "geometrySha256": "c95bb4d070e63eaae4d6e852bd8a440f2ab9cc3f9c53f3a11525cc73d0707192"
+        },
+        {
+          "transportId": 468,
+          "properties": {
+            "fid": 468
+          },
+          "geometrySha256": "0a7ef32cda98495932e3a2dace863d81c72b536a60682a46dab8cd9857c3f4de"
+        },
+        {
+          "transportId": 469,
+          "properties": {
+            "fid": 469
+          },
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "transportId": 484,
+          "properties": {
+            "fid": 484
+          },
+          "geometrySha256": "b5ddb71a42f2e021338afef3273d1a2c7f287da1fb2bf7e1a5d2ee5b78215937"
+        },
+        {
+          "transportId": 493,
+          "properties": {
+            "fid": 493
+          },
+          "geometrySha256": "fb7bcbd1d37b22c739098dad622a5f1f04780ee35aab3cb3c9c9b939b4aca674"
+        },
+        {
+          "transportId": 497,
+          "properties": {
+            "fid": 497
+          },
+          "geometrySha256": "98ba9ccb762743b72c0a90133c54a0bfbb3a937ae1d9de495dd9cde32f6f12ff"
+        },
+        {
+          "transportId": 503,
+          "properties": {
+            "fid": 503
+          },
+          "geometrySha256": "6938effccbee73c3c7729516a2704e5167fc76e0d948635533e3302d9ed86084"
+        },
+        {
+          "transportId": 507,
+          "properties": {
+            "fid": 507
+          },
+          "geometrySha256": "c86ec144ddaa318e1e2a973d653851edc876284bf18e3561261f3583795b9d5d"
+        },
+        {
+          "transportId": 511,
+          "properties": {
+            "fid": 511
+          },
+          "geometrySha256": "8b6a46c38b013df58a36830cc90b576ca2886edfb6bf29f467875afca8a8c891"
+        },
+        {
+          "transportId": 512,
+          "properties": {
+            "fid": 512
+          },
+          "geometrySha256": "4e2ca5762686d7635a41eb8bb367b6cb356b3920c78453ecb31211a455d0d91e"
+        },
+        {
+          "transportId": 514,
+          "properties": {
+            "fid": 514
+          },
+          "geometrySha256": "7555d3bb7bb42ee9953a46f34cee51d7d72bd96c16b7ccc5b93144e94e196c8d"
+        },
+        {
+          "transportId": 547,
+          "properties": {
+            "fid": 547
+          },
+          "geometrySha256": "93cb90bf06f31be19aa08fad183c080e10bf4667bcdec98597e4a8340c1c43e5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.517%2C89.643%2C27.518&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:14.281Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.517%2C89.643%2C27.518&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:14.562Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 45,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        329
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=329",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:14.845Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3884,
+      "features": [
+        {
+          "transportId": 329,
+          "properties": {
+            "fid": 329
+          },
+          "geometrySha256": "c279632abe30ca111a2dc0a6cba027e587c957eb9105ae7826b8841c35a3e240"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.64%2C27.515%2C89.641%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:15.131Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 14
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.64%2C27.515%2C89.641%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:15.412Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 97,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        594,
+        596,
+        599,
+        630,
+        643,
+        648,
+        677,
+        350,
+        428,
+        429,
+        430,
+        592,
+        595,
+        616
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=594%2C596%2C599%2C630%2C643%2C648%2C677%2C350%2C428%2C429%2C430%2C592%2C595%2C616",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:15.700Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7608,
+      "features": [
+        {
+          "transportId": 350,
+          "properties": {
+            "fid": 350
+          },
+          "geometrySha256": "7a4af4e765c7309346eefd38f7648a1fe997cf1399421181c8e6d251219bad7f"
+        },
+        {
+          "transportId": 428,
+          "properties": {
+            "fid": 428
+          },
+          "geometrySha256": "e93325cb95a1f1f18c65cdf5e7c56a080981be1fa485bedc56e175160b117fc5"
+        },
+        {
+          "transportId": 429,
+          "properties": {
+            "fid": 429
+          },
+          "geometrySha256": "c0bb1c643e2ab7a22260263e234a334fad1bb671f10635e3263d78c5758c74a2"
+        },
+        {
+          "transportId": 430,
+          "properties": {
+            "fid": 430
+          },
+          "geometrySha256": "bb5457af6aa7362069967e681901f991385ba05153d28e31aaafb1a11c9e7450"
+        },
+        {
+          "transportId": 592,
+          "properties": {
+            "fid": 592
+          },
+          "geometrySha256": "5cb1a561be82f684008e969aaeca42f40397bd0fba0125102dd2b78a9ca39729"
+        },
+        {
+          "transportId": 594,
+          "properties": {
+            "fid": 594
+          },
+          "geometrySha256": "8368b82bf06718e03c2c5937386ec8a3b4954640f27a84ec8132590b0965114e"
+        },
+        {
+          "transportId": 595,
+          "properties": {
+            "fid": 595
+          },
+          "geometrySha256": "ee8cc4980fa487ec17a18239480f3830774a9d50afdfb4e1ab9311e741faa1b2"
+        },
+        {
+          "transportId": 596,
+          "properties": {
+            "fid": 596
+          },
+          "geometrySha256": "2df9ffa69ba5fe34386444e2071b94535e278bd5f317a69762858d87cb2ea67e"
+        },
+        {
+          "transportId": 599,
+          "properties": {
+            "fid": 599
+          },
+          "geometrySha256": "e74b2267121c7541f3f9323c13257b0cb5e04e5465fab9b6af93bce8d925df49"
+        },
+        {
+          "transportId": 616,
+          "properties": {
+            "fid": 616
+          },
+          "geometrySha256": "76b7d44c9866dac3a34ad0dab895f3ebbc4da3eaa9b932cf6f53c00ba4ad748e"
+        },
+        {
+          "transportId": 630,
+          "properties": {
+            "fid": 630
+          },
+          "geometrySha256": "6f275a60b63d969b64846a784d6bbf15996d0efb19ce3803a5ba60b948c614a2"
+        },
+        {
+          "transportId": 643,
+          "properties": {
+            "fid": 643
+          },
+          "geometrySha256": "8f797ad486aaaf44f47ee4f13084b21887d3b329767cc96fbeb3a33cf0003a3b"
+        },
+        {
+          "transportId": 648,
+          "properties": {
+            "fid": 648
+          },
+          "geometrySha256": "c39baffbbda87efc88e433ea3eae07b930db1a40900e3db062687cbd7f05a19e"
+        },
+        {
+          "transportId": 677,
+          "properties": {
+            "fid": 677
+          },
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.644%2C27.515%2C89.645%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:16.632Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 13
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.644%2C27.515%2C89.645%2C27.516&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:16.927Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 93,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        172,
+        186,
+        264,
+        515,
+        516,
+        563,
+        641,
+        647,
+        652,
+        657,
+        655,
+        656,
+        675
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=172%2C186%2C264%2C515%2C516%2C563%2C641%2C647%2C652%2C657%2C655%2C656%2C675",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:17.227Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 9455,
+      "features": [
+        {
+          "transportId": 172,
+          "properties": {
+            "fid": 172
+          },
+          "geometrySha256": "67432fe04119c99853ed35dcd93fb804dfcadbf1a32266bb3a6d6a6c830420f7"
+        },
+        {
+          "transportId": 186,
+          "properties": {
+            "fid": 186
+          },
+          "geometrySha256": "6d8f61f8b6f6ed3bf2a578587340b051f6833a6c011d1c75a3ad572baa3bf000"
+        },
+        {
+          "transportId": 264,
+          "properties": {
+            "fid": 264
+          },
+          "geometrySha256": "cad9dc2b3ceb9d9ec3328df4fa198a4bd9dd07b605c41777c9480e6723347c4e"
+        },
+        {
+          "transportId": 515,
+          "properties": {
+            "fid": 515
+          },
+          "geometrySha256": "e9fd88834190d25bbae90eaac5fade021e9ad59f9b03e3669f099a1a2a1a57b2"
+        },
+        {
+          "transportId": 516,
+          "properties": {
+            "fid": 516
+          },
+          "geometrySha256": "fe28f2db47f23fb3b521079c70f79a6416caa5bd8b727e2a1421d605c75e69c7"
+        },
+        {
+          "transportId": 563,
+          "properties": {
+            "fid": 563
+          },
+          "geometrySha256": "ca0804b8760ac92cc63520f50eed287672632d56104c7553e984c535038706f9"
+        },
+        {
+          "transportId": 641,
+          "properties": {
+            "fid": 641
+          },
+          "geometrySha256": "7566e23859bfc95efd591c75788e9e186b967b4fd0cc838033fbb24b85f39c8e"
+        },
+        {
+          "transportId": 647,
+          "properties": {
+            "fid": 647
+          },
+          "geometrySha256": "e674ab20dc14e584940459df8dfdd3826436b8f847072e6798c8e53159d43893"
+        },
+        {
+          "transportId": 652,
+          "properties": {
+            "fid": 652
+          },
+          "geometrySha256": "ee2d1030daf6ced1efb94c71dce6d9b0ba4165108cdde82ed90e370140fa2501"
+        },
+        {
+          "transportId": 655,
+          "properties": {
+            "fid": 655
+          },
+          "geometrySha256": "6959326312a23709e3b40d84387cd545a754d4cb82558f78cafecbff66b7bc94"
+        },
+        {
+          "transportId": 656,
+          "properties": {
+            "fid": 656
+          },
+          "geometrySha256": "7f63a0214c4a4994dec096b57c4e15bb5c57bccd6c664d90235b9412d4b61c90"
+        },
+        {
+          "transportId": 657,
+          "properties": {
+            "fid": 657
+          },
+          "geometrySha256": "d8e800ea79e6c339038bacc6d7e2a4340f4c3af6c80ab148a2fd813ea4142316"
+        },
+        {
+          "transportId": 675,
+          "properties": {
+            "fid": 675
+          },
+          "geometrySha256": "df33f958b1a645e0768e6b9611f08170661cfdb7e6719d972fbdd86ed5851aae"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.513%2C89.643%2C27.514&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:17.959Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 22
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.642%2C27.513%2C89.643%2C27.514&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:18.577Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 128,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        467,
+        469,
+        512,
+        48,
+        112,
+        124,
+        181,
+        199,
+        212,
+        232,
+        258,
+        281,
+        320,
+        468,
+        484,
+        493,
+        497,
+        503,
+        507,
+        511,
+        514,
+        547
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=467%2C469%2C512",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:18.865Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2078,
+      "features": [
+        {
+          "transportId": 467,
+          "properties": {
+            "fid": 467
+          },
+          "geometrySha256": "c95bb4d070e63eaae4d6e852bd8a440f2ab9cc3f9c53f3a11525cc73d0707192"
+        },
+        {
+          "transportId": 469,
+          "properties": {
+            "fid": 469
+          },
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "transportId": 512,
+          "properties": {
+            "fid": 512
+          },
+          "geometrySha256": "4e2ca5762686d7635a41eb8bb367b6cb356b3920c78453ecb31211a455d0d91e"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=48%2C112%2C124",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:19.455Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1104,
+      "features": [
+        {
+          "transportId": 48,
+          "properties": {
+            "fid": 48
+          },
+          "geometrySha256": "c7707d0a33be46010215d1018f925c3b52756bed98cbce870950d5ddab4fb216"
+        },
+        {
+          "transportId": 112,
+          "properties": {
+            "fid": 112
+          },
+          "geometrySha256": "815c2772980d8be6d83aa42a8ae2f8f83f206d1c14a44610cf04f986fd1303f9"
+        },
+        {
+          "transportId": 124,
+          "properties": {
+            "fid": 124
+          },
+          "geometrySha256": "90bd8e1ffea315469bbef409fe67dffde04f09aa46c7e092f38487f4153067ac"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=181%2C199%2C212",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:19.735Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1532,
+      "features": [
+        {
+          "transportId": 181,
+          "properties": {
+            "fid": 181
+          },
+          "geometrySha256": "b406aee94e213b83ccb146f5918e51e7a7f2516707db4552be1edf6600330312"
+        },
+        {
+          "transportId": 199,
+          "properties": {
+            "fid": 199
+          },
+          "geometrySha256": "593da794b35bd6fdc853ccad3a8974bff066547c718522a6713034c703f5adb0"
+        },
+        {
+          "transportId": 212,
+          "properties": {
+            "fid": 212
+          },
+          "geometrySha256": "94a2dffff7e78cc16c2e3f8cd4aa4e209970ab05ada64cd76534ceb4071161e3"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=232%2C258%2C281",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:20.332Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1342,
+      "features": [
+        {
+          "transportId": 232,
+          "properties": {
+            "fid": 232
+          },
+          "geometrySha256": "ac5a23a6098611802542018f049fe29a07461022fe3f7da2d41ff22f865a8817"
+        },
+        {
+          "transportId": 258,
+          "properties": {
+            "fid": 258
+          },
+          "geometrySha256": "2c9d54bd317f7ebfb3947a35c88f49c38731caa9665f8e75ef2b3002d34d65f1"
+        },
+        {
+          "transportId": 281,
+          "properties": {
+            "fid": 281
+          },
+          "geometrySha256": "e7fe6b7a0a77093f7b9dfc85c908578747e36992afa2e2378bf54a65d5fb9edc"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=320%2C468%2C484",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:21.213Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1685,
+      "features": [
+        {
+          "transportId": 320,
+          "properties": {
+            "fid": 320
+          },
+          "geometrySha256": "a8b4f28800423ce158a4597c66c83cbcf58f42322cf4ca5e040d61d472cb03eb"
+        },
+        {
+          "transportId": 468,
+          "properties": {
+            "fid": 468
+          },
+          "geometrySha256": "0a7ef32cda98495932e3a2dace863d81c72b536a60682a46dab8cd9857c3f4de"
+        },
+        {
+          "transportId": 484,
+          "properties": {
+            "fid": 484
+          },
+          "geometrySha256": "b5ddb71a42f2e021338afef3273d1a2c7f287da1fb2bf7e1a5d2ee5b78215937"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=493%2C497%2C503",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:21.494Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1376,
+      "features": [
+        {
+          "transportId": 493,
+          "properties": {
+            "fid": 493
+          },
+          "geometrySha256": "fb7bcbd1d37b22c739098dad622a5f1f04780ee35aab3cb3c9c9b939b4aca674"
+        },
+        {
+          "transportId": 497,
+          "properties": {
+            "fid": 497
+          },
+          "geometrySha256": "98ba9ccb762743b72c0a90133c54a0bfbb3a937ae1d9de495dd9cde32f6f12ff"
+        },
+        {
+          "transportId": 503,
+          "properties": {
+            "fid": 503
+          },
+          "geometrySha256": "6938effccbee73c3c7729516a2704e5167fc76e0d948635533e3302d9ed86084"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=507%2C511%2C514",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:22.715Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1539,
+      "features": [
+        {
+          "transportId": 507,
+          "properties": {
+            "fid": 507
+          },
+          "geometrySha256": "c86ec144ddaa318e1e2a973d653851edc876284bf18e3561261f3583795b9d5d"
+        },
+        {
+          "transportId": 511,
+          "properties": {
+            "fid": 511
+          },
+          "geometrySha256": "8b6a46c38b013df58a36830cc90b576ca2886edfb6bf29f467875afca8a8c891"
+        },
+        {
+          "transportId": 514,
+          "properties": {
+            "fid": 514
+          },
+          "geometrySha256": "7555d3bb7bb42ee9953a46f34cee51d7d72bd96c16b7ccc5b93144e94e196c8d"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=547",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:22.996Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 579,
+      "features": [
+        {
+          "transportId": 547,
+          "properties": {
+            "fid": 547
+          },
+          "geometrySha256": "93cb90bf06f31be19aa08fad183c080e10bf4667bcdec98597e4a8340c1c43e5"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%28112%2C120%2C121%2C124%2C138%2C139%2C141%2C145%2C172%2C179%2C181%2C186%2C199%2C206%2C212%2C213%2C232%2C233%2C235%2C236%2C245%2C256%2C258%2C264%2C280%2C281%2C287%2C289%2C320%2C329%2C334%2C345%2C350%2C351%2C361%2C362%2C398%2C400%2C401%2C402%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:23.279Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%28112%2C120%2C121%2C124%2C138%2C139%2C141%2C145%2C172%2C179%2C181%2C186%2C199%2C206%2C212%2C213%2C232%2C233%2C235%2C236%2C245%2C256%2C258%2C264%2C280%2C281%2C287%2C289%2C320%2C329%2C334%2C345%2C350%2C351%2C361%2C362%2C398%2C400%2C401%2C402%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:23.563Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 201,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        112,
+        120,
+        121,
+        124,
+        138,
+        139,
+        141,
+        145,
+        172,
+        179,
+        181,
+        186,
+        199,
+        206,
+        212,
+        213,
+        232,
+        233,
+        235,
+        236,
+        245,
+        256,
+        258,
+        264,
+        280,
+        281,
+        287,
+        289,
+        320,
+        329,
+        334,
+        345,
+        350,
+        351,
+        361,
+        362,
+        398,
+        400,
+        401,
+        402
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=112%2C120%2C121%2C124%2C138%2C139%2C141%2C145%2C172%2C179%2C181%2C186%2C199%2C206%2C212%2C213%2C232%2C233%2C235%2C236%2C245%2C256%2C258%2C264%2C280%2C281%2C287%2C289%2C320%2C329%2C334%2C345%2C350%2C351%2C361%2C362%2C398%2C400%2C401%2C402",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:23.849Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 22328,
+      "features": [
+        {
+          "transportId": 112,
+          "properties": {
+            "fid": 112
+          },
+          "geometrySha256": "815c2772980d8be6d83aa42a8ae2f8f83f206d1c14a44610cf04f986fd1303f9"
+        },
+        {
+          "transportId": 120,
+          "properties": {
+            "fid": 120
+          },
+          "geometrySha256": "18e99c2fc0084ce166716043bfb85ccb60c939b55463a9ca1fdecf0c3d54e99b"
+        },
+        {
+          "transportId": 121,
+          "properties": {
+            "fid": 121
+          },
+          "geometrySha256": "d05373936ac8febe601daa9245e0ce5a82167d4a1b40401680084eae0d352127"
+        },
+        {
+          "transportId": 124,
+          "properties": {
+            "fid": 124
+          },
+          "geometrySha256": "90bd8e1ffea315469bbef409fe67dffde04f09aa46c7e092f38487f4153067ac"
+        },
+        {
+          "transportId": 138,
+          "properties": {
+            "fid": 138
+          },
+          "geometrySha256": "bf996cf901aa7d4c35d54697d1b9df6a8e8d0c925ad428bf2392210e37edf3ca"
+        },
+        {
+          "transportId": 139,
+          "properties": {
+            "fid": 139
+          },
+          "geometrySha256": "5cdfb5c2c2ffd496837967d375d9ab088044db05e6cedd9bace894b2bdaa4c3e"
+        },
+        {
+          "transportId": 141,
+          "properties": {
+            "fid": 141
+          },
+          "geometrySha256": "a63037da720c4004a3db925052bd2cdc166b97a7c93cd74621c9739913f970ae"
+        },
+        {
+          "transportId": 145,
+          "properties": {
+            "fid": 145
+          },
+          "geometrySha256": "c6b47ea5383cf3ceb517647ea272cb02d7e508eb423f6ddf26ca4a00b20ebada"
+        },
+        {
+          "transportId": 172,
+          "properties": {
+            "fid": 172
+          },
+          "geometrySha256": "67432fe04119c99853ed35dcd93fb804dfcadbf1a32266bb3a6d6a6c830420f7"
+        },
+        {
+          "transportId": 179,
+          "properties": {
+            "fid": 179
+          },
+          "geometrySha256": "243a640051b253d7a06882eeedf247e2049691dbdca988c1c928e20378afcb1d"
+        },
+        {
+          "transportId": 181,
+          "properties": {
+            "fid": 181
+          },
+          "geometrySha256": "b406aee94e213b83ccb146f5918e51e7a7f2516707db4552be1edf6600330312"
+        },
+        {
+          "transportId": 186,
+          "properties": {
+            "fid": 186
+          },
+          "geometrySha256": "6d8f61f8b6f6ed3bf2a578587340b051f6833a6c011d1c75a3ad572baa3bf000"
+        },
+        {
+          "transportId": 199,
+          "properties": {
+            "fid": 199
+          },
+          "geometrySha256": "593da794b35bd6fdc853ccad3a8974bff066547c718522a6713034c703f5adb0"
+        },
+        {
+          "transportId": 206,
+          "properties": {
+            "fid": 206
+          },
+          "geometrySha256": "9e67ef7fa8da50e9d761ea91655f4ab85cea7be670ee41a61baa6704d5c2d987"
+        },
+        {
+          "transportId": 212,
+          "properties": {
+            "fid": 212
+          },
+          "geometrySha256": "94a2dffff7e78cc16c2e3f8cd4aa4e209970ab05ada64cd76534ceb4071161e3"
+        },
+        {
+          "transportId": 213,
+          "properties": {
+            "fid": 213
+          },
+          "geometrySha256": "8d84bbd580ef0d7343bc4ecada0e99ce811dcfb7b9ffb8906eda34c89a11ee74"
+        },
+        {
+          "transportId": 232,
+          "properties": {
+            "fid": 232
+          },
+          "geometrySha256": "ac5a23a6098611802542018f049fe29a07461022fe3f7da2d41ff22f865a8817"
+        },
+        {
+          "transportId": 233,
+          "properties": {
+            "fid": 233
+          },
+          "geometrySha256": "1ec2d56da5864bb7936346bc72b542786b300c2520bc992b9cec517d18cf2b60"
+        },
+        {
+          "transportId": 235,
+          "properties": {
+            "fid": 235
+          },
+          "geometrySha256": "21c3e9a8a0761424f9161b47219ad935ca429558bbefa92745880ee758d0e0da"
+        },
+        {
+          "transportId": 236,
+          "properties": {
+            "fid": 236
+          },
+          "geometrySha256": "3b6f35a31b00fc4a2b5a15abadcfe611b4ea5e56e0fc4bad8853c65e742a7f8c"
+        },
+        {
+          "transportId": 245,
+          "properties": {
+            "fid": 245
+          },
+          "geometrySha256": "b094d2f8bcdb09271c3100c16caf0f8a53de621d542bef3653ca1890f2aba710"
+        },
+        {
+          "transportId": 256,
+          "properties": {
+            "fid": 256
+          },
+          "geometrySha256": "279dbfdf0da4e5478c394cd6bcef2ca11a17b3fb00efae51f461af8f0ce95226"
+        },
+        {
+          "transportId": 258,
+          "properties": {
+            "fid": 258
+          },
+          "geometrySha256": "2c9d54bd317f7ebfb3947a35c88f49c38731caa9665f8e75ef2b3002d34d65f1"
+        },
+        {
+          "transportId": 264,
+          "properties": {
+            "fid": 264
+          },
+          "geometrySha256": "cad9dc2b3ceb9d9ec3328df4fa198a4bd9dd07b605c41777c9480e6723347c4e"
+        },
+        {
+          "transportId": 280,
+          "properties": {
+            "fid": 280
+          },
+          "geometrySha256": "47e484244eca5ae5349c3239c579b86c0ec8ea92ed55206366899552ff99e589"
+        },
+        {
+          "transportId": 281,
+          "properties": {
+            "fid": 281
+          },
+          "geometrySha256": "e7fe6b7a0a77093f7b9dfc85c908578747e36992afa2e2378bf54a65d5fb9edc"
+        },
+        {
+          "transportId": 287,
+          "properties": {
+            "fid": 287
+          },
+          "geometrySha256": "00af49aa5dae094b5e3bf3c87dbddc7ad8f9b4ab5802b08603f7cbf33f4b45bf"
+        },
+        {
+          "transportId": 289,
+          "properties": {
+            "fid": 289
+          },
+          "geometrySha256": "370f9a6846ff729a8456841a4e0206768790c67a384a18f52b5d7a0fb5a1f162"
+        },
+        {
+          "transportId": 320,
+          "properties": {
+            "fid": 320
+          },
+          "geometrySha256": "a8b4f28800423ce158a4597c66c83cbcf58f42322cf4ca5e040d61d472cb03eb"
+        },
+        {
+          "transportId": 329,
+          "properties": {
+            "fid": 329
+          },
+          "geometrySha256": "c279632abe30ca111a2dc0a6cba027e587c957eb9105ae7826b8841c35a3e240"
+        },
+        {
+          "transportId": 334,
+          "properties": {
+            "fid": 334
+          },
+          "geometrySha256": "77214f6ada1305a98b690e6ae5f0494f0491ab891f3e86bdaa9cb33d29e7d4c3"
+        },
+        {
+          "transportId": 345,
+          "properties": {
+            "fid": 345
+          },
+          "geometrySha256": "4f58dda95564d700d78794bf7630bd355d15c9b45e3ef2b160937bf371a06834"
+        },
+        {
+          "transportId": 350,
+          "properties": {
+            "fid": 350
+          },
+          "geometrySha256": "7a4af4e765c7309346eefd38f7648a1fe997cf1399421181c8e6d251219bad7f"
+        },
+        {
+          "transportId": 351,
+          "properties": {
+            "fid": 351
+          },
+          "geometrySha256": "0b8b157133161ef37bd1f8d4e3175b70cce26db08afd34c29361241686720f56"
+        },
+        {
+          "transportId": 361,
+          "properties": {
+            "fid": 361
+          },
+          "geometrySha256": "b12eb793073a04c45143e8db14075a0b724f0dde70eac5ab4ad81324416595fc"
+        },
+        {
+          "transportId": 362,
+          "properties": {
+            "fid": 362
+          },
+          "geometrySha256": "165c86bae87e836abf978a86164d78634490f8a95cf267282b1679c31d824994"
+        },
+        {
+          "transportId": 398,
+          "properties": {
+            "fid": 398
+          },
+          "geometrySha256": "af0d9e76ae27e415b62a6b83ea64b4f495c3aa6ff1c7a6394fa657c6adfdca26"
+        },
+        {
+          "transportId": 400,
+          "properties": {
+            "fid": 400
+          },
+          "geometrySha256": "016c8ee7b8f8a43d754e1ca0ad4ec2dd186ec5fba286dc1aa834aeb0146e97e1"
+        },
+        {
+          "transportId": 401,
+          "properties": {
+            "fid": 401
+          },
+          "geometrySha256": "a0a4cf42a7055f89fa97a47dbae3a18cc34918f5e7951be07ce73757bc1d4de2"
+        },
+        {
+          "transportId": 402,
+          "properties": {
+            "fid": 402
+          },
+          "geometrySha256": "81f307fa3446c0be7d8a733941b8c05dfc25a95bff7fa6200c6b368e3bc494d3"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%28404%2C428%2C429%2C430%2C438%2C440%2C445%2C446%2C466%2C467%2C468%2C469%2C470%2C472%2C475%2C48%2C484%2C493%2C494%2C497%2C498%2C502%2C503%2C504%2C505%2C507%2C511%2C512%2C513%2C514%2C515%2C516%2C517%2C518%2C530%2C534%2C540%2C542%2C546%2C547%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:24.150Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%28404%2C428%2C429%2C430%2C438%2C440%2C445%2C446%2C466%2C467%2C468%2C469%2C470%2C472%2C475%2C48%2C484%2C493%2C494%2C497%2C498%2C502%2C503%2C504%2C505%2C507%2C511%2C512%2C513%2C514%2C515%2C516%2C517%2C518%2C530%2C534%2C540%2C542%2C546%2C547%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:24.434Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 200,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        48,
+        404,
+        428,
+        429,
+        430,
+        438,
+        440,
+        445,
+        446,
+        466,
+        467,
+        468,
+        469,
+        470,
+        472,
+        475,
+        484,
+        493,
+        494,
+        497,
+        498,
+        502,
+        503,
+        504,
+        505,
+        507,
+        511,
+        512,
+        513,
+        514,
+        515,
+        516,
+        517,
+        518,
+        530,
+        534,
+        540,
+        542,
+        546,
+        547
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=48%2C404%2C428%2C429%2C430%2C438%2C440%2C445%2C446%2C466%2C467%2C468%2C469%2C470%2C472%2C475%2C484%2C493%2C494%2C497%2C498%2C502%2C503%2C504%2C505%2C507%2C511%2C512%2C513%2C514%2C515%2C516%2C517%2C518%2C530%2C534%2C540%2C542%2C546%2C547",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:24.721Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 22791,
+      "features": [
+        {
+          "transportId": 48,
+          "properties": {
+            "fid": 48
+          },
+          "geometrySha256": "c7707d0a33be46010215d1018f925c3b52756bed98cbce870950d5ddab4fb216"
+        },
+        {
+          "transportId": 404,
+          "properties": {
+            "fid": 404
+          },
+          "geometrySha256": "9c57eec034ce9e65cb8ae3d84c3521c5a0ad2df4e9c08c82a7b8b7b0424d00ee"
+        },
+        {
+          "transportId": 428,
+          "properties": {
+            "fid": 428
+          },
+          "geometrySha256": "e93325cb95a1f1f18c65cdf5e7c56a080981be1fa485bedc56e175160b117fc5"
+        },
+        {
+          "transportId": 429,
+          "properties": {
+            "fid": 429
+          },
+          "geometrySha256": "c0bb1c643e2ab7a22260263e234a334fad1bb671f10635e3263d78c5758c74a2"
+        },
+        {
+          "transportId": 430,
+          "properties": {
+            "fid": 430
+          },
+          "geometrySha256": "bb5457af6aa7362069967e681901f991385ba05153d28e31aaafb1a11c9e7450"
+        },
+        {
+          "transportId": 438,
+          "properties": {
+            "fid": 438
+          },
+          "geometrySha256": "eef595f97c6e4d4b394f1a39cc17b57f85e2dd474a3edb0b1ddd20aa0691c6e7"
+        },
+        {
+          "transportId": 440,
+          "properties": {
+            "fid": 440
+          },
+          "geometrySha256": "f71cf6742947cff16c93d796225c2d4f98c0227a4ed4b7629f5c404aad3d62e5"
+        },
+        {
+          "transportId": 445,
+          "properties": {
+            "fid": 445
+          },
+          "geometrySha256": "ab201833f9687763db0d924b89811a95a4f376df13bb4715ea3ab2ed4d492a25"
+        },
+        {
+          "transportId": 446,
+          "properties": {
+            "fid": 446
+          },
+          "geometrySha256": "33dc16945e2def613e546eda7ca3160a1a07a46dca1ca057072fbc85ab4004bd"
+        },
+        {
+          "transportId": 466,
+          "properties": {
+            "fid": 466
+          },
+          "geometrySha256": "8df995cf7af0a6c43448b29d7c1b48a92d078e62cbc90c870db8c24416cc6a55"
+        },
+        {
+          "transportId": 467,
+          "properties": {
+            "fid": 467
+          },
+          "geometrySha256": "c95bb4d070e63eaae4d6e852bd8a440f2ab9cc3f9c53f3a11525cc73d0707192"
+        },
+        {
+          "transportId": 468,
+          "properties": {
+            "fid": 468
+          },
+          "geometrySha256": "0a7ef32cda98495932e3a2dace863d81c72b536a60682a46dab8cd9857c3f4de"
+        },
+        {
+          "transportId": 469,
+          "properties": {
+            "fid": 469
+          },
+          "geometrySha256": "797cc6e10f541dc20038b2aeffd925e1046ed7058507bb0de8b61c8ce57455ba"
+        },
+        {
+          "transportId": 470,
+          "properties": {
+            "fid": 470
+          },
+          "geometrySha256": "075430e101693815207c69b0cfa448e315286fb125d600bcf46dec1000832ed7"
+        },
+        {
+          "transportId": 472,
+          "properties": {
+            "fid": 472
+          },
+          "geometrySha256": "7707399a55cbeb19fe1a7249595cfb767dc0967cdf750c8fd9cde1e3d6bba324"
+        },
+        {
+          "transportId": 475,
+          "properties": {
+            "fid": 475
+          },
+          "geometrySha256": "8b93df5dce58aebe1705e2639c15257c5d697494d43d761122e7f69ee3bb8044"
+        },
+        {
+          "transportId": 484,
+          "properties": {
+            "fid": 484
+          },
+          "geometrySha256": "b5ddb71a42f2e021338afef3273d1a2c7f287da1fb2bf7e1a5d2ee5b78215937"
+        },
+        {
+          "transportId": 493,
+          "properties": {
+            "fid": 493
+          },
+          "geometrySha256": "fb7bcbd1d37b22c739098dad622a5f1f04780ee35aab3cb3c9c9b939b4aca674"
+        },
+        {
+          "transportId": 494,
+          "properties": {
+            "fid": 494
+          },
+          "geometrySha256": "03e72fe3698e718b80ea7952da3a1cb3e023ba03943fa2e0d67c1ff63e6c09ad"
+        },
+        {
+          "transportId": 497,
+          "properties": {
+            "fid": 497
+          },
+          "geometrySha256": "98ba9ccb762743b72c0a90133c54a0bfbb3a937ae1d9de495dd9cde32f6f12ff"
+        },
+        {
+          "transportId": 498,
+          "properties": {
+            "fid": 498
+          },
+          "geometrySha256": "15ea82e0c95e841de02d63c1216ed1038eac327f0e07d44d9f88fa9a7bc52a76"
+        },
+        {
+          "transportId": 502,
+          "properties": {
+            "fid": 502
+          },
+          "geometrySha256": "ba8e59956d8afbdbb5435e01ba69e922003e67350032b2404cf49453563dbc68"
+        },
+        {
+          "transportId": 503,
+          "properties": {
+            "fid": 503
+          },
+          "geometrySha256": "6938effccbee73c3c7729516a2704e5167fc76e0d948635533e3302d9ed86084"
+        },
+        {
+          "transportId": 504,
+          "properties": {
+            "fid": 504
+          },
+          "geometrySha256": "126e728e168f40c1b45703f419294a0bba5dddf7ddb17008f09cf5790db57854"
+        },
+        {
+          "transportId": 505,
+          "properties": {
+            "fid": 505
+          },
+          "geometrySha256": "f8d6fc582cc69009f31db3a30ff3c7a53b498b2b2d1958590361626eebfe9c47"
+        },
+        {
+          "transportId": 507,
+          "properties": {
+            "fid": 507
+          },
+          "geometrySha256": "c86ec144ddaa318e1e2a973d653851edc876284bf18e3561261f3583795b9d5d"
+        },
+        {
+          "transportId": 511,
+          "properties": {
+            "fid": 511
+          },
+          "geometrySha256": "8b6a46c38b013df58a36830cc90b576ca2886edfb6bf29f467875afca8a8c891"
+        },
+        {
+          "transportId": 512,
+          "properties": {
+            "fid": 512
+          },
+          "geometrySha256": "4e2ca5762686d7635a41eb8bb367b6cb356b3920c78453ecb31211a455d0d91e"
+        },
+        {
+          "transportId": 513,
+          "properties": {
+            "fid": 513
+          },
+          "geometrySha256": "ca97935fdebb5fc3cc90e5f2739a28a3a14295a1f47c1fd6cad685045b17bac5"
+        },
+        {
+          "transportId": 514,
+          "properties": {
+            "fid": 514
+          },
+          "geometrySha256": "7555d3bb7bb42ee9953a46f34cee51d7d72bd96c16b7ccc5b93144e94e196c8d"
+        },
+        {
+          "transportId": 515,
+          "properties": {
+            "fid": 515
+          },
+          "geometrySha256": "e9fd88834190d25bbae90eaac5fade021e9ad59f9b03e3669f099a1a2a1a57b2"
+        },
+        {
+          "transportId": 516,
+          "properties": {
+            "fid": 516
+          },
+          "geometrySha256": "fe28f2db47f23fb3b521079c70f79a6416caa5bd8b727e2a1421d605c75e69c7"
+        },
+        {
+          "transportId": 517,
+          "properties": {
+            "fid": 517
+          },
+          "geometrySha256": "6b0661e434ff55822de164fb512f77a691a28fed9d8aab31795087c05b5daab6"
+        },
+        {
+          "transportId": 518,
+          "properties": {
+            "fid": 518
+          },
+          "geometrySha256": "5b72ad60ebc82d3f86350fe78e1901bbf486b00db500e61b3b5b53a40614d596"
+        },
+        {
+          "transportId": 530,
+          "properties": {
+            "fid": 530
+          },
+          "geometrySha256": "2544f609dc201a5389592a2a2c47acde904121cd1cee750bcd987d2d1c01e1e7"
+        },
+        {
+          "transportId": 534,
+          "properties": {
+            "fid": 534
+          },
+          "geometrySha256": "d35f7751779c0818de836face1b9d3f84ae728f6013263ecac06c9d9389c4278"
+        },
+        {
+          "transportId": 540,
+          "properties": {
+            "fid": 540
+          },
+          "geometrySha256": "605c89412d8a5c06c1060f751a8833ce11ede32b3dd63727af77ef043f52af6f"
+        },
+        {
+          "transportId": 542,
+          "properties": {
+            "fid": 542
+          },
+          "geometrySha256": "b39899cc134160594591ebe690d95122eb41aa4fd77fed30e69db2c1be9e7c9e"
+        },
+        {
+          "transportId": 546,
+          "properties": {
+            "fid": 546
+          },
+          "geometrySha256": "a672307daecde2a2db33dd6cd424ddd60b37bfcf6faf5ab11a9570cff0989c29"
+        },
+        {
+          "transportId": 547,
+          "properties": {
+            "fid": 547
+          },
+          "geometrySha256": "93cb90bf06f31be19aa08fad183c080e10bf4667bcdec98597e4a8340c1c43e5"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%28563%2C567%2C583%2C588%2C592%2C594%2C595%2C596%2C598%2C599%2C61%2C616%2C629%2C630%2C633%2C641%2C643%2C647%2C648%2C652%2C653%2C654%2C655%2C656%2C657%2C663%2C670%2C674%2C675%2C677%2C680%2C683%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:25.008Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 32
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%28563%2C567%2C583%2C588%2C592%2C594%2C595%2C596%2C598%2C599%2C61%2C616%2C629%2C630%2C633%2C641%2C643%2C647%2C648%2C652%2C653%2C654%2C655%2C656%2C657%2C663%2C670%2C674%2C675%2C677%2C680%2C683%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:25.291Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 168,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        61,
+        563,
+        567,
+        583,
+        588,
+        592,
+        594,
+        595,
+        596,
+        598,
+        599,
+        616,
+        629,
+        630,
+        633,
+        641,
+        643,
+        647,
+        648,
+        652,
+        653,
+        654,
+        655,
+        656,
+        657,
+        663,
+        670,
+        674,
+        675,
+        677,
+        680,
+        683
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=61%2C563%2C567%2C583%2C588%2C592%2C594%2C595%2C596%2C598%2C599%2C616%2C629%2C630%2C633%2C641%2C643%2C647%2C648%2C652%2C653%2C654%2C655%2C656%2C657%2C663%2C670%2C674%2C675%2C677%2C680%2C683",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:25.579Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 19328,
+      "features": [
+        {
+          "transportId": 61,
+          "properties": {
+            "fid": 61
+          },
+          "geometrySha256": "85cb0d8bda4913380ef509846a675dcc296f679fa780f2cf836dbf666a478d24"
+        },
+        {
+          "transportId": 563,
+          "properties": {
+            "fid": 563
+          },
+          "geometrySha256": "ca0804b8760ac92cc63520f50eed287672632d56104c7553e984c535038706f9"
+        },
+        {
+          "transportId": 567,
+          "properties": {
+            "fid": 567
+          },
+          "geometrySha256": "19ddaaf6232f56a4cce5f14332fe9e240a4ff3595422c0d76b09a14dedd95270"
+        },
+        {
+          "transportId": 583,
+          "properties": {
+            "fid": 583
+          },
+          "geometrySha256": "987d7c6e49b6fc6b0fe7f16cb810ed0e047cae2f18393ac2bab81d914aa4ba7e"
+        },
+        {
+          "transportId": 588,
+          "properties": {
+            "fid": 588
+          },
+          "geometrySha256": "b8b1657781c43516dec722f076394130cf0a9f59d660cca6f7576c690a8e200e"
+        },
+        {
+          "transportId": 592,
+          "properties": {
+            "fid": 592
+          },
+          "geometrySha256": "5cb1a561be82f684008e969aaeca42f40397bd0fba0125102dd2b78a9ca39729"
+        },
+        {
+          "transportId": 594,
+          "properties": {
+            "fid": 594
+          },
+          "geometrySha256": "8368b82bf06718e03c2c5937386ec8a3b4954640f27a84ec8132590b0965114e"
+        },
+        {
+          "transportId": 595,
+          "properties": {
+            "fid": 595
+          },
+          "geometrySha256": "ee8cc4980fa487ec17a18239480f3830774a9d50afdfb4e1ab9311e741faa1b2"
+        },
+        {
+          "transportId": 596,
+          "properties": {
+            "fid": 596
+          },
+          "geometrySha256": "2df9ffa69ba5fe34386444e2071b94535e278bd5f317a69762858d87cb2ea67e"
+        },
+        {
+          "transportId": 598,
+          "properties": {
+            "fid": 598
+          },
+          "geometrySha256": "9006ea89bd4039df90464a4d1ccaf23dcccee46eea1012f71f1b95ed4ffb0d1c"
+        },
+        {
+          "transportId": 599,
+          "properties": {
+            "fid": 599
+          },
+          "geometrySha256": "e74b2267121c7541f3f9323c13257b0cb5e04e5465fab9b6af93bce8d925df49"
+        },
+        {
+          "transportId": 616,
+          "properties": {
+            "fid": 616
+          },
+          "geometrySha256": "76b7d44c9866dac3a34ad0dab895f3ebbc4da3eaa9b932cf6f53c00ba4ad748e"
+        },
+        {
+          "transportId": 629,
+          "properties": {
+            "fid": 629
+          },
+          "geometrySha256": "b0451166bc1345381c73bc49f839c2d2da0548754a58013f2482848155608864"
+        },
+        {
+          "transportId": 630,
+          "properties": {
+            "fid": 630
+          },
+          "geometrySha256": "6f275a60b63d969b64846a784d6bbf15996d0efb19ce3803a5ba60b948c614a2"
+        },
+        {
+          "transportId": 633,
+          "properties": {
+            "fid": 633
+          },
+          "geometrySha256": "72dd3f62384db25a95f0b3e809250eb9b1856042ca80774bdc345332c499252d"
+        },
+        {
+          "transportId": 641,
+          "properties": {
+            "fid": 641
+          },
+          "geometrySha256": "7566e23859bfc95efd591c75788e9e186b967b4fd0cc838033fbb24b85f39c8e"
+        },
+        {
+          "transportId": 643,
+          "properties": {
+            "fid": 643
+          },
+          "geometrySha256": "8f797ad486aaaf44f47ee4f13084b21887d3b329767cc96fbeb3a33cf0003a3b"
+        },
+        {
+          "transportId": 647,
+          "properties": {
+            "fid": 647
+          },
+          "geometrySha256": "e674ab20dc14e584940459df8dfdd3826436b8f847072e6798c8e53159d43893"
+        },
+        {
+          "transportId": 648,
+          "properties": {
+            "fid": 648
+          },
+          "geometrySha256": "c39baffbbda87efc88e433ea3eae07b930db1a40900e3db062687cbd7f05a19e"
+        },
+        {
+          "transportId": 652,
+          "properties": {
+            "fid": 652
+          },
+          "geometrySha256": "ee2d1030daf6ced1efb94c71dce6d9b0ba4165108cdde82ed90e370140fa2501"
+        },
+        {
+          "transportId": 653,
+          "properties": {
+            "fid": 653
+          },
+          "geometrySha256": "87b7d3f26cfca609ae6baf8ac92b1013dcd78f5f903548d518f6f89cbbe4f508"
+        },
+        {
+          "transportId": 654,
+          "properties": {
+            "fid": 654
+          },
+          "geometrySha256": "bebaa55dc6dfeb2a7c422645815a528c2ed1864e22ae2beb5b27509a62b414a5"
+        },
+        {
+          "transportId": 655,
+          "properties": {
+            "fid": 655
+          },
+          "geometrySha256": "6959326312a23709e3b40d84387cd545a754d4cb82558f78cafecbff66b7bc94"
+        },
+        {
+          "transportId": 656,
+          "properties": {
+            "fid": 656
+          },
+          "geometrySha256": "7f63a0214c4a4994dec096b57c4e15bb5c57bccd6c664d90235b9412d4b61c90"
+        },
+        {
+          "transportId": 657,
+          "properties": {
+            "fid": 657
+          },
+          "geometrySha256": "d8e800ea79e6c339038bacc6d7e2a4340f4c3af6c80ab148a2fd813ea4142316"
+        },
+        {
+          "transportId": 663,
+          "properties": {
+            "fid": 663
+          },
+          "geometrySha256": "9c910086c652f9f802c1808dde30cf8c8f8acf5dba3341d73ee584d90c9c3453"
+        },
+        {
+          "transportId": 670,
+          "properties": {
+            "fid": 670
+          },
+          "geometrySha256": "de2327c46671e56f6aa94f3b0d19c71e3fd3e1f2c12a6c3fe819cf6ef005da5d"
+        },
+        {
+          "transportId": 674,
+          "properties": {
+            "fid": 674
+          },
+          "geometrySha256": "60307dcc4c117eb730c659f85bd409b1e3891c276aaf8dbbec70284511b5320f"
+        },
+        {
+          "transportId": 675,
+          "properties": {
+            "fid": 675
+          },
+          "geometrySha256": "df33f958b1a645e0768e6b9611f08170661cfdb7e6719d972fbdd86ed5851aae"
+        },
+        {
+          "transportId": 677,
+          "properties": {
+            "fid": 677
+          },
+          "geometrySha256": "cfa9fdd4cf9b7f9bf1efde9b248d3c0e5e8c01f322689cd2cb94adbbbd4c1fcd"
+        },
+        {
+          "transportId": 680,
+          "properties": {
+            "fid": 680
+          },
+          "geometrySha256": "8bd568ac0eec8b8b979c599bf2f2bb5d75e1373a8cf7fd58b3f88679fdbb32a0"
+        },
+        {
+          "transportId": 683,
+          "properties": {
+            "fid": 683
+          },
+          "geometrySha256": "9517886f3b3a035ff73a25dfc87d2d4dd62c0307771594c92f768374b089a205"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%289876543210%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:25.883Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=fid+IN+%289876543210%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:26.179Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 42,
+      "objectIdFieldName": "fid",
+      "objectIds": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.64295245116742%2C27.516454157070005%2C89.64330687067888%2C27.51677195994187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:26.482Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "footprint",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.64295245116742%2C27.516454157070005%2C89.64330687067888%2C27.51677195994187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:26.777Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 69,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        345,
+        361,
+        401,
+        398,
+        400,
+        402,
+        404
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=345%2C361%2C401%2C398%2C400%2C402%2C404",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:27.408Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4023,
+      "features": [
+        {
+          "transportId": 345,
+          "properties": {
+            "fid": 345
+          },
+          "geometrySha256": "4f58dda95564d700d78794bf7630bd355d15c9b45e3ef2b160937bf371a06834"
+        },
+        {
+          "transportId": 361,
+          "properties": {
+            "fid": 361
+          },
+          "geometrySha256": "b12eb793073a04c45143e8db14075a0b724f0dde70eac5ab4ad81324416595fc"
+        },
+        {
+          "transportId": 398,
+          "properties": {
+            "fid": 398
+          },
+          "geometrySha256": "af0d9e76ae27e415b62a6b83ea64b4f495c3aa6ff1c7a6394fa657c6adfdca26"
+        },
+        {
+          "transportId": 400,
+          "properties": {
+            "fid": 400
+          },
+          "geometrySha256": "016c8ee7b8f8a43d754e1ca0ad4ec2dd186ec5fba286dc1aa834aeb0146e97e1"
+        },
+        {
+          "transportId": 401,
+          "properties": {
+            "fid": 401
+          },
+          "geometrySha256": "a0a4cf42a7055f89fa97a47dbae3a18cc34918f5e7951be07ce73757bc1d4de2"
+        },
+        {
+          "transportId": 402,
+          "properties": {
+            "fid": 402
+          },
+          "geometrySha256": "81f307fa3446c0be7d8a733941b8c05dfc25a95bff7fa6200c6b368e3bc494d3"
+        },
+        {
+          "transportId": 404,
+          "properties": {
+            "fid": 404
+          },
+          "geometrySha256": "9c57eec034ce9e65cb8ae3d84c3521c5a0ad2df4e9c08c82a7b8b7b0424d00ee"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.64295245116742%2C27.516454157070005%2C89.64330687067888%2C27.51677195994187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:28.453Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "source-binding",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.64295245116742%2C27.516454157070005%2C89.64330687067888%2C27.51677195994187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:28.733Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 69,
+      "objectIdFieldName": "fid",
+      "objectIds": [
+        345,
+        361,
+        401,
+        398,
+        400,
+        402,
+        404
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=4326&f=geojson&objectIds=345%2C361%2C401%2C398%2C400%2C402%2C404",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:06:29.014Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4023,
+      "features": [
+        {
+          "transportId": 345,
+          "properties": {
+            "fid": 345
+          },
+          "geometrySha256": "4f58dda95564d700d78794bf7630bd355d15c9b45e3ef2b160937bf371a06834"
+        },
+        {
+          "transportId": 361,
+          "properties": {
+            "fid": 361
+          },
+          "geometrySha256": "b12eb793073a04c45143e8db14075a0b724f0dde70eac5ab4ad81324416595fc"
+        },
+        {
+          "transportId": 398,
+          "properties": {
+            "fid": 398
+          },
+          "geometrySha256": "af0d9e76ae27e415b62a6b83ea64b4f495c3aa6ff1c7a6394fa657c6adfdca26"
+        },
+        {
+          "transportId": 400,
+          "properties": {
+            "fid": 400
+          },
+          "geometrySha256": "016c8ee7b8f8a43d754e1ca0ad4ec2dd186ec5fba286dc1aa834aeb0146e97e1"
+        },
+        {
+          "transportId": 401,
+          "properties": {
+            "fid": 401
+          },
+          "geometrySha256": "a0a4cf42a7055f89fa97a47dbae3a18cc34918f5e7951be07ce73757bc1d4de2"
+        },
+        {
+          "transportId": 402,
+          "properties": {
+            "fid": 402
+          },
+          "geometrySha256": "81f307fa3446c0be7d8a733941b8c05dfc25a95bff7fa6200c6b368e3bc494d3"
+        },
+        {
+          "transportId": 404,
+          "properties": {
+            "fid": 404
+          },
+          "geometrySha256": "9c57eec034ce9e65cb8ae3d84c3521c5a0ad2df4e9c08c82a7b8b7b0424d00ee"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/world-capitals-2026-10-08/thimphu-taba-quality.json",
+  "uniqueParcels": 112,
+  "requestCount": 66,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T19:06:29.871Z",
+  "qualityStatus": "independent_projected_geos_audit_complete",
+  "cityId": "capital:BT:thimphu",
+  "anchorWgs84": [
+    89.642,
+    27.515
+  ],
+  "metricProjection": "EPSG:32645 (WGS 84 / UTM zone 45N)",
+  "metricShapelyAudit": {
+    "file": "research/world-capitals-2026-10-08/thimphu-taba-quality.json",
+    "library": "Shapely 2.1.2",
+    "metricCrs": "EPSG:32645",
+    "featureCount": 112,
+    "validNonemptyCount": 112,
+    "invalidFeatureCount": 0,
+    "exactDuplicateGeometryPairCount": 0,
+    "positiveAreaOverlapPairCountAbove0_01M2": 0,
+    "sumPairwiseOverlapM2": 0,
+    "operationErrorCount": 0,
+    "areaM2": {
+      "min": 29.27611677084745,
+      "median": 607.035734943386,
+      "max": 164222.79714549542
+    }
+  },
+  "cityBoundaryCoverageCheck": {
+    "boundarySource": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/1",
+    "boundaryName": "tt_bdy2010",
+    "boundaryGeometrySha256": "2808494e052647480066306fd1b6348971df7e7502c5b8435eab29f8175728eb",
+    "boundaryProjection": "EPSG:3857",
+    "testedProjection": "EPSG:32645 to EPSG:3857 (proj4)",
+    "featuresTested": 112,
+    "fullyCoveredByPublishedBoundary": 112,
+    "notCovered": 0,
+    "interpretation": "All qualified Taba plot polygons lie inside this published 2010 Thromde boundary. The layer extent is limited to Taba and does not imply citywide coverage."
+  },
+  "datasetSemantics": {
+    "sourceLayerName": "tt_taba_plots",
+    "description": "tt_taba_plots",
+    "displayField": "location",
+    "classification": "limited Thimphu Thromde Taba plot polygons; legal registration and currentness are unverified",
+    "planningDesignation": "not established by public service/layer metadata",
+    "registeredTitleParcelStatus": "not established by public service/layer metadata",
+    "statusOrLifecycleFilter": null,
+    "reason": "Layer schema contains only OID fid, string location, string pricinct, and virtual shape measures. There is no status/date/lifecycle field, timeInfo, or editFieldsInfo. No fixed filter can be applied or verified."
+  },
+  "dataQualityCaveat": "This adapter qualification verifies bounded geometry retrieval, stable fid identity, pagination, and spatial binding. It does not establish legal cadastral/title status, currency, planning status, or coverage beyond the Taba extent."
+}

@@ -1,0 +1,4318 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded real-adapter qualification; full geometries stay in /tmp and repository samples contain at most three features.",
+  "checkedAt": "2026-10-08T18:30:04.895Z",
+  "city": "andorra-la-vella",
+  "descriptor": {
+    "id": "ad-andorra-la-vella-cadastre",
+    "adapter": "arcgis",
+    "idPrefix": "andorra-cadastre:",
+    "endpoint": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0",
+    "idField": "GLOBALID",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "GLOBALID",
+      "REF_CADASTRAL_TEXT",
+      "REF_CADASTRAL",
+      "DATA_BAIXA",
+      "TIPUS"
+    ],
+    "attributeNull": [
+      "DATA_BAIXA"
+    ],
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "maxFeatures": 1500,
+    "maxBboxKm2": 1,
+    "boundsSrid": 27563,
+    "boundsProjection": "+proj=lcc +lat_1=44.1 +lat_0=44.1 +lon_0=0 +k_0=0.999877499 +x_0=600000 +y_0=200000 +a=6378249.2 +b=6356515 +towgs84=-168,-60,320,0,0,0,0 +pm=paris +units=m +no_defs"
+  },
+  "scope": "Current parcels only: DATA_BAIXA is null; no owner/user fields requested.",
+  "grid": {
+    "centerLonLat": [
+      1.522,
+      42.5085
+    ],
+    "stepDegrees": 0.0005,
+    "cells": 13
+  },
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1396,
+      "bbox": [
+        1.5215,
+        42.508,
+        1.522,
+        42.5085
+      ],
+      "featureCount": 11,
+      "manifestCount": 11,
+      "manifestObjectIds": [
+        "428",
+        "441",
+        "1497",
+        "442",
+        "1293",
+        "1708",
+        "402",
+        "1049",
+        "400",
+        "401",
+        "403"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 11,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "objectId": "400",
+          "attributes": {
+            "GLOBALID": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+            "REF_CADASTRAL_TEXT": "5P000725",
+            "REF_CADASTRAL": "725",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "parcelId": "andorra-cadastre:{7881D8F8-034D-4091-B375-7531679E7056}",
+          "objectId": "401",
+          "attributes": {
+            "GLOBALID": "{7881D8F8-034D-4091-B375-7531679E7056}",
+            "REF_CADASTRAL_TEXT": "5P000341",
+            "REF_CADASTRAL": "341",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "parcelId": "andorra-cadastre:{01061953-53F4-4211-8F4D-8BF5924EBFE5}",
+          "objectId": "402",
+          "attributes": {
+            "GLOBALID": "{01061953-53F4-4211-8F4D-8BF5924EBFE5}",
+            "REF_CADASTRAL_TEXT": "5P000723",
+            "REF_CADASTRAL": "723",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "1283513003f7cdc1a32e856d9c65a140943c4eef22ffaccd7f3636963adee317"
+        },
+        {
+          "parcelId": "andorra-cadastre:{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+          "objectId": "403",
+          "attributes": {
+            "GLOBALID": "{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+            "REF_CADASTRAL_TEXT": "5P000883",
+            "REF_CADASTRAL": "883",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "f4d814993792f6ef5ec5b298ea5ed81705820b47a9f746b1d5a48d70a0ec1fbf"
+        },
+        {
+          "parcelId": "andorra-cadastre:{DE311BD8-D678-430A-8073-B19424E046E4}",
+          "objectId": "428",
+          "attributes": {
+            "GLOBALID": "{DE311BD8-D678-430A-8073-B19424E046E4}",
+            "REF_CADASTRAL_TEXT": "5P000718",
+            "REF_CADASTRAL": "718",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "13b7e6695e72f43d67be92e09c7c09074c847b7cd7cf118ccbcca822cfa15261"
+        },
+        {
+          "parcelId": "andorra-cadastre:{A802BACD-29E7-4475-9783-A87C034C8067}",
+          "objectId": "441",
+          "attributes": {
+            "GLOBALID": "{A802BACD-29E7-4475-9783-A87C034C8067}",
+            "REF_CADASTRAL_TEXT": "5P000721",
+            "REF_CADASTRAL": "721",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "c54493f50e97a1126048745dc48665cb8f90a79b432ad0eba0201229a3aef5e8"
+        },
+        {
+          "parcelId": "andorra-cadastre:{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "objectId": "442",
+          "attributes": {
+            "GLOBALID": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+            "REF_CADASTRAL_TEXT": "5P000722",
+            "REF_CADASTRAL": "722",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+          "objectId": "1049",
+          "attributes": {
+            "GLOBALID": "{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+            "REF_CADASTRAL_TEXT": "5P000884",
+            "REF_CADASTRAL": "884",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "c7ca76076e5bc8c4fd66be8325bdb06ce819e8f6b10277b79f1f8e7958c92a34"
+        },
+        {
+          "parcelId": "andorra-cadastre:{B381DD31-055E-4766-A1E3-09A03AE796D3}",
+          "objectId": "1293",
+          "attributes": {
+            "GLOBALID": "{B381DD31-055E-4766-A1E3-09A03AE796D3}",
+            "REF_CADASTRAL_TEXT": "5P000717",
+            "REF_CADASTRAL": "717",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "aebc943d4624dd7c0278c9420a5bbb9aec5cab52027335f001232f659412849e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{07778A5D-4A3C-477E-AF98-BFA498CBC7EB}",
+          "objectId": "1497",
+          "attributes": {
+            "GLOBALID": "{07778A5D-4A3C-477E-AF98-BFA498CBC7EB}",
+            "REF_CADASTRAL_TEXT": "5P001660",
+            "REF_CADASTRAL": "1660",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "04d3e6e757ba581d02d900da571569b9622505b549291082d2f76facb3683f13"
+        },
+        {
+          "parcelId": "andorra-cadastre:{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "objectId": "1708",
+          "attributes": {
+            "GLOBALID": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+            "REF_CADASTRAL_TEXT": "5P000743",
+            "REF_CADASTRAL": "743",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 958,
+      "bbox": [
+        1.522,
+        42.508,
+        1.5225,
+        42.5085
+      ],
+      "featureCount": 18,
+      "manifestCount": 18,
+      "manifestObjectIds": [
+        "442",
+        "1708",
+        "1049",
+        "1826",
+        "400",
+        "401",
+        "403",
+        "404",
+        "1786",
+        "410",
+        "1785",
+        "1260",
+        "406",
+        "405",
+        "486",
+        "1474",
+        "479",
+        "1980"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 18,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "objectId": "400",
+          "attributes": {
+            "GLOBALID": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+            "REF_CADASTRAL_TEXT": "5P000725",
+            "REF_CADASTRAL": "725",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "parcelId": "andorra-cadastre:{7881D8F8-034D-4091-B375-7531679E7056}",
+          "objectId": "401",
+          "attributes": {
+            "GLOBALID": "{7881D8F8-034D-4091-B375-7531679E7056}",
+            "REF_CADASTRAL_TEXT": "5P000341",
+            "REF_CADASTRAL": "341",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "parcelId": "andorra-cadastre:{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+          "objectId": "403",
+          "attributes": {
+            "GLOBALID": "{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+            "REF_CADASTRAL_TEXT": "5P000883",
+            "REF_CADASTRAL": "883",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "f4d814993792f6ef5ec5b298ea5ed81705820b47a9f746b1d5a48d70a0ec1fbf"
+        },
+        {
+          "parcelId": "andorra-cadastre:{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+          "objectId": "404",
+          "attributes": {
+            "GLOBALID": "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+            "REF_CADASTRAL_TEXT": "5P000735",
+            "REF_CADASTRAL": "735",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "4b8d7e64f31d2eca35c76aff9cf538603f775d8637ee1840e790950dc2c67828"
+        },
+        {
+          "parcelId": "andorra-cadastre:{6159323E-ACEF-4AD8-B15A-388F9EC5920C}",
+          "objectId": "405",
+          "attributes": {
+            "GLOBALID": "{6159323E-ACEF-4AD8-B15A-388F9EC5920C}",
+            "REF_CADASTRAL_TEXT": "5P000734",
+            "REF_CADASTRAL": "734",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "7c9e200bf012ac09c82746002fb7887b78a0518086a58bf1721fc938d4c17f50"
+        },
+        {
+          "parcelId": "andorra-cadastre:{AF2B8935-D93E-4286-8649-83EF5AB2A1C9}",
+          "objectId": "406",
+          "attributes": {
+            "GLOBALID": "{AF2B8935-D93E-4286-8649-83EF5AB2A1C9}",
+            "REF_CADASTRAL_TEXT": "5P000345",
+            "REF_CADASTRAL": "345",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "f7fdb656108ed72b259cb6cd6a06a263dd16d58cda4b32978472c1f212299545"
+        },
+        {
+          "parcelId": "andorra-cadastre:{95F0304A-C1AE-4998-A893-B88B7967508C}",
+          "objectId": "410",
+          "attributes": {
+            "GLOBALID": "{95F0304A-C1AE-4998-A893-B88B7967508C}",
+            "REF_CADASTRAL_TEXT": "5P000739",
+            "REF_CADASTRAL": "739",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "93ab58272905adf5e61ed7461a6e2d6c8973abc2511afc95d91cd73b479baa67"
+        },
+        {
+          "parcelId": "andorra-cadastre:{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "objectId": "442",
+          "attributes": {
+            "GLOBALID": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+            "REF_CADASTRAL_TEXT": "5P000722",
+            "REF_CADASTRAL": "722",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+          "objectId": "479",
+          "attributes": {
+            "GLOBALID": "{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+            "REF_CADASTRAL_TEXT": "5P000281",
+            "REF_CADASTRAL": "000281",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "b6a5d1d416dd48bfd2c267562d64f626e4a3ae5191d9f6e02b13b221f36e0bc8"
+        },
+        {
+          "parcelId": "andorra-cadastre:{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "objectId": "486",
+          "attributes": {
+            "GLOBALID": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+            "REF_CADASTRAL_TEXT": "5P000349",
+            "REF_CADASTRAL": "349",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        },
+        {
+          "parcelId": "andorra-cadastre:{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+          "objectId": "1049",
+          "attributes": {
+            "GLOBALID": "{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+            "REF_CADASTRAL_TEXT": "5P000884",
+            "REF_CADASTRAL": "884",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "c7ca76076e5bc8c4fd66be8325bdb06ce819e8f6b10277b79f1f8e7958c92a34"
+        },
+        {
+          "parcelId": "andorra-cadastre:{CE6E6FB7-6536-4BAD-AC59-0ED5432802AB}",
+          "objectId": "1260",
+          "attributes": {
+            "GLOBALID": "{CE6E6FB7-6536-4BAD-AC59-0ED5432802AB}",
+            "REF_CADASTRAL_TEXT": "5P000737",
+            "REF_CADASTRAL": "737",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "697e71c62caae6613bfaae4daaf07eb80bc4af3ea2da27540916928ed7db440c"
+        },
+        {
+          "parcelId": "andorra-cadastre:{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "objectId": "1474",
+          "attributes": {
+            "GLOBALID": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+            "REF_CADASTRAL_TEXT": "5P001933",
+            "REF_CADASTRAL": "1933",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "parcelId": "andorra-cadastre:{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "objectId": "1708",
+          "attributes": {
+            "GLOBALID": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+            "REF_CADASTRAL_TEXT": "5P000743",
+            "REF_CADASTRAL": "743",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        },
+        {
+          "parcelId": "andorra-cadastre:{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+          "objectId": "1785",
+          "attributes": {
+            "GLOBALID": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+            "REF_CADASTRAL_TEXT": "5P000343",
+            "REF_CADASTRAL": "343",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "04b6a1664851a897b3cc778b3e196840522d34857630e347500132ea5640b80f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "objectId": "1786",
+          "attributes": {
+            "GLOBALID": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+            "REF_CADASTRAL_TEXT": "5P000724",
+            "REF_CADASTRAL": "724",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        },
+        {
+          "parcelId": "andorra-cadastre:{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "objectId": "1826",
+          "attributes": {
+            "GLOBALID": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+            "REF_CADASTRAL_TEXT": "5P000338",
+            "REF_CADASTRAL": "338",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+          "objectId": "1980",
+          "attributes": {
+            "GLOBALID": "{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+            "REF_CADASTRAL_TEXT": "5P002208",
+            "REF_CADASTRAL": "2208",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "7b42bf1bad2ad0f0c231aaa4eaf433a9ae40ca3a370f11364987518ce645b190"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 1303,
+      "bbox": [
+        1.5225,
+        42.508,
+        1.523,
+        42.5085
+      ],
+      "featureCount": 13,
+      "manifestCount": 13,
+      "manifestObjectIds": [
+        "486",
+        "1474",
+        "479",
+        "1980",
+        "1861",
+        "1457",
+        "2064",
+        "1008",
+        "485",
+        "1354",
+        "477",
+        "1056",
+        "478"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 13,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+          "objectId": "477",
+          "attributes": {
+            "GLOBALID": "{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+            "REF_CADASTRAL_TEXT": "5P000298",
+            "REF_CADASTRAL": "000298",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "dd1cddefc4410c7bceeef57b9c309f841b8e0c40528afb3b69fba02506529a0b"
+        },
+        {
+          "parcelId": "andorra-cadastre:{25432496-BFBA-4F26-8990-F9C931048374}",
+          "objectId": "478",
+          "attributes": {
+            "GLOBALID": "{25432496-BFBA-4F26-8990-F9C931048374}",
+            "REF_CADASTRAL_TEXT": "5P000288",
+            "REF_CADASTRAL": "000288",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "b65556167893bafc2211b914a4f8cb0128888666f08918eeda289adf0c93cde3"
+        },
+        {
+          "parcelId": "andorra-cadastre:{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+          "objectId": "479",
+          "attributes": {
+            "GLOBALID": "{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+            "REF_CADASTRAL_TEXT": "5P000281",
+            "REF_CADASTRAL": "000281",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "b6a5d1d416dd48bfd2c267562d64f626e4a3ae5191d9f6e02b13b221f36e0bc8"
+        },
+        {
+          "parcelId": "andorra-cadastre:{2B72D2A0-B838-4EB2-A26B-5CE5D19A226F}",
+          "objectId": "485",
+          "attributes": {
+            "GLOBALID": "{2B72D2A0-B838-4EB2-A26B-5CE5D19A226F}",
+            "REF_CADASTRAL_TEXT": "5P000347",
+            "REF_CADASTRAL": "347",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "9cf6062336c6f3143911f163f201088b55a0d63967d5cc3ef71011d948dd5534"
+        },
+        {
+          "parcelId": "andorra-cadastre:{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "objectId": "486",
+          "attributes": {
+            "GLOBALID": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+            "REF_CADASTRAL_TEXT": "5P000349",
+            "REF_CADASTRAL": "349",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        },
+        {
+          "parcelId": "andorra-cadastre:{6244048C-65AE-430D-B6D9-194E63878126}",
+          "objectId": "1008",
+          "attributes": {
+            "GLOBALID": "{6244048C-65AE-430D-B6D9-194E63878126}",
+            "REF_CADASTRAL_TEXT": "5P000904",
+            "REF_CADASTRAL": "904",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "a8c90d4105d0961de00e3d009ba5abbcb3df572494bd9ce19cc12c1958d76729"
+        },
+        {
+          "parcelId": "andorra-cadastre:{E68187AF-D6A3-4D63-9138-183BFBCF2081}",
+          "objectId": "1056",
+          "attributes": {
+            "GLOBALID": "{E68187AF-D6A3-4D63-9138-183BFBCF2081}",
+            "REF_CADASTRAL_TEXT": "5P000273",
+            "REF_CADASTRAL": "273",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "50561574ea0c1e4f4b2255d748bfb27a0e7302c7ab572cf0e06cae6a4d689cbd"
+        },
+        {
+          "parcelId": "andorra-cadastre:{46ECE478-3669-4715-AA95-C35113294009}",
+          "objectId": "1354",
+          "attributes": {
+            "GLOBALID": "{46ECE478-3669-4715-AA95-C35113294009}",
+            "REF_CADASTRAL_TEXT": "5P000276",
+            "REF_CADASTRAL": "276",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "a97f508c56617396aa0eabef877c04de6f6568698a81a26d9b7155fcda3d34e4"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D5582995-4502-4C99-9739-3BF439B05083}",
+          "objectId": "1457",
+          "attributes": {
+            "GLOBALID": "{D5582995-4502-4C99-9739-3BF439B05083}",
+            "REF_CADASTRAL_TEXT": "5P000348",
+            "REF_CADASTRAL": "348",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "96243330ce1b9db57dcf98fec8cd573c7b8aa0a4bdb94a5dffa6cb0d112c80af"
+        },
+        {
+          "parcelId": "andorra-cadastre:{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "objectId": "1474",
+          "attributes": {
+            "GLOBALID": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+            "REF_CADASTRAL_TEXT": "5P001933",
+            "REF_CADASTRAL": "1933",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "parcelId": "andorra-cadastre:{8423177A-EE0B-4184-8CF3-6B77681AD403}",
+          "objectId": "1861",
+          "attributes": {
+            "GLOBALID": "{8423177A-EE0B-4184-8CF3-6B77681AD403}",
+            "REF_CADASTRAL_TEXT": "5P002933",
+            "REF_CADASTRAL": "2933",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "2051aae2219399dd8279b10afc8ea56ef3362f436de9e2234859cf85287bb182"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+          "objectId": "1980",
+          "attributes": {
+            "GLOBALID": "{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+            "REF_CADASTRAL_TEXT": "5P002208",
+            "REF_CADASTRAL": "2208",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "7b42bf1bad2ad0f0c231aaa4eaf433a9ae40ca3a370f11364987518ce645b190"
+        },
+        {
+          "parcelId": "andorra-cadastre:{5BBA4AC0-4587-4347-887A-11FCC52368EC}",
+          "objectId": "2064",
+          "attributes": {
+            "GLOBALID": "{5BBA4AC0-4587-4347-887A-11FCC52368EC}",
+            "REF_CADASTRAL_TEXT": "5P002344",
+            "REF_CADASTRAL": "2344",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "5589bcf566a0b5381d35fa0a72f29b19116ea55f372cc2e757780b8e97d0ee89"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 550,
+      "bbox": [
+        1.5215,
+        42.5085,
+        1.522,
+        42.509
+      ],
+      "featureCount": 11,
+      "manifestCount": 11,
+      "manifestObjectIds": [
+        "397",
+        "992",
+        "1784",
+        "2255",
+        "1497",
+        "1293",
+        "2254",
+        "1498",
+        "1708",
+        "470",
+        "407"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 11,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{6BE493E4-4A3C-4D7B-815B-3497636556E0}",
+          "objectId": "397",
+          "attributes": {
+            "GLOBALID": "{6BE493E4-4A3C-4D7B-815B-3497636556E0}",
+            "REF_CADASTRAL_TEXT": "5P000067",
+            "REF_CADASTRAL": "67",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "7f16b77b02ed3c3a96da7d2dcaa773c43ba8ddd7eccc09a0c101bc431c9f44c8"
+        },
+        {
+          "parcelId": "andorra-cadastre:{97B6BA72-4FD9-4CBC-8852-DAF42D22FCA0}",
+          "objectId": "407",
+          "attributes": {
+            "GLOBALID": "{97B6BA72-4FD9-4CBC-8852-DAF42D22FCA0}",
+            "REF_CADASTRAL_TEXT": "5P000742",
+            "REF_CADASTRAL": "742",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "13270456ebf0bf946dd41ccbca177fe72b379f9c2353277f5cf0b793d0becd95"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "objectId": "470",
+          "attributes": {
+            "GLOBALID": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+            "REF_CADASTRAL_TEXT": "5P000305",
+            "REF_CADASTRAL": "305",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "parcelId": "andorra-cadastre:{CA311473-37AD-4C67-95B7-23A91215D983}",
+          "objectId": "992",
+          "attributes": {
+            "GLOBALID": "{CA311473-37AD-4C67-95B7-23A91215D983}",
+            "REF_CADASTRAL_TEXT": "5P000068",
+            "REF_CADASTRAL": "68",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "537bf67b10549c26b99a5dacb989b37f16974516d196d684797ab284a8359f3c"
+        },
+        {
+          "parcelId": "andorra-cadastre:{B381DD31-055E-4766-A1E3-09A03AE796D3}",
+          "objectId": "1293",
+          "attributes": {
+            "GLOBALID": "{B381DD31-055E-4766-A1E3-09A03AE796D3}",
+            "REF_CADASTRAL_TEXT": "5P000717",
+            "REF_CADASTRAL": "717",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "aebc943d4624dd7c0278c9420a5bbb9aec5cab52027335f001232f659412849e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{07778A5D-4A3C-477E-AF98-BFA498CBC7EB}",
+          "objectId": "1497",
+          "attributes": {
+            "GLOBALID": "{07778A5D-4A3C-477E-AF98-BFA498CBC7EB}",
+            "REF_CADASTRAL_TEXT": "5P001660",
+            "REF_CADASTRAL": "1660",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "04d3e6e757ba581d02d900da571569b9622505b549291082d2f76facb3683f13"
+        },
+        {
+          "parcelId": "andorra-cadastre:{A00F19E1-1225-406D-A6A3-86F4E57D29AC}",
+          "objectId": "1498",
+          "attributes": {
+            "GLOBALID": "{A00F19E1-1225-406D-A6A3-86F4E57D29AC}",
+            "REF_CADASTRAL_TEXT": "5P000744",
+            "REF_CADASTRAL": "744",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "ce3a667bf1a21917b4ea0cbecddeb13a22dff9515656b9fccb91193fb8529acb"
+        },
+        {
+          "parcelId": "andorra-cadastre:{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "objectId": "1708",
+          "attributes": {
+            "GLOBALID": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+            "REF_CADASTRAL_TEXT": "5P000743",
+            "REF_CADASTRAL": "743",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        },
+        {
+          "parcelId": "andorra-cadastre:{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+          "objectId": "1784",
+          "attributes": {
+            "GLOBALID": "{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+            "REF_CADASTRAL_TEXT": "5P000065",
+            "REF_CADASTRAL": "65",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "978fa2f8bb01d4208b7b0399f8e2a27207aaa717a67a51ca856d4259200df9aa"
+        },
+        {
+          "parcelId": "andorra-cadastre:{811DAEF2-A414-424F-A899-3DF9FACCDA3E}",
+          "objectId": "2254",
+          "attributes": {
+            "GLOBALID": "{811DAEF2-A414-424F-A899-3DF9FACCDA3E}",
+            "REF_CADASTRAL_TEXT": "5P000064",
+            "REF_CADASTRAL": "64",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "820b1a5d9c8b5e57ac419c6c59bd1c1e5d38b7e900a5610386e071953ae477a6"
+        },
+        {
+          "parcelId": "andorra-cadastre:{013428A9-0DF3-47DC-9FCC-4390AF9CA687}",
+          "objectId": "2255",
+          "attributes": {
+            "GLOBALID": "{013428A9-0DF3-47DC-9FCC-4390AF9CA687}",
+            "REF_CADASTRAL_TEXT": "5P000066",
+            "REF_CADASTRAL": "66",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "a01c5c237fadcf91d578bbeb26a8aac15d335673a2ddb8ffd78b765d66d10ebd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 562,
+      "bbox": [
+        1.522,
+        42.5085,
+        1.5225,
+        42.509
+      ],
+      "featureCount": 12,
+      "manifestCount": 12,
+      "manifestObjectIds": [
+        "1708",
+        "470",
+        "407",
+        "1261",
+        "471",
+        "410",
+        "411",
+        "1989",
+        "474",
+        "1055",
+        "475",
+        "476"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 12,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{97B6BA72-4FD9-4CBC-8852-DAF42D22FCA0}",
+          "objectId": "407",
+          "attributes": {
+            "GLOBALID": "{97B6BA72-4FD9-4CBC-8852-DAF42D22FCA0}",
+            "REF_CADASTRAL_TEXT": "5P000742",
+            "REF_CADASTRAL": "742",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "13270456ebf0bf946dd41ccbca177fe72b379f9c2353277f5cf0b793d0becd95"
+        },
+        {
+          "parcelId": "andorra-cadastre:{95F0304A-C1AE-4998-A893-B88B7967508C}",
+          "objectId": "410",
+          "attributes": {
+            "GLOBALID": "{95F0304A-C1AE-4998-A893-B88B7967508C}",
+            "REF_CADASTRAL_TEXT": "5P000739",
+            "REF_CADASTRAL": "739",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "93ab58272905adf5e61ed7461a6e2d6c8973abc2511afc95d91cd73b479baa67"
+        },
+        {
+          "parcelId": "andorra-cadastre:{65EEF7FD-07E9-487D-AF62-787B7721FE39}",
+          "objectId": "411",
+          "attributes": {
+            "GLOBALID": "{65EEF7FD-07E9-487D-AF62-787B7721FE39}",
+            "REF_CADASTRAL_TEXT": "5P000740",
+            "REF_CADASTRAL": "740",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "c9a08c424ebd544991f0810d099068f45ae2fb1e9e034497e233b8280600e946"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "objectId": "470",
+          "attributes": {
+            "GLOBALID": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+            "REF_CADASTRAL_TEXT": "5P000305",
+            "REF_CADASTRAL": "305",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "parcelId": "andorra-cadastre:{40AF8556-D644-4EAF-9ACA-0417784BDBD7}",
+          "objectId": "471",
+          "attributes": {
+            "GLOBALID": "{40AF8556-D644-4EAF-9ACA-0417784BDBD7}",
+            "REF_CADASTRAL_TEXT": "5P000304",
+            "REF_CADASTRAL": "304",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "c3a063e83e25c4b9c685f09b105889d44fc12879cc9d7ba00819bf88b7c9b584"
+        },
+        {
+          "parcelId": "andorra-cadastre:{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "objectId": "474",
+          "attributes": {
+            "GLOBALID": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+            "REF_CADASTRAL_TEXT": "5P000303",
+            "REF_CADASTRAL": "000303",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "parcelId": "andorra-cadastre:{39FBF11E-383B-431F-9007-7ACF8D08A4C7}",
+          "objectId": "475",
+          "attributes": {
+            "GLOBALID": "{39FBF11E-383B-431F-9007-7ACF8D08A4C7}",
+            "REF_CADASTRAL_TEXT": "5P000301",
+            "REF_CADASTRAL": "301",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "9e1fdb8e5263dcf732853bd3b6f8a1a93e70e9d7de6c04f269f64daf31e0f15f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{EA9D16F3-833B-4A02-9267-95318D6F2296}",
+          "objectId": "476",
+          "attributes": {
+            "GLOBALID": "{EA9D16F3-833B-4A02-9267-95318D6F2296}",
+            "REF_CADASTRAL_TEXT": "5P000736",
+            "REF_CADASTRAL": "736",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "b2df82727ae1d1a0790f1000e3118bb48fc595c4d9a7612eabdf828f686a028f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D5A2816F-22B8-4B19-BC32-E1CE052C78FA}",
+          "objectId": "1055",
+          "attributes": {
+            "GLOBALID": "{D5A2816F-22B8-4B19-BC32-E1CE052C78FA}",
+            "REF_CADASTRAL_TEXT": "5P000738",
+            "REF_CADASTRAL": "738",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "d4e6f0c133601a1f88a3b0b1cd4deb20ed6c747c63dc77149a4aa6f3d7f7476c"
+        },
+        {
+          "parcelId": "andorra-cadastre:{F47EB407-327F-4B2F-9FD1-EC35BFF0DEDD}",
+          "objectId": "1261",
+          "attributes": {
+            "GLOBALID": "{F47EB407-327F-4B2F-9FD1-EC35BFF0DEDD}",
+            "REF_CADASTRAL_TEXT": "5P000741",
+            "REF_CADASTRAL": "741",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "68e795f7d3ff3e66074662da190f1d50213e2e220f1e75822a5c591e301cf93e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "objectId": "1708",
+          "attributes": {
+            "GLOBALID": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+            "REF_CADASTRAL_TEXT": "5P000743",
+            "REF_CADASTRAL": "743",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D3BBBB4F-C876-4B47-A278-3EDD5A9EE9AE}",
+          "objectId": "1989",
+          "attributes": {
+            "GLOBALID": "{D3BBBB4F-C876-4B47-A278-3EDD5A9EE9AE}",
+            "REF_CADASTRAL_TEXT": "5P002343",
+            "REF_CADASTRAL": "2343",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "14a2ac94dac6ba69c5d02bc3a6f0761385bd4a18c8b77f09a2b72188621c2850"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 817,
+      "bbox": [
+        1.5225,
+        42.5085,
+        1.523,
+        42.509
+      ],
+      "featureCount": 8,
+      "manifestCount": 8,
+      "manifestObjectIds": [
+        "1618",
+        "474",
+        "475",
+        "476",
+        "1283",
+        "1008",
+        "477",
+        "478"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 8,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "objectId": "474",
+          "attributes": {
+            "GLOBALID": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+            "REF_CADASTRAL_TEXT": "5P000303",
+            "REF_CADASTRAL": "000303",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "parcelId": "andorra-cadastre:{39FBF11E-383B-431F-9007-7ACF8D08A4C7}",
+          "objectId": "475",
+          "attributes": {
+            "GLOBALID": "{39FBF11E-383B-431F-9007-7ACF8D08A4C7}",
+            "REF_CADASTRAL_TEXT": "5P000301",
+            "REF_CADASTRAL": "301",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "9e1fdb8e5263dcf732853bd3b6f8a1a93e70e9d7de6c04f269f64daf31e0f15f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{EA9D16F3-833B-4A02-9267-95318D6F2296}",
+          "objectId": "476",
+          "attributes": {
+            "GLOBALID": "{EA9D16F3-833B-4A02-9267-95318D6F2296}",
+            "REF_CADASTRAL_TEXT": "5P000736",
+            "REF_CADASTRAL": "736",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "b2df82727ae1d1a0790f1000e3118bb48fc595c4d9a7612eabdf828f686a028f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+          "objectId": "477",
+          "attributes": {
+            "GLOBALID": "{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+            "REF_CADASTRAL_TEXT": "5P000298",
+            "REF_CADASTRAL": "000298",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "dd1cddefc4410c7bceeef57b9c309f841b8e0c40528afb3b69fba02506529a0b"
+        },
+        {
+          "parcelId": "andorra-cadastre:{25432496-BFBA-4F26-8990-F9C931048374}",
+          "objectId": "478",
+          "attributes": {
+            "GLOBALID": "{25432496-BFBA-4F26-8990-F9C931048374}",
+            "REF_CADASTRAL_TEXT": "5P000288",
+            "REF_CADASTRAL": "000288",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "b65556167893bafc2211b914a4f8cb0128888666f08918eeda289adf0c93cde3"
+        },
+        {
+          "parcelId": "andorra-cadastre:{6244048C-65AE-430D-B6D9-194E63878126}",
+          "objectId": "1008",
+          "attributes": {
+            "GLOBALID": "{6244048C-65AE-430D-B6D9-194E63878126}",
+            "REF_CADASTRAL_TEXT": "5P000904",
+            "REF_CADASTRAL": "904",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "a8c90d4105d0961de00e3d009ba5abbcb3df572494bd9ce19cc12c1958d76729"
+        },
+        {
+          "parcelId": "andorra-cadastre:{A59EDE10-04E6-4C83-B5AB-87179DB94342}",
+          "objectId": "1283",
+          "attributes": {
+            "GLOBALID": "{A59EDE10-04E6-4C83-B5AB-87179DB94342}",
+            "REF_CADASTRAL_TEXT": "5P000300",
+            "REF_CADASTRAL": "300",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "be6dafcfb09544750da3da8e6b46fba4d8120f3b4a851c4443271591ba9e68f2"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "objectId": "1618",
+          "attributes": {
+            "GLOBALID": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+            "REF_CADASTRAL_TEXT": "5P000302",
+            "REF_CADASTRAL": "302",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 658,
+      "bbox": [
+        1.5215,
+        42.509,
+        1.522,
+        42.5095
+      ],
+      "featureCount": 12,
+      "manifestCount": 12,
+      "manifestObjectIds": [
+        "2215",
+        "2218",
+        "466",
+        "1097",
+        "469",
+        "1984",
+        "1343",
+        "1985",
+        "1924",
+        "1784",
+        "2254",
+        "470"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 12,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{3D9D0A91-B798-4630-8924-F73848F25E2A}",
+          "objectId": "466",
+          "attributes": {
+            "GLOBALID": "{3D9D0A91-B798-4630-8924-F73848F25E2A}",
+            "REF_CADASTRAL_TEXT": "5P001522",
+            "REF_CADASTRAL": "1522",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "67e426a3000f7067994ef839cd4e25a8d56104b6676a4bc8a50e245c810d56d6"
+        },
+        {
+          "parcelId": "andorra-cadastre:{AACC68A7-2321-4907-8C51-1068789E0082}",
+          "objectId": "469",
+          "attributes": {
+            "GLOBALID": "{AACC68A7-2321-4907-8C51-1068789E0082}",
+            "REF_CADASTRAL_TEXT": "5P000306",
+            "REF_CADASTRAL": "306",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "7f4041a6723a4cddbae0597cf3e5c0ffa8ca690671ac3609e5c6528e89a55e8c"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "objectId": "470",
+          "attributes": {
+            "GLOBALID": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+            "REF_CADASTRAL_TEXT": "5P000305",
+            "REF_CADASTRAL": "305",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "parcelId": "andorra-cadastre:{F8DBBEF5-49CA-4A61-BF56-77EDAA8DF665}",
+          "objectId": "1097",
+          "attributes": {
+            "GLOBALID": "{F8DBBEF5-49CA-4A61-BF56-77EDAA8DF665}",
+            "REF_CADASTRAL_TEXT": "5P001524",
+            "REF_CADASTRAL": "1524",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "6e517801a62d03661b17899cef555ccfae83d79bbb7f270d3052ab9ffa443ce7"
+        },
+        {
+          "parcelId": "andorra-cadastre:{8C006841-F8C2-46E5-B283-47C642E92E8E}",
+          "objectId": "1343",
+          "attributes": {
+            "GLOBALID": "{8C006841-F8C2-46E5-B283-47C642E92E8E}",
+            "REF_CADASTRAL_TEXT": "5P000389",
+            "REF_CADASTRAL": "389",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "a80ac20e804ebafb9c40438255e3a501901c178f595116238ca49ac06d0fe469"
+        },
+        {
+          "parcelId": "andorra-cadastre:{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+          "objectId": "1784",
+          "attributes": {
+            "GLOBALID": "{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+            "REF_CADASTRAL_TEXT": "5P000065",
+            "REF_CADASTRAL": "65",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "978fa2f8bb01d4208b7b0399f8e2a27207aaa717a67a51ca856d4259200df9aa"
+        },
+        {
+          "parcelId": "andorra-cadastre:{9400D873-C73C-49F6-BFCA-5CE209812B29}",
+          "objectId": "1924",
+          "attributes": {
+            "GLOBALID": "{9400D873-C73C-49F6-BFCA-5CE209812B29}",
+            "REF_CADASTRAL_TEXT": "5P002730",
+            "REF_CADASTRAL": "2730",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "f863cf9fb2ae536eab257162d1c1c5cc71119d52eb5ffc6a3b172f86f7316e6e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{EE495949-5F1A-4084-9C22-75D797FB892D}",
+          "objectId": "1984",
+          "attributes": {
+            "GLOBALID": "{EE495949-5F1A-4084-9C22-75D797FB892D}",
+            "REF_CADASTRAL_TEXT": "5P002755",
+            "REF_CADASTRAL": "2755",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "334f11160229de687567656fd3f3d47ec5b1c1f7f72957f22404d7878f5db36e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+          "objectId": "1985",
+          "attributes": {
+            "GLOBALID": "{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+            "REF_CADASTRAL_TEXT": "5P002756",
+            "REF_CADASTRAL": "2756",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "16d7bdf97b5319d833414047d879a05d0ca6c5ad78cfdeaff4a509c7296efb58"
+        },
+        {
+          "parcelId": "andorra-cadastre:{AC6E51AF-C981-42E7-80F0-33D4075CB63D}",
+          "objectId": "2215",
+          "attributes": {
+            "GLOBALID": "{AC6E51AF-C981-42E7-80F0-33D4075CB63D}",
+            "REF_CADASTRAL_TEXT": "5P002292",
+            "REF_CADASTRAL": "2292",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d3eb0c8240ea3b7187833cb544fecfcdcae4dd22219dab37658ef4e4009d9fb"
+        },
+        {
+          "parcelId": "andorra-cadastre:{DE8987E6-1A6B-4961-B4E9-318793D15E7D}",
+          "objectId": "2218",
+          "attributes": {
+            "GLOBALID": "{DE8987E6-1A6B-4961-B4E9-318793D15E7D}",
+            "REF_CADASTRAL_TEXT": "5P002729",
+            "REF_CADASTRAL": "2729",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "95df722f6ae41ebc9b68c45c1926a4c9ff2eeba2716fd4ff93de6f02b217789e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{811DAEF2-A414-424F-A899-3DF9FACCDA3E}",
+          "objectId": "2254",
+          "attributes": {
+            "GLOBALID": "{811DAEF2-A414-424F-A899-3DF9FACCDA3E}",
+            "REF_CADASTRAL_TEXT": "5P000064",
+            "REF_CADASTRAL": "64",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "820b1a5d9c8b5e57ac419c6c59bd1c1e5d38b7e900a5610386e071953ae477a6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 746,
+      "bbox": [
+        1.522,
+        42.509,
+        1.5225,
+        42.5095
+      ],
+      "featureCount": 8,
+      "manifestCount": 8,
+      "manifestObjectIds": [
+        "469",
+        "1985",
+        "1618",
+        "2004",
+        "470",
+        "471",
+        "474",
+        "1983"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 8,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{AACC68A7-2321-4907-8C51-1068789E0082}",
+          "objectId": "469",
+          "attributes": {
+            "GLOBALID": "{AACC68A7-2321-4907-8C51-1068789E0082}",
+            "REF_CADASTRAL_TEXT": "5P000306",
+            "REF_CADASTRAL": "306",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "7f4041a6723a4cddbae0597cf3e5c0ffa8ca690671ac3609e5c6528e89a55e8c"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "objectId": "470",
+          "attributes": {
+            "GLOBALID": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+            "REF_CADASTRAL_TEXT": "5P000305",
+            "REF_CADASTRAL": "305",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "parcelId": "andorra-cadastre:{40AF8556-D644-4EAF-9ACA-0417784BDBD7}",
+          "objectId": "471",
+          "attributes": {
+            "GLOBALID": "{40AF8556-D644-4EAF-9ACA-0417784BDBD7}",
+            "REF_CADASTRAL_TEXT": "5P000304",
+            "REF_CADASTRAL": "304",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "c3a063e83e25c4b9c685f09b105889d44fc12879cc9d7ba00819bf88b7c9b584"
+        },
+        {
+          "parcelId": "andorra-cadastre:{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "objectId": "474",
+          "attributes": {
+            "GLOBALID": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+            "REF_CADASTRAL_TEXT": "5P000303",
+            "REF_CADASTRAL": "000303",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "objectId": "1618",
+          "attributes": {
+            "GLOBALID": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+            "REF_CADASTRAL_TEXT": "5P000302",
+            "REF_CADASTRAL": "302",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        },
+        {
+          "parcelId": "andorra-cadastre:{5C1D7344-A20D-4725-AFBE-6C1AA53040AF}",
+          "objectId": "1983",
+          "attributes": {
+            "GLOBALID": "{5C1D7344-A20D-4725-AFBE-6C1AA53040AF}",
+            "REF_CADASTRAL_TEXT": "5P002209",
+            "REF_CADASTRAL": "2209",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "9652aa5624a13788c1e1faa431db7bceb95997dd595a24452c524128045f5368"
+        },
+        {
+          "parcelId": "andorra-cadastre:{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+          "objectId": "1985",
+          "attributes": {
+            "GLOBALID": "{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+            "REF_CADASTRAL_TEXT": "5P002756",
+            "REF_CADASTRAL": "2756",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "16d7bdf97b5319d833414047d879a05d0ca6c5ad78cfdeaff4a509c7296efb58"
+        },
+        {
+          "parcelId": "andorra-cadastre:{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+          "objectId": "2004",
+          "attributes": {
+            "GLOBALID": "{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+            "REF_CADASTRAL_TEXT": "5P002765",
+            "REF_CADASTRAL": "002765",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "6d54f97b3b4b6cf89a665747aa3e3dc644e2a2c85e7d9760f0281d31888546dd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 454,
+      "bbox": [
+        1.5225,
+        42.509,
+        1.523,
+        42.5095
+      ],
+      "featureCount": 3,
+      "manifestCount": 3,
+      "manifestObjectIds": [
+        "1618",
+        "2004",
+        "474"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 3,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "objectId": "474",
+          "attributes": {
+            "GLOBALID": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+            "REF_CADASTRAL_TEXT": "5P000303",
+            "REF_CADASTRAL": "000303",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "objectId": "1618",
+          "attributes": {
+            "GLOBALID": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+            "REF_CADASTRAL_TEXT": "5P000302",
+            "REF_CADASTRAL": "302",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        },
+        {
+          "parcelId": "andorra-cadastre:{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+          "objectId": "2004",
+          "attributes": {
+            "GLOBALID": "{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+            "REF_CADASTRAL_TEXT": "5P002765",
+            "REF_CADASTRAL": "002765",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "6d54f97b3b4b6cf89a665747aa3e3dc644e2a2c85e7d9760f0281d31888546dd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 633,
+      "bbox": [
+        1.522,
+        42.5075,
+        1.5225,
+        42.508
+      ],
+      "featureCount": 11,
+      "manifestCount": 11,
+      "manifestObjectIds": [
+        "1826",
+        "1786",
+        "1140",
+        "486",
+        "1474",
+        "1491",
+        "1236",
+        "521",
+        "480",
+        "481",
+        "482"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 11,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{32EC7845-B776-4125-8138-393F77C775D4}",
+          "objectId": "480",
+          "attributes": {
+            "GLOBALID": "{32EC7845-B776-4125-8138-393F77C775D4}",
+            "REF_CADASTRAL_TEXT": "5P000339",
+            "REF_CADASTRAL": "339",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "5be1f74465b39b96f012e4f6fb5dae0e5cc6e72be6db10873f2d7be61eea5415"
+        },
+        {
+          "parcelId": "andorra-cadastre:{67518551-F993-4B47-87E6-87FDEE291518}",
+          "objectId": "481",
+          "attributes": {
+            "GLOBALID": "{67518551-F993-4B47-87E6-87FDEE291518}",
+            "REF_CADASTRAL_TEXT": "5P000342",
+            "REF_CADASTRAL": "342",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "2fb6ab9290d3f233e7fbf9c547ab656a319d48b74fc5eac447136fc6cbe4a140"
+        },
+        {
+          "parcelId": "andorra-cadastre:{5F875EEF-E66B-4963-89FE-8DEB88824306}",
+          "objectId": "482",
+          "attributes": {
+            "GLOBALID": "{5F875EEF-E66B-4963-89FE-8DEB88824306}",
+            "REF_CADASTRAL_TEXT": "5P000344",
+            "REF_CADASTRAL": "344",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "dc45a9f57bc1f00a113d081fae38ec1b0c3326e067d7467bb3455a878f846b1e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "objectId": "486",
+          "attributes": {
+            "GLOBALID": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+            "REF_CADASTRAL_TEXT": "5P000349",
+            "REF_CADASTRAL": "349",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        },
+        {
+          "parcelId": "andorra-cadastre:{7ACD1297-9CB2-46FD-9B9F-1798A902ADAB}",
+          "objectId": "521",
+          "attributes": {
+            "GLOBALID": "{7ACD1297-9CB2-46FD-9B9F-1798A902ADAB}",
+            "REF_CADASTRAL_TEXT": "5P001056",
+            "REF_CADASTRAL": "1056",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "924c40bb722eca9adef7fa8ae1ef086ac3c8918f4d33df0d7274ca1515a980a4"
+        },
+        {
+          "parcelId": "andorra-cadastre:{09CE9DC8-ADD4-4E35-BE04-8E4C717ABD7C}",
+          "objectId": "1140",
+          "attributes": {
+            "GLOBALID": "{09CE9DC8-ADD4-4E35-BE04-8E4C717ABD7C}",
+            "REF_CADASTRAL_TEXT": "5P000340",
+            "REF_CADASTRAL": "340",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "f6f27efffbd47339d905bbbff0b936bb591d54699d48659644266d348befb6f5"
+        },
+        {
+          "parcelId": "andorra-cadastre:{0C410D48-DA32-4012-B8EC-8870A8873781}",
+          "objectId": "1236",
+          "attributes": {
+            "GLOBALID": "{0C410D48-DA32-4012-B8EC-8870A8873781}",
+            "REF_CADASTRAL_TEXT": "5P001057",
+            "REF_CADASTRAL": "1057",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "9290cd3b729d1182475d2a0a95cf7e3b97532e350cd5ba10440abe8453eeb56f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "objectId": "1474",
+          "attributes": {
+            "GLOBALID": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+            "REF_CADASTRAL_TEXT": "5P001933",
+            "REF_CADASTRAL": "1933",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "parcelId": "andorra-cadastre:{CD435D1D-3024-4D14-92F2-7E2082F2CB86}",
+          "objectId": "1491",
+          "attributes": {
+            "GLOBALID": "{CD435D1D-3024-4D14-92F2-7E2082F2CB86}",
+            "REF_CADASTRAL_TEXT": "5P001058",
+            "REF_CADASTRAL": "1058",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "51b3d17b069517dd4a7e2b37ac8bae809845a368d9137aade5528796ebb1535f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "objectId": "1786",
+          "attributes": {
+            "GLOBALID": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+            "REF_CADASTRAL_TEXT": "5P000724",
+            "REF_CADASTRAL": "724",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        },
+        {
+          "parcelId": "andorra-cadastre:{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "objectId": "1826",
+          "attributes": {
+            "GLOBALID": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+            "REF_CADASTRAL_TEXT": "5P000338",
+            "REF_CADASTRAL": "338",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 766,
+      "bbox": [
+        1.522,
+        42.5095,
+        1.5225,
+        42.51
+      ],
+      "featureCount": 6,
+      "manifestCount": 6,
+      "manifestObjectIds": [
+        "1148",
+        "1572",
+        "1985",
+        "1592",
+        "784",
+        "2004"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 6,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{ECA5C70C-33C6-4EB3-B2AA-BEFE043C08FB}",
+          "objectId": "784",
+          "attributes": {
+            "GLOBALID": "{ECA5C70C-33C6-4EB3-B2AA-BEFE043C08FB}",
+            "REF_CADASTRAL_TEXT": "5P001483",
+            "REF_CADASTRAL": "1483",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "5ae17f0f8df74cf59656bc22b4572cbc1b6ffbc891e2442bdccc1ed614b0b758"
+        },
+        {
+          "parcelId": "andorra-cadastre:{A59B1997-8FDA-4128-B7F8-5ED98D31FF1E}",
+          "objectId": "1148",
+          "attributes": {
+            "GLOBALID": "{A59B1997-8FDA-4128-B7F8-5ED98D31FF1E}",
+            "REF_CADASTRAL_TEXT": "5P001531",
+            "REF_CADASTRAL": "1531",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "cbb1f637f3adf30d9441383e7a4f5c22bba9eb5227bf754440f714a6990dc02f"
+        },
+        {
+          "parcelId": "andorra-cadastre:{56171A02-7218-4E6D-8328-62B895DC425A}",
+          "objectId": "1572",
+          "attributes": {
+            "GLOBALID": "{56171A02-7218-4E6D-8328-62B895DC425A}",
+            "REF_CADASTRAL_TEXT": "5P001949",
+            "REF_CADASTRAL": "1949",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "725db1724c861bb62da835e7b0f65f6c24332b3321e4d85c33099b509f87be41"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4ACED624-7E16-4C95-B6BA-47B29A5CE241}",
+          "objectId": "1592",
+          "attributes": {
+            "GLOBALID": "{4ACED624-7E16-4C95-B6BA-47B29A5CE241}",
+            "REF_CADASTRAL_TEXT": "5P001519",
+            "REF_CADASTRAL": "1519",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "929979f9c9777558e6953060556564b9c853666b69a9580b5544cf1e12aecbbd"
+        },
+        {
+          "parcelId": "andorra-cadastre:{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+          "objectId": "1985",
+          "attributes": {
+            "GLOBALID": "{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+            "REF_CADASTRAL_TEXT": "5P002756",
+            "REF_CADASTRAL": "2756",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "16d7bdf97b5319d833414047d879a05d0ca6c5ad78cfdeaff4a509c7296efb58"
+        },
+        {
+          "parcelId": "andorra-cadastre:{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+          "objectId": "2004",
+          "attributes": {
+            "GLOBALID": "{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+            "REF_CADASTRAL_TEXT": "5P002765",
+            "REF_CADASTRAL": "002765",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "6d54f97b3b4b6cf89a665747aa3e3dc644e2a2c85e7d9760f0281d31888546dd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 948,
+      "bbox": [
+        1.521,
+        42.5085,
+        1.5215,
+        42.509
+      ],
+      "featureCount": 10,
+      "manifestCount": 10,
+      "manifestObjectIds": [
+        "1132",
+        "1924",
+        "1941",
+        "396",
+        "430",
+        "1508",
+        "397",
+        "992",
+        "1784",
+        "2255"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 10,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{C308755A-F5A7-4B53-B687-B78FC5C8F7E9}",
+          "objectId": "396",
+          "attributes": {
+            "GLOBALID": "{C308755A-F5A7-4B53-B687-B78FC5C8F7E9}",
+            "REF_CADASTRAL_TEXT": "5P000071",
+            "REF_CADASTRAL": "71",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "944d9f2cf03e4f43a06ec9172a44f0e395b9979bc660d9521c7028f0e8184055"
+        },
+        {
+          "parcelId": "andorra-cadastre:{6BE493E4-4A3C-4D7B-815B-3497636556E0}",
+          "objectId": "397",
+          "attributes": {
+            "GLOBALID": "{6BE493E4-4A3C-4D7B-815B-3497636556E0}",
+            "REF_CADASTRAL_TEXT": "5P000067",
+            "REF_CADASTRAL": "67",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "7f16b77b02ed3c3a96da7d2dcaa773c43ba8ddd7eccc09a0c101bc431c9f44c8"
+        },
+        {
+          "parcelId": "andorra-cadastre:{45C3481D-C158-43F8-A9F3-F9CE3488938C}",
+          "objectId": "430",
+          "attributes": {
+            "GLOBALID": "{45C3481D-C158-43F8-A9F3-F9CE3488938C}",
+            "REF_CADASTRAL_TEXT": "5P000070",
+            "REF_CADASTRAL": "70",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "4999a80f424639c79d7a06bef3a85b0e9ba7e67abe84e84cb6ab5980bea23c8d"
+        },
+        {
+          "parcelId": "andorra-cadastre:{CA311473-37AD-4C67-95B7-23A91215D983}",
+          "objectId": "992",
+          "attributes": {
+            "GLOBALID": "{CA311473-37AD-4C67-95B7-23A91215D983}",
+            "REF_CADASTRAL_TEXT": "5P000068",
+            "REF_CADASTRAL": "68",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "537bf67b10549c26b99a5dacb989b37f16974516d196d684797ab284a8359f3c"
+        },
+        {
+          "parcelId": "andorra-cadastre:{EB6B4A85-F54E-4461-814C-1BEAE4139F5C}",
+          "objectId": "1132",
+          "attributes": {
+            "GLOBALID": "{EB6B4A85-F54E-4461-814C-1BEAE4139F5C}",
+            "REF_CADASTRAL_TEXT": "5P000073",
+            "REF_CADASTRAL": "73",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "658036b7c31684204805ec5d8f4c2c8d4f9eb6406dad9fc14b528833c25d25e1"
+        },
+        {
+          "parcelId": "andorra-cadastre:{DD0EE8A5-42F3-4EE5-B7B8-43ED6387CA04}",
+          "objectId": "1508",
+          "attributes": {
+            "GLOBALID": "{DD0EE8A5-42F3-4EE5-B7B8-43ED6387CA04}",
+            "REF_CADASTRAL_TEXT": "5P000069",
+            "REF_CADASTRAL": "69",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "cb57f146ff17147b3e893e8d6b4ca3fcbcce6c03c5f40510cb5a90eaa3395290"
+        },
+        {
+          "parcelId": "andorra-cadastre:{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+          "objectId": "1784",
+          "attributes": {
+            "GLOBALID": "{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+            "REF_CADASTRAL_TEXT": "5P000065",
+            "REF_CADASTRAL": "65",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "978fa2f8bb01d4208b7b0399f8e2a27207aaa717a67a51ca856d4259200df9aa"
+        },
+        {
+          "parcelId": "andorra-cadastre:{9400D873-C73C-49F6-BFCA-5CE209812B29}",
+          "objectId": "1924",
+          "attributes": {
+            "GLOBALID": "{9400D873-C73C-49F6-BFCA-5CE209812B29}",
+            "REF_CADASTRAL_TEXT": "5P002730",
+            "REF_CADASTRAL": "2730",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "f863cf9fb2ae536eab257162d1c1c5cc71119d52eb5ffc6a3b172f86f7316e6e"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D53486DA-B4A9-479D-AE6D-6DAF408BB3C3}",
+          "objectId": "1941",
+          "attributes": {
+            "GLOBALID": "{D53486DA-B4A9-479D-AE6D-6DAF408BB3C3}",
+            "REF_CADASTRAL_TEXT": "5P002747",
+            "REF_CADASTRAL": "2747",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "c5eb50d54b4a331efa532f780f0e9f6be431df4777c9cde02c279b571bd089b0"
+        },
+        {
+          "parcelId": "andorra-cadastre:{013428A9-0DF3-47DC-9FCC-4390AF9CA687}",
+          "objectId": "2255",
+          "attributes": {
+            "GLOBALID": "{013428A9-0DF3-47DC-9FCC-4390AF9CA687}",
+            "REF_CADASTRAL_TEXT": "5P000066",
+            "REF_CADASTRAL": "66",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "a01c5c237fadcf91d578bbeb26a8aac15d335673a2ddb8ffd78b765d66d10ebd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 602,
+      "bbox": [
+        1.523,
+        42.5085,
+        1.5235,
+        42.509
+      ],
+      "featureCount": 6,
+      "manifestCount": 6,
+      "manifestObjectIds": [
+        "1618",
+        "477",
+        "478",
+        "1982",
+        "1981",
+        "487"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 6,
+      "ids": [
+        {
+          "parcelId": "andorra-cadastre:{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+          "objectId": "477",
+          "attributes": {
+            "GLOBALID": "{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+            "REF_CADASTRAL_TEXT": "5P000298",
+            "REF_CADASTRAL": "000298",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "dd1cddefc4410c7bceeef57b9c309f841b8e0c40528afb3b69fba02506529a0b"
+        },
+        {
+          "parcelId": "andorra-cadastre:{25432496-BFBA-4F26-8990-F9C931048374}",
+          "objectId": "478",
+          "attributes": {
+            "GLOBALID": "{25432496-BFBA-4F26-8990-F9C931048374}",
+            "REF_CADASTRAL_TEXT": "5P000288",
+            "REF_CADASTRAL": "000288",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "b65556167893bafc2211b914a4f8cb0128888666f08918eeda289adf0c93cde3"
+        },
+        {
+          "parcelId": "andorra-cadastre:{4197615C-F29F-4778-AA78-271CA49A79F1}",
+          "objectId": "487",
+          "attributes": {
+            "GLOBALID": "{4197615C-F29F-4778-AA78-271CA49A79F1}",
+            "REF_CADASTRAL_TEXT": "5P000299",
+            "REF_CADASTRAL": "000299",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "dcb2606accc4ca70ef81d9063f867077e82a5e53ff9ed4a0f506298677442b42"
+        },
+        {
+          "parcelId": "andorra-cadastre:{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "objectId": "1618",
+          "attributes": {
+            "GLOBALID": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+            "REF_CADASTRAL_TEXT": "5P000302",
+            "REF_CADASTRAL": "302",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        },
+        {
+          "parcelId": "andorra-cadastre:{615F5A57-AEAF-4EBE-9893-06F45993F181}",
+          "objectId": "1981",
+          "attributes": {
+            "GLOBALID": "{615F5A57-AEAF-4EBE-9893-06F45993F181}",
+            "REF_CADASTRAL_TEXT": "5P002718",
+            "REF_CADASTRAL": "2718",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "16400f717549cf9fd6cdb796b454c7907aff364dc13927bcca25e554547b31d6"
+        },
+        {
+          "parcelId": "andorra-cadastre:{962A8C34-B425-4A39-BAB6-1C99DE1CDCEC}",
+          "objectId": "1982",
+          "attributes": {
+            "GLOBALID": "{962A8C34-B425-4A39-BAB6-1C99DE1CDCEC}",
+            "REF_CADASTRAL_TEXT": "5P002202",
+            "REF_CADASTRAL": "2202",
+            "DATA_BAIXA": null,
+            "TIPUS": "P"
+          },
+          "geometrySha256": "25b6b4764e782e1bf3c3f4ff6acb729b88bd875b1224512b8f49a0a588a15f95"
+        }
+      ]
+    },
+    {
+      "name": "fresh-exact-batch-1",
+      "passed": true,
+      "elapsedMs": 1456,
+      "nativeIdCount": 80,
+      "objectIdCount": 80,
+      "requestCount": 3,
+      "complete": true,
+      "allHashesMatch": true
+    },
+    {
+      "name": "forced-page-size-3",
+      "passed": true,
+      "elapsedMs": 2131,
+      "bbox": [
+        1.522,
+        42.508,
+        1.5225,
+        42.5085
+      ],
+      "featureCount": 18,
+      "pageSize": 3,
+      "geometryPages": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "explicit-absent-id",
+      "passed": true,
+      "elapsedMs": 311,
+      "absentId": "andorra-cadastre:{FFFFFFFF-FFFF-4FFF-8FFF-FFFFFFFFFFFF}",
+      "complete": true,
+      "absentIds": [
+        "andorra-cadastre:{FFFFFFFF-FFFF-4FFF-8FFF-FFFFFFFFFFFF}"
+      ]
+    },
+    {
+      "name": "footprint-read",
+      "passed": true,
+      "elapsedMs": 803,
+      "parcelId": "andorra-cadastre:{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+      "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8",
+      "intersectingFeatureCount": 3,
+      "complete": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 833,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "selectedParcelId": "andorra-cadastre:{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+      "siteM2": 187.22
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:30:04.899Z",
+      "test": "viewport-0",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532992.814513607%2C23461.625964356936%2C533034.4677662052%2C23517.58669414083&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1058,
+      "count": 11
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:05.961Z",
+      "test": "viewport-0",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532992.814513607%2C23461.625964356936%2C533034.4677662052%2C23517.58669414083&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 176,
+      "manifestCount": 11,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "428",
+        "441",
+        "1497",
+        "442",
+        "1293",
+        "1708",
+        "402",
+        "1049",
+        "400",
+        "401",
+        "403"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:06.138Z",
+      "test": "viewport-0",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=428%2C441%2C1497%2C442%2C1293%2C1708%2C402%2C1049%2C400%2C401%2C403",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 154,
+      "featureCount": 11,
+      "rows": [
+        {
+          "objectId": "400",
+          "nativeId": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "objectId": "401",
+          "nativeId": "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "objectId": "402",
+          "nativeId": "{01061953-53F4-4211-8F4D-8BF5924EBFE5}",
+          "geometrySha256": "1283513003f7cdc1a32e856d9c65a140943c4eef22ffaccd7f3636963adee317"
+        },
+        {
+          "objectId": "403",
+          "nativeId": "{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+          "geometrySha256": "f4d814993792f6ef5ec5b298ea5ed81705820b47a9f746b1d5a48d70a0ec1fbf"
+        },
+        {
+          "objectId": "428",
+          "nativeId": "{DE311BD8-D678-430A-8073-B19424E046E4}",
+          "geometrySha256": "13b7e6695e72f43d67be92e09c7c09074c847b7cd7cf118ccbcca822cfa15261"
+        },
+        {
+          "objectId": "441",
+          "nativeId": "{A802BACD-29E7-4475-9783-A87C034C8067}",
+          "geometrySha256": "c54493f50e97a1126048745dc48665cb8f90a79b432ad0eba0201229a3aef5e8"
+        },
+        {
+          "objectId": "442",
+          "nativeId": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "objectId": "1049",
+          "nativeId": "{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+          "geometrySha256": "c7ca76076e5bc8c4fd66be8325bdb06ce819e8f6b10277b79f1f8e7958c92a34"
+        },
+        {
+          "objectId": "1293",
+          "nativeId": "{B381DD31-055E-4766-A1E3-09A03AE796D3}",
+          "geometrySha256": "aebc943d4624dd7c0278c9420a5bbb9aec5cab52027335f001232f659412849e"
+        },
+        {
+          "objectId": "1497",
+          "nativeId": "{07778A5D-4A3C-477E-AF98-BFA498CBC7EB}",
+          "geometrySha256": "04d3e6e757ba581d02d900da571569b9622505b549291082d2f76facb3683f13"
+        },
+        {
+          "objectId": "1708",
+          "nativeId": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:06.295Z",
+      "test": "viewport-1",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533033.9176835688%2C23461.219092393847%2C533075.5706012606%2C23517.179575896385&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 490,
+      "count": 18
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:06.786Z",
+      "test": "viewport-1",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533033.9176835688%2C23461.219092393847%2C533075.5706012606%2C23517.179575896385&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 152,
+      "manifestCount": 18,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "442",
+        "1708",
+        "1049",
+        "1826",
+        "400",
+        "401",
+        "403",
+        "404",
+        "1786",
+        "410",
+        "1785",
+        "1260",
+        "406",
+        "405",
+        "486",
+        "1474",
+        "479",
+        "1980"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:06.939Z",
+      "test": "viewport-1",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=442%2C1708%2C1049%2C1826%2C400%2C401%2C403%2C404%2C1786%2C410%2C1785%2C1260%2C406%2C405%2C486%2C1474%2C479%2C1980",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 311,
+      "featureCount": 18,
+      "rows": [
+        {
+          "objectId": "400",
+          "nativeId": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "objectId": "401",
+          "nativeId": "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "objectId": "403",
+          "nativeId": "{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+          "geometrySha256": "f4d814993792f6ef5ec5b298ea5ed81705820b47a9f746b1d5a48d70a0ec1fbf"
+        },
+        {
+          "objectId": "404",
+          "nativeId": "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+          "geometrySha256": "4b8d7e64f31d2eca35c76aff9cf538603f775d8637ee1840e790950dc2c67828"
+        },
+        {
+          "objectId": "405",
+          "nativeId": "{6159323E-ACEF-4AD8-B15A-388F9EC5920C}",
+          "geometrySha256": "7c9e200bf012ac09c82746002fb7887b78a0518086a58bf1721fc938d4c17f50"
+        },
+        {
+          "objectId": "406",
+          "nativeId": "{AF2B8935-D93E-4286-8649-83EF5AB2A1C9}",
+          "geometrySha256": "f7fdb656108ed72b259cb6cd6a06a263dd16d58cda4b32978472c1f212299545"
+        },
+        {
+          "objectId": "410",
+          "nativeId": "{95F0304A-C1AE-4998-A893-B88B7967508C}",
+          "geometrySha256": "93ab58272905adf5e61ed7461a6e2d6c8973abc2511afc95d91cd73b479baa67"
+        },
+        {
+          "objectId": "442",
+          "nativeId": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "objectId": "479",
+          "nativeId": "{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+          "geometrySha256": "b6a5d1d416dd48bfd2c267562d64f626e4a3ae5191d9f6e02b13b221f36e0bc8"
+        },
+        {
+          "objectId": "486",
+          "nativeId": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        },
+        {
+          "objectId": "1049",
+          "nativeId": "{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+          "geometrySha256": "c7ca76076e5bc8c4fd66be8325bdb06ce819e8f6b10277b79f1f8e7958c92a34"
+        },
+        {
+          "objectId": "1260",
+          "nativeId": "{CE6E6FB7-6536-4BAD-AC59-0ED5432802AB}",
+          "geometrySha256": "697e71c62caae6613bfaae4daaf07eb80bc4af3ea2da27540916928ed7db440c"
+        },
+        {
+          "objectId": "1474",
+          "nativeId": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "objectId": "1708",
+          "nativeId": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        },
+        {
+          "objectId": "1785",
+          "nativeId": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+          "geometrySha256": "04b6a1664851a897b3cc778b3e196840522d34857630e347500132ea5640b80f"
+        },
+        {
+          "objectId": "1786",
+          "nativeId": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        },
+        {
+          "objectId": "1826",
+          "nativeId": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        },
+        {
+          "objectId": "1980",
+          "nativeId": "{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+          "geometrySha256": "7b42bf1bad2ad0f0c231aaa4eaf433a9ae40ca3a370f11364987518ce645b190"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:07.256Z",
+      "test": "viewport-2",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533075.020856%2C23460.812470045872%2C533116.6734387839%2C23516.772707268916&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 170,
+      "count": 13
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:07.427Z",
+      "test": "viewport-2",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533075.020856%2C23460.812470045872%2C533116.6734387839%2C23516.772707268916&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 859,
+      "manifestCount": 13,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "486",
+        "1474",
+        "479",
+        "1980",
+        "1861",
+        "1457",
+        "2064",
+        "1008",
+        "485",
+        "1354",
+        "477",
+        "1056",
+        "478"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:08.287Z",
+      "test": "viewport-2",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=486%2C1474%2C479%2C1980%2C1861%2C1457%2C2064%2C1008%2C485%2C1354%2C477%2C1056%2C478",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 269,
+      "featureCount": 13,
+      "rows": [
+        {
+          "objectId": "477",
+          "nativeId": "{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+          "geometrySha256": "dd1cddefc4410c7bceeef57b9c309f841b8e0c40528afb3b69fba02506529a0b"
+        },
+        {
+          "objectId": "478",
+          "nativeId": "{25432496-BFBA-4F26-8990-F9C931048374}",
+          "geometrySha256": "b65556167893bafc2211b914a4f8cb0128888666f08918eeda289adf0c93cde3"
+        },
+        {
+          "objectId": "479",
+          "nativeId": "{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+          "geometrySha256": "b6a5d1d416dd48bfd2c267562d64f626e4a3ae5191d9f6e02b13b221f36e0bc8"
+        },
+        {
+          "objectId": "485",
+          "nativeId": "{2B72D2A0-B838-4EB2-A26B-5CE5D19A226F}",
+          "geometrySha256": "9cf6062336c6f3143911f163f201088b55a0d63967d5cc3ef71011d948dd5534"
+        },
+        {
+          "objectId": "486",
+          "nativeId": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        },
+        {
+          "objectId": "1008",
+          "nativeId": "{6244048C-65AE-430D-B6D9-194E63878126}",
+          "geometrySha256": "a8c90d4105d0961de00e3d009ba5abbcb3df572494bd9ce19cc12c1958d76729"
+        },
+        {
+          "objectId": "1056",
+          "nativeId": "{E68187AF-D6A3-4D63-9138-183BFBCF2081}",
+          "geometrySha256": "50561574ea0c1e4f4b2255d748bfb27a0e7302c7ab572cf0e06cae6a4d689cbd"
+        },
+        {
+          "objectId": "1354",
+          "nativeId": "{46ECE478-3669-4715-AA95-C35113294009}",
+          "geometrySha256": "a97f508c56617396aa0eabef877c04de6f6568698a81a26d9b7155fcda3d34e4"
+        },
+        {
+          "objectId": "1457",
+          "nativeId": "{D5582995-4502-4C99-9739-3BF439B05083}",
+          "geometrySha256": "96243330ce1b9db57dcf98fec8cd573c7b8aa0a4bdb94a5dffa6cb0d112c80af"
+        },
+        {
+          "objectId": "1474",
+          "nativeId": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "objectId": "1861",
+          "nativeId": "{8423177A-EE0B-4184-8CF3-6B77681AD403}",
+          "geometrySha256": "2051aae2219399dd8279b10afc8ea56ef3362f436de9e2234859cf85287bb182"
+        },
+        {
+          "objectId": "1980",
+          "nativeId": "{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+          "geometrySha256": "7b42bf1bad2ad0f0c231aaa4eaf433a9ae40ca3a370f11364987518ce645b190"
+        },
+        {
+          "objectId": "2064",
+          "nativeId": "{5BBA4AC0-4587-4347-887A-11FCC52368EC}",
+          "geometrySha256": "5589bcf566a0b5381d35fa0a72f29b19116ea55f372cc2e757780b8e97d0ee89"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:08.560Z",
+      "test": "viewport-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532993.3649336193%2C23517.179575896385%2C533035.0178487628%2C23573.14029396104&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 146,
+      "count": 11
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:08.707Z",
+      "test": "viewport-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532993.3649336193%2C23517.179575896385%2C533035.0178487628%2C23573.14029396104&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 148,
+      "manifestCount": 11,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "397",
+        "992",
+        "1784",
+        "2255",
+        "1497",
+        "1293",
+        "2254",
+        "1498",
+        "1708",
+        "470",
+        "407"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:08.856Z",
+      "test": "viewport-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=397%2C992%2C1784%2C2255%2C1497%2C1293%2C2254%2C1498%2C1708%2C470%2C407",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 252,
+      "featureCount": 11,
+      "rows": [
+        {
+          "objectId": "397",
+          "nativeId": "{6BE493E4-4A3C-4D7B-815B-3497636556E0}",
+          "geometrySha256": "7f16b77b02ed3c3a96da7d2dcaa773c43ba8ddd7eccc09a0c101bc431c9f44c8"
+        },
+        {
+          "objectId": "407",
+          "nativeId": "{97B6BA72-4FD9-4CBC-8852-DAF42D22FCA0}",
+          "geometrySha256": "13270456ebf0bf946dd41ccbca177fe72b379f9c2353277f5cf0b793d0becd95"
+        },
+        {
+          "objectId": "470",
+          "nativeId": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "objectId": "992",
+          "nativeId": "{CA311473-37AD-4C67-95B7-23A91215D983}",
+          "geometrySha256": "537bf67b10549c26b99a5dacb989b37f16974516d196d684797ab284a8359f3c"
+        },
+        {
+          "objectId": "1293",
+          "nativeId": "{B381DD31-055E-4766-A1E3-09A03AE796D3}",
+          "geometrySha256": "aebc943d4624dd7c0278c9420a5bbb9aec5cab52027335f001232f659412849e"
+        },
+        {
+          "objectId": "1497",
+          "nativeId": "{07778A5D-4A3C-477E-AF98-BFA498CBC7EB}",
+          "geometrySha256": "04d3e6e757ba581d02d900da571569b9622505b549291082d2f76facb3683f13"
+        },
+        {
+          "objectId": "1498",
+          "nativeId": "{A00F19E1-1225-406D-A6A3-86F4E57D29AC}",
+          "geometrySha256": "ce3a667bf1a21917b4ea0cbecddeb13a22dff9515656b9fccb91193fb8529acb"
+        },
+        {
+          "objectId": "1708",
+          "nativeId": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        },
+        {
+          "objectId": "1784",
+          "nativeId": "{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+          "geometrySha256": "978fa2f8bb01d4208b7b0399f8e2a27207aaa717a67a51ca856d4259200df9aa"
+        },
+        {
+          "objectId": "2254",
+          "nativeId": "{811DAEF2-A414-424F-A899-3DF9FACCDA3E}",
+          "geometrySha256": "820b1a5d9c8b5e57ac419c6c59bd1c1e5d38b7e900a5610386e071953ae477a6"
+        },
+        {
+          "objectId": "2255",
+          "nativeId": "{013428A9-0DF3-47DC-9FCC-4390AF9CA687}",
+          "geometrySha256": "a01c5c237fadcf91d578bbeb26a8aac15d335673a2ddb8ffd78b765d66d10ebd"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:09.111Z",
+      "test": "viewport-4",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533034.4677662052%2C23516.772707268916%2C533076.1203464423%2C23572.73317905498&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 152,
+      "count": 12
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:09.264Z",
+      "test": "viewport-4",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533034.4677662052%2C23516.772707268916%2C533076.1203464423%2C23572.73317905498&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 148,
+      "manifestCount": 12,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1708",
+        "470",
+        "407",
+        "1261",
+        "471",
+        "410",
+        "411",
+        "1989",
+        "474",
+        "1055",
+        "475",
+        "476"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:09.413Z",
+      "test": "viewport-4",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1708%2C470%2C407%2C1261%2C471%2C410%2C411%2C1989%2C474%2C1055%2C475%2C476",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 147,
+      "featureCount": 12,
+      "rows": [
+        {
+          "objectId": "407",
+          "nativeId": "{97B6BA72-4FD9-4CBC-8852-DAF42D22FCA0}",
+          "geometrySha256": "13270456ebf0bf946dd41ccbca177fe72b379f9c2353277f5cf0b793d0becd95"
+        },
+        {
+          "objectId": "410",
+          "nativeId": "{95F0304A-C1AE-4998-A893-B88B7967508C}",
+          "geometrySha256": "93ab58272905adf5e61ed7461a6e2d6c8973abc2511afc95d91cd73b479baa67"
+        },
+        {
+          "objectId": "411",
+          "nativeId": "{65EEF7FD-07E9-487D-AF62-787B7721FE39}",
+          "geometrySha256": "c9a08c424ebd544991f0810d099068f45ae2fb1e9e034497e233b8280600e946"
+        },
+        {
+          "objectId": "470",
+          "nativeId": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "objectId": "471",
+          "nativeId": "{40AF8556-D644-4EAF-9ACA-0417784BDBD7}",
+          "geometrySha256": "c3a063e83e25c4b9c685f09b105889d44fc12879cc9d7ba00819bf88b7c9b584"
+        },
+        {
+          "objectId": "474",
+          "nativeId": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "objectId": "475",
+          "nativeId": "{39FBF11E-383B-431F-9007-7ACF8D08A4C7}",
+          "geometrySha256": "9e1fdb8e5263dcf732853bd3b6f8a1a93e70e9d7de6c04f269f64daf31e0f15f"
+        },
+        {
+          "objectId": "476",
+          "nativeId": "{EA9D16F3-833B-4A02-9267-95318D6F2296}",
+          "geometrySha256": "b2df82727ae1d1a0790f1000e3118bb48fc595c4d9a7612eabdf828f686a028f"
+        },
+        {
+          "objectId": "1055",
+          "nativeId": "{D5A2816F-22B8-4B19-BC32-E1CE052C78FA}",
+          "geometrySha256": "d4e6f0c133601a1f88a3b0b1cd4deb20ed6c747c63dc77149a4aa6f3d7f7476c"
+        },
+        {
+          "objectId": "1261",
+          "nativeId": "{F47EB407-327F-4B2F-9FD1-EC35BFF0DEDD}",
+          "geometrySha256": "68e795f7d3ff3e66074662da190f1d50213e2e220f1e75822a5c591e301cf93e"
+        },
+        {
+          "objectId": "1708",
+          "nativeId": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        },
+        {
+          "objectId": "1989",
+          "nativeId": "{D3BBBB4F-C876-4B47-A278-3EDD5A9EE9AE}",
+          "geometrySha256": "14a2ac94dac6ba69c5d02bc3a6f0761385bd4a18c8b77f09a2b72188621c2850"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:09.675Z",
+      "test": "viewport-5",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533075.5706012606%2C23516.36608825557%2C533117.2228465897%2C23572.32631376214&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 153,
+      "count": 8
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:09.830Z",
+      "test": "viewport-5",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533075.5706012606%2C23516.36608825557%2C533117.2228465897%2C23572.32631376214&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 503,
+      "manifestCount": 8,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1618",
+        "474",
+        "475",
+        "476",
+        "1283",
+        "1008",
+        "477",
+        "478"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:10.336Z",
+      "test": "viewport-5",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1618%2C474%2C475%2C476%2C1283%2C1008%2C477%2C478",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 154,
+      "featureCount": 8,
+      "rows": [
+        {
+          "objectId": "474",
+          "nativeId": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "objectId": "475",
+          "nativeId": "{39FBF11E-383B-431F-9007-7ACF8D08A4C7}",
+          "geometrySha256": "9e1fdb8e5263dcf732853bd3b6f8a1a93e70e9d7de6c04f269f64daf31e0f15f"
+        },
+        {
+          "objectId": "476",
+          "nativeId": "{EA9D16F3-833B-4A02-9267-95318D6F2296}",
+          "geometrySha256": "b2df82727ae1d1a0790f1000e3118bb48fc595c4d9a7612eabdf828f686a028f"
+        },
+        {
+          "objectId": "477",
+          "nativeId": "{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+          "geometrySha256": "dd1cddefc4410c7bceeef57b9c309f841b8e0c40528afb3b69fba02506529a0b"
+        },
+        {
+          "objectId": "478",
+          "nativeId": "{25432496-BFBA-4F26-8990-F9C931048374}",
+          "geometrySha256": "b65556167893bafc2211b914a4f8cb0128888666f08918eeda289adf0c93cde3"
+        },
+        {
+          "objectId": "1008",
+          "nativeId": "{6244048C-65AE-430D-B6D9-194E63878126}",
+          "geometrySha256": "a8c90d4105d0961de00e3d009ba5abbcb3df572494bd9ce19cc12c1958d76729"
+        },
+        {
+          "objectId": "1283",
+          "nativeId": "{A59EDE10-04E6-4C83-B5AB-87179DB94342}",
+          "geometrySha256": "be6dafcfb09544750da3da8e6b46fba4d8120f3b4a851c4443271591ba9e68f2"
+        },
+        {
+          "objectId": "1618",
+          "nativeId": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:10.494Z",
+      "test": "viewport-6",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532993.9153535527%2C23572.73317905498%2C533035.5679312416%2C23628.693885406858&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 145,
+      "count": 12
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:10.640Z",
+      "test": "viewport-6",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532993.9153535527%2C23572.73317905498%2C533035.5679312416%2C23628.693885406858&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 144,
+      "manifestCount": 12,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "2215",
+        "2218",
+        "466",
+        "1097",
+        "469",
+        "1984",
+        "1343",
+        "1985",
+        "1924",
+        "1784",
+        "2254",
+        "470"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:10.785Z",
+      "test": "viewport-6",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=2215%2C2218%2C466%2C1097%2C469%2C1984%2C1343%2C1985%2C1924%2C1784%2C2254%2C470",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 366,
+      "featureCount": 12,
+      "rows": [
+        {
+          "objectId": "466",
+          "nativeId": "{3D9D0A91-B798-4630-8924-F73848F25E2A}",
+          "geometrySha256": "67e426a3000f7067994ef839cd4e25a8d56104b6676a4bc8a50e245c810d56d6"
+        },
+        {
+          "objectId": "469",
+          "nativeId": "{AACC68A7-2321-4907-8C51-1068789E0082}",
+          "geometrySha256": "7f4041a6723a4cddbae0597cf3e5c0ffa8ca690671ac3609e5c6528e89a55e8c"
+        },
+        {
+          "objectId": "470",
+          "nativeId": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "objectId": "1097",
+          "nativeId": "{F8DBBEF5-49CA-4A61-BF56-77EDAA8DF665}",
+          "geometrySha256": "6e517801a62d03661b17899cef555ccfae83d79bbb7f270d3052ab9ffa443ce7"
+        },
+        {
+          "objectId": "1343",
+          "nativeId": "{8C006841-F8C2-46E5-B283-47C642E92E8E}",
+          "geometrySha256": "a80ac20e804ebafb9c40438255e3a501901c178f595116238ca49ac06d0fe469"
+        },
+        {
+          "objectId": "1784",
+          "nativeId": "{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+          "geometrySha256": "978fa2f8bb01d4208b7b0399f8e2a27207aaa717a67a51ca856d4259200df9aa"
+        },
+        {
+          "objectId": "1924",
+          "nativeId": "{9400D873-C73C-49F6-BFCA-5CE209812B29}",
+          "geometrySha256": "f863cf9fb2ae536eab257162d1c1c5cc71119d52eb5ffc6a3b172f86f7316e6e"
+        },
+        {
+          "objectId": "1984",
+          "nativeId": "{EE495949-5F1A-4084-9C22-75D797FB892D}",
+          "geometrySha256": "334f11160229de687567656fd3f3d47ec5b1c1f7f72957f22404d7878f5db36e"
+        },
+        {
+          "objectId": "1985",
+          "nativeId": "{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+          "geometrySha256": "16d7bdf97b5319d833414047d879a05d0ca6c5ad78cfdeaff4a509c7296efb58"
+        },
+        {
+          "objectId": "2215",
+          "nativeId": "{AC6E51AF-C981-42E7-80F0-33D4075CB63D}",
+          "geometrySha256": "3d3eb0c8240ea3b7187833cb544fecfcdcae4dd22219dab37658ef4e4009d9fb"
+        },
+        {
+          "objectId": "2218",
+          "nativeId": "{DE8987E6-1A6B-4961-B4E9-318793D15E7D}",
+          "geometrySha256": "95df722f6ae41ebc9b68c45c1926a4c9ff2eeba2716fd4ff93de6f02b217789e"
+        },
+        {
+          "objectId": "2254",
+          "nativeId": "{811DAEF2-A414-424F-A899-3DF9FACCDA3E}",
+          "geometrySha256": "820b1a5d9c8b5e57ac419c6c59bd1c1e5d38b7e900a5610386e071953ae477a6"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:11.154Z",
+      "test": "viewport-7",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533035.0178487628%2C23572.32631376214%2C533076.6700915452%2C23628.286773838277&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 153,
+      "count": 8
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:11.308Z",
+      "test": "viewport-7",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533035.0178487628%2C23572.32631376214%2C533076.6700915452%2C23628.286773838277&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 149,
+      "manifestCount": 8,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "469",
+        "1985",
+        "1618",
+        "2004",
+        "470",
+        "471",
+        "474",
+        "1983"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:11.458Z",
+      "test": "viewport-7",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=469%2C1985%2C1618%2C2004%2C470%2C471%2C474%2C1983",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 439,
+      "featureCount": 8,
+      "rows": [
+        {
+          "objectId": "469",
+          "nativeId": "{AACC68A7-2321-4907-8C51-1068789E0082}",
+          "geometrySha256": "7f4041a6723a4cddbae0597cf3e5c0ffa8ca690671ac3609e5c6528e89a55e8c"
+        },
+        {
+          "objectId": "470",
+          "nativeId": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "objectId": "471",
+          "nativeId": "{40AF8556-D644-4EAF-9ACA-0417784BDBD7}",
+          "geometrySha256": "c3a063e83e25c4b9c685f09b105889d44fc12879cc9d7ba00819bf88b7c9b584"
+        },
+        {
+          "objectId": "474",
+          "nativeId": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "objectId": "1618",
+          "nativeId": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        },
+        {
+          "objectId": "1983",
+          "nativeId": "{5C1D7344-A20D-4725-AFBE-6C1AA53040AF}",
+          "geometrySha256": "9652aa5624a13788c1e1faa431db7bceb95997dd595a24452c524128045f5368"
+        },
+        {
+          "objectId": "1985",
+          "nativeId": "{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+          "geometrySha256": "16d7bdf97b5319d833414047d879a05d0ca6c5ad78cfdeaff4a509c7296efb58"
+        },
+        {
+          "objectId": "2004",
+          "nativeId": "{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+          "geometrySha256": "6d54f97b3b4b6cf89a665747aa3e3dc644e2a2c85e7d9760f0281d31888546dd"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:11.903Z",
+      "test": "viewport-8",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533076.1203464423%2C23571.919698085345%2C533117.7722543168%2C23627.87991188382&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 153,
+      "count": 3
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:12.059Z",
+      "test": "viewport-8",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533076.1203464423%2C23571.919698085345%2C533117.7722543168%2C23627.87991188382&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 152,
+      "manifestCount": 3,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1618",
+        "2004",
+        "474"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:12.212Z",
+      "test": "viewport-8",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1618%2C2004%2C474",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 143,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "474",
+          "nativeId": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "objectId": "1618",
+          "nativeId": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        },
+        {
+          "objectId": "2004",
+          "nativeId": "{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+          "geometrySha256": "6d54f97b3b4b6cf89a665747aa3e3dc644e2a2c85e7d9760f0281d31888546dd"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:12.359Z",
+      "test": "viewport-9",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533033.3676008534%2C23405.665469134197%2C533075.020856%2C23461.625964356936&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 147,
+      "count": 11
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:12.508Z",
+      "test": "viewport-9",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533033.3676008534%2C23405.665469134197%2C533075.020856%2C23461.625964356936&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 154,
+      "manifestCount": 11,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1826",
+        "1786",
+        "1140",
+        "486",
+        "1474",
+        "1491",
+        "1236",
+        "521",
+        "480",
+        "481",
+        "482"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:12.664Z",
+      "test": "viewport-9",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1826%2C1786%2C1140%2C486%2C1474%2C1491%2C1236%2C521%2C480%2C481%2C482",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 324,
+      "featureCount": 11,
+      "rows": [
+        {
+          "objectId": "480",
+          "nativeId": "{32EC7845-B776-4125-8138-393F77C775D4}",
+          "geometrySha256": "5be1f74465b39b96f012e4f6fb5dae0e5cc6e72be6db10873f2d7be61eea5415"
+        },
+        {
+          "objectId": "481",
+          "nativeId": "{67518551-F993-4B47-87E6-87FDEE291518}",
+          "geometrySha256": "2fb6ab9290d3f233e7fbf9c547ab656a319d48b74fc5eac447136fc6cbe4a140"
+        },
+        {
+          "objectId": "482",
+          "nativeId": "{5F875EEF-E66B-4963-89FE-8DEB88824306}",
+          "geometrySha256": "dc45a9f57bc1f00a113d081fae38ec1b0c3326e067d7467bb3455a878f846b1e"
+        },
+        {
+          "objectId": "486",
+          "nativeId": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        },
+        {
+          "objectId": "521",
+          "nativeId": "{7ACD1297-9CB2-46FD-9B9F-1798A902ADAB}",
+          "geometrySha256": "924c40bb722eca9adef7fa8ae1ef086ac3c8918f4d33df0d7274ca1515a980a4"
+        },
+        {
+          "objectId": "1140",
+          "nativeId": "{09CE9DC8-ADD4-4E35-BE04-8E4C717ABD7C}",
+          "geometrySha256": "f6f27efffbd47339d905bbbff0b936bb591d54699d48659644266d348befb6f5"
+        },
+        {
+          "objectId": "1236",
+          "nativeId": "{0C410D48-DA32-4012-B8EC-8870A8873781}",
+          "geometrySha256": "9290cd3b729d1182475d2a0a95cf7e3b97532e350cd5ba10440abe8453eeb56f"
+        },
+        {
+          "objectId": "1474",
+          "nativeId": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "objectId": "1491",
+          "nativeId": "{CD435D1D-3024-4D14-92F2-7E2082F2CB86}",
+          "geometrySha256": "51b3d17b069517dd4a7e2b37ac8bae809845a368d9137aade5528796ebb1535f"
+        },
+        {
+          "objectId": "1786",
+          "nativeId": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        },
+        {
+          "objectId": "1826",
+          "nativeId": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:12.994Z",
+      "test": "viewport-10",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533035.5679312416%2C23627.87991188382%2C533077.2198365694%2C23683.840360250935&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 163,
+      "count": 6
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:13.316Z",
+      "test": "viewport-10",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533035.5679312416%2C23627.87991188382%2C533077.2198365694%2C23683.840360250935&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 162,
+      "manifestCount": 6,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1148",
+        "1572",
+        "1985",
+        "1592",
+        "784",
+        "2004"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:13.482Z",
+      "test": "viewport-10",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1148%2C1572%2C1985%2C1592%2C784%2C2004",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 266,
+      "featureCount": 6,
+      "rows": [
+        {
+          "objectId": "784",
+          "nativeId": "{ECA5C70C-33C6-4EB3-B2AA-BEFE043C08FB}",
+          "geometrySha256": "5ae17f0f8df74cf59656bc22b4572cbc1b6ffbc891e2442bdccc1ed614b0b758"
+        },
+        {
+          "objectId": "1148",
+          "nativeId": "{A59B1997-8FDA-4128-B7F8-5ED98D31FF1E}",
+          "geometrySha256": "cbb1f637f3adf30d9441383e7a4f5c22bba9eb5227bf754440f714a6990dc02f"
+        },
+        {
+          "objectId": "1572",
+          "nativeId": "{56171A02-7218-4E6D-8328-62B895DC425A}",
+          "geometrySha256": "725db1724c861bb62da835e7b0f65f6c24332b3321e4d85c33099b509f87be41"
+        },
+        {
+          "objectId": "1592",
+          "nativeId": "{4ACED624-7E16-4C95-B6BA-47B29A5CE241}",
+          "geometrySha256": "929979f9c9777558e6953060556564b9c853666b69a9580b5544cf1e12aecbbd"
+        },
+        {
+          "objectId": "1985",
+          "nativeId": "{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+          "geometrySha256": "16d7bdf97b5319d833414047d879a05d0ca6c5ad78cfdeaff4a509c7296efb58"
+        },
+        {
+          "objectId": "2004",
+          "nativeId": "{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+          "geometrySha256": "6d54f97b3b4b6cf89a665747aa3e3dc644e2a2c85e7d9760f0281d31888546dd"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:13.857Z",
+      "test": "viewport-11",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532952.2621035043%2C23517.58669414083%2C532993.9153535527%2C23573.547658481257&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 165,
+      "count": 10
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:14.024Z",
+      "test": "viewport-11",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=532952.2621035043%2C23517.58669414083%2C532993.9153535527%2C23573.547658481257&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 505,
+      "manifestCount": 10,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1132",
+        "1924",
+        "1941",
+        "396",
+        "430",
+        "1508",
+        "397",
+        "992",
+        "1784",
+        "2255"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:14.531Z",
+      "test": "viewport-11",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1132%2C1924%2C1941%2C396%2C430%2C1508%2C397%2C992%2C1784%2C2255",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 158,
+      "featureCount": 10,
+      "rows": [
+        {
+          "objectId": "396",
+          "nativeId": "{C308755A-F5A7-4B53-B687-B78FC5C8F7E9}",
+          "geometrySha256": "944d9f2cf03e4f43a06ec9172a44f0e395b9979bc660d9521c7028f0e8184055"
+        },
+        {
+          "objectId": "397",
+          "nativeId": "{6BE493E4-4A3C-4D7B-815B-3497636556E0}",
+          "geometrySha256": "7f16b77b02ed3c3a96da7d2dcaa773c43ba8ddd7eccc09a0c101bc431c9f44c8"
+        },
+        {
+          "objectId": "430",
+          "nativeId": "{45C3481D-C158-43F8-A9F3-F9CE3488938C}",
+          "geometrySha256": "4999a80f424639c79d7a06bef3a85b0e9ba7e67abe84e84cb6ab5980bea23c8d"
+        },
+        {
+          "objectId": "992",
+          "nativeId": "{CA311473-37AD-4C67-95B7-23A91215D983}",
+          "geometrySha256": "537bf67b10549c26b99a5dacb989b37f16974516d196d684797ab284a8359f3c"
+        },
+        {
+          "objectId": "1132",
+          "nativeId": "{EB6B4A85-F54E-4461-814C-1BEAE4139F5C}",
+          "geometrySha256": "658036b7c31684204805ec5d8f4c2c8d4f9eb6406dad9fc14b528833c25d25e1"
+        },
+        {
+          "objectId": "1508",
+          "nativeId": "{DD0EE8A5-42F3-4EE5-B7B8-43ED6387CA04}",
+          "geometrySha256": "cb57f146ff17147b3e893e8d6b4ca3fcbcce6c03c5f40510cb5a90eaa3395290"
+        },
+        {
+          "objectId": "1784",
+          "nativeId": "{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+          "geometrySha256": "978fa2f8bb01d4208b7b0399f8e2a27207aaa717a67a51ca856d4259200df9aa"
+        },
+        {
+          "objectId": "1924",
+          "nativeId": "{9400D873-C73C-49F6-BFCA-5CE209812B29}",
+          "geometrySha256": "f863cf9fb2ae536eab257162d1c1c5cc71119d52eb5ffc6a3b172f86f7316e6e"
+        },
+        {
+          "objectId": "1941",
+          "nativeId": "{D53486DA-B4A9-479D-AE6D-6DAF408BB3C3}",
+          "geometrySha256": "c5eb50d54b4a331efa532f780f0e9f6be431df4777c9cde02c279b571bd089b0"
+        },
+        {
+          "objectId": "2255",
+          "nativeId": "{013428A9-0DF3-47DC-9FCC-4390AF9CA687}",
+          "geometrySha256": "a01c5c237fadcf91d578bbeb26a8aac15d335673a2ddb8ffd78b765d66d10ebd"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:14.807Z",
+      "test": "viewport-12",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533116.6734387839%2C23515.959718861995%2C533158.3253492034%2C23571.919698085345&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 153,
+      "count": 6
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:14.963Z",
+      "test": "viewport-12",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533116.6734387839%2C23515.959718861995%2C533158.3253492034%2C23571.919698085345&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 155,
+      "manifestCount": 6,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1618",
+        "477",
+        "478",
+        "1982",
+        "1981",
+        "487"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:15.120Z",
+      "test": "viewport-12",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1618%2C477%2C478%2C1982%2C1981%2C487",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 285,
+      "featureCount": 6,
+      "rows": [
+        {
+          "objectId": "477",
+          "nativeId": "{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+          "geometrySha256": "dd1cddefc4410c7bceeef57b9c309f841b8e0c40528afb3b69fba02506529a0b"
+        },
+        {
+          "objectId": "478",
+          "nativeId": "{25432496-BFBA-4F26-8990-F9C931048374}",
+          "geometrySha256": "b65556167893bafc2211b914a4f8cb0128888666f08918eeda289adf0c93cde3"
+        },
+        {
+          "objectId": "487",
+          "nativeId": "{4197615C-F29F-4778-AA78-271CA49A79F1}",
+          "geometrySha256": "dcb2606accc4ca70ef81d9063f867077e82a5e53ff9ed4a0f506298677442b42"
+        },
+        {
+          "objectId": "1618",
+          "nativeId": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        },
+        {
+          "objectId": "1981",
+          "nativeId": "{615F5A57-AEAF-4EBE-9893-06F45993F181}",
+          "geometrySha256": "16400f717549cf9fd6cdb796b454c7907aff364dc13927bcca25e554547b31d6"
+        },
+        {
+          "objectId": "1982",
+          "nativeId": "{962A8C34-B425-4A39-BAB6-1C99DE1CDCEC}",
+          "geometrySha256": "25b6b4764e782e1bf3c3f4ff6acb729b88bd875b1224512b8f49a0a588a15f95"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:15.415Z",
+      "test": "fresh-exact-batch-1",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query",
+      "method": "POST",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 162,
+      "count": 80
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:15.580Z",
+      "test": "fresh-exact-batch-1",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query",
+      "method": "POST",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 155,
+      "manifestCount": 80,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "1784",
+        "402",
+        "2255",
+        "1708",
+        "1497",
+        "1140",
+        "1236",
+        "1049",
+        "478",
+        "485",
+        "480",
+        "475",
+        "466",
+        "471",
+        "487",
+        "430",
+        "1354",
+        "1474",
+        "470",
+        "1592",
+        "1980",
+        "400",
+        "1572",
+        "2064",
+        "1983",
+        "482",
+        "486",
+        "405",
+        "1981",
+        "1008",
+        "411",
+        "481",
+        "397",
+        "2004",
+        "401",
+        "521",
+        "2254",
+        "477",
+        "1861",
+        "1343",
+        "1924",
+        "410",
+        "1982",
+        "407",
+        "1498",
+        "1148",
+        "1283",
+        "441",
+        "469",
+        "2215",
+        "406",
+        "1293",
+        "1785",
+        "396",
+        "992",
+        "1491",
+        "479",
+        "1260",
+        "1618",
+        "1989",
+        "1941",
+        "1457",
+        "1055",
+        "403",
+        "1508",
+        "428",
+        "2218",
+        "442",
+        "1056",
+        "476",
+        "1132",
+        "784",
+        "1984",
+        "1786",
+        "1826",
+        "404",
+        "1261",
+        "1097",
+        "474",
+        "1985"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:15.737Z",
+      "test": "fresh-exact-batch-1",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1784%2C402%2C2255%2C1708%2C1497%2C1140%2C1236%2C1049%2C478%2C485%2C480%2C475%2C466%2C471%2C487%2C430%2C1354%2C1474%2C470%2C1592%2C1980%2C400%2C1572%2C2064%2C1983%2C482%2C486%2C405%2C1981%2C1008%2C411%2C481%2C397%2C2004%2C401%2C521%2C2254%2C477%2C1861%2C1343%2C1924%2C410%2C1982%2C407%2C1498%2C1148%2C1283%2C441%2C469%2C2215%2C406%2C1293%2C1785%2C396%2C992%2C1491%2C479%2C1260%2C1618%2C1989%2C1941%2C1457%2C1055%2C403%2C1508%2C428%2C2218%2C442%2C1056%2C476%2C1132%2C784%2C1984%2C1786%2C1826%2C404%2C1261%2C1097%2C474%2C1985",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 178,
+      "featureCount": 80,
+      "rows": [
+        {
+          "objectId": "396",
+          "nativeId": "{C308755A-F5A7-4B53-B687-B78FC5C8F7E9}",
+          "geometrySha256": "944d9f2cf03e4f43a06ec9172a44f0e395b9979bc660d9521c7028f0e8184055"
+        },
+        {
+          "objectId": "397",
+          "nativeId": "{6BE493E4-4A3C-4D7B-815B-3497636556E0}",
+          "geometrySha256": "7f16b77b02ed3c3a96da7d2dcaa773c43ba8ddd7eccc09a0c101bc431c9f44c8"
+        },
+        {
+          "objectId": "400",
+          "nativeId": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "objectId": "401",
+          "nativeId": "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "objectId": "402",
+          "nativeId": "{01061953-53F4-4211-8F4D-8BF5924EBFE5}",
+          "geometrySha256": "1283513003f7cdc1a32e856d9c65a140943c4eef22ffaccd7f3636963adee317"
+        },
+        {
+          "objectId": "403",
+          "nativeId": "{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+          "geometrySha256": "f4d814993792f6ef5ec5b298ea5ed81705820b47a9f746b1d5a48d70a0ec1fbf"
+        },
+        {
+          "objectId": "404",
+          "nativeId": "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+          "geometrySha256": "4b8d7e64f31d2eca35c76aff9cf538603f775d8637ee1840e790950dc2c67828"
+        },
+        {
+          "objectId": "405",
+          "nativeId": "{6159323E-ACEF-4AD8-B15A-388F9EC5920C}",
+          "geometrySha256": "7c9e200bf012ac09c82746002fb7887b78a0518086a58bf1721fc938d4c17f50"
+        },
+        {
+          "objectId": "406",
+          "nativeId": "{AF2B8935-D93E-4286-8649-83EF5AB2A1C9}",
+          "geometrySha256": "f7fdb656108ed72b259cb6cd6a06a263dd16d58cda4b32978472c1f212299545"
+        },
+        {
+          "objectId": "407",
+          "nativeId": "{97B6BA72-4FD9-4CBC-8852-DAF42D22FCA0}",
+          "geometrySha256": "13270456ebf0bf946dd41ccbca177fe72b379f9c2353277f5cf0b793d0becd95"
+        },
+        {
+          "objectId": "410",
+          "nativeId": "{95F0304A-C1AE-4998-A893-B88B7967508C}",
+          "geometrySha256": "93ab58272905adf5e61ed7461a6e2d6c8973abc2511afc95d91cd73b479baa67"
+        },
+        {
+          "objectId": "411",
+          "nativeId": "{65EEF7FD-07E9-487D-AF62-787B7721FE39}",
+          "geometrySha256": "c9a08c424ebd544991f0810d099068f45ae2fb1e9e034497e233b8280600e946"
+        },
+        {
+          "objectId": "428",
+          "nativeId": "{DE311BD8-D678-430A-8073-B19424E046E4}",
+          "geometrySha256": "13b7e6695e72f43d67be92e09c7c09074c847b7cd7cf118ccbcca822cfa15261"
+        },
+        {
+          "objectId": "430",
+          "nativeId": "{45C3481D-C158-43F8-A9F3-F9CE3488938C}",
+          "geometrySha256": "4999a80f424639c79d7a06bef3a85b0e9ba7e67abe84e84cb6ab5980bea23c8d"
+        },
+        {
+          "objectId": "441",
+          "nativeId": "{A802BACD-29E7-4475-9783-A87C034C8067}",
+          "geometrySha256": "c54493f50e97a1126048745dc48665cb8f90a79b432ad0eba0201229a3aef5e8"
+        },
+        {
+          "objectId": "442",
+          "nativeId": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "objectId": "466",
+          "nativeId": "{3D9D0A91-B798-4630-8924-F73848F25E2A}",
+          "geometrySha256": "67e426a3000f7067994ef839cd4e25a8d56104b6676a4bc8a50e245c810d56d6"
+        },
+        {
+          "objectId": "469",
+          "nativeId": "{AACC68A7-2321-4907-8C51-1068789E0082}",
+          "geometrySha256": "7f4041a6723a4cddbae0597cf3e5c0ffa8ca690671ac3609e5c6528e89a55e8c"
+        },
+        {
+          "objectId": "470",
+          "nativeId": "{4A638EAC-498D-489B-82B6-301184229A2E}",
+          "geometrySha256": "653eab2dae7d9ee29d09c3f29b90a3c99357cd26e5e7ee31c1106fdf656133f7"
+        },
+        {
+          "objectId": "471",
+          "nativeId": "{40AF8556-D644-4EAF-9ACA-0417784BDBD7}",
+          "geometrySha256": "c3a063e83e25c4b9c685f09b105889d44fc12879cc9d7ba00819bf88b7c9b584"
+        },
+        {
+          "objectId": "474",
+          "nativeId": "{F983A7E3-4F26-4715-B246-FF6BDE878B40}",
+          "geometrySha256": "3d1af6fb3efa0e54b38f7019452ade3cbf49ec152da03cfc7c80ad930bb4c0b2"
+        },
+        {
+          "objectId": "475",
+          "nativeId": "{39FBF11E-383B-431F-9007-7ACF8D08A4C7}",
+          "geometrySha256": "9e1fdb8e5263dcf732853bd3b6f8a1a93e70e9d7de6c04f269f64daf31e0f15f"
+        },
+        {
+          "objectId": "476",
+          "nativeId": "{EA9D16F3-833B-4A02-9267-95318D6F2296}",
+          "geometrySha256": "b2df82727ae1d1a0790f1000e3118bb48fc595c4d9a7612eabdf828f686a028f"
+        },
+        {
+          "objectId": "477",
+          "nativeId": "{818327A0-E632-44CA-AC4A-09B3EF6A7D3F}",
+          "geometrySha256": "dd1cddefc4410c7bceeef57b9c309f841b8e0c40528afb3b69fba02506529a0b"
+        },
+        {
+          "objectId": "478",
+          "nativeId": "{25432496-BFBA-4F26-8990-F9C931048374}",
+          "geometrySha256": "b65556167893bafc2211b914a4f8cb0128888666f08918eeda289adf0c93cde3"
+        },
+        {
+          "objectId": "479",
+          "nativeId": "{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+          "geometrySha256": "b6a5d1d416dd48bfd2c267562d64f626e4a3ae5191d9f6e02b13b221f36e0bc8"
+        },
+        {
+          "objectId": "480",
+          "nativeId": "{32EC7845-B776-4125-8138-393F77C775D4}",
+          "geometrySha256": "5be1f74465b39b96f012e4f6fb5dae0e5cc6e72be6db10873f2d7be61eea5415"
+        },
+        {
+          "objectId": "481",
+          "nativeId": "{67518551-F993-4B47-87E6-87FDEE291518}",
+          "geometrySha256": "2fb6ab9290d3f233e7fbf9c547ab656a319d48b74fc5eac447136fc6cbe4a140"
+        },
+        {
+          "objectId": "482",
+          "nativeId": "{5F875EEF-E66B-4963-89FE-8DEB88824306}",
+          "geometrySha256": "dc45a9f57bc1f00a113d081fae38ec1b0c3326e067d7467bb3455a878f846b1e"
+        },
+        {
+          "objectId": "485",
+          "nativeId": "{2B72D2A0-B838-4EB2-A26B-5CE5D19A226F}",
+          "geometrySha256": "9cf6062336c6f3143911f163f201088b55a0d63967d5cc3ef71011d948dd5534"
+        },
+        {
+          "objectId": "486",
+          "nativeId": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        },
+        {
+          "objectId": "487",
+          "nativeId": "{4197615C-F29F-4778-AA78-271CA49A79F1}",
+          "geometrySha256": "dcb2606accc4ca70ef81d9063f867077e82a5e53ff9ed4a0f506298677442b42"
+        },
+        {
+          "objectId": "521",
+          "nativeId": "{7ACD1297-9CB2-46FD-9B9F-1798A902ADAB}",
+          "geometrySha256": "924c40bb722eca9adef7fa8ae1ef086ac3c8918f4d33df0d7274ca1515a980a4"
+        },
+        {
+          "objectId": "784",
+          "nativeId": "{ECA5C70C-33C6-4EB3-B2AA-BEFE043C08FB}",
+          "geometrySha256": "5ae17f0f8df74cf59656bc22b4572cbc1b6ffbc891e2442bdccc1ed614b0b758"
+        },
+        {
+          "objectId": "992",
+          "nativeId": "{CA311473-37AD-4C67-95B7-23A91215D983}",
+          "geometrySha256": "537bf67b10549c26b99a5dacb989b37f16974516d196d684797ab284a8359f3c"
+        },
+        {
+          "objectId": "1008",
+          "nativeId": "{6244048C-65AE-430D-B6D9-194E63878126}",
+          "geometrySha256": "a8c90d4105d0961de00e3d009ba5abbcb3df572494bd9ce19cc12c1958d76729"
+        },
+        {
+          "objectId": "1049",
+          "nativeId": "{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+          "geometrySha256": "c7ca76076e5bc8c4fd66be8325bdb06ce819e8f6b10277b79f1f8e7958c92a34"
+        },
+        {
+          "objectId": "1055",
+          "nativeId": "{D5A2816F-22B8-4B19-BC32-E1CE052C78FA}",
+          "geometrySha256": "d4e6f0c133601a1f88a3b0b1cd4deb20ed6c747c63dc77149a4aa6f3d7f7476c"
+        },
+        {
+          "objectId": "1056",
+          "nativeId": "{E68187AF-D6A3-4D63-9138-183BFBCF2081}",
+          "geometrySha256": "50561574ea0c1e4f4b2255d748bfb27a0e7302c7ab572cf0e06cae6a4d689cbd"
+        },
+        {
+          "objectId": "1097",
+          "nativeId": "{F8DBBEF5-49CA-4A61-BF56-77EDAA8DF665}",
+          "geometrySha256": "6e517801a62d03661b17899cef555ccfae83d79bbb7f270d3052ab9ffa443ce7"
+        },
+        {
+          "objectId": "1132",
+          "nativeId": "{EB6B4A85-F54E-4461-814C-1BEAE4139F5C}",
+          "geometrySha256": "658036b7c31684204805ec5d8f4c2c8d4f9eb6406dad9fc14b528833c25d25e1"
+        },
+        {
+          "objectId": "1140",
+          "nativeId": "{09CE9DC8-ADD4-4E35-BE04-8E4C717ABD7C}",
+          "geometrySha256": "f6f27efffbd47339d905bbbff0b936bb591d54699d48659644266d348befb6f5"
+        },
+        {
+          "objectId": "1148",
+          "nativeId": "{A59B1997-8FDA-4128-B7F8-5ED98D31FF1E}",
+          "geometrySha256": "cbb1f637f3adf30d9441383e7a4f5c22bba9eb5227bf754440f714a6990dc02f"
+        },
+        {
+          "objectId": "1236",
+          "nativeId": "{0C410D48-DA32-4012-B8EC-8870A8873781}",
+          "geometrySha256": "9290cd3b729d1182475d2a0a95cf7e3b97532e350cd5ba10440abe8453eeb56f"
+        },
+        {
+          "objectId": "1260",
+          "nativeId": "{CE6E6FB7-6536-4BAD-AC59-0ED5432802AB}",
+          "geometrySha256": "697e71c62caae6613bfaae4daaf07eb80bc4af3ea2da27540916928ed7db440c"
+        },
+        {
+          "objectId": "1261",
+          "nativeId": "{F47EB407-327F-4B2F-9FD1-EC35BFF0DEDD}",
+          "geometrySha256": "68e795f7d3ff3e66074662da190f1d50213e2e220f1e75822a5c591e301cf93e"
+        },
+        {
+          "objectId": "1283",
+          "nativeId": "{A59EDE10-04E6-4C83-B5AB-87179DB94342}",
+          "geometrySha256": "be6dafcfb09544750da3da8e6b46fba4d8120f3b4a851c4443271591ba9e68f2"
+        },
+        {
+          "objectId": "1293",
+          "nativeId": "{B381DD31-055E-4766-A1E3-09A03AE796D3}",
+          "geometrySha256": "aebc943d4624dd7c0278c9420a5bbb9aec5cab52027335f001232f659412849e"
+        },
+        {
+          "objectId": "1343",
+          "nativeId": "{8C006841-F8C2-46E5-B283-47C642E92E8E}",
+          "geometrySha256": "a80ac20e804ebafb9c40438255e3a501901c178f595116238ca49ac06d0fe469"
+        },
+        {
+          "objectId": "1354",
+          "nativeId": "{46ECE478-3669-4715-AA95-C35113294009}",
+          "geometrySha256": "a97f508c56617396aa0eabef877c04de6f6568698a81a26d9b7155fcda3d34e4"
+        },
+        {
+          "objectId": "1457",
+          "nativeId": "{D5582995-4502-4C99-9739-3BF439B05083}",
+          "geometrySha256": "96243330ce1b9db57dcf98fec8cd573c7b8aa0a4bdb94a5dffa6cb0d112c80af"
+        },
+        {
+          "objectId": "1474",
+          "nativeId": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "objectId": "1491",
+          "nativeId": "{CD435D1D-3024-4D14-92F2-7E2082F2CB86}",
+          "geometrySha256": "51b3d17b069517dd4a7e2b37ac8bae809845a368d9137aade5528796ebb1535f"
+        },
+        {
+          "objectId": "1497",
+          "nativeId": "{07778A5D-4A3C-477E-AF98-BFA498CBC7EB}",
+          "geometrySha256": "04d3e6e757ba581d02d900da571569b9622505b549291082d2f76facb3683f13"
+        },
+        {
+          "objectId": "1498",
+          "nativeId": "{A00F19E1-1225-406D-A6A3-86F4E57D29AC}",
+          "geometrySha256": "ce3a667bf1a21917b4ea0cbecddeb13a22dff9515656b9fccb91193fb8529acb"
+        },
+        {
+          "objectId": "1508",
+          "nativeId": "{DD0EE8A5-42F3-4EE5-B7B8-43ED6387CA04}",
+          "geometrySha256": "cb57f146ff17147b3e893e8d6b4ca3fcbcce6c03c5f40510cb5a90eaa3395290"
+        },
+        {
+          "objectId": "1572",
+          "nativeId": "{56171A02-7218-4E6D-8328-62B895DC425A}",
+          "geometrySha256": "725db1724c861bb62da835e7b0f65f6c24332b3321e4d85c33099b509f87be41"
+        },
+        {
+          "objectId": "1592",
+          "nativeId": "{4ACED624-7E16-4C95-B6BA-47B29A5CE241}",
+          "geometrySha256": "929979f9c9777558e6953060556564b9c853666b69a9580b5544cf1e12aecbbd"
+        },
+        {
+          "objectId": "1618",
+          "nativeId": "{D2391B61-8BAF-44EE-9D6F-28578BEE6222}",
+          "geometrySha256": "3d1cbc1bc6e9a50d5f192c7368b370b76e0fd9ec9d1b7b2ff038609f81aefb50"
+        },
+        {
+          "objectId": "1708",
+          "nativeId": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        },
+        {
+          "objectId": "1784",
+          "nativeId": "{00BD34F1-58C3-4621-9080-757D2673F5FC}",
+          "geometrySha256": "978fa2f8bb01d4208b7b0399f8e2a27207aaa717a67a51ca856d4259200df9aa"
+        },
+        {
+          "objectId": "1785",
+          "nativeId": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+          "geometrySha256": "04b6a1664851a897b3cc778b3e196840522d34857630e347500132ea5640b80f"
+        },
+        {
+          "objectId": "1786",
+          "nativeId": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        },
+        {
+          "objectId": "1826",
+          "nativeId": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        },
+        {
+          "objectId": "1861",
+          "nativeId": "{8423177A-EE0B-4184-8CF3-6B77681AD403}",
+          "geometrySha256": "2051aae2219399dd8279b10afc8ea56ef3362f436de9e2234859cf85287bb182"
+        },
+        {
+          "objectId": "1924",
+          "nativeId": "{9400D873-C73C-49F6-BFCA-5CE209812B29}",
+          "geometrySha256": "f863cf9fb2ae536eab257162d1c1c5cc71119d52eb5ffc6a3b172f86f7316e6e"
+        },
+        {
+          "objectId": "1941",
+          "nativeId": "{D53486DA-B4A9-479D-AE6D-6DAF408BB3C3}",
+          "geometrySha256": "c5eb50d54b4a331efa532f780f0e9f6be431df4777c9cde02c279b571bd089b0"
+        },
+        {
+          "objectId": "1980",
+          "nativeId": "{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+          "geometrySha256": "7b42bf1bad2ad0f0c231aaa4eaf433a9ae40ca3a370f11364987518ce645b190"
+        },
+        {
+          "objectId": "1981",
+          "nativeId": "{615F5A57-AEAF-4EBE-9893-06F45993F181}",
+          "geometrySha256": "16400f717549cf9fd6cdb796b454c7907aff364dc13927bcca25e554547b31d6"
+        },
+        {
+          "objectId": "1982",
+          "nativeId": "{962A8C34-B425-4A39-BAB6-1C99DE1CDCEC}",
+          "geometrySha256": "25b6b4764e782e1bf3c3f4ff6acb729b88bd875b1224512b8f49a0a588a15f95"
+        },
+        {
+          "objectId": "1983",
+          "nativeId": "{5C1D7344-A20D-4725-AFBE-6C1AA53040AF}",
+          "geometrySha256": "9652aa5624a13788c1e1faa431db7bceb95997dd595a24452c524128045f5368"
+        },
+        {
+          "objectId": "1984",
+          "nativeId": "{EE495949-5F1A-4084-9C22-75D797FB892D}",
+          "geometrySha256": "334f11160229de687567656fd3f3d47ec5b1c1f7f72957f22404d7878f5db36e"
+        },
+        {
+          "objectId": "1985",
+          "nativeId": "{FF53403F-B2B2-4DDA-9202-1878A4EAFCAF}",
+          "geometrySha256": "16d7bdf97b5319d833414047d879a05d0ca6c5ad78cfdeaff4a509c7296efb58"
+        },
+        {
+          "objectId": "1989",
+          "nativeId": "{D3BBBB4F-C876-4B47-A278-3EDD5A9EE9AE}",
+          "geometrySha256": "14a2ac94dac6ba69c5d02bc3a6f0761385bd4a18c8b77f09a2b72188621c2850"
+        },
+        {
+          "objectId": "2004",
+          "nativeId": "{6C07DC04-3A3E-455B-9AB1-D359F48E5490}",
+          "geometrySha256": "6d54f97b3b4b6cf89a665747aa3e3dc644e2a2c85e7d9760f0281d31888546dd"
+        },
+        {
+          "objectId": "2064",
+          "nativeId": "{5BBA4AC0-4587-4347-887A-11FCC52368EC}",
+          "geometrySha256": "5589bcf566a0b5381d35fa0a72f29b19116ea55f372cc2e757780b8e97d0ee89"
+        },
+        {
+          "objectId": "2215",
+          "nativeId": "{AC6E51AF-C981-42E7-80F0-33D4075CB63D}",
+          "geometrySha256": "3d3eb0c8240ea3b7187833cb544fecfcdcae4dd22219dab37658ef4e4009d9fb"
+        },
+        {
+          "objectId": "2218",
+          "nativeId": "{DE8987E6-1A6B-4961-B4E9-318793D15E7D}",
+          "geometrySha256": "95df722f6ae41ebc9b68c45c1926a4c9ff2eeba2716fd4ff93de6f02b217789e"
+        },
+        {
+          "objectId": "2254",
+          "nativeId": "{811DAEF2-A414-424F-A899-3DF9FACCDA3E}",
+          "geometrySha256": "820b1a5d9c8b5e57ac419c6c59bd1c1e5d38b7e900a5610386e071953ae477a6"
+        },
+        {
+          "objectId": "2255",
+          "nativeId": "{013428A9-0DF3-47DC-9FCC-4390AF9CA687}",
+          "geometrySha256": "a01c5c237fadcf91d578bbeb26a8aac15d335673a2ddb8ffd78b765d66d10ebd"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:16.875Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533033.9176835688%2C23461.219092393847%2C533075.5706012606%2C23517.179575896385&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 150,
+      "count": 18
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:17.027Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533033.9176835688%2C23461.219092393847%2C533075.5706012606%2C23517.179575896385&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 166,
+      "manifestCount": 18,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "442",
+        "1708",
+        "1049",
+        "1826",
+        "400",
+        "401",
+        "403",
+        "404",
+        "1786",
+        "410",
+        "1785",
+        "1260",
+        "406",
+        "405",
+        "486",
+        "1474",
+        "479",
+        "1980"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:17.198Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=442%2C1708%2C1049",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 152,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "442",
+          "nativeId": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "objectId": "1049",
+          "nativeId": "{19EDEF53-B6CE-44C5-95F0-0146C72EDDD6}",
+          "geometrySha256": "c7ca76076e5bc8c4fd66be8325bdb06ce819e8f6b10277b79f1f8e7958c92a34"
+        },
+        {
+          "objectId": "1708",
+          "nativeId": "{037E8AA5-8518-450D-BACF-943B61A19D7D}",
+          "geometrySha256": "fe9052bcba247ff3c0cb70b4256c8322c6fffd3fe32eec3f889610a92e9550c0"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:17.353Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1826%2C400%2C401",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 597,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "400",
+          "nativeId": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "objectId": "401",
+          "nativeId": "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "objectId": "1826",
+          "nativeId": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:17.955Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=403%2C404%2C1786",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 150,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "403",
+          "nativeId": "{DBD6431C-A029-4F49-B48E-3997D5FA4C99}",
+          "geometrySha256": "f4d814993792f6ef5ec5b298ea5ed81705820b47a9f746b1d5a48d70a0ec1fbf"
+        },
+        {
+          "objectId": "404",
+          "nativeId": "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+          "geometrySha256": "4b8d7e64f31d2eca35c76aff9cf538603f775d8637ee1840e790950dc2c67828"
+        },
+        {
+          "objectId": "1786",
+          "nativeId": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:18.109Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=410%2C1785%2C1260",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 153,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "410",
+          "nativeId": "{95F0304A-C1AE-4998-A893-B88B7967508C}",
+          "geometrySha256": "93ab58272905adf5e61ed7461a6e2d6c8973abc2511afc95d91cd73b479baa67"
+        },
+        {
+          "objectId": "1260",
+          "nativeId": "{CE6E6FB7-6536-4BAD-AC59-0ED5432802AB}",
+          "geometrySha256": "697e71c62caae6613bfaae4daaf07eb80bc4af3ea2da27540916928ed7db440c"
+        },
+        {
+          "objectId": "1785",
+          "nativeId": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+          "geometrySha256": "04b6a1664851a897b3cc778b3e196840522d34857630e347500132ea5640b80f"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:18.265Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=406%2C405%2C486",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 149,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "405",
+          "nativeId": "{6159323E-ACEF-4AD8-B15A-388F9EC5920C}",
+          "geometrySha256": "7c9e200bf012ac09c82746002fb7887b78a0518086a58bf1721fc938d4c17f50"
+        },
+        {
+          "objectId": "406",
+          "nativeId": "{AF2B8935-D93E-4286-8649-83EF5AB2A1C9}",
+          "geometrySha256": "f7fdb656108ed72b259cb6cd6a06a263dd16d58cda4b32978472c1f212299545"
+        },
+        {
+          "objectId": "486",
+          "nativeId": "{606129CC-B118-4F0D-9E61-076967D979B9}",
+          "geometrySha256": "edebf4b760585081da73f9d9799594ad3b588d3342bf7e4db2c4070d263dd532"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:18.417Z",
+      "test": "forced-page-size-3",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=1474%2C479%2C1980",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 587,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "479",
+          "nativeId": "{CD4E8AF3-DC05-472F-AB52-46556E1B1922}",
+          "geometrySha256": "b6a5d1d416dd48bfd2c267562d64f626e4a3ae5191d9f6e02b13b221f36e0bc8"
+        },
+        {
+          "objectId": "1474",
+          "nativeId": "{497C82EA-E8E0-4E13-AC03-A4C07B45207E}",
+          "geometrySha256": "babb7f61110c1454a21e16848370af5756a37415c62d4ab65d9761d25116288d"
+        },
+        {
+          "objectId": "1980",
+          "nativeId": "{4B5C8B6C-5BBF-4563-996B-EC777A14C634}",
+          "geometrySha256": "7b42bf1bad2ad0f0c231aaa4eaf433a9ae40ca3a370f11364987518ce645b190"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:19.010Z",
+      "test": "explicit-absent-id",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=%28DATA_BAIXA+IS+NULL%29+AND+%28GLOBALID+IN+%28%27%7BFFFFFFFF-FFFF-4FFF-8FFF-FFFFFFFFFFFF%7D%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 143,
+      "count": 0
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:19.165Z",
+      "test": "explicit-absent-id",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=%28DATA_BAIXA+IS+NULL%29+AND+%28GLOBALID+IN+%28%27%7BFFFFFFFF-FFFF-4FFF-8FFF-FFFFFFFFFFFF%7D%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 151
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:19.324Z",
+      "test": "footprint-read",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533027.0895006882%2C23460.61682467186%2C533048.2659924324%2C23478.003885767044&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 177,
+      "count": 6
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:19.503Z",
+      "test": "footprint-read",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533027.0895006882%2C23460.61682467186%2C533048.2659924324%2C23478.003885767044&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 145,
+      "manifestCount": 6,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "442",
+        "1826",
+        "400",
+        "401",
+        "1786",
+        "1785"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:19.650Z",
+      "test": "footprint-read",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=442%2C1826%2C400%2C401%2C1786%2C1785",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 363,
+      "featureCount": 6,
+      "rows": [
+        {
+          "objectId": "400",
+          "nativeId": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "objectId": "401",
+          "nativeId": "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "objectId": "442",
+          "nativeId": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "objectId": "1785",
+          "nativeId": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+          "geometrySha256": "04b6a1664851a897b3cc778b3e196840522d34857630e347500132ea5640b80f"
+        },
+        {
+          "objectId": "1786",
+          "nativeId": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        },
+        {
+          "objectId": "1826",
+          "nativeId": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:20.131Z",
+      "test": "source-binding",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533027.0895006882%2C23460.61682467186%2C533048.2659924324%2C23478.003885767044&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 152,
+      "count": 6
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:20.327Z",
+      "test": "source-binding",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&geometry=533027.0895006882%2C23460.61682467186%2C533048.2659924324%2C23478.003885767044&geometryType=esriGeometryEnvelope&inSR=27563&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 203,
+      "manifestCount": 6,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        "442",
+        "1826",
+        "400",
+        "401",
+        "1786",
+        "1785"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:20.533Z",
+      "test": "source-binding",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=DATA_BAIXA+IS+NULL&outFields=OBJECTID%2CGLOBALID%2CREF_CADASTRAL_TEXT%2CREF_CADASTRAL%2CDATA_BAIXA%2CTIPUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=442%2C1826%2C400%2C401%2C1786%2C1785",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 343,
+      "featureCount": 6,
+      "rows": [
+        {
+          "objectId": "400",
+          "nativeId": "{4FA334A7-F802-48EA-B492-9E0AE6C1DA02}",
+          "geometrySha256": "fe1de552b28d75429d24c3ad3b00adb36179f94a6f96527ff26e0f68b62709f8"
+        },
+        {
+          "objectId": "401",
+          "nativeId": "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "geometrySha256": "98a6e1b3672a52e8d1228b948d8fd8e3c450cc63fd92fbf0aeab585d9bd04e05"
+        },
+        {
+          "objectId": "442",
+          "nativeId": "{E374B553-4BDA-4358-BEB6-D58738E39AFA}",
+          "geometrySha256": "ba03c02ca8b7be448d5e2683b5df2372f9bb644d53aa828434346aa5720e331f"
+        },
+        {
+          "objectId": "1785",
+          "nativeId": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+          "geometrySha256": "04b6a1664851a897b3cc778b3e196840522d34857630e347500132ea5640b80f"
+        },
+        {
+          "objectId": "1786",
+          "nativeId": "{EE9F8876-C17A-4DB1-BE6B-62B3CD975AAE}",
+          "geometrySha256": "04a97dabaec27c1e463d95daabe8a02584e3b9841b64398acbadb9ca82879fc1"
+        },
+        {
+          "objectId": "1826",
+          "nativeId": "{F371A87A-5BC3-4EA3-83CB-5768F8F364BF}",
+          "geometrySha256": "acb8de58b1d14ff8a294790a05c3a7aede92af358167c785642a7335677038b2"
+        }
+      ]
+    }
+  ],
+  "privacy": "Only parcel identity/reference, lifecycle, and administrative class fields listed by the descriptor are queried. No owner fields.",
+  "activeTest": null,
+  "runtime": {
+    "retainedUniqueNativeIds": 80,
+    "exactReadIds": 80,
+    "exactAllHashesMatch": true,
+    "requestCount": 58,
+    "completedAt": "2026-10-08T18:30:20.967Z"
+  },
+  "result": "passed",
+  "metricShapelyAudit": {
+    "metricCrs": "EPSG:32631 WGS 84 / UTM zone 31N",
+    "projector": "Node proj4 backend dependency; Shapely 2.1.2 / GEOS 3.13.1",
+    "featureCount": 80,
+    "uniqueSourceNativeIds": 80,
+    "duplicateNativeIdCount": 0,
+    "geometryTypes": {
+      "Polygon": 80
+    },
+    "validGeometryCount": 80,
+    "invalidGeometryCount": 0,
+    "invalidExamples": [],
+    "polygonHoleCount": 0,
+    "areaM2": {
+      "min": 8.160670179354286,
+      "median": 247.20746533753208,
+      "max": 15820.77965920573,
+      "under1m2": 0
+    },
+    "positiveOverlapThresholdM2": 0.01,
+    "positiveAreaOverlapCount": 3,
+    "positiveAreaOverlapExamples": [
+      {
+        "parcelId": "andorra-cadastre:{7881D8F8-034D-4091-B375-7531679E7056}",
+        "objectId": "401",
+        "otherParcelId": "andorra-cadastre:{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+        "otherObjectId": "1785",
+        "overlapM2": 67.6482
+      },
+      {
+        "parcelId": "andorra-cadastre:{7881D8F8-034D-4091-B375-7531679E7056}",
+        "objectId": "401",
+        "otherParcelId": "andorra-cadastre:{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+        "otherObjectId": "404",
+        "overlapM2": 6.9535
+      },
+      {
+        "parcelId": "andorra-cadastre:{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+        "objectId": "404",
+        "otherParcelId": "andorra-cadastre:{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+        "otherObjectId": "1785",
+        "overlapM2": 8.0955
+      }
+    ],
+    "sampleScope": "All unique source geometries returned in the bounded city window cells in this acceptance run."
+  },
+  "geometryQualityOutcome": "adapter_passed_with_overlap_findings",
+  "safeSampleFile": "andorra-la-vella-safe-sample.json",
+  "sourceGeometryDiagnosis": {
+    "checkedAt": "2026-10-08T18:36:15.243Z",
+    "method": "Fresh exact-identity ArcGIS REST refetch of the previously flagged features in native spatial reference and outSR=4326. Native and WGS84 geometries were measured in the local metric CRS; no repair, clipping, or filtering was applied. Areas/fractions are approximate. Maximum inscribed diameter measures the largest disk in polygonal overlap area; line-only contact excluded.",
+    "diagnosticRawResponses": "/tmp/world-capitals-2026-10-08/source-geometry-diagnostics.json",
+    "service": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0",
+    "queryFilter": "DATA_BAIXA IS NULL AND GLOBALID IN (exact three IDs below)",
+    "statusLifecycle": "All three exact features returned HTTP 200; DATA_BAIXA null and TIPUS=P for each. Kept the DATA_BAIXA IS NULL current-record filter.",
+    "records": [
+      {
+        "id": "{7881D8F8-034D-4091-B375-7531679E7056}",
+        "objectId": 401,
+        "ref": "5P000341"
+      },
+      {
+        "id": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+        "objectId": 1785,
+        "ref": "5P000343"
+      },
+      {
+        "id": "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+        "objectId": 404,
+        "ref": "5P000735"
+      }
+    ],
+    "projectionComparison": "Native EPSG:27563, outSR=27563, outSR=4326, GeoJSON default and GeoJSON outSR=4326 each retained ring vertex counts 23/17/15. The three overlaps persisted in native and transformed results; area shifts slightly with reprojection, but overlap fractions are stable.",
+    "overlaps": [
+      {
+        "ids": [
+          "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}"
+        ],
+        "areaM2Native": 67.713034,
+        "areaM2Out4326": 67.873702,
+        "fractionsOfEach": [
+          0.26880907,
+          0.37920543
+        ],
+        "fractionOfSmaller": 0.37920543,
+        "maxInscribedDiameterM": 6.855617
+      },
+      {
+        "ids": [
+          "{7881D8F8-034D-4091-B375-7531679E7056}",
+          "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}"
+        ],
+        "areaM2Native": 6.960154,
+        "areaM2Out4326": 6.976668,
+        "fractionsOfEach": [
+          0.02763061,
+          0.02471328
+        ],
+        "fractionOfSmaller": 0.02763061,
+        "maxInscribedDiameterM": 1.288384
+      },
+      {
+        "ids": [
+          "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+          "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}"
+        ],
+        "areaM2Native": 8.103246,
+        "areaM2Out4326": 8.122472,
+        "fractionsOfEach": [
+          0.04537967,
+          0.02877204
+        ],
+        "fractionOfSmaller": 0.04537967,
+        "maxInscribedDiameterM": 1.165944
+      }
+    ]
+  }
+}

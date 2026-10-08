@@ -1,0 +1,3913 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded real-adapter qualification; full geometries stay in /tmp and repository samples contain at most three features.",
+  "checkedAt": "2026-10-08T18:30:20.972Z",
+  "city": "bratislava",
+  "descriptor": {
+    "id": "sk-bratislava-register-c",
+    "adapter": "arcgis",
+    "idPrefix": "bratislava-register-c:",
+    "endpoint": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1",
+    "idFields": [
+      "ku",
+      "cpa_text"
+    ],
+    "idFieldTypes": {
+      "ku": "string",
+      "cpa_text": "string"
+    },
+    "objectIdField": "objectid",
+    "outFields": [
+      "objectid",
+      "find_pc",
+      "ku",
+      "cpa_text",
+      "cpa_num",
+      "pec",
+      "drp",
+      "ump"
+    ],
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "maxFeatures": 1500,
+    "maxBboxKm2": 1
+  },
+  "scope": "Cadastral register C map layer; no register E inferred; no person or owner fields requested.",
+  "grid": {
+    "centerLonLat": [
+      17.109,
+      48.144
+    ],
+    "stepDegrees": 0.0005,
+    "cells": 13
+  },
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 501,
+      "bbox": [
+        17.1085,
+        48.1435,
+        17.109,
+        48.144
+      ],
+      "featureCount": 8,
+      "manifestCount": 8,
+      "manifestObjectIds": [
+        "198198",
+        "198241",
+        "198265",
+        "198191",
+        "198192",
+        "198195",
+        "198197",
+        "198196"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 8,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~7",
+          "objectId": "198191",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "7"
+          },
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~1",
+          "objectId": "198192",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "1"
+          },
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21399",
+          "objectId": "198195",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21399"
+          },
+          "geometrySha256": "5b2fb31debe770d5bb7151eb5b67a5416dded9480c8489a360cfb8cbd35540d1"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21401",
+          "objectId": "198196",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21401"
+          },
+          "geometrySha256": "24398b40fb99dd82218308252568dfd7426684365c26aaf8b491947b3f261899"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21402",
+          "objectId": "198197",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21402"
+          },
+          "geometrySha256": "14c8dcedaa2ee07cf0d96547a712752861a8ac7408483f0b80da92e960c68005"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21403",
+          "objectId": "198198",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21403"
+          },
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~67",
+          "objectId": "198241",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "67"
+          },
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21396",
+          "objectId": "198265",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21396"
+          },
+          "geometrySha256": "1c9156fc31360146fd33fabcd0f01f898e7540c8448bdc488d00881a0480f8ee"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 429,
+      "bbox": [
+        17.109,
+        48.1435,
+        17.1095,
+        48.144
+      ],
+      "featureCount": 6,
+      "manifestCount": 6,
+      "manifestObjectIds": [
+        "198185",
+        "198191",
+        "198192",
+        "198189",
+        "198190",
+        "198198"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 6,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~6",
+          "objectId": "198185",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "6"
+          },
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~2",
+          "objectId": "198189",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "2"
+          },
+          "geometrySha256": "ec88e4b3b2d954df59fbb80688c52300db1b1c3f3c6792ff174f6afdc9db71a8"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21404%2F1",
+          "objectId": "198190",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21404/1"
+          },
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~7",
+          "objectId": "198191",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "7"
+          },
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~1",
+          "objectId": "198192",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "1"
+          },
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21403",
+          "objectId": "198198",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21403"
+          },
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 470,
+      "bbox": [
+        17.1095,
+        48.1435,
+        17.11,
+        48.144
+      ],
+      "featureCount": 5,
+      "manifestCount": 5,
+      "manifestObjectIds": [
+        "198185",
+        "198192",
+        "203674",
+        "198189",
+        "198190"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 5,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~6",
+          "objectId": "198185",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "6"
+          },
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~2",
+          "objectId": "198189",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "2"
+          },
+          "geometrySha256": "ec88e4b3b2d954df59fbb80688c52300db1b1c3f3c6792ff174f6afdc9db71a8"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21404%2F1",
+          "objectId": "198190",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21404/1"
+          },
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~1",
+          "objectId": "198192",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "1"
+          },
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F1",
+          "objectId": "203674",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/1"
+          },
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 529,
+      "bbox": [
+        17.1085,
+        48.144,
+        17.109,
+        48.1445
+      ],
+      "featureCount": 10,
+      "manifestCount": 10,
+      "manifestObjectIds": [
+        "198198",
+        "198241",
+        "198242",
+        "198243",
+        "198244",
+        "198265",
+        "198267",
+        "205123",
+        "205124",
+        "205125"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 10,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21403",
+          "objectId": "198198",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21403"
+          },
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~67",
+          "objectId": "198241",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "67"
+          },
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~68",
+          "objectId": "198242",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "68"
+          },
+          "geometrySha256": "fbdb45e7daba6c6557af606e944258424365cef91f97f07c3fd0b6c942e5eeb4"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~66",
+          "objectId": "198243",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "66"
+          },
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~64",
+          "objectId": "198244",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "64"
+          },
+          "geometrySha256": "f0d75ba753e2d20efa946c3810ef22e545492b58319e9afe500e89b208cda8f0"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21396",
+          "objectId": "198265",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21396"
+          },
+          "geometrySha256": "1c9156fc31360146fd33fabcd0f01f898e7540c8448bdc488d00881a0480f8ee"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F2",
+          "objectId": "198267",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/2"
+          },
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F3",
+          "objectId": "205123",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "61/3"
+          },
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F2",
+          "objectId": "205124",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "61/2"
+          },
+          "geometrySha256": "f254a85d30fe1b758725cd3c31ac3ec2d3d534e515f6dec886454f9a984baa79"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F1",
+          "objectId": "205125",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "61/1"
+          },
+          "geometrySha256": "c7bcc48b358d65f18f0cc96c0723f6184ed179dd55150e49bf83c35b93a410e9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 414,
+      "bbox": [
+        17.109,
+        48.144,
+        17.1095,
+        48.1445
+      ],
+      "featureCount": 11,
+      "manifestCount": 11,
+      "manifestObjectIds": [
+        "198190",
+        "198198",
+        "198241",
+        "198242",
+        "198243",
+        "198252",
+        "205123",
+        "206731",
+        "198192",
+        "198267",
+        "203674"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 11,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21404%2F1",
+          "objectId": "198190",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21404/1"
+          },
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~1",
+          "objectId": "198192",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "1"
+          },
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21403",
+          "objectId": "198198",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21403"
+          },
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~67",
+          "objectId": "198241",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "67"
+          },
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~68",
+          "objectId": "198242",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "68"
+          },
+          "geometrySha256": "fbdb45e7daba6c6557af606e944258424365cef91f97f07c3fd0b6c942e5eeb4"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~66",
+          "objectId": "198243",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "66"
+          },
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~69",
+          "objectId": "198252",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "69"
+          },
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F2",
+          "objectId": "198267",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/2"
+          },
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F1",
+          "objectId": "203674",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/1"
+          },
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F3",
+          "objectId": "205123",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "61/3"
+          },
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F1",
+          "objectId": "206731",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/1"
+          },
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 488,
+      "bbox": [
+        17.1095,
+        48.144,
+        17.11,
+        48.1445
+      ],
+      "featureCount": 9,
+      "manifestCount": 9,
+      "manifestObjectIds": [
+        "198189",
+        "198190",
+        "198252",
+        "198279",
+        "198277",
+        "206731",
+        "198201",
+        "198278",
+        "203674"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 9,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~2",
+          "objectId": "198189",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "2"
+          },
+          "geometrySha256": "ec88e4b3b2d954df59fbb80688c52300db1b1c3f3c6792ff174f6afdc9db71a8"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21404%2F1",
+          "objectId": "198190",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21404/1"
+          },
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21404%2F2",
+          "objectId": "198201",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21404/2"
+          },
+          "geometrySha256": "be32e56fd1d28588aa82e9dbc86f7ff1a89041f9408bf4b452da1e92c7ec23b9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~69",
+          "objectId": "198252",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "69"
+          },
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~72",
+          "objectId": "198277",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "72"
+          },
+          "geometrySha256": "4a76665d519ec2c7012acd8d6f0eea8d3e6c65ee1fbdc4125a8d3fabdf388988"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~70",
+          "objectId": "198278",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "70"
+          },
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21406",
+          "objectId": "198279",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21406"
+          },
+          "geometrySha256": "9454ef1c15e02d5a430a2c6e36a0a2aea021c2daafc2d3c1e3638fffebfacf37"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F1",
+          "objectId": "203674",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/1"
+          },
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F1",
+          "objectId": "206731",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/1"
+          },
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 459,
+      "bbox": [
+        17.1085,
+        48.1445,
+        17.109,
+        48.145
+      ],
+      "featureCount": 10,
+      "manifestCount": 10,
+      "manifestObjectIds": [
+        "198249",
+        "198251",
+        "198252",
+        "198267",
+        "198269",
+        "205123",
+        "205125",
+        "206731",
+        "206732",
+        "212266"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 10,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~60",
+          "objectId": "198249",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "60"
+          },
+          "geometrySha256": "97b3d7bba75bc88466984e57727ba9e60155a9447ece22e7b79d2104b2586091"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~62%2F3",
+          "objectId": "198251",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "62/3"
+          },
+          "geometrySha256": "975a4df1d9188e06f5334fafc4ed718c1bfcebb669a553e6b9d94a192ddfe294"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~69",
+          "objectId": "198252",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "69"
+          },
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F2",
+          "objectId": "198267",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/2"
+          },
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~62%2F4",
+          "objectId": "198269",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "62/4"
+          },
+          "geometrySha256": "677220296fb850dfc02327504debdba218269677c44b083ce8aaad81c6a64401"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F3",
+          "objectId": "205123",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "61/3"
+          },
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F1",
+          "objectId": "205125",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "61/1"
+          },
+          "geometrySha256": "c7bcc48b358d65f18f0cc96c0723f6184ed179dd55150e49bf83c35b93a410e9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F1",
+          "objectId": "206731",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/1"
+          },
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F3",
+          "objectId": "206732",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/3"
+          },
+          "geometrySha256": "53dd5c567d2b1a7e46df75f10d33263c8512a544597f366333da8cb61133a52f"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~59%2F1",
+          "objectId": "212266",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "59/1"
+          },
+          "geometrySha256": "c1cf53f50a7076eccdc4156d8abdec934d5d7b6fc99ccaf4e13dbf53520b2f2d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 436,
+      "bbox": [
+        17.109,
+        48.1445,
+        17.1095,
+        48.145
+      ],
+      "featureCount": 9,
+      "manifestCount": 9,
+      "manifestObjectIds": [
+        "198252",
+        "198274",
+        "198277",
+        "206731",
+        "198251",
+        "198267",
+        "198278",
+        "203674",
+        "206732"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 9,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~62%2F3",
+          "objectId": "198251",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "62/3"
+          },
+          "geometrySha256": "975a4df1d9188e06f5334fafc4ed718c1bfcebb669a553e6b9d94a192ddfe294"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~69",
+          "objectId": "198252",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "69"
+          },
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F2",
+          "objectId": "198267",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/2"
+          },
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~74",
+          "objectId": "198274",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "74"
+          },
+          "geometrySha256": "91f9e7e42947e88d91c3a97ba603e04f5e39a1c909b82c4bdd2bb1748382aac4"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~72",
+          "objectId": "198277",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "72"
+          },
+          "geometrySha256": "4a76665d519ec2c7012acd8d6f0eea8d3e6c65ee1fbdc4125a8d3fabdf388988"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~70",
+          "objectId": "198278",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "70"
+          },
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F1",
+          "objectId": "203674",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/1"
+          },
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F1",
+          "objectId": "206731",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/1"
+          },
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~63%2F3",
+          "objectId": "206732",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "63/3"
+          },
+          "geometrySha256": "53dd5c567d2b1a7e46df75f10d33263c8512a544597f366333da8cb61133a52f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 522,
+      "bbox": [
+        17.1095,
+        48.1445,
+        17.11,
+        48.145
+      ],
+      "featureCount": 7,
+      "manifestCount": 7,
+      "manifestObjectIds": [
+        "198274",
+        "198277",
+        "198275",
+        "198276",
+        "198278",
+        "203674",
+        "204673"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 7,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~74",
+          "objectId": "198274",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "74"
+          },
+          "geometrySha256": "91f9e7e42947e88d91c3a97ba603e04f5e39a1c909b82c4bdd2bb1748382aac4"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~73",
+          "objectId": "198275",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "73"
+          },
+          "geometrySha256": "f36dbab506c2c33088f2196dd8ab3ff7986e29051a1b1e619a0c9e4e17df180a"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~71",
+          "objectId": "198276",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "71"
+          },
+          "geometrySha256": "7eedb3cc78faab0809b78137eb9e9fd558e02369cb98383e176ca2e8f600787c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~72",
+          "objectId": "198277",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "72"
+          },
+          "geometrySha256": "4a76665d519ec2c7012acd8d6f0eea8d3e6c65ee1fbdc4125a8d3fabdf388988"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~70",
+          "objectId": "198278",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "70"
+          },
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F1",
+          "objectId": "203674",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/1"
+          },
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21408%2F1",
+          "objectId": "204673",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21408/1"
+          },
+          "geometrySha256": "5db424faff3bedaf017e29f85a7ccb5c0e63028504d7b8a129f441969479fd2a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 413,
+      "bbox": [
+        17.109,
+        48.143,
+        17.1095,
+        48.1435
+      ],
+      "featureCount": 8,
+      "manifestCount": 8,
+      "manifestObjectIds": [
+        "198179",
+        "198185",
+        "198191",
+        "197922",
+        "198184",
+        "211723",
+        "198180",
+        "198197"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 8,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~116",
+          "objectId": "197922",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "116"
+          },
+          "geometrySha256": "aa4ef388eaad12533f58dd41d4ecd851fac331a5f761775d3cf40a331ef80c71"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~13",
+          "objectId": "198179",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "13"
+          },
+          "geometrySha256": "2f6ae3c5204e4b9c796fd1fc1c3f08ea6eaef53c0527277dc827c96146773c3c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~12",
+          "objectId": "198180",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "12"
+          },
+          "geometrySha256": "249199a6f92c726cb1f748ddd302261e41d43f9ab05c6959b6950d7e450e5b29"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~8",
+          "objectId": "198184",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "8"
+          },
+          "geometrySha256": "f30e80f857e4556a207ced1e4433d16b6065beb1581828e85f664729bb2582b2"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~6",
+          "objectId": "198185",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "6"
+          },
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~7",
+          "objectId": "198191",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "7"
+          },
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21402",
+          "objectId": "198197",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21402"
+          },
+          "geometrySha256": "14c8dcedaa2ee07cf0d96547a712752861a8ac7408483f0b80da92e960c68005"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21388%2F1",
+          "objectId": "211723",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21388/1"
+          },
+          "geometrySha256": "47005b98f9a7e0f1fff678ef8bb3145ced9ba451f8bd4545351c3687b7772848"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 404,
+      "bbox": [
+        17.109,
+        48.145,
+        17.1095,
+        48.1455
+      ],
+      "featureCount": 10,
+      "manifestCount": 10,
+      "manifestObjectIds": [
+        "198270",
+        "198274",
+        "204979",
+        "198271",
+        "198259",
+        "198264",
+        "198251",
+        "198278",
+        "203674",
+        "204673"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 10,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~62%2F3",
+          "objectId": "198251",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "62/3"
+          },
+          "geometrySha256": "975a4df1d9188e06f5334fafc4ed718c1bfcebb669a553e6b9d94a192ddfe294"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~57",
+          "objectId": "198259",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "57"
+          },
+          "geometrySha256": "4ccba35c0eced9ff8f646aca320a963318c017ef889ee9a9ed0f86813e2e7d53"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21409",
+          "objectId": "198264",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21409"
+          },
+          "geometrySha256": "5b352e9fdc42eddcd056182bb6e9d4ca12f8b85a4a79a180e788458077d3544d"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F6",
+          "objectId": "198270",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/6"
+          },
+          "geometrySha256": "c264eeb5f07a891f273d89ac1d2a45013fa69373dc8fa1a2ffef2f89da867923"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~75",
+          "objectId": "198271",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "75"
+          },
+          "geometrySha256": "cff6b945b15b8a0b0893302483aff0aadc5e0d2107eeb2aa3d3ddd80649881e7"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~74",
+          "objectId": "198274",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "74"
+          },
+          "geometrySha256": "91f9e7e42947e88d91c3a97ba603e04f5e39a1c909b82c4bdd2bb1748382aac4"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~70",
+          "objectId": "198278",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "70"
+          },
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F1",
+          "objectId": "203674",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/1"
+          },
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21408%2F1",
+          "objectId": "204673",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21408/1"
+          },
+          "geometrySha256": "5db424faff3bedaf017e29f85a7ccb5c0e63028504d7b8a129f441969479fd2a"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21335%2F1",
+          "objectId": "204979",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21335/1"
+          },
+          "geometrySha256": "252d567b6dccfb81a39ca00f7a89cb12a7f1de340258bceda983e6e583a69cd2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 420,
+      "bbox": [
+        17.108,
+        48.144,
+        17.1085,
+        48.1445
+      ],
+      "featureCount": 9,
+      "manifestCount": 9,
+      "manifestObjectIds": [
+        "192751",
+        "198241",
+        "198243",
+        "198244",
+        "198246",
+        "198260",
+        "198261",
+        "198265",
+        "205125"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 9,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~22",
+          "objectId": "192751",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "22"
+          },
+          "geometrySha256": "6815018b3087cb9770639c56a0672ec5531f9a678f0e6f193bc22e274dc226b9"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~67",
+          "objectId": "198241",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "67"
+          },
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~66",
+          "objectId": "198243",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "66"
+          },
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~64",
+          "objectId": "198244",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "64"
+          },
+          "geometrySha256": "f0d75ba753e2d20efa946c3810ef22e545492b58319e9afe500e89b208cda8f0"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~23",
+          "objectId": "198246",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "23"
+          },
+          "geometrySha256": "9c80a8567baebd1c9f2c82eb7695868dfbdbb0366df4aa6c8d9fa0312792fc42"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21397",
+          "objectId": "198260",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21397"
+          },
+          "geometrySha256": "5389227adf660c7c9cf32a9a96a1c0caf1d24b80ca778b06fcfc4bbae36ce6b7"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21398",
+          "objectId": "198261",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21398"
+          },
+          "geometrySha256": "8b09f414823d1dc972ff33350de4eec8c41d6ba22210ac118c80c2d23feafc10"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21396",
+          "objectId": "198265",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21396"
+          },
+          "geometrySha256": "1c9156fc31360146fd33fabcd0f01f898e7540c8448bdc488d00881a0480f8ee"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F1",
+          "objectId": "205125",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "61/1"
+          },
+          "geometrySha256": "c7bcc48b358d65f18f0cc96c0723f6184ed179dd55150e49bf83c35b93a410e9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 433,
+      "bbox": [
+        17.11,
+        48.144,
+        17.1105,
+        48.1445
+      ],
+      "featureCount": 8,
+      "manifestCount": 8,
+      "manifestObjectIds": [
+        "198210",
+        "198215",
+        "198235",
+        "198279",
+        "198234",
+        "198276",
+        "198278",
+        "203674"
+      ],
+      "geometryPages": 1,
+      "uniqueNativeIds": 8,
+      "ids": [
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~87",
+          "objectId": "198210",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "87"
+          },
+          "geometrySha256": "086dc09873a1e69565d02126064890c44025234bbb5c797c618f19dc021f4e6d"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~86",
+          "objectId": "198215",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "86"
+          },
+          "geometrySha256": "b1abf671156454644e2fc6ed624fc53fb326106da69081356ebf709105ce18ea"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~85%2F1",
+          "objectId": "198234",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "85/1"
+          },
+          "geometrySha256": "41472d5d22bb1e69edf802201c2a929232b7fd9450615767843925af8a0b7ca3"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~85%2F2",
+          "objectId": "198235",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "85/2"
+          },
+          "geometrySha256": "7cd2cb7340ac4b5b9d7cee6e95bca8d851f1d022a07ab82f2df2f0d369603ed2"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~71",
+          "objectId": "198276",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "71"
+          },
+          "geometrySha256": "7eedb3cc78faab0809b78137eb9e9fd558e02369cb98383e176ca2e8f600787c"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~70",
+          "objectId": "198278",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "70"
+          },
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21406",
+          "objectId": "198279",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21406"
+          },
+          "geometrySha256": "9454ef1c15e02d5a430a2c6e36a0a2aea021c2daafc2d3c1e3638fffebfacf37"
+        },
+        {
+          "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~21405%2F1",
+          "objectId": "203674",
+          "attributes": {
+            "ku": "Staré Mesto",
+            "cpa_text": "21405/1"
+          },
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        }
+      ]
+    },
+    {
+      "name": "fresh-exact-batch-1",
+      "passed": true,
+      "elapsedMs": 732,
+      "nativeIdCount": 52,
+      "objectIdCount": 52,
+      "requestCount": 3,
+      "complete": true,
+      "allHashesMatch": true
+    },
+    {
+      "name": "forced-page-size-3",
+      "passed": true,
+      "elapsedMs": 807,
+      "bbox": [
+        17.109,
+        48.144,
+        17.1095,
+        48.1445
+      ],
+      "featureCount": 11,
+      "pageSize": 3,
+      "geometryPages": 4,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "explicit-absent-id",
+      "passed": true,
+      "elapsedMs": 521,
+      "absentId": "bratislava-register-c:Star%C3%A9%20Mesto~999999999999",
+      "complete": true,
+      "absentIds": [
+        "bratislava-register-c:Star%C3%A9%20Mesto~999999999999"
+      ]
+    },
+    {
+      "name": "footprint-read",
+      "passed": true,
+      "elapsedMs": 408,
+      "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~7",
+      "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1",
+      "intersectingFeatureCount": 5,
+      "complete": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 471,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "selectedParcelId": "bratislava-register-c:Star%C3%A9%20Mesto~7",
+      "siteM2": 763.16
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:30:20.973Z",
+      "test": "viewport-0",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 181,
+      "count": 8
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:21.156Z",
+      "test": "viewport-0",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1085%2C48.1435%2C17.109%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 167,
+      "manifestCount": 8,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198198",
+        "198241",
+        "198265",
+        "198191",
+        "198192",
+        "198195",
+        "198197",
+        "198196"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:21.337Z",
+      "test": "viewport-0",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198198%2C198241%2C198265%2C198191%2C198192%2C198195%2C198197%2C198196",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 134,
+      "featureCount": 8,
+      "rows": [
+        {
+          "objectId": "198191",
+          "nativeId": [
+            "Staré Mesto",
+            "7"
+          ],
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "198195",
+          "nativeId": [
+            "Staré Mesto",
+            "21399"
+          ],
+          "geometrySha256": "5b2fb31debe770d5bb7151eb5b67a5416dded9480c8489a360cfb8cbd35540d1"
+        },
+        {
+          "objectId": "198196",
+          "nativeId": [
+            "Staré Mesto",
+            "21401"
+          ],
+          "geometrySha256": "24398b40fb99dd82218308252568dfd7426684365c26aaf8b491947b3f261899"
+        },
+        {
+          "objectId": "198197",
+          "nativeId": [
+            "Staré Mesto",
+            "21402"
+          ],
+          "geometrySha256": "14c8dcedaa2ee07cf0d96547a712752861a8ac7408483f0b80da92e960c68005"
+        },
+        {
+          "objectId": "198198",
+          "nativeId": [
+            "Staré Mesto",
+            "21403"
+          ],
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "objectId": "198241",
+          "nativeId": [
+            "Staré Mesto",
+            "67"
+          ],
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "objectId": "198265",
+          "nativeId": [
+            "Staré Mesto",
+            "21396"
+          ],
+          "geometrySha256": "1c9156fc31360146fd33fabcd0f01f898e7540c8448bdc488d00881a0480f8ee"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:21.476Z",
+      "test": "viewport-1",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.1435%2C17.1095%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 143,
+      "count": 6
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:21.620Z",
+      "test": "viewport-1",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.1435%2C17.1095%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 150,
+      "manifestCount": 6,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198185",
+        "198191",
+        "198192",
+        "198189",
+        "198190",
+        "198198"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:21.770Z",
+      "test": "viewport-1",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198185%2C198191%2C198192%2C198189%2C198190%2C198198",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 132,
+      "featureCount": 6,
+      "rows": [
+        {
+          "objectId": "198185",
+          "nativeId": [
+            "Staré Mesto",
+            "6"
+          ],
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "objectId": "198189",
+          "nativeId": [
+            "Staré Mesto",
+            "2"
+          ],
+          "geometrySha256": "ec88e4b3b2d954df59fbb80688c52300db1b1c3f3c6792ff174f6afdc9db71a8"
+        },
+        {
+          "objectId": "198190",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/1"
+          ],
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "objectId": "198191",
+          "nativeId": [
+            "Staré Mesto",
+            "7"
+          ],
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "198198",
+          "nativeId": [
+            "Staré Mesto",
+            "21403"
+          ],
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:21.905Z",
+      "test": "viewport-2",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1095%2C48.1435%2C17.11%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 154,
+      "count": 5
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:22.060Z",
+      "test": "viewport-2",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1095%2C48.1435%2C17.11%2C48.144&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 185,
+      "manifestCount": 5,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198185",
+        "198192",
+        "203674",
+        "198189",
+        "198190"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:22.247Z",
+      "test": "viewport-2",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198185%2C198192%2C203674%2C198189%2C198190",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 125,
+      "featureCount": 5,
+      "rows": [
+        {
+          "objectId": "198185",
+          "nativeId": [
+            "Staré Mesto",
+            "6"
+          ],
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "objectId": "198189",
+          "nativeId": [
+            "Staré Mesto",
+            "2"
+          ],
+          "geometrySha256": "ec88e4b3b2d954df59fbb80688c52300db1b1c3f3c6792ff174f6afdc9db71a8"
+        },
+        {
+          "objectId": "198190",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/1"
+          ],
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:22.376Z",
+      "test": "viewport-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1085%2C48.144%2C17.109%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 134,
+      "count": 10
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:22.513Z",
+      "test": "viewport-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1085%2C48.144%2C17.109%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 155,
+      "manifestCount": 10,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198198",
+        "198241",
+        "198242",
+        "198243",
+        "198244",
+        "198265",
+        "198267",
+        "205123",
+        "205124",
+        "205125"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:22.670Z",
+      "test": "viewport-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198198%2C198241%2C198242%2C198243%2C198244%2C198265%2C198267%2C205123%2C205124%2C205125",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 198,
+      "featureCount": 10,
+      "rows": [
+        {
+          "objectId": "198198",
+          "nativeId": [
+            "Staré Mesto",
+            "21403"
+          ],
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "objectId": "198241",
+          "nativeId": [
+            "Staré Mesto",
+            "67"
+          ],
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "objectId": "198242",
+          "nativeId": [
+            "Staré Mesto",
+            "68"
+          ],
+          "geometrySha256": "fbdb45e7daba6c6557af606e944258424365cef91f97f07c3fd0b6c942e5eeb4"
+        },
+        {
+          "objectId": "198243",
+          "nativeId": [
+            "Staré Mesto",
+            "66"
+          ],
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "objectId": "198244",
+          "nativeId": [
+            "Staré Mesto",
+            "64"
+          ],
+          "geometrySha256": "f0d75ba753e2d20efa946c3810ef22e545492b58319e9afe500e89b208cda8f0"
+        },
+        {
+          "objectId": "198265",
+          "nativeId": [
+            "Staré Mesto",
+            "21396"
+          ],
+          "geometrySha256": "1c9156fc31360146fd33fabcd0f01f898e7540c8448bdc488d00881a0480f8ee"
+        },
+        {
+          "objectId": "198267",
+          "nativeId": [
+            "Staré Mesto",
+            "63/2"
+          ],
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "objectId": "205123",
+          "nativeId": [
+            "Staré Mesto",
+            "61/3"
+          ],
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "objectId": "205124",
+          "nativeId": [
+            "Staré Mesto",
+            "61/2"
+          ],
+          "geometrySha256": "f254a85d30fe1b758725cd3c31ac3ec2d3d534e515f6dec886454f9a984baa79"
+        },
+        {
+          "objectId": "205125",
+          "nativeId": [
+            "Staré Mesto",
+            "61/1"
+          ],
+          "geometrySha256": "c7bcc48b358d65f18f0cc96c0723f6184ed179dd55150e49bf83c35b93a410e9"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:22.906Z",
+      "test": "viewport-4",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.144%2C17.1095%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 132,
+      "count": 11
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:23.039Z",
+      "test": "viewport-4",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.144%2C17.1095%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 142,
+      "manifestCount": 11,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198190",
+        "198198",
+        "198241",
+        "198242",
+        "198243",
+        "198252",
+        "205123",
+        "206731",
+        "198192",
+        "198267",
+        "203674"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:23.182Z",
+      "test": "viewport-4",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198190%2C198198%2C198241%2C198242%2C198243%2C198252%2C205123%2C206731%2C198192%2C198267%2C203674",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 133,
+      "featureCount": 11,
+      "rows": [
+        {
+          "objectId": "198190",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/1"
+          ],
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "198198",
+          "nativeId": [
+            "Staré Mesto",
+            "21403"
+          ],
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "objectId": "198241",
+          "nativeId": [
+            "Staré Mesto",
+            "67"
+          ],
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "objectId": "198242",
+          "nativeId": [
+            "Staré Mesto",
+            "68"
+          ],
+          "geometrySha256": "fbdb45e7daba6c6557af606e944258424365cef91f97f07c3fd0b6c942e5eeb4"
+        },
+        {
+          "objectId": "198243",
+          "nativeId": [
+            "Staré Mesto",
+            "66"
+          ],
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "objectId": "198252",
+          "nativeId": [
+            "Staré Mesto",
+            "69"
+          ],
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "objectId": "198267",
+          "nativeId": [
+            "Staré Mesto",
+            "63/2"
+          ],
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "objectId": "205123",
+          "nativeId": [
+            "Staré Mesto",
+            "61/3"
+          ],
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "objectId": "206731",
+          "nativeId": [
+            "Staré Mesto",
+            "63/1"
+          ],
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:23.321Z",
+      "test": "viewport-5",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1095%2C48.144%2C17.11%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 164,
+      "count": 9
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:23.487Z",
+      "test": "viewport-5",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1095%2C48.144%2C17.11%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 148,
+      "manifestCount": 9,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198189",
+        "198190",
+        "198252",
+        "198279",
+        "198277",
+        "206731",
+        "198201",
+        "198278",
+        "203674"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:23.637Z",
+      "test": "viewport-5",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198189%2C198190%2C198252%2C198279%2C198277%2C206731%2C198201%2C198278%2C203674",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 166,
+      "featureCount": 9,
+      "rows": [
+        {
+          "objectId": "198189",
+          "nativeId": [
+            "Staré Mesto",
+            "2"
+          ],
+          "geometrySha256": "ec88e4b3b2d954df59fbb80688c52300db1b1c3f3c6792ff174f6afdc9db71a8"
+        },
+        {
+          "objectId": "198190",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/1"
+          ],
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "objectId": "198201",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/2"
+          ],
+          "geometrySha256": "be32e56fd1d28588aa82e9dbc86f7ff1a89041f9408bf4b452da1e92c7ec23b9"
+        },
+        {
+          "objectId": "198252",
+          "nativeId": [
+            "Staré Mesto",
+            "69"
+          ],
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "objectId": "198277",
+          "nativeId": [
+            "Staré Mesto",
+            "72"
+          ],
+          "geometrySha256": "4a76665d519ec2c7012acd8d6f0eea8d3e6c65ee1fbdc4125a8d3fabdf388988"
+        },
+        {
+          "objectId": "198278",
+          "nativeId": [
+            "Staré Mesto",
+            "70"
+          ],
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "objectId": "198279",
+          "nativeId": [
+            "Staré Mesto",
+            "21406"
+          ],
+          "geometrySha256": "9454ef1c15e02d5a430a2c6e36a0a2aea021c2daafc2d3c1e3638fffebfacf37"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "objectId": "206731",
+          "nativeId": [
+            "Staré Mesto",
+            "63/1"
+          ],
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:23.812Z",
+      "test": "viewport-6",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1085%2C48.1445%2C17.109%2C48.145&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 160,
+      "count": 10
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:23.973Z",
+      "test": "viewport-6",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1085%2C48.1445%2C17.109%2C48.145&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 145,
+      "manifestCount": 10,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198249",
+        "198251",
+        "198252",
+        "198267",
+        "198269",
+        "205123",
+        "205125",
+        "206731",
+        "206732",
+        "212266"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:24.119Z",
+      "test": "viewport-6",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198249%2C198251%2C198252%2C198267%2C198269%2C205123%2C205125%2C206731%2C206732%2C212266",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 150,
+      "featureCount": 10,
+      "rows": [
+        {
+          "objectId": "198249",
+          "nativeId": [
+            "Staré Mesto",
+            "60"
+          ],
+          "geometrySha256": "97b3d7bba75bc88466984e57727ba9e60155a9447ece22e7b79d2104b2586091"
+        },
+        {
+          "objectId": "198251",
+          "nativeId": [
+            "Staré Mesto",
+            "62/3"
+          ],
+          "geometrySha256": "975a4df1d9188e06f5334fafc4ed718c1bfcebb669a553e6b9d94a192ddfe294"
+        },
+        {
+          "objectId": "198252",
+          "nativeId": [
+            "Staré Mesto",
+            "69"
+          ],
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "objectId": "198267",
+          "nativeId": [
+            "Staré Mesto",
+            "63/2"
+          ],
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "objectId": "198269",
+          "nativeId": [
+            "Staré Mesto",
+            "62/4"
+          ],
+          "geometrySha256": "677220296fb850dfc02327504debdba218269677c44b083ce8aaad81c6a64401"
+        },
+        {
+          "objectId": "205123",
+          "nativeId": [
+            "Staré Mesto",
+            "61/3"
+          ],
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "objectId": "205125",
+          "nativeId": [
+            "Staré Mesto",
+            "61/1"
+          ],
+          "geometrySha256": "c7bcc48b358d65f18f0cc96c0723f6184ed179dd55150e49bf83c35b93a410e9"
+        },
+        {
+          "objectId": "206731",
+          "nativeId": [
+            "Staré Mesto",
+            "63/1"
+          ],
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        },
+        {
+          "objectId": "206732",
+          "nativeId": [
+            "Staré Mesto",
+            "63/3"
+          ],
+          "geometrySha256": "53dd5c567d2b1a7e46df75f10d33263c8512a544597f366333da8cb61133a52f"
+        },
+        {
+          "objectId": "212266",
+          "nativeId": [
+            "Staré Mesto",
+            "59/1"
+          ],
+          "geometrySha256": "c1cf53f50a7076eccdc4156d8abdec934d5d7b6fc99ccaf4e13dbf53520b2f2d"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:24.273Z",
+      "test": "viewport-7",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.1445%2C17.1095%2C48.145&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 142,
+      "count": 9
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:24.417Z",
+      "test": "viewport-7",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.1445%2C17.1095%2C48.145&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 144,
+      "manifestCount": 9,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198252",
+        "198274",
+        "198277",
+        "206731",
+        "198251",
+        "198267",
+        "198278",
+        "203674",
+        "206732"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:24.562Z",
+      "test": "viewport-7",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198252%2C198274%2C198277%2C206731%2C198251%2C198267%2C198278%2C203674%2C206732",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 144,
+      "featureCount": 9,
+      "rows": [
+        {
+          "objectId": "198251",
+          "nativeId": [
+            "Staré Mesto",
+            "62/3"
+          ],
+          "geometrySha256": "975a4df1d9188e06f5334fafc4ed718c1bfcebb669a553e6b9d94a192ddfe294"
+        },
+        {
+          "objectId": "198252",
+          "nativeId": [
+            "Staré Mesto",
+            "69"
+          ],
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "objectId": "198267",
+          "nativeId": [
+            "Staré Mesto",
+            "63/2"
+          ],
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "objectId": "198274",
+          "nativeId": [
+            "Staré Mesto",
+            "74"
+          ],
+          "geometrySha256": "91f9e7e42947e88d91c3a97ba603e04f5e39a1c909b82c4bdd2bb1748382aac4"
+        },
+        {
+          "objectId": "198277",
+          "nativeId": [
+            "Staré Mesto",
+            "72"
+          ],
+          "geometrySha256": "4a76665d519ec2c7012acd8d6f0eea8d3e6c65ee1fbdc4125a8d3fabdf388988"
+        },
+        {
+          "objectId": "198278",
+          "nativeId": [
+            "Staré Mesto",
+            "70"
+          ],
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "objectId": "206731",
+          "nativeId": [
+            "Staré Mesto",
+            "63/1"
+          ],
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        },
+        {
+          "objectId": "206732",
+          "nativeId": [
+            "Staré Mesto",
+            "63/3"
+          ],
+          "geometrySha256": "53dd5c567d2b1a7e46df75f10d33263c8512a544597f366333da8cb61133a52f"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:24.711Z",
+      "test": "viewport-8",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1095%2C48.1445%2C17.11%2C48.145&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 133,
+      "count": 7
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:24.845Z",
+      "test": "viewport-8",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.1095%2C48.1445%2C17.11%2C48.145&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 191,
+      "manifestCount": 7,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198274",
+        "198277",
+        "198275",
+        "198276",
+        "198278",
+        "203674",
+        "204673"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:25.039Z",
+      "test": "viewport-8",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198274%2C198277%2C198275%2C198276%2C198278%2C203674%2C204673",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 192,
+      "featureCount": 7,
+      "rows": [
+        {
+          "objectId": "198274",
+          "nativeId": [
+            "Staré Mesto",
+            "74"
+          ],
+          "geometrySha256": "91f9e7e42947e88d91c3a97ba603e04f5e39a1c909b82c4bdd2bb1748382aac4"
+        },
+        {
+          "objectId": "198275",
+          "nativeId": [
+            "Staré Mesto",
+            "73"
+          ],
+          "geometrySha256": "f36dbab506c2c33088f2196dd8ab3ff7986e29051a1b1e619a0c9e4e17df180a"
+        },
+        {
+          "objectId": "198276",
+          "nativeId": [
+            "Staré Mesto",
+            "71"
+          ],
+          "geometrySha256": "7eedb3cc78faab0809b78137eb9e9fd558e02369cb98383e176ca2e8f600787c"
+        },
+        {
+          "objectId": "198277",
+          "nativeId": [
+            "Staré Mesto",
+            "72"
+          ],
+          "geometrySha256": "4a76665d519ec2c7012acd8d6f0eea8d3e6c65ee1fbdc4125a8d3fabdf388988"
+        },
+        {
+          "objectId": "198278",
+          "nativeId": [
+            "Staré Mesto",
+            "70"
+          ],
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "objectId": "204673",
+          "nativeId": [
+            "Staré Mesto",
+            "21408/1"
+          ],
+          "geometrySha256": "5db424faff3bedaf017e29f85a7ccb5c0e63028504d7b8a129f441969479fd2a"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:25.235Z",
+      "test": "viewport-9",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.143%2C17.1095%2C48.1435&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 149,
+      "count": 8
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:25.386Z",
+      "test": "viewport-9",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.143%2C17.1095%2C48.1435&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 125,
+      "manifestCount": 8,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198179",
+        "198185",
+        "198191",
+        "197922",
+        "198184",
+        "211723",
+        "198180",
+        "198197"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:25.513Z",
+      "test": "viewport-9",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198179%2C198185%2C198191%2C197922%2C198184%2C211723%2C198180%2C198197",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 133,
+      "featureCount": 8,
+      "rows": [
+        {
+          "objectId": "197922",
+          "nativeId": [
+            "Staré Mesto",
+            "116"
+          ],
+          "geometrySha256": "aa4ef388eaad12533f58dd41d4ecd851fac331a5f761775d3cf40a331ef80c71"
+        },
+        {
+          "objectId": "198179",
+          "nativeId": [
+            "Staré Mesto",
+            "13"
+          ],
+          "geometrySha256": "2f6ae3c5204e4b9c796fd1fc1c3f08ea6eaef53c0527277dc827c96146773c3c"
+        },
+        {
+          "objectId": "198180",
+          "nativeId": [
+            "Staré Mesto",
+            "12"
+          ],
+          "geometrySha256": "249199a6f92c726cb1f748ddd302261e41d43f9ab05c6959b6950d7e450e5b29"
+        },
+        {
+          "objectId": "198184",
+          "nativeId": [
+            "Staré Mesto",
+            "8"
+          ],
+          "geometrySha256": "f30e80f857e4556a207ced1e4433d16b6065beb1581828e85f664729bb2582b2"
+        },
+        {
+          "objectId": "198185",
+          "nativeId": [
+            "Staré Mesto",
+            "6"
+          ],
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "objectId": "198191",
+          "nativeId": [
+            "Staré Mesto",
+            "7"
+          ],
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "objectId": "198197",
+          "nativeId": [
+            "Staré Mesto",
+            "21402"
+          ],
+          "geometrySha256": "14c8dcedaa2ee07cf0d96547a712752861a8ac7408483f0b80da92e960c68005"
+        },
+        {
+          "objectId": "211723",
+          "nativeId": [
+            "Staré Mesto",
+            "21388/1"
+          ],
+          "geometrySha256": "47005b98f9a7e0f1fff678ef8bb3145ced9ba451f8bd4545351c3687b7772848"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:25.651Z",
+      "test": "viewport-10",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.145%2C17.1095%2C48.1455&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 132,
+      "count": 10
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:25.785Z",
+      "test": "viewport-10",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.145%2C17.1095%2C48.1455&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 125,
+      "manifestCount": 10,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198270",
+        "198274",
+        "204979",
+        "198271",
+        "198259",
+        "198264",
+        "198251",
+        "198278",
+        "203674",
+        "204673"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:25.913Z",
+      "test": "viewport-10",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198270%2C198274%2C204979%2C198271%2C198259%2C198264%2C198251%2C198278%2C203674%2C204673",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 139,
+      "featureCount": 10,
+      "rows": [
+        {
+          "objectId": "198251",
+          "nativeId": [
+            "Staré Mesto",
+            "62/3"
+          ],
+          "geometrySha256": "975a4df1d9188e06f5334fafc4ed718c1bfcebb669a553e6b9d94a192ddfe294"
+        },
+        {
+          "objectId": "198259",
+          "nativeId": [
+            "Staré Mesto",
+            "57"
+          ],
+          "geometrySha256": "4ccba35c0eced9ff8f646aca320a963318c017ef889ee9a9ed0f86813e2e7d53"
+        },
+        {
+          "objectId": "198264",
+          "nativeId": [
+            "Staré Mesto",
+            "21409"
+          ],
+          "geometrySha256": "5b352e9fdc42eddcd056182bb6e9d4ca12f8b85a4a79a180e788458077d3544d"
+        },
+        {
+          "objectId": "198270",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/6"
+          ],
+          "geometrySha256": "c264eeb5f07a891f273d89ac1d2a45013fa69373dc8fa1a2ffef2f89da867923"
+        },
+        {
+          "objectId": "198271",
+          "nativeId": [
+            "Staré Mesto",
+            "75"
+          ],
+          "geometrySha256": "cff6b945b15b8a0b0893302483aff0aadc5e0d2107eeb2aa3d3ddd80649881e7"
+        },
+        {
+          "objectId": "198274",
+          "nativeId": [
+            "Staré Mesto",
+            "74"
+          ],
+          "geometrySha256": "91f9e7e42947e88d91c3a97ba603e04f5e39a1c909b82c4bdd2bb1748382aac4"
+        },
+        {
+          "objectId": "198278",
+          "nativeId": [
+            "Staré Mesto",
+            "70"
+          ],
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "objectId": "204673",
+          "nativeId": [
+            "Staré Mesto",
+            "21408/1"
+          ],
+          "geometrySha256": "5db424faff3bedaf017e29f85a7ccb5c0e63028504d7b8a129f441969479fd2a"
+        },
+        {
+          "objectId": "204979",
+          "nativeId": [
+            "Staré Mesto",
+            "21335/1"
+          ],
+          "geometrySha256": "252d567b6dccfb81a39ca00f7a89cb12a7f1de340258bceda983e6e583a69cd2"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:26.057Z",
+      "test": "viewport-11",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.108%2C48.144%2C17.1085%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 126,
+      "count": 9
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:26.186Z",
+      "test": "viewport-11",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.108%2C48.144%2C17.1085%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 135,
+      "manifestCount": 9,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "192751",
+        "198241",
+        "198243",
+        "198244",
+        "198246",
+        "198260",
+        "198261",
+        "198265",
+        "205125"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:26.322Z",
+      "test": "viewport-11",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=192751%2C198241%2C198243%2C198244%2C198246%2C198260%2C198261%2C198265%2C205125",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 152,
+      "featureCount": 9,
+      "rows": [
+        {
+          "objectId": "192751",
+          "nativeId": [
+            "Staré Mesto",
+            "22"
+          ],
+          "geometrySha256": "6815018b3087cb9770639c56a0672ec5531f9a678f0e6f193bc22e274dc226b9"
+        },
+        {
+          "objectId": "198241",
+          "nativeId": [
+            "Staré Mesto",
+            "67"
+          ],
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "objectId": "198243",
+          "nativeId": [
+            "Staré Mesto",
+            "66"
+          ],
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "objectId": "198244",
+          "nativeId": [
+            "Staré Mesto",
+            "64"
+          ],
+          "geometrySha256": "f0d75ba753e2d20efa946c3810ef22e545492b58319e9afe500e89b208cda8f0"
+        },
+        {
+          "objectId": "198246",
+          "nativeId": [
+            "Staré Mesto",
+            "23"
+          ],
+          "geometrySha256": "9c80a8567baebd1c9f2c82eb7695868dfbdbb0366df4aa6c8d9fa0312792fc42"
+        },
+        {
+          "objectId": "198260",
+          "nativeId": [
+            "Staré Mesto",
+            "21397"
+          ],
+          "geometrySha256": "5389227adf660c7c9cf32a9a96a1c0caf1d24b80ca778b06fcfc4bbae36ce6b7"
+        },
+        {
+          "objectId": "198261",
+          "nativeId": [
+            "Staré Mesto",
+            "21398"
+          ],
+          "geometrySha256": "8b09f414823d1dc972ff33350de4eec8c41d6ba22210ac118c80c2d23feafc10"
+        },
+        {
+          "objectId": "198265",
+          "nativeId": [
+            "Staré Mesto",
+            "21396"
+          ],
+          "geometrySha256": "1c9156fc31360146fd33fabcd0f01f898e7540c8448bdc488d00881a0480f8ee"
+        },
+        {
+          "objectId": "205125",
+          "nativeId": [
+            "Staré Mesto",
+            "61/1"
+          ],
+          "geometrySha256": "c7bcc48b358d65f18f0cc96c0723f6184ed179dd55150e49bf83c35b93a410e9"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:26.480Z",
+      "test": "viewport-12",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.11%2C48.144%2C17.1105%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 130,
+      "count": 8
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:26.614Z",
+      "test": "viewport-12",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.11%2C48.144%2C17.1105%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 161,
+      "manifestCount": 8,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198210",
+        "198215",
+        "198235",
+        "198279",
+        "198234",
+        "198276",
+        "198278",
+        "203674"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:26.777Z",
+      "test": "viewport-12",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198210%2C198215%2C198235%2C198279%2C198234%2C198276%2C198278%2C203674",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 134,
+      "featureCount": 8,
+      "rows": [
+        {
+          "objectId": "198210",
+          "nativeId": [
+            "Staré Mesto",
+            "87"
+          ],
+          "geometrySha256": "086dc09873a1e69565d02126064890c44025234bbb5c797c618f19dc021f4e6d"
+        },
+        {
+          "objectId": "198215",
+          "nativeId": [
+            "Staré Mesto",
+            "86"
+          ],
+          "geometrySha256": "b1abf671156454644e2fc6ed624fc53fb326106da69081356ebf709105ce18ea"
+        },
+        {
+          "objectId": "198234",
+          "nativeId": [
+            "Staré Mesto",
+            "85/1"
+          ],
+          "geometrySha256": "41472d5d22bb1e69edf802201c2a929232b7fd9450615767843925af8a0b7ca3"
+        },
+        {
+          "objectId": "198235",
+          "nativeId": [
+            "Staré Mesto",
+            "85/2"
+          ],
+          "geometrySha256": "7cd2cb7340ac4b5b9d7cee6e95bca8d851f1d022a07ab82f2df2f0d369603ed2"
+        },
+        {
+          "objectId": "198276",
+          "nativeId": [
+            "Staré Mesto",
+            "71"
+          ],
+          "geometrySha256": "7eedb3cc78faab0809b78137eb9e9fd558e02369cb98383e176ca2e8f600787c"
+        },
+        {
+          "objectId": "198278",
+          "nativeId": [
+            "Staré Mesto",
+            "70"
+          ],
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "objectId": "198279",
+          "nativeId": [
+            "Staré Mesto",
+            "21406"
+          ],
+          "geometrySha256": "9454ef1c15e02d5a430a2c6e36a0a2aea021c2daafc2d3c1e3638fffebfacf37"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:26.916Z",
+      "test": "fresh-exact-batch-1",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query",
+      "method": "POST",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 278,
+      "count": 52
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:27.197Z",
+      "test": "fresh-exact-batch-1",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query",
+      "method": "POST",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 265,
+      "manifestCount": 52,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "192751",
+        "197922",
+        "198179",
+        "198180",
+        "198184",
+        "198185",
+        "198189",
+        "198190",
+        "198191",
+        "198192",
+        "198195",
+        "198196",
+        "198197",
+        "198198",
+        "198201",
+        "198210",
+        "198215",
+        "198234",
+        "198235",
+        "198241",
+        "198242",
+        "198243",
+        "198244",
+        "198246",
+        "198249",
+        "198251",
+        "198252",
+        "198259",
+        "198260",
+        "198261",
+        "198264",
+        "198265",
+        "198267",
+        "198269",
+        "198270",
+        "198271",
+        "198274",
+        "198275",
+        "198276",
+        "198277",
+        "198278",
+        "198279",
+        "203674",
+        "204673",
+        "204979",
+        "205123",
+        "205124",
+        "205125",
+        "206731",
+        "206732",
+        "211723",
+        "212266"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:27.473Z",
+      "test": "fresh-exact-batch-1",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=192751%2C197922%2C198179%2C198180%2C198184%2C198185%2C198189%2C198190%2C198191%2C198192%2C198195%2C198196%2C198197%2C198198%2C198201%2C198210%2C198215%2C198234%2C198235%2C198241%2C198242%2C198243%2C198244%2C198246%2C198249%2C198251%2C198252%2C198259%2C198260%2C198261%2C198264%2C198265%2C198267%2C198269%2C198270%2C198271%2C198274%2C198275%2C198276%2C198277%2C198278%2C198279%2C203674%2C204673%2C204979%2C205123%2C205124%2C205125%2C206731%2C206732%2C211723%2C212266",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 162,
+      "featureCount": 52,
+      "rows": [
+        {
+          "objectId": "192751",
+          "nativeId": [
+            "Staré Mesto",
+            "22"
+          ],
+          "geometrySha256": "6815018b3087cb9770639c56a0672ec5531f9a678f0e6f193bc22e274dc226b9"
+        },
+        {
+          "objectId": "197922",
+          "nativeId": [
+            "Staré Mesto",
+            "116"
+          ],
+          "geometrySha256": "aa4ef388eaad12533f58dd41d4ecd851fac331a5f761775d3cf40a331ef80c71"
+        },
+        {
+          "objectId": "198179",
+          "nativeId": [
+            "Staré Mesto",
+            "13"
+          ],
+          "geometrySha256": "2f6ae3c5204e4b9c796fd1fc1c3f08ea6eaef53c0527277dc827c96146773c3c"
+        },
+        {
+          "objectId": "198180",
+          "nativeId": [
+            "Staré Mesto",
+            "12"
+          ],
+          "geometrySha256": "249199a6f92c726cb1f748ddd302261e41d43f9ab05c6959b6950d7e450e5b29"
+        },
+        {
+          "objectId": "198184",
+          "nativeId": [
+            "Staré Mesto",
+            "8"
+          ],
+          "geometrySha256": "f30e80f857e4556a207ced1e4433d16b6065beb1581828e85f664729bb2582b2"
+        },
+        {
+          "objectId": "198185",
+          "nativeId": [
+            "Staré Mesto",
+            "6"
+          ],
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "objectId": "198189",
+          "nativeId": [
+            "Staré Mesto",
+            "2"
+          ],
+          "geometrySha256": "ec88e4b3b2d954df59fbb80688c52300db1b1c3f3c6792ff174f6afdc9db71a8"
+        },
+        {
+          "objectId": "198190",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/1"
+          ],
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "objectId": "198191",
+          "nativeId": [
+            "Staré Mesto",
+            "7"
+          ],
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "198195",
+          "nativeId": [
+            "Staré Mesto",
+            "21399"
+          ],
+          "geometrySha256": "5b2fb31debe770d5bb7151eb5b67a5416dded9480c8489a360cfb8cbd35540d1"
+        },
+        {
+          "objectId": "198196",
+          "nativeId": [
+            "Staré Mesto",
+            "21401"
+          ],
+          "geometrySha256": "24398b40fb99dd82218308252568dfd7426684365c26aaf8b491947b3f261899"
+        },
+        {
+          "objectId": "198197",
+          "nativeId": [
+            "Staré Mesto",
+            "21402"
+          ],
+          "geometrySha256": "14c8dcedaa2ee07cf0d96547a712752861a8ac7408483f0b80da92e960c68005"
+        },
+        {
+          "objectId": "198198",
+          "nativeId": [
+            "Staré Mesto",
+            "21403"
+          ],
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "objectId": "198201",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/2"
+          ],
+          "geometrySha256": "be32e56fd1d28588aa82e9dbc86f7ff1a89041f9408bf4b452da1e92c7ec23b9"
+        },
+        {
+          "objectId": "198210",
+          "nativeId": [
+            "Staré Mesto",
+            "87"
+          ],
+          "geometrySha256": "086dc09873a1e69565d02126064890c44025234bbb5c797c618f19dc021f4e6d"
+        },
+        {
+          "objectId": "198215",
+          "nativeId": [
+            "Staré Mesto",
+            "86"
+          ],
+          "geometrySha256": "b1abf671156454644e2fc6ed624fc53fb326106da69081356ebf709105ce18ea"
+        },
+        {
+          "objectId": "198234",
+          "nativeId": [
+            "Staré Mesto",
+            "85/1"
+          ],
+          "geometrySha256": "41472d5d22bb1e69edf802201c2a929232b7fd9450615767843925af8a0b7ca3"
+        },
+        {
+          "objectId": "198235",
+          "nativeId": [
+            "Staré Mesto",
+            "85/2"
+          ],
+          "geometrySha256": "7cd2cb7340ac4b5b9d7cee6e95bca8d851f1d022a07ab82f2df2f0d369603ed2"
+        },
+        {
+          "objectId": "198241",
+          "nativeId": [
+            "Staré Mesto",
+            "67"
+          ],
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        },
+        {
+          "objectId": "198242",
+          "nativeId": [
+            "Staré Mesto",
+            "68"
+          ],
+          "geometrySha256": "fbdb45e7daba6c6557af606e944258424365cef91f97f07c3fd0b6c942e5eeb4"
+        },
+        {
+          "objectId": "198243",
+          "nativeId": [
+            "Staré Mesto",
+            "66"
+          ],
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "objectId": "198244",
+          "nativeId": [
+            "Staré Mesto",
+            "64"
+          ],
+          "geometrySha256": "f0d75ba753e2d20efa946c3810ef22e545492b58319e9afe500e89b208cda8f0"
+        },
+        {
+          "objectId": "198246",
+          "nativeId": [
+            "Staré Mesto",
+            "23"
+          ],
+          "geometrySha256": "9c80a8567baebd1c9f2c82eb7695868dfbdbb0366df4aa6c8d9fa0312792fc42"
+        },
+        {
+          "objectId": "198249",
+          "nativeId": [
+            "Staré Mesto",
+            "60"
+          ],
+          "geometrySha256": "97b3d7bba75bc88466984e57727ba9e60155a9447ece22e7b79d2104b2586091"
+        },
+        {
+          "objectId": "198251",
+          "nativeId": [
+            "Staré Mesto",
+            "62/3"
+          ],
+          "geometrySha256": "975a4df1d9188e06f5334fafc4ed718c1bfcebb669a553e6b9d94a192ddfe294"
+        },
+        {
+          "objectId": "198252",
+          "nativeId": [
+            "Staré Mesto",
+            "69"
+          ],
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        },
+        {
+          "objectId": "198259",
+          "nativeId": [
+            "Staré Mesto",
+            "57"
+          ],
+          "geometrySha256": "4ccba35c0eced9ff8f646aca320a963318c017ef889ee9a9ed0f86813e2e7d53"
+        },
+        {
+          "objectId": "198260",
+          "nativeId": [
+            "Staré Mesto",
+            "21397"
+          ],
+          "geometrySha256": "5389227adf660c7c9cf32a9a96a1c0caf1d24b80ca778b06fcfc4bbae36ce6b7"
+        },
+        {
+          "objectId": "198261",
+          "nativeId": [
+            "Staré Mesto",
+            "21398"
+          ],
+          "geometrySha256": "8b09f414823d1dc972ff33350de4eec8c41d6ba22210ac118c80c2d23feafc10"
+        },
+        {
+          "objectId": "198264",
+          "nativeId": [
+            "Staré Mesto",
+            "21409"
+          ],
+          "geometrySha256": "5b352e9fdc42eddcd056182bb6e9d4ca12f8b85a4a79a180e788458077d3544d"
+        },
+        {
+          "objectId": "198265",
+          "nativeId": [
+            "Staré Mesto",
+            "21396"
+          ],
+          "geometrySha256": "1c9156fc31360146fd33fabcd0f01f898e7540c8448bdc488d00881a0480f8ee"
+        },
+        {
+          "objectId": "198267",
+          "nativeId": [
+            "Staré Mesto",
+            "63/2"
+          ],
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "objectId": "198269",
+          "nativeId": [
+            "Staré Mesto",
+            "62/4"
+          ],
+          "geometrySha256": "677220296fb850dfc02327504debdba218269677c44b083ce8aaad81c6a64401"
+        },
+        {
+          "objectId": "198270",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/6"
+          ],
+          "geometrySha256": "c264eeb5f07a891f273d89ac1d2a45013fa69373dc8fa1a2ffef2f89da867923"
+        },
+        {
+          "objectId": "198271",
+          "nativeId": [
+            "Staré Mesto",
+            "75"
+          ],
+          "geometrySha256": "cff6b945b15b8a0b0893302483aff0aadc5e0d2107eeb2aa3d3ddd80649881e7"
+        },
+        {
+          "objectId": "198274",
+          "nativeId": [
+            "Staré Mesto",
+            "74"
+          ],
+          "geometrySha256": "91f9e7e42947e88d91c3a97ba603e04f5e39a1c909b82c4bdd2bb1748382aac4"
+        },
+        {
+          "objectId": "198275",
+          "nativeId": [
+            "Staré Mesto",
+            "73"
+          ],
+          "geometrySha256": "f36dbab506c2c33088f2196dd8ab3ff7986e29051a1b1e619a0c9e4e17df180a"
+        },
+        {
+          "objectId": "198276",
+          "nativeId": [
+            "Staré Mesto",
+            "71"
+          ],
+          "geometrySha256": "7eedb3cc78faab0809b78137eb9e9fd558e02369cb98383e176ca2e8f600787c"
+        },
+        {
+          "objectId": "198277",
+          "nativeId": [
+            "Staré Mesto",
+            "72"
+          ],
+          "geometrySha256": "4a76665d519ec2c7012acd8d6f0eea8d3e6c65ee1fbdc4125a8d3fabdf388988"
+        },
+        {
+          "objectId": "198278",
+          "nativeId": [
+            "Staré Mesto",
+            "70"
+          ],
+          "geometrySha256": "53eb7efbcbfe88a58bc6e2ffd4db81ffed4f1ee68b1f132171ebeb4c5b9c2831"
+        },
+        {
+          "objectId": "198279",
+          "nativeId": [
+            "Staré Mesto",
+            "21406"
+          ],
+          "geometrySha256": "9454ef1c15e02d5a430a2c6e36a0a2aea021c2daafc2d3c1e3638fffebfacf37"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        },
+        {
+          "objectId": "204673",
+          "nativeId": [
+            "Staré Mesto",
+            "21408/1"
+          ],
+          "geometrySha256": "5db424faff3bedaf017e29f85a7ccb5c0e63028504d7b8a129f441969479fd2a"
+        },
+        {
+          "objectId": "204979",
+          "nativeId": [
+            "Staré Mesto",
+            "21335/1"
+          ],
+          "geometrySha256": "252d567b6dccfb81a39ca00f7a89cb12a7f1de340258bceda983e6e583a69cd2"
+        },
+        {
+          "objectId": "205123",
+          "nativeId": [
+            "Staré Mesto",
+            "61/3"
+          ],
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "objectId": "205124",
+          "nativeId": [
+            "Staré Mesto",
+            "61/2"
+          ],
+          "geometrySha256": "f254a85d30fe1b758725cd3c31ac3ec2d3d534e515f6dec886454f9a984baa79"
+        },
+        {
+          "objectId": "205125",
+          "nativeId": [
+            "Staré Mesto",
+            "61/1"
+          ],
+          "geometrySha256": "c7bcc48b358d65f18f0cc96c0723f6184ed179dd55150e49bf83c35b93a410e9"
+        },
+        {
+          "objectId": "206731",
+          "nativeId": [
+            "Staré Mesto",
+            "63/1"
+          ],
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        },
+        {
+          "objectId": "206732",
+          "nativeId": [
+            "Staré Mesto",
+            "63/3"
+          ],
+          "geometrySha256": "53dd5c567d2b1a7e46df75f10d33263c8512a544597f366333da8cb61133a52f"
+        },
+        {
+          "objectId": "211723",
+          "nativeId": [
+            "Staré Mesto",
+            "21388/1"
+          ],
+          "geometrySha256": "47005b98f9a7e0f1fff678ef8bb3145ced9ba451f8bd4545351c3687b7772848"
+        },
+        {
+          "objectId": "212266",
+          "nativeId": [
+            "Staré Mesto",
+            "59/1"
+          ],
+          "geometrySha256": "c1cf53f50a7076eccdc4156d8abdec934d5d7b6fc99ccaf4e13dbf53520b2f2d"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:27.649Z",
+      "test": "forced-page-size-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.144%2C17.1095%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 127,
+      "count": 11
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:27.778Z",
+      "test": "forced-page-size-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.109%2C48.144%2C17.1095%2C48.1445&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 135,
+      "manifestCount": 11,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198190",
+        "198198",
+        "198241",
+        "198242",
+        "198243",
+        "198252",
+        "205123",
+        "206731",
+        "198192",
+        "198267",
+        "203674"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:27.915Z",
+      "test": "forced-page-size-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198190%2C198198%2C198241",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 131,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "198190",
+          "nativeId": [
+            "Staré Mesto",
+            "21404/1"
+          ],
+          "geometrySha256": "a4be1b2bea1178f4085fa09b5ddfbf5ac7431f8a11e0c9c7c39208646bbec1e9"
+        },
+        {
+          "objectId": "198198",
+          "nativeId": [
+            "Staré Mesto",
+            "21403"
+          ],
+          "geometrySha256": "667ac07179cfb5c1954f368a27daad8e5fa7302e58fe105e2515f41fb6366371"
+        },
+        {
+          "objectId": "198241",
+          "nativeId": [
+            "Staré Mesto",
+            "67"
+          ],
+          "geometrySha256": "e8a40fdb63868415103de7a7f7347aa9693227b89988e2a3b197bc0fe1c7ebc8"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:28.050Z",
+      "test": "forced-page-size-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198242%2C198243%2C198252",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 123,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "198242",
+          "nativeId": [
+            "Staré Mesto",
+            "68"
+          ],
+          "geometrySha256": "fbdb45e7daba6c6557af606e944258424365cef91f97f07c3fd0b6c942e5eeb4"
+        },
+        {
+          "objectId": "198243",
+          "nativeId": [
+            "Staré Mesto",
+            "66"
+          ],
+          "geometrySha256": "7602b6eac63ecbdbcd34ced72a1ed78362cd4fe60096e5473337a9014646a479"
+        },
+        {
+          "objectId": "198252",
+          "nativeId": [
+            "Staré Mesto",
+            "69"
+          ],
+          "geometrySha256": "94eb1d2e88a58f76bce095926b32afac659ff7d74e6d0977f478afedce1e0893"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:28.176Z",
+      "test": "forced-page-size-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=205123%2C206731%2C198192",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 133,
+      "featureCount": 3,
+      "rows": [
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "205123",
+          "nativeId": [
+            "Staré Mesto",
+            "61/3"
+          ],
+          "geometrySha256": "3a301fbb050bab5831fcb6d22eab362f72dbd9d889fd06b175114721ca2ccab0"
+        },
+        {
+          "objectId": "206731",
+          "nativeId": [
+            "Staré Mesto",
+            "63/1"
+          ],
+          "geometrySha256": "158eb3b7edc41a6a5eff60d6a71b7265f61bf36348828de8f0f50e03afee21f9"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:28.312Z",
+      "test": "forced-page-size-3",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198267%2C203674",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 139,
+      "featureCount": 2,
+      "rows": [
+        {
+          "objectId": "198267",
+          "nativeId": [
+            "Staré Mesto",
+            "63/2"
+          ],
+          "geometrySha256": "f2b2e32508c444f7da9580e3d5a016be11a2243b73531d729b5431cc1d57fae5"
+        },
+        {
+          "objectId": "203674",
+          "nativeId": [
+            "Staré Mesto",
+            "21405/1"
+          ],
+          "geometrySha256": "1860e4a39c8d9dfac4dcf944bd29708ad0053df747c1b23392fd833cc7a49d4c"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:28.461Z",
+      "test": "explicit-absent-id",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=%28ku+%3D+%27Star%C3%A9+Mesto%27+AND+cpa_text+%3D+%27999999999999%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 223,
+      "count": 0
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:28.686Z",
+      "test": "explicit-absent-id",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=%28ku+%3D+%27Star%C3%A9+Mesto%27+AND+cpa_text+%3D+%27999999999999%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 294
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:28.985Z",
+      "test": "footprint-read",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.108936025513042%2C48.14327020383273%2C17.109391725014582%2C48.14366247845866&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 130,
+      "count": 7
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:29.116Z",
+      "test": "footprint-read",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.108936025513042%2C48.14327020383273%2C17.109391725014582%2C48.14366247845866&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 141,
+      "manifestCount": 7,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198196",
+        "198184",
+        "198179",
+        "198185",
+        "198191",
+        "198192",
+        "198197"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:29.259Z",
+      "test": "footprint-read",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198196%2C198184%2C198179%2C198185%2C198191%2C198192%2C198197",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 131,
+      "featureCount": 7,
+      "rows": [
+        {
+          "objectId": "198179",
+          "nativeId": [
+            "Staré Mesto",
+            "13"
+          ],
+          "geometrySha256": "2f6ae3c5204e4b9c796fd1fc1c3f08ea6eaef53c0527277dc827c96146773c3c"
+        },
+        {
+          "objectId": "198184",
+          "nativeId": [
+            "Staré Mesto",
+            "8"
+          ],
+          "geometrySha256": "f30e80f857e4556a207ced1e4433d16b6065beb1581828e85f664729bb2582b2"
+        },
+        {
+          "objectId": "198185",
+          "nativeId": [
+            "Staré Mesto",
+            "6"
+          ],
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "objectId": "198191",
+          "nativeId": [
+            "Staré Mesto",
+            "7"
+          ],
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "198196",
+          "nativeId": [
+            "Staré Mesto",
+            "21401"
+          ],
+          "geometrySha256": "24398b40fb99dd82218308252568dfd7426684365c26aaf8b491947b3f261899"
+        },
+        {
+          "objectId": "198197",
+          "nativeId": [
+            "Staré Mesto",
+            "21402"
+          ],
+          "geometrySha256": "14c8dcedaa2ee07cf0d96547a712752861a8ac7408483f0b80da92e960c68005"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:29.396Z",
+      "test": "source-binding",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.108936025513042%2C48.14327020383273%2C17.109391725014582%2C48.14366247845866&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 136,
+      "count": 7
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:29.535Z",
+      "test": "source-binding",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&geometry=17.108936025513042%2C48.14327020383273%2C17.109391725014582%2C48.14366247845866&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 135,
+      "manifestCount": 7,
+      "objectIdFieldName": "objectid",
+      "objectIds": [
+        "198196",
+        "198184",
+        "198179",
+        "198185",
+        "198191",
+        "198192",
+        "198197"
+      ]
+    },
+    {
+      "checkedAt": "2026-10-08T18:30:29.672Z",
+      "test": "source-binding",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1/query?where=1%3D1&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa_num%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&f=geojson&objectIds=198196%2C198184%2C198179%2C198185%2C198191%2C198192%2C198197",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 125,
+      "featureCount": 7,
+      "rows": [
+        {
+          "objectId": "198179",
+          "nativeId": [
+            "Staré Mesto",
+            "13"
+          ],
+          "geometrySha256": "2f6ae3c5204e4b9c796fd1fc1c3f08ea6eaef53c0527277dc827c96146773c3c"
+        },
+        {
+          "objectId": "198184",
+          "nativeId": [
+            "Staré Mesto",
+            "8"
+          ],
+          "geometrySha256": "f30e80f857e4556a207ced1e4433d16b6065beb1581828e85f664729bb2582b2"
+        },
+        {
+          "objectId": "198185",
+          "nativeId": [
+            "Staré Mesto",
+            "6"
+          ],
+          "geometrySha256": "c097b94aee17bdc97a01278e32f6a01758eac77e92301aa8a2eb20b81a5ef99f"
+        },
+        {
+          "objectId": "198191",
+          "nativeId": [
+            "Staré Mesto",
+            "7"
+          ],
+          "geometrySha256": "1f6c237ec6a7872ba8569b6955d8c81d3821853613552dad8bad0101382bcca1"
+        },
+        {
+          "objectId": "198192",
+          "nativeId": [
+            "Staré Mesto",
+            "1"
+          ],
+          "geometrySha256": "d003bc0197bc95a17d3e834f67ccec32e9fa160ff6837d857d0d0577542a65ce"
+        },
+        {
+          "objectId": "198196",
+          "nativeId": [
+            "Staré Mesto",
+            "21401"
+          ],
+          "geometrySha256": "24398b40fb99dd82218308252568dfd7426684365c26aaf8b491947b3f261899"
+        },
+        {
+          "objectId": "198197",
+          "nativeId": [
+            "Staré Mesto",
+            "21402"
+          ],
+          "geometrySha256": "14c8dcedaa2ee07cf0d96547a712752861a8ac7408483f0b80da92e960c68005"
+        }
+      ]
+    }
+  ],
+  "privacy": "Only parcel identity/reference, lifecycle, and administrative class fields listed by the descriptor are queried. No owner fields.",
+  "activeTest": null,
+  "runtime": {
+    "retainedUniqueNativeIds": 52,
+    "exactReadIds": 52,
+    "exactAllHashesMatch": true,
+    "requestCount": 56,
+    "completedAt": "2026-10-08T18:30:29.869Z"
+  },
+  "result": "passed",
+  "metricShapelyAudit": {
+    "metricCrs": "EPSG:32633 WGS 84 / UTM zone 33N",
+    "projector": "Node proj4 backend dependency; Shapely 2.1.2 / GEOS 3.13.1",
+    "featureCount": 52,
+    "uniqueSourceNativeIds": 52,
+    "duplicateNativeIdCount": 0,
+    "geometryTypes": {
+      "Polygon": 52
+    },
+    "validGeometryCount": 51,
+    "invalidGeometryCount": 1,
+    "invalidExamples": [
+      {
+        "parcelId": "bratislava-register-c:Star%C3%A9%20Mesto~61%2F1",
+        "objectId": "205125",
+        "reason": "Ring Self-intersection[656839.329556715 5334542.2773771]"
+      }
+    ],
+    "polygonHoleCount": 8,
+    "areaM2": {
+      "min": 3.200216289834456,
+      "median": 873.709664798053,
+      "max": 22315.300862752763,
+      "under1m2": 0
+    },
+    "positiveOverlapThresholdM2": 0.01,
+    "positiveAreaOverlapCount": 0,
+    "positiveAreaOverlapExamples": [],
+    "sampleScope": "All unique source geometries returned in the bounded city window cells in this acceptance run."
+  },
+  "geometryQualityOutcome": "adapter_passed_with_one_invalid_source_polygon",
+  "safeSampleFile": "bratislava-safe-sample.json",
+  "sourceGeometryDiagnosis": {
+    "checkedAt": "2026-10-08T18:36:15.243Z",
+    "method": "Fresh exact-identity ArcGIS REST refetch of the previously flagged features in native spatial reference and outSR=4326. Native and WGS84 geometries were measured in the local metric CRS; no repair, clipping, or filtering was applied. Areas/fractions are approximate. Maximum inscribed diameter measures the largest disk in polygonal overlap area; line-only contact excluded.",
+    "diagnosticRawResponses": "/tmp/world-capitals-2026-10-08/source-geometry-diagnostics.json",
+    "service": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1",
+    "exactTarget": {
+      "objectid": 205125,
+      "ku": "Staré Mesto",
+      "cpa_text": "61/1",
+      "pec": 439,
+      "drp": 13,
+      "ump": 1
+    },
+    "comparison": "Fresh exact reads from MapServer/1 (current diagnostic source) and FeatureServer/1 (accepted alternative); both return the same OID/ref and 57 vertices in each native/outSR4326/GeoJSON variant.",
+    "oldMapServer": {
+      "nativeWKID": 102100,
+      "valid": false,
+      "reason": "Ring Self-intersection",
+      "nativeAreaM2": 4032.381695,
+      "out4326TransformedBackAreaM2": 4032.381695,
+      "invalidityPersistsAfterTransform": true
+    },
+    "acceptedFeatureServer": {
+      "nativeWKID": 102100,
+      "valid": false,
+      "reason": "Ring Self-intersection",
+      "nativeAreaM2": 4032.381699,
+      "out4326TransformedBackAreaM2": 4032.381699,
+      "invalidityPersistsAfterTransform": true
+    },
+    "finding": "The self-intersection is already present in the source-coordinate geometry and persists after reprojection on both services. The two service versions are slightly different at coordinates, but both encode the same invalidity. This is a source-geometry quality issue, not introduced by outSR=4326."
+  }
+}

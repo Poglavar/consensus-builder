@@ -1,0 +1,538 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32635",
+  "featureCount": 59,
+  "validNonemptyCount": 59,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "md-geodata:01002050178",
+        "md-geodata:01002050575"
+      ],
+      "overlapM2": 0.3690862172329265,
+      "fractionOfSmaller": 0.00010793812755860334
+    },
+    {
+      "ids": [
+        "md-geodata:01002050209",
+        "md-geodata:01002050549"
+      ],
+      "overlapM2": 0.025212849477644933,
+      "fractionOfSmaller": 9.912911649640411e-06
+    },
+    {
+      "ids": [
+        "md-geodata:01002050278",
+        "md-geodata:01002050549"
+      ],
+      "overlapM2": 0.14839856128839324,
+      "fractionOfSmaller": 1.637749413836472e-05
+    },
+    {
+      "ids": [
+        "md-geodata:01002050549",
+        "md-geodata:01002050004"
+      ],
+      "overlapM2": 0.020283885827957253,
+      "fractionOfSmaller": 4.5898264235750325e-05
+    },
+    {
+      "ids": [
+        "md-geodata:01002050549",
+        "md-geodata:01002050101"
+      ],
+      "overlapM2": 1.4088067211437312,
+      "fractionOfSmaller": 0.0008798834612631756
+    },
+    {
+      "ids": [
+        "md-geodata:01002050549",
+        "md-geodata:01002050575"
+      ],
+      "overlapM2": 0.01845400087796731,
+      "fractionOfSmaller": 1.796010161637554e-06
+    },
+    {
+      "ids": [
+        "md-geodata:01002050549",
+        "md-geodata:01002050168"
+      ],
+      "overlapM2": 0.149144156572483,
+      "fractionOfSmaller": 4.4012932895001664e-05
+    },
+    {
+      "ids": [
+        "md-geodata:01002050549",
+        "md-geodata:01002050436"
+      ],
+      "overlapM2": 0.03671471440343629,
+      "fractionOfSmaller": 3.086400483297408e-05
+    },
+    {
+      "ids": [
+        "md-geodata:01005200228",
+        "md-geodata:01005200364"
+      ],
+      "overlapM2": 0.05531781478061284,
+      "fractionOfSmaller": 4.226116492061016e-06
+    },
+    {
+      "ids": [
+        "md-geodata:01002050419",
+        "md-geodata:01002050515"
+      ],
+      "overlapM2": 0.2222165929326616,
+      "fractionOfSmaller": 0.0006269662956519763
+    },
+    {
+      "ids": [
+        "md-geodata:01002060368",
+        "md-geodata:01002060171"
+      ],
+      "overlapM2": 0.024618844866388823,
+      "fractionOfSmaller": 9.805435903410986e-06
+    },
+    {
+      "ids": [
+        "md-geodata:01002050166",
+        "md-geodata:01002050162"
+      ],
+      "overlapM2": 55.599885114241076,
+      "fractionOfSmaller": 0.05357058867875804
+    },
+    {
+      "ids": [
+        "md-geodata:01002050185",
+        "md-geodata:01002050529"
+      ],
+      "overlapM2": 0.2167975646919428,
+      "fractionOfSmaller": 0.0005047822420565232
+    }
+  ],
+  "sumPairwiseOverlapM2": 58.294937038337224,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 15.954744857618545,
+    "median": 1155.5201861375783,
+    "max": 94664.21086657076
+  },
+  "features": [
+    {
+      "id": "md-geodata:01002050023",
+      "areaM2": 284.1162464274128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050034",
+      "areaM2": 88.30218725122228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050178",
+      "areaM2": 3419.4239383348286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050209",
+      "areaM2": 2543.435306271445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050278",
+      "areaM2": 9061.127424907185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050549",
+      "areaM2": 59463.28884652903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050575",
+      "areaM2": 10274.998032940664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200228",
+      "areaM2": 13089.514897313004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200364",
+      "areaM2": 94664.21086657076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050241",
+      "areaM2": 5053.332814432287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050168",
+      "areaM2": 3388.643899925619,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050173",
+      "areaM2": 729.2583050035108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050248",
+      "areaM2": 1013.4713695788233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050419",
+      "areaM2": 2873.533308406753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050436",
+      "areaM2": 1189.5641736101434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050520",
+      "areaM2": 41.50170525307989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050528",
+      "areaM2": 1008.2124229496003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002060367",
+      "areaM2": 50889.44551841633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002060368",
+      "areaM2": 89823.2314314843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050058",
+      "areaM2": 15.954744857618545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200003",
+      "areaM2": 38553.316156563844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200269",
+      "areaM2": 1931.5710068661915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050048",
+      "areaM2": 64.97354794480327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050166",
+      "areaM2": 1037.8807940239735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050226",
+      "areaM2": 58.87342921675191,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050243",
+      "areaM2": 1673.6358099909555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050440",
+      "areaM2": 593.3716259307064,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050446",
+      "areaM2": 41.85984943255417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050083",
+      "areaM2": 92.88241976577461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050162",
+      "areaM2": 8100.228913931093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050200",
+      "areaM2": 1209.5891068397189,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050216",
+      "areaM2": 744.5278989184122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050492",
+      "areaM2": 267.44871675166854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050519",
+      "areaM2": 129.83442366274625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050521",
+      "areaM2": 173.56492094849108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005190246",
+      "areaM2": 87968.15866039152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200362",
+      "areaM2": 13274.992815966783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050207",
+      "areaM2": 630.1654586016618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002040509",
+      "areaM2": 46673.76581678454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050004",
+      "areaM2": 441.9314360946587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050086",
+      "areaM2": 501.00075272617244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050101",
+      "areaM2": 1601.1287666678318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050104",
+      "areaM2": 833.5931307242943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050123",
+      "areaM2": 496.72460325509985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050185",
+      "areaM2": 1331.7622402875018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050196",
+      "areaM2": 395.3527450568165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050229",
+      "areaM2": 1155.5201861375783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050249",
+      "areaM2": 245.95940028689233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050267",
+      "areaM2": 735.7581245937612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050525",
+      "areaM2": 374.90590626790134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050529",
+      "areaM2": 429.4873048796095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005190247",
+      "areaM2": 121.55763471200945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200181",
+      "areaM2": 4997.400579198983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200238",
+      "areaM2": 6342.449774595718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01005200316",
+      "areaM2": 1521.0015445310576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050255",
+      "areaM2": 2390.237922501987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050515",
+      "areaM2": 354.4314813630942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002050518",
+      "areaM2": 2843.6577404107993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "md-geodata:01002060171",
+      "areaM2": 2510.7343629491006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

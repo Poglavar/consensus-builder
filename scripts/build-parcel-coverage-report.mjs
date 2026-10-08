@@ -41,6 +41,17 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
     // stay unbound; provider/country membership and similar names are not sufficient evidence.
     const appCityByRegistryCity = new Map();
     const ambiguousRegistryCities = new Set();
+    // A reviewed city row can explicitly bind one entry of a shared provider. Require both
+    // the live configuration and enabled source ledger to agree; names/proximity never bind it.
+    for (const city of registry.cities) {
+        const liveCity = liveById.get(city.appCityId);
+        const source = liveCity && sourceById.get(liveCity.sourceId);
+        if (source?.liveIntegration?.status === 'enabled'
+            && source.liveIntegration.cityIds?.includes(city.appCityId)
+            && city.sourceIds?.includes(liveCity.sourceId)) {
+            appCityByRegistryCity.set(city.cityId, city.appCityId);
+        }
+    }
     for (const source of registry.sources) {
         const integration = source.liveIntegration;
         const appCityId = integration?.appCityId;
@@ -50,7 +61,7 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
         if (!liveCity || liveCity.sourceId !== source.sourceId) continue;
         const [registryCityId] = source.verifiedCityIds;
         if (typeof registryCityId !== 'string' || !registryCityId) continue;
-        if (appCityByRegistryCity.has(registryCityId)) ambiguousRegistryCities.add(registryCityId);
+        if (appCityByRegistryCity.has(registryCityId) && appCityByRegistryCity.get(registryCityId) !== appCityId) ambiguousRegistryCities.add(registryCityId);
         else appCityByRegistryCity.set(registryCityId, appCityId);
     }
     for (const city of inputCities) {

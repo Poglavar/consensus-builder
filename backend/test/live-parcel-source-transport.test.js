@@ -6,7 +6,9 @@ import vm from 'node:vm';
 const sourceId = 'ca-on-toronto-property-boundary';
 const toronto = { id: 'toronto', parcels: { source: 'parcel-source', sourceId, gridSize: 0.005, requiresBackend: true } };
 const cityConfigs = [toronto, { id: 'explore', parcels: { source: 'none' } },
-    { id: 'different_city', parcels: { source: 'parcel-bg' } }];
+    { id: 'different_city', parcels: { source: 'parcel-bg' } },
+    { id: 'slow_city', parcels: { source: 'parcel-source', sourceId: 'slow-source', idBatchSize: 3 } },
+    { id: 'invalid_batch', parcels: { source: 'parcel-source', sourceId: 'slow-source', idBatchSize: 0 } }];
 const polygon = { type: 'Polygon', coordinates: [[[-79.385, 43.65], [-79.38, 43.65], [-79.38, 43.655], [-79.385, 43.65]]] };
 const parcel = { type: 'Feature', properties: { parcelId: 'CA-ON-TORONTO-123' }, geometry: polygon };
 const response = payload => ({ ok: true, status: 200, json: async () => payload });
@@ -71,6 +73,32 @@ describe('live parcel source transport', () => {
         expect(result.features).toEqual([parcel]);
         expect(fetch.mock.calls[0][0]).toBe(`http://localhost:4638/parcel-sources/${sourceId}/under`);
         expect(JSON.parse(fetch.mock.calls[0][1].body)).toMatchObject({ geometry: polygon, srid: 4326 });
+    });
+
+    it('splits slow-source browser ID requests and accounts for absence only after every batch completes', async () => {
+        const ids = Array.from({ length: 8 }, (_, index) => `slow:${index}`);
+        const fetch = vi.fn(async url => {
+            const batch = new URL(url).searchParams.get('ids').split(',');
+            return response({ complete: true, features: batch.filter(id => id !== 'slow:4').map(id =>
+                ({ ...parcel, properties: { parcelId: id } })), absentIds: batch.filter(id => id === 'slow:4') });
+        });
+        const { transport } = boot(fetch, 'slow_city');
+        const result = await transport.fetchByIds(ids);
+        expect(fetch.mock.calls.map(([url]) => new URL(url).searchParams.get('ids').split(',')))
+            .toEqual([ids.slice(0, 3), ids.slice(3, 6), ids.slice(6)]);
+        expect(result.features.map(feature => feature.properties.parcelId)).toEqual(ids.filter(id => id !== 'slow:4'));
+        expect(result.absentIds).toEqual(['slow:4']);
+
+        fetch.mockClear();
+        fetch.mockImplementationOnce(async () => response({ complete: true, features: ids.slice(0, 3).map(id =>
+            ({ ...parcel, properties: { parcelId: id } })), absentIds: [] }))
+            .mockImplementationOnce(async () => response({ complete: false, features: [], absentIds: [] }));
+        await expect(transport.fetchByIds(ids)).rejects.toThrow(/incomplete/);
+        expect(fetch).toHaveBeenCalledTimes(2);
+
+        fetch.mockClear();
+        await expect(boot(fetch, 'invalid_batch').transport.fetchByIds(ids)).rejects.toThrow(/batch size/);
+        expect(fetch).not.toHaveBeenCalled();
     });
 
     it('never accepts incomplete cells, IDs or footprints as missing ground', async () => {

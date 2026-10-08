@@ -1,0 +1,42 @@
+{
+  "purpose": "Read-only bounded public service query; no catalogue/runtime configuration change.",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:PY:asuncion",
+  "sourceId": "municipal ArcGIS MapServer layer 32 Datos Catastrales",
+  "tests": [
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32/query",
+      "format": "geojson",
+      "bboxLonLat": [
+        -57.636,
+        -25.301,
+        -57.634,
+        -25.299
+      ],
+      "maxRecords": 3,
+      "requestedFields": [
+        "objectid_1"
+      ],
+      "httpStatus": 400,
+      "outcome": "Specified output format unsupported."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32/query",
+      "format": "json/pjson",
+      "bboxLonLat": [
+        -57.636,
+        -25.301,
+        -57.634,
+        -25.299
+      ],
+      "maxRecords": 3,
+      "requestedFields": [
+        "objectid_1"
+      ],
+      "httpStatus": 200,
+      "outcome": "ArcGIS application error 500 Unable to perform query; no feature geometry."
+    }
+  ],
+  "overall": "not_qualifiable_through_public_feature_query",
+  "reason": "Official layer metadata is Polygon geometry, but bounded public queries returned service errors; no sample or adapter qualification claimed."
+}

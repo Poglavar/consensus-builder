@@ -76,10 +76,12 @@
     },
     {
       "countryCode": "MK",
-      "coverage": "unknown",
+      "coverage": "partial",
       "checkedAt": "2026-10-08",
-      "sourceIds": [],
-      "note": "AREC describes cadastral data services, but the cadastre and NSDI portal checks failed before returning parcel geometry. Checks from a second network also failed. Access remains inconclusive.",
+      "sourceIds": [
+        "mk-skopje-old-bazaar-parcels"
+      ],
+      "note": "Public Old Bazaar parcel polygons are verified in a bounded Skopje sample. Duplicate and overlapping source shapes keep that city layer outside the runtime catalog; countrywide coverage is unconfirmed. Earlier AREC national cadastre/NSDI checks remain inconclusive.",
       "evidence": [
         {
           "title": "AREC: official cadastre portal",
@@ -88,6 +90,10 @@
         {
           "title": "AREC: official online cadastre service",
           "url": "https://ossp.katastar.gov.mk/OSSP/"
+        },
+        {
+          "title": "City of Skopje: Old Bazaar parcel polygons",
+          "url": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3"
         }
       ]
     },

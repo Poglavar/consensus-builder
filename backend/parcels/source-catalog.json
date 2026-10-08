@@ -404,15 +404,22 @@
       "maxBboxKm2": 25,
       "countryCode": "NL",
       "metricSrid": 32631,
-      "scope": "National Dutch cadastral map; bounded Amsterdam and Rotterdam globe entries are enabled. Valid (G) records only. Boundaries are indicative and unsuitable for survey measurements or establishing legal title.",
+      "scope": "Current Dutch cadastral map, bounded Amsterdam, Rotterdam and The Hague city entries. Indicative boundaries; wider coverage requires the separate national review.",
       "evidenceFile": "research/amsterdam-live.json",
       "attribution": "Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.",
       "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
       "catalogueUrl": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
       "cityIds": [
         "amsterdam",
-        "rotterdam"
-      ]
+        "rotterdam",
+        "thehague"
+      ],
+      "additionalCityEvidence": {
+        "thehague": "research/world-capitals-2026-10-08/the-hague-acceptance.json"
+      },
+      "cityScopes": {
+        "thehague": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee."
+      }
     },
     {
       "id": "be-vlaanderen-grb-adp",
@@ -4222,6 +4229,332 @@
       "attribution": "City of Tshwane registered surveyed parcels — Pretoria; adapted to WGS84. Bounded samples only.",
       "licenceNote": "Public anonymous query access verified. Publisher conditions remain informational; a named reuse licence was not established.",
       "caCertificate": "./certificates/geotrust-tls-rsa-ca-g1.pem"
+    },
+    {
+      "id": "at-bev-kataster-vector-tiles",
+      "adapter": "bev-tiles",
+      "endpoint": "https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf",
+      "idPrefix": "AT-BEV-",
+      "outFields": [
+        "kg",
+        "gnr",
+        "ez",
+        "kgez",
+        "rstatus"
+      ],
+      "parcelNumberField": "gnr",
+      "maxTiles": 64,
+      "maxFeatures": 500,
+      "maxBboxKm2": 1,
+      "name": "BEV cadastral vector tiles",
+      "countryCode": "AT",
+      "metricSrid": 32633,
+      "cityIds": [
+        "vienna"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+      "evidenceFile": "research/world-capitals-2026-10-08/vienna-acceptance.json",
+      "catalogueUrl": "https://kataster.bev.gv.at/",
+      "attribution": "BEV, CC BY 4.0; adapted from public cadastral vector tiles. Display coordinates are not legally binding survey coordinates.",
+      "licenceNote": "BEV, CC BY 4.0; adapted from public cadastral vector tiles. Display coordinates are not legally binding survey coordinates.",
+      "additionalCityEvidence": {
+        "vienna": "research/world-capitals-2026-10-08/vienna-acceptance.json"
+      },
+      "cityScopes": {
+        "vienna": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified."
+      }
+    },
+    {
+      "id": "me-water-cadastral-parcels",
+      "name": "Montenegro Water Administration cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://wis.gov.me/geoserver/wfs",
+      "featureType": "uzv:parcele_v",
+      "geometryField": "geom",
+      "idField": "id",
+      "idType": "integer",
+      "idPrefix": "me-water:",
+      "parcelNumberField": "br_parcele",
+      "outFields": [
+        "id",
+        "ko",
+        "br_parcele",
+        "naziv_ko",
+        "naziv_po"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "countryCode": "ME",
+      "metricSrid": 32634,
+      "cityIds": [
+        "cetinje"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "283 complete parcel references in 13 Cetinje cells, all valid with no sampled overlaps. Source-row id is a stable read reference, not proof of title; native district/parcel labels are retained. Podgorica remains unconfigured because its separate sample has material defects.",
+      "evidenceFile": "research/world-capitals-2026-10-08/cetinje-acceptance.json",
+      "catalogueUrl": "https://wis.gov.me/geoportal",
+      "attribution": "Montenegro Water Administration cadastral layer; public access verified, named reuse licence unestablished. Publisher conditions are informational.",
+      "licenceNote": "Montenegro Water Administration cadastral layer; public access verified, named reuse licence unestablished. Publisher conditions are informational.",
+      "additionalCityEvidence": {
+        "cetinje": "research/world-capitals-2026-10-08/cetinje-acceptance.json"
+      },
+      "cityScopes": {
+        "cetinje": "283 complete parcel references in 13 Cetinje cells, all valid with no sampled overlaps. Source-row id is a stable read reference, not proof of title; native district/parcel labels are retained. Podgorica remains unconfigured because its separate sample has material defects."
+      }
+    },
+    {
+      "id": "sm-public-cadastral-ground",
+      "name": "San Marino public cadastral land",
+      "adapter": "arcgis",
+      "endpoint": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17",
+      "idField": "FOG_MAP",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "sm-cadastre:",
+      "parcelNumberField": "FOG_MAP",
+      "outFields": [
+        "OBJECTID",
+        "FOG_MAP",
+        "FOGLIO",
+        "MAPPALE",
+        "NOME",
+        "CATA_NAME",
+        "CATA_ST",
+        "CATA_LIVE"
+      ],
+      "attributeFilters": {
+        "NOME": "PAR",
+        "CATA_NAME": "TERRENO"
+      },
+      "nativeGeometryMode": "parts",
+      "disjointParts": true,
+      "partMatchFields": [
+        "FOGLIO",
+        "MAPPALE"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "countryCode": "SM",
+      "metricSrid": 32633,
+      "cityIds": [
+        "sanmarino"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified.",
+      "evidenceFile": "research/world-capitals-2026-10-08/san-marino-acceptance.json",
+      "catalogueUrl": "https://mappeonline.pa.sm/maps/prgmobile/",
+      "attribution": "San Marino public PRG cadastral layer; public query access verified. Separate paid cadastral services do not gate this map source. Publisher conditions informational.",
+      "licenceNote": "San Marino public PRG cadastral layer; public query access verified. Separate paid cadastral services do not gate this map source. Publisher conditions informational.",
+      "additionalCityEvidence": {
+        "sanmarino": "research/world-capitals-2026-10-08/san-marino-acceptance.json"
+      },
+      "cityScopes": {
+        "sanmarino": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified."
+      }
+    },
+    {
+      "id": "nz-linz-primary-parcels-arcgis",
+      "adapter": "arcgis",
+      "idPrefix": "nz-linz:",
+      "endpoint": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+      "idField": "id",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "id",
+        "appellation",
+        "topology_type"
+      ],
+      "parcelNumberField": "appellation",
+      "pageSize": 100,
+      "idBatchSize": 1,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 5,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "single-equality",
+      "name": "LINZ primary parcels — public ArcGIS publication",
+      "countryCode": "NZ",
+      "metricSrid": 32760,
+      "cityIds": [
+        "wellington"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
+      "evidenceFile": "research/world-capitals-2026-10-08/wellington-acceptance.json",
+      "catalogueUrl": "https://data.linz.govt.nz/layer/50823-nz-primary-parcels/",
+      "attribution": "Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.",
+      "licenceNote": "Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.",
+      "additionalCityEvidence": {
+        "wellington": "research/world-capitals-2026-10-08/wellington-acceptance.json"
+      },
+      "cityScopes": {
+        "wellington": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified."
+      }
+    },
+    {
+      "id": "lb-bbed-beirut-parcels",
+      "name": "Beirut Urban Lab municipal parcel basemap",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+      "idField": "PID",
+      "idType": "string",
+      "idPrefix": "LB-BBED-",
+      "objectIdField": "OBJECTID_1",
+      "outFields": [
+        "OBJECTID_1",
+        "PID",
+        "GlobalID"
+      ],
+      "parcelNumberField": "PID",
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "countryCode": "LB",
+      "metricSrid": 32636,
+      "cityIds": [
+        "beirut"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide.",
+      "evidenceFile": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json",
+      "catalogueUrl": "https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download",
+      "attribution": "The Beirut Built Environment Database, Beirut Urban Lab (American University of Beirut) and CNRS; ODbL. Adapted to WGS84; research basemap, not legal title data.",
+      "licenceNote": "The Beirut Built Environment Database, Beirut Urban Lab (American University of Beirut) and CNRS; ODbL. Adapted to WGS84; research basemap, not legal title data.",
+      "additionalCityEvidence": {
+        "beirut": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json"
+      },
+      "cityScopes": {
+        "beirut": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide."
+      }
+    },
+    {
+      "id": "bt-thimphu-taba-plots",
+      "name": "Thimphu Thromde Taba plot polygons (status unverified)",
+      "adapter": "arcgis",
+      "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+      "idField": "fid",
+      "idType": "integer",
+      "idPrefix": "bt-thimphu-taba:",
+      "objectIdField": "fid",
+      "outFields": [
+        "fid"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "countryCode": "BT",
+      "metricSrid": 32645,
+      "cityIds": [
+        "thimphu"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+      "evidenceFile": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json",
+      "catalogueUrl": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+      "attribution": "Bhutan NSDI / Thimphu Thromde Taba plots. Parcel registration, lifecycle and planning status unverified. Public access; publisher conditions informational.",
+      "licenceNote": "Bhutan NSDI / Thimphu Thromde Taba plots. Parcel registration, lifecycle and planning status unverified. Public access; publisher conditions informational.",
+      "additionalCityEvidence": {
+        "thimphu": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json"
+      },
+      "cityScopes": {
+        "thimphu": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only."
+      }
+    },
+    {
+      "id": "bn-survey-cadas-bsb",
+      "name": "Brunei Survey Department G1_GDBD CADAS",
+      "adapter": "arcgis",
+      "endpoint": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "BN-SD-BSB-",
+      "parcelNumberField": "LOTNUM",
+      "outFields": [
+        "OBJECTID",
+        "LOTNUM",
+        "DISTCODE",
+        "BOOKCODE"
+      ],
+      "pageSize": 3,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "countryCode": "BN",
+      "metricSrid": 32650,
+      "cityIds": [
+        "bandarseribegawan"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+      "evidenceFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json",
+      "catalogueUrl": "https://survey.gov.bn/",
+      "attribution": "Brunei Survey Department G1_GDBD CADAS; public geometry, publisher conditions informational. 357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+      "licenceNote": "Brunei Survey Department G1_GDBD CADAS; public geometry, publisher conditions informational. 357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+      "additionalCityEvidence": {
+        "bandarseribegawan": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json"
+      },
+      "cityScopes": {
+        "bandarseribegawan": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified."
+      }
+    },
+    {
+      "adapter": "wfs",
+      "id": "il-govmap-cadastral-parcel-rows",
+      "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+      "featureType": "opendata:PARCEL_ALL",
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "version": "2.0.0",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "govmap:row:",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "GUSH_NUM",
+        "GUSH_SUFFI",
+        "PARCEL"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "responseSrid": 3857,
+      "minRequestIntervalMs": 100,
+      "name": "Govmap public cadastral parcel rows",
+      "parcelNumberField": "PARCEL",
+      "countryCode": "IL",
+      "metricSrid": 32636,
+      "cityIds": [
+        "jerusalem",
+        "eastjerusalem"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "evidenceFile": "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+      "catalogueUrl": "https://www.govmap.gov.il/",
+      "attribution": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "licenceNote": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "additionalCityEvidence": {
+        "eastjerusalem": "research/world-capitals-2026-10-08/east-jerusalem-acceptance.json",
+        "jerusalem": "research/world-capitals-2026-10-08/jerusalem-acceptance.json"
+      },
+      "cityScopes": {
+        "eastjerusalem": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+        "jerusalem": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
+      }
     }
   ]
 }

@@ -3664,7 +3664,17 @@
             "athens": "Atenas, Grecia",
             "gaborone": "Gaborone, Botsuana",
             "bloemfontein": "Bloemfontein, Sudáfrica",
-            "pretoria": "Pretoria, Sudáfrica"
+            "pretoria": "Pretoria, Sudáfrica",
+            "vienna": "Viena, Austria",
+            "cetinje": "Cetiña, Montenegro",
+            "sanmarino": "San Marino, San Marino",
+            "thehague": "La Haya, Países Bajos",
+            "wellington": "Wellington, Nueva Zelanda",
+            "beirut": "Beirut, Líbano",
+            "thimphu": "Timbu — Taba, Bután",
+            "bandarseribegawan": "Bandar Seri Begawan, Brunéi",
+            "jerusalem": "Jerusalén, Israel",
+            "eastjerusalem": "Jerusalén Oriental, Palestina"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",
@@ -4248,6 +4258,7 @@
             "noResults": "Ningún lugar coincide"
         },
         "legend": {
+            "toggle": "Leyenda del mapa",
             "title": "Cobertura catastral por país",
             "cities": "Ciudad con parcelas en la app"
         },
@@ -4315,6 +4326,7 @@
         },
         "activity": {
             "title": "Actividad reciente",
+            "zoningType": "Zonificación",
             "loading": "Cargando actividad…",
             "empty": "Todavía no hay actividad reciente.",
             "error": "La actividad no está disponible temporalmente.",

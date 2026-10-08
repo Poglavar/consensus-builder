@@ -1,0 +1,1938 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS topology audit of bounded adapter-returned features projected to EPSG:3857; no geometry repair. Counts describe the tested viewport only.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:3857",
+  "featureCount": 236,
+  "validNonemptyCount": 234,
+  "invalidFeatures": [
+    {
+      "id": "north-nicosia:3735580",
+      "reason": "Ring Self-intersection[3710210.80911748 4210170.09433097]",
+      "empty": false
+    },
+    {
+      "id": "north-nicosia:3737731",
+      "reason": "Ring Self-intersection[3709149.46098676 4210641.04261903]",
+      "empty": false
+    }
+  ],
+  "exactDuplicateGeometryGroups": [],
+  "positiveAreaOverlapPairsAbove1e-6M2": [
+    {
+      "ids": [
+        "north-nicosia:3737713",
+        "north-nicosia:3737752"
+      ],
+      "intersectionAreaM2": 0.8281514456692688,
+      "fractionOfSmaller": 0.0010847742749764183,
+      "minimumRotatedRectangleWidthM": 2.8251876143452463,
+      "minimumRotatedRectangleLengthM": 19.879795480153053
+    },
+    {
+      "ids": [
+        "north-nicosia:3737713",
+        "north-nicosia:3737724"
+      ],
+      "intersectionAreaM2": 0.028195449677051457,
+      "fractionOfSmaller": 1.2430435562516694e-05,
+      "minimumRotatedRectangleWidthM": 31.648194401124325,
+      "minimumRotatedRectangleLengthM": 116.68053296404194
+    }
+  ],
+  "areaM2": {
+    "min": 0.5348240509331914,
+    "median": 866.4959933070643,
+    "max": 25152.51946336312
+  },
+  "features": [
+    {
+      "id": "north-nicosia:3734447",
+      "areaM2": 953.0867737591151,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734581",
+      "areaM2": 59.521455754296944,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734583",
+      "areaM2": 80.23054755862434,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734448",
+      "areaM2": 872.7517042492217,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734465",
+      "areaM2": 6061.467894946859,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734598",
+      "areaM2": 5107.165793115563,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734437",
+      "areaM2": 891.8700216451203,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734582",
+      "areaM2": 58.85467486696464,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734584",
+      "areaM2": 877.9332146750207,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734435",
+      "areaM2": 1005.9410188917684,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734444",
+      "areaM2": 889.5830882942487,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734476",
+      "areaM2": 859.9845168750162,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734478",
+      "areaM2": 812.0786364229073,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734578",
+      "areaM2": 59.47689101992034,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734580",
+      "areaM2": 834.7381871395596,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734451",
+      "areaM2": 1091.5449099732884,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734453",
+      "areaM2": 1490.57320467127,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734487",
+      "areaM2": 23181.362743939793,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734585",
+      "areaM2": 3284.84224756392,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734587",
+      "areaM2": 841.1361828599742,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734594",
+      "areaM2": 1081.2630358770882,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734422",
+      "areaM2": 4321.5379666850295,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734596",
+      "areaM2": 845.2808501966566,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734728",
+      "areaM2": 1085.0482610175422,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734439",
+      "areaM2": 830.4714344962993,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734440",
+      "areaM2": 852.5116609310317,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734575",
+      "areaM2": 58.51664063743823,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734576",
+      "areaM2": 59.147683806122316,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734589",
+      "areaM2": 1015.297170900878,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734590",
+      "areaM2": 1664.1892539246314,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734436",
+      "areaM2": 857.1431906271338,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734725",
+      "areaM2": 569.9945832791682,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734726",
+      "areaM2": 1067.5638532871747,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734443",
+      "areaM2": 2469.9423389347735,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734479",
+      "areaM2": 794.4888854255596,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734579",
+      "areaM2": 61.23623031481427,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734423",
+      "areaM2": 7729.66586686745,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734593",
+      "areaM2": 1343.8006902398695,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734597",
+      "areaM2": 1964.9111810003526,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734442",
+      "areaM2": 3502.278317774173,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734573",
+      "areaM2": 1139.6175837362903,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734591",
+      "areaM2": 863.8672959751802,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734427",
+      "areaM2": 1687.4941241431961,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734592",
+      "areaM2": 829.8473210461194,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734724",
+      "areaM2": 932.4011887013633,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734438",
+      "areaM2": 869.1246906389483,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734445",
+      "areaM2": 891.6575747023161,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734452",
+      "areaM2": 1218.7554690483776,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734577",
+      "areaM2": 59.64255481522995,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734588",
+      "areaM2": 1894.7364252602856,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734595",
+      "areaM2": 1517.8929048087446,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734727",
+      "areaM2": 311.4789333577251,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734430",
+      "areaM2": 1098.3188236474502,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734434",
+      "areaM2": 19752.24245582345,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734449",
+      "areaM2": 854.2716582930518,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734425",
+      "areaM2": 11179.138323176108,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734464",
+      "areaM2": 1455.144918464194,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734429",
+      "areaM2": 818.8679753238945,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734457",
+      "areaM2": 401.55758794642566,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734458",
+      "areaM2": 574.8180149146405,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734454",
+      "areaM2": 2054.6901853077225,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734461",
+      "areaM2": 671.4186574129074,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734468",
+      "areaM2": 8188.035329279022,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735113",
+      "areaM2": 914.7171267928833,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734421",
+      "areaM2": 17085.275541742652,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734446",
+      "areaM2": 1050.0779675863673,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734469",
+      "areaM2": 9265.529896880254,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734426",
+      "areaM2": 1009.3758746783561,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734428",
+      "areaM2": 999.8586728936748,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734455",
+      "areaM2": 511.2733932526695,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734460",
+      "areaM2": 658.5234143413622,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734462",
+      "areaM2": 4449.949997945648,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734424",
+      "areaM2": 5502.982939171248,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735128",
+      "areaM2": 2676.88671343227,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734441",
+      "areaM2": 1103.9626905456641,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734456",
+      "areaM2": 373.02774755086585,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734459",
+      "areaM2": 433.2215991420118,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734431",
+      "areaM2": 953.5534783695289,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734450",
+      "areaM2": 875.7607171719162,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735118",
+      "areaM2": 915.1068355825868,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735115",
+      "areaM2": 752.0778348536214,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735122",
+      "areaM2": 780.5650908819598,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735129",
+      "areaM2": 827.7370507011244,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734480",
+      "areaM2": 1135.9079754098475,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735114",
+      "areaM2": 735.0280081393142,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734432",
+      "areaM2": 2108.1801661755453,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735137",
+      "areaM2": 851.5037984182677,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735139",
+      "areaM2": 776.1918328937498,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734466",
+      "areaM2": 4933.742913973946,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734481",
+      "areaM2": 1535.489974708214,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734483",
+      "areaM2": 591.9276450913123,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735117",
+      "areaM2": 762.6954033493242,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735119",
+      "areaM2": 822.322552033177,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735124",
+      "areaM2": 1423.6046377255561,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735132",
+      "areaM2": 789.5986889328074,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734485",
+      "areaM2": 7920.983492696251,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735127",
+      "areaM2": 806.4951898946349,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735123",
+      "areaM2": 775.5017656540316,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735130",
+      "areaM2": 787.6764869531727,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734475",
+      "areaM2": 1060.3493800986591,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735630",
+      "areaM2": 2023.0534417626018,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734433",
+      "areaM2": 396.1200011031247,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735125",
+      "areaM2": 786.0356532276892,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735126",
+      "areaM2": 814.5252657480377,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734467",
+      "areaM2": 1692.9648861043322,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734482",
+      "areaM2": 1848.089806719097,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734484",
+      "areaM2": 3320.04119176654,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735135",
+      "areaM2": 779.0319283425373,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735584",
+      "areaM2": 2550.3694756488558,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734463",
+      "areaM2": 2758.44881142268,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734470",
+      "areaM2": 10258.564638834749,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734477",
+      "areaM2": 4028.2485825860504,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735120",
+      "areaM2": 750.7784559795931,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735131",
+      "areaM2": 25152.51946336312,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734472",
+      "areaM2": 12372.343906801721,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734486",
+      "areaM2": 2266.9028701061316,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737713",
+      "areaM2": 23860.648374043627,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737719",
+      "areaM2": 21707.105670604993,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735615",
+      "areaM2": 1038.3027836213494,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735618",
+      "areaM2": 788.664342663892,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734473",
+      "areaM2": 486.15741489633183,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735613",
+      "areaM2": 935.2541008902695,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734474",
+      "areaM2": 749.1938097590619,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735109",
+      "areaM2": 849.6916601241389,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735580",
+      "areaM2": 77777.57367827375,
+      "valid": false,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735616",
+      "areaM2": 149.85045747912503,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735625",
+      "areaM2": 189.09272995906412,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737724",
+      "areaM2": 2268.259188123167,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737752",
+      "areaM2": 763.4320473605183,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737721",
+      "areaM2": 12886.4153753994,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737753",
+      "areaM2": 366.1687884269034,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734655",
+      "areaM2": 4408.266757736349,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734660",
+      "areaM2": 1155.2546873767362,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734599",
+      "areaM2": 3666.492591242563,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734614",
+      "areaM2": 420.46169618007775,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734721",
+      "areaM2": 176.8788637692406,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734631",
+      "areaM2": 6692.438645065999,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734633",
+      "areaM2": 456.4641026113899,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734648",
+      "areaM2": 1301.4267556127788,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734767",
+      "areaM2": 668.8709781865915,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734613",
+      "areaM2": 2398.1115940527734,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734645",
+      "areaM2": 1769.4552823699662,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734770",
+      "areaM2": 28.9091877332838,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734471",
+      "areaM2": 4097.148109794907,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734795",
+      "areaM2": 2968.1889396390966,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734603",
+      "areaM2": 1395.0900263756912,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734610",
+      "areaM2": 132.8978143696465,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734646",
+      "areaM2": 1198.2803970166146,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734671",
+      "areaM2": 2352.36187258512,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734771",
+      "areaM2": 728.3612594811879,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734839",
+      "areaM2": 2409.335304752145,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734608",
+      "areaM2": 1126.7533443254215,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734658",
+      "areaM2": 12869.243700461522,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735180",
+      "areaM2": 24568.347474703456,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734616",
+      "areaM2": 2309.8450252332627,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734622",
+      "areaM2": 326.2099180301307,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734647",
+      "areaM2": 1134.8082541040387,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734661",
+      "areaM2": 1092.3037034639615,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734672",
+      "areaM2": 1188.2053287153192,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734606",
+      "areaM2": 1580.3662130395273,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734623",
+      "areaM2": 0.5348240509331914,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734779",
+      "areaM2": 45.278376726854034,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734624",
+      "areaM2": 95.46586339246863,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734641",
+      "areaM2": 2148.6037143302137,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734642",
+      "areaM2": 3801.53808277286,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734656",
+      "areaM2": 1125.2921644904814,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734659",
+      "areaM2": 1088.3052407181472,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734673",
+      "areaM2": 1219.749720973106,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734600",
+      "areaM2": 1621.675852568281,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734632",
+      "areaM2": 681.2401462515634,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3734723",
+      "areaM2": 248.00513391547506,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737588",
+      "areaM2": 92.73016952475892,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737688",
+      "areaM2": 745.2089434523365,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737711",
+      "areaM2": 637.039640043954,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737592",
+      "areaM2": 171.883510036606,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737720",
+      "areaM2": 3232.760899850281,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737747",
+      "areaM2": 60.236470073815454,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737607",
+      "areaM2": 134.96726021143533,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737673",
+      "areaM2": 69.13723933343294,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737675",
+      "areaM2": 68.86987517205812,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737726",
+      "areaM2": 195.98666170971657,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737741",
+      "areaM2": 255.60250003741345,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737743",
+      "areaM2": 95.46667397188509,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737597",
+      "areaM2": 785.8417126517458,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737665",
+      "areaM2": 1341.792404945965,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737715",
+      "areaM2": 7424.9578475492,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737568",
+      "areaM2": 111.63408723379031,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737602",
+      "areaM2": 512.5788832830542,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737627",
+      "areaM2": 19.23608682219794,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737663",
+      "areaM2": 102.74747074927338,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737670",
+      "areaM2": 69.02908032336556,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737672",
+      "areaM2": 68.3511717268226,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737727",
+      "areaM2": 118.96820264427205,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737738",
+      "areaM2": 1001.7836181441082,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737585",
+      "areaM2": 156.51770802239415,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737596",
+      "areaM2": 841.7707898885973,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737628",
+      "areaM2": 1501.087969690415,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737728",
+      "areaM2": 143.5892293511866,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737735",
+      "areaM2": 87.1192257887254,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737581",
+      "areaM2": 293.2435616555561,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737649",
+      "areaM2": 281.9877449012134,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737739",
+      "areaM2": 154.5179886677052,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737664",
+      "areaM2": 473.04289382535256,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737668",
+      "areaM2": 451.9946762882049,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737699",
+      "areaM2": 24.928291085366375,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737714",
+      "areaM2": 1548.1465671796325,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737731",
+      "areaM2": 9774.863297882122,
+      "valid": false,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737750",
+      "areaM2": 490.37299077076705,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737594",
+      "areaM2": 74.70779653830414,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737619",
+      "areaM2": 3319.48675480228,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737630",
+      "areaM2": 196.7992754567137,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737644",
+      "areaM2": 166.75643800136984,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737662",
+      "areaM2": 13.437262146227718,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737687",
+      "areaM2": 3815.4827578526297,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737694",
+      "areaM2": 264.40002308954934,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737705",
+      "areaM2": 10.590555399357598,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737591",
+      "areaM2": 81.20114777704208,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737737",
+      "areaM2": 77.93781010080528,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737744",
+      "areaM2": 67.5388407779298,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737608",
+      "areaM2": 31.88716000610621,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737623",
+      "areaM2": 228.21448701978065,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737674",
+      "areaM2": 68.01610939893416,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737706",
+      "areaM2": 587.9220517932855,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3737740",
+      "areaM2": 294.9201159212,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735620",
+      "areaM2": 923.1489721533487,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735107",
+      "areaM2": 1200.695500861684,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735108",
+      "areaM2": 1092.065410813548,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735622",
+      "areaM2": 179.45851778751046,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735612",
+      "areaM2": 2130.850517403655,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735621",
+      "areaM2": 1277.4311544014315,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735617",
+      "areaM2": 782.6108595434289,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735623",
+      "areaM2": 363.2558449207245,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735793",
+      "areaM2": 1648.0333222847723,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735619",
+      "areaM2": 873.8539603486366,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735614",
+      "areaM2": 396.5717962880069,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "north-nicosia:3735624",
+      "areaM2": 1636.1047066169583,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    }
+  ]
+}

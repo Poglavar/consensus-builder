@@ -1,0 +1,190 @@
+{
+  "cityId": "capital:SM:san-marino",
+  "name": "San Marino",
+  "country": "San Marino",
+  "countryCode": "SM",
+  "centerLatLon": [
+    43.93333333333333,
+    12.416667
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "City San Marino cadastral parcels map public",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Città di San Marino catasto particelle mappa pubblica",
+      "language": "Italian",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.territorio.sm/pub2/TerritorioSM/Mappe-online.html",
+      "observation": "Government directory links public PRG map."
+    },
+    {
+      "url": "https://mappeonline.pa.sm/maps/prgmobile/",
+      "observation": "Public PRG viewer config and linked webmap publish Catasto map service."
+    },
+    {
+      "url": "https://gov.sm/pub2/GovSM/Territorio/Catasto/Visure-Catastali.html",
+      "observation": "Cadastral record consultation has a separate professional/counter service; this does not restrict the public planning map geometry."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:12:17.911Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer?f=json",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer?f=json",
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7991
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:40.777Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/maps/prgmobile/config.json",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/maps/prgmobile/config.json",
+      "contentType": "application/json",
+      "bytes": 11739
+    },
+    {
+      "checkedAt": "2026-10-08T18:14:12.466Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17/query?where=1%3D1&outFields=NOME,CATA_NAME,CATA_ST,CATA_LIVE&returnDistinctValues=true&returnGeometry=false&f=json",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17/query?where=1%3D1&outFields=NOME,CATA_NAME,CATA_ST,CATA_LIVE&returnDistinctValues=true&returnGeometry=false&f=json",
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1285
+    },
+    {
+      "checkedAt": "2026-10-08T18:12:42.612Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/6?f=json",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/6?f=json",
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4154
+    },
+    {
+      "checkedAt": "2026-10-08T18:09:48.456Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 1023
+    },
+    {
+      "checkedAt": "2026-10-08T18:14:12.496Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17/query?where=NOME%3D%27PAR%27&geometry=12.445,43.933,12.45,43.938&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=OBJECTID,NOME,FOGLIO,MAPPALE,FOG_MAP,CATA_LIVE,CATA_NAME,CATA_ST,GlobalID&resultRecordCount=3&returnGeometry=true&f=geojson",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17/query?where=NOME%3D%27PAR%27&geometry=12.445,43.933,12.45,43.938&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=OBJECTID,NOME,FOGLIO,MAPPALE,FOG_MAP,CATA_LIVE,CATA_NAME,CATA_ST,GlobalID&resultRecordCount=3&returnGeometry=true&f=geojson",
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12872
+    },
+    {
+      "checkedAt": "2026-10-08T18:12:42.611Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17?f=json",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17?f=json",
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 6482
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:13.438Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/maps/prgmobile/",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/maps/prgmobile/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 3288
+    },
+    {
+      "checkedAt": "2026-10-08T18:13:30.997Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17/query?where=1%3D1&geometry=12.445,43.933,12.45,43.938&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=OBJECTID,NOME,FOGLIO,MAPPALE,FOG_MAP,CATA_LIVE,CATA_NAME,CATA_ST,GlobalID&resultRecordCount=3&returnGeometry=true&f=geojson",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17/query?where=1%3D1&geometry=12.445,43.933,12.45,43.938&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=OBJECTID,NOME,FOGLIO,MAPPALE,FOG_MAP,CATA_LIVE,CATA_NAME,CATA_ST,GlobalID&resultRecordCount=3&returnGeometry=true&f=geojson",
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 13554
+    },
+    {
+      "checkedAt": "2026-10-08T18:11:21.561Z",
+      "method": "GET",
+      "url": "https://mappeonline.pa.sm/portal/sharing/rest/content/items/5baa8a0cf7b44c92b7b7757c0197a06d/data?f=json",
+      "httpStatus": 200,
+      "finalUrl": "https://mappeonline.pa.sm/portal/sharing/rest/content/items/5baa8a0cf7b44c92b7b7757c0197a06d/data?f=json",
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 64706
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Public cadastral map returns polygon ground records with sheet/parcel FOG_MAP references inside Città di San Marino.",
+  "registryEvidenceUrls": [
+    "https://www.territorio.sm/pub2/TerritorioSM/Mappe-online.html",
+    "https://mappeonline.pa.sm/maps/prgmobile/",
+    "https://gov.sm/pub2/GovSM/Territorio/Catasto/Visure-Catastali.html"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "sm-public-cadastral-ground"
+  ],
+  "sourceCandidate": {
+    "url": "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17",
+    "publisher": "San Marino territorial information system",
+    "safeSampleFile": "san-marino-adapter-sample.geojson"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Cartographic cadastral ground; NOME=PAR/CATA_NAME=TERRENO identifies land polygons; road/water/cartographic layers need explicit treatment.",
+    "verifiedOpenScope": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Some sheet/parcel references repeat across component polygons. Runtime acceptance must reconstruct all parts and test projection from custom Cassini coordinates; no owner/operation-user fields requested.",
+  "runtimeReadiness": "enabled",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "responseFile": "research/world-capitals-2026-10-08/san-marino-adapter-sample.geojson",
+    "runtimeSampleParcelCount": 221,
+    "initialSampleMetadataFile": "research/world-capitals-2026-10-08/san-marino-safe-sample.json"
+  },
+  "acceptanceFile": "research/world-capitals-2026-10-08/san-marino-acceptance.json",
+  "geometryQualityFile": "research/world-capitals-2026-10-08/san-marino-quality.json",
+  "runtimeQualified": true,
+  "appCityId": "sanmarino",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "221 complete FOG_MAP land-parcel references in 13 city cells. NOME=PAR and CATA_NAME=TERRENO select land parcels; road/water/cartographic classes are excluded. All native parts are retrieved. Wider completeness and legal currentness unverified.",
+    "evidenceFile": "research/world-capitals-2026-10-08/san-marino-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/san-marino-quality.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/san-marino-adapter-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      43.936,
+      12.446
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.001
+  }
+}

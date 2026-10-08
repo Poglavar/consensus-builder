@@ -1,0 +1,1959 @@
+{
+  "metaStatus": 200,
+  "objectIdField": "OBJECTID",
+  "serviceGeometryType": "esriGeometryPolygon",
+  "spatialReference": {
+    "wkid": 102100,
+    "latestWkid": 3857
+  },
+  "cellStepDegrees": 0.002,
+  "cells": [
+    {
+      "name": "viewport-01",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.321999999999996,
+        35.338,
+        33.324,
+        35.34
+      ],
+      "complete": true,
+      "featureCount": 52,
+      "ids": [
+        {
+          "id": "north-nicosia:3734423",
+          "hash": "716aad66b48c3a7525227fbca052f207b2be8fd3d70207d47cb0df4886bd5345",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734442",
+          "hash": "44dcbecd689fa74b7fef4d797e169e6ad5cd24105b2448926d6ee701390599ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734573",
+          "hash": "1c1021018b9261ee9bf71c93b6a95aba9c54d3d12f3d26cca2097fa9ed5f5310",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734591",
+          "hash": "64b0a13a16c9a3e9d92cbe9a1ce8a660d531bd0f36b00fb8e6046d98fd2068fe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734592",
+          "hash": "b94499a5eb9fc371a9b4457d3e5db859546fef57d74148f528e475d426ffbe44",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734724",
+          "hash": "cec57de25ce63dd4dcee3e3d8d37c9d2ff081dcd8af4b047cff9cf98d9d3ea03",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734447",
+          "hash": "a1681a15df5d711a2ef4590ca09d338d03c82a9b69e74df985dd7633afc9d356",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734581",
+          "hash": "31daab89f188c40261e3aeaac8fd0f9ed44ded210696bd3e17a1dd405d728ded",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734583",
+          "hash": "46141bc02d2ca7fcee82516bb9867b712775e1584a0dcc6887033e6e80061fbc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734448",
+          "hash": "29315f5419ed731570d51d16c2e81390c519137769aa0c95105419154226daac",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734465",
+          "hash": "196785da93906e7735142c1328e8c3d7886bda6f1dfdc3f60e9209520070bc09",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734598",
+          "hash": "28ff29de3ff3ea1abe56eab6022c030c05e76ec28edcbbc18f031fdb15d19efb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734437",
+          "hash": "e0c6f40f8c8a8f8d79c9cec29a0139f1c1d93f8cdb9901dbaa57a8d436a2eec5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734582",
+          "hash": "d419fc8a18ab4000b46a0785290ee4617d507149aba07a468c975dba690eac27",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734584",
+          "hash": "2d2d086cbf65c5f85038ade4c45a28c646ca74b5e1930abb5ffd22e5cdeb18f5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734435",
+          "hash": "308692240cf0c4246e739376ebc2197e0bfc20ce2034b416ea06966cb6ccf28a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734444",
+          "hash": "aa3e29d6f609231e2e78572ca1e76e69b64d2a3dedc068ca76981faedb976f5a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734476",
+          "hash": "85471691f888fd09fbb3f609c9dfe09fde472de237337355ac25265e0bce09f3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734478",
+          "hash": "3ebae462a5b70cec8649e84c59a4e2361ed8b25fc00f1117ad12ed259e3dbb11",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734578",
+          "hash": "686cd0826729c277bdd19d8cc647bdb208be5f512fcd29a155e823979caa4f7d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734580",
+          "hash": "0ddd4c09785852100278b9cad996d3a72f42239a4902447159287a1c82417882",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734422",
+          "hash": "86e7ec6739eb50fe002e445cde2131677874e1112fd717478a30b1f8a5082075",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734439",
+          "hash": "818b0ca31844424321936b9b8bdb5deffd16f88882ddb26d2cd8926aeacd518c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734440",
+          "hash": "5d3d2b75b8c5b19a82ce0fca4020604d59a411d497e51cc7011fc40fcdf38570",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734575",
+          "hash": "11e51fae49d9c332033830f74b0175310f8d4d3db7c9f8d91f0ca29b61334719",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734576",
+          "hash": "4e524773e06e9204744e2e807c8e08413cfd5546eb1e2efe3647eda7c5a8fb16",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734589",
+          "hash": "d9f46d18ed3e6658dfd26de4bab0d358891edc2fa723bc24799162442e3450ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734590",
+          "hash": "b9d59330d58a266a00f9f53cab7c13ae9138026ebad8e3dc21bc7dbe0e3381c0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734725",
+          "hash": "c62546a43506fdb86a4a8c01391d19e25aceade33dc99c5d4c53d41b505d5519",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734726",
+          "hash": "1aef3991ec877482ef744a87928d8e3397a5eea42cfbd7ae5459e3278fb03ac6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734451",
+          "hash": "b62a722faf980d1e5acdcb1c33ce397cf8b7b26bd57998d8c7b8dc2276586474",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734453",
+          "hash": "786a69eceecf8257db8c9044abfecb74d83669f40dcd67411197660a93ca6249",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734487",
+          "hash": "3fc09408f387485816e8e9ad4aba78d0cae3c55985a7fb15f3efb5554cffedcc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734585",
+          "hash": "731b240bf9948a5998cf08bd6b09452c9c5fd26172bac50f92b6a8ab5ea64a18",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734587",
+          "hash": "68577e14b731cedb5f47fb19faa9c001e12682a0727c60aa36d9d79750b29daa",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734594",
+          "hash": "b74d99832d119bc02aef4365b0b8dd4c5d592a65fdc2e9d1e56a148316deacf4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734427",
+          "hash": "3c85bc2615d899b2c0e88fa77556a88356c535d048bfac4b5a59352a12207fd0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734596",
+          "hash": "15aaf760ad8688444e024d234f71237c75e0a02ea85ad421a45d096a75a1719d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734728",
+          "hash": "da7f2cdbcdd21bd86e8fdba72353724cbcc882d200eda7545725a88d520c50cf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734438",
+          "hash": "721e9e5d0eb1885132ff3ea1eb71dd58f0294e87f91a9c58911ace804f461e9c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734445",
+          "hash": "d531d8288dea3f99c7ad4d41ea760c64b7925ff509ec47ab860dbe754ed11c92",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734452",
+          "hash": "c7d488df64e741b097845767be1ef6c2c032c870630b7195c87842de7cdf9c2a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734577",
+          "hash": "8ad1c88aa04a1fe26c4d67db5b97e49190016f3a49182d8351ba57b291cd83ee",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734588",
+          "hash": "33650ff5fa88eae639584f6f90c0a28d1d6aa85cd056337b789b7316291ce7c4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734595",
+          "hash": "d16bb17208de2facac484e974fe0ee315d73cb044ee19282e49d0be3259df420",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734436",
+          "hash": "1d77984a0a1d03ef948e54c1bf4e286a9e67beb086d30a86bdde21a4e4209838",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734443",
+          "hash": "4b9a18fe48930b8b1616a40d8f5be62c7147b56b1d212fefb637c733cdef3a7f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734727",
+          "hash": "c7c1485a49beb1433b2664e98c099111e73740269258e7b303cc3291b0ea00e8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734479",
+          "hash": "33271f680c9817eb90f040808dc8b1b84a3efd66f54d60479e043ccadd3fee3a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734579",
+          "hash": "ad308e9d356c15b773c189c9de4cd704687f5a430378fa8c862fcae2f97c9b00",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734593",
+          "hash": "c99f000a71cb1ade08e41e9190f9012998fe66d8637f0cd75ec02c64c7d81e5d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734597",
+          "hash": "0dab9ed27e5115ab0819b657825c75a030d62abf3b97235134e3fb85f1630ca7",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-02",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.324,
+        35.338,
+        33.326,
+        35.34
+      ],
+      "complete": true,
+      "featureCount": 34,
+      "ids": [
+        {
+          "id": "north-nicosia:3734423",
+          "hash": "716aad66b48c3a7525227fbca052f207b2be8fd3d70207d47cb0df4886bd5345",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734446",
+          "hash": "6428842cb311d7ca5a1440ca4e2f43a588e8380fed7e9a2c2c18087a2a2990ce",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734469",
+          "hash": "111c9bcfbffd5ed5d548a17ec3dc6ad10d47ffafcdd538c29b082638c876e80f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734424",
+          "hash": "9401561a2a778e7d5dd12d1917921fca77859aae7020e19d0396c32449162f4c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734441",
+          "hash": "bdcd638a67a374553c41cc07debe5781f192ce0e81ec6dd8e42d0c2710c31b8a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734456",
+          "hash": "44fcca56a0356082a48b7f59dc59c9adb504176904da89a2a1a9dc8197eb9ad9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734430",
+          "hash": "77269c0ea72180a327cc240823dda4dcecc0a2cb17420992de364b6bdadb8430",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734434",
+          "hash": "65d2be5f90b4963365c9ba437f90ecb23d823ef55c14bae30632627d0ba7d274",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734459",
+          "hash": "f02b89c992ca15c276f75f80a1186de0aec1936b40abbd183af9008ea3abf9c1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734425",
+          "hash": "4e02b07bc7640102b5bc399b92fa49c7c4cecf31580b7b21f1ac0330b536689e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734449",
+          "hash": "f18d78834555ae939b2aa4143b8bc4c1437a5e643af399cb9a034ad91b2c20b2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734464",
+          "hash": "3b39ade24d41d71b11f0a5330add202040fa875bad8fa4ef248549944d603870",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734440",
+          "hash": "5d3d2b75b8c5b19a82ce0fca4020604d59a411d497e51cc7011fc40fcdf38570",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734457",
+          "hash": "e3afa4bbe465c08fa2a6073b0eb415a9d832f5dabf5529e9d7ddfdac72934d00",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734458",
+          "hash": "63a1abd4053a58e0c9cc08dfde3fe2252b38325acb7f9139d5d0f21987fbb580",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734431",
+          "hash": "f8a848075b952a8c0a1bd79d983d239c11386ccca3a91d066c713a2db0e11988",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734448",
+          "hash": "29315f5419ed731570d51d16c2e81390c519137769aa0c95105419154226daac",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734450",
+          "hash": "3065b64bffc4b6292fb5cbec7144312d8b06889e59e85df44262a86eed29b8ae",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734445",
+          "hash": "d531d8288dea3f99c7ad4d41ea760c64b7925ff509ec47ab860dbe754ed11c92",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734595",
+          "hash": "d16bb17208de2facac484e974fe0ee315d73cb044ee19282e49d0be3259df420",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735118",
+          "hash": "9a6494631f31f5d5f942f177465f74908d4f27a8849196c4538c284b1bfa2504",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734429",
+          "hash": "8e6a48293ab029a9ddca1b4eb1cf67d1e94f53b3a1f60ee5957ee7b465366be4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734454",
+          "hash": "0fb46645aca2960cbc52c6162a56541515988bc6a0a52eb12a31f4d8936ee97d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735113",
+          "hash": "09cbf20dd6ed071c10affdedaf5559071b396141dd05e98f169d00d693e99c48",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734421",
+          "hash": "69232875b1c769cba163b47e89dbc26a3ff2659535967ebbb818e1fb77988f88",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734461",
+          "hash": "b854b3803c7bd0d3eb8fa0f6db734e2d50f91ddefc441d3ae22fc1c4b3695fc5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734468",
+          "hash": "490f6f34b8c90888edd2bc2e94083d0a51bdd209a8d8f03228ef97770d39f1f5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734426",
+          "hash": "b2f6a8e485dae6ffc1ef043f04ac10ecb4cb6bc9601e2e01178c98535000e11c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734428",
+          "hash": "e04f7825b30993b350a72008fe382b534caee2c71e94c5d4c8818a101cb8c78c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734453",
+          "hash": "786a69eceecf8257db8c9044abfecb74d83669f40dcd67411197660a93ca6249",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734455",
+          "hash": "8a6155c21043a14f35596f4e34bc1b43459471425641e77240907c7ef3680e6c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734460",
+          "hash": "9cc9eeeb99367bf292008230a800987c08a52f2c1577c6fa1cf9c5bd0cf7ac17",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734462",
+          "hash": "75ce98806b4d0927672b9b09496b119cca585c95ecb12ee412a3dd476ec58de5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735128",
+          "hash": "b6e86ba37aaae489e7c74821645b842d468552212145a69c75494537ca2b0c22",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-03",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.326,
+        35.338,
+        33.327999999999996,
+        35.34
+      ],
+      "complete": true,
+      "featureCount": 42,
+      "ids": [
+        {
+          "id": "north-nicosia:3735115",
+          "hash": "450d949bbc48a7d0df98f625570ce080b78d74e228daef1d09d2ce8949a75f69",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735122",
+          "hash": "1ee779a7a78efdc31bf7b65446f5c1882d1c9759a033b22c7f8f300313f6a7f2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735129",
+          "hash": "d3b0a0ae3cea4a5dfd94ec17bbcbc1a433b8503ebb9464e4db0d353b19fd4de1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734469",
+          "hash": "111c9bcfbffd5ed5d548a17ec3dc6ad10d47ffafcdd538c29b082638c876e80f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734480",
+          "hash": "3ae4d59c16a45d13071d8338b894abf412bca9cb2d395c942f84224756b184fb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735114",
+          "hash": "cfa21b45b6bf35c6f7dba2d5e8c2bd39cd3eeaeb59acc8d7397e2e5d7ecefd6e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734425",
+          "hash": "4e02b07bc7640102b5bc399b92fa49c7c4cecf31580b7b21f1ac0330b536689e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735137",
+          "hash": "190a76cd601b4863540be740957aeca3476a07c0b50239585c060a42eebba294",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735139",
+          "hash": "07235bc802adb828d350b8c0e8e95223203ad52cbfb36aa5d78a4adfab1799c9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734475",
+          "hash": "7edb2a1a90f27d9cb313696637a9d592c474fb88528599a7e0f3905f17ffd140",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735125",
+          "hash": "10f99cc48daeec8a0b72ddb73e9b681da521ff9ea69fb4de1bbef72b7fa6acf4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735126",
+          "hash": "c86e77cf374cf097d1920f211018585e37f188764d4fa1c65893b44695764014",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734424",
+          "hash": "9401561a2a778e7d5dd12d1917921fca77859aae7020e19d0396c32449162f4c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735124",
+          "hash": "0d0f0fde98b3aef8fe21b7f17e1302c299b11824b38105b54d8c72c6d009e4b4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735127",
+          "hash": "212cf370969017af12a29a8709c21ef44607253c83a44a6f0204da8113573299",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734463",
+          "hash": "4a72a59e4834ea79631a8baa00f20fceecf61f0af18108ce755ce0f23892331c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734470",
+          "hash": "281683299ff2a09d9a5f1cb1b99a8755f80b6c07a11f65569e230b8b09198562",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734477",
+          "hash": "3f05be2264d015c925a145fe6f01293d4c25d4656bc1627cb97a876c02e4f54b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735113",
+          "hash": "09cbf20dd6ed071c10affdedaf5559071b396141dd05e98f169d00d693e99c48",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735120",
+          "hash": "b06a6933728f31d6a821eb237bb2e189768fc9e225a2b3d02317062ad02ad987",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735131",
+          "hash": "c8673c958862203768990f14a917d0c2cb99b7382cac92d74e69144a4f515176",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734433",
+          "hash": "40306bfb567479bb5ced84ca00ca24b574ace8590411b37c4e5e87a79c9b3349",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734467",
+          "hash": "9b4d20fa30b59ec12ed1db1c2e2c283830f809ec7660e3e54f24f7efe5be5182",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734482",
+          "hash": "6c18866c08b21a59c88cb00984fdc7434bfe400a992d1c9eae7c27444aa60220",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734484",
+          "hash": "4dc4ae783386dc55ebecd009069b739535ecb2ff77f0c9eb622df4a21cd2e15a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735118",
+          "hash": "9a6494631f31f5d5f942f177465f74908d4f27a8849196c4538c284b1bfa2504",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735135",
+          "hash": "96aa84dcb78841e6a5208a95088a023484f0ba7fef81cfbb24db2ff2d54077fb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734421",
+          "hash": "69232875b1c769cba163b47e89dbc26a3ff2659535967ebbb818e1fb77988f88",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734485",
+          "hash": "45fad8c7c26bb258997bada7ec1c16442e2b021ab85dcbc15061f9077c51c4e5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735584",
+          "hash": "606d18197c16e22d42158fe570b45147904fdcc70da628e989e2fc558a58400b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735123",
+          "hash": "31b72fc5e464b258ac9d134d65dce368c6a60562bd02c7f29f7890270fceb76c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735128",
+          "hash": "b6e86ba37aaae489e7c74821645b842d468552212145a69c75494537ca2b0c22",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735130",
+          "hash": "dfccc579fd003e58c50a1b2dc8f8204d182e6317169de2ab56eadb370b78acbe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734432",
+          "hash": "d535e4fdbdcc4d4936e8d68da09f9ca7716b268596d9b1594fc2011524064d27",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734434",
+          "hash": "65d2be5f90b4963365c9ba437f90ecb23d823ef55c14bae30632627d0ba7d274",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735630",
+          "hash": "e5165be1adaf0b0a4c9da9854bca78e33bbc8e933beeca26f74c602bcfa5e802",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734466",
+          "hash": "10dc658499f4757fdf09ef815bcf2ce34c030886a9cfb340f819903d104bcbdf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734481",
+          "hash": "3fac6c1d778b8bd660c904bf1b9c43abe9dfa5f93a07823561e7547e230f7073",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734483",
+          "hash": "cdb8822a5e689d718d9abf66cd019dc6602e9de23174b256ff38c9d8f6d74028",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735117",
+          "hash": "5018a8e7d999b5ca2db7010300f7714a536809ad2cf1abbda2e45e22e3228fe5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735119",
+          "hash": "a213a47c76e37846b443806a580178ac02ebfa36a00d73a113b4065cbab8fd04",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735132",
+          "hash": "b993e0e499e3f06382efd8a3368d2c4e0dd63af60b73eb13cc069c7a8b7816b7",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-04",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.321999999999996,
+        35.34,
+        33.324,
+        35.342000000000006
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        {
+          "id": "north-nicosia:3734423",
+          "hash": "716aad66b48c3a7525227fbca052f207b2be8fd3d70207d47cb0df4886bd5345",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734486",
+          "hash": "abb4cf33a3b22350ceb95d7e894a6dc6146549eb2f680fe2123f6969975f0d45",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737719",
+          "hash": "66cbcac9422f8ff1623230def4614eee2d7aa1d5a24a2a51170cec863f279c2f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734422",
+          "hash": "86e7ec6739eb50fe002e445cde2131677874e1112fd717478a30b1f8a5082075",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734472",
+          "hash": "2604222bda096335209477000685a5f0e17d186e258d98239a9b9cb695f41981",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734487",
+          "hash": "3fc09408f387485816e8e9ad4aba78d0cae3c55985a7fb15f3efb5554cffedcc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737713",
+          "hash": "383ace70807f77cf413f5282fc629c61aa1893061d24b1f59f19ba27409f76ac",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-05",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.324,
+        35.34,
+        33.326,
+        35.342000000000006
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        {
+          "id": "north-nicosia:3734421",
+          "hash": "69232875b1c769cba163b47e89dbc26a3ff2659535967ebbb818e1fb77988f88",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734423",
+          "hash": "716aad66b48c3a7525227fbca052f207b2be8fd3d70207d47cb0df4886bd5345",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734426",
+          "hash": "b2f6a8e485dae6ffc1ef043f04ac10ecb4cb6bc9601e2e01178c98535000e11c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734472",
+          "hash": "2604222bda096335209477000685a5f0e17d186e258d98239a9b9cb695f41981",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-06",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.326,
+        35.34,
+        33.327999999999996,
+        35.342000000000006
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        {
+          "id": "north-nicosia:3734463",
+          "hash": "4a72a59e4834ea79631a8baa00f20fceecf61f0af18108ce755ce0f23892331c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735613",
+          "hash": "d1e7088ea93d4d119b6b7dd306b63ebb91b2eefbf966cf9cfbb9ac9a7f46e4d4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735618",
+          "hash": "88830feb00ba9e7c86fc9e9c0fdad633c39d9e83b31a68b316bed89745fa7207",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734466",
+          "hash": "10dc658499f4757fdf09ef815bcf2ce34c030886a9cfb340f819903d104bcbdf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734481",
+          "hash": "3fac6c1d778b8bd660c904bf1b9c43abe9dfa5f93a07823561e7547e230f7073",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735615",
+          "hash": "d8091585b242129a9e20cbb14397e82b3c57b0910caa21285296032a5082c4f6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734480",
+          "hash": "3ae4d59c16a45d13071d8338b894abf412bca9cb2d395c942f84224756b184fb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735580",
+          "hash": "9bc8fb442a6e07757cfa543fd805bfd823b336ef667bef15bf7899e1ae4c5e58",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735616",
+          "hash": "957ea75649bc4e4ffa821da29c803e81c990a9a3bc565c925aef2ee28c839166",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734421",
+          "hash": "69232875b1c769cba163b47e89dbc26a3ff2659535967ebbb818e1fb77988f88",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734424",
+          "hash": "9401561a2a778e7d5dd12d1917921fca77859aae7020e19d0396c32449162f4c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734473",
+          "hash": "ec5e4372fba3c3fc00ba1f6b821a8933d55f1e16d86093eed454c9f49c7beb19",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734425",
+          "hash": "4e02b07bc7640102b5bc399b92fa49c7c4cecf31580b7b21f1ac0330b536689e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734474",
+          "hash": "24b9597bf3b6107611cb586df42de61944264b604e3f23f2a249480d263b26c0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735109",
+          "hash": "9280dd7babe7f83c78691a84d8226090610a8a7675e6c0aeeff1347785bac17f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734472",
+          "hash": "2604222bda096335209477000685a5f0e17d186e258d98239a9b9cb695f41981",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735625",
+          "hash": "e7c5081a7a365d5ebb8b9cab08eb923bb9dfb44d5a26bf2fc70d94e7bbfe6d17",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-07",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.321999999999996,
+        35.342000000000006,
+        33.324,
+        35.344
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        {
+          "id": "north-nicosia:3737719",
+          "hash": "66cbcac9422f8ff1623230def4614eee2d7aa1d5a24a2a51170cec863f279c2f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737724",
+          "hash": "a125f37595ab661734cd97940fe3170f63aa86582a7348d72091ecd96eb88991",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737752",
+          "hash": "909a5784e4bf77934b9f4dab65dd6588e2d29619f3d9579a06b0e4f36abb7e9e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737713",
+          "hash": "383ace70807f77cf413f5282fc629c61aa1893061d24b1f59f19ba27409f76ac",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737721",
+          "hash": "faf694b886f5b916598afaeb9703ef607fc88b1a2fcc0c9c2990ca96683d80ff",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737753",
+          "hash": "d33dc792a97242b83f1ffec3644d337d1719518ee2335ee924ba28beef6ca65d",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-08",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.324,
+        35.342000000000006,
+        33.326,
+        35.344
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        {
+          "id": "north-nicosia:3737721",
+          "hash": "faf694b886f5b916598afaeb9703ef607fc88b1a2fcc0c9c2990ca96683d80ff",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-09",
+      "kind": "aligned-grid",
+      "bbox": [
+        33.326,
+        35.342000000000006,
+        33.327999999999996,
+        35.344
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-10",
+      "kind": "adjacent-pan",
+      "bbox": [
+        33.324,
+        35.336000000000006,
+        33.326,
+        35.338
+      ],
+      "complete": true,
+      "featureCount": 45,
+      "ids": [
+        {
+          "id": "north-nicosia:3734462",
+          "hash": "75ce98806b4d0927672b9b09496b119cca585c95ecb12ee412a3dd476ec58de5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734655",
+          "hash": "176359f898912afcb982ede2d6824ed1029d8367bdc8d0f1dbfdac30d498d424",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734660",
+          "hash": "39bbd3c73e18153837685719d85b77dde183777139695ad3134514e36a0fefb9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734608",
+          "hash": "fdff8905c8d54a57dccf2ffdb092897b8aea7d3aef0bf89ab14f16e98f7a7f35",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734658",
+          "hash": "104eae9d6e922589b205835cdbea210751d1efbcb1d080bfdd2530cd3b270cda",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734721",
+          "hash": "23179c1ff5a4494fbd678517aac29c89ad54db2cd2a93155e47a4844f6fc411d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734606",
+          "hash": "2cea85360cedaee497ef64542a629c1413665fb042c10873a5a58ef4d59d21eb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734616",
+          "hash": "785bddfeeb59552e9d683e0939a1d64571fecea9e29769cb15ac0309fb9a0c34",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734623",
+          "hash": "83fff5e186a112d2de5de9baa628640131c99e6aeba290d7d521db39e5307641",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734624",
+          "hash": "bd94c01e65755b9dd4a5dd44af0bb4587b24774e2f8e3449fcf78cf55e84217b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734641",
+          "hash": "e152bbf19f5dd48c8273b6cb8383071cff9db27b9fbecaf26a6398287fe03aac",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734642",
+          "hash": "569f2abe581df65a79008c48283a1f2dfd84b8de59498804dd1bb79b611a3c2a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734656",
+          "hash": "60af59bd33521b3d1adca71731ced8d0b04da40561d6dcd5f75dd018eb3a23a8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734659",
+          "hash": "0a1c8ae8a6a3f6476151bfdefb9f4d9fe9d248c4f1f789658dbe8a34ef804e83",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734673",
+          "hash": "29332ad0cc0c3840c2a121f5d5cbb95d6a706c24a853b761bd676b4551bf6456",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734599",
+          "hash": "aa12ab8c1856e94c9e483826d0ab222b22754e4e2be6ba20176ca0161c20134b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734614",
+          "hash": "6af71cf4cfed9b2cdb4955fc0c674ff6e9440a515f69f4650cb811877287c5cc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734723",
+          "hash": "24187fcb66c9aeb766d25d9c57b5f384a180c204ce5e4be31061c392bd2a273a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734631",
+          "hash": "dd13d5384b74f444815224de13decea89b18caf870ebaa9cb0bcc1980ab1c8a9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734633",
+          "hash": "efa1030af9ab81bc948d4fa77e6025938e681b7d5f9fc5ab219d1a3076cacf6f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734648",
+          "hash": "6db9c034c67bf3ae667630a14c595c41f5a6bbda45163ce487027adbbc272d53",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734469",
+          "hash": "111c9bcfbffd5ed5d548a17ec3dc6ad10d47ffafcdd538c29b082638c876e80f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734471",
+          "hash": "5d36b375190afa0d56d775d6bbfd87583eea035e416b9b64dac86b507dc26fb2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734767",
+          "hash": "585879ba2a78998b026dd7c95467db33c363cdb845b392ea43ec771119051783",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734603",
+          "hash": "f3bd4b2ae233c40ae7d22eb0e20f338bdc1f91315165c23c79d469e296c2a3ed",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734610",
+          "hash": "b0048ce75951247e944d829e7b43b4175befcda358b062df31db9b21cb123d14",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734646",
+          "hash": "7907a7892a506257476934593bb90d995b0221479c168d8090a6dcad8c35000d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734671",
+          "hash": "09f5d7fb59e77b3930f5fca9fc288d2081d664050e3c26ab722e5b9f70c71f79",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734771",
+          "hash": "6533bd840fe047f800eff04f9f1790ddb152f78c86fe5ff46ec90cf15c7ec56d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734839",
+          "hash": "a78b433cb8c53f5612315e564ceb38c4cdeb1d7cd3e12b78d839a8686384c23a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734468",
+          "hash": "490f6f34b8c90888edd2bc2e94083d0a51bdd209a8d8f03228ef97770d39f1f5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734622",
+          "hash": "c44dcdc5897bcd71c36fce92d28632163877b001cdd558a5ddf8808122c09364",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735180",
+          "hash": "17a7877fb2c7747ce18a7de211000a4328b69701e94514eb4084665addcf91d4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734647",
+          "hash": "4cdf7531a89e661a751098bd02925baed0f6e1a2d191531d9ace9667b311fd78",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734661",
+          "hash": "3fbe1fee5be1bab7a4519dfa78b2c7816f5120e6194807ed08a7e1995cbd6df3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734672",
+          "hash": "dd9bda66cc1a1b6eac103423562d71e3e9b1e4315405d39db47acd965be9f02e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734470",
+          "hash": "281683299ff2a09d9a5f1cb1b99a8755f80b6c07a11f65569e230b8b09198562",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734595",
+          "hash": "d16bb17208de2facac484e974fe0ee315d73cb044ee19282e49d0be3259df420",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734779",
+          "hash": "6cf82ef994a97b804cf132ef5866fc2921f05bf9d38f46116c463d324dadeca8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734613",
+          "hash": "5cbda7190c034296df7dd1fa88becac97c1e7f7875119ed057c66eff5ce22fc8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734645",
+          "hash": "fd72c9399f5aab7770949305fda1e1e7ca59adf109b22cc2c761ce554e6e9a20",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734770",
+          "hash": "3f32706990ddcf973a99a36ce3f4b60fbbdb6db08fbe9dcbbad5f394d62f986e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734600",
+          "hash": "ef7cdca4ff9be41e9a23ae359dea95d3e9275255345819fae1e45b4f90e94cda",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734632",
+          "hash": "9f4f536980e9f49d5c3523053ac86cc6cf45431488e5d06ea063617ced6800cd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734795",
+          "hash": "e02c87ef15148b41452109955b463a60320ea6f03671ee239b29cdb9418ec874",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "kind": "adjacent-pan",
+      "bbox": [
+        33.324,
+        35.344,
+        33.326,
+        35.346000000000004
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-12",
+      "kind": "adjacent-pan",
+      "bbox": [
+        33.32,
+        35.34,
+        33.321999999999996,
+        35.342000000000006
+      ],
+      "complete": true,
+      "featureCount": 56,
+      "ids": [
+        {
+          "id": "north-nicosia:3737588",
+          "hash": "46717868090da1291ccd6af932ac7aa2a62e3d3c4c965ba424ce1217514bd56e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737688",
+          "hash": "7360040906dbc63f60198e8a8013df8e90b230d0a60e85f5df074c12361d0e17",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737711",
+          "hash": "fb52aba08eeb5138a1c5e6a2827ebae91752826f41a1bbe079d647be3ad17ac1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737591",
+          "hash": "71567a0eb6580c757422564b9c2835c161570a9388f80c8a8cc73702fca179b9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737720",
+          "hash": "62c186731fbac945eba77f14950d5140ca27c6e58d8930d5cf6e346bf00c0b04",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737747",
+          "hash": "bc3c5c0e561f025b9feb3a5ca653e365eb4a7188ce33f9ca8d99ff5f408b8896",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737608",
+          "hash": "eca71ffb2f3b81416f7e3a5a8c3f04ba1ff6bf36abfa42f262a9975e6f14ea0e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737623",
+          "hash": "5980dd16e98f7ea960cd915bf4ce1dc9419683532fca4642fe1e5e06fd116f5b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737674",
+          "hash": "33796b41e47e8661a7f8c6424c80a4eac91f7f9c65054823e664413c07daec2b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737597",
+          "hash": "b8d7ac9bb47970a762c4620b8f3beb10c1de8ce07d9a4766d46638accab29322",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737706",
+          "hash": "60bebb1ef7c6f45a6adf7544cde9de73061d526ad592df52b1855cc15bfe19db",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737740",
+          "hash": "a1b5626a5b92b1808f1b8caa90ca4b3eabcac6d2b0883e1a9a044ad43088c43d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737581",
+          "hash": "28a622ad5d842c26ee4aa401903b7101744a07c8293d105571452cd334afdf91",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737665",
+          "hash": "a545fc22dbffe4a664bde4f97818657337a5f78b8e53462851e70b8229793be5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737715",
+          "hash": "e4786bf46088e4d4445f5ecee80fadab9d28b8c58ccb111e6eeff341068785e3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737649",
+          "hash": "cab0fd346b332f5dfe00091d310558418b5419bfd6655d327ae4d8174dcf52d5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737664",
+          "hash": "7a22dcd07e44b7bd3269137eb71854f490b186ca369d65d8a4ae3eb371939b5e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737668",
+          "hash": "f807f852b0384e356121dd3493383e30fa8d4df89a8b2a1529b69ba56d5c1278",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737699",
+          "hash": "d3b9e0545767bb7f7f1166b70bf0cf29d7a99c423407edd1483efd6891ea7ef2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737714",
+          "hash": "1e0b813fb807430c6a7d28e8b705bf1e46ab743148097665e03cbef0d9e75128",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737731",
+          "hash": "078008bbad58eb5d7a1b1448ea79c579dfeb8de2a9b5abb3468625d851621e6b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737585",
+          "hash": "2f727b7cd3de9f4f771a9966fcece14a6a1b3f3daaff154c732d8e2d01344a64",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737719",
+          "hash": "66cbcac9422f8ff1623230def4614eee2d7aa1d5a24a2a51170cec863f279c2f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737750",
+          "hash": "9ae2cb43853c5d1535272dd574a864d23db269db48524b4a041b5e64561a0218",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737596",
+          "hash": "5a21d0343bb07651551e874efe84aa69f1ca65a62a33e2f2a476b62f2b02d8cf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737628",
+          "hash": "75d05f616d579875a92b5fa49c9fafda23924f71d3cf8b8e84a747017208843b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737728",
+          "hash": "80b427cc2b4a2376308090719a143806d0c2a99bad72709b594d44fa71974515",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737594",
+          "hash": "f55a99877cdd4c16f7a653bae74d7a7bc3290d2e2a80a6ff720dd314eacb1195",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737735",
+          "hash": "74b17c1381c67a494246aa96015e888de40c8192532286745597f47e21a18365",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737739",
+          "hash": "768c29b83fd37f1f182eebc497998106d1d165b5deb631dcd5503619a21be258",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737619",
+          "hash": "cda11790338748ebf613d388d72894829009b038212ce7d705cbbbbb29654ea7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737630",
+          "hash": "1ac6a277f2e3c67ae67b4c7763fa05ab10520ab7ed97094c916102954b7d65ca",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737644",
+          "hash": "3ed6115d09bad066bf20b12a5c7fdba203c00df856d63c12a3f634e358d2f251",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737662",
+          "hash": "86fa44718f7a550526fdaaffa2984868b0172490ba02e3f5e701c69b3783053a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737687",
+          "hash": "e0bb738d0d96fb6aa7eb19391e4b7d3bf021a489e98e500c713c618a8ca2f7be",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737694",
+          "hash": "bd6cc493152e6a7c81900b591cee2f604100c49dc5e9897095b4a7e0d2d9cb68",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737705",
+          "hash": "d0cd99fa5b3bc3b743b0429338e387b0a3d84e2277a79f967f77e0f3d48bb186",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737737",
+          "hash": "77392f36e0b26a48e753b49707f56cb5294459185f7c3aa06e953bd6b0c9f070",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737744",
+          "hash": "e861550817c9e20c67baec5ddc90f695d70b812e787c0cba2fa5a9241bfacb36",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734487",
+          "hash": "3fc09408f387485816e8e9ad4aba78d0cae3c55985a7fb15f3efb5554cffedcc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737568",
+          "hash": "dcc4c5c4936b31e05faf2c48c3754c517ce144697739fca6bfcaeb60c0600a11",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737602",
+          "hash": "3a51f00e9775a725eab7e52b48525776e380720ead7708373ec5e889ab3bd49e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737627",
+          "hash": "4fff29291b320e5d16bc595d729de26d1a4ee80723f804774ee99e7f28ce8045",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737663",
+          "hash": "fba6097d16694ec25dc081062106ac21340ec068727f122efbf2c94b8db89207",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737670",
+          "hash": "daea449f740209c32285e6925442213b550ffcbab7c6d9733a8a4e9c66854448",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737672",
+          "hash": "6f25f6750af6882c1582ffa3ee592d779399fb73c6f089035d72c26b1f1771d8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737727",
+          "hash": "95ffcd64e6e394c4b4284067b5cd0f112f1dc44f72c17046b0bd493dda9c22c9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737738",
+          "hash": "b36fca3f90b4514036cda82b1f5b03c64e2181c0eb51bbdd0f52da305791f853",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737592",
+          "hash": "e7b4f1782aae5d434fb70404006d2965a4da6410e371df53cfcf7d64ddbb3e6f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737607",
+          "hash": "faf3f5b82ab718f453a0db3aa18bb3afa97cc7e29f288cddb9dbd2d3ad4e88ea",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737713",
+          "hash": "383ace70807f77cf413f5282fc629c61aa1893061d24b1f59f19ba27409f76ac",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737673",
+          "hash": "72bd180e1e329f497528f243504d74fbb8036f52ffc86557f8f8de83661c1535",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737675",
+          "hash": "5a668e66dbacef8fa58a8fd857f6ac5c192c00f79afbda62dd8aae9cbbad8b67",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737726",
+          "hash": "f1b287ca9019d8d32b45981a41b1fc240b4dbc90151f93f7c3643e805cae3bce",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737741",
+          "hash": "c862edf35eecbc27b6865ff3b3ebfa48a6d3b3d5ba6d1c45b103de63e09f02ea",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3737743",
+          "hash": "f3b15cc290db5815a4d32b672d32db9995d33076ad51cacf2c225b0322987014",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-13",
+      "kind": "adjacent-pan",
+      "bbox": [
+        33.327999999999996,
+        35.34,
+        33.33,
+        35.342000000000006
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        {
+          "id": "north-nicosia:3735109",
+          "hash": "9280dd7babe7f83c78691a84d8226090610a8a7675e6c0aeeff1347785bac17f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735617",
+          "hash": "ae2270d67fb5722d7918707f099fd48e522f7734bf7481a8d743974793116761",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735619",
+          "hash": "722a9ae2c98321a927cf9bb63964c5cc2a4d08c5b3f36aad9765eba2b6b05564",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735613",
+          "hash": "d1e7088ea93d4d119b6b7dd306b63ebb91b2eefbf966cf9cfbb9ac9a7f46e4d4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735615",
+          "hash": "d8091585b242129a9e20cbb14397e82b3c57b0910caa21285296032a5082c4f6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735624",
+          "hash": "d28130ae4eb54a1aa34e7ccb987a39b5262354a8d059526e8c2dfc79d358baa1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735621",
+          "hash": "b3b98042e1b4ba8aef6702d3537eae4e44a0b2db065238513411ea68ea3256f4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735622",
+          "hash": "8de885b86ac5435d78246e61bd43654f9fea35d798dc1fd01a0daf396b4d5f30",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735623",
+          "hash": "a566fa98da5087b822fbdc65a8976c5eb6edb8ee02271771f6568fbd4bdd87bf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3734480",
+          "hash": "3ae4d59c16a45d13071d8338b894abf412bca9cb2d395c942f84224756b184fb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735580",
+          "hash": "9bc8fb442a6e07757cfa543fd805bfd823b336ef667bef15bf7899e1ae4c5e58",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735793",
+          "hash": "79ee0ba7a3fbe0a2333a6517ba736b841d765bde3783d52042e4b99be3ff2570",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735107",
+          "hash": "8b72297adfea2753b511b052112710898d39a8042ca730619f0590bd68515d43",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735108",
+          "hash": "4d2b6b2401a896c9144d586d4cea56e2adbd30ca6d2026b1ca9b3e01118cf726",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735614",
+          "hash": "3ab252811cf23a8f36936b187836f885c9f5fcb66748222ef9396796e145f775",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735612",
+          "hash": "b4499fdd46e5bea8f2ebda6963392d1368c849382f0a8f187cf25c9bf2fcc339",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735620",
+          "hash": "3deaf0cf2d0f8025f0a4ec2528b909716cc5d7565db67902e6125471f40da4f2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "north-nicosia:3735625",
+          "hash": "e7c5081a7a365d5ebb8b9cab08eb923bb9dfb44d5a26bf2fc70d94e7bbfe6d17",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    }
+  ],
+  "forcedPageSize3": {
+    "bbox": [
+      33.32,
+      35.34,
+      33.321999999999996,
+      35.342000000000006
+    ],
+    "complete": true,
+    "count": 56,
+    "hashesMatch": true
+  },
+  "freshIdHashRereads": {
+    "complete": true,
+    "queried": 236,
+    "returned": 236,
+    "allPresent": true,
+    "allHashesMatch": true,
+    "absentIds": []
+  },
+  "explicitAbsence": {
+    "complete": true,
+    "featureCount": 0,
+    "absentIds": [
+      "north-nicosia:9876543210"
+    ]
+  },
+  "footprintRead": {
+    "complete": true,
+    "featureCount": 4,
+    "allIntersect": true
+  },
+  "sourceBinding": {
+    "computed": true,
+    "binding": {
+      "parcels": [
+        {
+          "parcelId": "north-nicosia:3734421",
+          "overlapM2": 11368.812,
+          "intrusionM": 82.3774
+        }
+      ],
+      "touched": [],
+      "toleranceM": 0,
+      "coverage": "complete",
+      "unsurveyedM2": 0,
+      "siteM2": 11368.81,
+      "source": "server:asia-north-nicosia-research",
+      "unknownM2": 0,
+      "computedAt": "2026-10-08T18:23:29.602Z"
+    }
+  },
+  "errors": [],
+  "sampleAudit": [
+    {
+      "geometryType": "Polygon",
+      "valid4326": true,
+      "projectedEPSG3857": {
+        "geometryType": "Polygon",
+        "geometrySha256": "3ae2604e8cd58822a2e9df25af36c1eb481e47970096760289a694a03e8a192d",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "sha256": "69232875b1c769cba163b47e89dbc26a3ff2659535967ebbb818e1fb77988f88"
+    },
+    {
+      "geometryType": "Polygon",
+      "valid4326": true,
+      "projectedEPSG3857": {
+        "geometryType": "Polygon",
+        "geometrySha256": "0d29646c38fbe95c0405f9470b9704ab36f51e6c49f1f57f8631d574c623a0f6",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "sha256": "86e7ec6739eb50fe002e445cde2131677874e1112fd717478a30b1f8a5082075"
+    }
+  ],
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

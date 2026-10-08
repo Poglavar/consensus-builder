@@ -1,0 +1,256 @@
+{
+  "purpose": "Completed regional slice of the remaining world-capital research batch.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "complete",
+  "group": "americas",
+  "cityCount": 22,
+  "cities": [
+    {
+      "cityId": "capital:AG:saint-johns",
+      "name": "Saint John's",
+      "countryCode": "AG",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-saint-johns.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:BS:nassau",
+      "name": "Nassau",
+      "countryCode": "BS",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-nassau.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:BB:bridgetown",
+      "name": "Bridgetown",
+      "countryCode": "BB",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-bridgetown.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:BZ:belmopan",
+      "name": "Belmopan",
+      "countryCode": "BZ",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-belmopan.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:CA:ottawa",
+      "name": "Ottawa",
+      "countryCode": "CA",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-ottawa.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:CR:san-jose",
+      "name": "San Jose",
+      "countryCode": "CR",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-san-jose.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:CU:havana",
+      "name": "Havana",
+      "countryCode": "CU",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-havana.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:DM:roseau",
+      "name": "Roseau",
+      "countryCode": "DM",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-roseau.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:GD:saint-georges",
+      "name": "Saint George's",
+      "countryCode": "GD",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-saint-georges.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:HT:port-au-prince",
+      "name": "Port-au-Prince",
+      "countryCode": "HT",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-port-au-prince.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:HN:tegucigalpa",
+      "name": "Tegucigalpa",
+      "countryCode": "HN",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-tegucigalpa.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:NI:managua",
+      "name": "Managua",
+      "countryCode": "NI",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-managua.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:PA:panama-city",
+      "name": "Panama City",
+      "countryCode": "PA",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-panama-city.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:KN:basseterre",
+      "name": "Basseterre",
+      "countryCode": "KN",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-basseterre.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:LC:castries",
+      "name": "Castries",
+      "countryCode": "LC",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-castries.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:VC:kingstown",
+      "name": "Kingstown",
+      "countryCode": "VC",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-kingstown.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:BO:la-paz",
+      "name": "La Paz",
+      "countryCode": "BO",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_access_review",
+      "sourceIds": [
+        "bo-gamlp-lapaz-wfs"
+      ]
+    },
+    {
+      "cityId": "capital:BO:sucre",
+      "name": "Sucre",
+      "countryCode": "BO",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-sucre.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:CL:valparaiso",
+      "name": "Valparaiso",
+      "countryCode": "CL",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-valparaiso.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:GY:georgetown",
+      "name": "Georgetown",
+      "countryCode": "GY",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-georgetown.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:PY:asuncion",
+      "name": "Asuncion",
+      "countryCode": "PY",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-asuncion.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:SR:paramaribo",
+      "name": "Paramaribo",
+      "countryCode": "SR",
+      "group": "americas",
+      "researchFile": "research/world-capitals-2026-10-08/city-paramaribo.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "sr-miglis-paramaribo-fs"
+      ]
+    }
+  ]
+}

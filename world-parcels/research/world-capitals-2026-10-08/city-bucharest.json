@@ -1,0 +1,134 @@
+{
+  "cityId": "capital:RO:bucharest",
+  "name": "Bucharest",
+  "country": "Romania",
+  "countryCode": "RO",
+  "centerLatLon": [
+    44.43333333333333,
+    26.1
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "Bucharest cadastral parcels public GIS ANCPI",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "București cadastru parcele geoportal imobile ANCPI",
+      "language": "Romanian",
+      "method": "web.run search_query",
+      "executedAt": "2026-10-08T19:36:51Z"
+    },
+    {
+      "query": "București harta cadastrală geoportal imobile ANCPI API",
+      "language": "Romanian",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://b.ancpi.ro/",
+      "observation": "Official city cadastral office page is indexed with land-book and cadastral-plan services; direct hostname resolution failed during this check."
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/imobile.html",
+      "observation": "Indexed official public property-boundary viewer describes registered property geometry."
+    },
+    {
+      "url": "https://geoportal.gov.ro/",
+      "observation": "Official replacement portal announces infrastructure migration; direct reads timed out."
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "observation": "Indexed official parcel layer has geometry and native cadastral identity, but current network access failed."
+    },
+    {
+      "url": "https://www.ancpi.ro/epay/AboutUs.action",
+      "observation": "Central ANCPI official About Us search listing states that ANCPI has 42 subordinate territorial cadastral and property-publicity offices, including the Municipality of Bucharest. Direct page opening returned HTTP 502; this is indexed primary evidence, not a directly inspected page."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:10:40.779Z",
+      "method": "GET",
+      "url": "https://geoportal.ancpi.ro/maps/rest/services/imobile/Imobile/MapServer/1/query?f=geojson&where=1%3D1&geometry=26.098,44.432,26.10,44.434&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=OBJECTID,NATIONAL_CADASTRAL_REFERENCE&resultRecordCount=3",
+      "error": "fetch failed",
+      "cause": "ENOTFOUND",
+      "httpStatus": null
+    },
+    {
+      "name": "bucharest-layer",
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json",
+      "checkedAt": "2026-10-08T17:58:12.859Z",
+      "error": "fetch failed",
+      "cause": "ENOTFOUND",
+      "elapsedMs": 467,
+      "httpStatus": null
+    },
+    {
+      "name": "bucharest-new-layer",
+      "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json",
+      "checkedAt": "2026-10-08T18:05:07.534Z",
+      "error": "fetch failed",
+      "cause": "UND_ERR_CONNECT_TIMEOUT",
+      "httpStatus": null
+    },
+    {
+      "name": "bucharest-new",
+      "url": "https://geoportal.gov.ro/",
+      "checkedAt": "2026-10-08T17:58:24.384Z",
+      "error": "fetch failed",
+      "cause": "UND_ERR_CONNECT_TIMEOUT",
+      "elapsedMs": 10527,
+      "httpStatus": null
+    },
+    {
+      "checkedAt": "2026-10-08T18:12:17.912Z",
+      "method": "GET",
+      "url": "https://b.ancpi.ro/",
+      "error": "fetch failed",
+      "cause": "ENOTFOUND",
+      "httpStatus": null
+    },
+    {
+      "url": "https://www.ancpi.ro/epay/AboutUs.action",
+      "method": "GET central ANCPI official page inspection",
+      "httpStatus": 502,
+      "checkedAt": "2026-10-08T19:36:51Z",
+      "outcome": "Direct open returned HTTP 502. Official search listing states ANCPI has 42 county and Bucharest subordinate cadastral/property-publicity offices; retained as indexed primary evidence with limited confidence."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official ANCPI indexed information says the agency has a subordinate cadastral and property-publicity office for the Municipality of Bucharest; the Bucharest office page is also indexed with land-book and cadastral-plan services. Direct opens of relevant ANCPI pages failed (HTTP 502 or hostname resolution), and the public geometry endpoint could not be queried, so registry existence is supported by indexed primary claims while city parcel geometry remains unverified.",
+  "registryEvidenceUrls": [
+    "https://b.ancpi.ro/",
+    "https://geoportal.ancpi.ro/imobile.html",
+    "https://geoportal.gov.ro/",
+    "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+    "https://www.ancpi.ro/epay/AboutUs.action"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "sourceCandidate": {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+    "publisher": "ANCPI / OCPI București",
+    "safeSampleFile": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public city geometry remains unverified in this run.",
+    "verifiedOpenScope": "No city-specific public cadastral polygon response verified.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The central ANCPI page and Bucharest office site could not be directly opened in this session; the evidence is limited to official indexed text. No parcel geometry response was obtained.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "resultCategory": "city_registry_found_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "europe"
+}

@@ -1,0 +1,152 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:BZ:belmopan",
+  "name": "Belmopan",
+  "country": "Belize",
+  "countryCode": "BZ",
+  "centerLatLon": [
+    17.25,
+    -88.766667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Belmopan Belize official parcel map cadastre GIS land registry",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+        "https://portal.bnsdi.gov.bz/geo_portal",
+        "https://portal.bnsdi.gov.bz/lic"
+      ]
+    },
+    {
+      "query": "Belize government land registry interactive map cadastral parcel service GIS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+        "https://portal.bnsdi.gov.bz/geo_portal",
+        "https://portal.bnsdi.gov.bz/lic"
+      ]
+    },
+    {
+      "query": "site:portal.bnsdi.gov.bz parcel data Belize cadastre GeoServer WFS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+        "https://portal.bnsdi.gov.bz/geo_portal",
+        "https://portal.bnsdi.gov.bz/lic"
+      ]
+    },
+    {
+      "query": "site:portal.bnsdi.gov.bz Belmopan parcels cadastre map service",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+        "https://portal.bnsdi.gov.bz/geo_portal",
+        "https://portal.bnsdi.gov.bz/lic"
+      ]
+    },
+    {
+      "query": "site:arcgis.com Belize Land Information Center parcel polygons Belmopan",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+        "https://portal.bnsdi.gov.bz/geo_portal",
+        "https://portal.bnsdi.gov.bz/lic"
+      ]
+    },
+    {
+      "query": "Belmopan cadastral GIS parcel polygons GeoServer Belize map service",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+        "https://portal.bnsdi.gov.bz/geo_portal",
+        "https://portal.bnsdi.gov.bz/lic"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+      "observation": "Official Land Registry says it maintains an interactive map that indicates parcel boundaries; it lists a Belmopan City office."
+    },
+    {
+      "url": "https://portal.bnsdi.gov.bz/lic",
+      "observation": "Official BNSDI page identifies Land Information Center parcel-data datasets (Parcel Database, provisional parcel files and boundaries). The portal did not yield a service endpoint in this pass."
+    },
+    {
+      "url": "https://portal.bnsdi.gov.bz/geo_portal",
+      "observation": "Official BNSDI Geo Portal page; the web map timed out during inspection, so no service URL or sample was verified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://portal.bnsdi.gov.bz/geo_portal",
+      "method": "GET",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Public portal inspection timed out; no remote outage or data absence inferred."
+    },
+    {
+      "url": "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Inspection tool reported HTTP 502; no source outage inferred."
+    },
+    {
+      "url": "https://portal.bnsdi.gov.bz/lic",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Inspection tool timed out; no source outage inferred."
+    },
+    {
+      "url": "https://portal.bnsdi.gov.bz/geo_portal",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Inspection tool timed out; no source outage inferred."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Belize Land Registry describes its interactive parcel-boundary map and lists a Belmopan City office; BNSDI identifies parcel database/boundary datasets. No public vector endpoint or feature response was reached.",
+    "urls": [
+      "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+      "https://portal.bnsdi.gov.bz/lic"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "Belize Land Registry describes its interactive parcel-boundary map and lists a Belmopan City office; BNSDI identifies parcel database/boundary datasets. No public vector endpoint or feature response was reached."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "Belize Land Registry describes its interactive parcel-boundary map and lists a Belmopan City office; BNSDI identifies parcel database/boundary datasets. No public vector endpoint or feature response was reached.",
+  "registryEvidenceUrls": [
+    "https://naturalresources.gov.bz/index.php/land-registry-land-title-unit/",
+    "https://portal.bnsdi.gov.bz/lic"
+  ],
+  "sourceIds": []
+}

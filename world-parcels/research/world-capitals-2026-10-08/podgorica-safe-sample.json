@@ -1,0 +1,88 @@
+{
+  "purpose": "Bounded public cadastral geometry sample, nonpersonal fields only.",
+  "checkedAt": "2026-10-08T18:05:18.039Z",
+  "request": {
+    "url": "https://wis.gov.me/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=uzv%3Aparcele_v&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=19.261%2C42.439%2C19.265%2C42.443%2CEPSG%3A4326&count=3&propertyName=geom%2Cid%2Cko%2Cbr_parcele%2Cnaziv_ko%2Cnaziv_po",
+    "method": "GET",
+    "params": {
+      "service": "WFS",
+      "version": "2.0.0",
+      "request": "GetFeature",
+      "typeNames": "uzv:parcele_v",
+      "outputFormat": "application/json",
+      "srsName": "EPSG:4326",
+      "bbox": "19.261,42.439,19.265,42.443,EPSG:4326",
+      "count": "3",
+      "propertyName": "geom,id,ko,br_parcele,naziv_ko,naziv_po"
+    }
+  },
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "parcele_v.fid--3bc10029_1a11c47a596_-7a80",
+        "geometry": {
+          "geometryType": "MultiPolygon",
+          "geometrySha256": "3a6a9ece328294f69870905ff198346d44ed18edb680be57abc11b4fd036f88a",
+          "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "id": 530006,
+          "ko": 112,
+          "naziv_ko": "PODGORICA III",
+          "naziv_po": "Podgorica",
+          "br_parcele": "5469/1"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "parcele_v.fid--3bc10029_1a11c47a596_-7a7f",
+        "geometry": {
+          "geometryType": "MultiPolygon",
+          "geometrySha256": "ad942c4293288f201e47c4e356f4f4d62252abe90f05bd019525379e0fbe5852",
+          "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "id": 510874,
+          "ko": 111,
+          "naziv_ko": "PODGORICA II",
+          "naziv_po": "Podgorica",
+          "br_parcele": "4036"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "parcele_v.fid--3bc10029_1a11c47a596_-7a7e",
+        "geometry": {
+          "geometryType": "MultiPolygon",
+          "geometrySha256": "ba14c6bc86ba3810cf8e5baa49cc77a8ee64fa259e69513a751a741e486f8bc1",
+          "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "id": 510740,
+          "ko": 111,
+          "naziv_ko": "PODGORICA II",
+          "naziv_po": "Podgorica",
+          "br_parcele": "3969"
+        }
+      }
+    ],
+    "totalFeatures": 354,
+    "numberMatched": 354,
+    "numberReturned": 3,
+    "timeStamp": "2026-10-08T18:05:18.522Z",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:EPSG::4326"
+      }
+    }
+  },
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

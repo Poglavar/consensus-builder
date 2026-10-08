@@ -1,0 +1,91 @@
+{
+  "purpose": "Three cadastral polygons fully contained within one official Vienna vector tile, plus matching exact-reference API envelopes; tile-edge completeness still to qualify.",
+  "checkedAt": "2026-10-08T17:53:04.493Z",
+  "tileUrl": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+  "tileHttpStatus": 200,
+  "tileExtent": 65536,
+  "parcelFeatureCount": 252,
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "d67068cb3e21a5d7e0d22d42e5de7235d2aff0b049aea66c381d988cb52c9b22",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "kg": "01004",
+        "gnr": "572",
+        "rstatus": "E"
+      },
+      "id": 1125031806
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "488e6c424ed5f7de711bad3f0178943e35090db7ac954ca9f370528cbff141eb",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "kg": "01004",
+        "gnr": "564",
+        "rstatus": "E"
+      },
+      "id": 1125031778
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "d00a9a3d04bbde12906cd5565f1ce8c36890ea224fc312d62ea7837dadd9cb20",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "kg": "01004",
+        "gnr": "571",
+        "rstatus": "E"
+      },
+      "id": 1125031876
+    }
+  ],
+  "exactReferenceChecks": [
+    {
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/01004/572/",
+      "status": 200,
+      "checkedAt": "2026-10-08T17:53:04.082Z",
+      "nativeReference": "01004:572",
+      "apiGeometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "715241201368e0f45a7e2d52c75cf0f8f8b211d25215c91f4cf245ced674ade8",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "tileFeatureId": 1125031806
+    },
+    {
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/01004/564/",
+      "status": 200,
+      "checkedAt": "2026-10-08T17:53:04.417Z",
+      "nativeReference": "01004:564",
+      "apiGeometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "8cc4be89a46caac2fb48b54d60ed520571c6fce20eb534d6564b835a1cf170fe",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "tileFeatureId": 1125031778
+    },
+    {
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/01004/571/",
+      "status": 200,
+      "checkedAt": "2026-10-08T17:53:04.493Z",
+      "nativeReference": "01004:571",
+      "apiGeometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "727570ad1c7f79f9190c065a58f221815dcc74f139c4a38bc673f6626d1af844",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "tileFeatureId": 1125031876
+    }
+  ],
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

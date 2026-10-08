@@ -1,0 +1,134 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:LC:castries",
+  "name": "Castries",
+  "country": "Saint Lucia",
+  "countryCode": "LC",
+  "centerLatLon": [
+    14,
+    -61
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Castries Saint Lucia cadastral parcel map GIS land registry official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+        "https://www.govt.lc/ministries/physical-development/land-registry-section"
+      ]
+    },
+    {
+      "query": "Castries Saint Lucia cadastral parcel map GIS land registry official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+        "https://www.govt.lc/ministries/physical-development/land-registry-section"
+      ]
+    },
+    {
+      "query": "site:sling.gosl.gov.lc cadastral parcels Saint Lucia geoservices",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+        "https://www.govt.lc/ministries/physical-development/land-registry-section"
+      ]
+    },
+    {
+      "query": "site:govt.lc land registry cadastral map GIS Saint Lucia land parcels",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+        "https://www.govt.lc/ministries/physical-development/land-registry-section"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+      "observation": "Government DoPDUR site labels a Parcel Boundaries map and cautions it is experimental/non-authoritative; use must comply with cadastral map requirements."
+    },
+    {
+      "url": "https://geoservices.govt.lc/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "observation": "Capabilities response lists 13 feature types with no parcel, cadastral, or lot layer."
+    },
+    {
+      "url": "https://www.govt.lc/ministries/physical-development/land-registry-section",
+      "observation": "Official government locates its Land Registry Section at Waterfront Castries and links to paid/in-person registry inspection services."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoservices.govt.lc/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "params": {
+        "service": "WFS",
+        "request": "GetCapabilities"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:54Z",
+      "outcome": "WFS capabilities XML listed 13 feature types; none were parcels/cadastre/lots."
+    },
+    {
+      "url": "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official DoPDUR parcel-boundary page opened; it cautions the map is experimental and non-authoritative."
+    },
+    {
+      "url": "https://geoservices.govt.lc/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official WFS capabilities was opened through a read-only request; 13 feature types listed, none identified as parcel/cadastre/lot."
+    },
+    {
+      "url": "https://www.govt.lc/ministries/physical-development/land-registry-section",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Land Registry page opened; it places the registry in Castries and describes fee-based/in-person register inspection."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The official Land Registry office is in Castries and an experimental, non-authoritative parcel-boundary map exists. The inspected WFS capabilities listed no parcel/cadastre/lot layers, and coverage of Castries itself was not established.",
+    "urls": [
+      "https://www.govt.lc/ministries/physical-development/land-registry-section",
+      "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+      "https://geoservices.govt.lc/geoserver/wfs?service=WFS&request=GetCapabilities"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The official Land Registry office is in Castries and an experimental, non-authoritative parcel-boundary map exists. The inspected WFS capabilities listed no parcel/cadastre/lot layers, and coverage of Castries itself was not established."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The official Land Registry office is in Castries and an experimental, non-authoritative parcel-boundary map exists. The inspected WFS capabilities listed no parcel/cadastre/lot layers, and coverage of Castries itself was not established.",
+  "registryEvidenceUrls": [
+    "https://www.govt.lc/ministries/physical-development/land-registry-section",
+    "https://geoservices.govt.lc/maps/lrtp2gis20211231/",
+    "https://geoservices.govt.lc/geoserver/wfs?service=WFS&request=GetCapabilities"
+  ],
+  "sourceIds": []
+}

@@ -1,0 +1,129 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:LA:vientiane",
+  "name": "Vientiane",
+  "country": "Laos",
+  "countryCode": "LA",
+  "centerLatLon": [
+    17.966666666666665,
+    102.6
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:virgo.mpwt.gov.la land parcel Vientiane GIS plot data layers",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://virgo.mpwt.gov.la/"
+      ]
+    },
+    {
+      "query": "Vientiane Integrated Urban Information GIS Open Data Platform parcels site:virgo.mpwt.gov.la",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://virgo.mpwt.gov.la/"
+      ]
+    },
+    {
+      "query": "site:monre.gov.la land management cadastral Laos department land registration map Vientiane",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://virgo.mpwt.gov.la/"
+      ]
+    },
+    {
+      "query": "Laos Vientiane urban development administration land use GIS map official city",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://virgo.mpwt.gov.la/"
+      ]
+    },
+    {
+      "query": "ແຜນທີ່ ຕອນດິນ ວຽງຈັນ ກົມທີ່ດິນ ລະບົບ GIS ທາງການ",
+      "language": "Lao",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://gis.cde.unibe.ch/gis/rest/services/Decide/laos_land_use_master_plan_2030/MapServer",
+        "https://luislao.la/",
+        "https://luis.luislao.info/?lang=lo"
+      ]
+    },
+    {
+      "query": "ວຽງຈັນ ແຜນທີ່ດິນ ຕອນດິນ ຂໍ້ມູນ GIS ລະບົບ VIRGO ແຫ່ງຊາດ",
+      "language": "Lao",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://gis.cde.unibe.ch/gis/rest/services/Decide/laos_build_up_areas_lo/MapServer",
+        "https://luis.luislao.info/?lang=lo",
+        "https://www.ngd.la/?lang=lo&page_id=2933"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://virgo.mpwt.gov.la/",
+      "observation": "Vientiane Integrated Urban Information / VIRGO platform is described as GIS-based open data and identifies the Department of Land, Ministry of Natural Resources and Environment as information provider; search results did not establish a parcel polygon layer."
+    },
+    {
+      "url": "https://virgo.mpwt.gov.la/",
+      "observation": "Vientiane Integrated Urban Information GeoNode/MapStore portal loaded over HTTPS; catalogue links expose dataset and map browsing. No cadastral parcel polygon layer was verified in this inspection."
+    },
+    {
+      "url": "https://virgo.mpwt.gov.la/catalogue/#/?f=dataset",
+      "observation": "Official VIRGO GeoNode dataset catalogue opened and exposes dataset/map browsing navigation; inspected text did not expose a cadastral parcel layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://virgo.mpwt.gov.la/",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://virgo.mpwt.gov.la/; content type text/html; charset=utf-8; 47990 bytes.",
+      "firstPartyScripts": [
+        "https://virgo.mpwt.gov.la/static/mapstore/dist/js/gn-components.js?geonode-mapstore-client-v4.0.0-a050a1074de487c78b5937d72f5fcc90c7a9cd49",
+        "https://virgo.mpwt.gov.la/static/lib/js/jquery.min.js",
+        "https://virgo.mpwt.gov.la/static/lib/js/bootstrap.min.js"
+      ],
+      "relevantOfficialLinks": [
+        "https://virgo.mpwt.gov.la/static/mapstore/dist/themes/geonode.css?geonode-mapstore-client-v4.0.0-a050a1074de487c78b5937d72f5fcc90c7a9cd49",
+        "https://virgo.mpwt.gov.la/catalogue/#/?f=dataset",
+        "https://virgo.mpwt.gov.la/catalogue/#/?f=map"
+      ]
+    },
+    {
+      "url": "https://virgo.mpwt.gov.la/catalogue/#/?f=dataset",
+      "method": "web.run open official VIRGO dataset catalogue",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:53:00Z",
+      "outcome": "Catalogue page inspected; it exposes dataset/map catalogue navigation, but rendered text did not list cadastral parcel layers."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "VIRGO is an urban open-data GeoNode/MapStore portal and Lao geospatial/land-use sources exist, but no city parcel registry or cadastral boundary dataset was established.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "urban_geospatial_portal_parcel_registry_scope_unknown",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "VIRGO is an urban open-data GeoNode/MapStore portal and Lao geospatial/land-use sources exist, but no city parcel registry or cadastral boundary dataset was established.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

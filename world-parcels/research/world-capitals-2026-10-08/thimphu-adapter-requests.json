@@ -1,0 +1,848 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Safe adapter-operation trace reconstructed from the persisted qualification summary. Per-page wire URLs/statuses were not captured in the original run; cell-level completion, request counts, OID sets and hashes are retained as recorded.",
+  "city": "thimphu",
+  "sourceId": "asia-thimphu-research",
+  "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0/query",
+  "metaStatus": 200,
+  "pageSizeForced": 3,
+  "transportOidField": "fid",
+  "requestedFields": [
+    "fid"
+  ],
+  "operations": [
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-01",
+      "bbox": [
+        89.63600000000001,
+        27.418000000000003,
+        89.638,
+        27.42
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": []
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-02",
+      "bbox": [
+        89.638,
+        27.418000000000003,
+        89.64,
+        27.42
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:157649",
+          "hash": "0661cc2714983a1acdbd5dff8dc0e65fd8d5763894025418ca2326cab0251409",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157651",
+          "hash": "4c6e62ad6c67d0c0a651c006cf9ca2a897225ff30057640d70a2e576d7574ba2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157668",
+          "hash": "83e8bc729c209b08493344056987fae28141e196a4d90903f6068e1b3d560a49",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157650",
+          "hash": "ab8776f1b0b5d66fbcc6bfd17443065b094166878c50377ea3c92c7bc53b6372",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-03",
+      "bbox": [
+        89.64,
+        27.418000000000003,
+        89.64200000000001,
+        27.42
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:158039",
+          "hash": "b84df8d6950efe2b267e0e1bc4a3c9852fab914ec4707a49ee936b0b79444564",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158068",
+          "hash": "6c4ed28b30a747f0ba124c99519200815a5f4af6b9b0c0342206f3e4cc65c4c2",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-04",
+      "bbox": [
+        89.63600000000001,
+        27.42,
+        89.638,
+        27.422
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:157654",
+          "hash": "69e33bb8fb5fd0924ada0ea4c8820170c7cf525424d0e64e23663165a3a9bcbb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157659",
+          "hash": "6235ef9ceef29d387e96f9afbb08369a23574bc73303dd910a33fac1a0899b7f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157667",
+          "hash": "19f87cf0ba9082337aad5945babc181391422cb22d2dbbb8049c448f28de5bf6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157653",
+          "hash": "dc4059eae7dfb0148f1d6972de58101de623fab743fa23a81808053e1049ead2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157655",
+          "hash": "afd8136fe77c9cc4fd76b311c1e3147e15c420edcc01d9e4e1988db8e627d4fa",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157657",
+          "hash": "3537c856bef3e3f609f99a2c44e958722d64d85685709e40f86e44f796c25ee5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157652",
+          "hash": "246405e8d69c48029d2e2f120fb9beeafd27ccb3ec5fa61e7b504324e1380189",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157656",
+          "hash": "68d23d31edf3d51bc53403f8c7100902ae98598fd389d29f87af571048ed8dc9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157658",
+          "hash": "8c4038b09633dffd2dee3bbcba8c8103b56d948beafa1eeb6fc50255369ff354",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157662",
+          "hash": "26a210e2e211cc1b78f051becf1fd43fc84eebc0f04fc38fec229ebf8621558d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157666",
+          "hash": "a5dff862bb78fba8a92962b1fc11c77b217962588b1d4cd6a66de86921131149",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157681",
+          "hash": "ce71b03a0543af8209f7e83f693bd2230bdf8db081159a705f3a16275ea4ff63",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157660",
+          "hash": "9f92e22b78a9b6657928ba9e8e7f6707475730e734ba4851907cb5b7fe6fa1d3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157661",
+          "hash": "0ba257dc9900fc09ebdbd89d2445aec5d1a74d491ede241c36910233a0c7c593",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157676",
+          "hash": "37a77a057aa49181e755b7236aace681b48973a750a7b8f9dec304138521aaae",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-05",
+      "bbox": [
+        89.638,
+        27.42,
+        89.64,
+        27.422
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:157649",
+          "hash": "0661cc2714983a1acdbd5dff8dc0e65fd8d5763894025418ca2326cab0251409",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157650",
+          "hash": "ab8776f1b0b5d66fbcc6bfd17443065b094166878c50377ea3c92c7bc53b6372",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157651",
+          "hash": "4c6e62ad6c67d0c0a651c006cf9ca2a897225ff30057640d70a2e576d7574ba2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157648",
+          "hash": "62af1f8a1f57ec66324e87e750b82a6afc452d5819b814603feb5906cf88af4c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157679",
+          "hash": "2732614e5d31d354d17c934baeb48b0cd0bd70901401eee96529adf6a72fa886",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157681",
+          "hash": "ce71b03a0543af8209f7e83f693bd2230bdf8db081159a705f3a16275ea4ff63",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157668",
+          "hash": "83e8bc729c209b08493344056987fae28141e196a4d90903f6068e1b3d560a49",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157680",
+          "hash": "caa39c0a9f570161c9d47b038dacd8153fd51d90e08ad7ddda0dd554f63d19f4",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-06",
+      "bbox": [
+        89.64,
+        27.42,
+        89.64200000000001,
+        27.422
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:158057",
+          "hash": "cf1427d9dc52877222e3d00966f754a0e18d3860ae8c70d020f5f80f4db4d366",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158163",
+          "hash": "58975d95f2a52342ac1b462a9e19d4ffea664494c87933ea5030c062c86d6ab2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158164",
+          "hash": "d72b3cd46f057110f362745d67fe5a95a899468a4f7da33aaf5f2ea1301456dd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158058",
+          "hash": "fa47e569ece45fc6f93340cff42da0196cd036443c1892983d7446bbe40a1480",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158151",
+          "hash": "ee5298379d9f9606bc59e0d82b0d94e869f7817b5640053d697ae584ecaf9022",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158159",
+          "hash": "1a44722137b43c1b7cdacd216a67fa9e21609e77ffb3029c85eaf65d1eeb35e3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158068",
+          "hash": "6c4ed28b30a747f0ba124c99519200815a5f4af6b9b0c0342206f3e4cc65c4c2",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-07",
+      "bbox": [
+        89.63600000000001,
+        27.422,
+        89.638,
+        27.424000000000003
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": []
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-08",
+      "bbox": [
+        89.638,
+        27.422,
+        89.64,
+        27.424000000000003
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:158073",
+          "hash": "c805d33e225c7674ec2325c60897a6b08feb6651384cf7ddc40d751f72deba97",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158083",
+          "hash": "c33444fc607f25c555056304053a3d7c8ed45eaccb67745a64bf4ad655ded400",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158166",
+          "hash": "5eb290bc52eeaf6e524f8ea88ae3515e5e04ccc349159eac7f2dda6c3a0a1dbd",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-09",
+      "bbox": [
+        89.64,
+        27.422,
+        89.64200000000001,
+        27.424000000000003
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:158057",
+          "hash": "cf1427d9dc52877222e3d00966f754a0e18d3860ae8c70d020f5f80f4db4d366",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158069",
+          "hash": "7145c0c75fb6b5286e1721a97c93889962b70052b2e24d41b3c62ed4a59bac13",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158073",
+          "hash": "c805d33e225c7674ec2325c60897a6b08feb6651384cf7ddc40d751f72deba97",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-10",
+      "bbox": [
+        89.638,
+        27.416,
+        89.64,
+        27.418000000000003
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": []
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-11",
+      "bbox": [
+        89.638,
+        27.424000000000003,
+        89.64,
+        27.426000000000002
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:158059",
+          "hash": "2980d02c25d9208209144b85cbadfc18a60355b80910cecfbb144a3e3de03d8c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158083",
+          "hash": "c33444fc607f25c555056304053a3d7c8ed45eaccb67745a64bf4ad655ded400",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158146",
+          "hash": "d836f88f7f737d9d3c3678338b81c119135c32c571dae5daa5971eb71ef778e6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158067",
+          "hash": "b7a956b41d8d37f4a24fa8b6212c29980c05f711e400530bf82ec4e3495d12af",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158073",
+          "hash": "c805d33e225c7674ec2325c60897a6b08feb6651384cf7ddc40d751f72deba97",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158166",
+          "hash": "5eb290bc52eeaf6e524f8ea88ae3515e5e04ccc349159eac7f2dda6c3a0a1dbd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158043",
+          "hash": "b3b20da85c66b865bca67eb42cea34071cd38300fc60e6e4e5a81c930f0c6572",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158115",
+          "hash": "a26683d04b831b6081a3de3abdb9627e1fad5b8b520d407ad19e2a8d9a8cf941",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:164739",
+          "hash": "9ab170a07e2623541bccdedd31c84eef14012c17419106a3a02e3bd5bfdb93c6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158044",
+          "hash": "dd562463b9d1406ad1e44f7109639a01e049184d73148b7909fedf0957f590f7",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-12",
+      "bbox": [
+        89.634,
+        27.42,
+        89.63600000000001,
+        27.422
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:157652",
+          "hash": "246405e8d69c48029d2e2f120fb9beeafd27ccb3ec5fa61e7b504324e1380189",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157653",
+          "hash": "dc4059eae7dfb0148f1d6972de58101de623fab743fa23a81808053e1049ead2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157674",
+          "hash": "cc319f94f1e002eb6e31a799e92b91cdb76a73f24f2f4458fbbd6fb5a6585c01",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157672",
+          "hash": "f0386bd6e1025d2bb37dee78494da7935799ac07aaa8016dafd85a637ecf4c6e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157673",
+          "hash": "2366564cbe281c6d2ca2c617aac5befa8064aeb09f082995bd5073dd74629fa8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157677",
+          "hash": "70df71d3a789571cb9455058b40e2be1d7e8b32676714e1d94f595593723fa9f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157664",
+          "hash": "d965baeeef7a398e75e80a3e9c8588e59b3401b8a22736cc7f99b71ebadf7cf1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157669",
+          "hash": "fb3b348dac48b08356708ce3d8983f9a6429c8a5f966a17ccab2cb7db41423b0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157675",
+          "hash": "0cfb956b996152ea5883bf2b18280ff245b09e8353d08ab97930d0209abf2a04",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157662",
+          "hash": "26a210e2e211cc1b78f051becf1fd43fc84eebc0f04fc38fec229ebf8621558d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157663",
+          "hash": "fcf966e3d5a828b849afb4c6b0a1728c5713fdeb6f09391ceb007ce5e95fdb0c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157665",
+          "hash": "ab520ed2a7a0b352e27bb7f3ab331b1b95e78dce18e0706f73149851999a59d8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157676",
+          "hash": "37a77a057aa49181e755b7236aace681b48973a750a7b8f9dec304138521aaae",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:157678",
+          "hash": "d522fe350ca3dfab92e6d235862534d4650f925f1d5af2a3e7c7b2fe11cb5607",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-13",
+      "bbox": [
+        89.64200000000001,
+        27.42,
+        89.644,
+        27.422
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "thimphu:158154",
+          "hash": "db0f5f4344dde9bde62da249922f5923ed70786a25cfb545b41fd795db2fb8d8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158156",
+          "hash": "70ae05e218cdb92a21ea6445917ba542096b51f9aba79eb4a9e99e15a4d6aa20",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158157",
+          "hash": "55b93181aceaebaf2f7e081acb827bd26374e9c54d6803d9b6d19355c51da9b9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158147",
+          "hash": "4c6416a2de17a356f1a5dea7a8739ecfccd7435ee5f743c4161c78baf007f5ef",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158159",
+          "hash": "1a44722137b43c1b7cdacd216a67fa9e21609e77ffb3029c85eaf65d1eeb35e3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158165",
+          "hash": "ebdf6071c26ae30a2e88869a1312e839eab6e096ded07d3e77441cf99eae0a6d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158155",
+          "hash": "20a9f7623dc1e5dee0628147855481b41334192ca7f9bebd65a2416a15f4e826",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158161",
+          "hash": "9b387ecbaa66c6ef6c546f6b11063c49ac7aa3ae8b1993e6c47c4503913043f4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158163",
+          "hash": "58975d95f2a52342ac1b462a9e19d4ffea664494c87933ea5030c062c86d6ab2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158070",
+          "hash": "083a7796594f8d0bdc9f5e82b3f2949a12c7805282715ffd84a4c5f67c5ffe15",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158151",
+          "hash": "ee5298379d9f9606bc59e0d82b0d94e869f7817b5640053d697ae584ecaf9022",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158162",
+          "hash": "d6025f63f7b81e4a78c990271e11dee7633abcfc000403314e7125106d24a6f4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158068",
+          "hash": "6c4ed28b30a747f0ba124c99519200815a5f4af6b9b0c0342206f3e4cc65c4c2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158158",
+          "hash": "f054b605dee2bbfd2f9d626a7962479f6785b68969368d7a2e6d418a02897cf1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "thimphu:158160",
+          "hash": "de3ecc06799426231a88d0f89c74553088807a5c969ea60fac21b3aa3fc16cf2",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "forcedPageSize3",
+      "result": {
+        "bbox": [
+          89.63600000000001,
+          27.42,
+          89.638,
+          27.422
+        ],
+        "complete": true,
+        "count": 15,
+        "hashesMatch": true
+      }
+    },
+    {
+      "operation": "freshExactIdHashRereads",
+      "result": {
+        "complete": true,
+        "queried": 62,
+        "returned": 62,
+        "allPresent": true,
+        "allHashesMatch": true,
+        "absentIds": []
+      }
+    },
+    {
+      "operation": "explicitAbsence",
+      "result": {
+        "complete": true,
+        "featureCount": 0,
+        "absentIds": [
+          "thimphu:9876543210"
+        ]
+      }
+    },
+    {
+      "operation": "footprintRead",
+      "result": {
+        "error": "Parcel provider timed out."
+      }
+    },
+    {
+      "operation": "computeSourceBinding",
+      "result": {
+        "computed": true,
+        "binding": {
+          "parcels": [
+            {
+              "parcelId": "thimphu:157648",
+              "overlapM2": 562.116,
+              "intrusionM": 20.0613
+            }
+          ],
+          "touched": [],
+          "toleranceM": 0,
+          "coverage": "complete",
+          "unsurveyedM2": 0,
+          "siteM2": 562.12,
+          "source": "server:asia-thimphu-research",
+          "unknownM2": 0,
+          "computedAt": "2026-10-08T18:20:22.190Z"
+        }
+      }
+    },
+    {
+      "operation": "footprintReadRetry",
+      "traceSource": "/tmp/thimphu-footprint-retry.json",
+      "result": {
+        "complete": true,
+        "featureCount": 3,
+        "allIntersect": true,
+        "sampleIds": [
+          "thimphu:157648",
+          "thimphu:157668",
+          "thimphu:157679"
+        ],
+        "sampleHashesOnly": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0/query",
+          "params": {
+            "where": "1=1",
+            "geometry": "89.63933578437165,27.420219054531486,89.63956152291355,27.420550312915537",
+            "geometryType": "esriGeometryEnvelope",
+            "inSR": "4326",
+            "spatialRel": "esriSpatialRelIntersects",
+            "f": "json",
+            "returnCountOnly": "true"
+          },
+          "httpStatus": 200,
+          "count": 3,
+          "elapsedMs": 898
+        },
+        {
+          "method": "GET",
+          "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0/query",
+          "params": {
+            "where": "1=1",
+            "geometry": "89.63933578437165,27.420219054531486,89.63956152291355,27.420550312915537",
+            "geometryType": "esriGeometryEnvelope",
+            "inSR": "4326",
+            "spatialRel": "esriSpatialRelIntersects",
+            "f": "json",
+            "returnIdsOnly": "true"
+          },
+          "httpStatus": 200,
+          "objectIdCount": 3,
+          "elapsedMs": 282
+        },
+        {
+          "method": "GET",
+          "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0/query",
+          "params": {
+            "where": "1=1",
+            "outFields": "fid",
+            "returnGeometry": "true",
+            "outSR": "4326",
+            "f": "geojson",
+            "objectIds": "157648,157679,157668"
+          },
+          "httpStatus": 200,
+          "featureCount": 3,
+          "elapsedMs": 283
+        }
+      ],
+      "timeoutPolicy": "60-second fetch wrapper; response attributes constrained to fid."
+    }
+  ]
+}

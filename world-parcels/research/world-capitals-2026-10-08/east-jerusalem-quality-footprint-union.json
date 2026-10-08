@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS audit of the union of 13-cell grid rows and a fresh complete adapter footprint response; no geometry repair. Full geometry remains in /tmp.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32636",
+  "featureCount": 10,
+  "gridUniqueFeatureCount": 6,
+  "validNonemptyCount": 10,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryGroups": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "areaM2": {
+    "min": 3805.756332110382,
+    "median": 14133.394022608525,
+    "max": 237777.7427323204
+  },
+  "features": [
+    {
+      "id": "govmap:row:786512",
+      "areaM2": 237777.7427323204,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786513",
+      "areaM2": 15234.345606162658,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786514",
+      "areaM2": 5581.555772122461,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786737",
+      "areaM2": 20870.839019687395,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786740",
+      "areaM2": 111292.54944752484,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786738",
+      "areaM2": 13032.44243905439,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786313",
+      "areaM2": 3805.756332110382,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786508",
+      "areaM2": 47186.98247817487,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786509",
+      "areaM2": 10631.279839917062,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "govmap:row:786739",
+      "areaM2": 5927.026966529587,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    }
+  ]
+}

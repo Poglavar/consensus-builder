@@ -1,0 +1,73 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": 199,
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "a5d591bbfc1b404ff914eb763a101de4bef97eb37b92de0d516afc378d4d9eb2",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "OBJECTID": 199,
+        "NOME": "PAR",
+        "FOGLIO": 40,
+        "MAPPALE": 117,
+        "FOG_MAP": "F40M117",
+        "CATA_LIVE": 17,
+        "CATA_NAME": "TERRENO",
+        "CATA_ST": 28,
+        "GlobalID": "{44A2B7F5-0AC5-4F95-9A15-0C502DBFE8D9}"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 202,
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "0eb7d74c6cfe9fb2deb56a6f8dc663f2d390d072f3f48f8150a446b149a251b1",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "OBJECTID": 202,
+        "NOME": "PAR",
+        "FOGLIO": 42,
+        "MAPPALE": 134,
+        "FOG_MAP": "F42M134",
+        "CATA_LIVE": 29,
+        "CATA_NAME": "TERRENO",
+        "CATA_ST": 52,
+        "GlobalID": "{3099287E-05EF-4348-8C24-D58965952915}"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 2401,
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "d943671bafef1e4e50d70c0333162e89120c68fda3978e37138d02aaee179bac",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "OBJECTID": 2401,
+        "NOME": "PAR",
+        "FOGLIO": 42,
+        "MAPPALE": 397,
+        "FOG_MAP": "F42M397",
+        "CATA_LIVE": 29,
+        "CATA_NAME": "TERRENO",
+        "CATA_ST": 52,
+        "GlobalID": "{FC43ACC4-22AF-43D1-9D97-267A523FB5ED}"
+      }
+    }
+  ],
+  "exceededTransferLimit": true,
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

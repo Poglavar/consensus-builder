@@ -1,0 +1,159 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:CA:ottawa",
+  "name": "Ottawa",
+  "country": "Canada",
+  "countryCode": "CA",
+  "centerLatLon": [
+    45.416666666666664,
+    -75.7
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Ottawa Ontario official parcel GIS open data property parcels feature service",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa"
+      ]
+    },
+    {
+      "query": "Ottawa GeoOttawa données ouvertes parcelles cadastre lots service GIS municipal",
+      "language": "French",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa",
+        "https://ouverte.ottawa.ca/"
+      ]
+    },
+    {
+      "query": "Ottawa ArcGIS Hub parcels property parcels official GeoOttawa layer feature service",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://maps.ottawa.ca/geoOttawa/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa",
+      "observation": "City GeoOttawa is the relevant municipal mapping portal. Search also returned a false-positive Ottawa, Illinois parcel service; excluded. Canadian parcel geometry not verified."
+    },
+    {
+      "url": "https://maps.ottawa.ca/geoOttawa/",
+      "observation": "Official city GeoOttawa web map; public item metadata points to this viewer and a Property_Parcels service, but its REST service requires a token/login."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://maps.ottawa.ca/geoOttawa/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Opened official GeoOttawa app shell; it returned a legacy browser-compatibility page."
+    },
+    {
+      "url": "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official city page could not be rendered by the inspection tool (HTTP 403); discovery came from city search result."
+    },
+    {
+      "url": "https://ouverte.ottawa.ca/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official open-data portal opened with no readable lines in the inspection result."
+    },
+    {
+      "url": "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Public REST metadata request returned ArcGIS application error 499 (token required); no feature data obtained."
+    },
+    {
+      "url": "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer/0/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Bounded feature request returned an ArcGIS login HTML page; no geometry obtained and no authentication bypass attempted."
+    },
+    {
+      "url": "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Escalated read-only public metadata request returned HTTP 200 with ArcGIS application error 499 (token required); layer details unavailable."
+    },
+    {
+      "url": "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer/0/query",
+      "method": "GET",
+      "params": {
+        "geometry": "-75.701,45.415,-75.699,45.417",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 3
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Escalated bounded request returned HTTP 200 with ArcGIS Server REST API Login HTML; no geometry obtained and no authentication bypass attempted."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "The City of Ottawa identifies GeoOttawa property-parcel mapping and a Property_Parcels REST service. Unauthenticated feature calls returned login HTML/token errors, so geometry was not verified.",
+    "urls": [
+      "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa",
+      "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "GeoOttawa Property_Parcels service",
+    "operator": "City of Ottawa",
+    "scope": "City parcel service identified by official GeoOttawa sources; REST operations return token-required/login responses, so geometry remains unverified.",
+    "endpoint": "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer",
+    "protocol": "ArcGIS MapServer",
+    "featureType": "MapServer layer 0 (search result; metadata blocked)",
+    "geometryField": "geometry",
+    "sourceIdField": "OBJECTID",
+    "requestProperties": [
+      "OBJECTID",
+      "geometry"
+    ],
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:4326"
+  },
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The City of Ottawa identifies GeoOttawa property-parcel mapping and a Property_Parcels REST service. Unauthenticated feature calls returned login HTML/token errors, so geometry was not verified."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The City of Ottawa identifies GeoOttawa property-parcel mapping and a Property_Parcels REST service. Unauthenticated feature calls returned login HTML/token errors, so geometry was not verified.",
+  "registryEvidenceUrls": [
+    "https://ottawa.ca/en/planning-development-and-construction/maps-and-zoning/geoottawa",
+    "https://maps.ottawa.ca/ArcGIS/rest/services/Property_Parcels/MapServer"
+  ],
+  "sourceIds": []
+}

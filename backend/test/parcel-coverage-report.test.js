@@ -140,6 +140,20 @@ describe('parcel coverage report', () => {
         expect(report.cities.map(city => city.appCityIds)).toEqual([[], [], [], [], []]);
     });
 
+    it('binds reviewed city rows to a shared provider only when all explicit source references agree', () => {
+        const rows = [
+            { cityId: 'capital:one', appCityId: 'app-one', sourceIds: ['shared'] },
+            { cityId: 'capital:two', appCityId: 'app-two', sourceIds: ['different'] },
+            { cityId: 'capital:three', appCityId: 'app-three', sourceIds: ['shared'] }
+        ].map(city => ({ ...city, name: city.cityId, countryCode: 'AA' }));
+        const report = buildSmallReport({
+            registry: { cities: rows, sources: [{ sourceId: 'shared', verifiedCityIds: rows.map(city => city.cityId),
+                liveIntegration: { status: 'enabled', cityIds: ['app-one', 'app-two'] } }] },
+            liveCities: rows.map(city => ({ id: city.appCityId, sourceId: 'shared' }))
+        });
+        expect(report.cities.map(city => city.appCityIds)).toEqual([['app-one'], [], []]);
+    });
+
     it('keeps discovery categories separate from territorial completeness', () => {
         expect(countryCategory({ nationalCadastreFound: true, probeStatus: 'national_cadastre_viewer_only' })).toBe('national');
         expect(countryCategory({ nationalCadastreFound: null, citiesWithRegistry: 1 })).toBe('local');

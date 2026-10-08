@@ -1,0 +1,151 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "skopje-oid:113",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              21.436501405613456,
+              42.00030326191422
+            ],
+            [
+              21.436418741407486,
+              42.00031958428807
+            ],
+            [
+              21.43639774038563,
+              42.000312041677844
+            ],
+            [
+              21.43640116544835,
+              42.00028992316792
+            ],
+            [
+              21.43648842736453,
+              42.00027358327119
+            ],
+            [
+              21.436501405613456,
+              42.00030326191422
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "skopje-oid:113",
+        "id": "skopje-oid:113",
+        "sourceId": "mk-skopje-old-bazaar-parcels",
+        "sourceParcelId": "113",
+        "parcelNumber": "113",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 113,
+          "KP": null,
+          "Parcela": "",
+          "Br_Blok": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "skopje-oid:123",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              21.436522730626976,
+              42.00035806288533
+            ],
+            [
+              21.436457151227195,
+              42.00033239620874
+            ],
+            [
+              21.436509192120248,
+              42.000321144553546
+            ],
+            [
+              21.436522730626976,
+              42.00035806288533
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "skopje-oid:123",
+        "id": "skopje-oid:123",
+        "sourceId": "mk-skopje-old-bazaar-parcels",
+        "sourceParcelId": "123",
+        "parcelNumber": "123",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 123,
+          "KP": null,
+          "Parcela": "",
+          "Br_Blok": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "skopje-oid:127",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              21.4364928297651,
+              42.00002125947834
+            ],
+            [
+              21.4364835468914,
+              42.00000871734886
+            ],
+            [
+              21.43655538054942,
+              41.99997795348483
+            ],
+            [
+              21.43655389721509,
+              41.999985200071535
+            ],
+            [
+              21.436545746466795,
+              41.99998866164474
+            ],
+            [
+              21.436548371172307,
+              41.999998942178856
+            ],
+            [
+              21.4364928297651,
+              42.00002125947834
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "skopje-oid:127",
+        "id": "skopje-oid:127",
+        "sourceId": "mk-skopje-old-bazaar-parcels",
+        "sourceParcelId": "127",
+        "parcelNumber": "127",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 127,
+          "KP": null,
+          "Parcela": "",
+          "Br_Blok": null
+        }
+      }
+    }
+  ]
+}

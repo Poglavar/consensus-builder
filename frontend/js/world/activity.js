@@ -14,36 +14,72 @@
         viewport.append(track); panel.append(header, status, viewport); root.append(panel);
         let events = [], state = 'loading', destroyed = false, request = null, userScrolling = false;
         panel.classList.toggle('world-activity--static', !!reducedMotion);
+        const horizontalMode = () => !!global.matchMedia?.('(max-width: 600px)')?.matches;
+        const cyclingEnabled = () => events.length > (horizontalMode() ? 1 : 3) && !reducedMotion && !userScrolling;
+        function proposalTypeLabel(event) {
+            const key = global.WorldActivityModel.proposalTypeKey(event);
+            if (key === 'urban-rule') return t('world.activity.zoningType', 'Zoning');
+            const fallback = key === 'other' ? 'Other' : key.replace(/-/g, ' ');
+            return t(`modal.roadWidth.proposalList.goalLabels.${key}`, fallback);
+        }
         function enableManualScroll() {
             if (userScrolling) return;
             const style = global.getComputedStyle(track);
-            const matrix = new DOMMatrixReadOnly(style.transform === 'none' ? 'matrix(1, 0, 0, 1, 0, 0)' : style.transform);
-            const listHeight = track.firstElementChild?.getBoundingClientRect().height || 0;
-            let offset = Math.max(0, -matrix.m42);
-            if (listHeight) offset %= listHeight;
+            const horizontal = horizontalMode();
+            const matrix = new global.DOMMatrixReadOnly(style.transform === 'none' ? 'matrix(1, 0, 0, 1, 0, 0)' : style.transform);
+            const translated = horizontal ? matrix.m41 : matrix.m42;
+            const list = track.firstElementChild;
+            const listRect = list?.getBoundingClientRect();
+            const listSize = horizontal ? (list?.scrollWidth || listRect?.width || 0) : (listRect?.height || 0);
+            let offset = Math.max(0, -translated);
+            if (listSize) offset %= listSize;
             // Near the loop seam, rotate the real rows to keep the same visible events when the
             // duplicate disappears; otherwise native scroll clamping would jump backwards.
-            const list = track.firstElementChild;
-            const rowHeight = list?.firstElementChild?.getBoundingClientRect().height || 0;
-            if (rowHeight && offset > Math.max(0, listHeight - viewport.clientHeight)) {
-                const rows = Math.floor(offset / rowHeight);
-                for (let i = 0; i < rows; i++) list.append(list.firstElementChild);
-                offset -= rows * rowHeight;
+            const viewportSize = horizontal ? viewport.clientWidth : viewport.clientHeight;
+            const seamStart = Math.max(0, listSize - viewportSize);
+            while (list?.firstElementChild && offset > seamStart) {
+                const first = list.firstElementChild;
+                const rect = first.getBoundingClientRect();
+                const itemSize = horizontal ? rect.width : rect.height;
+                if (!itemSize) break;
+                list.append(first);
+                offset -= itemSize;
             }
             userScrolling = true;
-            track.style.transform = 'none';
-            track.querySelector('.world-activity__copy')?.remove();
             panel.classList.remove('world-activity--cycling');
             panel.classList.add('world-activity--manual');
-            viewport.scrollTop = offset;
+            track.style.transform = 'none';
+            track.querySelector('.world-activity__copy')?.remove();
+            if (horizontal) viewport.scrollLeft = offset;
+            else viewport.scrollTop = offset;
         }
         viewport.addEventListener('wheel', event => {
             enableManualScroll();
             event.preventDefault();
-            viewport.scrollTop += event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewport.clientHeight : 1);
+            const horizontal = horizontalMode();
+            const delta = horizontal ? (event.deltaX || event.deltaY) : event.deltaY;
+            const pageSize = horizontal ? viewport.clientWidth : viewport.clientHeight;
+            const amount = delta * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? pageSize : 1);
+            if (horizontal) viewport.scrollLeft += amount;
+            else viewport.scrollTop += amount;
         }, { passive: false });
-        viewport.addEventListener('touchmove', enableManualScroll, { passive: true });
-        viewport.addEventListener('pointerdown', event => { if (event.target === viewport) enableManualScroll(); }, { passive: true });
+        let pointerStart = null;
+        viewport.addEventListener('pointerdown', event => {
+            pointerStart = { x: event.clientX, y: event.clientY };
+        }, { passive: true });
+        viewport.addEventListener('pointermove', event => {
+            if (!pointerStart || userScrolling) return;
+            const dx = Math.abs(event.clientX - pointerStart.x);
+            const dy = Math.abs(event.clientY - pointerStart.y);
+            const horizontal = horizontalMode();
+            if (horizontal ? dx > 8 && dx > dy : dy > 8 && dy > dx) {
+                enableManualScroll();
+                pointerStart = null;
+            }
+        }, { passive: true });
+        for (const type of ['pointerup', 'pointercancel', 'pointerleave']) {
+            viewport.addEventListener(type, () => { pointerStart = null; }, { passive: true });
+        }
         viewport.addEventListener('focusin', event => {
             if (event.target.matches(':focus-visible')) enableManualScroll();
         });
@@ -52,7 +88,7 @@
             status.textContent = state === 'ready' ? '' : t('world.activity.' + state, { loading: 'Loading activity…', empty: 'No recent activity yet.', error: 'Activity is temporarily unavailable.' }[state]);
             status.hidden = state === 'ready'; viewport.hidden = state !== 'ready';
             track.replaceChildren();
-            for (let copy = 0; copy < (events.length > 3 && !reducedMotion && !userScrolling ? 2 : 1); copy++) {
+            for (let copy = 0; copy < (cyclingEnabled() ? 2 : 1); copy++) {
                 const list = document.createElement('ul'); list.className = 'world-activity__list';
                 if (copy) { list.setAttribute('aria-hidden', 'true'); list.classList.add('world-activity__copy'); }
                 for (const event of events) {
@@ -90,13 +126,21 @@
                     location.textContent = place.kind === 'city' ? place.name
                         : t('world.activity.location.' + place.kind, { near: 'near {{place}}', country: 'in {{place}}', unknown: 'Location unknown' }[place.kind], { place: place.name });
                     const meta = document.createElement('span'); meta.className = 'world-activity__meta'; meta.append(location, time);
-                    link.append(action, subject, meta); li.append(link); list.append(li);
+                    const compact = document.createElement('span'); compact.className = 'world-activity__compact';
+                    const compactCity = document.createElement('span'); compactCity.className = 'world-activity__compact-city';
+                    compactCity.textContent = ['city', 'near'].includes(place.kind) ? place.name : location.textContent;
+                    const compactType = document.createElement('span'); compactType.className = 'world-activity__compact-type';
+                    compactType.textContent = proposalTypeLabel(event);
+                    compact.append(compactCity, compactType);
+                    link.append(compact, action, subject, meta); li.append(link); list.append(li);
                 }
                 track.append(list);
             }
-            panel.classList.toggle('world-activity--cycling', events.length > 3 && !reducedMotion && !userScrolling);
+            panel.classList.toggle('world-activity--cycling', cyclingEnabled());
             track.style.setProperty('--activity-duration', events.length * 8 + 's');
         }
+        const mobileQuery = global.matchMedia?.('(max-width: 600px)');
+        mobileQuery?.addEventListener?.('change', render);
         async function load() {
             if (request || destroyed) return;
             request = new AbortController();
@@ -120,7 +164,7 @@
             if (!userScrolling && !document.hidden && !panel.matches(':hover') && !panel.contains(document.activeElement)) load();
         }, 60000);
         render(); load();
-        return { render, destroy() { destroyed = true; global.clearInterval(timer); request?.abort(); panel.remove(); } };
+        return { render, destroy() { destroyed = true; mobileQuery?.removeEventListener?.('change', render); global.clearInterval(timer); request?.abort(); panel.remove(); } };
     }
     global.WorldActivity = { mount };
 })(window);

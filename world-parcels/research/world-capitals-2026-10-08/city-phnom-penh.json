@@ -1,0 +1,104 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:KH:phnom-penh",
+  "name": "Phnom Penh",
+  "country": "Cambodia",
+  "countryCode": "KH",
+  "centerLatLon": [
+    11.55,
+    104.916667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:gov.kh cadastral parcel map Phnom Penh Cambodia GIS open data land parcel",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://mlmupc.gov.kh/cadastral-services/"
+      ]
+    },
+    {
+      "query": "Cambodia Phnom Penh cadastre online map parcels Ministry Land official GIS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://mlmupc.gov.kh/cadastral-services/"
+      ]
+    },
+    {
+      "query": "ផែនទី ក្បាលដី ភ្នំពេញ GIS ក្រសួងដែនដី cadastral",
+      "language": "Khmer",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://mlmupc.gov.kh/cadastral-services/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://mlmupc.gov.kh/cadastral-services/",
+      "observation": "Cambodia Ministry of Land Management, Urban Planning and Construction lists cadastral services; no public parcel feature endpoint surfaced in the searched official sources."
+    },
+    {
+      "url": "https://mlmupc.gov.kh/cadastral-services/",
+      "observation": "Cambodian Ministry of Land Management cadastral services page loaded over HTTPS and links to `https://cadastral.mlmupc.gov.kh/mortgage` and `/service`; no public geometry endpoint was identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mlmupc.gov.kh/cadastral-services/",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://mlmupc.gov.kh/cadastral-services/; content type text/html; charset=UTF-8; 459244 bytes.",
+      "firstPartyScripts": [
+        "https://mlmupc.gov.kh/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "https://mlmupc.gov.kh/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "https://mlmupc.gov.kh/wp-content/plugins/ays-popup-box/public/js/ays-pb-public.js?ver=5.2.1",
+        "https://status.mlmupc.gov.kh/script.js",
+        "https://mlmupc.gov.kh/wp-content/plugins/adobe-pdf-viewer/build/frontend.js?ver=1.0.0",
+        "https://mlmupc.gov.kh/wp-content/themes/kadence/assets/js/simplelightbox.min.js?ver=1.2.19",
+        "https://mlmupc.gov.kh/wp-content/themes/kadence/assets/js/lightbox-init.min.js?ver=1.2.19",
+        "https://mlmupc.gov.kh/wp-content/themes/kadence/assets/js/navigation.min.js?ver=1.2.19"
+      ],
+      "relevantOfficialLinks": [
+        "https://acrobatservices.adobe.com",
+        "https://mlmupc.gov.kh/cadastral-services/",
+        "https://mlmupc.gov.kh/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmlmupc.gov.kh%2Fcadastral-services%2F",
+        "https://mlmupc.gov.kh/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmlmupc.gov.kh%2Fcadastral-services%2F&format=xml",
+        "https://mlmupc.gov.kh/consulting-services/",
+        "https://mlmupc.gov.kh/layout-copy-service/",
+        "https://mlmupc.gov.kh/construction-services/",
+        "https://mlmupc.gov.kh/cadastral-services/#main",
+        "https://mlmupc.gov.kh/cadastral-services/#",
+        "https://mlmupc.gov.kh/land-management-process/",
+        "https://mlmupc.gov.kh/provincial_landuse/",
+        "https://mlmupc.gov.kh/district_landuse/"
+      ]
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "The national land ministry lists cadastral services, but the inspected evidence does not establish Phnom Penh-specific registry coverage or public parcel geometry.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "national_registry_candidate_city_scope_unverified",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "The national land ministry lists cadastral services, but the inspected evidence does not establish Phnom Penh-specific registry coverage or public parcel geometry.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

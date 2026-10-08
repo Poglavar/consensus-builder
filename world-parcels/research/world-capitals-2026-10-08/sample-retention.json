@@ -1,0 +1,81 @@
+{
+  "purpose": "Limits retained public polygon examples to at most three per city, with no ownership/contact attributes. Surplus historic samples retain requests and geometry type/hash summaries.",
+  "checkedAt": "2026-10-08",
+  "retainedSampleFiles": [
+    "andorra-la-vella-safe-sample.json",
+    "bandar-seri-begawan-safe-sample.geojson",
+    "beirut-plots-adapter-sample.geojson",
+    "bratislava-safe-sample.json",
+    "cetinje-adapter-sample.geojson",
+    "chisinau-adapter-sample.geojson",
+    "east-jerusalem-adapter-sample.geojson",
+    "jerusalem-adapter-sample.geojson",
+    "la-paz-safe-sample.json",
+    "male-adapter-sample.geojson",
+    "male-safe-sample.geojson",
+    "north-nicosia-safe-sample.geojson",
+    "paramaribo-safe-sample.json",
+    "podgorica-adapter-sample.geojson",
+    "ramallah-safe-sample.geojson",
+    "san-marino-adapter-sample.geojson",
+    "skopje-old-bazaar-safe-sample.json",
+    "the-hague-adapter-sample.geojson",
+    "thimphu-taba-adapter-sample.geojson",
+    "vienna-adapter-sample.geojson",
+    "wellington-safe-sample.geojson"
+  ],
+  "summarized": [
+    {
+      "file": "beirut-adapter-qualification.json",
+      "geometryCountSummarized": 3
+    },
+    {
+      "file": "cetinje-safe-sample.json",
+      "geometryCountSummarized": 3
+    },
+    {
+      "file": "chisinau-safe-sample.json",
+      "geometryCountSummarized": 3
+    },
+    {
+      "file": "east-jerusalem-safe-sample.geojson",
+      "geometryCountSummarized": 2
+    },
+    {
+      "file": "jerusalem-safe-sample.geojson",
+      "geometryCountSummarized": 2
+    },
+    {
+      "file": "north-nicosia-adapter-qualification.json",
+      "geometryCountSummarized": 2
+    },
+    {
+      "file": "podgorica-safe-sample.json",
+      "geometryCountSummarized": 3
+    },
+    {
+      "file": "ramallah-adapter-qualification.json",
+      "geometryCountSummarized": 2
+    },
+    {
+      "file": "san-marino-safe-sample.json",
+      "geometryCountSummarized": 3
+    },
+    {
+      "file": "skopje-safe-sample.json",
+      "geometryCountSummarized": 3
+    },
+    {
+      "file": "the-hague-safe-sample.json",
+      "geometryCountSummarized": 3
+    },
+    {
+      "file": "thimphu-safe-sample.geojson",
+      "geometryCountSummarized": 2
+    },
+    {
+      "file": "vienna-safe-sample.json",
+      "geometryCountSummarized": 6
+    }
+  ]
+}

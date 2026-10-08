@@ -1,0 +1,81 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:NR:yaren",
+  "name": "Yaren",
+  "country": "Nauru",
+  "countryCode": "NR",
+  "centerLatLon": [
+    -0.5477,
+    166.920867
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "de facto",
+  "priorEvidence": [
+    "research/countries/NR.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/NR.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Nauru land parcel cadastral GIS official lands survey map Yaren",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"Land Map\" \"LisCad\" official land management records fee",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Nauruan \"eam\" \"land\" survey map Nauru cadastral",
+      "language": "Naoero-language attempt",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Nauruan eam map land survey land boundary Naoero",
+      "language": "Naoero-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.nauru.gov.nr/government/ministries/hon-charmaine-eraidinomo-scotty,-mp.aspx",
+      "observation": "Official ministry portfolio identifies Department of Land Management / Directorate of Lands & Survey, Land Registration, Survey & Land Boundaries. 2026 Gazette lists fee-based Land Map and detailed LisCad survey-map records; no open feature API/viewer identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.nauru.gov.nr/government/ministries/hon-charmaine-eraidinomo-scotty,-mp.aspx",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "outcome": "Official Nauru ministry portfolio page inspected; identifies Land Management, Land Registration, Survey & Land Boundaries."
+    },
+    {
+      "url": "https://www.nauru.gov.nr/media/219914/gazette_67-26.pdf",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "application/pdf",
+      "outcome": "Official Gazette search result lists fee-based land maps and detailed LisCad survey maps; no open feature service."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-yaren.json"
+}

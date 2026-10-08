@@ -3650,7 +3650,17 @@
             "athens": "Atina, Grčka",
             "gaborone": "Gaborone, Bocvana",
             "bloemfontein": "Blumfontejn, Južnoafrička Republika",
-            "pretoria": "Pretorija, Južnoafrička Republika"
+            "pretoria": "Pretorija, Južnoafrička Republika",
+            "vienna": "Беч, Аустрија",
+            "cetinje": "Цетиње, Црна Гора",
+            "sanmarino": "Сан Марино, Сан Марино",
+            "thehague": "Хаг, Холандија",
+            "wellington": "Велингтон, Нови Зеланд",
+            "beirut": "Бејрут, Либан",
+            "thimphu": "Тимбу — Таба, Бутан",
+            "bandarseribegawan": "Бандар Сери Бегаван, Брунеј",
+            "jerusalem": "Јерусалим, Израел",
+            "eastjerusalem": "Источни Јерусалим, Палестина"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",
@@ -4234,6 +4244,7 @@
             "noResults": "Nema takvog mesta"
         },
         "legend": {
+            "toggle": "Legenda mape",
             "title": "Pokrivenost parcelama po državi",
             "cities": "Grad sa parcelama u aplikaciji"
         },
@@ -4301,6 +4312,7 @@
         },
         "activity": {
             "title": "Najnovije aktivnosti",
+            "zoningType": "Zoniranje",
             "loading": "Učitavanje aktivnosti…",
             "empty": "Još nema nedavnih aktivnosti.",
             "error": "Aktivnosti privremeno nisu dostupne.",

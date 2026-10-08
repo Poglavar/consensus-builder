@@ -399,17 +399,29 @@
             root.classList.add('world-view--back-to-map');
             closeBtn.classList.add('world-view__close--back');
         }
-        if (opts.closable !== false) root.appendChild(closeBtn);
+        if (opts.closable !== false) (opts.closeLabel ? top : root).appendChild(closeBtn);
 
         const overview = el('div', 'world-view__overview');
         root.appendChild(overview);
         const legend = el('div', 'world-legend');
+        const legendToggle = el('button', 'world-legend__toggle', {
+            type: 'button', 'aria-expanded': 'false', 'aria-controls': 'world-legend-content'
+        });
+        legendToggle.appendChild(el('i', 'fas fa-list-ul', { 'aria-hidden': 'true' }));
+        const legendContent = el('div', 'world-legend__content', { id: 'world-legend-content' });
         const legendTitle = el('p', 'world-legend__title');
         const legendList = el('ul', 'world-legend__list');
         const legendCities = el('p', 'world-legend__cities');
-        legend.append(legendTitle, legendList, legendCities);
+        legendContent.append(legendTitle, legendList, legendCities);
+        legend.append(legendToggle, legendContent);
         overview.appendChild(legend);
         const activity = global.WorldActivity.mount(overview, { t, reducedMotion: reduce, coverage });
+
+        function setLegendExpanded(expanded) {
+            legend.classList.toggle('world-legend--open', expanded);
+            legendToggle.setAttribute('aria-expanded', String(expanded));
+        }
+        legendToggle.addEventListener('click', () => setLegendExpanded(legendToggle.getAttribute('aria-expanded') !== 'true'));
 
         const labelLayer = el('div', 'world-view__labels');
         root.appendChild(labelLayer);
@@ -417,7 +429,12 @@
             .slice().sort((a, b) => LIVE_LABEL_ORDER.indexOf(a.id) - LIVE_LABEL_ORDER.indexOf(b.id))
             .map(city => {
                 const node = el('button', 'world-city-label', { type: 'button', text: city.name });
-                node.addEventListener('click', ev => { ev.stopPropagation(); select(coverage.tierAt(city.lat, city.lon)); });
+                node.addEventListener('click', ev => {
+                    ev.stopPropagation();
+                    // Pointer taps are resolved with the globe gesture. Keyboard activation is
+                    // still a native button click, so dragging a label never opens its popup.
+                    if (ev.detail === 0) select(coverage.tierAt(city.lat, city.lon));
+                });
                 labelLayer.appendChild(node);
                 return { city, node, vec: GM.latLonToVector(city.lat, city.lon, 1.002), w: 0, h: 0 };
             });
@@ -437,6 +454,9 @@
             closeBtn.textContent = opts.closeLabel ? closeLabel : '×';
             closeBtn.setAttribute('aria-label', closeLabel);
             closeBtn.title = closeLabel;
+            const legendLabel = t('world.legend.toggle', 'Map legend');
+            legendToggle.setAttribute('aria-label', legendLabel);
+            legendToggle.title = legendLabel;
             legendTitle.textContent = t('world.legend.title', 'Country parcel coverage');
             legendList.textContent = '';
             global.WorldCoverage.COVERAGE_LEVELS.forEach(level => {
@@ -516,14 +536,15 @@
         function touch() { lastInteraction = performance.now(); dirty = true; }
 
         function onPointerDown(ev) {
-            if (flight) return;
+            if (flight || ev.button !== 0 || !ev.target.closest('.world-view__canvas, .world-city-label')) return;
             zoomTarget = null;
             renderer.domElement.setPointerCapture(ev.pointerId);
             pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
             vel.lat = vel.lon = 0;
             touch();
             if (pointers.size === 1) {
-                drag = { x0: ev.clientX, y0: ev.clientY, x: ev.clientX, y: ev.clientY, t0: performance.now(), moved: 0, samples: [] };
+                const label = liveLabels.find(item => item.node === ev.target.closest('.world-city-label'));
+                drag = { x0: ev.clientX, y0: ev.clientY, x: ev.clientX, y: ev.clientY, t0: performance.now(), moved: 0, samples: [], city: label?.city };
             } else if (pointers.size === 2) {
                 const [a, b] = [...pointers.values()];
                 pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), alt: cam.altitudeKm };
@@ -562,7 +583,8 @@
             if (!drag) return;
             const elapsed = performance.now() - drag.t0;
             if (drag.moved <= TAP_MAX_PX && elapsed <= TAP_MAX_MS) {
-                pickAt(ev.clientX, ev.clientY);
+                if (drag.city) select(coverage.tierAt(drag.city.lat, drag.city.lon));
+                else pickAt(ev.clientX, ev.clientY);
             } else if (drag.samples.length > 1) {
                 const span = Math.max(16, drag.samples[drag.samples.length - 1].t - drag.samples[0].t);
                 const sum = drag.samples.reduce((acc, s) => ({ lon: acc.lon + s.dLon, lat: acc.lat + s.dLat }), { lon: 0, lat: 0 });
@@ -571,10 +593,17 @@
             drag = null;
         }
 
+        function onPointerCancel(ev) {
+            if (!pointers.delete(ev.pointerId)) return;
+            drag = pinch = null;
+            vel.lat = vel.lon = 0;
+            touch();
+        }
+
         function onWheel(ev) {
             // Labels cross the pointer during zoom. Handle their bubbling wheel events on the
             // globe root too, while leaving the overlay controls and scrollable panels alone.
-            if (ev.target.closest('.world-search, .world-activity, .world-popup, .world-view__close')) return;
+            if (ev.target.closest('.world-search, .world-activity, .world-popup, .world-view__close, .world-legend')) return;
             ev.preventDefault();
             if (flight) return;
             const delta = GM.wheelDeltaPixels(ev.deltaY, ev.deltaMode, viewport.h);
@@ -602,6 +631,12 @@
             if (ev.key !== 'Escape') return;
             if (!results.hidden) return; // search handles its own Escape
             if (selected) { deselect(); return; }
+            if (legendToggle.getAttribute('aria-expanded') === 'true') {
+                setLegendExpanded(false);
+                legendToggle.focus();
+                ev.preventDefault();
+                return;
+            }
             if (opts.closable !== false) {
                 ev.preventDefault();
                 global.WorldView.close();
@@ -946,10 +981,13 @@
 
         // ---- wiring ----
         const canvas = renderer.domElement;
-        canvas.addEventListener('pointerdown', onPointerDown);
-        canvas.addEventListener('pointermove', onPointerMove);
-        canvas.addEventListener('pointerup', onPointerUp);
-        canvas.addEventListener('pointercancel', onPointerUp);
+        // Labels and canvas share one gesture surface; controls are filtered in onPointerDown.
+        // Capture on the canvas keeps drags alive when labels move or disappear under a finger.
+        root.addEventListener('pointerdown', onPointerDown);
+        root.addEventListener('pointermove', onPointerMove);
+        root.addEventListener('pointerup', onPointerUp);
+        root.addEventListener('pointercancel', onPointerCancel);
+        root.addEventListener('lostpointercapture', onPointerCancel);
         root.addEventListener('wheel', onWheel, { passive: false });
         canvas.addEventListener('keydown', onCanvasKey);
         root.addEventListener('keydown', onRootKey);
@@ -967,6 +1005,11 @@
         root.__unregisterEscape = global.ModalEscape?.register(root, () => {
             if (!results.hidden) return false; // let the focused search input clear its results
             if (selected) { deselect(); return true; }
+            if (legendToggle.getAttribute('aria-expanded') === 'true') {
+                setLegendExpanded(false);
+                legendToggle.focus();
+                return true;
+            }
             if (opts.closable === false) return false;
             global.WorldView.close();
             if (typeof opts.onClose === 'function') opts.onClose();

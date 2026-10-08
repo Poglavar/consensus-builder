@@ -1,0 +1,38 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "PARCEL_ALL.20516",
+      "properties": {
+        "OBJECTID": 1091565,
+        "PARCEL_ID": 1076459,
+        "GUSH_NUM": 30843,
+        "GUSH_SUFFI": 0,
+        "PARCEL": 6
+      },
+      "geometry": {
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "196ccd2cab340b3e8b2c96694777021f4682178b363022f339e7ef2f10970b2c",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "PARCEL_ALL.36868",
+      "properties": {
+        "OBJECTID": 37286,
+        "PARCEL_ID": 37968,
+        "GUSH_NUM": 30336,
+        "GUSH_SUFFI": 0,
+        "PARCEL": 133
+      },
+      "geometry": {
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "bcfad00769448b234632eb9cca09a82e4e521407479c82aff2c157c65dd95cd6",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      }
+    }
+  ],
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

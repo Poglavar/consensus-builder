@@ -1,0 +1,4042 @@
+{
+  "metaStatus": 200,
+  "objectIdField": "OBJECTID",
+  "serviceGeometryType": "esriGeometryPolygon",
+  "spatialReference": {
+    "wkid": 28191,
+    "latestWkid": 28191,
+    "xyTolerance": 0.001,
+    "zTolerance": 0.001,
+    "mTolerance": 0.001,
+    "falseX": -4839400,
+    "falseY": -13387400,
+    "xyUnits": 10000,
+    "falseZ": -100000,
+    "zUnits": 10000,
+    "falseM": -100000,
+    "mUnits": 10000
+  },
+  "cellStepDegrees": 0.002,
+  "cells": [
+    {
+      "name": "viewport-01",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.198,
+        31.900000000000002,
+        35.2,
+        31.902
+      ],
+      "complete": true,
+      "featureCount": 35,
+      "ids": [
+        {
+          "id": "ramallah:747080",
+          "hash": "1a3d6f7b8dbc3be81c1468d6620425e27a6afc67a59403d26f6af9ff05df6886",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747067",
+          "hash": "aa16b884065e2d2acfb967e363db350942fd53b1ed8eafbfb111c791b0ef6966",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747063",
+          "hash": "3c20263e91f3e613d7e7ddae1486945e1f6b9fcb79ab02f95387b23a8f83165e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747544",
+          "hash": "cb2406ba7d6edb8ba3be9ba867e6c67c394fe75a174a60b1c9cd7eacbf9910e3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747061",
+          "hash": "1800926252987ef50e8b9955ff70b8b8c138f5de844203a270e90a3d42160440",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747062",
+          "hash": "e06178401e9b952c2f03f2723e445b3df98bcbb74f4da74fbbcd1f15e29630fe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747106",
+          "hash": "bfb8f4e6cf39ee31fe2ba4747678cde5a0e7fd45e6b1f1666dbc134ccd81e817",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747107",
+          "hash": "4c2ac72d19ba536f878eb59164bbb6513b967b46d2bb7a6c3ee1ada3278de434",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747458",
+          "hash": "e8f7e0c3ec73ace2f6ce080119dcd2a17f274db7828d778661935e885aeddefe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747114",
+          "hash": "bf755e0d4426ad615b44a9e9ec605f004ea12643aaf4b2f984aef1c30751edd9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747547",
+          "hash": "b7d0b4ed163de1686f06b7dd50bfb04d883d1c9f4373dc09d7ca855c628332e8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747549",
+          "hash": "c06e1fb064f5f33f90f564712c4dc46b158e46c6fb917188b4fb9efe9e9dfb69",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747115",
+          "hash": "8c2e8d502ed953cd88114d91711195306de9e18fb7261ac4ba308de15a66f414",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747556",
+          "hash": "5c5fa2620073df5c450e9aa7c4c6ce205190384058cfb9a79c715cd5258b3984",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747466",
+          "hash": "53a876ed53c57fb34d997a0b55277570b619a7e870df3726bbceabab820da9fc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747120",
+          "hash": "9b64776910b0e17899cc775d3451982cc0521c32c63dd7cee55b15308b1260e6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747121",
+          "hash": "428b09d9d67afc43829c1f6c8e8aa2e54f215ca59ce4ff78bec0473bab85b8f2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747129",
+          "hash": "d9d0d50c9043515bd5a489490c56d3cd899e11b0536ce459c142bd25e8585948",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747130",
+          "hash": "86fbbd0c285359366c8873032f2a8cd0556bd38d6a2692acb0f3af7fa4cd21ec",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747132",
+          "hash": "78394954d750c4cb07a21a61ed869c827593be1bde9b686114cc5d62e3dd0a52",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747477",
+          "hash": "994ee463cfd2ce6637d998c37602cb6eae837bcef02749630fc23cd87c491778",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747479",
+          "hash": "62c041c038c1a6ed7d9e57d0362f42e4219d39e05ddcaaeeaab6bdd2b1e0a13b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747566",
+          "hash": "9410003f6e1a5f34f8213c11fbe419eb90525fff3ba62a22aed3eac30ac79f59",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747577",
+          "hash": "e96941698e63869d367122c6d33f478aaf7a5bb7823440907402232313f79cad",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747133",
+          "hash": "85007d812671c37441c19ee10f2521925894dfa0810c339483e05211902b963a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747135",
+          "hash": "5214b2430a05166c8612d11b79bc0ec2281de3053b81a3b807c765595b088fd6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747134",
+          "hash": "80d96e4f7210f4ce952ccc47691e6496578357261431b6cc97fdc17ac3892ee8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747587",
+          "hash": "c8aacd955e9075e43c7856bf068984ffabcbca1b87c9f142309bb7eb81f3a7b1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747606",
+          "hash": "2a5d14be52b9f4f958a73914e8cecaf25877bdd43f89c70c11a3af157e237927",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747499",
+          "hash": "dbfc2353a3414954d75b189b8727d9730a7b36468acdfbec168621050f696be1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747612",
+          "hash": "9cb6c0dd0fe7373452630410068cfe3f524991d84782ff6743b601dd4440a7f0",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747615",
+          "hash": "1d506206a18b3a1bd9b29a3abb2e7c5f9e94b12bc3d98f684bbf8a6a0f97b8e9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747616",
+          "hash": "28bdb3897781ae9718589d8b9010a4a60c6861b24f753381eacbfa2460f4cbb8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747528",
+          "hash": "329382aa8610fbd8c731941bc91b6eccac9cb9a52d9d90449bc97c0a51cff9c5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747618",
+          "hash": "81a7fbd9e2d0991f25ea4c907f9a6fd2214cd9bcbea1209f657bd17577d9e362",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-02",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.2,
+        31.900000000000002,
+        35.202000000000005,
+        31.902
+      ],
+      "complete": true,
+      "featureCount": 42,
+      "ids": [
+        {
+          "id": "ramallah:747007",
+          "hash": "8c38157ef521ab5dbe1808ad61c7a024ee1030a031f5d150930888c28f634343",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747004",
+          "hash": "453b43b824310d4af1a96e54d8d00f5758163d77c2684485cba663acd1833357",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747006",
+          "hash": "9d1d6062a1427243043ad08b343ad4680d1e7ee0e1ab2187cc87aaa1f31f12f4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747544",
+          "hash": "cb2406ba7d6edb8ba3be9ba867e6c67c394fe75a174a60b1c9cd7eacbf9910e3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747631",
+          "hash": "bee42f4f5b104911d7f797acde839e2942e7687397da2dad5c520b4ca152c075",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747063",
+          "hash": "3c20263e91f3e613d7e7ddae1486945e1f6b9fcb79ab02f95387b23a8f83165e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747634",
+          "hash": "9ae26fdd54a9a6d64a331a336f84e9f45125a08196c6adb62d5a9f286a2ebbe8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747633",
+          "hash": "fc5e9bcf8da045e424cf2281a9d867287ef4410a03027e5cbf87a6133d9306dd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747632",
+          "hash": "26c3c8a0a44d7152cd0d0387accd0d77f1d054e6e777061c273a30623d081f87",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747637",
+          "hash": "5b3e8d34795e030923b2a5706b61b7cddc605d992976678d16cd773d78a0311b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747635",
+          "hash": "af4ed503aee3f006270e2fd27113d48dcaa725dd7aa5b488741bafcfe47232fd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747638",
+          "hash": "d591e7900942a80b7f5ffd4a269b5d318b21f3b1477f0b7506bb803c82ce6ca7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747641",
+          "hash": "3cd4fcb2fd5e4124b09008cb528ae798cbcf838b0647ce0aedb396804ea4567f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747639",
+          "hash": "0b2dabb35db788113b193bf4ddb0793c6abbb8fdc2079cd3c37ef0303f24d3c1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747640",
+          "hash": "cc901eb25d131f383bce305a001f825a08f148ceb734fdf5e813545f3afdb7f1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747642",
+          "hash": "68cc9fd51c37e286876a9bb6030e58248ce071d9c65833003393035d242e0dc6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747643",
+          "hash": "5d545a19667964959f0eb05315f6f645f150d7b3ae59d596ff618e729c01a997",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747644",
+          "hash": "dcb1bbc8a591798bebec94f761ce1638e536fdfa4fe4d8e7a51761adcba56024",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747645",
+          "hash": "b00a9683176a1b07c53396280f0248e17ada6f956305495469d8f72acbf112bc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747648",
+          "hash": "19fb1687e40633f0ac3b7ced49a29e57187ed80e54fca4a95c5cc3cab56f5b48",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747647",
+          "hash": "de8f92a8f87255be1814db4ea29f3b7ea12bfcaf81fea35475375ecfe0a7e025",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747668",
+          "hash": "84366974778c0c5276248e61a76e97a47f30306bf33e8b42c6fa434db22f0bda",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747666",
+          "hash": "489c6021a6a3d01647fd27f1af5304cf129d1b8d48163dc85bc581decd1ec54b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747649",
+          "hash": "a6cafc54b87bf3cd65f65380b8440ed4968dd7f571bca4248ca96875d3bdac5c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747688",
+          "hash": "b9ed628e95304c4c144dcd7920aa5fb567611c175206479da9d97098a918cd95",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747690",
+          "hash": "d8fa2c121c2d2ca022b5ea68f3d957ca0542eb7f6e5cf826fc40a698f8d4cd1e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747689",
+          "hash": "5960c25f2cda3d4a5230be4ebefcfdd60c3cd68083e74784e110c4872cee4c68",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747702",
+          "hash": "91697f09abddb29486c48a3253146e785418c72df33c0fd85003b63a9a7e85c1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747703",
+          "hash": "5ca746aad226ce20f3aa36941fc489723847fd3c3e85079d79fd150e6b0e4d4d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747704",
+          "hash": "cd5eed6665fcdee880cbf7307b2adaee0bc1200fe9d5ce494ca1a801c18595a5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747549",
+          "hash": "c06e1fb064f5f33f90f564712c4dc46b158e46c6fb917188b4fb9efe9e9dfb69",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747705",
+          "hash": "56acc6dbfe409b8078b5c424d6faf6c4e9a70f085ca026e26d4a7e49a7940c74",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747706",
+          "hash": "b6234e173897b005cdfb789900f6530ecb645d3ea3df8626e24812e806ffd2d4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747556",
+          "hash": "5c5fa2620073df5c450e9aa7c4c6ce205190384058cfb9a79c715cd5258b3984",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747559",
+          "hash": "68e84a8c3e8ac48a2c38dcce1820d1ccd6bcd4d7d562a4e4175fba7eeb601521",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747560",
+          "hash": "6a799e94019a860a6a0270358df23d1532056fcb05b596f7ba1ebebb89980ed6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747557",
+          "hash": "74a165b834f42426a46266aeac78fb9155f3b6e0f8313d45c564d38e7de59a0b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747612",
+          "hash": "9cb6c0dd0fe7373452630410068cfe3f524991d84782ff6743b601dd4440a7f0",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747558",
+          "hash": "76469d8feea5f61dc4609394cd257b384901c09873c42bd56b565a75166ee8aa",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747616",
+          "hash": "28bdb3897781ae9718589d8b9010a4a60c6861b24f753381eacbfa2460f4cbb8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747629",
+          "hash": "7e77ac93b6c92f5bdd51433e8b991e245cb075c2cbdb777ac34845709e5b9c5d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747630",
+          "hash": "b2b3e462650ba37d1e43a010cd9cb33db7e1b273bdee1909b50e306f20ea4f14",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-03",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.202000000000005,
+        31.900000000000002,
+        35.204,
+        31.902
+      ],
+      "complete": true,
+      "featureCount": 41,
+      "ids": [
+        {
+          "id": "ramallah:747641",
+          "hash": "3cd4fcb2fd5e4124b09008cb528ae798cbcf838b0647ce0aedb396804ea4567f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747633",
+          "hash": "fc5e9bcf8da045e424cf2281a9d867287ef4410a03027e5cbf87a6133d9306dd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747631",
+          "hash": "bee42f4f5b104911d7f797acde839e2942e7687397da2dad5c520b4ca152c075",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747642",
+          "hash": "68cc9fd51c37e286876a9bb6030e58248ce071d9c65833003393035d242e0dc6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747650",
+          "hash": "5b4a30881d843b00763459c30b736968ae878994895b4bb53f00a25c8ba182c3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747651",
+          "hash": "093997d94dc90663deda36f5df21d15f92d27409b7992716bae324f2e0e65229",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747652",
+          "hash": "645a8d37a4434e2a3410b3db4ba28c6a212eb697927fe6d7eed62bb414af8a10",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747653",
+          "hash": "34b9ea5b7619e87ca10c500a08892712c9c6e7a6264bd7685a194a41810e7bc6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747655",
+          "hash": "4afaefeef93bf7084f8116e58cc69957b3acd60069cb26e7b52765384d10f1e6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747658",
+          "hash": "4fdca56ee191ea014c9d78960ecdb9329b938bca8021235d0df2f728a8069976",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747657",
+          "hash": "dd70cd9c44b1dced6f7d498136867011ea098215840993e2b6c43eff850623a1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747656",
+          "hash": "b23c0e19af2fba2b9a63bdcb499c14b9c81732568c31bf09986a8cea5a5227af",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747659",
+          "hash": "9222ef46770017fbc57a41095631279e39e5cf246c6f5602e88ef37b1eaefc90",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747660",
+          "hash": "8a0cf34a2d52f60ff8d7f6691b0135349015d1ec9eb676660f936bdbdfb81326",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747661",
+          "hash": "8eb6211649376de7f0e56904545cebaadc6644aadf89361b87cc1865d4833803",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747664",
+          "hash": "9463ea5780ce6cb3d43fd4342cc4aeb4e5fd0897fe7960b7dd7aa5f9cfed7dc7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747663",
+          "hash": "82c75efe980da95b036bec3d3e44465dd902fe8ffbfbecb8f65881ac87fc69ea",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747662",
+          "hash": "1bfb1fb49e7715e18da14b8334f2bc9a43959359df345fc80402b3514f04036e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747670",
+          "hash": "d6561b86a3b66bbab65c54c83f236aa16a9a0b29b889cc4931b5b14131801a65",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747668",
+          "hash": "84366974778c0c5276248e61a76e97a47f30306bf33e8b42c6fa434db22f0bda",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747669",
+          "hash": "768bd7abd43599bb32c0730afb869dd4a311a2bf694e1ec807647bdf6321a7d6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747672",
+          "hash": "1ab0d8966ed985d40b18032b6789f80932b0cae5ef925438742df0b33d9695d7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747671",
+          "hash": "cb8987270e50614ef8edf931c91855fc74c7ace8fa5a66e3af9b6486d4438568",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747686",
+          "hash": "ff8d3f9ef8bc3b533642577c53964e0f160bc39f8adb9538bf2a3e931328bfc1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747688",
+          "hash": "b9ed628e95304c4c144dcd7920aa5fb567611c175206479da9d97098a918cd95",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747696",
+          "hash": "b8cf06a2f91dd0745760eafdb38fc30f2435c30c6e1739ad6c53cac824cb9b46",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747695",
+          "hash": "e0d39d7d5f88edb8259b1b6d95dbaf528e670671c15cf82e64fae42ce49514b0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747697",
+          "hash": "2b6a54d8a2157fae89770e0cd46e82add6d4a68478c99e1479d6515905495613",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747698",
+          "hash": "14e4c49a6e7c8a70e9c916660761a327d96aa0cc00996e2963c037320e647c57",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747701",
+          "hash": "849b7ed05bf2448b8cf2730661273f1794447bb6f4ad2a39df566cb574a81931",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747707",
+          "hash": "4f2af95d3dc0c0acc8ffb8fc0be506f816356eb15c7e3e544f72138a05beae8c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747704",
+          "hash": "cd5eed6665fcdee880cbf7307b2adaee0bc1200fe9d5ce494ca1a801c18595a5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747705",
+          "hash": "56acc6dbfe409b8078b5c424d6faf6c4e9a70f085ca026e26d4a7e49a7940c74",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747730",
+          "hash": "c2b32a945115c6c02a944716d12389a1d54400694d40215ca25fdbff58a5f5a5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747800",
+          "hash": "6652a0186ec94532add546d4412e22413f391cd77d54cc9d908564ebc0dfd33e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747792",
+          "hash": "df0ab6acbba7905edf8db1b953428558a3d5e84ff0d9952086923a7b84c8ad42",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747750",
+          "hash": "44af605bb20c0dc7a564caa0103a7acfca784257b9b74aef88835265c9cb3859",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747755",
+          "hash": "d0d545f3868aac8d6c86e1ee120875316bf2debb17f6556f94de9e0d096e7780",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747793",
+          "hash": "dc52e0313d606d6522e42d14b1edec2c6bddab12758766fa7b514f6caa2c84ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747629",
+          "hash": "7e77ac93b6c92f5bdd51433e8b991e245cb075c2cbdb777ac34845709e5b9c5d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747630",
+          "hash": "b2b3e462650ba37d1e43a010cd9cb33db7e1b273bdee1909b50e306f20ea4f14",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-04",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.198,
+        31.902,
+        35.2,
+        31.904
+      ],
+      "complete": true,
+      "featureCount": 41,
+      "ids": [
+        {
+          "id": "ramallah:747009",
+          "hash": "290c2a28bc39318df187c0ec2c33b9bdc11a42ce1ce9c245b01bde0880709c25",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747008",
+          "hash": "cd09b7e6b76f4db6eb94da87db8c8c561cbae8fdb6dc13d4fec03af8e971702a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747010",
+          "hash": "e1bbdfb5bfb56849f86d3f53de2b339a73bc0fc000a52804cd1f395edd3e331c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747012",
+          "hash": "fe7988381785a448465556cfd8ca7c039600c57bf7fc35a6bee82b4fca3b5675",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747011",
+          "hash": "f1340675072a05e4d424c2f7affe1683b0ede5a69f65687e2bfcf6258095b805",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747063",
+          "hash": "3c20263e91f3e613d7e7ddae1486945e1f6b9fcb79ab02f95387b23a8f83165e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747038",
+          "hash": "bdcd5e1f6f313599abf4188e10877efeab70244342d8c06fc88ec21f50dab955",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747044",
+          "hash": "a2bee788f1c4800eb89b0b77405d84f28a9094547a29064d86ee4d6ca391c4a2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747039",
+          "hash": "9bb280b8dd68d76467db78b67e90f48008fb36f697f421a46f153be72cfe6c62",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747079",
+          "hash": "63b61a7d2726122c6e07fdfea1a18586d0471400ccc26d4c2a44e37af3c1ac47",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746964",
+          "hash": "0cffde7113ec602f56d6ff66fe88e82a45f15b854e4b47b521557a7c1c7d07bc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746971",
+          "hash": "b9a0e8c45823458bcf7668910627d22645796158e62642f0e7a641d76d0e3cf6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747032",
+          "hash": "5ca92e584f669742d21e796ba70012fbb871022eebfaa8b199b0bbd117c98fcd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747031",
+          "hash": "07d103ab999edf7e3dc745b14d689a876c08d9ab3acb4f5f4cf64bac2780875e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747030",
+          "hash": "c506580bf494da6a7fbcb9acb8a4601df68112f886a4a336dc1ed4cddcf79b3a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746980",
+          "hash": "545bbbcba4698804cbd42a72ce5d25fc8071318eb034236fa5e6bc7045c7d872",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747036",
+          "hash": "39b60e24a8c9dda630ccd8e76c12cdd3e7816a6acf827a22f73611225af12ce2",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747035",
+          "hash": "a3b822b07a44cf546b0b7476111f8099573026cba5549b7ababeb79582437c73",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747052",
+          "hash": "78a7e47f3346697363e3598be9fb9c4adb5427e29b0e8b3c1c7cde5c0d61334b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746981",
+          "hash": "d27b2bed8df2308cd7fdfd294d696d0552bce4d040eb4b0bd7df9e0933e72970",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747059",
+          "hash": "976885d732322dfa0877aceceda40316f7f9dbf400572fddc0f1f60931c8259d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746993",
+          "hash": "fec8c60f49b2047f8e8196cb6bd0c7d5296d31eac37d0e7bc12b87d3d5be2938",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747061",
+          "hash": "1800926252987ef50e8b9955ff70b8b8c138f5de844203a270e90a3d42160440",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747062",
+          "hash": "e06178401e9b952c2f03f2723e445b3df98bcbb74f4da74fbbcd1f15e29630fe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747098",
+          "hash": "28f6d3b7fe67b6b8438b8e7fba5911f1959f8ef9feff9584c1464d871a073659",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747091",
+          "hash": "35aefcae6b07bf276503c4c086371bc63c011990b96a1817e9f073bdfb24f018",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747102",
+          "hash": "a1714b81291e71519787152120f32253e72d62b093128dbabd912b1934387bf9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747116",
+          "hash": "4624cfab0dbcc40509a9a619d480f680b865c1664730325be6128412f1301653",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747108",
+          "hash": "35d7c4e013f87db79592b3900f9e5822b727f385578e70ac81178506636cea63",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747103",
+          "hash": "4d916bb04b306e97911249c1e7e950f1a9cc755079f7dbeeb0e2c3efea7fb1b8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747120",
+          "hash": "9b64776910b0e17899cc775d3451982cc0521c32c63dd7cee55b15308b1260e6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747121",
+          "hash": "428b09d9d67afc43829c1f6c8e8aa2e54f215ca59ce4ff78bec0473bab85b8f2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747122",
+          "hash": "554833f83f88efd7d475bff7964fcc6d97a97a775849cfc0d1528a26f80e7edf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748672",
+          "hash": "1d2816ba2c3f997bda2504df73da5524ec2bbf3abb0dcc06594c1e1f8128e9eb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747131",
+          "hash": "69ef873ee47340ccbdf0fada6586fe45d32ebab6a07acc2308badb881bfeed56",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747124",
+          "hash": "e05c26701d1446b8d0a6b4f0419f83566eec02bd5f694b07f0ff602c9f293ef2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748678",
+          "hash": "eda005d6aa498231f9b391c2a048ca7313803c5679f4814a3c962cf0499a8d8e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748679",
+          "hash": "348681da8bd3eb7bb9fff94df97929666de87b81c28a710914bd26d59ba5b613",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748680",
+          "hash": "1cf4fa524f7a0615ae4edb3f82bbbf6c7fee553c94ef84be635be5a314d906fc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748682",
+          "hash": "f16d08ec89c31f7ce1aa5539aecfd0c255198e5cce76192c1ce19e4552210ae4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:754649",
+          "hash": "06d8908984c4c7b5209fba27490bc868ecf8c82abebab50469f310f6e63d4d2d",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-05",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.2,
+        31.902,
+        35.202000000000005,
+        31.904
+      ],
+      "complete": true,
+      "featureCount": 44,
+      "ids": [
+        {
+          "id": "ramallah:747003",
+          "hash": "dd2a9419e4cd734127c04a39a2aa00b63af9bfcea6c147f27121af248175acd8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747001",
+          "hash": "4afbf6d74a4e9e6727cdd37e807bf614f8a51093c3d863558109b40143152702",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747002",
+          "hash": "73910f5ad2c5919f8502b406aeef6593c872a161ae3762dd091d369b34c2e2e6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747007",
+          "hash": "8c38157ef521ab5dbe1808ad61c7a024ee1030a031f5d150930888c28f634343",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747004",
+          "hash": "453b43b824310d4af1a96e54d8d00f5758163d77c2684485cba663acd1833357",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747006",
+          "hash": "9d1d6062a1427243043ad08b343ad4680d1e7ee0e1ab2187cc87aaa1f31f12f4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747000",
+          "hash": "72740cc464862e28aeae681a2b803ea5b146909830e360f497447274844f603c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747009",
+          "hash": "290c2a28bc39318df187c0ec2c33b9bdc11a42ce1ce9c245b01bde0880709c25",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747008",
+          "hash": "cd09b7e6b76f4db6eb94da87db8c8c561cbae8fdb6dc13d4fec03af8e971702a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747012",
+          "hash": "fe7988381785a448465556cfd8ca7c039600c57bf7fc35a6bee82b4fca3b5675",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747011",
+          "hash": "f1340675072a05e4d424c2f7affe1683b0ede5a69f65687e2bfcf6258095b805",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747010",
+          "hash": "e1bbdfb5bfb56849f86d3f53de2b339a73bc0fc000a52804cd1f395edd3e331c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747018",
+          "hash": "4e6093762bdc981f54d506945585c06da272a74a996badd0e5ffa0efe52c1dbf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747017",
+          "hash": "585a4a09c37f56d9585cf318bc30ef66e5a3c555520a3104d48880faa97e0530",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747019",
+          "hash": "7b85984de0b17fe8b84aaab182edc44ff0689206abfb386313d73abcf546b31e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747014",
+          "hash": "683ca6158f33aef5d213c09fa9f28a73d37bde7ea7dd84b5981931aba4ccdd32",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747015",
+          "hash": "e7b33509814da36c72787172dca151f8de36f446e67eeb6cdb2c11d085416e4c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747016",
+          "hash": "f126e65b01c6e0403d5cdda1713b23423e1edff4aefefe3c2f9ba3a3f33ab79c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747040",
+          "hash": "31ddacc39b0d002f281ac94ec2bbc3ae675045a73ace6d46158cd9744821f5c5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747042",
+          "hash": "2d88b1032905a3e6f2ea2a8bda903073a1150d6599d179607b7dedbef7e4d819",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747044",
+          "hash": "a2bee788f1c4800eb89b0b77405d84f28a9094547a29064d86ee4d6ca391c4a2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746970",
+          "hash": "71b9aa4b10cc86a5d7fea16b069f303add7fa6fd2cf49d6f9ec635589480b5d7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746967",
+          "hash": "fd7622dc8f8103ace89f9ca6bcdeb5402c30a463ce8dbbafec9df89b9fb2710c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747047",
+          "hash": "88b7f4fb288f23a1cc7c6f0f08f829933b6a95f05762334fb8b77f72616c78bd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746973",
+          "hash": "f85142b1eb85dca79dbc800838675d7d0fb5f749c5a9793c2ddc853fb98b6f6c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746964",
+          "hash": "0cffde7113ec602f56d6ff66fe88e82a45f15b854e4b47b521557a7c1c7d07bc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746971",
+          "hash": "b9a0e8c45823458bcf7668910627d22645796158e62642f0e7a641d76d0e3cf6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747030",
+          "hash": "c506580bf494da6a7fbcb9acb8a4601df68112f886a4a336dc1ed4cddcf79b3a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747029",
+          "hash": "691c140a083c22a3fff44df12ca88c79a7c6b4bbe274ffdcc2adf3679a9d785b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747035",
+          "hash": "a3b822b07a44cf546b0b7476111f8099573026cba5549b7ababeb79582437c73",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746976",
+          "hash": "bb9d9dd7e4a542d3dad20af28d0a35f084f2b5d3f192b01917b7b497ab983d30",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746977",
+          "hash": "5bf13c1ad6ec3efe015b7c466695da14197aceaba7d9a1151fdaf8a42dd1c299",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746979",
+          "hash": "0a41c266095651760d4be315ada6272e5cb80c5fe0316b83e3b4d68a9c1f2719",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746980",
+          "hash": "545bbbcba4698804cbd42a72ce5d25fc8071318eb034236fa5e6bc7045c7d872",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746989",
+          "hash": "fe3ad3a5b6be9bc98d4f943e1539265399d65e1639119b6c6941227b49c677e3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746982",
+          "hash": "8ff08a85108113c2d4eaba63070d9ee0851cd5da76abcc4c43367539d30b6829",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746994",
+          "hash": "1443107a8cabd2241e8d698d7daeeeda77a944545c264eb93a28a82ef23cc5f3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746995",
+          "hash": "3b5e88c836bd404abd3b8a642c70bb500cd734e2d75f05ba46a2ded4c7cab03d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746997",
+          "hash": "51b0eba83124d7037ddda7cdbc03aab3ff491d47f43aa8bff065ba1477023ce9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747634",
+          "hash": "9ae26fdd54a9a6d64a331a336f84e9f45125a08196c6adb62d5a9f286a2ebbe8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746999",
+          "hash": "e23035e1af39d1d8e57514a4e5ad04d8e2dd5a1d5e2e23cfa41a7079b336ee8e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747632",
+          "hash": "26c3c8a0a44d7152cd0d0387accd0d77f1d054e6e777061c273a30623d081f87",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747628",
+          "hash": "0d8229f81c6ef39745b255e45150a57e213b27936fc29e5fbbfad93b79205bc0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747629",
+          "hash": "7e77ac93b6c92f5bdd51433e8b991e245cb075c2cbdb777ac34845709e5b9c5d",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-06",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.202000000000005,
+        31.902,
+        35.204,
+        31.904
+      ],
+      "complete": true,
+      "featureCount": 44,
+      "ids": [
+        {
+          "id": "ramallah:747040",
+          "hash": "31ddacc39b0d002f281ac94ec2bbc3ae675045a73ace6d46158cd9744821f5c5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747042",
+          "hash": "2d88b1032905a3e6f2ea2a8bda903073a1150d6599d179607b7dedbef7e4d819",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747047",
+          "hash": "88b7f4fb288f23a1cc7c6f0f08f829933b6a95f05762334fb8b77f72616c78bd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746973",
+          "hash": "f85142b1eb85dca79dbc800838675d7d0fb5f749c5a9793c2ddc853fb98b6f6c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746982",
+          "hash": "8ff08a85108113c2d4eaba63070d9ee0851cd5da76abcc4c43367539d30b6829",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746985",
+          "hash": "2d0c39f92e17290b1a39e65eaf5aced49984f700616ec93ef44194ec01aa9bea",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746990",
+          "hash": "e7ac92d3df5976e700810e910e043908c2e4d2ff8eba10ec5b52fe3cf48abca5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746986",
+          "hash": "e2986ade56fec0085c64b24f4c1bffc7beddb7d41cabe68a36057a08857edfa7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746991",
+          "hash": "9389dc0c38e5629d86f2ab23fa0b3226d16b4eba925b887b49ee7fbd48595dc8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746995",
+          "hash": "3b5e88c836bd404abd3b8a642c70bb500cd734e2d75f05ba46a2ded4c7cab03d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746987",
+          "hash": "2dd0348f110f1499f2c25d85f92fd58b6ee5a823cba76f1e637d04c9e955f253",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746992",
+          "hash": "392c64f3c77bb1026d3c8d7f71124140fea8652c69d5f60fc719a5fd9a0b7853",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746996",
+          "hash": "6a6d6ec7d37ec989a74c90d4d04b3fd7c80789bd0c72c3aaea23d738fe234108",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746997",
+          "hash": "51b0eba83124d7037ddda7cdbc03aab3ff491d47f43aa8bff065ba1477023ce9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746999",
+          "hash": "e23035e1af39d1d8e57514a4e5ad04d8e2dd5a1d5e2e23cfa41a7079b336ee8e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747646",
+          "hash": "8e484f90afb3196b631b91a3bc3954b81eb8dcdb9187b8bb951d00a893449c00",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747636",
+          "hash": "cfa6ece6799c38bb6df9a25a4d35eeb4535a9c184d7dcb3d996413a36cb9fb3f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747651",
+          "hash": "093997d94dc90663deda36f5df21d15f92d27409b7992716bae324f2e0e65229",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747665",
+          "hash": "b8e90ec382f00946d0773b4940cd904ee7942f67b3e74ed4dd7014effcdd894b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747654",
+          "hash": "e9330ae0ff89e8bfeb1e58f8f13e79ac40f1916508f8c165e14e13e25a47dd65",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747674",
+          "hash": "f6c20086c7f74de35ead71e518b9b7556f6db9272a5ce5cbab5ec7206e20a0fe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747699",
+          "hash": "eeaa429cb37b9881cb3d5276e864dcbfb649b10a2b931fa9f0ec94979b1ff1ce",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747691",
+          "hash": "c689f87d60f79c90071b3bea2526530b3ad73e0290b5137113f96e2f202140e1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747685",
+          "hash": "5657d308f5e9dc78dceb7f7478d8cb06822a0a844095637a48100b44f2dca362",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747700",
+          "hash": "3e3329f4a1ba17e28dfc8f31b0f0b1932248c6f86d3b179089511757529dde0e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747701",
+          "hash": "849b7ed05bf2448b8cf2730661273f1794447bb6f4ad2a39df566cb574a81931",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747767",
+          "hash": "904567cf97845d25e607dd8f04b48c0f9afe18ca2bc4df48d1cb14adc81b81c3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747765",
+          "hash": "c9f9c23b855faddeb2ad0ec3afb1cbeec140ae5404c6ae8ca1fe2eb823644985",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747769",
+          "hash": "85b267e0f6b499852725c1c0911083eb0e74b91d02b5a15f752c0b4a906f1558",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747766",
+          "hash": "d0858787c0ec4a6f0661f276dec24f500cc94757d467141a335fa5570a5b6dad",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747805",
+          "hash": "aebb0f8b36b53f087f4fb5c7cb5dd3b3703263fbcb7846ecea4a2416f867e308",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747770",
+          "hash": "0a0138c2ec7d00d230a51bf573863ca03d7c7170679f6540b59ffb5cecb44f26",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747792",
+          "hash": "df0ab6acbba7905edf8db1b953428558a3d5e84ff0d9952086923a7b84c8ad42",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747796",
+          "hash": "f3745bf82b3c5357e440e4250d89adf78edcc7e0e1c9f37158d501a9d0ca941b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747627",
+          "hash": "fd0bfe78cd1bafc87e2ddc6de1358e27d095061a11defa8c956547215b38fe65",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747764",
+          "hash": "9cedc521089473a571ceb29668788b02e9f0f3e33d0cdf8238deb6d3b017762e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747628",
+          "hash": "0d8229f81c6ef39745b255e45150a57e213b27936fc29e5fbbfad93b79205bc0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747630",
+          "hash": "b2b3e462650ba37d1e43a010cd9cb33db7e1b273bdee1909b50e306f20ea4f14",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747629",
+          "hash": "7e77ac93b6c92f5bdd51433e8b991e245cb075c2cbdb777ac34845709e5b9c5d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747826",
+          "hash": "96599533a142cd9e5c3ad12559816211ea6e11ebd6ea574322fffd8135ca98df",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747824",
+          "hash": "c559b9ca262585b8a51298f30a28829741d6d6cb5aabd1ca309f056e3305895e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747825",
+          "hash": "73d690b1de5e6f2d26988282e899a8aeebb219921af007008ae94a93131bf31e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747827",
+          "hash": "b83e30f11a208be9c899406994fda51c61dd5753931900eca12575810b66ee86",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747830",
+          "hash": "4202b5a369681cb2fc17f6e9ea5e51143bb74afe28bfeb1fb367fd2baf98d017",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-07",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.198,
+        31.904,
+        35.2,
+        31.906000000000002
+      ],
+      "complete": true,
+      "featureCount": 43,
+      "ids": [
+        {
+          "id": "ramallah:746509",
+          "hash": "71326d10495ec28acdc8033dcfaaae15f2bd80b18fbbbb3b8b3b4b057095591f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746517",
+          "hash": "96f6d48db3777adff62e6e452450e108d75ad9968e541a96d22018827791ffb1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746436",
+          "hash": "5a2fff250381e62256440c39b891cda4aafa997253d36a0a8416457098afe1c5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746518",
+          "hash": "8f731c67df51cad6f0db7ef744cdd27c09185444f3041818f06bb6555d18de72",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747030",
+          "hash": "c506580bf494da6a7fbcb9acb8a4601df68112f886a4a336dc1ed4cddcf79b3a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746519",
+          "hash": "d5def377201ed4fd8ef1acd2e4c14262c0f5a43c6876ac774d64c0e9ba4bbc6f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747032",
+          "hash": "5ca92e584f669742d21e796ba70012fbb871022eebfaa8b199b0bbd117c98fcd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747031",
+          "hash": "07d103ab999edf7e3dc745b14d689a876c08d9ab3acb4f5f4cf64bac2780875e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747033",
+          "hash": "c4de46621c6328a2e0feaa6010e18033a73d96dacc5fa5ababdf917e57cd8a54",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747034",
+          "hash": "f67b4f454dbc8b022240126b47139d7c3b1f2f0b837dc2ff73c32540982f2d5f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747028",
+          "hash": "13366480ca95f6bef06d3106a115056326a5b9895e372e40f6a7b6a422cc8f8d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747036",
+          "hash": "39b60e24a8c9dda630ccd8e76c12cdd3e7816a6acf827a22f73611225af12ce2",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746599",
+          "hash": "dcd61c82f362854d3aa3cb454fffc2fb268515606699f173aad7cb13c7a4b56b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746598",
+          "hash": "9c84fb2d4a96e5cdd05f4ed12335b1606707f9209c71c0e0dcd029a7555d153a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746408",
+          "hash": "7e4300b130d3658e0960610004bc0d62e31e3781431d09d50ed005df38e3cd55",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746506",
+          "hash": "2d692421ddb2148dd2d257b2b5717518a14986582b6e12b107fcc1697c819b0f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746505",
+          "hash": "e24094b7d6278a9751474b26c62d500a834945f5e62b91d41def66b9406904ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746409",
+          "hash": "0b2801052c2fcc1baae067675871379813526edca5364d0f0edf9da4336ee410",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746508",
+          "hash": "327a6d7ea4341f359c59472dae3e25849edd9869e259b2e94f9532895311703b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748759",
+          "hash": "600aeb38de97019b54b7398181be59d13b4202dacfa418b46921bf0ab1ce6ce3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748760",
+          "hash": "eb876f68292f842914e6a14c09b3f8676e94ea917914a02f0b150ef9069b2ba5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748761",
+          "hash": "b438eb8941dc4c0b7cb320d823fe65e2f0b519bdc918db2e2d4bd47e71b8cc75",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748763",
+          "hash": "9c307e4444e0b6a06a6a0787f84dcfc72530db7b889b97557da9bf3ec232ed5a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748762",
+          "hash": "7cfaa835e2f0ffe338faa0e8ccc8f8fdfe0067bba8063a36cf26a294ae39ba39",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748636",
+          "hash": "a5124720428ebd3e6b5a47a10bc3f7c1e1a57daa82e59fc2a75cc63db73cc5c9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748764",
+          "hash": "06830c5ca46e5ddd8c662aed98364a5fb9f392d403df2c749e0434d1799783bf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748765",
+          "hash": "138e8ac2ca5e7c1cce1779ea81490844be472e3f2fb3ba41ac701d731d971ebd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748640",
+          "hash": "e107172b644dcf94d32bb2130a4144375c2d56a1b63ed2b78a4511b4e94cf922",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748639",
+          "hash": "6f42fcc814dcb53af0c0e6507f14e6c76e1ecd1adf4ffc33daf8ee07b2d7baea",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748641",
+          "hash": "118258924f455bb662098d68e75e2cf7c803964467f78c568a4991cbd29f55c8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748669",
+          "hash": "333e5a1ed800f16b026b57966a1e1e12457ef3e74926d606ca0da50f2cc7438f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748668",
+          "hash": "e644c656a26acb7b8ebfe3a38f46d429d6c7f6b9cb2f676eea0300bbb785b655",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748642",
+          "hash": "19081970f9f0fbe4e7dae90aa22af1a312bb164d4ce2acd0648f75014de1d3d2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748672",
+          "hash": "1d2816ba2c3f997bda2504df73da5524ec2bbf3abb0dcc06594c1e1f8128e9eb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748671",
+          "hash": "3ed42036d8434b48c791ec959c9ea0d44219d1120cf937a50933910a00b355ed",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748676",
+          "hash": "f5b1b5598035f31c98a3f5e308718d5d411e336265545fbee4815d583cae6811",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748678",
+          "hash": "eda005d6aa498231f9b391c2a048ca7313803c5679f4814a3c962cf0499a8d8e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748677",
+          "hash": "7ed3564730907c6093382b310b83a70769f940322e872612ff01a63f328a20f2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748683",
+          "hash": "9062819aced4fe40dc1546272c711f282b824112f7300ef165b3b25f33c55294",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:749999",
+          "hash": "2d95294aff12974dcfd632afe94d2da0f84959eabccfcd909fa48421d62fca7e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:754613",
+          "hash": "945b6d1aba0b126d39d1a0655ac4a7a2f41708532bd195f5a2ab17561823e25a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748684",
+          "hash": "0358bca01f8cd0699ca4601fb445292896abccabd5ece173fc3b85ab0b049d0a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:754649",
+          "hash": "06d8908984c4c7b5209fba27490bc868ecf8c82abebab50469f310f6e63d4d2d",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-08",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.2,
+        31.904,
+        35.202000000000005,
+        31.906000000000002
+      ],
+      "complete": true,
+      "featureCount": 46,
+      "ids": [
+        {
+          "id": "ramallah:746602",
+          "hash": "d68d07d8cd7dd20eb5bba9661c1a71ee146030c895e48663d3312c6dd3c7edd1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746600",
+          "hash": "0411d64509f35e508be21243dcb2bb5306776ef99956eee8ec2dc53b00e0760a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746601",
+          "hash": "4eaf8ec9f385cc41c23037eb70c141d3b0b36ac6505d130587c1be6abe5fd070",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746605",
+          "hash": "42b1433980a0c1441a0e71317614ca1ad60b5f67091e71f779c01f8c4992c6f8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746603",
+          "hash": "f376c1183e846c70e9dbcbe6ff994ceb8d57c3b2c0e5437be45a41e2c4ff12e5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746604",
+          "hash": "1b85b176a900509bfe918a1d44eceafb4e7127eb45ad06112d2bad3364c7c7e2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746526",
+          "hash": "31de6c92cc12d02480fd873fbc6bea5bd75607da6614648f743fbeb94ee42538",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746529",
+          "hash": "e2928e7099402eeee986730c7b35afd33c86820262b84951b3807f431b2707ae",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746530",
+          "hash": "f9d1816cf5fd30f37491312466a0acfe2f890b9128b1c503a1bfdea808a35b6d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746539",
+          "hash": "fa5260c6ee77781dfb5c331e4225254bb2e9712869d2ef56f03e23f81cbf67f3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746533",
+          "hash": "adf70e0da8921b48eaa26c537a43cc3c02265ab297f22a8c68551e0a3218cda1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746540",
+          "hash": "a66e37eae37108a6aae36d56c134b6de5d50f0d33df23bdd9e79640876300bcb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746541",
+          "hash": "1d02a032cf03d26c63f463527f04587972d178ec5ab430c9ede670a4892a4183",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746542",
+          "hash": "8f69ad510ad6470d17f3d33bda2db7899eeffa70bf89c1d080dc1a6868bafa28",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746543",
+          "hash": "02c3bb541f772169ad380d67cfc6ebea9848aae2831db40ab4b48d8a245bd009",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746545",
+          "hash": "14ce8dc2417bc51b601ee68e39fd04104c5bad815b0c7bcf975032f2ec2eb078",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746546",
+          "hash": "b4272f0d4c8fffaeabc0a3110532e7f08e56f6247fa83ac56cb374b70d9769ef",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746548",
+          "hash": "300b0f45fc1506b9ac4e2169939bd59beb3db67e0dee47f74abeada2896a3b2c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747018",
+          "hash": "4e6093762bdc981f54d506945585c06da272a74a996badd0e5ffa0efe52c1dbf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746551",
+          "hash": "5278be69d868c8e551dad603872828e8cb2765bb6912cc799ba1764044e71a8f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746552",
+          "hash": "fe6c51a9ce26d71f7f148f66411a3c4def936667dcaa03a046c85c57b4f79f4c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747020",
+          "hash": "b8e47179d42322e2b9567dc3d7d6fdee6d8be30de388c7d008558c4fc824670d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747021",
+          "hash": "db8575b83e0d04cc8ea764c638f084d4c1b332b8ed930fb30c6138895dac8c38",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747019",
+          "hash": "7b85984de0b17fe8b84aaab182edc44ff0689206abfb386313d73abcf546b31e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747024",
+          "hash": "a7f2304c6b89650293f9fa4f3619552f190adcdcee54996d2cb41f10f4592922",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747022",
+          "hash": "7d5ec26becf36811e674159da71a9008ea27532fa2d8813f86c85f8b6eac5c46",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747023",
+          "hash": "2ea90cc3e7073aaeaf7a6ba8e3522cab40fb7dea00bc3507fa1c038b823f8b05",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746557",
+          "hash": "9419c0054c1cbd93246ea0fe88a58832e949301bf9f0ac0bc10d2036e831c13e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747025",
+          "hash": "c0278afc6356a9be413b0d19cfd38ce84f1def0872547498ec7735892e8f49bd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747046",
+          "hash": "8cb5bfd43c50fddef4a2f96573573563e4617c7ded4b3dbbfe8b3044e017e03f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746966",
+          "hash": "3ca3b3f34990e57249313b5e7b0574445918d9bbe2ac6a4ec1a6e7a0d2c1022b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746967",
+          "hash": "fd7622dc8f8103ace89f9ca6bcdeb5402c30a463ce8dbbafec9df89b9fb2710c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747047",
+          "hash": "88b7f4fb288f23a1cc7c6f0f08f829933b6a95f05762334fb8b77f72616c78bd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746973",
+          "hash": "f85142b1eb85dca79dbc800838675d7d0fb5f749c5a9793c2ddc853fb98b6f6c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746974",
+          "hash": "ddd3e65c79f69334517210fb342240d496b20efe22cc4d43dd7b50a5ad9db300",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747029",
+          "hash": "691c140a083c22a3fff44df12ca88c79a7c6b4bbe274ffdcc2adf3679a9d785b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747030",
+          "hash": "c506580bf494da6a7fbcb9acb8a4601df68112f886a4a336dc1ed4cddcf79b3a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747028",
+          "hash": "13366480ca95f6bef06d3106a115056326a5b9895e372e40f6a7b6a422cc8f8d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747026",
+          "hash": "327c0582fd79bce7ad1e315b2276ac9e82be6da994404804bd6f5a3eb21ce9fc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746599",
+          "hash": "dcd61c82f362854d3aa3cb454fffc2fb268515606699f173aad7cb13c7a4b56b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746598",
+          "hash": "9c84fb2d4a96e5cdd05f4ed12335b1606707f9209c71c0e0dcd029a7555d153a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746596",
+          "hash": "ab0b42365992dbd7559ebefacae9672705a0b8009fe05ad4ecb2325739783c62",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746975",
+          "hash": "fcd21bff28c2ae6c460e4292e676f62b7d676e541f9c279ba6e070d7044db20b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:759924",
+          "hash": "c37ac3331d72aa6e442bfc846f205397be8177e13960f4594a176d6c30ddbb55",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746505",
+          "hash": "e24094b7d6278a9751474b26c62d500a834945f5e62b91d41def66b9406904ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:759925",
+          "hash": "fb596ac92b6f1ae2989bb1e79be4f8dae1b5cd3b97fbc68ded387dbb12b71735",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-09",
+      "kind": "aligned-grid",
+      "bbox": [
+        35.202000000000005,
+        31.904,
+        35.204,
+        31.906000000000002
+      ],
+      "complete": true,
+      "featureCount": 62,
+      "ids": [
+        {
+          "id": "ramallah:746605",
+          "hash": "42b1433980a0c1441a0e71317614ca1ad60b5f67091e71f779c01f8c4992c6f8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746524",
+          "hash": "17806f1fa515fa668d637bf6a8819895e9b66366bb2b342e66bdf7909171cd80",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746602",
+          "hash": "d68d07d8cd7dd20eb5bba9661c1a71ee146030c895e48663d3312c6dd3c7edd1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746528",
+          "hash": "a88f782d2437ad73f405ad9a2745298a6741ee3bf0d95ee5c4d2aea98c0670c0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746521",
+          "hash": "3a112e80ae291afb7f9f80df3360cce774631a85556e9884ab2ca3fad3b05597",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746525",
+          "hash": "177fda681620cd16ccde77f73168160653e3c59ec9ba144e65f89fb779981030",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746529",
+          "hash": "e2928e7099402eeee986730c7b35afd33c86820262b84951b3807f431b2707ae",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746606",
+          "hash": "1e514eafb8158fb7aa3c587b73d5fb6b299028b95c5c72d4d8148292ed71a880",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746530",
+          "hash": "f9d1816cf5fd30f37491312466a0acfe2f890b9128b1c503a1bfdea808a35b6d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746607",
+          "hash": "1cea39ca3ef7406a401816f061f1dee38545e45a80e0a9b6682e5f7232ec994e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746609",
+          "hash": "736ca5ab91f931256a37c863320313a27d669631b8df9ccf02b1b6083c030a6b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746608",
+          "hash": "77a545a46f7daee6228fc343e5ca14dd336747ea0a85a4094c9263f11e2e5dc5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746610",
+          "hash": "297ed5c9ed014be57c1922c6e27dd2c343a5b41c279afb95a1cbe839f108b590",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746611",
+          "hash": "82801c4872a87dac0072711a3e798e1d6df0d2fd77157ec2666fa847c30469f6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746612",
+          "hash": "273d7e947ad7066aed27eb8952485a678c4b59cc94456ab8cea8a0f30c3ab4bf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746535",
+          "hash": "01f713a459e595bc26b37362c993a9f048f412eb46cc1b7f580a58c1f01ff500",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746534",
+          "hash": "42f95451da71efdaa4dfffb1bc058aad12ecf46f313b9f227bb9731f0b73b460",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747005",
+          "hash": "32695189ad5dd7ff2426f88070cbf0598ddfc4ecbe0e13cea00fe32964a64234",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746539",
+          "hash": "fa5260c6ee77781dfb5c331e4225254bb2e9712869d2ef56f03e23f81cbf67f3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746537",
+          "hash": "3908f316270293e8ac66375605763f4d8c498f7d3b988ff2a46b4b2abf783e34",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746536",
+          "hash": "8cd69e2cc010b52ab5a89171125fd9109024b154bd9ac6b195990a344ab47ef6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746614",
+          "hash": "822b91e4da9922ab9a5fad1d6de072c977cb1cb827c52c973d43f20121f1fcc7",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746613",
+          "hash": "804b1481f04ceff7f200f7d8459e8b7efcab81a6566456331b97db3c3300e986",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746615",
+          "hash": "2bee43297130d9831f6bbe5db9b2251e921df6074761ced28b113a6a771aabc8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746616",
+          "hash": "67cf249f0301a2e9bfe57c7d20fedaa87c24e557b41a886c8eabd01c07d8c72e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746618",
+          "hash": "bc7bb506025c7c5cd8894803ddf1ae7a8ac979fb4e0250e8a3a7db657d3a3d4b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746617",
+          "hash": "d0728fef2e7f524439be941866667282f6187fbc6f8ca2a15e43808b26d5a98b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746621",
+          "hash": "0e4000b3f092b0e70b7922ef75ad602c8c31c7c9b2b5a46f7802c80fc862292e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746620",
+          "hash": "2777b14cceda7c367b28a6eba6002c43b21f0a97f6947ba8b9123a819541f66a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746619",
+          "hash": "e20febc69972e31a783c34bbf475865848ed7dc34840c56f32dc0878beaae3e6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746627",
+          "hash": "c76121adc5c4944f1d1ec56d859b09bf254a8994edf495687376cdca4ead674b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746626",
+          "hash": "94c04efb679918b0aaf0f0bcf56e30f5cbaf9ec0112583b676c2dd8436af98ee",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746622",
+          "hash": "1a77855dca511cc7df2db0b3812a7668da6644f402611766d46d8d7463909e45",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746630",
+          "hash": "a056b53c1220fd4c915aa171d66d0a9cf50536138f299cc4f7aacc4a9f7789bc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746628",
+          "hash": "fbb893ebd12341eb2da7be53c7ff5bbcd8d210d3cf16553993dd483d8f8ff41b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746629",
+          "hash": "d970abc593b449f75a77056cd689eeaf2f9269eb8e091fc917dfa7e1504cd977",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747041",
+          "hash": "ab96e3912d3aae16bef1425df0dc53b08039c07da8114e90ee3f7223732be026",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746633",
+          "hash": "ca0539b223eef16c4368ff961e2e4afa84663dd1eb7ea7dd1658ba325e12531c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747013",
+          "hash": "9a5201061d54a00bf2b4cdb75529c63e5fa840bab77042b94d3b885a95f31228",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747045",
+          "hash": "4a382ee6172177a7782771c2964fdad0a9ae37b854a1416228e75e43ea7997c4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747046",
+          "hash": "8cb5bfd43c50fddef4a2f96573573563e4617c7ded4b3dbbfe8b3044e017e03f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747043",
+          "hash": "e8701b6a00a3900e9df78254e34b5c81f1f204e10b9087d751f70072e46a576d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746963",
+          "hash": "6b2ba72f60e2ebab0a8be7526eabdd942f5056d9c80959eb6a935b1091c443ad",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746965",
+          "hash": "6bc39eca202a2cef5c221a1931e1536ff5fadf83bb78a2f446b0e4c238a25ee9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746968",
+          "hash": "d546d41d7a0883ee5520624aab0df75f7b11b99c1102e632f73ce02a331291c6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746973",
+          "hash": "f85142b1eb85dca79dbc800838675d7d0fb5f749c5a9793c2ddc853fb98b6f6c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746972",
+          "hash": "5755fd8719229442583d4ef35003a53a18c21663d760b2c7b381d925992bdf6b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746969",
+          "hash": "a7709c377bf8b5958b07f05e7f3b8a0e78a09aae7e05572b87aa150ea24e9bd6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747037",
+          "hash": "8b2f870db0e603bd3928f5222fa46ddf38e584620f411a37e85926ef0a9f6121",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747027",
+          "hash": "adecd44024a217a41ab8d254e05eecdc63849273bd6333d3afbf2c5af59335db",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746596",
+          "hash": "ab0b42365992dbd7559ebefacae9672705a0b8009fe05ad4ecb2325739783c62",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746984",
+          "hash": "1ab4a58262ea71ada83f5583f70552f59dfccad5dad3e641b7c077788bf27aab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746983",
+          "hash": "7f6e681dd2ba622a2001e89338348e8724feb5f7b38044a85600f6a84b2f386b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746978",
+          "hash": "ac5801b597733ef86ed6e1cd1f7231e3e3ed1f839a3f90da58edec1ae92478ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746986",
+          "hash": "e2986ade56fec0085c64b24f4c1bffc7beddb7d41cabe68a36057a08857edfa7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746988",
+          "hash": "cd9449c3d7c4d3a26610ebbfbc3ac919ba5c94dd513e087580474ff82d17477e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746985",
+          "hash": "2d0c39f92e17290b1a39e65eaf5aced49984f700616ec93ef44194ec01aa9bea",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746987",
+          "hash": "2dd0348f110f1499f2c25d85f92fd58b6ee5a823cba76f1e637d04c9e955f253",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746998",
+          "hash": "c3525311e3d45445d5ad9a34743058fbcba794403a5e57eab678c1765d2cafc2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746991",
+          "hash": "9389dc0c38e5629d86f2ab23fa0b3226d16b4eba925b887b49ee7fbd48595dc8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747824",
+          "hash": "c559b9ca262585b8a51298f30a28829741d6d6cb5aabd1ca309f056e3305895e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747825",
+          "hash": "73d690b1de5e6f2d26988282e899a8aeebb219921af007008ae94a93131bf31e",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "kind": "adjacent-pan",
+      "bbox": [
+        35.2,
+        31.898,
+        35.202000000000005,
+        31.900000000000002
+      ],
+      "complete": true,
+      "featureCount": 50,
+      "ids": [
+        {
+          "id": "ramallah:747668",
+          "hash": "84366974778c0c5276248e61a76e97a47f30306bf33e8b42c6fa434db22f0bda",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747666",
+          "hash": "489c6021a6a3d01647fd27f1af5304cf129d1b8d48163dc85bc581decd1ec54b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747669",
+          "hash": "768bd7abd43599bb32c0730afb869dd4a311a2bf694e1ec807647bdf6321a7d6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747667",
+          "hash": "3768f27352510eae6d89a71286b714b34da9ae7825e752fa7ab4bf1982cdd526",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747676",
+          "hash": "2963d62da0401f78724af16a9b0620046e7702d5fbe9e471e6fc78956f3fc26c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747677",
+          "hash": "a99b8c316d36c11ea672bef157d1f8c303d6a1d1b527723167ec0ef15a77545a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747553",
+          "hash": "8685c1f6431b6abf250066caed6f0028e042024d31224a74f0fdf0e499ebc856",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747559",
+          "hash": "68e84a8c3e8ac48a2c38dcce1820d1ccd6bcd4d7d562a4e4175fba7eeb601521",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747690",
+          "hash": "d8fa2c121c2d2ca022b5ea68f3d957ca0542eb7f6e5cf826fc40a698f8d4cd1e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747562",
+          "hash": "1c0ec79337ec54703bb0f492a83db80ad4af245188ac817c6d052a37559ea7e9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747561",
+          "hash": "691b611cca11fb7935194a71c0b6e611550dab2664360e557e0ccfb694bfe27c",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747560",
+          "hash": "6a799e94019a860a6a0270358df23d1532056fcb05b596f7ba1ebebb89980ed6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747556",
+          "hash": "5c5fa2620073df5c450e9aa7c4c6ce205190384058cfb9a79c715cd5258b3984",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747563",
+          "hash": "aa9c2a196aa9cfb4926c2ebea81a3a8ee58dbaf4e6494e4999bb75e68732a742",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747564",
+          "hash": "88bcdd13f2893107916dac0f52d2a465fef26c56e8800b3748b37ba483ba9f42",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747565",
+          "hash": "174c069c9971eb504dcdfda7bb73cebd164d89f000446a6c59fd79dbeb6b46dd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747572",
+          "hash": "56e67d5b81725483bfbfd6b4b744c23df07c16901b6bc975a81753ce857a0802",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747574",
+          "hash": "64638964c1ac7e4461451da2c02e3ffc7fa64774a524be2815d5a5d6dc375a16",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747576",
+          "hash": "e0752cd175c30bd0afa011968194dd8bb43f26d4979c112c7513f01f6888748f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747575",
+          "hash": "37410504a84d1a47ae467aa5b938d3291f79d26a7bd2a3a84f2fbd02b9234dc4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747567",
+          "hash": "1f7716c2c282d875b7faa5a3cf65aa2cd5e39503e3356ba34fd4acfb02f9c916",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747568",
+          "hash": "cbd31e9c076712c56e3823097b6b3f6b05bd3873f233bad6c50cfff26be97625",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747579",
+          "hash": "db37574503e3d814023641e2b2bce0ee39c67de3dde37762939e8eff67c2ca13",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747578",
+          "hash": "af968eeaf095aacc20593c683a8650f01e595f9cc31f21f12e28be057d062b6b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747581",
+          "hash": "e6411af7916b07649de61755c21b7f07bb21848db56c543b1ead55208ac97c0d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747580",
+          "hash": "ddc3fda847aa6a3f3c7245884535ac2188617f97456f003d18975648bfe67967",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747582",
+          "hash": "2cff7f16b008f573022d402491f271ee5316347d6fede4f723599a60613bcc78",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747583",
+          "hash": "136df18529e0974c659a68a7a84b8e0088bf9454490c6c00a95b9b41a8fe7730",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747584",
+          "hash": "667dedbddc356fb3b0509bfa6839e2e50cc225238597d884fea63e75d51ca97b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747585",
+          "hash": "b1f9f025025776f1de6004956d3ead28038014b4376da5ca95ea93e7ee7f8e0a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747586",
+          "hash": "c0b33f37c001a70cccf54bd202c4775e9d46a119cf275348a9aab27e7989394f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747588",
+          "hash": "91387b5edb39597ed96b04bb3fcc243323084f94aaaad4b425a4461e0ec3b7b3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747589",
+          "hash": "804c2840dd2d506edc0160e91ad169e17971d971dca518f444f4c7f1eafc7780",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747590",
+          "hash": "ca8e926d1a92d013f575fb6a80e6fa12a5817cedd537a45516644595e382711c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747591",
+          "hash": "e0b2603a8acd3b05e0268fa49c218c4365bf4ccf2b25aa181433a7dae6ba2413",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747594",
+          "hash": "b5207e47638e4bcda2115cbdade884768965f10fdc165d0f47936affea7e81e9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747595",
+          "hash": "cb9ac31e3f1b39c35c3ed5c61536d1e093a8059a49eb3bfc07a0695f7f73762c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747596",
+          "hash": "e5a8b00fcac36d1bf6c940fc067027632bd488c7a18ad93390893ce54e4babb0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747597",
+          "hash": "c2f98ef1b47ab28748fe4d2adc4965c852b89f7fe069dc3c013819560a23552b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747616",
+          "hash": "28bdb3897781ae9718589d8b9010a4a60c6861b24f753381eacbfa2460f4cbb8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747613",
+          "hash": "18ccc1812eee9cf63ac07a917621a781813653326664f6fb580010d3cc8513fe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747614",
+          "hash": "def3972205de4abf44e10bbb004a3af98dbf15eaf84b53e7b614df629e22a067",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747620",
+          "hash": "d8289ea1a689652f41c8eba15d6980ad3be136c596764e59aca9fd28e197c32a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747621",
+          "hash": "a13d65172e7681fb76435b9cc90dc44edea8b20f2de7ff688b4803b177706cd7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747619",
+          "hash": "1bac610d99827747219798531a1bd7a9b11b9f1ed43c22d2fd2420be7624444f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747624",
+          "hash": "5aa4dba600dd64dd5a16499db3af45eb525293f18f12e365f99288ec8bfa1584",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747622",
+          "hash": "c6e5a17c70d1239c16e128d892c422841e8f0ab0611d66d4f9e4e51a7406106d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747623",
+          "hash": "db6d6c68d705d7470ba7cbadc243f9c24ab11f2965e4d7f39288b857ca375d90",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747626",
+          "hash": "bd94d6566c4146606607af84a8df6ad5784ba05b5d152bb9fec9750cb07b490e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:754828",
+          "hash": "29c5fbf714f5c2d9ad6411e161a15309b0c71c06bacdc0a4760c5b5a50772b46",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "kind": "adjacent-pan",
+      "bbox": [
+        35.2,
+        31.906000000000002,
+        35.202000000000005,
+        31.908
+      ],
+      "complete": true,
+      "featureCount": 40,
+      "ids": [
+        {
+          "id": "ramallah:746527",
+          "hash": "6c2c4c39130926446f5fc36002c2162b2ebbbf8c34381cb349fcf5731c9cbacb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746544",
+          "hash": "ffbd5c6981e80dd9b8801acfee29e9ec07909caf0b28875d14684240ac28e51c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746523",
+          "hash": "a1e5fd21d2da5e07667a9eef89cc0f0316b16e4fc394626a296a91e57c673273",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746553",
+          "hash": "5778fc910184cdac5cbbf208b2eb5c4282667ed9a4ac6eb83611cf8cd6b45357",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746550",
+          "hash": "a5a40eae1759d07d37cf454ab40b7c316667b0363d5f1facbf225bd5e45aafe9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746549",
+          "hash": "f98fab78717235fd0308878dc398701d48e1f2a0727d5d5836f430bc3f0ce252",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746555",
+          "hash": "eb1239f643b6419e84624aa22bcb970b8c316af50e0f6c16de6a6fc17d92eb6f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746557",
+          "hash": "9419c0054c1cbd93246ea0fe88a58832e949301bf9f0ac0bc10d2036e831c13e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746554",
+          "hash": "a5ea2b5ca0a63afbce5628e7fe3c4cd3bd90a3c90b540bfe57d5821581a7f5c9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746559",
+          "hash": "8ca94c65dd2788f9ef06bb8d452fb7ca091a162247569b2959f9f6071cebf93c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746562",
+          "hash": "508bc067914cb73c86b50e99203cece2b5e1c51213bbda881ab2c78891730795",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746560",
+          "hash": "91daaca272a1671897c55085e99968ab07f107fd256290aaa84d72ff8406e3d3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746571",
+          "hash": "427dce6772c4ed1eaf50e6f5ef1f3f533edcd4f76bf80db3e444227df0395b47",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746566",
+          "hash": "5b1c15c6177a7fdf4b541e8bc65c7ee12ad3c5d65046a01e53c1ad50a742ec4b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746567",
+          "hash": "bc1ae12cf6cc6f1e6fc69f1c273793924f76aa202996a8486ac98af3ee19c18c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746575",
+          "hash": "ba2047213c76db4e1080d9d94ecc2073d222924d602dac453269742e1a4b12c0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746577",
+          "hash": "aaa3620d683c4bd4ccfce5899433fa76af1b2853647fa6667efa690569955ac2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746576",
+          "hash": "c1db0a5033d73eefa335eadfb203257f7a38100a50e6b00ffe74bd9e479a6489",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746584",
+          "hash": "7ee172152ae7cf724ba83426210af99e5b598caafe187f08974b03a28d4dfde8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746581",
+          "hash": "c747c1cc1472f08c47fed235804cb61fa4688f0b759393abb7f2386eda4985bf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746583",
+          "hash": "60e51428d4b1cc16512f7f9fbade8d733da84280994ed48d0d8a473e6dd06abf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746586",
+          "hash": "8ed93e979d855957db261ccbeb52a2378301990c7f812823db01c4533c1fadeb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746585",
+          "hash": "38424cf56c0361d7a3e5241d53787c6ce57d8a2a93e43e16ce37a24abdaae74c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746578",
+          "hash": "9ebfac9f9d92cb3c1af49699160b42dad0c5cd8bf6755e6fbe9610479dc7979d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746587",
+          "hash": "4c643614d724092091c9a09f2ca1d4f300b02f523931930c2b38e7e868120923",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746588",
+          "hash": "6a9f5ccdf130f6e356f5189e5f8afeca6f2d077d72ef8e4144b6da5f21e22418",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746589",
+          "hash": "e9c2247475ddb6ff572f0d59123c244d3c0272ab3714eee09e40c7818883712e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746590",
+          "hash": "a31fc84792001c65029bfb267bc9dbf954add9e61ac99eeebc6ebc722f18a4bb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746591",
+          "hash": "feb0c7e5a056eb0dab6c55e163911f71861b5ae71fa013cb0938bdfe5ced74b4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746592",
+          "hash": "aff7714d78e934ccdfa59cab9602a52bdab2339e613d51fa4a8c36705b484526",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746595",
+          "hash": "69eb8c5c84d4a98d75921c103379833e7503c03f7bc54b304de5e93facd799fd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746593",
+          "hash": "c44747760185388931bb9df13035824f8a1ade94fa5607fb464de7257668945f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746596",
+          "hash": "ab0b42365992dbd7559ebefacae9672705a0b8009fe05ad4ecb2325739783c62",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746598",
+          "hash": "9c84fb2d4a96e5cdd05f4ed12335b1606707f9209c71c0e0dcd029a7555d153a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746454",
+          "hash": "56b863b0597fc0b31533d954697ed9ee86e30284517250aa61e578f0cf2f0f03",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746597",
+          "hash": "0eb4ddb7034dac2064853845e6a8577a92c57f78bbdc75b89e8ac55c931413f6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:754647",
+          "hash": "38820afaa4409837f438c477b49282219abc0dc7118442d2bcc5d8b86c57224d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:749572",
+          "hash": "96f6d10deefda6a98cf1110a88da1b129b5497746000be6f6f7c83dd788c1ca3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:746457",
+          "hash": "fa2a468e0268924ce94dc5717a0db6f42813bbdc7e74e72fe536eb64989b3300",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:759889",
+          "hash": "976728f94667c78d606a7900c4fc7e6db23dcba952de7542d6f63687cd297b38",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "kind": "adjacent-pan",
+      "bbox": [
+        35.196000000000005,
+        31.902,
+        35.198,
+        31.904
+      ],
+      "complete": true,
+      "featureCount": 87,
+      "ids": [
+        {
+          "id": "ramallah:747069",
+          "hash": "cce7c7e5f84a409fcd596675a3001c2ed9ad233fe451c2f56f2ac4857f446556",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747070",
+          "hash": "92e0380a6a650e21db041c33a7a33745d83fc665f17fbf634025d79a49f1559a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747064",
+          "hash": "555215fb247c7b3974e8bee776b274c33632138cbcdad83edc8dd27d9239add3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747072",
+          "hash": "f902b0ebccf8ac828a76f12a3e054283557ac20c5bd86087c2725fbb8aa1d7bb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747071",
+          "hash": "f8976b85eb1d44db5dd6b2024d5ef87f852a042eab4310eea80cc62497acaee5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747065",
+          "hash": "8ac4ef08f16ca7bf406417aa065bf275b2dc1bb32e8fc8fae9c2c77b6be90582",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747066",
+          "hash": "bdd235ad2a303af79d0495cdcda1c36b711ddd76e1544895c7a921f26d0bb8ef",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747073",
+          "hash": "03f231ce05ba2511abb5667e0cf19daa198a1d4357309117649da377a2fdd2fc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747074",
+          "hash": "cdeab5a4b4643cae833930a4babab98b995150b72c91624d15690fe727887437",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747076",
+          "hash": "cd76ee60e3b4224d77e0797303a2573155732c21b89b7023e2bad8fc9e2cacd2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747048",
+          "hash": "d9b1797e878d48e8b6c3be475ef085a9376793d3d4d282cff3e24ed3c4024e58",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747075",
+          "hash": "c2797f7b6c0b546eb895e72978011cbf500369e8cdc84750194f2edaa776c59c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747077",
+          "hash": "618411b4dee8843fb2f4941859522d1e17aa14f4b64f615b58fe00e394834fd8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747082",
+          "hash": "8d80cce976c08c1beb2db1035c6784d5143fa246c2c5c5ee4310558ce1aea70a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747081",
+          "hash": "bf5be342c55f57b4c9be43f74ca14b0ec36ab06a6ae13e601cd507b9f42a761a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747083",
+          "hash": "3449a3e5564534948f9b6620a6295400d0b83d2990e8d7e48afb8b5c69b256a7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747084",
+          "hash": "692f0fbc92d1ab47b5a9c74524ee01162438251bb3556149e985e78dd594b5c5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747085",
+          "hash": "f47f9e7b238fb2396e189cb6e6d86b5ef6a3d7bb3cd6b5973b146690cb451e28",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747087",
+          "hash": "545581a0f5aefe3a949ddc4ac042322de3dc40bc0fc7f8f3629172771037f341",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747086",
+          "hash": "f6849895ff3372f497b8815cdfa04a3294963268ba6f68e1049cabe2678a6d59",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747078",
+          "hash": "56844c4c1573d4d6ee632df9acd34c73ddb54b3805ae6c648c04dc6500f9ba5e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747088",
+          "hash": "797fc8ead9587eab404cd6bef4d70e9af675e7fad803031d68bbd03baf4a86a3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747089",
+          "hash": "3c17065a68d24fd8aa405e10469a8ec39a42d749c41c281cfe95b58e6dde21ba",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747079",
+          "hash": "63b61a7d2726122c6e07fdfea1a18586d0471400ccc26d4c2a44e37af3c1ac47",
+          "geometryType": "MultiPolygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747055",
+          "hash": "573a523d64ca81a09978342a272263fe6f01290eea5ef5045f539d698c3f8067",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747054",
+          "hash": "670309a4cc36ba7c5eb9eef3c76161b419ee4bf022e53ece1d3eec1879c11a4a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747053",
+          "hash": "13105a469556fb55944429e309b75497ad14ad507a56e76e4fc797e57b0eda98",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747056",
+          "hash": "7cfd99504eb720a632767dc24890003dc511bbf702245776e7d898858cec40dc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747058",
+          "hash": "4c501ea4a112fb648bf03fed34ebc957d3887dfa2b9b8cce5739ed5826b8d423",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747060",
+          "hash": "f6caeccc7bb5bb4edb5d70d5e155a723e54a35543905e7a1d5b2a7be1234341c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747093",
+          "hash": "b2ad04f2e02aca0148991c5bb676daf3e395839ed9a2c2dbba789e0b88ba0adc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747092",
+          "hash": "c0ae64eb8f88ed40b90d9a2f2ec9ccc315935ae123b8b3bd35288886b0a72013",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747090",
+          "hash": "9c887d028222d033a3de1b61dec540bcb026276e4709ce2b502e62df73d1b69b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747094",
+          "hash": "ffc86e56395cc2b29831b03d09766f3d11c3816f0203939fbd2e2e4be07729bf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747095",
+          "hash": "6bd85669364014656f0932e41fe2ec32be95d1e0f4c9502043a281084d140cc1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747096",
+          "hash": "3e76f0708515127d3acd5f8187cec075b6dc7eac06a1f4d6eaa2f3f38840135d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747099",
+          "hash": "83c30403d57995ccff5acf1b68baaa4a39d0c60e60dda88965642110349801ba",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747098",
+          "hash": "28f6d3b7fe67b6b8438b8e7fba5911f1959f8ef9feff9584c1464d871a073659",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747097",
+          "hash": "5fdba5fae5065a1d4647f72c31a116106e7416e8f9b830f12e05a2758c8c94e1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747100",
+          "hash": "aa9e6abef89b4a137a4d953d5dbd9113691d06a902b76241d816ba21494ad0ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747101",
+          "hash": "2c391827c56f06701d5ad99794f13f6619b856e228f0748607a7e5158bf5fcfb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747102",
+          "hash": "a1714b81291e71519787152120f32253e72d62b093128dbabd912b1934387bf9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747108",
+          "hash": "35d7c4e013f87db79592b3900f9e5822b727f385578e70ac81178506636cea63",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747104",
+          "hash": "2f3f20f52d4097dfa479428725a6eb4819789d562b1001868de959f7d7503129",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747103",
+          "hash": "4d916bb04b306e97911249c1e7e950f1a9cc755079f7dbeeb0e2c3efea7fb1b8",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747123",
+          "hash": "b4d15687830b2d3f382bb16fad8892407a1623664a978dde2c42f9a72e19a557",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747125",
+          "hash": "bd5caf059420e5eefe91f5e8f6e7bab136f2e6533be66efcdbabbfe8bb950d3d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747126",
+          "hash": "c80d027491a296cf3aeb19ecbb0d9439196185fc780a25b6d10e731d117279d3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747159",
+          "hash": "e27f4d5dd86a0f1786e995e1c8729026d9adbe411ef30099a10dc75ff3ddd803",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747138",
+          "hash": "2c0df2e959666043a30d73269db6254d446c8841a0c9e6b87463764902b73233",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747139",
+          "hash": "eaae64e64c48fb24e8ae6cb72339e03d6ef5886ddf06ebdcb265c02656b2fcfa",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747180",
+          "hash": "25cc16fbe665f6d8a7fc8699bdcc0891762a34311876cb5598e64ef85316343b",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747175",
+          "hash": "680554fec2f2fdfb9ea6580a3598b30da04ff235047d63f03c693aff9fc16ab1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747174",
+          "hash": "6b863796a4eaa89a649e203b302393ea91c4243d848dd82097b6d9051f28144e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747184",
+          "hash": "b37f150abb16db9a823a6d4c463f3e923694728667110a1da5f37e3e1c250cc0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747185",
+          "hash": "aac60ac390d57f282db956a9b8127004c7954087e5fe7050bb7b7d89a6693edc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747183",
+          "hash": "229cbaff1204bd7b64a64fce8f597407d5f06b3ab53eca12d2ef475ba47c0bb9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747187",
+          "hash": "7b41481ab0ae372405f4d5cd2cea127d283bc98c1a9474c8266dbe2aea2937b1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747188",
+          "hash": "7b9cf36ca2b3917536f89c9219a6b1784deba983bc23583e3ec58e830874f191",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747186",
+          "hash": "ac4527f2535a7ee0ffb8583ca46260d667dbe4d582724fb071fa0230213a2528",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747189",
+          "hash": "1068a963f8cea364e158f13f69ad54c6f5f6c25f7907ddc6a7a055c2b439a0bf",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748820",
+          "hash": "5bdc9b2ecaf1aaee77a76d4f9d8bdccd86c9e3ed77da5f20211083b04e0d7e67",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748821",
+          "hash": "c4f755effcffd288d35063df43bad1b6d7192a7bdd8087770ea28b2d1785550d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748822",
+          "hash": "f5a02eefd96a53a51cdc8fe57a9d0ece96ebf13bb997746179e9bd939414d962",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748824",
+          "hash": "cdd831a6fef1063df42f29eea26ef61ec41bfdd61e91bbca88caf2edd2529de3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748823",
+          "hash": "df64118208407e4b42139a6110b7ec58d124057962f29dfd2f3038246302e0b4",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748917",
+          "hash": "da83d408049a48461a099d3a5199c3782ef1faf7b726f3ed2220d989accbbfcb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748905",
+          "hash": "73912f0c3d369f2d1fd5904819fa7afd8ca086eaf943547bcc148d66619d50b7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748906",
+          "hash": "b27331162c88138683187541fd45c67c5be8d700c0bacf09a88c439dc8740b52",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748919",
+          "hash": "438e1cd218a7920bfb53f62f53a4c35dca5dca367fdc2a9828d2dc8117bd1ab6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748918",
+          "hash": "322237c5502c6f1b7bda083e2907f2a26ee26b49f4b4d1b27b3260a9483d63e6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748921",
+          "hash": "ef77a5f1be1f6c7f84faeca87cb4f221a09880f924a9928fa433c9f8fe39540e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748923",
+          "hash": "38f6d540e4da7ce467c61fda2d92a4952fbb27e034c657709060c46b48d217fd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748922",
+          "hash": "e39aff2c9aa461b00725c3b6f49601fcd2dba3a50f3d72f05e557369b931bfe7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748924",
+          "hash": "7f88701a3871290220cc9b16d8a3d9979478c5f839cd7ed790f08d92293484c7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748925",
+          "hash": "b82c060198cd692a384dc88f98699ffeb3761de42d8cdbe0ab9fb30b5ade4a15",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748926",
+          "hash": "b6878e341e8365dc2a0ae6167404849a78e8f160d49d3d753f257dae4d1101da",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748927",
+          "hash": "035f5b97731e555055bd0e4e45cc794433135d08fb8183aabf5b84a683ccc3ae",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748677",
+          "hash": "7ed3564730907c6093382b310b83a70769f940322e872612ff01a63f328a20f2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748929",
+          "hash": "0336c760ca701a0df58e71090780c3da5b7bdcb0ef2a9f6877120c713bdbe85a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748930",
+          "hash": "998e283748d3629669bd854680ee06af61fd08ac72bbc570cee77c2826609ebc",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748932",
+          "hash": "4f687704594119c35425e2580ad58466cd56c47429491c513627e907fbd271fb",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748678",
+          "hash": "eda005d6aa498231f9b391c2a048ca7313803c5679f4814a3c962cf0499a8d8e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748933",
+          "hash": "14898800599aaacc3f1492148ae2f25c076141f122c29ae6c996d46d65845375",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748934",
+          "hash": "27dae4a0256f25f310cd8827abec8036125bce7d68ceec0173bce1298066f970",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748935",
+          "hash": "2f8a89d28b67f09563c1069236b10bb5ff32cb892c08d8533411fa1df21ce7f7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:748936",
+          "hash": "3d93acbb13d1564e6664b3253de4788c8ab13c4f9364dad1cb3b3fb565570453",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "name": "viewport-13",
+      "kind": "adjacent-pan",
+      "bbox": [
+        35.204,
+        31.902,
+        35.206,
+        31.904
+      ],
+      "complete": true,
+      "featureCount": 52,
+      "ids": [
+        {
+          "id": "ramallah:747768",
+          "hash": "0140b6381aa4f8af9e7cdddf74dab67b82255f6f478d09cedf634a9b2e23bebd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747769",
+          "hash": "85b267e0f6b499852725c1c0911083eb0e74b91d02b5a15f752c0b4a906f1558",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747767",
+          "hash": "904567cf97845d25e607dd8f04b48c0f9afe18ca2bc4df48d1cb14adc81b81c3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747772",
+          "hash": "4a07b69402abb89f73ef0292a4cdc69bb15a388f56aef0c2f70c15ba17fd4363",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747770",
+          "hash": "0a0138c2ec7d00d230a51bf573863ca03d7c7170679f6540b59ffb5cecb44f26",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747771",
+          "hash": "3ca44a22dbfca27d2e6949d46ae31fdd077512c3e68a754b9ef1b5ccbb0acbea",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747805",
+          "hash": "aebb0f8b36b53f087f4fb5c7cb5dd3b3703263fbcb7846ecea4a2416f867e308",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747774",
+          "hash": "4f53de6888feff11c58b42e4c837ccf1f7cf8d7b06cfcb278c39a43e4c7394ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747711",
+          "hash": "a46a9881debd62e346545952d6e9dd3d3c27c4b3e2280632e0df816af0f0c713",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747721",
+          "hash": "8fc0b9c2bdbd89615338b285058b21071d39f6c6a0fb3b25abb85bf46ff49efe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747720",
+          "hash": "dca8fd359876b56a72024a6c8b940a0d72c3ed28b265869dbb8195daab866622",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747718",
+          "hash": "b7380030f22d541186ad4f0b544c80beab6fcde4a111475f075c27c94acc73fe",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747722",
+          "hash": "1b55b55cbaa3912a156faa86e365fccc37de9cb1d4d74ec0a7e97cb49b55a15e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747725",
+          "hash": "273f89e7feefd532509b50bca7381f3334558eac38f3e26ec5fc971cd0959736",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747726",
+          "hash": "da6282edeb682d0579dfa9bd9169c2e6b91af816c2d9bf454a3e70296a409c24",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747775",
+          "hash": "e2d5f682b6aa8578c58448a8ef2f16f37a688c74bd3363ff61a833ef278476d2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747727",
+          "hash": "cf0d5cb55cf3b3145de949f0ae01c3b73323a7d671d38d433cc177c36d6c73a2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747784",
+          "hash": "464033ac901990dd687665303d814ea40978cd7be161fd366aa7bcbe7e0261b7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747785",
+          "hash": "3cc90cb0d5123c15685ea9d652a7199d73b64c85a405326bfc671ae01addd1bd",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747728",
+          "hash": "e422e9bc424fb3a3089ac7dedb04f49920df71288976b5cae6370db016694025",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747733",
+          "hash": "6544f99e02a1ee6f5b3e613be5ac03cfc80d37af11abf11c6de63fd54da25bc5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747734",
+          "hash": "f64602ddac668c20acc6810bc2d2d28b329fa3f354d426daf7b1b5d55dcb86c0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747735",
+          "hash": "d339391612a0f679b68bc43d5a1cfcd12fbaf0d2d21b5fd76fd3c875dbad6ee6",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747740",
+          "hash": "c57bee5af1ee363d89d81463b1ceb756522ddc3843bbacd6231dc100c8383f37",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747788",
+          "hash": "38cdaeeb37ff6f6a725b21f61291f55c088b4e7efd20f25a2270e2f6f67e826d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747787",
+          "hash": "268fc0dbf1531dfe9b36c05e04d692d7db3cc25eeb518d412de42baa517eaa76",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747786",
+          "hash": "cc24d62e01b7b2467635992459407e7bb82aff51d2198f984f2406835e5468b2",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747791",
+          "hash": "37d6b77461446729cdae1f39ccbf554e9c0577f3f8881056f9852e4c33eb3e9c",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747789",
+          "hash": "410636e610854dc8894532d06877ed084b30575c36117d1d9741e79292cde4c0",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747790",
+          "hash": "a80c1f3e4ce79a7635dcb76d3b9e39d2eb98610556349cb88a7a6ee9192aa744",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747749",
+          "hash": "2a0d7f76a67cf508010f7f704398e4d939e1ef0108798ff061de52d3bdfac420",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747743",
+          "hash": "54f0afb516c1863c386a827eda804ca5112abe50ce4ef2e740fb564c6f1d3967",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747792",
+          "hash": "df0ab6acbba7905edf8db1b953428558a3d5e84ff0d9952086923a7b84c8ad42",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747752",
+          "hash": "ff1a22bbc9e8112077f99e6974f572b022dc7bbb57430b23ad42507b2257392d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747814",
+          "hash": "71f1b16f729714f9928ac2de8447b2c16aae61d867ad84ec21063f18b17a5cc5",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747751",
+          "hash": "f47b9ba6efef3919d9894457410e0e5546ecaaa1bbc78a914bbe5a984dab87b9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747820",
+          "hash": "77b01db14521c29d7e5d113c70a75e6262f95546e6c3e5c5343ecb65183a828a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747819",
+          "hash": "0d9402833a5d7aeddd63ea9de1344956bd896de87535fb145c7c01d977b4dbf3",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747817",
+          "hash": "38c489b8ed87705f5493eebaa483c4fe9575621321abbe74f325dde66af2b19a",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747821",
+          "hash": "5882ab90c831de84e9b3f62edc6a9dc1b1265e8212968cbb5a15e8829500a1e9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747753",
+          "hash": "d0f221ae606ce954923c78f161fb5d780e2e7dd718fbf0066db89ea07df701a1",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747822",
+          "hash": "d9a72b7f1a8316a284e5d6ae1c2ea830142d8f798547a32164eaf73312510a59",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747754",
+          "hash": "93a232b305e45a98cdfdce8d91c2ba965ccedb1029897efa10021931154c2f76",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747757",
+          "hash": "19d0f1191f0f4b8f2d7bd876e1e9f4491a75943471bf9bf194b6a49aa9b8625d",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747758",
+          "hash": "f256f898b2dd4840c7ea58d45c375cb6e82fc035e6323dd98798b8f55323a479",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747761",
+          "hash": "cd09b4ff1f0a3ffbebd0addfa3f002a1eb960cc18e44354b3c3f276fa66095ab",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747760",
+          "hash": "05de56b665acf7f1d187ecb09f863fd02f708481953caa6aa61ac8d6e6bb1aa9",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747759",
+          "hash": "047b8fbde1e0def5be07b305aab29d4fea763383efbb780ef64bbf8a2a33e7d7",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747823",
+          "hash": "336f01799eac4a2f0e71602c920946f7eaa7e2bbecfcddce0021da3a3a7a4d89",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747764",
+          "hash": "9cedc521089473a571ceb29668788b02e9f0f3e33d0cdf8238deb6d3b017762e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747824",
+          "hash": "c559b9ca262585b8a51298f30a28829741d6d6cb5aabd1ca309f056e3305895e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "ramallah:747827",
+          "hash": "b83e30f11a208be9c899406994fda51c61dd5753931900eca12575810b66ee86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    }
+  ],
+  "forcedPageSize3": {
+    "bbox": [
+      35.196000000000005,
+      31.902,
+      35.198,
+      31.904
+    ],
+    "complete": true,
+    "count": 87,
+    "hashesMatch": true
+  },
+  "freshIdHashRereads": {
+    "complete": true,
+    "queried": 517,
+    "returned": 517,
+    "allPresent": true,
+    "allHashesMatch": true,
+    "absentIds": [],
+    "batchSize": 40
+  },
+  "explicitAbsence": {
+    "complete": true,
+    "featureCount": 0,
+    "absentIds": [
+      "ramallah:9876543210"
+    ]
+  },
+  "footprintRead": {
+    "complete": true,
+    "featureCount": 5,
+    "allIntersect": true
+  },
+  "sourceBinding": {
+    "computed": true,
+    "binding": {
+      "parcels": [
+        {
+          "parcelId": "ramallah:746976",
+          "overlapM2": 662.281,
+          "intrusionM": 19.6628
+        }
+      ],
+      "touched": [],
+      "toleranceM": 0,
+      "coverage": "complete",
+      "unsurveyedM2": 0,
+      "siteM2": 662.28,
+      "source": "server:asia-ramallah-research",
+      "unknownM2": 0,
+      "computedAt": "2026-10-08T18:21:38.002Z"
+    }
+  },
+  "errors": [],
+  "sampleAudit": [
+    {
+      "geometryType": "Polygon",
+      "valid4326": true,
+      "projectedEPSG3857": {
+        "geometryType": "Polygon",
+        "geometrySha256": "02a66a4cc0b9f9e047a380235cad7c005d96556fb1c3b86ff4e8f98196ce54aa",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "sha256": "bb9d9dd7e4a542d3dad20af28d0a35f084f2b5d3f192b01917b7b497ab983d30"
+    },
+    {
+      "geometryType": "Polygon",
+      "valid4326": true,
+      "projectedEPSG3857": {
+        "geometryType": "Polygon",
+        "geometrySha256": "6e0caaa14c2d6a3e33547224c43610a766070c99f4f838a7de5d91f3427e035d",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "sha256": "5bf13c1ad6ec3efe015b7c466695da14197aceaba7d9a1151fdaf8a42dd1c299"
+    }
+  ],
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

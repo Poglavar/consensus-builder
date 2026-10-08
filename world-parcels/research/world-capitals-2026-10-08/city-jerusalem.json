@@ -1,0 +1,348 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:59:07.158Z",
+  "cityId": "capital:IL:jerusalem",
+  "name": "Jerusalem",
+  "country": "Israel",
+  "countryCode": "IL",
+  "centerLatLon": [
+    31.766666666666666,
+    35.233333
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:gov.il Jerusalem cadastral map open data parcel shapefile GIS cadastre",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://data.gov.il/datasets/israel_mapping_center/shape",
+        "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem"
+      ]
+    },
+    {
+      "query": "Govmap Israel parcels service feature layer query g​​ush helka API",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://data.gov.il/datasets/israel_mapping_center/shape",
+        "https://www.govmap.gov.il/"
+      ]
+    },
+    {
+      "query": "Govmap Israel public cadastral parcel WFS official layer and service documentation",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.govmap.gov.il/",
+        "https://open.govmap.gov.il/geoserver/opendata/wfs"
+      ]
+    },
+    {
+      "query": "ירושלים קדסטר חלקות מפה גוש חלקה אתר רשמי עיריית ירושלים",
+      "language": "Hebrew",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://jerusalem.datacity.org.il/dataset/plots",
+        "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem"
+      ],
+      "executedAt": "2026-10-08T19:36:51Z"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://data.gov.il/datasets/israel_mapping_center/shape",
+      "observation": "Israel Mapping Center publishes a parcel SHP dataset with a note that it is not legal authority for boundary reconstruction and freshness must be checked by users."
+    },
+    {
+      "url": "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem",
+      "observation": "Survey of Israel offers information for unregistered cadastral areas in Jerusalem via an application, indicating coverage can be incomplete."
+    },
+    {
+      "url": "https://data.gov.il/dataset/israel_mapping_center/shape",
+      "observation": "This guessed CKAN dataset URL returned HTTP 404. It is not evidence that the Israel Mapping Center has no open parcel data."
+    },
+    {
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&request=GetCapabilities",
+      "observation": "Official Govmap Open Data GeoServer WFS GetCapabilities returned HTTP 200. It advertises `opendata:PARCEL_ALL` (Hebrew title “חלקות”, parcels), `opendata:SUB_GUSH_ALL` (blocks), and ITM-coordinate variants."
+    },
+    {
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=opendata%3APARCEL_ALL",
+      "observation": "DescribeFeatureType returned HTTP 200; geometry field is `the_geom` (MultiSurface); safe parcel fields are OBJECTID, PARCEL_ID, GUSH_NUM, GUSH_SUFFI, and PARCEL. No personal/owner attributes were requested in the successful sample query."
+    },
+    {
+      "url": "https://www.govmap.gov.il/",
+      "observation": "The official Govmap viewer hostname returned HTTP 403 CloudFront challenge in direct probes, while its documented Open Data WFS endpoint remained accessible and returned the verified parcel geometry."
+    },
+    {
+      "url": "https://jerusalem.datacity.org.il/dataset/plots",
+      "observation": "Jerusalem Municipality open-data dataset titled חלקות (plots) identifies the dataset as municipal parcel information and links its source to the city GIS viewer; opened and inspected. The published CSV/XLSX downloads are dated February 2021."
+    },
+    {
+      "url": "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem",
+      "observation": "Israeli government Hebrew service page for cadastral information in unregistered areas of Jerusalem; the page was returned in official search results, while direct opening returned HTTP 403."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET WFS GetCapabilities",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:29:00Z",
+      "outcome": "Returned OGC WFS 2.0.0 capabilities (97,343 bytes) listing the national `opendata:PARCEL_ALL` parcel layer."
+    },
+    {
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=opendata%3APARCEL_ALL",
+      "method": "GET WFS DescribeFeatureType",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:29:00Z",
+      "outcome": "Returned schema with `the_geom` MultiSurface geometry plus safe parcel ID/code fields."
+    },
+    {
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+      "method": "GET WFS 2.0.0 GetFeature, bounded bbox and safe ID/code fields only",
+      "params": {
+        "typeNames": "opendata:PARCEL_ALL",
+        "bboxLonLat": [
+          35.2,
+          31.77,
+          35.22,
+          31.79
+        ],
+        "bboxCRS": "EPSG:4326",
+        "propertyName": [
+          "the_geom",
+          "OBJECTID",
+          "PARCEL_ID",
+          "GUSH_NUM",
+          "GUSH_SUFFI",
+          "PARCEL"
+        ],
+        "count": 2,
+        "outputFormat": "application/json"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "checkedAt": "2026-10-08T18:29:00Z",
+      "outcome": "Returned two non-empty MultiPolygon features in the bounded city-area query; geometry is public parcel geometry. Query requested geometry plus only safe IDs/codes."
+    },
+    {
+      "url": "https://data.gov.il/dataset/israel_mapping_center/shape",
+      "method": "GET primary government page attempted during investigation",
+      "httpStatus": 404,
+      "checkedAt": "2026-10-08T18:29:00Z",
+      "outcome": "Guessed older dataset route returned HTTP 404; the current plural `/datasets/` route and Govmap WFS were separately verified."
+    },
+    {
+      "url": "https://jerusalem.datacity.org.il/dataset/plots",
+      "method": "GET official municipal open-data page inspection",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T19:36:51Z",
+      "outcome": "Opened the municipal dataset page; it identifies Jerusalem parcel data and municipal GIS provenance. No parcel download was queried in this follow-up."
+    },
+    {
+      "url": "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem",
+      "method": "GET official government page inspection",
+      "httpStatus": 403,
+      "checkedAt": "2026-10-08T19:36:51Z",
+      "outcome": "Direct open returned an HTTP 403 challenge; official search listing still describes cadastral-information service for Jerusalem."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Israel Mapping Center/Govmap public parcel layer provides national cadastral polygons. The layer is not a legal title record; city-area geometry is verified independently.",
+  "registryEvidenceUrls": [
+    "https://open.govmap.gov.il/geoserver/opendata/wfs",
+    "https://www.govmap.gov.il/",
+    "https://jerusalem.datacity.org.il/dataset/plots",
+    "https://www.gov.il/he/service/information-cadastre-unregulated-area-jerusalem"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "url": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+    "kind": "OGC WFS 2.0.0 GeoServer parcel feature type",
+    "publisher": "Israel Mapping Center / Govmap Open Data",
+    "queryUrl": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+    "typeName": "opendata:PARCEL_ALL",
+    "geometryType": "MultiPolygon",
+    "scope": "National parcel layer; bounded adapter qualification verifies city-area rows only. The national layer does not determine Jerusalem/East Jerusalem boundaries, sovereignty, or legal title.",
+    "safeSampleFile": "jerusalem-adapter-sample.geojson",
+    "sampleAttributes": "OBJECTID, PARCEL_ID, GUSH_NUM, GUSH_SUFFI, PARCEL only",
+    "nativeFields": [
+      "OBJECTID",
+      "PARCEL_ID",
+      "GUSH_NUM",
+      "GUSH_SUFFI",
+      "PARCEL"
+    ],
+    "stableSourceRowId": "OBJECTID",
+    "stableSourceRowIdSemantics": "Unique provider row identifier for exact runtime reads; not represented as a statutory/legal parcel-number key.",
+    "parcelIdUniqueness": "PARCEL_ID is not unique in this layer; OBJECTID is the canonical adapter row identity."
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "featureCount": 2,
+    "geometryTypes": [
+      "MultiPolygon"
+    ],
+    "cityBboxLonLat": [
+      35.2,
+      31.77,
+      35.22,
+      31.79
+    ],
+    "sampleFile": "research/world-capitals-2026-10-08/jerusalem-adapter-sample.geojson",
+    "initialSampleMetadataFile": "jerusalem-safe-sample.geojson"
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "National parcel layer according to public WFS capabilities.",
+    "verifiedOpenScope": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "countrywideVerified": false,
+    "politicalBoundaryClaim": false,
+    "territorialCaveat": "Govmap parcel coverage in a city-area sample does not determine Jerusalem/East Jerusalem boundaries, sovereignty, or legal title."
+  },
+  "runtimeReadiness": "enabled",
+  "status": "complete",
+  "remainingUncertainty": "The bounded runtime qualification verifies only the sampled cells and rows; it does not establish citywide completeness, legal title, currentness, or political boundaries.",
+  "runtimeQualification": {
+    "adapter": "backend/parcels/wfs-source.js",
+    "descriptor": {
+      "adapter": "wfs",
+      "id": "govmap-parcel-all-jerusalem-rowid",
+      "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+      "featureType": "opendata:PARCEL_ALL",
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "version": "2.0.0",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "IL-JERUSALEM-ROW-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "GUSH_NUM",
+        "GUSH_SUFFI",
+        "PARCEL"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "responseSrid": 3857,
+      "minRequestIntervalMs": 100,
+      "idBatchSize": 3
+    },
+    "transport": "Unmodified adapter transport and responses; original 15-second AbortSignal preserved.",
+    "grid": {
+      "completedCells": 13,
+      "alignedCells": 9,
+      "adjacentPanCells": 4,
+      "totalFeaturesReturnedAcrossCells": 184,
+      "uniqueProviderRowIds": 123,
+      "pageSize": 100
+    },
+    "forcedPageSize3": {
+      "complete": true,
+      "featureCount": 37,
+      "geometryPages": 13,
+      "allGeometryHashesMatch": true
+    },
+    "freshExactIdHashRereads": {
+      "queried": 123,
+      "allPresent": true,
+      "allGeometryHashesMatch": true,
+      "absentIds": [],
+      "batchSize": 3,
+      "callerBatch40Capability": {
+        "passed": true,
+        "queried": 40,
+        "returned": 40,
+        "allHashesMatch": true,
+        "requestCount": 14,
+        "elapsedMs": 85097
+      }
+    },
+    "explicitAbsence": {
+      "complete": true,
+      "absentIds": [
+        "IL-JERUSALEM-ROW-9876543210"
+      ]
+    },
+    "footprintRead": {
+      "selectedParcelId": "IL-JERUSALEM-ROW-1091864",
+      "intersectingFeatureCount": 9,
+      "allGeometryHashesMatch": true
+    },
+    "computeSourceBinding": {
+      "computed": true,
+      "coverage": "complete",
+      "siteM2": 454.83,
+      "boundParcels": 1
+    },
+    "identitySemantics": {
+      "nativeIdField": "OBJECTID",
+      "nativeIdType": "integer",
+      "identityMeaning": "Provider row identifier; stable for exact WFS reads but not represented as a legal parcel-number key.",
+      "safeParcelReferenceFields": [
+        "PARCEL_ID",
+        "GUSH_NUM",
+        "GUSH_SUFFI",
+        "PARCEL"
+      ],
+      "parcelIdUniqueness": "PARCEL_ID is not unique in the inspected layer: one bounded query returned three rows for PARCEL_ID=1076459. OBJECTID is used as the unique source identity."
+    },
+    "qualityAudit": {
+      "repoFile": "jerusalem-quality.json",
+      "metricCrs": "EPSG:32636",
+      "shapelyVersion": "Shapely 2.1.2",
+      "featureCount": 123,
+      "validNonemptyCount": 123,
+      "invalidGeometryCount": 0,
+      "positiveAreaOverlapPairCount": 0,
+      "exactDuplicateGeometryGroupCount": 0
+    },
+    "requestTraceFile": "jerusalem-adapter-requests.json",
+    "acceptanceFile": "jerusalem-acceptance.json",
+    "sampleOutputFile": "jerusalem-adapter-sample.geojson",
+    "sharedDescriptorAcceptanceFile": "govmap-final-descriptor-acceptance.json",
+    "sharedSourceIdentity": {
+      "sourceId": "il-govmap-cadastral-parcel-rows",
+      "idPrefix": "govmap:row:",
+      "idField": "OBJECTID"
+    },
+    "footprintUnionAudit": {
+      "repoFile": "jerusalem-quality-footprint-union.json",
+      "gridUniqueFeatureCount": 123,
+      "footprintFeatureCount": 9,
+      "unionUniqueFeatureCount": 123,
+      "validNonemptyCount": 123,
+      "invalidGeometryCount": 0,
+      "overlapPairCountAbove0_01M2": 0
+    }
+  },
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+  ],
+  "appCityId": "jerusalem",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "evidenceFile": "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/jerusalem-quality-footprint-union.json"
+  },
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/jerusalem-adapter-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      31.782,
+      35.214
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.001
+  }
+}

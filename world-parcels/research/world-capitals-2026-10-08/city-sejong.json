@@ -1,0 +1,118 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:KR:sejong",
+  "name": "Sejong",
+  "country": "South Korea",
+  "countryCode": "KR",
+  "centerLatLon": [
+    36.4801,
+    127.289
+  ],
+  "capitalRole": "administrative government seat",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:gov.kr Sejong cadastral parcel map GIS land parcel public map official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+        "https://www.kgeop.go.kr/"
+      ]
+    },
+    {
+      "query": "세종시 연속지적도 WMS GIS 토지정보 지도 공식",
+      "language": "Korean",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+        "https://www.kgeop.go.kr/"
+      ]
+    },
+    {
+      "query": "Sejong City Korea cadastral map parcel geospatial service WFS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www3.sejong.go.kr/sjrp/realEstateInfo"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+      "observation": "Official Sejong Real Estate Portal allows selecting a map parcel to show lot number, road address, land category and area; information is sourced from V-World, MOLIT public data and Kakao."
+    },
+    {
+      "url": "https://www.kgeop.go.kr/",
+      "observation": "K-GeoP is the Ministry of Land, Infrastructure and Transport national geospatial information platform."
+    },
+    {
+      "url": "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+      "observation": "Sejong City real-estate portal loaded over HTTPS; its first-party JS bundle includes references to GeoServer `/geoserver/sjmp/ows`, VWorld WMTS, and a public-data trading API. The bundle references alone do not verify parcel polygon access."
+    },
+    {
+      "url": "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+      "observation": "Sejong City real-estate portal loaded and its first-party bundle references GeoServer `/geoserver/sjmp/ows` and a VWorld WMTS endpoint. The GeoServer hostname failed DNS resolution and the credential-free VWorld probe returned HTTP 502; the public geometry path is not verified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://www3.sejong.go.kr/sjrp/realEstateInfo; content type text/html; 1590 bytes.",
+      "firstPartyScripts": [
+        "https://www3.sejong.go.kr/sjrp/assets/index-Cm-Gy6c-.js"
+      ],
+      "discoveredServiceReferences": [
+        "http://real.map.sejong.go.kr/geoserver/sjmp/ows",
+        "https://api.odcloud.kr/api/RealEstateTradingSvc/v1/"
+      ],
+      "relevantOfficialLinks": [
+        "https://www3.sejong.go.kr/sjrp/css/widgets/divideMap.css",
+        "https://www3.sejong.go.kr/sjrp/css/widgets/basemap.css"
+      ]
+    },
+    {
+      "url": "http://real.map.sejong.go.kr/geoserver/sjmp/ows?service=WFS&request=GetCapabilities",
+      "method": "GET viewer-referenced WFS capabilities",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:35:55Z",
+      "outcome": "Hostname failed DNS resolution (ENOTFOUND) over both HTTP and HTTPS; no WFS capabilities or layer geometry were retrievable."
+    },
+    {
+      "url": "https://api.vworld.kr/req/wmts/1.0.0/GetCapabilities.xml?request=GetCapabilities",
+      "method": "GET credential-free VWorld WMTS capabilities probe",
+      "httpStatus": 502,
+      "checkedAt": "2026-10-08T18:35:55Z",
+      "outcome": "Gateway returned HTTP 502 to this unauthenticated capabilities probe; no parcel geometry verified. No key or credential was sent."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official city lot-query viewer confirms parcel-aware property information in Sejong, but no public geometry API/feature response was verified.",
+  "registryEvidenceUrls": [
+    "https://www3.sejong.go.kr/sjrp/realEstateInfo",
+    "https://www.kgeop.go.kr/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_city_parcel_viewer_no_geometry_response",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "No new bounded parcel-feature HTTP response with verifiable provenance recorded in this city artifact.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "No bounded city parcel feature query with safe fields was verified; the listed source may be a viewer, planning dataset, nonpublic service or national registry.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

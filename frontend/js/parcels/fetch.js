@@ -213,7 +213,13 @@
             features = Array.isArray(answer?.features) ? answer.features : [];
         } else if (provider?.source === 'parcel-source') {
             features = [];
-            for (const batch of chunks(ids)) {
+            // Slow providers use smaller browser requests as well as smaller upstream batches,
+            // so one exact-ID call can finish within the unchanged request deadline.
+            const batchSize = provider.idBatchSize ?? ID_BATCH_SIZE;
+            if (!Number.isSafeInteger(batchSize) || batchSize < 1 || batchSize > ID_BATCH_SIZE) {
+                throw new Error('Invalid parcel source ID batch size.');
+            }
+            for (const batch of chunks(ids, batchSize)) {
                 const payload = await responseJson(`${backendBase()}/parcel-sources/${encodeURIComponent(provider.sourceId)}?${new URLSearchParams({ ids: batch.join(',') })}`, {
                     headers: { Accept: 'application/json' }, cache: 'no-store'
                 });

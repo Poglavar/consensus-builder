@@ -1,0 +1,77 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:PA:panama-city",
+  "name": "Panama City",
+  "country": "Panama",
+  "countryCode": "PA",
+  "centerLatLon": [
+    8.966666666666667,
+    -79.533333
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Panama City Panama official municipal cadastral GIS parcel map",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22"
+      ]
+    },
+    {
+      "query": "Ciudad de Panamá catastro GIS parcelas municipio servicio oficial MIVIOT",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22",
+      "observation": "MIVIOT announced its geoportal with thematic map layers, geographic search, direct public downloads, and interoperable services; whether parcel layer exists was not determined."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official MIVIOT geoportal announcement was opened; the inspection tool returned an error, so no parcel endpoint was verified."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "MIVIOT documents its public geoportal and thematic layers, but no city parcel layer or registry coverage specific to Panama City was verified.",
+    "urls": [
+      "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "MIVIOT documents its public geoportal and thematic layers, but no city parcel layer or registry coverage specific to Panama City was verified."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "MIVIOT documents its public geoportal and thematic layers, but no city parcel layer or registry coverage specific to Panama City was verified.",
+  "registryEvidenceUrls": [
+    "https://www.miviot.gob.pa/blog/infomiviot-7/nuevo-geoportal-del-miviot-una-herramienta-digital-al-servicio-de-la-planificacion-territorial-y-la-transparencia-22"
+  ],
+  "sourceIds": []
+}

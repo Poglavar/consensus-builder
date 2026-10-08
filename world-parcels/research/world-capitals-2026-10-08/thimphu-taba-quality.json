@@ -1,0 +1,804 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32645",
+  "featureCount": 112,
+  "validNonemptyCount": 112,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 29.27611677084745,
+    "median": 607.035734943386,
+    "max": 164222.79714549542
+  },
+  "features": [
+    {
+      "id": "bt-thimphu-taba:61",
+      "areaM2": 871.5583149099358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:145",
+      "areaM2": 783.3907585028403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:179",
+      "areaM2": 436.5078521340867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:213",
+      "areaM2": 152.50897283258902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:438",
+      "areaM2": 405.4623592778225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:440",
+      "areaM2": 376.66994715367963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:445",
+      "areaM2": 406.22609909304936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:446",
+      "areaM2": 405.7225443572292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:466",
+      "areaM2": 551.0123924625651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:470",
+      "areaM2": 348.90544385206397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:472",
+      "areaM2": 725.0176331413668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:498",
+      "areaM2": 285.4544982812856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:505",
+      "areaM2": 535.2736747082705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:513",
+      "areaM2": 1155.7060290733893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:517",
+      "areaM2": 405.88315626169884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:546",
+      "areaM2": 839.8506497524679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:583",
+      "areaM2": 982.978566090811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:588",
+      "areaM2": 433.1269426863009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:596",
+      "areaM2": 1207.3792773672149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:598",
+      "areaM2": 435.08920826386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:677",
+      "areaM2": 11864.659655818201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:120",
+      "areaM2": 434.99968695916965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:138",
+      "areaM2": 928.4467554974149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:139",
+      "areaM2": 506.39065707785653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:141",
+      "areaM2": 540.0930509064854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:206",
+      "areaM2": 550.9653915266056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:256",
+      "areaM2": 434.06903092308323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:280",
+      "areaM2": 434.0119528039477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:281",
+      "areaM2": 152.8997321081262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:334",
+      "areaM2": 914.2958436321471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:469",
+      "areaM2": 2999.506788829655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:502",
+      "areaM2": 4868.81864864982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:504",
+      "areaM2": 405.0424781518247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:507",
+      "areaM2": 405.04134331726476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:514",
+      "areaM2": 405.04205099724237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:567",
+      "areaM2": 972.0770019178369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:494",
+      "areaM2": 3166.5380073862557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:518",
+      "areaM2": 312.87717879158413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:530",
+      "areaM2": 825.3001954973303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:534",
+      "areaM2": 749.3261462234882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:540",
+      "areaM2": 1752.5458589511172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:287",
+      "areaM2": 562.6951090854774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:289",
+      "areaM2": 375.85320468762325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:674",
+      "areaM2": 806.0783157740856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:245",
+      "areaM2": 812.5094779529398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:633",
+      "areaM2": 4008.0757829626086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:235",
+      "areaM2": 491.4131338207082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:236",
+      "areaM2": 522.7665966290944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:516",
+      "areaM2": 12997.37462434599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:641",
+      "areaM2": 2015.7422767713265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:647",
+      "areaM2": 769.6838208017225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:663",
+      "areaM2": 29.27611677084745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:675",
+      "areaM2": 1074.532801891497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:680",
+      "areaM2": 957.0245195406937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:683",
+      "areaM2": 1529.0757680776637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:329",
+      "areaM2": 164222.79714549542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:648",
+      "areaM2": 2263.472347215679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:345",
+      "areaM2": 380.964987190193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:398",
+      "areaM2": 540.8629391844513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:402",
+      "areaM2": 606.4973806236285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:404",
+      "areaM2": 1726.532988861477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:121",
+      "areaM2": 813.5064324704929,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:233",
+      "areaM2": 436.7812928324472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:351",
+      "areaM2": 513.674609417372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:361",
+      "areaM2": 744.0279739914256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:362",
+      "areaM2": 607.7105008025517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:400",
+      "areaM2": 678.0656658101393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:401",
+      "areaM2": 565.4628669795107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:475",
+      "areaM2": 607.5740892631436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:542",
+      "areaM2": 576.0639032745926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:629",
+      "areaM2": 892.2650094163096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:652",
+      "areaM2": 607.5759892405488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:653",
+      "areaM2": 690.5603172777458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:654",
+      "areaM2": 527.1128606902688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:670",
+      "areaM2": 705.8535593973331,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:48",
+      "areaM2": 436.4517609653738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:112",
+      "areaM2": 377.2680707005234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:124",
+      "areaM2": 435.3504567720674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:181",
+      "areaM2": 376.6494606588227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:199",
+      "areaM2": 725.0476689086197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:212",
+      "areaM2": 898.7991151300147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:232",
+      "areaM2": 436.428211161595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:258",
+      "areaM2": 581.4453341784265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:320",
+      "areaM2": 435.8845543463738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:467",
+      "areaM2": 378.3274861866893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:468",
+      "areaM2": 405.04171448924296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:484",
+      "areaM2": 2009.0012826121026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:493",
+      "areaM2": 518.6701193800357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:497",
+      "areaM2": 518.6681371345373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:503",
+      "areaM2": 492.1248456024847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:511",
+      "areaM2": 2388.501079026886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:512",
+      "areaM2": 3415.8138068388484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:547",
+      "areaM2": 329.56265380842257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:350",
+      "areaM2": 634.2130503239414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:428",
+      "areaM2": 760.0843718470707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:429",
+      "areaM2": 634.4726532718104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:430",
+      "areaM2": 1135.678997274717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:592",
+      "areaM2": 607.5965310024699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:594",
+      "areaM2": 475.177304004293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:595",
+      "areaM2": 1207.2626929409387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:599",
+      "areaM2": 1207.3578226309717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:616",
+      "areaM2": 664.7913012080215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:630",
+      "areaM2": 1012.5989898778586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:643",
+      "areaM2": 486.26938438308986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:172",
+      "areaM2": 295.40477953924216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:186",
+      "areaM2": 1414.03182008824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:264",
+      "areaM2": 523.4719618694126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:515",
+      "areaM2": 435.0334250078009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:563",
+      "areaM2": 6110.8247334950975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:655",
+      "areaM2": 1025.930159363403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:656",
+      "areaM2": 501.9051753552221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "bt-thimphu-taba:657",
+      "areaM2": 933.311965796051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

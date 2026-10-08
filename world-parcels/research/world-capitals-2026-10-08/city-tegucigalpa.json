@@ -1,0 +1,109 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:HN:tegucigalpa",
+  "name": "Tegucigalpa",
+  "country": "Honduras",
+  "countryCode": "HN",
+  "centerLatLon": [
+    14.1,
+    -87.216667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Tegucigalpa Honduras official catastro GIS municipal parcel map",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    },
+    {
+      "query": "Tegucigalpa mapa catastral parcelas catastro GIS Alcaldía municipal official Honduras",
+      "language": "Spanish/English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    },
+    {
+      "query": "Tegucigalpa Alcaldía Distrito Central mapa catastral base división predial oficial claves catastrales",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://atlasmunicipal.amdc.hn/atlas-mapas/",
+        "https://mapas.simet.amdc.hn/catalogue/",
+        "https://amdc-gobgeo.electrosoftware.net/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://atlasmunicipal.amdc.hn/atlas-mapas/",
+      "observation": "Official Atlas Municipal says the Distrito Central base cadastral map contains official parcel division, cadastral keys, and property limits; the linked catalog has no public parcel feature endpoint."
+    },
+    {
+      "url": "https://mapas.simet.amdc.hn/catalogue/",
+      "observation": "Official AMDC-associated GeoNode catalogue; no cadastral dataset appeared in the public catalogue inspected."
+    },
+    {
+      "url": "https://amdc-gobgeo.electrosoftware.net/",
+      "observation": "AMDC GobGeo cadastral-management portal; inspect only without submitting property/person searches."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://atlasmunicipal.amdc.hn/atlas-mapas/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Opened municipal atlas; it describes the official cadastral base map and links to an AMDC GeoNode catalogue."
+    },
+    {
+      "url": "https://mapas.simet.amdc.hn/catalogue/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Opened public GeoNode catalogue; no parcel dataset listed in rendered content."
+    },
+    {
+      "url": "https://amdc-gobgeo.electrosoftware.net/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Portal shell opened with no readable lines; no search or personal identifiers submitted."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "The Distrito Central municipal atlas documents an official cadastral base map with parcel divisions, cadastral keys, and property limits. The associated public catalogue did not provide parcel data during inspection.",
+    "urls": [
+      "https://atlasmunicipal.amdc.hn/atlas-mapas/",
+      "https://mapas.simet.amdc.hn/catalogue/",
+      "https://amdc-gobgeo.electrosoftware.net/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The Distrito Central municipal atlas documents an official cadastral base map with parcel divisions, cadastral keys, and property limits. The associated public catalogue did not provide parcel data during inspection."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The Distrito Central municipal atlas documents an official cadastral base map with parcel divisions, cadastral keys, and property limits. The associated public catalogue did not provide parcel data during inspection.",
+  "registryEvidenceUrls": [
+    "https://atlasmunicipal.amdc.hn/atlas-mapas/",
+    "https://mapas.simet.amdc.hn/catalogue/",
+    "https://amdc-gobgeo.electrosoftware.net/"
+  ],
+  "sourceIds": []
+}

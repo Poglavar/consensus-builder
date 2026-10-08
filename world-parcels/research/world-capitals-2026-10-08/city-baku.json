@@ -1,0 +1,94 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:AZ:baku",
+  "name": "Baku",
+  "country": "Azerbaijan",
+  "countryCode": "AZ",
+  "centerLatLon": [
+    40.38333333333333,
+    49.866667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:nsdi.gov.az Baku cadastral parcels GIS map cadastre Azerbaijan land parcel",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://emlak.gov.az/az/page/view/32",
+        "https://emlak.gov.az/mapmodule"
+      ]
+    },
+    {
+      "query": "Bakı torpaq kadastr xəritəsi parcel cadastral GIS official Azerbaijan",
+      "language": "Azerbaijani",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://emlak.gov.az/az/page/view/32",
+        "https://emlak.gov.az/mapmodule"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://emlak.gov.az/az/page/view/32",
+      "observation": "The State Property Service describes TEKUİS as the electronic land cadastre accounting system for land inventory and production of district, city and municipal maps; interactive map module also published."
+    },
+    {
+      "url": "https://emlak.gov.az/mapmodule",
+      "observation": "Azerbaijan State Property Service interactive map page loaded over HTTPS; retrieved HTML exposed only its first-party jQuery/bootstrap assets and no parcel service configuration."
+    },
+    {
+      "url": "https://emlak.gov.az/mapmodule",
+      "observation": "Official State Property Service interactive map page; its two structure panes load through `/mapmodule/structures/1` and `/mapmodule/structures/2` and reference a first-party Google Maps plugin. The returned panes contain no GeoJSON/polygon geometry or ArcGIS, GeoServer, WFS, or WMS service reference."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://emlak.gov.az/mapmodule",
+      "method": "GET official interactive-map page",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:29:00Z",
+      "outcome": "Returned the Azerbaijani-language State Property Service map page with two structure panes and first-party AJAX configuration."
+    },
+    {
+      "url": "https://emlak.gov.az/mapmodule/structures/1",
+      "method": "POST official map-structure HTML (dynamic CSRF value not retained)",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "checkedAt": "2026-10-08T18:29:00Z",
+      "outcome": "Returned 19,710 bytes referencing a Google Maps plugin; no non-empty GeoJSON/polygon geometry or public WFS/WMS/ArcGIS service endpoint was identified."
+    },
+    {
+      "url": "https://emlak.gov.az/mapmodule/structures/2",
+      "method": "POST official map-structure HTML (dynamic CSRF value not retained)",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "checkedAt": "2026-10-08T18:29:00Z",
+      "outcome": "Returned 38,406 bytes referencing a Google Maps plugin; no non-empty GeoJSON/polygon geometry or public WFS/WMS/ArcGIS service endpoint was identified."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Azerbaijan State Property Service operates national cadastre and map services, but no city-specific basis established that registry coverage or the inspected parcel viewer returns Baku cadastral features.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "national_registry_candidate_city_scope_unverified",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "Azerbaijan State Property Service operates national cadastre and map services, but no city-specific basis established that registry coverage or the inspected parcel viewer returns Baku cadastral features.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

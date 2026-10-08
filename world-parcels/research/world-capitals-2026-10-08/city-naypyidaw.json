@@ -1,0 +1,115 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:MM:naypyidaw",
+  "name": "Naypyidaw",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "centerLatLon": [
+    19.7633,
+    96.0785
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:mlis.gov.mm cadastral map Naypyidaw GIS land parcel",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://slrd.gov.mm/en",
+        "https://nptdc.gov.mm/mobile_naypyitaw.php?naypyitawname=naypyitaw+map"
+      ]
+    },
+    {
+      "query": "Naypyidaw Myanmar land parcel cadastral map official GIS land records",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://slrd.gov.mm/en",
+        "https://nptdc.gov.mm/mobile_naypyitaw.php?naypyitawname=naypyitaw+map"
+      ]
+    },
+    {
+      "query": "site:slrd.gov.mm Naypyitaw land records map cadastre GIS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://slrd.gov.mm/en"
+      ]
+    },
+    {
+      "query": "နေပြည်တော် မြေစာရင်း မြေကွက် ကဒက်စတာ မြေပုံ နေပြည်တော် ဖွံ့ဖြိုးရေးကော်မတီ",
+      "language": "Burmese",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.surveydepartment.gov.mm/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://slrd.gov.mm/en",
+      "observation": "Myanmar Settlement and Land Records Department lists its headquarters in Nay Pyi Taw; the national land record authority is identified, but no public parcel viewer/feature layer was found."
+    },
+    {
+      "url": "https://nptdc.gov.mm/mobile_naypyitaw.php?naypyitawname=naypyitaw+map",
+      "observation": "Naypyitaw Development Committee has a city map page, but it did not establish parcel layer availability."
+    },
+    {
+      "url": "https://slrd.gov.mm/en",
+      "observation": "Myanmar Settlement and Land Records Department page describes its national record/survey remit and headquarters in Nay Pyi Taw; no city-specific public cadastral layer was identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://slrd.gov.mm/en",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://slrd.gov.mm/en; content type text/html; charset=UTF-8; 173117 bytes.",
+      "firstPartyScripts": [
+        "https://slrd.gov.mm/sites/default/files/js/js_VXyiEZYf5Q46NttJJFRkRxKQcKtPcBxekEPsFKzz_v0.js",
+        "https://slrd.gov.mm/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js",
+        "https://slrd.gov.mm/sites/default/files/js/js_EC2vLRwABWAUhgg3vmIrpauAvyNeQh3i-AAXnehx2fE.js"
+      ],
+      "relevantOfficialLinks": [
+        "https://fonts.googleapis.com/css?family=Roboto:400,500,700",
+        "https://slrd.gov.mm/en/user/register",
+        "https://slrd.gov.mm/en/registration-contracts-accordance-contract-registration-act",
+        "https://slrd.gov.mm/en/registration-status",
+        "https://slrd.gov.mm/en/premitted-status-central-committee-management-vacant-fallow-and-virgin-lands",
+        "https://slrd.gov.mm/en/land-administration-management-and-research-topics",
+        "https://slrd.gov.mm/en/surveying-mapping-and-archival-topics"
+      ]
+    },
+    {
+      "url": "https://nptdc.gov.mm/mobile_naypyitaw.php?naypyitawname=naypyitaw+map",
+      "method": "web.run open official city map page",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:53:00Z",
+      "outcome": "Nay Pyi Taw Development Committee map page inspected; it exposes a city map title but no parcel layer or service details in the returned page text."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "The Settlement and Land Records Department is a national authority and the NPTDC page is a city map, but no city-specific cadastral layer or parcel registry coverage was established.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_map_evidence_registry_scope_unknown",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "The Settlement and Land Records Department is a national authority and the NPTDC page is a city map, but no city-specific cadastral layer or parcel registry coverage was established.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

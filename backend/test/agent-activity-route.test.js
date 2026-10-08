@@ -23,7 +23,7 @@ describe('agent activity', () => {
         const proposalAccount = '11111111111111111111111111111111';
         const proposalRows = [
             { proposal_id: 'p1', city: 'zagreb', display_name: 'Pocket park', created_at: '2026-09-21T10:00:00Z',
-                proposal_data: { geometry: { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.92, 45.8], [15.92, 45.82], [15.9, 45.8]]] } } }
+                proposal_data: { goal: 'park', primaryType: 'Purchase', geometry: { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.92, 45.8], [15.92, 45.82], [15.9, 45.8]]] } } }
         ];
         const calls = [];
         const pool = { query: async (sql, params = []) => {
@@ -55,6 +55,7 @@ describe('agent activity', () => {
         expect(response.body.events.map(event => event.action.type)).toEqual(['accept', 'execute', 'create']);
         expect(response.body.events[0]).toMatchObject({
             action: { proposalId: 'p1' }, entity: { type: 'proposal', id: 'p1' },
+            proposalType: 'park', proposalPrimaryType: 'Purchase',
             proposalName: 'Pocket park', cityId: 'zagreb', transaction: 'accepted-tx',
             location: { lat: 45.81, lon: 15.91 }
         });
@@ -62,8 +63,10 @@ describe('agent activity', () => {
         expect(response.body.events[2].location).toEqual({ lat: 45.81, lon: 15.91 });
         expect(response.body.events[1]).toMatchObject({
             id: 'verified-execution', action: { type: 'execute', proposalId: 'p1' },
+            proposalType: 'park', proposalPrimaryType: 'Purchase',
             provenance: { source: 'verified_proposal_lifecycle' }
         });
+        expect(response.body.events[2]).toMatchObject({ proposalType: 'park', proposalPrimaryType: 'Purchase' });
         expect(calls.find(call => call.sql.includes('FROM proposal') && call.sql.includes('created_at')).params).toEqual([30]);
         expect(calls.find(call => call.sql.includes('consensus.land_event')).sql).toMatch(/event_type = 'proposal_lifecycle' AND outcome = 'executed'/);
     });

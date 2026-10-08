@@ -1,0 +1,112 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:CK:avarua",
+  "name": "Avarua",
+  "country": "Cook Islands",
+  "countryCode": "CK",
+  "centerLatLon": [
+    -21.207,
+    -159.775
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/CK.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/CK.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Avarua Cook Islands cadastral parcels GIS official title land survey",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Cook Islands cadastral parcel geometry Avarua Rarotonga official survey map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Avarua Cook Islands land boundary cadastre survey map Te Au o Tonga Rarotonga",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"Te Au o Tonga\" Avarua land map survey",
+      "language": "Cook Islands Māori place-name/local-language search",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Cook Islands cadastral parcel survey land map Rarotonga Avarua tapere",
+      "language": "English",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.justice.gov.ck/survey/",
+      "observation": "Official Ministry of Justice says Land Administration is the repository and primary source for official land boundaries and manages cadastral surveys/mapping; it links sample survey maps, not a public polygon service."
+    },
+    {
+      "url": "https://ici.gov.ck/land-maps/",
+      "observation": "Official Infrastructure Cook Islands Land Maps request form asks for village, land name/tapere, island district and purpose; land maps are requested through a service form, not exposed as a public city query."
+    },
+    {
+      "url": "https://cookgeo.gov.ck/",
+      "observation": "Official CookGeo portal. Complete public dataset API catalog inspected (64 of 64 records). Records matching Avarua/Rarotonga are 2022 imagery, 1 m topo-bathymetric DEM and contours, and offshore/harbour bathymetry; no cadastral/parcel/land-boundary vector layer appears in the catalog."
+    },
+    {
+      "url": "https://cookgeo.gov.ck/api/v2/datasets/?page_size=100",
+      "observation": "Public catalog API HTTP 200, total=64, all 64 returned. Searched all titles, abstracts and keywords for parcel/cadastral/land/boundary and Rarotonga/Avarua; no city parcel dataset found. Rarotonga raster products are not parcel boundaries."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cookgeo.gov.ck/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Official portal home page returned; identifies CookGeo as the national geospatial dataset/map portal."
+    },
+    {
+      "url": "https://cookgeo.gov.ck/api/v2/datasets/?page_size=100",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Complete catalog response: total=64 and 64 records. No land-parcel/cadastral/boundary feature layer found; Rarotonga/Avarua datasets were imagery/DEM/contours and bathymetry."
+    },
+    {
+      "url": "https://www.justice.gov.ck/survey/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official Ministry survey page inspected; Land Administration is official boundary and cadastral survey custodian, no public city query service linked."
+    },
+    {
+      "url": "https://ici.gov.ck/land-maps/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official Land Maps service form inspected; requesting a map needs village, land/tapere and district information."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "The official cadastre is confirmed to exist and its ministry is the primary boundary custodian. The public CookGeo catalog contains no Avarua parcel vector layer; the ministry instead offers an individual land-map request form. No bounded parcel response captured, so city query availability/geometry remains unknown.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": null,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_cadastre_confirmed_public_city_parcel_geometry_not_verified",
+  "coverageAssessment": {
+    "claimedScope": "National Land Administration boundary/cadastral survey responsibility confirmed; public dataset catalog checked in full.",
+    "verifiedOpenScope": "No public Avarua parcel vectors; CookGeo raster/imagery covers Rarotonga, and map requests are submitted to ICI.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-avarua.json"
+}

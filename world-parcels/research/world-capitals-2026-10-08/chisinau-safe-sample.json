@@ -1,0 +1,82 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "terenuri.7893574",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "8294aa8cf9aa8093ae4ce9caa5f42f9d207043863aae61714a5f9327676b0a07",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "codcadastral": "01002050009",
+        "cod_parcel": " 0009"
+      },
+      "bbox": [
+        28.8346,
+        47.0212,
+        28.8355,
+        47.0219
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": "terenuri.7893622",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "5707e99b65d48987ae239793995836d3d737c8c9a2a7a6ef5c2ade61df0156a6",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "codcadastral": "01002050023",
+        "cod_parcel": " 0023"
+      },
+      "bbox": [
+        28.8312,
+        47.021,
+        28.8316,
+        47.0212
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": "terenuri.7893656",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "0837410da5bda0e6297671079b2e89799aaea10c926ba0caf070ad5e947f813d",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "codcadastral": "01002050034",
+        "cod_parcel": " 0034"
+      },
+      "bbox": [
+        28.8312,
+        47.0211,
+        28.8314,
+        47.0212
+      ]
+    }
+  ],
+  "totalFeatures": 57,
+  "numberMatched": 57,
+  "numberReturned": 3,
+  "timeStamp": "2026-10-08T18:13:31.412Z",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+    }
+  },
+  "bbox": [
+    28.8312,
+    47.021,
+    28.8355,
+    47.0219
+  ],
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

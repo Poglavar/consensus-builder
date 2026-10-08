@@ -44,6 +44,101 @@ const AHMEDABAD_CAPPED_PROFILE = {
 const AHMEDABAD_BOUNDS = [72.59, 23.015, 72.595, 23.02];
 
 describe('WFS parcel adapter', () => {
+    it('batches native ID filters at the configured limit and reports absence after every batch completes', async () => {
+        const { adapter, fetchImpl } = source([page([feature(1)]), page([])], { idBatchSize: 1 });
+        const result = await adapter.queryIds(['FR-PCI-75105000AD0011', 'FR-PCI-75105000AD0012', 'FR-PCI-75105000AD0011']);
+        expect(result.features.map(row => row.id)).toEqual(['FR-PCI-75105000AD0011']);
+        expect(result.absentIds).toEqual(['FR-PCI-75105000AD0012']);
+        expect(fetchImpl.mock.calls.map(([url]) => new URL(url).searchParams.get('cql_filter'))).toEqual([
+            "idu IN ('75105000AD0011')", "idu IN ('75105000AD0012')"
+        ]);
+    });
+    it('does not publish partial results or accept a different batch identity after the first batch succeeds', async () => {
+        const failure = source([page([feature(1)]), { ok: false, status: 503 }], { idBatchSize: 1 });
+        await expect(failure.adapter.queryIds(['FR-PCI-75105000AD0011', 'FR-PCI-75105000AD0012'])).rejects.toMatchObject({ upstreamStatus: 503 });
+        const repeat = source([page([feature(1)]), page([feature(1)])], { idBatchSize: 1 });
+        await expect(repeat.adapter.queryIds(['FR-PCI-75105000AD0011', 'FR-PCI-75105000AD0012'])).rejects.toThrow(/unexpected parcels/);
+    });
+    it.each([0, -1, 81, 1.5, '3'])('rejects invalid native ID batch limit %s', idBatchSize => {
+        expect(() => source([], { idBatchSize })).toThrow(/Invalid WFS/);
+    });
+    it('requests only the configured geometry and safe attributes on every bounds page and exact read', async () => {
+        const first = feature(1), second = feature(2, '75105000AD0012');
+        const { adapter, fetchImpl } = source([page([first], 2), page([second], 2), page([first])],
+            { requestProperties: true, geometryField: 'the_geom', pageSize: 1 });
+        const bounds = await adapter.queryBounds(BOUNDS);
+        expect(bounds.features).toHaveLength(2);
+        await expect(adapter.queryIds(['FR-PCI-75105000AD0011'])).resolves.toMatchObject({ complete: true, absentIds: [] });
+        for (const [url] of fetchImpl.mock.calls) {
+            expect(new URL(url).searchParams.get('propertyName')).toBe('the_geom,idu,numero');
+        }
+    });
+    it.each([
+        { requestProperties: 'yes' }, { requestProperties: true },
+        { requestProperties: true, geometryField: 'geom', outFields: ['idu', 'owner,address'] }
+    ])('rejects malformed WFS property projection %j', override => {
+        expect(() => source([], override)).toThrow(/Invalid WFS/);
+    });
+    it('leaves default provider property negotiation unchanged', async () => {
+        const { adapter, fetchImpl } = source([page([feature(1)])]);
+        await adapter.queryBounds(BOUNDS);
+        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.has('propertyName')).toBe(false);
+    });
+    it('preserves projected parcel detail and holes while keeping spatial filters in longitude/latitude', async () => {
+        const projected = { type: 'MultiPolygon', coordinates: [[
+            [[111319.4908, 111325.1429], [111320.4908, 111325.1429], [111320.4908, 111326.1429], [111319.4908, 111326.1429], [111319.4908, 111325.1429]],
+            [[111319.6908, 111325.3429], [111319.6908, 111325.9429], [111320.2908, 111325.9429], [111320.2908, 111325.3429], [111319.6908, 111325.3429]]
+        ]] };
+        const crs = { type: 'name', properties: { name: 'urn:ogc:def:crs:EPSG::3857' } };
+        const { adapter, fetchImpl } = source([page([feature(1, '75105000AD0011', projected)], 1, { crs })], { responseSrid: 3857 });
+        const result = await adapter.queryBounds([0.999, 0.999, 1.001, 1.001]);
+        const geometry = result.features[0].geometry;
+        expect(geometry.type).toBe('MultiPolygon');
+        expect(geometry.coordinates[0]).toHaveLength(2);
+        expect(geometry.coordinates[0][0][0][0]).toBeCloseTo(1, 8);
+        expect(geometry.coordinates[0][0][0][1]).toBeCloseTo(1, 8);
+        expect(geometry.coordinates[0][0][1][0] - geometry.coordinates[0][0][0][0]).toBeCloseTo(0.000008983152841, 11);
+        expect(geometry.coordinates[0][0].at(-1)).toEqual(geometry.coordinates[0][0][0]);
+        expect(projected.coordinates[0][0][0]).toEqual([111319.4908, 111325.1429]);
+        const url = new URL(fetchImpl.mock.calls[0][0]);
+        expect(url.searchParams.get('srsName')).toBe('EPSG:3857');
+        expect(url.searchParams.get('bbox')).toBe('0.999,0.999,1.001,1.001,CRS:84');
+    });
+    it.each([undefined, { type: 'name', properties: { name: 'EPSG:4326' } }])('rejects unverified projected response CRS (%s)', async crs => {
+        const { adapter } = source([page([feature(1)], 1, { crs })], { responseSrid: 3857 });
+        await expect(adapter.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+    });
+    it.each([null, '111319', 1e30])('rejects malformed projected coordinates (%s)', async invalid => {
+        const geometry = { type: 'Polygon', coordinates: [[[invalid, 111325], [111320, 111325], [111320, 111326], [invalid, 111325]]] };
+        const crs = { type: 'name', properties: { name: 'EPSG:3857' } };
+        const { adapter } = source([page([feature(1, '75105000AD0011', geometry)], 1, { crs })], { responseSrid: 3857 });
+        await expect(adapter.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+    });
+    it('rejects unsupported output projections before network access', () => {
+        expect(() => source([], { responseSrid: 4026 })).toThrow(/invalid wfs parcel source descriptor/i);
+    });
+    it('normalizes mixed metric serialization precision identically for viewport and fresh ID reads', async () => {
+        const geometry = x => ({ type: 'Polygon', coordinates: [[[x, 111325.1429], [111320.4908, 111325.1429], [111320.4908, 111326.1429], [x, 111325.1429]]] });
+        const crs = { type: 'name', properties: { name: 'EPSG:3857' } };
+        const { adapter } = source([
+            page([feature(1, '75105000AD0011', geometry(111319.4908241))], 1, { crs }),
+            page([feature(1, '75105000AD0011', geometry(111319.4908))], 1, { crs })
+        ], { responseSrid: 3857, responseCoordinatePrecision: 4 });
+        const viewport = await adapter.queryBounds(BOUNDS);
+        const exact = await adapter.queryIds(['FR-PCI-75105000AD0011']);
+        expect(exact.features[0].geometry).toEqual(viewport.features[0].geometry);
+    });
+    it('allows a counted empty projected response without a CRS and quotes a native field named id', async () => {
+        const { adapter, fetchImpl } = source([page([], 0, { crs: null })], {
+            responseSrid: 3857, idField: 'id', idType: 'integer', idPattern: undefined, outFields: ['id']
+        });
+        const result = await adapter.queryIds(['FR-PCI-2147483647']);
+        expect(result).toMatchObject({ complete: true, features: [], absentIds: ['FR-PCI-2147483647'] });
+        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('cql_filter')).toBe('"id" IN (2147483647)');
+    });
+    it.each([-1, 9, 0.5, '4'])('rejects unsupported metric precision (%s)', responseCoordinatePrecision => {
+        expect(() => source([], { responseSrid: 3857, responseCoordinatePrecision })).toThrow(/invalid wfs parcel source descriptor/i);
+    });
     it('uses explicit longitude/latitude CRS and pages until the known match count is reached', async () => {
         const { adapter, fetchImpl } = source([
             page([feature(1), feature(2, '75105000AD0012')], 3, { links: [{ rel: 'next', href: 'http://localhost/unsafe' }] }),

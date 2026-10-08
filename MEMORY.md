@@ -546,3 +546,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-08: Globe land geometry is independent of ISO registry joins: retain uncoded Natural Earth territories with stable source IDs and unknown parcel coverage, so missing country metadata never turns land into ocean.
 
 - 2026-10-08: Tbilisi and Istanbul load exact cadastral polygons on map clicks without completing viewport cells; their public services do not provide verified complete area enumeration.
+
+- 2026-10-08: BEV parcel geometry is reconstructed from every required maximum-resolution vector tile in a shared integer grid; the reference API supplies only bounds, so it must never be used as the parcel shape, and incomplete tile coverage fails explicitly.

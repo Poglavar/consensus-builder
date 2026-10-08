@@ -16,6 +16,7 @@ import { createNairobiOutlineSource } from './nairobi-outline-source.js';
 import { createKazakhstanPkkSource } from './kazakhstan-pkk-source.js';
 import { createMsdaPointSource } from './msda-point-source.js';
 import { createTkgmPointSource } from './tkgm-point-source.js';
+import { createBevTileParcelSource } from './bev-tile-source.js';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
@@ -112,6 +113,7 @@ export function createParcelSource(descriptor, options = {}) {
         'kazakhstan-pkk': createKazakhstanPkkSource,
         'msda-point': createMsdaPointSource,
         'tkgm-point': createTkgmPointSource,
+        'bev-tiles': createBevTileParcelSource,
         socrata: createSocrataParcelSource }[descriptor.adapter];
     if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {

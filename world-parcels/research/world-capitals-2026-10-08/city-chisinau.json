@@ -1,0 +1,584 @@
+{
+  "cityId": "capital:MD:chisinau",
+  "name": "Chisinau",
+  "country": "Moldova",
+  "countryCode": "MD",
+  "centerLatLon": [
+    47,
+    28.85
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "Chisinau Moldova cadastral parcel map geoportal",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Chișinău plan cadastral parcele geoportal e cadastru",
+      "language": "Romanian",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.ipcbi.gov.md/ro",
+      "observation": "Official cadastral agency links the Geodata public map."
+    },
+    {
+      "url": "https://geodata.gov.md/?locale=ro#/",
+      "observation": "Public MapStore bundle/config reveals cadastru_data WFS; capabilities names terenuri as cadastral parcels."
+    },
+    {
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer",
+      "observation": "Municipal land layers also have parcel references; a central bbox request timed out. Chosen source is the national cadastral WFS instead."
+    }
+  ],
+  "requests": [
+    {
+      "name": "chisinau-agency",
+      "url": "https://www.ipcbi.gov.md/ro",
+      "checkedAt": "2026-10-08T18:01:02.053Z",
+      "bytes": 51878,
+      "contentType": "text/html; charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:13.436Z",
+      "method": "GET",
+      "url": "https://geodata.gov.md/_v/2026100818/dist/mapstore2.js?bd0c292c59e5d82a989f&v=02122026",
+      "httpStatus": 200,
+      "finalUrl": "https://geodata.gov.md/_v/2026100818/dist/mapstore2.js?bd0c292c59e5d82a989f&v=02122026",
+      "contentType": "text/javascript",
+      "bytes": 5107671
+    },
+    {
+      "checkedAt": "2026-10-08T18:12:17.883Z",
+      "method": "GET",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+      "httpStatus": 200,
+      "finalUrl": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+      "contentType": "application/xml",
+      "bytes": 96665
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:13.437Z",
+      "method": "GET",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector?f=pjson",
+      "httpStatus": 200,
+      "finalUrl": "https://portal.dgaurf.md/arcgis/rest/services/Colector?f=pjson",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 1331
+    },
+    {
+      "checkedAt": "2026-10-08T18:09:48.455Z",
+      "method": "GET",
+      "url": "https://geodata.gov.md/_v/2026100818/localConfig.json",
+      "httpStatus": 404,
+      "finalUrl": "https://geodata.gov.md/_v/2026100818/localConfig.json",
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "checkedAt": "2026-10-08T18:11:21.560Z",
+      "method": "GET",
+      "url": "https://geodata.gov.md/_v/2026100818/configs/config.json",
+      "httpStatus": 200,
+      "finalUrl": "https://geodata.gov.md/_v/2026100818/configs/config.json",
+      "contentType": "application/octet-stream",
+      "bytes": 658
+    },
+    {
+      "name": "chisinau-geodata",
+      "url": "https://geodata.gov.md/?locale=ro#/",
+      "checkedAt": "2026-10-08T18:04:18.624Z",
+      "bytes": 27291,
+      "contentType": "text/html",
+      "redirect": "https://geodata.gov.md/_v/2026100818/?locale=ro",
+      "httpStatus": 200
+    },
+    {
+      "name": "chisinau-land-layer",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Cadastru_2023/MapServer/29?f=json",
+      "checkedAt": "2026-10-08T18:01:01.247Z",
+      "bytes": 2325,
+      "contentType": "text/plain;charset=utf-8",
+      "geometryType": "esriGeometryPolygon",
+      "httpStatus": 200
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:40.777Z",
+      "method": "GET",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer?f=pjson",
+      "httpStatus": 200,
+      "finalUrl": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer?f=pjson",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 1824
+    },
+    {
+      "checkedAt": "2026-10-08T18:11:21.560Z",
+      "method": "GET",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer/0?f=pjson",
+      "httpStatus": 200,
+      "finalUrl": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer/0?f=pjson",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 17686
+    },
+    {
+      "checkedAt": "2026-10-08T18:11:21.561Z",
+      "method": "GET",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer/1?f=pjson",
+      "httpStatus": 200,
+      "finalUrl": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer/1?f=pjson",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 13415
+    },
+    {
+      "checkedAt": "2026-10-08T18:11:21.531Z",
+      "method": "GET",
+      "url": "https://geodata.gov.md/_v/2026100818/configs/localConfig.json",
+      "httpStatus": 200,
+      "finalUrl": "https://geodata.gov.md/_v/2026100818/configs/localConfig.json",
+      "contentType": "application/octet-stream",
+      "bytes": 38825
+    },
+    {
+      "checkedAt": "2026-10-08T18:12:17.910Z",
+      "method": "GET",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer/0/query?where=1%3D1&geometry=28.831,47.021,28.835,47.025&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=objectid_12,codcadastr,cod_parcel,cod_cadast,cadastre_n,statut&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "error": "The operation was aborted due to timeout",
+      "httpStatus": null
+    },
+    {
+      "checkedAt": "2026-10-08T18:13:30.969Z",
+      "method": "GET",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&request=GetFeature&version=2.0.0&typeNames=cadastru_data:terenuri&outputFormat=application/json&srsName=CRS:84&bbox=28.831,47.021,28.835,47.025,CRS:84&count=3&propertyName=geom,codcadastral,cod_parcel&sortBy=codcadastral",
+      "httpStatus": 200,
+      "finalUrl": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&request=GetFeature&version=2.0.0&typeNames=cadastru_data:terenuri&outputFormat=application/json&srsName=CRS:84&bbox=28.831,47.021,28.835,47.025,CRS:84&count=3&propertyName=geom,codcadastral,cod_parcel&sortBy=codcadastral",
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1734
+    },
+    {
+      "checkedAt": "2026-10-08T18:12:42.583Z",
+      "method": "GET",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeNames=cadastru_data:terenuri",
+      "httpStatus": 200,
+      "finalUrl": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeNames=cadastru_data:terenuri",
+      "contentType": "application/gml+xml; version=3.2",
+      "bytes": 1491
+    },
+    {
+      "name": "chisinau-service",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Colector/Cadastru_2023/MapServer?f=json",
+      "checkedAt": "2026-10-08T17:58:12.363Z",
+      "bytes": 6512,
+      "elapsedMs": 706,
+      "contentType": "text/plain;charset=utf-8",
+      "layers": [
+        {
+          "id": 0,
+          "name": "colector2.tvitalie.Zone_de_Agrement",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 1,
+          "name": "colector2.tvitalie.Platforma_pentru_deseuri",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 2,
+          "name": "colector2.tvitalie.Mobilier_urban",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 3,
+          "name": "colector2.tvitalie.Stati_publice",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 4,
+          "name": "colector2.tvitalie.Indicatoare_rutiere",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 5,
+          "name": "colector2.tvitalie.Parcari_autorizate",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 6,
+          "name": "colector2.tvitalie.Altitudini_1_500P",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 7,
+          "name": "colector2.tvitalie.Lini_rosi_Chisinau",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 8,
+          "name": "colector2.tvitalie.Curbe_de_depresia",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 9,
+          "name": "colector2.tvitalie.Altitudini_1_500S",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 10,
+          "name": "colector2.tvitalie.Zone_pietonale",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 11,
+          "name": "colector2.tvitalie.Calea_ferata_RM",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 12,
+          "name": "colector2.tvitalie.Control_funciar",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 13,
+          "name": "colector2.tvitalie.Coridoare_ecologice",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 14,
+          "name": "colector2.tvitalie.inundatie_0_5procent",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 15,
+          "name": "colector2.tvitalie.Parcari_auto",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 16,
+          "name": "colector2.tvitalie.Inundatie_0_1_procent",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 17,
+          "name": "colector2.tvitalie.Marirea_spatiilor_verzi",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 18,
+          "name": "colector2.tvitalie.Acaparare_ilegala_teren",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 19,
+          "name": "colector2.tvitalie.inundatie_1procent",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 20,
+          "name": "colector2.tvitalie.Hidrologia_inginereasca",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 21,
+          "name": "colector2.tvitalie.Teren_consultari_publice",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 22,
+          "name": "colector2.tvitalie.inundati_ruperea_barajelor",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 23,
+          "name": "colector2.tvitalie.Documentatie_urbanism",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 24,
+          "name": "colector2.tvitalie.Alunecari_de_teren",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 25,
+          "name": "colector2.tvitalie.ZU",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 26,
+          "name": "colector2.tvitalie.Registru_monumentelor",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 27,
+          "name": "colector2.tvitalie.Valoarea_teren",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 28,
+          "name": "colector2.tvitalie.Spati_verzi_identificate",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 29,
+          "name": "colector2.tvitalie.Beneficiari_funciari",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 30,
+          "name": "colector2.tvitalie.Teren_APL",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 31,
+          "name": "colector2.tvitalie.Servitute_mun_Chisinau",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 32,
+          "name": "colector2.tvitalie.Centru_Istoric",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 33,
+          "name": "colector2.tvitalie.Populatia_mun_Chisinau",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 34,
+          "name": "colector2.tvitalie.Umpluturi_de_sol",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 35,
+          "name": "Geologia_inginereasca",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        },
+        {
+          "id": 36,
+          "name": "colector2.tvitalie.Micsorarea_spatiilor_verzi",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0
+        }
+      ],
+      "httpStatus": 200
+    },
+    {
+      "checkedAt": "2026-10-08T18:09:48.456Z",
+      "method": "GET",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services?f=pjson",
+      "httpStatus": 200,
+      "finalUrl": "https://portal.dgaurf.md/arcgis/rest/services?f=pjson",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 363
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:13.437Z",
+      "method": "GET",
+      "url": "https://portal.dgaurf.md/arcgis/rest/services/Harti_tematice?f=pjson",
+      "httpStatus": 200,
+      "finalUrl": "https://portal.dgaurf.md/arcgis/rest/services/Harti_tematice?f=pjson",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 587
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official public WFS returned three Polygon features in central Chișinău, each with codcadastral and cod_parcel.",
+  "registryEvidenceUrls": [
+    "https://www.ipcbi.gov.md/ro",
+    "https://geodata.gov.md/?locale=ro#/",
+    "https://portal.dgaurf.md/arcgis/rest/services/Colector/Teren_mun_Chisinau/FeatureServer"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "md-geodata-cadastral-parcels"
+  ],
+  "sourceCandidate": {
+    "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs",
+    "publisher": "Moldova cadastral authority / Geodata",
+    "safeSampleFile": "chisinau-adapter-sample.geojson"
+  },
+  "coverageAssessment": {
+    "claimedScope": "National cadastral WFS; bounded central Chișinău sample verified.",
+    "verifiedOpenScope": "National cadastral WFS; bounded central Chișinău sample verified.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The retained sample includes native cadastral references only. Whole-city completeness and dataset vintage remain unverified.",
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "responseFile": "research/world-capitals-2026-10-08/chisinau-adapter-sample.geojson",
+    "runtimeSampleParcelCount": 59,
+    "initialSampleMetadataFile": "research/world-capitals-2026-10-08/chisinau-safe-sample.json"
+  },
+  "acceptanceFile": "research/world-capitals-2026-10-08/chisinau-acceptance.json",
+  "geometryQualityFile": "research/world-capitals-2026-10-08/chisinau-quality.json",
+  "runtimeQualified": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Fresh native-coordinate reads reproduce a material overlap of 5.36% of the smaller parcel, about 55.6 m² on the ground. No documented lifecycle rule resolves it.",
+    "evidenceFile": "research/world-capitals-2026-10-08/chisinau-overlap-review.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/chisinau-adapter-sample.geojson"
+}

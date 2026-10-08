@@ -367,6 +367,8 @@ function publicProposalEvents(rows = []) {
         id: `proposal:${row.proposal_id}:created`, source: 'live',
         action: { type: 'create', proposalId: String(row.proposal_id) },
         entity: { type: 'proposal', id: String(row.proposal_id) },
+        proposalType: row.proposal_data?.goal || null,
+        proposalPrimaryType: row.proposal_data?.primaryType || null,
         proposalName: row.display_name || null, cityId: row.city || null,
         occurredAt: row.created_at || null, transaction: null,
         message: `Proposal ${row.display_name || row.proposal_id} was created.`
@@ -381,6 +383,8 @@ function executedProposalEvents(rows = [], proposalIdsByAccount = new Map(), pro
         return [withProposalLocation({
             id: row.event_id, source: 'live', action: { type: 'execute', proposalId },
             entity: { type: 'proposal', id: proposalId }, outcome: 'executed',
+            proposalType: proposal.proposal_data?.goal || null,
+            proposalPrimaryType: proposal.proposal_data?.primaryType || null,
             proposalName: proposal.display_name || null, cityId: proposal.city || null,
             occurredAt: row.source_observed_at, transaction: row.transaction_signature || null,
             message: `Proposal ${proposal.display_name || proposalId} was executed.`,
@@ -533,7 +537,11 @@ export function setupAgentActivityRoute(app, pool, {
                 && byId.has(String(event.action?.proposalId)))
                 .map(event => {
                     const proposal = byId.get(String(event.action.proposalId));
-                    return withProposalLocation({ ...event, proposalName: proposal.display_name || null, cityId: proposal.city || null }, proposal);
+                    return withProposalLocation({ ...event,
+                        proposalType: proposal.proposal_data?.goal || null,
+                        proposalPrimaryType: proposal.proposal_data?.primaryType || null,
+                        proposalName: proposal.display_name || null, cityId: proposal.city || null
+                    }, proposal);
                 });
             const events = mergeEvents(dbProposalEvents, executedEvents, confirmedChainEvents)
                 .sort((a, b) => (Date.parse(b.occurredAt || b.recordedAt || 0) || 0)

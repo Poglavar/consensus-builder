@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent review of the largest overlap pair from the bounded Bandar Seri Begawan sample, re-queried directly from the source in native coordinates. No raw geometry is retained.",
+  "checkedAt": "2026-10-08T19:11:49Z",
+  "source": {
+    "layerUrl": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3",
+    "queryUrl": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3/query?objectIds=109741%2C109739&outFields=OBJECTID%2CLOTNUM%2CDISTCODE%2CBOOKCODE&returnGeometry=true&f=json",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "format": "ArcGIS REST f=json",
+    "requestedObjectIds": [
+      109741,
+      109739
+    ],
+    "selectedAttributeFields": [
+      "OBJECTID",
+      "LOTNUM",
+      "DISTCODE",
+      "BOOKCODE"
+    ],
+    "returnGeometry": true,
+    "outSpatialReferenceRequested": false,
+    "responseSpatialReference": {
+      "wkid": 102490,
+      "latestWkid": 5247
+    },
+    "featureCount": 2,
+    "sourceParcelLabels": [
+      {
+        "objectId": 109739,
+        "lotNumber": 13833,
+        "districtCode": "BM",
+        "bookCode": "BD"
+      },
+      {
+        "objectId": 109741,
+        "lotNumber": 13832,
+        "districtCode": "BM",
+        "bookCode": "BD"
+      }
+    ]
+  },
+  "pairIds": [
+    "BN-SD-BSB-109741",
+    "BN-SD-BSB-109739"
+  ],
+  "nativeGeometryReview": {
+    "geometrySource": "Unmodified ArcGIS JSON rings from the HTTP 200 response; analyzed in returned native coordinates, without outSR or WGS84 serialization.",
+    "intersectionResultType": "GeometryCollection",
+    "positiveAreaPolygonComponents": 2,
+    "lineOnlyComponentsExcludedFromArea": 2,
+    "areaM2": 26.86821585625615,
+    "parcelAreasM2": {
+      "BN-SD-BSB-109741": 124930.77093416991,
+      "BN-SD-BSB-109739": 161766.29739287286
+    },
+    "fractionOfSmallerParcel": 0.00021506483675197912,
+    "fractionOfSmallerParcelPercent": 0.02150648367519791,
+    "componentAreasM2": [
+      22.450148114883383,
+      4.418067741372759
+    ],
+    "maximumInscribedDisk": {
+      "diameterM": 0.29678605770991207,
+      "componentIndex": 0,
+      "algorithm": "GEOS/Shapely 2.1.2 maximum_inscribed_circle",
+      "toleranceM": 0.005,
+      "interpretation": "Largest circular clearance that fits wholly within either positive-area overlap component; the second component has a smaller 0.0542 m diameter."
+    },
+    "comparisonToEarlierSerializedSample": {
+      "earlierAreaM2": 26.886630303638075,
+      "nativeMinusEarlierM2": -0.01841444738192376,
+      "note": "Native-source overlap area agrees within 0.07% with the earlier EPSG:4326 serialized geometry result; the near-match confirms that result was not created by output-CRS serialization."
+    },
+    "conclusion": "This is a narrow sliver overlap, not a broad parcel conflict: maximum inscribed disk diameter is about 0.297 m and area is 0.02151% of the smaller parcel. The result is pair-specific and does not establish whole-city topology."
+  },
+  "rawGeometryStored": false
+}

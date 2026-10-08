@@ -1,0 +1,662 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32636",
+  "featureCount": 89,
+  "validNonemptyCount": 89,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "LB-BBED-Zo_74",
+        "LB-BBED-Zo_73"
+      ],
+      "overlapM2": 0.12518215916728748,
+      "fractionOfSmaller": 0.0004979625000347434,
+      "maximumInscribedDiameterM": 0.026182333658886166
+    },
+    {
+      "ids": [
+        "LB-BBED-Zo_101",
+        "LB-BBED-Zo_77"
+      ],
+      "overlapM2": 0.307560213917752,
+      "fractionOfSmaller": 0.0007532652155477663,
+      "maximumInscribedDiameterM": 0.04263476694057806
+    }
+  ],
+  "sumPairwiseOverlapM2": 0.4327423730850395,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 28.278939064012583,
+    "median": 661.0166761888049,
+    "max": 25085.22573820472
+  },
+  "features": [
+    {
+      "id": "LB-BBED-Zo_15",
+      "areaM2": 545.8885228900361,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_939",
+      "areaM2": 361.29731858117304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1019",
+      "areaM2": 427.6250133782293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1138",
+      "areaM2": 2285.4290195959074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1141",
+      "areaM2": 28.278939064012583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1139",
+      "areaM2": 43.44925334964113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1137",
+      "areaM2": 2684.2114407378813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_68",
+      "areaM2": 1336.6222528342028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_74",
+      "areaM2": 251.38872738118508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_73",
+      "areaM2": 412.88355797396076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_908",
+      "areaM2": 73.53813411662776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_83",
+      "areaM2": 59.630220590346156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_89",
+      "areaM2": 2549.6490650649575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_26",
+      "areaM2": 4210.3089865762095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1128",
+      "areaM2": 3982.8149755500117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1158",
+      "areaM2": 1582.5871241666325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_978",
+      "areaM2": 1821.3120334045527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_9",
+      "areaM2": 1635.7352369724606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_11",
+      "areaM2": 1125.1437555475613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1136",
+      "areaM2": 396.47941425997885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_3",
+      "areaM2": 25085.22573820472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1036",
+      "areaM2": 1410.5209430336974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_108",
+      "areaM2": 934.8140516029407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1134",
+      "areaM2": 2573.59089116235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1132",
+      "areaM2": 8448.53310316683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Po_7",
+      "areaM2": 245.17632060479923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_4",
+      "areaM2": 1450.8507191803674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1133",
+      "areaM2": 102.86162453494244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_800",
+      "areaM2": 415.8020717713583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_101",
+      "areaM2": 408.3026901674964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1114",
+      "areaM2": 195.03862348360954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1136",
+      "areaM2": 167.61692568306896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1135",
+      "areaM2": 176.79626464615882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_808",
+      "areaM2": 425.90570865647237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1209",
+      "areaM2": 287.6855162850844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_812",
+      "areaM2": 289.9341876842711,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1134",
+      "areaM2": 122.93847492741361,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_816",
+      "areaM2": 59.564953632020476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1210",
+      "areaM2": 66.82704412343537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1372",
+      "areaM2": 815.6298637055248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1371",
+      "areaM2": 3874.691929060455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_77",
+      "areaM2": 4215.1936931126065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1370",
+      "areaM2": 3769.3850777495018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1374",
+      "areaM2": 1620.9232269679892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1373",
+      "areaM2": 513.9304034806729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1131",
+      "areaM2": 3513.3924978595255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_831",
+      "areaM2": 2599.905340469379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1392",
+      "areaM2": 7819.150879571327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1237",
+      "areaM2": 148.09593208174783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1379",
+      "areaM2": 4142.058684317914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1380",
+      "areaM2": 466.32293113775756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1412",
+      "areaM2": 507.81631228413823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_28",
+      "areaM2": 29.865647555817795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_911",
+      "areaM2": 1282.1966964172002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_834",
+      "areaM2": 4473.639241595537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1430",
+      "areaM2": 865.9152374846745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1410",
+      "areaM2": 2268.8972276395175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1437",
+      "areaM2": 116.74145990229741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_1",
+      "areaM2": 1712.4012702832174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_855",
+      "areaM2": 934.0946464404614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_859",
+      "areaM2": 460.83807750076096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1375",
+      "areaM2": 452.6306320451614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_2",
+      "areaM2": 3601.0912478350406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_122",
+      "areaM2": 1102.4685761214696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_24",
+      "areaM2": 544.150426764371,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_115",
+      "areaM2": 504.89884514887495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1381",
+      "areaM2": 438.7551640607981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_2",
+      "areaM2": 3830.1389998359723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_928",
+      "areaM2": 610.3898346907647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1383",
+      "areaM2": 1632.8741424656419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1363",
+      "areaM2": 3621.4686265339087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Zo_62",
+      "areaM2": 188.82826878915017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_731",
+      "areaM2": 168.797235613824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_802",
+      "areaM2": 360.151980212372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_803",
+      "areaM2": 342.5485640299346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_856",
+      "areaM2": 111.76303333097559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_1423",
+      "areaM2": 2111.1272524142328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_990",
+      "areaM2": 928.0324343504759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_797",
+      "areaM2": 884.443379225509,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_799",
+      "areaM2": 661.0166761888049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_795",
+      "areaM2": 62.32879408707928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_794",
+      "areaM2": 1862.5132705382252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Mi_183",
+      "areaM2": 830.0199239721319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Po_773",
+      "areaM2": 1735.4674382750075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Po_1378",
+      "areaM2": 437.31950367599825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Po_1406",
+      "areaM2": 437.3282227384716,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Po_790",
+      "areaM2": 425.1378940906879,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Po_1360",
+      "areaM2": 1041.4546156371985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "LB-BBED-Po_1454",
+      "areaM2": 5444.166396888271,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

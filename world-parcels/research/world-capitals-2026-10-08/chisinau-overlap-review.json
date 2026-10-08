@@ -1,0 +1,40 @@
+{
+  "purpose": "Fresh projected source reread of the largest Chisinau overlap, before any adapter rounding or reprojection. Web Mercator dimensions differ from local ground dimensions but the overlap fraction is comparable. No source geometry is repaired.",
+  "request": {
+    "checkedAt": "2026-10-08T18:43:07.044Z",
+    "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&count=5&CQL_FILTER=codcadastral+IN+%28%2701002050166%27%2C%2701002050162%27%29&propertyName=geom%2Ccodcadastral%2Ccod_parcel%2Clanduse%2Ctypeproperty",
+    "httpStatus": 200,
+    "bytes": 3328,
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:EPSG::3857"
+      }
+    },
+    "numberMatched": 2
+  },
+  "library": "Shapely 2.1.2",
+  "crs": "EPSG:3857",
+  "nativeProperties": [
+    {
+      "landuse": "Pentru construcţii",
+      "typeproperty": "PUBLICA",
+      "codcadastral": "01002050166",
+      "cod_parcel": " 0166"
+    },
+    {
+      "landuse": "Pentru construcţii",
+      "typeproperty": "PUBLICA",
+      "codcadastral": "01002050162",
+      "cod_parcel": " 0162"
+    }
+  ],
+  "valid": [
+    true,
+    true
+  ],
+  "overlapProjectedM2": 119.62469371563864,
+  "fractionOfSmaller": 0.05357046353519994,
+  "maximumInscribedDiameterProjectedM": 4.9619571068699555,
+  "decision": "Material overlap is already present in projected source output, independent of WGS84 precision or adapter serialization; source remains held."
+}

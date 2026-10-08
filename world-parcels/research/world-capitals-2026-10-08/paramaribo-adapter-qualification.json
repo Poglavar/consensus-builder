@@ -1,0 +1,320 @@
+{
+  "purpose": "Read-only provider adapter qualification; no catalogue or runtime configuration change.",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "city": "paramaribo",
+  "sourceId": "sr-miglis-paramaribo-fs",
+  "descriptor": {
+    "id": "sr-miglis-paramaribo-fs",
+    "endpoint": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6",
+    "idField": "FID",
+    "idType": "integer",
+    "idPrefix": "SR-MIGLIS-PM-",
+    "outFields": [
+      "FID"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 1,
+    "metricSrid": 32621,
+    "objectIdField": "FID"
+  },
+  "grid": {
+    "cellDegrees": 0.002,
+    "alignedCellCount": 9,
+    "panCellCount": 4,
+    "totalCellCount": 13,
+    "pageSizeForced": 3
+  },
+  "tests": [
+    {
+      "name": "aligned-0-0",
+      "bbox": [
+        -55.17,
+        5.83,
+        -55.168000000000006,
+        5.832000000000001
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 49,
+      "requestCount": 17,
+      "elapsedMs": 15295,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-1-0",
+      "bbox": [
+        -55.168,
+        5.83,
+        -55.166000000000004,
+        5.832000000000001
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 66,
+      "requestCount": 23,
+      "elapsedMs": 13207,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-2-0",
+      "bbox": [
+        -55.166,
+        5.83,
+        -55.164,
+        5.832000000000001
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 74,
+      "requestCount": 25,
+      "elapsedMs": 16973,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-0-1",
+      "bbox": [
+        -55.17,
+        5.832,
+        -55.168000000000006,
+        5.8340000000000005
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 82,
+      "requestCount": 28,
+      "elapsedMs": 17494,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-1-1",
+      "bbox": [
+        -55.168,
+        5.832,
+        -55.166000000000004,
+        5.8340000000000005
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 77,
+      "requestCount": 26,
+      "elapsedMs": 17056,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-2-1",
+      "bbox": [
+        -55.166,
+        5.832,
+        -55.164,
+        5.8340000000000005
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 71,
+      "requestCount": 24,
+      "elapsedMs": 14295,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-0-2",
+      "bbox": [
+        -55.17,
+        5.834,
+        -55.168000000000006,
+        5.836
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 57,
+      "requestCount": 20,
+      "elapsedMs": 12469,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-1-2",
+      "bbox": [
+        -55.168,
+        5.834,
+        -55.166000000000004,
+        5.836
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 55,
+      "requestCount": 19,
+      "elapsedMs": 11275,
+      "conflictCount": 0
+    },
+    {
+      "name": "aligned-2-2",
+      "bbox": [
+        -55.166,
+        5.834,
+        -55.164,
+        5.836
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 107,
+      "requestCount": 36,
+      "elapsedMs": 13923,
+      "conflictCount": 0
+    },
+    {
+      "name": "pan-1",
+      "bbox": [
+        -55.1695,
+        5.832,
+        -55.167500000000004,
+        5.8340000000000005
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 81,
+      "requestCount": 28,
+      "elapsedMs": 17089,
+      "conflictCount": 0
+    },
+    {
+      "name": "pan-2",
+      "bbox": [
+        -55.1665,
+        5.832,
+        -55.164500000000004,
+        5.8340000000000005
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 78,
+      "requestCount": 27,
+      "elapsedMs": 19477,
+      "conflictCount": 0
+    },
+    {
+      "name": "pan-3",
+      "bbox": [
+        -55.168,
+        5.8305,
+        -55.166000000000004,
+        5.8325000000000005
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 78,
+      "requestCount": 27,
+      "elapsedMs": 16300,
+      "conflictCount": 0
+    },
+    {
+      "name": "pan-4",
+      "bbox": [
+        -55.168,
+        5.8335,
+        -55.166000000000004,
+        5.835500000000001
+      ],
+      "passed": true,
+      "complete": true,
+      "featureCount": 54,
+      "requestCount": 19,
+      "elapsedMs": 14922,
+      "conflictCount": 0
+    }
+  ],
+  "requestSummary": {
+    "count": 499,
+    "forcedPageSize": 3,
+    "allRequestsRedacted": true
+  },
+  "identity": {
+    "viewportFeatureRows": 929,
+    "uniqueNativeIds": 516,
+    "duplicateIdConflicts": 0,
+    "freshExactIds": 516,
+    "exactGeometryMismatches": 0,
+    "absentProbe": {
+      "passed": true,
+      "requested": 1,
+      "returned": 0,
+      "absent": 1
+    },
+    "exactAllPassed": true
+  },
+  "footprint": {
+    "passed": true,
+    "parcelCount": 1,
+    "coverage": "complete",
+    "siteM2": 557.9
+  },
+  "sourceBinding": {
+    "passed": true,
+    "declaredIds": 3,
+    "boundParcels": 3,
+    "absent": 0,
+    "siteM2": 5813.39
+  },
+  "metricAudit": {
+    "pending": false,
+    "inputFeatureCount": 516,
+    "srid": 32621,
+    "method": "Shapely 2.1.2 / GEOS; projected to EPSG:32621 with repository proj4; effective width approximate = 2 × intersection area / intersection perimeter; no geometry repair.",
+    "validNonemptyNonzeroCount": 516,
+    "normalizedDuplicateGeometryCount": 0,
+    "pairsAbove0_01m2": 212,
+    "pairsOver1m2": 149,
+    "pairsOver10m2": 76,
+    "pairsAbove1PercentOfSmaller": 117,
+    "pairsAbove10PercentOfSmaller": 18,
+    "sliverLikeCount": 67,
+    "sliverDefinition": "intersection <3 m² and <0.5% of smaller parcel",
+    "maxOverlapAreaM2": 11273.56,
+    "maxOverlapPercentOfSmaller": 100.0,
+    "maxEffectiveWidthApproxM": 45.13,
+    "largestMaterialExamples": [
+      {
+        "indexPair": [
+          5,
+          25
+        ],
+        "areaM2": 11273.556940066495,
+        "pctOfSmaller": 100.0,
+        "effectiveWidthApproxM": 45.12795664559764,
+        "intersectionType": "Polygon"
+      },
+      {
+        "indexPair": [
+          118,
+          163
+        ],
+        "areaM2": 1827.6451729242851,
+        "pctOfSmaller": 97.72103518169165,
+        "effectiveWidthApproxM": 17.262459513328814,
+        "intersectionType": "Polygon"
+      },
+      {
+        "indexPair": [
+          262,
+          290
+        ],
+        "areaM2": 1442.9916718882298,
+        "pctOfSmaller": 90.56859261491608,
+        "effectiveWidthApproxM": 12.299265972845715,
+        "intersectionType": "Polygon"
+      },
+      {
+        "indexPair": [
+          142,
+          165
+        ],
+        "areaM2": 740.6836728494569,
+        "pctOfSmaller": 90.78451151073143,
+        "effectiveWidthApproxM": 8.183415399961927,
+        "intersectionType": "Polygon"
+      }
+    ],
+    "noRepoGeometrySaved": true
+  },
+  "overall": "HOLD_material_overlaps_only",
+  "holdReason": "The 516-row dataset passed pagination, identity, absent-ID, footprint, and source binding checks; independent EPSG:32621/Shapely audit found material overlaps, including full or near-full overlap of smaller polygons. No other qualification failure was used as a hold reason."
+}

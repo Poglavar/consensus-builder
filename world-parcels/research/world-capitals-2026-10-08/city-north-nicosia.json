@@ -1,0 +1,208 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:CY:north-nicosia",
+  "name": "North Nicosia",
+  "country": "Cyprus",
+  "countryCode": "CY",
+  "centerLatLon": [
+    35.1856,
+    33.3823
+  ],
+  "capitalRole": "de facto seat of Northern Cyprus; supplemental disputed-status seat",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "North Nicosia official cadastral map parcel GIS Turkish Republic Northern Cyprus land registry map",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.tkgm.gov.tr/projeler/gelecek-odakli-projeler/kktc",
+        "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0"
+      ]
+    },
+    {
+      "query": "KKTC kadastro harita parsel sorgu GIS resmi harita",
+      "language": "Turkish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.tkgm.gov.tr/projeler/gelecek-odakli-projeler/kktc"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+      "observation": "Official Cyprus Department of Lands and Surveys Polygon Parcels layer. Native fields include SBPI_ID_NO, DIST_CODE, VIL_CODE, QRTR_CODE, BLCK_CODE, PARCEL_NBR, SHEET, PLAN_NBR and SRC_SL_CODE; layer metadata gives the national cadastral MapServer extent and supports GeoJSON queries."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/projeler/gelecek-odakli-projeler/kktc",
+      "observation": "Turkish General Directorate of Land Registry and Cadastre describes a cadastral renewal project for KKTC; this is not an open endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0/query",
+      "method": "GET ArcGIS REST bounded query via requests",
+      "params": {
+        "where": "1=1",
+        "geometry": "3708000,4207000,3718000,4215000",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 3857,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 2
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:05:36Z",
+      "outcome": "application/geo+json returned 2 non-empty Polygon features in city bounding area. Only OBJECTID was requested; saved sample retains geometry only."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Cyprus cadastral service returned two Polygon features in a bounded envelope covering North Nicosia. The query establishes geometry within the envelope, not political status or full northern coverage.",
+  "registryEvidenceUrls": [
+    "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+    "https://www.tkgm.gov.tr/projeler/gelecek-odakli-projeler/kktc"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+    "kind": "ArcGIS MapServer polygon feature layer",
+    "publisher": "Cyprus Department of Lands and Surveys",
+    "queryUrl": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0/query",
+    "geometryType": "Polygon",
+    "scope": "City-area bounded request only; no completeness claim.",
+    "safeSampleFile": "north-nicosia-safe-sample.geojson",
+    "sampleAttributes": "omitted",
+    "nativeFields": [
+      "SBPI_ID_NO",
+      "DIST_CODE",
+      "VIL_CODE",
+      "QRTR_CODE",
+      "BLCK_CODE",
+      "PARCEL_NBR",
+      "SHEET",
+      "PLAN_NBR",
+      "SRC_SL_CODE"
+    ]
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/geo+json;charset=UTF-8",
+    "featureCount": 2,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "bbox": [
+      3708000,
+      4207000,
+      3718000,
+      4215000
+    ],
+    "bboxSpatialReference": 3857,
+    "outSpatialReference": 4326,
+    "sampleFile": "north-nicosia-safe-sample.geojson"
+  },
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "Official municipal/national cadastral layer as published by its owner.",
+    "verifiedOpenScope": "2 Polygon features from a bounded city-area request.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_quality_review",
+  "status": "complete",
+  "remainingUncertainty": "Sample does not establish full city coverage, currency, legal title scope, or integration suitability.",
+  "runtimeQualification": {
+    "adapter": "backend/parcels/arcgis-source.js",
+    "descriptorId": "asia-north-nicosia-research",
+    "transportOidsOnly": true,
+    "transportOidField": "OBJECTID",
+    "viewportGrid": {
+      "completedCells": 13,
+      "alignedGridCells": 9,
+      "adjacentPanCells": 4,
+      "totalFeatureResponses": 282,
+      "uniqueParcelIds": 236
+    },
+    "completePagingForcedAtPageSize": 3,
+    "forcedPageFeatureCount": 56,
+    "forcedGeometryPages": 19,
+    "explicitAbsenceCheck": {
+      "complete": true,
+      "featureCount": 0,
+      "absentId": "north-nicosia:9876543210"
+    },
+    "freshExactIdHashRereads": {
+      "queried": 236,
+      "allPresent": true,
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    "footprintRead": {
+      "complete": true,
+      "intersectingParcelCount": 4
+    },
+    "computeSourceBinding": {
+      "computed": true
+    },
+    "projectedTopologyAudit": {
+      "file": "/tmp/asia-capitals-2026-10-08/shapely-topology-audit.json",
+      "projection": "EPSG:3857",
+      "shapelyVersion": "2.1.2",
+      "uniqueFeatures": 236,
+      "invalidGeometryCount": 2,
+      "positiveAreaOverlapCount": 2,
+      "auditToleranceSquareMeters": 1e-06,
+      "repoQualityFile": "north-nicosia-quality.json",
+      "invalidIds": [
+        "north-nicosia:3735580",
+        "north-nicosia:3737731"
+      ],
+      "overlapPairs": [
+        {
+          "ids": [
+            "north-nicosia:3737713",
+            "north-nicosia:3737752"
+          ],
+          "intersectionAreaM2": 0.8281514456692688,
+          "fractionOfSmaller": 0.0010847742749764183,
+          "minimumRotatedRectangleWidthM": 2.8251876143452463,
+          "minimumRotatedRectangleLengthM": 19.879795480153053
+        },
+        {
+          "ids": [
+            "north-nicosia:3737713",
+            "north-nicosia:3737724"
+          ],
+          "intersectionAreaM2": 0.028195449677051457,
+          "fractionOfSmaller": 1.2430435562516694e-05,
+          "minimumRotatedRectangleWidthM": 31.648194401124325,
+          "minimumRotatedRectangleLengthM": 116.68053296404194
+        }
+      ]
+    },
+    "privacy": "Query attributes limited to native object IDs; no owner/contact fields requested.",
+    "qualityDisposition": {
+      "status": "held_quality_review",
+      "reason": "Two invalid geometries and two positive-area overlaps occur in the bounded 236-feature sample. No geometry repair or row exclusion was applied.",
+      "qualityFile": "north-nicosia-quality.json"
+    }
+  },
+  "sourceIds": [
+    "cy-dls-north-nicosia-parcels"
+  ],
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Two sampled parcel polygons self-intersect; two additional positive-area overlaps are recorded. No source repair applied.",
+    "evidenceFile": "research/world-capitals-2026-10-08/north-nicosia-quality.json"
+  },
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/north-nicosia-safe-sample.geojson"
+}

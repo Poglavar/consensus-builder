@@ -1,0 +1,141 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:NI:managua",
+  "name": "Managua",
+  "country": "Nicaragua",
+  "countryCode": "NI",
+  "centerLatLon": [
+    12.133333333333333,
+    -86.25
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Managua Nicaragua official catastro municipal mapa GIS parcelas",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+        "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+        "https://tramites.ineter.gob.ni/",
+        "https://idec.ineter.gob.ni/"
+      ]
+    },
+    {
+      "query": "Managua mapa catastral INETER catastro parcelas servicio oficial",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+        "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+        "https://tramites.ineter.gob.ni/",
+        "https://idec.ineter.gob.ni/"
+      ]
+    },
+    {
+      "query": "Managua Nicaragua official cadastral parcels government INETER cadastre parcel map",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://consultacf.ineter.gob.ni/",
+        "https://webserver2.ineter.gob.ni/mapas/servidores.html"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+      "observation": "INETER map server index names a Mapa Catastral de Managua viewer."
+    },
+    {
+      "url": "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+      "observation": "Official INETER page describes a Managua Parcelas layer showing cadastral lots and numbers, and explicitly warns that the integrated cadastral database is incomplete."
+    },
+    {
+      "url": "https://tramites.ineter.gob.ni/",
+      "observation": "INETER cadastral certificate services confirm physical cadastral records; the historic viewer is not a documented downloadable vector API."
+    },
+    {
+      "url": "https://idec.ineter.gob.ni/",
+      "observation": "Government-led cadastral geospatial infrastructure description says it will expose vector services; no Managua parcel endpoint was identified."
+    },
+    {
+      "url": "https://consultacf.ineter.gob.ni/",
+      "observation": "Official INETER cadastral portal offers parcel lookup against a national database; the parcel consultation redirects to an authentication page. It does not prove a public geometry response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+      "method": "GET",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "The web inspection tool reported a 502 for the government ArcIMS viewer page; no remote service outage or parcel geometry inferred."
+    },
+    {
+      "url": "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Inspection tool reported HTTP 502; no remote outage inferred."
+    },
+    {
+      "url": "https://tramites.ineter.gob.ni/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Opened official INETER procedures portal; it identifies national cadastral services and certificate workflows."
+    },
+    {
+      "url": "https://idec.ineter.gob.ni/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Inspection tool returned an internal fetch error; no remote outage inferred."
+    },
+    {
+      "url": "https://consultacf.ineter.gob.ni/",
+      "method": "web.run open/click",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official INETER portal opened and describes parcel lookup; following Consultar Parcela led to an authentication/login page; no parcel query was submitted."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "INETER directly documents a Managua Parcelas map layer showing cadastral lots and numbers, and warns that the integrated cadastral database is incomplete. The historic viewer and catalog could not be queried for geometry during this pass.",
+    "urls": [
+      "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+      "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+      "https://consultacf.ineter.gob.ni/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "INETER directly documents a Managua Parcelas map layer showing cadastral lots and numbers, and warns that the integrated cadastral database is incomplete. The historic viewer and catalog could not be queried for geometry during this pass.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "INETER directly documents a Managua Parcelas map layer showing cadastral lots and numbers, and warns that the integrated cadastral database is incomplete. The historic viewer and catalog could not be queried for geometry during this pass.",
+  "registryEvidenceUrls": [
+    "https://webserver2.ineter.gob.ni/sis/f-mana.html",
+    "https://webserver2.ineter.gob.ni/mapas/servidores.html",
+    "https://consultacf.ineter.gob.ni/"
+  ],
+  "sourceIds": []
+}

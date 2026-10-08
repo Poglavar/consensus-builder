@@ -1,0 +1,277 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:PS:ramallah",
+  "name": "Ramallah",
+  "country": "State of Palestine",
+  "countryCode": "PS",
+  "centerLatLon": [
+    31.9038,
+    35.2034
+  ],
+  "capitalRole": "Palestinian Authority administrative seat",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Ramallah Palestinian land parcel cadastre public GIS map West Bank official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://ramallah-gis.ps/",
+        "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0"
+      ]
+    },
+    {
+      "query": "site:gov.il Jerusalem cadastral map open data parcel shapefile GIS cadastre",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://ramallah-gis.ps/",
+        "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0"
+      ]
+    },
+    {
+      "query": "رام الله خريطة كادستر قطع الأراضي بلدية رام الله GIS",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://ramallah.ps/ar/Article/3140/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D9%80GIS",
+        "https://www.arcgis.com/home/item.html?id=0fd256a1448b492298fce0ec238f1f39"
+      ],
+      "executedAt": "2026-10-08T19:36:51Z"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://ramallah-gis.ps/",
+      "observation": "Ramallah municipality GIS portal links to its public city map and land-basin maps."
+    },
+    {
+      "url": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0",
+      "observation": "Ramallah municipal parcel Polygon layer. Safe native fields include MAIN_PARCEL_NO, PARCEL_NO, PARCEL_AREA_RE, BLOCK_NO_STRING, QUARTER_NO_STRING, CITY, BLOCKNONAME, QUARTERNONAME, PARCELHISTORICAL, LANDAREA, ACTIVE_INACTIVE, PARCELSOURCE and X/Y; owner-related tables and personal/editor fields were excluded."
+    },
+    {
+      "url": "https://ramallah.ps/ar/Article/3140/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D9%80GIS",
+      "observation": "Ramallah Municipality Arabic GIS-services page was opened; it describes the city spatial database, including plots, neighborhoods, basins and streets, and links to the municipal map."
+    },
+    {
+      "url": "https://www.arcgis.com/home/item.html?id=0fd256a1448b492298fce0ec238f1f39",
+      "observation": "Official ArcGIS item search listing in Arabic identifies a public Ramallah municipal map developed and managed by the municipal GIS unit, including parcel information; it is informational rather than legal proof."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0/query",
+      "method": "GET ArcGIS REST bounded query via requests",
+      "params": {
+        "where": "1=1",
+        "geometry": "168882,145344,169157,145503",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 28191,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 2
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:05:36Z",
+      "outcome": "application/geo+json returned 2 non-empty Polygon features in city bounding area. Only OBJECTID was requested; saved sample retains geometry only."
+    },
+    {
+      "url": "https://ramallah.ps/ar/Article/3140/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D9%80GIS",
+      "method": "GET official municipal page inspection",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T19:36:51Z",
+      "outcome": "Opened and inspected the Arabic municipal GIS-services page; it describes municipal spatial data including plots and links the city map. No new parcel query in this follow-up."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The exact municipal parcel layer returned two Polygon features for a bounded area around Ramallah in a public query. This verifies partial city geometry only, not complete parcel coverage or land-title scope.",
+  "registryEvidenceUrls": [
+    "https://ramallah-gis.ps/",
+    "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0",
+    "https://ramallah.ps/ar/Article/3140/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D9%80GIS",
+    "https://www.arcgis.com/home/item.html?id=0fd256a1448b492298fce0ec238f1f39"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "url": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0",
+    "kind": "ArcGIS MapServer polygon feature layer",
+    "publisher": "Ramallah Municipality GIS",
+    "queryUrl": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0/query",
+    "geometryType": "Polygon",
+    "scope": "City-area bounded request only; no completeness claim.",
+    "safeSampleFile": "ramallah-safe-sample.geojson",
+    "sampleAttributes": "omitted",
+    "nativeFields": [
+      "MAIN_PARCEL_NO",
+      "PARCEL_NO",
+      "PARCEL_AREA_RE",
+      "BLOCK_NO_STRING",
+      "QUARTER_NO_STRING",
+      "CITY",
+      "BLOCKNONAME",
+      "QUARTERNONAME",
+      "PARCELHISTORICAL",
+      "LANDAREA",
+      "ACTIVE_INACTIVE",
+      "PARCELSOURCE"
+    ]
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/geo+json;charset=UTF-8",
+    "featureCount": 2,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "bbox": [
+      168882,
+      145344,
+      169157,
+      145503
+    ],
+    "bboxSpatialReference": 28191,
+    "outSpatialReference": 4326,
+    "sampleFile": "ramallah-safe-sample.geojson"
+  },
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "Official municipal/national cadastral layer as published by its owner.",
+    "verifiedOpenScope": "2 Polygon features from a bounded city-area request.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_quality_review",
+  "status": "complete",
+  "remainingUncertainty": "Sample does not establish full city coverage, currency, legal title scope, or integration suitability.",
+  "runtimeQualification": {
+    "adapter": "backend/parcels/arcgis-source.js",
+    "descriptorId": "asia-ramallah-research",
+    "transportOidsOnly": true,
+    "transportOidField": "OBJECTID",
+    "viewportGrid": {
+      "completedCells": 13,
+      "alignedGridCells": 9,
+      "adjacentPanCells": 4,
+      "totalFeatureResponses": 627,
+      "uniqueParcelIds": 517
+    },
+    "completePagingForcedAtPageSize": 3,
+    "forcedPageFeatureCount": 87,
+    "forcedGeometryPages": 29,
+    "explicitAbsenceCheck": {
+      "complete": true,
+      "featureCount": 0,
+      "absentId": "ramallah:9876543210"
+    },
+    "freshExactIdHashRereads": {
+      "queried": 517,
+      "allPresent": true,
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    "footprintRead": {
+      "complete": true,
+      "intersectingParcelCount": 5
+    },
+    "computeSourceBinding": {
+      "computed": true
+    },
+    "projectedTopologyAudit": {
+      "file": "/tmp/asia-capitals-2026-10-08/shapely-topology-audit.json",
+      "projection": "EPSG:3857",
+      "shapelyVersion": "2.1.2",
+      "uniqueFeatures": 517,
+      "invalidGeometryCount": 0,
+      "positiveAreaOverlapCount": 38,
+      "auditToleranceSquareMeters": 1e-06,
+      "largestObservedOverlap": {
+        "ids": [
+          "ramallah:748669",
+          "ramallah:748671"
+        ],
+        "intersectionAreaM2_EPSG3857": 28.84820868081266,
+        "fractionOfSmallerParcel_EPSG3857": 0.4778671141914299,
+        "minimumRotatedRectangleWidthM_EPSG3857": 3.970005200929949,
+        "nativeCrs": "EPSG:28191",
+        "intersectionAreaM2_native": 20.71940084313048,
+        "fractionOfSmallerParcel_native": 0.47763694855934935,
+        "minimumRotatedRectangleWidthM_native": 3.373388345065526,
+        "httpStatus": 200,
+        "nativeRereadFields": [
+          "OBJECTID"
+        ]
+      },
+      "interpretation": "The largest bounded-sample overlap persists in a fresh exact-ID reread in the source native CRS. Its area differs from EPSG:3857 due projection scale; the relative overlap fraction is stable.",
+      "repoQualityFile": "ramallah-quality.json",
+      "largestOverlap": {
+        "pairIds": [
+          748669,
+          748671
+        ],
+        "nativeCrs": "EPSG:28191",
+        "nativeRequest": {
+          "url": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0/query",
+          "method": "GET",
+          "objectIds": "748669,748671",
+          "outFields": "OBJECTID",
+          "returnGeometry": true,
+          "outSR": 28191,
+          "f": "geojson",
+          "httpStatus": 200
+        },
+        "nativeMetric": {
+          "intersectionAreaM2": 20.71940084313048,
+          "fractionOfSmallerParcel": 0.47763694855934935,
+          "minimumRotatedRectangleWidthM": 3.373388345065526,
+          "minimumRotatedRectangleLengthM": 7.152068120593771,
+          "parcelAreasM2": [
+            43.378974146837734,
+            634.9396977139328
+          ]
+        },
+        "projectedEPSG3857Metric": {
+          "ids": [
+            "ramallah:748669",
+            "ramallah:748671"
+          ],
+          "intersectionAreaM2": 28.84820868081266,
+          "fractionOfSmaller": 0.4778671141914299,
+          "minimumRotatedRectangleWidthM": 3.970005200929949,
+          "minimumRotatedRectangleLengthM": 8.508630538742947
+        },
+        "interpretation": "Largest observed pair in the bounded EPSG:3857 audit was freshly reread from the provider in its native projected EPSG:28191 CRS. The overlap persists in native coordinates; the differing area reflects projection scale, not a topology change."
+      }
+    },
+    "privacy": "Query attributes limited to native object IDs; no owner/contact fields requested.",
+    "overlapCodeAudit": {
+      "safeFields": [
+        "ACTIVE_INACTIVE",
+        "PARCELHISTORICAL",
+        "PARCELSOURCE"
+      ],
+      "status": "overlapping records were all ACTIVE_INACTIVE=Active and PARCELHISTORICAL=0; overlaps remain unexplained."
+    },
+    "qualityDisposition": {
+      "status": "held_quality_review",
+      "reason": "38 positive-area overlap pairs in the bounded 517-feature sample; the largest native-CRS overlap covers 47.76% of the smaller row. No repair or source-side exclusion was applied.",
+      "qualityFile": "ramallah-quality.json"
+    }
+  },
+  "sourceIds": [
+    "ps-ramallah-municipal-parcels"
+  ],
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "38 sampled overlaps; the largest native-coordinate reread covers 47.76% of the smaller parcel. No repair or unsupported row exclusion applied.",
+    "evidenceFile": "research/world-capitals-2026-10-08/ramallah-quality.json"
+  },
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/ramallah-safe-sample.geojson"
+}

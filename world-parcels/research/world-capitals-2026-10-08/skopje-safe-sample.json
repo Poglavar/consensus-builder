@@ -1,0 +1,78 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "skopje-oid:113",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "550c87e0fd77264330cfa7ef7625e57c1ea0c2063cad853aa7f5f9dd25cd8f2b",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "parcelId": "skopje-oid:113",
+        "id": "skopje-oid:113",
+        "sourceId": "mk-skopje-old-bazaar-parcels",
+        "sourceParcelId": "113",
+        "parcelNumber": "113",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 113,
+          "KP": null,
+          "Parcela": "",
+          "Br_Blok": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "skopje-oid:123",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "87bb6848ae7671fa423c7d134d59a16e3ba3b3b596a5ec9a63faf42576dc1e2d",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "parcelId": "skopje-oid:123",
+        "id": "skopje-oid:123",
+        "sourceId": "mk-skopje-old-bazaar-parcels",
+        "sourceParcelId": "123",
+        "parcelNumber": "123",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 123,
+          "KP": null,
+          "Parcela": "",
+          "Br_Blok": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "skopje-oid:127",
+      "geometry": {
+        "geometryType": "Polygon",
+        "geometrySha256": "f2a6f92bb46b202ac1553a4f7a2696d819cddf1ee6ac91df9b980e8495c72c9a",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "properties": {
+        "parcelId": "skopje-oid:127",
+        "id": "skopje-oid:127",
+        "sourceId": "mk-skopje-old-bazaar-parcels",
+        "sourceParcelId": "127",
+        "parcelNumber": "127",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 127,
+          "KP": null,
+          "Parcela": "",
+          "Br_Blok": null
+        }
+      }
+    }
+  ],
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

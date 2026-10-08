@@ -1,0 +1,103 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:ID:nusantara",
+  "name": "Nusantara",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "centerLatLon": [
+    -0.975,
+    116.707
+  ],
+  "capitalRole": "planned/transitional national-capital seat; current legal and operational status requires verification",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Nusantara IKN official cadastral parcel map land GIS Nusantara authority",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoportal.ikn.go.id/catalog?type=dataset",
+        "https://geodata.ikn.go.id/"
+      ]
+    },
+    {
+      "query": "site:ikn.go.id peta bidang tanah IKN parcel Nusantara cadastral",
+      "language": "Indonesian",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoportal.ikn.go.id/",
+        "https://ikn.go.id/storage/regulasi/perka-oikn-no-6-tahun-2023-rdtr-ikn-utara.pdf"
+      ]
+    },
+    {
+      "query": "\"Bidang Tanah\" site:geoportal.ikn.go.id",
+      "language": "Indonesian",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoportal.ikn.go.id/catalog?type=dataset"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://geoportal.ikn.go.id/catalog?type=dataset",
+      "observation": "Official OIKN Geoportal catalog lists 193 spatial datasets, mostly planning/cadastre topic tags and planning-area RDTR layers; no parcel dataset specifically identified in results."
+    },
+    {
+      "url": "https://geodata.ikn.go.id/developer/",
+      "observation": "IKN GeoNode documentation describes public WMS/WFS/CSW service mechanisms for published datasets; no parcel layer name was confirmed."
+    },
+    {
+      "url": "https://geoportal.ikn.go.id/catalog?type=dataset",
+      "observation": "IKN Geoportal dataset catalogue loaded over HTTPS and links to official IKN data portals. The inspected page did not identify a public cadastral polygon endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.ikn.go.id/catalog?type=dataset",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://geoportal.ikn.go.id/catalog?type=dataset; content type text/html; charset=utf-8; 240705 bytes.",
+      "relevantOfficialLinks": [
+        "https://geoportal.ikn.go.id/assets/root-BGkT5YVx.css",
+        "https://fonts.googleapis.com",
+        "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        "https://geoportal.ikn.go.id/oikn.png",
+        "https://geoportal.ikn.go.id/",
+        "https://geoportal.ikn.go.id/map",
+        "https://geoportal.ikn.go.id/catalog",
+        "https://geoportal.ikn.go.id/dashboard",
+        "https://geodata.ikn.go.id",
+        "https://geoportal.ikn.go.id/login",
+        "https://satudata.ikn.go.id",
+        "https://satudata.ikn.go.id/geoportal/srv/eng/catalog.edit"
+      ]
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Official IKN geospatial catalog and service platform found, but cadastral parcel coverage or accessible parcel features not verified.",
+  "registryEvidenceUrls": [
+    "https://geoportal.ikn.go.id/catalog?type=dataset",
+    "https://geodata.ikn.go.id/developer/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_geospatial_portal_no_city_parcel_layer_verified",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "No new bounded parcel-feature HTTP response with verifiable provenance recorded in this city artifact.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "No bounded city parcel feature query with safe fields was verified; the listed source may be a viewer, planning dataset, nonpublic service or national registry.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

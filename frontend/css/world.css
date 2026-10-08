@@ -21,7 +21,6 @@
     color: var(--world-ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: radial-gradient(ellipse at 50% 45%, #0d1d44 0%, #081231 45%, #030712 100%);
-    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -74,6 +73,7 @@ body.world-view-open {
     display: block;
     cursor: grab;
     outline: none;
+    touch-action: none;
 }
 
 .world-view__canvas:active {
@@ -103,10 +103,11 @@ body.world-view-open {
 .world-search {
     position: relative;
     width: 100%;
+    min-width: 0;
     pointer-events: auto;
 }
 
-.world-search__input {
+.world-search .world-search__input {
     box-sizing: border-box;
     width: 100%;
     height: 52px;
@@ -125,17 +126,17 @@ body.world-view-open {
     -webkit-user-select: text;
 }
 
-.world-search__input::placeholder {
+.world-search .world-search__input::placeholder {
     color: var(--world-ink-dim);
 }
 
-.world-search__input:focus {
+.world-search .world-search__input:focus {
     outline: none;
     border-color: var(--world-accent);
     box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(108, 180, 255, 0.25);
 }
 
-.world-search__input::-webkit-search-cancel-button {
+.world-search .world-search__input::-webkit-search-cancel-button {
     filter: invert(0.8);
 }
 
@@ -228,14 +229,15 @@ body.world-view-open {
 }
 
 .world-view--back-to-map .world-view__top {
-    top: calc(76px + var(--app-safe-area-top, 0px));
+    top: calc(12px + var(--app-safe-area-top, 0px));
 }
 
 .world-view--back-to-map .world-view__close {
-    left: 50%;
-    right: auto;
-    top: calc(12px + var(--app-safe-area-top, 0px));
-    transform: translateX(-50%);
+    position: static;
+    order: -1;
+    flex: none;
+    align-self: center;
+    pointer-events: auto;
 }
 
 .world-view__close:hover,
@@ -261,6 +263,28 @@ body.world-view-open {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     transition: opacity 0.35s ease;
+}
+
+.world-legend__toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--world-edge);
+    border-radius: 50%;
+    background: var(--world-glass);
+    color: var(--world-ink);
+    font-size: 18px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.world-legend__toggle:hover,
+.world-legend__toggle:focus-visible,
+.world-legend__toggle[aria-expanded="true"] {
+    border-color: var(--world-accent);
+    outline: none;
 }
 
 .world-legend__title {
@@ -346,6 +370,7 @@ body.world-view-open {
     white-space: nowrap;
     cursor: pointer;
     pointer-events: auto;
+    touch-action: none;
 }
 
 .world-city-label:hover,
@@ -579,7 +604,7 @@ body.world-view-open {
     pointer-events: none;
 }
 
-/* ---- phones: popup becomes a bottom sheet, legend tucks into a row ---- */
+/* ---- phones: one search row, bottom-sheet popups, and an expandable legend icon ---- */
 
 @media (max-width: 600px) {
     .world-view__top {
@@ -587,11 +612,17 @@ body.world-view-open {
         width: calc(100% - 32px);
         left: 16px;
         transform: none;
-        align-items: stretch;
-        gap: 6px;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
     }
 
-    .world-search__input {
+    .world-search {
+        position: static;
+        flex: 1;
+    }
+
+    .world-search .world-search__input {
         height: 46px;
         font-size: 16px;
         padding-left: 44px;
@@ -599,21 +630,27 @@ body.world-view-open {
     }
 
     .world-view__close {
-        top: calc(26px + var(--app-safe-area-top, 0px));
+        top: calc(12px + var(--app-safe-area-top, 0px));
         right: calc(12px + var(--app-safe-area-right, 0px));
     }
 
     .world-view--back-to-map .world-view__top {
-        top: calc(70px + var(--app-safe-area-top, 0px));
+        top: calc(12px + var(--app-safe-area-top, 0px));
         width: calc(100% - 32px);
         left: 16px;
     }
 
-    /* Stack measured content in normal flow, including longer translated legend labels. */
+    .world-view__close--back {
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    /* Share one compact row; expanded translated legend content floats above it. */
     .world-view__overview {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        align-items: end;
+        gap: 10px;
         position: absolute;
         left: 12px;
         right: 12px;
@@ -623,13 +660,39 @@ body.world-view-open {
     }
 
     .world-legend {
-        position: static;
-        order: 2;
+        position: relative;
+        left: auto;
+        bottom: auto;
+        order: 0;
         pointer-events: auto;
-        padding: 9px 12px;
+        padding: 0;
+        border: 0;
+        background: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 
-    .world-legend__title {
+    .world-legend__toggle {
+        display: inline-grid;
+        place-items: center;
+    }
+
+    .world-legend__content {
+        box-sizing: border-box;
+        position: absolute;
+        left: 0;
+        bottom: calc(100% + 10px);
+        width: min(340px, calc(100vw - 24px));
+        padding: 14px;
+        border: 1px solid var(--world-edge);
+        border-radius: 16px;
+        background: var(--world-glass-strong);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    .world-legend:not(.world-legend--open) .world-legend__content {
         display: none;
     }
 
@@ -869,8 +932,10 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
 .world-activity__subject { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--world-ink-dim); }
 .world-activity__event time { color: var(--world-ink-dim); font-size: 11px; }
 .world-activity__status { font-size: 13px; color: var(--world-ink-dim); }
+.world-activity__compact { display: none; }
 .world-activity--cycling .world-activity__track { animation: world-activity-cycle var(--activity-duration) linear infinite; }
-.world-activity:hover .world-activity__track { animation-play-state: paused; }
+.world-activity:hover .world-activity__track,
+.world-activity:focus-within .world-activity__track { animation-play-state: paused; }
 .world-activity--manual .world-activity__track { animation: none; transform: none; }
 .world-activity--manual .world-activity__viewport { overflow-y: auto; overflow-x: hidden; mask-image: none; overscroll-behavior: contain; }
 .world-activity a:focus-visible { outline: 2px solid var(--world-accent); outline-offset: -2px; border-radius: 4px; }
@@ -884,6 +949,29 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     .world-activity__event { padding: 6px 2px 6px 15px; }
     .world-popup:not([hidden]) ~ .world-activity { visibility: hidden; }
     .world-view:has(.world-popup:not([hidden])) .world-activity { visibility: hidden; }
+}
+@media (max-width: 600px) {
+    .world-activity { min-width: 0; margin: 0; touch-action: pan-x; }
+    .world-activity::before { inset: -5px -6px; background: rgba(3, 7, 18, .5); mask-image: linear-gradient(90deg, transparent, black 12px, black calc(100% - 12px), transparent); }
+    .world-activity__header { display: none; }
+    .world-activity__viewport { height: 44px; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; }
+    .world-activity__track { display: flex; width: max-content; }
+    .world-activity__list { display: flex; flex: none; }
+    .world-activity__list li { flex: none; height: 44px; }
+    .world-activity__event { padding: 0 18px 0 15px; justify-content: center; border-bottom: 0; }
+    .world-activity__event::before { top: 19px; }
+    .world-activity__action,
+    .world-activity__subject,
+    .world-activity__meta { display: none; }
+    .world-activity__compact { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+    .world-activity__compact-city { font-size: 13px; font-weight: 600; }
+    .world-activity__compact-type { font-size: 12px; color: var(--world-ink-dim); }
+    .world-activity__status { margin: 0; min-height: 44px; display: flex; align-items: center; }
+    .world-activity__status[hidden] { display: none; }
+    .world-activity--cycling .world-activity__track { animation-name: world-activity-marquee; }
+    .world-activity--cycling .world-activity__viewport { overflow-x: auto; overflow-y: hidden; mask-image: linear-gradient(90deg, transparent, black 8px, black calc(100% - 8px), transparent); }
+    .world-activity--manual .world-activity__viewport { overflow-x: auto; overflow-y: hidden; mask-image: none; }
+    @keyframes world-activity-marquee { to { transform: translateX(-50%); } }
 }
 @media (prefers-reduced-motion: reduce) {
     .world-activity--cycling .world-activity__track { animation: none; }

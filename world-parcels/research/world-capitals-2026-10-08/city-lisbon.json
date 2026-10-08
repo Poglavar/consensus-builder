@@ -1,0 +1,128 @@
+{
+  "cityId": "capital:PT:lisbon",
+  "name": "Lisbon",
+  "country": "Portugal",
+  "countryCode": "PT",
+  "centerLatLon": [
+    38.71666666666667,
+    -9.133333
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "Lisbon Portugal cadastral parcels municipal GIS",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Lisboa cadastro predial parcelas limites SIG município",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Lisboa cadastro predial SNIC dados abertos parcelas",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://lxcadastro.cm-lisboa.pt/",
+      "observation": "Indexed official municipal cadastral application says cadastral information requires authorization; current direct read hit HTTP403 challenge."
+    },
+    {
+      "url": "https://bupi.gov.pt/pt/publicacoes/municpio-de-lisboa-adere-ao-bupi",
+      "observation": "Official BUPi announcement says Lisbon joined the property registration system."
+    },
+    {
+      "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro",
+      "observation": "Public national cadastral collection exists, but coverage near Lisbon must be distinguished from Lisbon city."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:10:13.439Z",
+      "method": "GET",
+      "url": "https://bupi.gov.pt/pt/publicacoes/municpio-de-lisboa-adere-ao-bupi",
+      "httpStatus": 200,
+      "finalUrl": "https://bupi.gov.pt/pt/publicacoes/municpio-de-lisboa-adere-ao-bupi",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 109762
+    },
+    {
+      "checkedAt": "2026-10-08T18:11:21.562Z",
+      "method": "GET",
+      "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-9.20,38.70,-9.10,38.758",
+      "httpStatus": 200,
+      "finalUrl": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-9.20,38.70,-9.10,38.758",
+      "contentType": "application/json",
+      "bytes": 1459
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:13.438Z",
+      "method": "GET",
+      "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-9.23,38.69,-9.09,38.81",
+      "httpStatus": 200,
+      "finalUrl": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-9.23,38.69,-9.09,38.81",
+      "contentType": "application/json",
+      "bytes": 7867
+    },
+    {
+      "checkedAt": "2026-10-08T18:09:48.457Z",
+      "method": "GET",
+      "url": "https://ogcapi.dgterritorio.gov.pt/collections?f=json",
+      "httpStatus": 200,
+      "finalUrl": "https://ogcapi.dgterritorio.gov.pt/collections?f=json",
+      "contentType": "application/json",
+      "bytes": 442600
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:40.778Z",
+      "method": "GET",
+      "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-9.21,38.70,-9.10,38.767",
+      "httpStatus": 200,
+      "finalUrl": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-9.21,38.70,-9.10,38.767",
+      "contentType": "application/json",
+      "bytes": 7210
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:40.778Z",
+      "method": "GET",
+      "url": "https://lxcadastro.cm-lisboa.pt/",
+      "httpStatus": 403,
+      "finalUrl": "https://lxcadastro.cm-lisboa.pt/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 5435
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official municipal cadastral application and BUPi Lisbon participation establish a local cadastral/registration service.",
+  "registryEvidenceUrls": [
+    "https://lxcadastro.cm-lisboa.pt/",
+    "https://bupi.gov.pt/pt/publicacoes/municpio-de-lisboa-adere-ao-bupi",
+    "https://ogcapi.dgterritorio.gov.pt/collections/cadastro"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "sourceCandidate": {
+    "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items",
+    "publisher": "DGT; Câmara Municipal de Lisboa",
+    "safeSampleFile": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "No public Lisbon-city parcel sample verified. Wider bbox returned Odivelas-area records administrativeunit111608; central Lisbon bbox returned zero.",
+    "verifiedOpenScope": "No city-specific public cadastral polygon response verified.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "National data availability and neighboring municipality parcels do not establish Lisbon coverage. Direct municipal portal access returned HTTP403; no authenticated retrieval was attempted.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "resultCategory": "city_registry_found_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "europe"
+}

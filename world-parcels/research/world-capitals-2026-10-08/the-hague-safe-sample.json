@@ -1,0 +1,97 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "akr_kadastrale_gemeente_code_code": "973",
+        "akr_kadastrale_gemeente_code_waarde": "GVH01",
+        "begin_geldigheid": "2004-05-21T11:16:15Z",
+        "identificatie_lokaal_id": "22230164670000",
+        "identificatie_namespace": "NL.IMKAD.KadastraalObject",
+        "kadastrale_gemeente_code": "881",
+        "kadastrale_gemeente_waarde": "'s-Gravenhage",
+        "kadastrale_grootte_waarde": 447,
+        "perceelnummer": 1646,
+        "perceelnummer_rotatie": 0,
+        "perceelnummer_verschuiving_delta_x": 0,
+        "perceelnummer_verschuiving_delta_y": 0,
+        "sectie": "D",
+        "soort_grootte_code": "1",
+        "soort_grootte_waarde": "Vastgesteld",
+        "status_historie_code": "G",
+        "status_historie_waarde": "Geldig",
+        "tijdstip_registratie": "2004-05-21T11:16:15Z",
+        "volgnummer": 0
+      },
+      "geometry": {
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "66af24fc5c60c84bb5c66f40efceb5638e822ca8f2fd5a96b8258acc4d0ff059",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "id": "cb58c8e3-05da-5a88-8f77-2af1fc6eabde"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "akr_kadastrale_gemeente_code_code": "973",
+        "akr_kadastrale_gemeente_code_waarde": "GVH01",
+        "begin_geldigheid": "2009-11-30T10:21:01Z",
+        "identificatie_lokaal_id": "22230187470000",
+        "identificatie_namespace": "NL.IMKAD.KadastraalObject",
+        "kadastrale_gemeente_code": "881",
+        "kadastrale_gemeente_waarde": "'s-Gravenhage",
+        "kadastrale_grootte_waarde": 1522,
+        "perceelnummer": 1874,
+        "perceelnummer_rotatie": 0,
+        "perceelnummer_verschuiving_delta_x": 0,
+        "perceelnummer_verschuiving_delta_y": 0,
+        "sectie": "D",
+        "soort_grootte_code": "1",
+        "soort_grootte_waarde": "Vastgesteld",
+        "status_historie_code": "G",
+        "status_historie_waarde": "Geldig",
+        "tijdstip_registratie": "2009-11-30T10:21:01Z",
+        "volgnummer": 0
+      },
+      "geometry": {
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "c3b1acd40adf580001c52f845fbf8f8285ec425bdce82abac367de3d26ccc7e7",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "id": "9930dd17-41d8-51fa-b25a-faa0943184d8"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "akr_kadastrale_gemeente_code_code": "973",
+        "akr_kadastrale_gemeente_code_waarde": "GVH01",
+        "begin_geldigheid": "2013-10-10T09:51:04Z",
+        "identificatie_lokaal_id": "22230189070000",
+        "identificatie_namespace": "NL.IMKAD.KadastraalObject",
+        "kadastrale_gemeente_code": "881",
+        "kadastrale_gemeente_waarde": "'s-Gravenhage",
+        "kadastrale_grootte_waarde": 457,
+        "perceelnummer": 1890,
+        "perceelnummer_rotatie": 0,
+        "perceelnummer_verschuiving_delta_x": 4.005,
+        "perceelnummer_verschuiving_delta_y": -5.341,
+        "sectie": "D",
+        "soort_grootte_code": "1",
+        "soort_grootte_waarde": "Vastgesteld",
+        "status_historie_code": "G",
+        "status_historie_waarde": "Geldig",
+        "tijdstip_registratie": "2013-10-10T09:51:04Z",
+        "volgnummer": 0
+      },
+      "geometry": {
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "5f71d1171e8563716cb628235fc8504d37a977abf5752b3f5f2d62c153bd05a9",
+        "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+      },
+      "id": "54dcabbb-bd82-5dae-8631-e3851157df6b"
+    }
+  ],
+  "numberReturned": 3,
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

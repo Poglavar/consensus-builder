@@ -1,0 +1,88 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:GD:saint-georges",
+  "name": "Saint George's",
+  "country": "Grenada",
+  "countryCode": "GD",
+  "centerLatLon": [
+    12.05,
+    -61.75
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Saint George's Grenada official cadastral map parcel GIS land registry",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://elandregistry.gov.gd/Default.aspx",
+        "https://elandregistry.gov.gd/About.aspx"
+      ]
+    },
+    {
+      "query": "St George's Grenada cadastral parcel map GIS official lands registry",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://elandregistry.gov.gd/Default.aspx",
+        "https://elandregistry.gov.gd/About.aspx"
+      ]
+    },
+    {
+      "query": "St George's Grenada land parcels cadastre GIS official government",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://elandregistry.gov.gd/Default.aspx",
+        "https://elandregistry.gov.gd/About.aspx"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://elandregistry.gov.gd/Default.aspx",
+      "observation": "Official eLandRegistry portal indicates online land-record services, but no public parcel geometry was established; stop at login/credential boundary."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://elandregistry.gov.gd/Default.aspx",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Grenada eLandRegistry portal opened; it describes online land-record services but remains at the login/search page; no public geometry verified."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The national eLandRegistry portal describes online land-record services but presents a login/search page; the evidence does not establish Saint George's-specific coverage or public parcel geometry.",
+    "urls": [
+      "https://elandregistry.gov.gd/Default.aspx"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The national eLandRegistry portal describes online land-record services but presents a login/search page; the evidence does not establish Saint George's-specific coverage or public parcel geometry."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The national eLandRegistry portal describes online land-record services but presents a login/search page; the evidence does not establish Saint George's-specific coverage or public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://elandregistry.gov.gd/Default.aspx"
+  ],
+  "sourceIds": []
+}

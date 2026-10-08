@@ -3613,7 +3613,17 @@
             "athens": "Athens, Greece",
             "gaborone": "Gaborone, Botswana",
             "bloemfontein": "Bloemfontein, South Africa",
-            "pretoria": "Pretoria, South Africa"
+            "pretoria": "Pretoria, South Africa",
+            "vienna": "Vienna, Austria",
+            "cetinje": "Cetinje, Montenegro",
+            "sanmarino": "San Marino, San Marino",
+            "thehague": "The Hague, Netherlands",
+            "wellington": "Wellington, New Zealand",
+            "beirut": "Beirut, Lebanon",
+            "thimphu": "Thimphu — Taba, Bhutan",
+            "bandarseribegawan": "Bandar Seri Begawan, Brunei",
+            "jerusalem": "Jerusalem, Israel",
+            "eastjerusalem": "East Jerusalem, Palestine"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",
@@ -4197,6 +4207,7 @@
             "noResults": "No matching place"
         },
         "legend": {
+            "toggle": "Map legend",
             "title": "Country parcel coverage",
             "cities": "City with parcels in the app"
         },
@@ -4264,6 +4275,7 @@
         },
         "activity": {
             "title": "Latest activity",
+            "zoningType": "Zoning",
             "loading": "Loading activity…",
             "empty": "No recent activity yet.",
             "error": "Activity is temporarily unavailable.",

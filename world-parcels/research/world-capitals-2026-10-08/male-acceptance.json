@@ -1,0 +1,2457 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T18:40:57.796Z",
+  "city": "male",
+  "descriptor": {
+    "id": "mv-hdc-parcels-public-view",
+    "name": "HDC Parcels Public View",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0",
+    "idField": "OBJECTID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "MV-HDC-PARCELVIEW-OID-",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        73.446,
+        4.183,
+        73.447,
+        4.184
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        73.447,
+        4.183,
+        73.448,
+        4.184
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        73.448,
+        4.183,
+        73.449,
+        4.184
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        73.446,
+        4.184,
+        73.447,
+        4.185
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        73.447,
+        4.184,
+        73.448,
+        4.185
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        73.448,
+        4.184,
+        73.449,
+        4.185
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        73.446,
+        4.185,
+        73.447,
+        4.186
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        73.447,
+        4.185,
+        73.448,
+        4.186
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        73.448,
+        4.185,
+        73.449,
+        4.186
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        73.447,
+        4.182,
+        73.448,
+        4.183
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        73.447,
+        4.186,
+        73.448,
+        4.187
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        73.445,
+        4.184,
+        73.446,
+        4.185
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        73.449,
+        4.184,
+        73.45,
+        4.185
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1116,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        73.446,
+        4.183,
+        73.447,
+        4.184
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14446",
+          "geometrySha256": "3f5d3279d2902330847a329249bc6bd00e14b342873af7a9af5e13b912b5d3fe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1322,
+      "requestIndexes": [
+        3,
+        6
+      ],
+      "bbox": [
+        73.447,
+        4.183,
+        73.448,
+        4.184
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14632",
+          "geometrySha256": "5ba886d0602dd8027728c36119d8317fe5343748ae5c6be927efece0ead73cdf"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14465",
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14633",
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14636",
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14690",
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 2957,
+      "requestIndexes": [
+        7,
+        12
+      ],
+      "bbox": [
+        73.448,
+        4.183,
+        73.449,
+        4.184
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14451",
+          "geometrySha256": "b48c6a70ebc80f74ba3cec677cc61de53ecc2581d3d54bccc5baf1ac2533b44f"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14450",
+          "geometrySha256": "7c3177db1db6282295028e2306c9df5e1de41cf8e2f6ac3b969344fd81827b2c"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14599",
+          "geometrySha256": "d5dc9d1ccc90ad6f8f3de89ac28a9c0a36ad718c9753c682dc482462d2c63df9"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14632",
+          "geometrySha256": "5ba886d0602dd8027728c36119d8317fe5343748ae5c6be927efece0ead73cdf"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14633",
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14664",
+          "geometrySha256": "1945671791146174069ef06ad4259372bc266456dd4bb5f3a88c7de76865a809"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14750",
+          "geometrySha256": "2fa9b77a7e1f05b9c5629d1104c01a5748e5ba1e9b34cd1544a208638d6a0c56"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14688",
+          "geometrySha256": "1c4c3acf821f5827174203cecad2221ad27ac5248dc202f556f276450c559ad8"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14699",
+          "geometrySha256": "080ae6f4b66153a91f437782f3bcf330d059911499be8038bebbf07d22faba5c"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14838",
+          "geometrySha256": "6c9466e9888f9e5dd7d7d21c4608c2478e90d1ee1c087c08384311dbdd4ea1fd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 1381,
+      "requestIndexes": [
+        13,
+        16
+      ],
+      "bbox": [
+        73.446,
+        4.184,
+        73.447,
+        4.185
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14446",
+          "geometrySha256": "3f5d3279d2902330847a329249bc6bd00e14b342873af7a9af5e13b912b5d3fe"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14675",
+          "geometrySha256": "c76713776d57f4e48474a75e97ee368c304d53f9b44df1d8374b37ac926bfac6"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14677",
+          "geometrySha256": "c5b2807899facf9c2d4b01ef2f9cd3cbec32987e1e9ed10fba6eaefc5f2a88b2"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14690",
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 2129,
+      "requestIndexes": [
+        17,
+        22
+      ],
+      "bbox": [
+        73.447,
+        4.184,
+        73.448,
+        4.185
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14465",
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14453",
+          "geometrySha256": "8b2d0ccff54634faa467c6b80c59daa9b340099eb62b20fad192fc3ee58e1c08"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-4167",
+          "geometrySha256": "f8938dbe69e386a0e0a87f2e73414f04f54c6c63b50af642bc9d032214bf76db"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14636",
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14633",
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14480",
+          "geometrySha256": "8a726e6e0fd83c141c2f4710f60f235a2f2db1f7de0e2f1075b36e9d345efb21"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14672",
+          "geometrySha256": "055268ac7f6a3be81267dbf614157cf3a8891f9c5d4ac820ae7230f478670578"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14640",
+          "geometrySha256": "d38c35e0edf95ecde3808d450f1bd9cd143a0acf37c99235dfc40d68c326b474"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14641",
+          "geometrySha256": "81a424b90e5a7d2f7efa6497f26c3e8d412e1d4c2febe449c34752f43e6e3176"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14690",
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14696",
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1660,
+      "requestIndexes": [
+        23,
+        27
+      ],
+      "bbox": [
+        73.448,
+        4.184,
+        73.449,
+        4.185
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14633",
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14453",
+          "geometrySha256": "8b2d0ccff54634faa467c6b80c59daa9b340099eb62b20fad192fc3ee58e1c08"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14599",
+          "geometrySha256": "d5dc9d1ccc90ad6f8f3de89ac28a9c0a36ad718c9753c682dc482462d2c63df9"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14687",
+          "geometrySha256": "1357e0dff2f64c38d47dc4a9194c25a9925bc6541af7af14ae445a66c8f614d1"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14664",
+          "geometrySha256": "1945671791146174069ef06ad4259372bc266456dd4bb5f3a88c7de76865a809"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14663",
+          "geometrySha256": "009cd37008eb42d8073be98583ca639069a0a54c67401b14611dba240af0dc9a"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14696",
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14765",
+          "geometrySha256": "d32800d3934f8f96ce9b5d07e73deba4d4747c00211234517cc7e5ba5f21e594"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 1054,
+      "requestIndexes": [
+        28,
+        30
+      ],
+      "bbox": [
+        73.446,
+        4.185,
+        73.447,
+        4.186
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14784",
+          "geometrySha256": "a8a31357fa838baa9e1a0dcb8529f91360556adb6aa9aee1b6035a4bbc04ae00"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14675",
+          "geometrySha256": "c76713776d57f4e48474a75e97ee368c304d53f9b44df1d8374b37ac926bfac6"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14677",
+          "geometrySha256": "c5b2807899facf9c2d4b01ef2f9cd3cbec32987e1e9ed10fba6eaefc5f2a88b2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1034,
+      "requestIndexes": [
+        31,
+        33
+      ],
+      "bbox": [
+        73.447,
+        4.185,
+        73.448,
+        4.186
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14687",
+          "geometrySha256": "1357e0dff2f64c38d47dc4a9194c25a9925bc6541af7af14ae445a66c8f614d1"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14696",
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1457,
+      "requestIndexes": [
+        34,
+        36
+      ],
+      "bbox": [
+        73.448,
+        4.185,
+        73.449,
+        4.186
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14687",
+          "geometrySha256": "1357e0dff2f64c38d47dc4a9194c25a9925bc6541af7af14ae445a66c8f614d1"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14663",
+          "geometrySha256": "009cd37008eb42d8073be98583ca639069a0a54c67401b14611dba240af0dc9a"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14696",
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 1045,
+      "requestIndexes": [
+        37,
+        39
+      ],
+      "bbox": [
+        73.447,
+        4.182,
+        73.448,
+        4.183
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14450",
+          "geometrySha256": "7c3177db1db6282295028e2306c9df5e1de41cf8e2f6ac3b969344fd81827b2c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 702,
+      "requestIndexes": [
+        40,
+        41
+      ],
+      "bbox": [
+        73.447,
+        4.186,
+        73.448,
+        4.187
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 1206,
+      "requestIndexes": [
+        42,
+        44
+      ],
+      "bbox": [
+        73.445,
+        4.184,
+        73.446,
+        4.185
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14675",
+          "geometrySha256": "c76713776d57f4e48474a75e97ee368c304d53f9b44df1d8374b37ac926bfac6"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14677",
+          "geometrySha256": "c5b2807899facf9c2d4b01ef2f9cd3cbec32987e1e9ed10fba6eaefc5f2a88b2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 1354,
+      "requestIndexes": [
+        45,
+        48
+      ],
+      "bbox": [
+        73.449,
+        4.184,
+        73.45,
+        4.185
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14714",
+          "geometrySha256": "7917e7dfb7d36a60cc1886284c7440fa1f29c6b627351ec2b935cc3cb8d1597e"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14664",
+          "geometrySha256": "1945671791146174069ef06ad4259372bc266456dd4bb5f3a88c7de76865a809"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14663",
+          "geometrySha256": "009cd37008eb42d8073be98583ca639069a0a54c67401b14611dba240af0dc9a"
+        },
+        {
+          "id": "MV-HDC-PARCELVIEW-OID-14773",
+          "geometrySha256": "d325af3f137d5188dc55e77779f648fa42b9db5e48322684a040970787cee35e"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1940,
+      "requestIndexes": [
+        49,
+        54
+      ],
+      "count": 11,
+      "geometryPages": 4,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 3817,
+      "requestIndexes": [
+        55,
+        66
+      ],
+      "count": 29,
+      "ids": [
+        "MV-HDC-PARCELVIEW-OID-14446",
+        "MV-HDC-PARCELVIEW-OID-14450",
+        "MV-HDC-PARCELVIEW-OID-14451",
+        "MV-HDC-PARCELVIEW-OID-14453",
+        "MV-HDC-PARCELVIEW-OID-14465",
+        "MV-HDC-PARCELVIEW-OID-14480",
+        "MV-HDC-PARCELVIEW-OID-14599",
+        "MV-HDC-PARCELVIEW-OID-14632",
+        "MV-HDC-PARCELVIEW-OID-14633",
+        "MV-HDC-PARCELVIEW-OID-14636",
+        "MV-HDC-PARCELVIEW-OID-14640",
+        "MV-HDC-PARCELVIEW-OID-14641",
+        "MV-HDC-PARCELVIEW-OID-14663",
+        "MV-HDC-PARCELVIEW-OID-14664",
+        "MV-HDC-PARCELVIEW-OID-14672",
+        "MV-HDC-PARCELVIEW-OID-14675",
+        "MV-HDC-PARCELVIEW-OID-14677",
+        "MV-HDC-PARCELVIEW-OID-14687",
+        "MV-HDC-PARCELVIEW-OID-14688",
+        "MV-HDC-PARCELVIEW-OID-14690",
+        "MV-HDC-PARCELVIEW-OID-14696",
+        "MV-HDC-PARCELVIEW-OID-14699",
+        "MV-HDC-PARCELVIEW-OID-14714",
+        "MV-HDC-PARCELVIEW-OID-14750",
+        "MV-HDC-PARCELVIEW-OID-14765",
+        "MV-HDC-PARCELVIEW-OID-14773",
+        "MV-HDC-PARCELVIEW-OID-14784",
+        "MV-HDC-PARCELVIEW-OID-14838",
+        "MV-HDC-PARCELVIEW-OID-4167"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 584,
+      "requestIndexes": [
+        67,
+        68
+      ],
+      "absentIds": [
+        "MV-HDC-PARCELVIEW-OID-2147483647"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1302,
+      "requestIndexes": [
+        69,
+        72
+      ],
+      "selectedParcelId": "MV-HDC-PARCELVIEW-OID-14465",
+      "count": 2,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 1352,
+      "requestIndexes": [
+        73,
+        76
+      ],
+      "selectedParcelId": "MV-HDC-PARCELVIEW-OID-14465",
+      "coverage": "complete",
+      "siteM2": 1830.87,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.446%2C4.183%2C73.447%2C4.184&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:40:57.805Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.446%2C4.183%2C73.447%2C4.184&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:40:58.266Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14446
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14446",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:40:58.619Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 468,
+      "features": [
+        {
+          "transportId": 14446,
+          "properties": {
+            "OBJECTID": 14446
+          },
+          "geometrySha256": "3f5d3279d2902330847a329249bc6bd00e14b342873af7a9af5e13b912b5d3fe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.183%2C73.448%2C4.184&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:40:58.920Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.183%2C73.448%2C4.184&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:40:59.272Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14465,
+        14632,
+        14633,
+        14636,
+        14690
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14465%2C14632%2C14633",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:40:59.621Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2757,
+      "features": [
+        {
+          "transportId": 14632,
+          "properties": {
+            "OBJECTID": 14632
+          },
+          "geometrySha256": "5ba886d0602dd8027728c36119d8317fe5343748ae5c6be927efece0ead73cdf"
+        },
+        {
+          "transportId": 14465,
+          "properties": {
+            "OBJECTID": 14465
+          },
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14636%2C14690",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:40:59.930Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 859,
+      "features": [
+        {
+          "transportId": 14636,
+          "properties": {
+            "OBJECTID": 14636
+          },
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        },
+        {
+          "transportId": 14690,
+          "properties": {
+            "OBJECTID": 14690
+          },
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.448%2C4.183%2C73.449%2C4.184&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:00.243Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 10
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.448%2C4.183%2C73.449%2C4.184&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:00.680Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 106,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14450,
+        14451,
+        14599,
+        14632,
+        14633,
+        14664,
+        14688,
+        14699,
+        14750,
+        14838
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14450%2C14451%2C14599",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:01.164Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 9116,
+      "features": [
+        {
+          "transportId": 14451,
+          "properties": {
+            "OBJECTID": 14451
+          },
+          "geometrySha256": "b48c6a70ebc80f74ba3cec677cc61de53ecc2581d3d54bccc5baf1ac2533b44f"
+        },
+        {
+          "transportId": 14450,
+          "properties": {
+            "OBJECTID": 14450
+          },
+          "geometrySha256": "7c3177db1db6282295028e2306c9df5e1de41cf8e2f6ac3b969344fd81827b2c"
+        },
+        {
+          "transportId": 14599,
+          "properties": {
+            "OBJECTID": 14599
+          },
+          "geometrySha256": "d5dc9d1ccc90ad6f8f3de89ac28a9c0a36ad718c9753c682dc482462d2c63df9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14632%2C14633%2C14664",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:01.501Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6061,
+      "features": [
+        {
+          "transportId": 14632,
+          "properties": {
+            "OBJECTID": 14632
+          },
+          "geometrySha256": "5ba886d0602dd8027728c36119d8317fe5343748ae5c6be927efece0ead73cdf"
+        },
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "transportId": 14664,
+          "properties": {
+            "OBJECTID": 14664
+          },
+          "geometrySha256": "1945671791146174069ef06ad4259372bc266456dd4bb5f3a88c7de76865a809"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14688%2C14699%2C14750",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:01.825Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3957,
+      "features": [
+        {
+          "transportId": 14750,
+          "properties": {
+            "OBJECTID": 14750
+          },
+          "geometrySha256": "2fa9b77a7e1f05b9c5629d1104c01a5748e5ba1e9b34cd1544a208638d6a0c56"
+        },
+        {
+          "transportId": 14688,
+          "properties": {
+            "OBJECTID": 14688
+          },
+          "geometrySha256": "1c4c3acf821f5827174203cecad2221ad27ac5248dc202f556f276450c559ad8"
+        },
+        {
+          "transportId": 14699,
+          "properties": {
+            "OBJECTID": 14699
+          },
+          "geometrySha256": "080ae6f4b66153a91f437782f3bcf330d059911499be8038bebbf07d22faba5c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14838",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:02.900Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 785,
+      "features": [
+        {
+          "transportId": 14838,
+          "properties": {
+            "OBJECTID": 14838
+          },
+          "geometrySha256": "6c9466e9888f9e5dd7d7d21c4608c2478e90d1ee1c087c08384311dbdd4ea1fd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.446%2C4.184%2C73.447%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:03.205Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.446%2C4.184%2C73.447%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:03.555Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14446,
+        14675,
+        14677,
+        14690
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14446%2C14675%2C14677",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:03.946Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4586,
+      "features": [
+        {
+          "transportId": 14446,
+          "properties": {
+            "OBJECTID": 14446
+          },
+          "geometrySha256": "3f5d3279d2902330847a329249bc6bd00e14b342873af7a9af5e13b912b5d3fe"
+        },
+        {
+          "transportId": 14675,
+          "properties": {
+            "OBJECTID": 14675
+          },
+          "geometrySha256": "c76713776d57f4e48474a75e97ee368c304d53f9b44df1d8374b37ac926bfac6"
+        },
+        {
+          "transportId": 14677,
+          "properties": {
+            "OBJECTID": 14677
+          },
+          "geometrySha256": "c5b2807899facf9c2d4b01ef2f9cd3cbec32987e1e9ed10fba6eaefc5f2a88b2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14690",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:04.258Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 469,
+      "features": [
+        {
+          "transportId": 14690,
+          "properties": {
+            "OBJECTID": 14690
+          },
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.184%2C73.448%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:04.595Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.184%2C73.448%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:05.001Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 111,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        4167,
+        14453,
+        14465,
+        14480,
+        14633,
+        14636,
+        14640,
+        14641,
+        14672,
+        14690,
+        14696
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=4167%2C14453%2C14465",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:05.466Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3393,
+      "features": [
+        {
+          "transportId": 14465,
+          "properties": {
+            "OBJECTID": 14465
+          },
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "transportId": 14453,
+          "properties": {
+            "OBJECTID": 14453
+          },
+          "geometrySha256": "8b2d0ccff54634faa467c6b80c59daa9b340099eb62b20fad192fc3ee58e1c08"
+        },
+        {
+          "transportId": 4167,
+          "properties": {
+            "OBJECTID": 4167
+          },
+          "geometrySha256": "f8938dbe69e386a0e0a87f2e73414f04f54c6c63b50af642bc9d032214bf76db"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14480%2C14633%2C14636",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:05.787Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4113,
+      "features": [
+        {
+          "transportId": 14636,
+          "properties": {
+            "OBJECTID": 14636
+          },
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        },
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "transportId": 14480,
+          "properties": {
+            "OBJECTID": 14480
+          },
+          "geometrySha256": "8a726e6e0fd83c141c2f4710f60f235a2f2db1f7de0e2f1075b36e9d345efb21"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14640%2C14641%2C14672",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:06.095Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2361,
+      "features": [
+        {
+          "transportId": 14672,
+          "properties": {
+            "OBJECTID": 14672
+          },
+          "geometrySha256": "055268ac7f6a3be81267dbf614157cf3a8891f9c5d4ac820ae7230f478670578"
+        },
+        {
+          "transportId": 14640,
+          "properties": {
+            "OBJECTID": 14640
+          },
+          "geometrySha256": "d38c35e0edf95ecde3808d450f1bd9cd143a0acf37c99235dfc40d68c326b474"
+        },
+        {
+          "transportId": 14641,
+          "properties": {
+            "OBJECTID": 14641
+          },
+          "geometrySha256": "81a424b90e5a7d2f7efa6497f26c3e8d412e1d4c2febe449c34752f43e6e3176"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14690%2C14696",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:06.402Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 858,
+      "features": [
+        {
+          "transportId": 14690,
+          "properties": {
+            "OBJECTID": 14690
+          },
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        },
+        {
+          "transportId": 14696,
+          "properties": {
+            "OBJECTID": 14696
+          },
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.448%2C4.184%2C73.449%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:06.733Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.448%2C4.184%2C73.449%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:07.097Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14453,
+        14599,
+        14633,
+        14663,
+        14664,
+        14687,
+        14696,
+        14765
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14453%2C14599%2C14633",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:07.446Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5978,
+      "features": [
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "transportId": 14453,
+          "properties": {
+            "OBJECTID": 14453
+          },
+          "geometrySha256": "8b2d0ccff54634faa467c6b80c59daa9b340099eb62b20fad192fc3ee58e1c08"
+        },
+        {
+          "transportId": 14599,
+          "properties": {
+            "OBJECTID": 14599
+          },
+          "geometrySha256": "d5dc9d1ccc90ad6f8f3de89ac28a9c0a36ad718c9753c682dc482462d2c63df9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14663%2C14664%2C14687",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:07.776Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5264,
+      "features": [
+        {
+          "transportId": 14687,
+          "properties": {
+            "OBJECTID": 14687
+          },
+          "geometrySha256": "1357e0dff2f64c38d47dc4a9194c25a9925bc6541af7af14ae445a66c8f614d1"
+        },
+        {
+          "transportId": 14664,
+          "properties": {
+            "OBJECTID": 14664
+          },
+          "geometrySha256": "1945671791146174069ef06ad4259372bc266456dd4bb5f3a88c7de76865a809"
+        },
+        {
+          "transportId": 14663,
+          "properties": {
+            "OBJECTID": 14663
+          },
+          "geometrySha256": "009cd37008eb42d8073be98583ca639069a0a54c67401b14611dba240af0dc9a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14696%2C14765",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:08.084Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 739,
+      "features": [
+        {
+          "transportId": 14696,
+          "properties": {
+            "OBJECTID": 14696
+          },
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        },
+        {
+          "transportId": 14765,
+          "properties": {
+            "OBJECTID": 14765
+          },
+          "geometrySha256": "d32800d3934f8f96ce9b5d07e73deba4d4747c00211234517cc7e5ba5f21e594"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.446%2C4.185%2C73.447%2C4.186&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:08.394Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.446%2C4.185%2C73.447%2C4.186&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:08.754Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 64,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14675,
+        14677,
+        14784
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14675%2C14677%2C14784",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:09.124Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6138,
+      "features": [
+        {
+          "transportId": 14784,
+          "properties": {
+            "OBJECTID": 14784
+          },
+          "geometrySha256": "a8a31357fa838baa9e1a0dcb8529f91360556adb6aa9aee1b6035a4bbc04ae00"
+        },
+        {
+          "transportId": 14675,
+          "properties": {
+            "OBJECTID": 14675
+          },
+          "geometrySha256": "c76713776d57f4e48474a75e97ee368c304d53f9b44df1d8374b37ac926bfac6"
+        },
+        {
+          "transportId": 14677,
+          "properties": {
+            "OBJECTID": 14677
+          },
+          "geometrySha256": "c5b2807899facf9c2d4b01ef2f9cd3cbec32987e1e9ed10fba6eaefc5f2a88b2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.185%2C73.448%2C4.186&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:09.449Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.185%2C73.448%2C4.186&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:09.797Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 58,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14687,
+        14696
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14687%2C14696",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:10.157Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1336,
+      "features": [
+        {
+          "transportId": 14687,
+          "properties": {
+            "OBJECTID": 14687
+          },
+          "geometrySha256": "1357e0dff2f64c38d47dc4a9194c25a9925bc6541af7af14ae445a66c8f614d1"
+        },
+        {
+          "transportId": 14696,
+          "properties": {
+            "OBJECTID": 14696
+          },
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.448%2C4.185%2C73.449%2C4.186&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:10.484Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.448%2C4.185%2C73.449%2C4.186&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:10.839Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 64,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14663,
+        14687,
+        14696
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14663%2C14687%2C14696",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:11.233Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1922,
+      "features": [
+        {
+          "transportId": 14687,
+          "properties": {
+            "OBJECTID": 14687
+          },
+          "geometrySha256": "1357e0dff2f64c38d47dc4a9194c25a9925bc6541af7af14ae445a66c8f614d1"
+        },
+        {
+          "transportId": 14663,
+          "properties": {
+            "OBJECTID": 14663
+          },
+          "geometrySha256": "009cd37008eb42d8073be98583ca639069a0a54c67401b14611dba240af0dc9a"
+        },
+        {
+          "transportId": 14696,
+          "properties": {
+            "OBJECTID": 14696
+          },
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.182%2C73.448%2C4.183&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:11.944Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.182%2C73.448%2C4.183&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:12.325Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14450
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14450",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:12.680Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3494,
+      "features": [
+        {
+          "transportId": 14450,
+          "properties": {
+            "OBJECTID": 14450
+          },
+          "geometrySha256": "7c3177db1db6282295028e2306c9df5e1de41cf8e2f6ac3b969344fd81827b2c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.186%2C73.448%2C4.187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:12.990Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.186%2C73.448%2C4.187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:13.342Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.445%2C4.184%2C73.446%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:13.693Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.445%2C4.184%2C73.446%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:14.054Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 58,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14675,
+        14677
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14675%2C14677",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:14.432Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4159,
+      "features": [
+        {
+          "transportId": 14675,
+          "properties": {
+            "OBJECTID": 14675
+          },
+          "geometrySha256": "c76713776d57f4e48474a75e97ee368c304d53f9b44df1d8374b37ac926bfac6"
+        },
+        {
+          "transportId": 14677,
+          "properties": {
+            "OBJECTID": 14677
+          },
+          "geometrySha256": "c5b2807899facf9c2d4b01ef2f9cd3cbec32987e1e9ed10fba6eaefc5f2a88b2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.449%2C4.184%2C73.45%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:14.900Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.449%2C4.184%2C73.45%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:15.272Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14663,
+        14664,
+        14714,
+        14773
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14663%2C14664%2C14714",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:15.630Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4667,
+      "features": [
+        {
+          "transportId": 14714,
+          "properties": {
+            "OBJECTID": 14714
+          },
+          "geometrySha256": "7917e7dfb7d36a60cc1886284c7440fa1f29c6b627351ec2b935cc3cb8d1597e"
+        },
+        {
+          "transportId": 14664,
+          "properties": {
+            "OBJECTID": 14664
+          },
+          "geometrySha256": "1945671791146174069ef06ad4259372bc266456dd4bb5f3a88c7de76865a809"
+        },
+        {
+          "transportId": 14663,
+          "properties": {
+            "OBJECTID": 14663
+          },
+          "geometrySha256": "009cd37008eb42d8073be98583ca639069a0a54c67401b14611dba240af0dc9a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14773",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:15.946Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2544,
+      "features": [
+        {
+          "transportId": 14773,
+          "properties": {
+            "OBJECTID": 14773
+          },
+          "geometrySha256": "d325af3f137d5188dc55e77779f648fa42b9db5e48322684a040970787cee35e"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.184%2C73.448%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:16.257Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.447%2C4.184%2C73.448%2C4.185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:16.633Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 111,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        4167,
+        14453,
+        14465,
+        14480,
+        14633,
+        14636,
+        14640,
+        14641,
+        14672,
+        14690,
+        14696
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=4167%2C14453%2C14465",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:17.013Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3393,
+      "features": [
+        {
+          "transportId": 14465,
+          "properties": {
+            "OBJECTID": 14465
+          },
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "transportId": 14453,
+          "properties": {
+            "OBJECTID": 14453
+          },
+          "geometrySha256": "8b2d0ccff54634faa467c6b80c59daa9b340099eb62b20fad192fc3ee58e1c08"
+        },
+        {
+          "transportId": 4167,
+          "properties": {
+            "OBJECTID": 4167
+          },
+          "geometrySha256": "f8938dbe69e386a0e0a87f2e73414f04f54c6c63b50af642bc9d032214bf76db"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14480%2C14633%2C14636",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:17.298Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4113,
+      "features": [
+        {
+          "transportId": 14636,
+          "properties": {
+            "OBJECTID": 14636
+          },
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        },
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "transportId": 14480,
+          "properties": {
+            "OBJECTID": 14480
+          },
+          "geometrySha256": "8a726e6e0fd83c141c2f4710f60f235a2f2db1f7de0e2f1075b36e9d345efb21"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14640%2C14641%2C14672",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:17.610Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2361,
+      "features": [
+        {
+          "transportId": 14672,
+          "properties": {
+            "OBJECTID": 14672
+          },
+          "geometrySha256": "055268ac7f6a3be81267dbf614157cf3a8891f9c5d4ac820ae7230f478670578"
+        },
+        {
+          "transportId": 14640,
+          "properties": {
+            "OBJECTID": 14640
+          },
+          "geometrySha256": "d38c35e0edf95ecde3808d450f1bd9cd143a0acf37c99235dfc40d68c326b474"
+        },
+        {
+          "transportId": 14641,
+          "properties": {
+            "OBJECTID": 14641
+          },
+          "geometrySha256": "81a424b90e5a7d2f7efa6497f26c3e8d412e1d4c2febe449c34752f43e6e3176"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14690%2C14696",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:17.907Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 858,
+      "features": [
+        {
+          "transportId": 14690,
+          "properties": {
+            "OBJECTID": 14690
+          },
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        },
+        {
+          "transportId": 14696,
+          "properties": {
+            "OBJECTID": 14696
+          },
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=OBJECTID+IN+%2814446%2C14450%2C14451%2C14453%2C14465%2C14480%2C14599%2C14632%2C14633%2C14636%2C14640%2C14641%2C14663%2C14664%2C14672%2C14675%2C14677%2C14687%2C14688%2C14690%2C14696%2C14699%2C14714%2C14750%2C14765%2C14773%2C14784%2C14838%2C4167%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:18.196Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 29
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=OBJECTID+IN+%2814446%2C14450%2C14451%2C14453%2C14465%2C14480%2C14599%2C14632%2C14633%2C14636%2C14640%2C14641%2C14663%2C14664%2C14672%2C14675%2C14677%2C14687%2C14688%2C14690%2C14696%2C14699%2C14714%2C14750%2C14765%2C14773%2C14784%2C14838%2C4167%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:18.512Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 219,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14699,
+        14696,
+        14688,
+        14690,
+        14672,
+        14675,
+        14687,
+        14677,
+        14714,
+        14750,
+        14773,
+        14765,
+        14838,
+        14784,
+        14632,
+        14480,
+        14633,
+        14636,
+        14664,
+        14663,
+        14640,
+        14641,
+        14465,
+        14453,
+        14599,
+        14451,
+        14450,
+        14446,
+        4167
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14699%2C14696%2C14688",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:18.823Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4037,
+      "features": [
+        {
+          "transportId": 14688,
+          "properties": {
+            "OBJECTID": 14688
+          },
+          "geometrySha256": "1c4c3acf821f5827174203cecad2221ad27ac5248dc202f556f276450c559ad8"
+        },
+        {
+          "transportId": 14696,
+          "properties": {
+            "OBJECTID": 14696
+          },
+          "geometrySha256": "6d1613f4fe072a2210ffc71343082a6891a4d80d5b457f997ca77c5b6497814a"
+        },
+        {
+          "transportId": 14699,
+          "properties": {
+            "OBJECTID": 14699
+          },
+          "geometrySha256": "080ae6f4b66153a91f437782f3bcf330d059911499be8038bebbf07d22faba5c"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14690%2C14672%2C14675",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:19.138Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4469,
+      "features": [
+        {
+          "transportId": 14690,
+          "properties": {
+            "OBJECTID": 14690
+          },
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        },
+        {
+          "transportId": 14672,
+          "properties": {
+            "OBJECTID": 14672
+          },
+          "geometrySha256": "055268ac7f6a3be81267dbf614157cf3a8891f9c5d4ac820ae7230f478670578"
+        },
+        {
+          "transportId": 14675,
+          "properties": {
+            "OBJECTID": 14675
+          },
+          "geometrySha256": "c76713776d57f4e48474a75e97ee368c304d53f9b44df1d8374b37ac926bfac6"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14687%2C14677%2C14714",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:19.483Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2242,
+      "features": [
+        {
+          "transportId": 14714,
+          "properties": {
+            "OBJECTID": 14714
+          },
+          "geometrySha256": "7917e7dfb7d36a60cc1886284c7440fa1f29c6b627351ec2b935cc3cb8d1597e"
+        },
+        {
+          "transportId": 14687,
+          "properties": {
+            "OBJECTID": 14687
+          },
+          "geometrySha256": "1357e0dff2f64c38d47dc4a9194c25a9925bc6541af7af14ae445a66c8f614d1"
+        },
+        {
+          "transportId": 14677,
+          "properties": {
+            "OBJECTID": 14677
+          },
+          "geometrySha256": "c5b2807899facf9c2d4b01ef2f9cd3cbec32987e1e9ed10fba6eaefc5f2a88b2"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14750%2C14773%2C14765",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:19.808Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3162,
+      "features": [
+        {
+          "transportId": 14750,
+          "properties": {
+            "OBJECTID": 14750
+          },
+          "geometrySha256": "2fa9b77a7e1f05b9c5629d1104c01a5748e5ba1e9b34cd1544a208638d6a0c56"
+        },
+        {
+          "transportId": 14765,
+          "properties": {
+            "OBJECTID": 14765
+          },
+          "geometrySha256": "d32800d3934f8f96ce9b5d07e73deba4d4747c00211234517cc7e5ba5f21e594"
+        },
+        {
+          "transportId": 14773,
+          "properties": {
+            "OBJECTID": 14773
+          },
+          "geometrySha256": "d325af3f137d5188dc55e77779f648fa42b9db5e48322684a040970787cee35e"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14838%2C14784%2C14632",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:20.134Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3711,
+      "features": [
+        {
+          "transportId": 14838,
+          "properties": {
+            "OBJECTID": 14838
+          },
+          "geometrySha256": "6c9466e9888f9e5dd7d7d21c4608c2478e90d1ee1c087c08384311dbdd4ea1fd"
+        },
+        {
+          "transportId": 14632,
+          "properties": {
+            "OBJECTID": 14632
+          },
+          "geometrySha256": "5ba886d0602dd8027728c36119d8317fe5343748ae5c6be927efece0ead73cdf"
+        },
+        {
+          "transportId": 14784,
+          "properties": {
+            "OBJECTID": 14784
+          },
+          "geometrySha256": "a8a31357fa838baa9e1a0dcb8529f91360556adb6aa9aee1b6035a4bbc04ae00"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14480%2C14633%2C14636",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:20.472Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4113,
+      "features": [
+        {
+          "transportId": 14636,
+          "properties": {
+            "OBJECTID": 14636
+          },
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        },
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "transportId": 14480,
+          "properties": {
+            "OBJECTID": 14480
+          },
+          "geometrySha256": "8a726e6e0fd83c141c2f4710f60f235a2f2db1f7de0e2f1075b36e9d345efb21"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14664%2C14663%2C14640",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:20.755Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4746,
+      "features": [
+        {
+          "transportId": 14664,
+          "properties": {
+            "OBJECTID": 14664
+          },
+          "geometrySha256": "1945671791146174069ef06ad4259372bc266456dd4bb5f3a88c7de76865a809"
+        },
+        {
+          "transportId": 14640,
+          "properties": {
+            "OBJECTID": 14640
+          },
+          "geometrySha256": "d38c35e0edf95ecde3808d450f1bd9cd143a0acf37c99235dfc40d68c326b474"
+        },
+        {
+          "transportId": 14663,
+          "properties": {
+            "OBJECTID": 14663
+          },
+          "geometrySha256": "009cd37008eb42d8073be98583ca639069a0a54c67401b14611dba240af0dc9a"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14641%2C14465%2C14453",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:21.066Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2122,
+      "features": [
+        {
+          "transportId": 14465,
+          "properties": {
+            "OBJECTID": 14465
+          },
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "transportId": 14453,
+          "properties": {
+            "OBJECTID": 14453
+          },
+          "geometrySha256": "8b2d0ccff54634faa467c6b80c59daa9b340099eb62b20fad192fc3ee58e1c08"
+        },
+        {
+          "transportId": 14641,
+          "properties": {
+            "OBJECTID": 14641
+          },
+          "geometrySha256": "81a424b90e5a7d2f7efa6497f26c3e8d412e1d4c2febe449c34752f43e6e3176"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14599%2C14451%2C14450",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:21.384Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 9116,
+      "features": [
+        {
+          "transportId": 14451,
+          "properties": {
+            "OBJECTID": 14451
+          },
+          "geometrySha256": "b48c6a70ebc80f74ba3cec677cc61de53ecc2581d3d54bccc5baf1ac2533b44f"
+        },
+        {
+          "transportId": 14450,
+          "properties": {
+            "OBJECTID": 14450
+          },
+          "geometrySha256": "7c3177db1db6282295028e2306c9df5e1de41cf8e2f6ac3b969344fd81827b2c"
+        },
+        {
+          "transportId": 14599,
+          "properties": {
+            "OBJECTID": 14599
+          },
+          "geometrySha256": "d5dc9d1ccc90ad6f8f3de89ac28a9c0a36ad718c9753c682dc482462d2c63df9"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14446%2C4167",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:21.683Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2803,
+      "features": [
+        {
+          "transportId": 14446,
+          "properties": {
+            "OBJECTID": 14446
+          },
+          "geometrySha256": "3f5d3279d2902330847a329249bc6bd00e14b342873af7a9af5e13b912b5d3fe"
+        },
+        {
+          "transportId": 4167,
+          "properties": {
+            "OBJECTID": 4167
+          },
+          "geometrySha256": "f8938dbe69e386a0e0a87f2e73414f04f54c6c63b50af642bc9d032214bf76db"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=OBJECTID+IN+%282147483647%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:22.015Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=OBJECTID+IN+%282147483647%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:22.308Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.4472849913434%2C4.183621997017692%2C73.4479384196123%2C4.184134333773195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:22.602Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.4472849913434%2C4.183621997017692%2C73.4479384196123%2C4.184134333773195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:22.956Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14465,
+        14633,
+        14636,
+        14690
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14465%2C14633%2C14636",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:23.311Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2200,
+      "features": [
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "transportId": 14465,
+          "properties": {
+            "OBJECTID": 14465
+          },
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "transportId": 14636,
+          "properties": {
+            "OBJECTID": 14636
+          },
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        }
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14690",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:23.617Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 469,
+      "features": [
+        {
+          "transportId": 14690,
+          "properties": {
+            "OBJECTID": 14690
+          },
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.4472849913434%2C4.183621997017692%2C73.4479384196123%2C4.184134333773195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:23.904Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&geometry=73.4472849913434%2C4.183621997017692%2C73.4479384196123%2C4.184134333773195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:24.264Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        14465,
+        14633,
+        14636,
+        14690
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14465%2C14633%2C14636",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:24.646Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2200,
+      "features": [
+        {
+          "transportId": 14633,
+          "properties": {
+            "OBJECTID": 14633
+          },
+          "geometrySha256": "add381fa57d23876da2313ff209251d1a01bbcddc8161ee40979f6da6ce0421b"
+        },
+        {
+          "transportId": 14465,
+          "properties": {
+            "OBJECTID": 14465
+          },
+          "geometrySha256": "a16131ab3351593227d62388e6138cd22860b9e355766b5fa02f916e1963de65"
+        },
+        {
+          "transportId": 14636,
+          "properties": {
+            "OBJECTID": 14636
+          },
+          "geometrySha256": "51a9af3733c4ad3677c48f0d868b90b23ae080d8f820a91cdcd1048e0d6d4ac1"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=14690",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:41:24.936Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 469,
+      "features": [
+        {
+          "transportId": 14690,
+          "properties": {
+            "OBJECTID": 14690
+          },
+          "geometrySha256": "2deb3eb25de11065f43b03299172f15d8d18a73c2370df6526f921ac289e8c1f"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/world-capitals-2026-10-08/male-quality.json",
+  "uniqueParcels": 29,
+  "requestCount": 77,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T18:41:25.262Z",
+  "qualityStatus": "audited",
+  "qualitySummary": {
+    "featureCount": 29,
+    "validNonemptyCount": 29,
+    "invalidFeatureCount": 0,
+    "exactDuplicateGeometryPairCount": 0,
+    "overlapPairCount": 2,
+    "sliverLikeOverlapCount": 1,
+    "materialOverlapCount": 1,
+    "sumPairwiseOverlapM2": 2445.6112888400944,
+    "largestOverlapFractionOfSmaller": 0.9999999654645337,
+    "maxEffectiveWidthApproxM": 22.732224896563793,
+    "nearDuplicateOverlapPairCount": 1
+  },
+  "sourceScope": "Hulhumal\u00e9 partial city coverage only; this 13-cell sample does not establish Mal\u00e9-island or full Mal\u00e9 City coverage.",
+  "statusFilterAudit": {
+    "metadataUrl": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0?f=pjson",
+    "officialFields": [
+      "STATUS"
+    ],
+    "officialStatusDomain": [
+      "Planned",
+      "Completed",
+      "Negotiation Ongoing",
+      "Signed"
+    ],
+    "statusMeaning": "Layer metadata names the field domain Lots.DevelopmentStatus; it is a development status, not a parcel lifecycle/current-record flag.",
+    "archiveMetadata": "isDataArchived=true and supportsQueryWithHistoricMoment=true; the qualification used the service default current view and did not request a historic moment.",
+    "filterApplied": false,
+    "reason": "No official active/inactive parcel lifecycle field or definitionExpression is documented. A targeted exact OID adapter read of the material-overlap pair found one Completed status and one null status; excluding null would be unsupported and would not resolve provider lifecycle truth.",
+    "requestTrail": [
+      {
+        "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=OBJECTID+IN+%284167%2C14480%29&f=json&returnCountOnly=true",
+        "method": "GET via existing ArcGIS adapter queryIds",
+        "httpStatus": 200,
+        "count": 2
+      },
+      {
+        "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=OBJECTID+IN+%284167%2C14480%29&f=json&returnIdsOnly=true",
+        "method": "GET via existing ArcGIS adapter queryIds",
+        "httpStatus": 200,
+        "objectIds": [
+          14480,
+          4167
+        ]
+      },
+      {
+        "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CSTATUS&returnGeometry=true&outSR=4326&f=geojson&objectIds=14480%2C4167",
+        "method": "GET via existing ArcGIS adapter queryIds",
+        "httpStatus": 200,
+        "requestedFields": [
+          "OBJECTID",
+          "STATUS"
+        ],
+        "returnedStatuses": [
+          {
+            "OBJECTID": 14480,
+            "STATUS": "Completed"
+          },
+          {
+            "OBJECTID": 4167,
+            "STATUS": null
+          }
+        ],
+        "geometryStored": false
+      }
+    ],
+    "auditRequestCount": 3
+  },
+  "paginationModeObservation": {
+    "qualificationMode": "object-ids manifest paging through the existing ArcGIS adapter, pageSize=3",
+    "result": "All 13 cells and the explicit absence/fresh-ID/footprint/binding tests passed.",
+    "initialOffsetModeProbe": "An initial bounded probe using the adapter default offset pagination failed one dense cell with a repeated/omitted object-ID error; no runtime code was changed. The supported object-ID manifest mode completed correctly."
+  },
+  "qualityConclusion": "One sliver-like overlap and one material near-total containment: two polygons overlap by about 2445.58 m\u00b2, approximately 100% of the smaller polygon. No geometries repaired. This material pair has only about 0.00185 m\u00b2 symmetric difference and is flagged for source-level review."
+}

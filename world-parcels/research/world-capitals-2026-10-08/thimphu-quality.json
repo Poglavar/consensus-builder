@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS topology audit of bounded adapter-returned features projected to EPSG:3857; no geometry repair. Counts describe the tested viewport only.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:3857",
+  "featureCount": 62,
+  "validNonemptyCount": 62,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryGroups": [],
+  "positiveAreaOverlapPairsAbove1e-6M2": [],
+  "areaM2": {
+    "min": 431.68296233902873,
+    "median": 855.1171472968664,
+    "max": 29588.89811707898
+  },
+  "features": [
+    {
+      "id": "thimphu:157649",
+      "areaM2": 2109.950468048004,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157651",
+      "areaM2": 812.4803889704169,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157668",
+      "areaM2": 972.0396116754436,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157650",
+      "areaM2": 759.9882376396454,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158039",
+      "areaM2": 1817.3027730189579,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158068",
+      "areaM2": 29588.89811707898,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157654",
+      "areaM2": 1033.5643624771155,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157659",
+      "areaM2": 2945.9636748027924,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157667",
+      "areaM2": 714.143994747773,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157653",
+      "areaM2": 3426.4292170211115,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157655",
+      "areaM2": 431.68296233902873,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157657",
+      "areaM2": 877.0767243396114,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157652",
+      "areaM2": 2282.438190098939,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157656",
+      "areaM2": 659.5181224352496,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157658",
+      "areaM2": 674.4621731142353,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157662",
+      "areaM2": 644.2657411329756,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157666",
+      "areaM2": 721.3036524287712,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157681",
+      "areaM2": 4369.93202976614,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157660",
+      "areaM2": 642.2283098067279,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157661",
+      "areaM2": 767.6382474929034,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157676",
+      "areaM2": 1030.4185923879854,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157648",
+      "areaM2": 713.4128089006509,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157679",
+      "areaM2": 713.5469426692953,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157680",
+      "areaM2": 555.2046103516357,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158057",
+      "areaM2": 5974.437531016192,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158163",
+      "areaM2": 1560.8078847531008,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158164",
+      "areaM2": 1562.0183837076045,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158058",
+      "areaM2": 833.1575702541214,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158151",
+      "areaM2": 5183.6088764133565,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158159",
+      "areaM2": 2066.4892138471023,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158073",
+      "areaM2": 18436.95124581253,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158083",
+      "areaM2": 15224.202707030217,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158166",
+      "areaM2": 5161.469558744641,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158069",
+      "areaM2": 2293.02249074317,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158059",
+      "areaM2": 1061.3954429883365,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158146",
+      "areaM2": 3818.091171300079,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158067",
+      "areaM2": 1256.4141799305078,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158043",
+      "areaM2": 765.1431767080219,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158115",
+      "areaM2": 699.013373748442,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:164739",
+      "areaM2": 624.9759121973402,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158044",
+      "areaM2": 1748.0932535709157,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157674",
+      "areaM2": 830.7405259880785,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157672",
+      "areaM2": 673.8083978870932,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157673",
+      "areaM2": 776.9075185966705,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157677",
+      "areaM2": 1016.9019839472488,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157664",
+      "areaM2": 2591.3213966602543,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157669",
+      "areaM2": 678.8108950869469,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157675",
+      "areaM2": 1042.1366416297371,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157663",
+      "areaM2": 3991.019505463106,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157665",
+      "areaM2": 689.454038573212,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:157678",
+      "areaM2": 680.615702638161,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158154",
+      "areaM2": 667.7696287018125,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158156",
+      "areaM2": 1053.7579718523198,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158157",
+      "areaM2": 644.0080231021988,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158147",
+      "areaM2": 660.40449351702,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158165",
+      "areaM2": 641.5216302593892,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158155",
+      "areaM2": 677.8538598850334,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158161",
+      "areaM2": 513.796812942946,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158070",
+      "areaM2": 21802.961733151824,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158162",
+      "areaM2": 791.3960107884261,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158158",
+      "areaM2": 683.8674912275612,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "thimphu:158160",
+      "areaM2": 1568.4296374394564,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    }
+  ]
+}

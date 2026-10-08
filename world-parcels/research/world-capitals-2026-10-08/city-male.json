@@ -1,0 +1,248 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:MV:male",
+  "name": "Male",
+  "country": "Maldives",
+  "countryCode": "MV",
+  "centerLatLon": [
+    4.166666666666667,
+    73.5
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:gov.mv Maldives cadastral parcel map GIS land registry Malé",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geomatics.gov.mv/index.php",
+        "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/MapServer/1"
+      ]
+    },
+    {
+      "query": "Maldives Land and Survey Authority cadastral map parcel GIS official Male",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geomatics.gov.mv/index.php",
+        "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/MapServer/1"
+      ]
+    },
+    {
+      "query": "Hulhumalé administratively part of Malé City Greater Malé official capital municipality",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://presidency.gov.mv/Press/Article/29127",
+        "https://malecity.gov.mv/en/news/392"
+      ]
+    },
+    {
+      "query": "site:gov.mv Hulhumalé Malé City administrative boundary official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://presidency.gov.mv/Press/Article/29127"
+      ]
+    },
+    {
+      "query": "މާލެ ބިން ސާރވޭ cadastral parcel land registry",
+      "language": "Dhivehi + English",
+      "method": "web.run search_query",
+      "resultUrls": [],
+      "executedAt": "2026-10-08T19:36:51Z"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://geomatics.gov.mv/index.php",
+      "observation": "Geomatics Department says it manages cadastral survey data and that OneMap is authoritative national map/land-registry source."
+    },
+    {
+      "url": "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/MapServer/1",
+      "observation": "Hulhumalé Development Corporation Lots Public layer is Polygon and exposes LOT_NO, PARCEL_NO, AREA_SQM and ADMIN_NO; extent is around 73.5E, 4.2N and thus is Hulhumalé, not Malé island."
+    },
+    {
+      "url": "https://presidency.gov.mv/Press/Article/29127",
+      "observation": "President’s Office says Male City Council is responsible for municipal services in Malé City, Hulhumalé and Villimalé."
+    },
+    {
+      "url": "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/FeatureServer/2",
+      "observation": "ArcGIS FeatureServer layer metadata names this polygon layer “Parcels Public” and declares OBJECTID. Root service lists five polygon layers: Buildings Public (0), Lots Public (1), Parcels Public (2), Zones Public (3), and Phases Public (4). FeatureServer query returns non-null polygons; corresponding MapServer query returned null geometry in probes."
+    },
+    {
+      "url": "https://gis.hdc.mv/server/rest/services?f=json",
+      "observation": "Public ArcGIS service directory lists a separate `Parcels_public_view` FeatureServer and MapServer. The FeatureServer contains a single `Parcel_Public_View` Polygon layer with OBJECTID and a Hulhumalé-area extent."
+    },
+    {
+      "url": "https://gis.hdc.mv/portal/sharing/rest/search?q=type%3A%22Web+Map%22&f=json",
+      "observation": "Public HDC portal web-map item data was inspected without reading attribute records. Two public web maps reference `DBO_Property_Public/FeatureServer/1` (Lots Public); the verified Parcel_Public_View layer is a separate public FeatureServer item."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/MapServer/1/query",
+      "method": "GET ArcGIS REST bounded query via requests",
+      "params": {
+        "where": "1=1",
+        "geometry": "8175000,465000,8187000,473000",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 3857,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,LOT_NO,PARCEL_NO,AREA_SQM,ADMIN_NO",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 2
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:05:36Z",
+      "outcome": "Two records returned in application/geo+json, but both geometry values were null. No parcel polygon sample can be verified from this public layer response."
+    },
+    {
+      "url": "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/FeatureServer/2/query",
+      "method": "GET ArcGIS REST bounded query, OBJECTID+geometry only",
+      "params": {
+        "geometry": "8175000,465000,8187000,473000",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 102100,
+        "outSR": 4326,
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "f": "geojson",
+        "resultRecordCount": 2
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:25:00Z",
+      "outcome": "application/geo+json returned two non-null Polygon features in the Hulhumalé extent; response exceededTransferLimit=true, so this verifies a bounded sample only."
+    },
+    {
+      "url": "https://gis.hdc.mv/server/rest/services?f=json",
+      "method": "GET ArcGIS REST service directory",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:25:00Z",
+      "outcome": "Directory lists DBO_Property_Public, Lots, Parcels_public_view, Temp_Lands_view and other map/image services."
+    },
+    {
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0?f=json",
+      "method": "GET ArcGIS REST layer metadata",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:25:00Z",
+      "outcome": "Layer `Parcel_Public_View` declares Polygon geometry, OBJECTID, and extent around Hulhumalé."
+    },
+    {
+      "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query",
+      "method": "GET ArcGIS REST bounded query, OBJECTID+geometry only",
+      "params": {
+        "geometry": "8175000,465000,8187000,473000",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 102100,
+        "outSR": 4326,
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "f": "geojson",
+        "resultRecordCount": 2
+      },
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "checkedAt": "2026-10-08T18:25:00Z",
+      "outcome": "Returned two non-null Polygon features in the Hulhumalé extent; response has exceededTransferLimit=true, so this verifies a bounded sample only."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "National Geomatics Department sources establish cadastral survey and land-registry functions, and the public HDC lot service covers Hulhumalé within Malé City; the Dhivehi/English follow-up found no Malé-island layer. Geometry is verified only for the documented bounded sample, not comprehensive Malé-island coverage.",
+  "registryEvidenceUrls": [
+    "https://geomatics.gov.mv/index.php",
+    "https://gis.hdc.mv/server/rest/services/DBO_Property_Public/MapServer/1",
+    "https://presidency.gov.mv/Press/Article/29127"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "url": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0",
+    "kind": "ArcGIS FeatureServer polygon layer",
+    "publisher": "Hulhumalé Development Corporation",
+    "queryUrl": "https://gis.hdc.mv/server/rest/services/Parcels_public_view/FeatureServer/0/query",
+    "geometryType": "Polygon",
+    "scope": "Hulhumalé public parcels; official Male City Council sources include Hulhumalé within Malé City. Bounded geometry verified only in this extent.",
+    "safeSampleFile": "male-safe-sample.geojson",
+    "sampleAttributes": "OBJECTID only",
+    "nativeFields": [
+      "OBJECTID"
+    ]
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/geo+json; charset=UTF-8",
+    "featureCount": 2,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "cityBboxProjected": [
+      8175000,
+      465000,
+      8187000,
+      473000
+    ],
+    "sampleFile": "male-safe-sample.geojson",
+    "exceededTransferLimit": true
+  },
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "HDC public parcel layer; service extent around Hulhumalé, not Malé island. Official city-government evidence places Hulhumalé within Malé City.",
+    "verifiedOpenScope": "Two Polygon features returned from Hulhumalé bounded query.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_quality_review",
+  "status": "complete",
+  "remainingUncertainty": "Hulhumalé public polygons are associated with Malé City, but coverage is partial and excludes Malé island; runtime adapter checks passed via object-ID paging. Independent projected topology found a material near-duplicate overlap affecting nearly all of one feature, so quality remains held for review. No official current/inactive lifecycle filter is documented; STATUS is a nullable development status.",
+  "runtimeQualification": {
+    "status": "adapter_verified_partial_coverage_quality_hold",
+    "sourceId": "mv-hdc-parcels-public-view",
+    "acceptanceFile": "male-acceptance.json",
+    "qualityFile": "male-quality.json",
+    "adapterSampleFile": "male-adapter-sample.geojson",
+    "adapter": "arcgis",
+    "nativeIdentity": "OBJECTID integer; OID identity only, no official cadastral code assumed",
+    "paginationMode": "object-ids manifest; forced page size 3",
+    "gridCellCount": 13,
+    "uniqueNativeIds": 29,
+    "allFreshIdGeometryHashesMatch": true,
+    "adjacentCellGeometryHashConflicts": 0,
+    "absentIdProbePassed": true,
+    "footprintLookup": "complete",
+    "sourceBinding": "complete",
+    "qualityStatus": "material_near_duplicate_overlap_review",
+    "qualitySummary": {
+      "featureCount": 29,
+      "validNonemptyCount": 29,
+      "invalidFeatureCount": 0,
+      "exactDuplicateGeometryPairCount": 0,
+      "overlapPairCount": 2,
+      "sliverLikeOverlapCount": 1,
+      "materialOverlapCount": 1,
+      "sumPairwiseOverlapM2": 2445.6112888400944,
+      "largestOverlapFractionOfSmaller": 0.9999999654645337,
+      "maxEffectiveWidthApproxM": 22.732224896563793,
+      "nearDuplicateOverlapPairCount": 1
+    },
+    "coverage": "Hulhumalé only; partial Malé City coverage, not Malé island or complete municipal coverage",
+    "lifecycleStatusFilterApplied": false,
+    "lifecycleStatusReason": "No official active/inactive parcel lifecycle field or definitionExpression is documented. A targeted exact OID adapter read of the material-overlap pair found one Completed status and one null status; excluding null would be unsupported and would not resolve provider lifecycle truth."
+  },
+  "sourceIds": [
+    "mv-hdc-parcels-public-view"
+  ],
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Hulhumalé sample contains a 2,445.58 m² near-duplicate overlap covering nearly all of the smaller parcel. Nullable development STATUS is not a documented parcel-lifecycle rule.",
+    "evidenceFile": "research/world-capitals-2026-10-08/male-quality.json"
+  },
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/male-safe-sample.geojson"
+}

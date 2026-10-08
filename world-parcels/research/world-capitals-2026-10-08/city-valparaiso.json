@@ -1,0 +1,87 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:CL:valparaiso",
+  "name": "Valparaiso",
+  "country": "Chile",
+  "countryCode": "CL",
+  "centerLatLon": [
+    -33.0472,
+    -71.6127
+  ],
+  "capitalRole": "legislative seat",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Valparaiso Chile municipal catastro predial parcel map GIS official",
+      "language": "Spanish/English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://departamentosig.munivalpo.cl/",
+        "https://geoportal.munivalpo.cl/mapa/",
+        "https://geoportal-sistema-de-informacion-geografica-munivalpo.hub.arcgis.com/"
+      ]
+    },
+    {
+      "query": "Valparaiso Chile official municipal cadastral parcel map property parcels",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://departamentosig.munivalpo.cl/"
+      ]
+    },
+    {
+      "query": "Valparaíso Chile catastro predial parcelas mapa oficial municipal GIS",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://departamentosig.munivalpo.cl/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://departamentosig.munivalpo.cl/",
+      "observation": "Valparaíso municipal GIS department lists a Digital Map and Geoportal and describes georeferenced data for urban planning; parcel layer or service was not identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://departamentosig.munivalpo.cl/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official municipal GIS department page opened; it advertises the city digital map and geoportal for urban-planning data, but a parcel layer was not exposed."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The municipal GIS department offers a digital map and urban-planning geodata, but the official portal and separate English/Spanish searches did not identify a city parcel/cadastral layer.",
+    "urls": [
+      "https://departamentosig.munivalpo.cl/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The municipal GIS department offers a digital map and urban-planning geodata, but the official portal and separate English/Spanish searches did not identify a city parcel/cadastral layer."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The municipal GIS department offers a digital map and urban-planning geodata, but the official portal and separate English/Spanish searches did not identify a city parcel/cadastral layer.",
+  "registryEvidenceUrls": [
+    "https://departamentosig.munivalpo.cl/"
+  ],
+  "sourceIds": []
+}

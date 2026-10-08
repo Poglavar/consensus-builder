@@ -1,0 +1,82 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:VC:kingstown",
+  "name": "Kingstown",
+  "country": "Saint Vincent and the Grenadines",
+  "countryCode": "VC",
+  "centerLatLon": [
+    13.133333333333333,
+    -61.216667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Kingstown Saint Vincent cadastral parcels land registry GIS official government mapping",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://stats.gov.vc/data/maps/"
+      ]
+    },
+    {
+      "query": "site:gis.gov.vc parcel cadastre Kingstown map service",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://stats.gov.vc/data/maps/",
+      "observation": "Official Statistical Office publishes a Kingstown census division PDF and a separate Suburbs of Kingstown map; these show administrative boundaries rather than cadastral parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://stats.gov.vc/data/maps/",
+      "method": "GET",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "The web inspection tool reported a 404 for the government map page linked by search results; no remote service outage or parcel geometry inferred."
+    },
+    {
+      "url": "https://stats.gov.vc/data/maps/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Statistics Office map index was opened, but inspection returned an internal error; no parcel source verified."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "Official statistical maps identify Kingstown census divisions and suburbs, not cadastral parcels; no city parcel registry coverage was established.",
+    "urls": [
+      "https://stats.gov.vc/data/maps/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "Official statistical maps identify Kingstown census divisions and suburbs, not cadastral parcels; no city parcel registry coverage was established."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "Official statistical maps identify Kingstown census divisions and suburbs, not cadastral parcels; no city parcel registry coverage was established.",
+  "registryEvidenceUrls": [
+    "https://stats.gov.vc/data/maps/"
+  ],
+  "sourceIds": []
+}

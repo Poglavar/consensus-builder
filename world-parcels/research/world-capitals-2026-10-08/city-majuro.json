@@ -1,0 +1,69 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:MH:majuro",
+  "name": "Majuro",
+  "country": "Marshall Islands",
+  "countryCode": "MH",
+  "centerLatLon": [
+    7.1,
+    171.383333
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/MH.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/MH.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Marshall Islands land registry parcel GIS map Majuro government cadastral",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"cadastral\" \"Majuro\" \"land\" map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Marshallese \"bwidej\" parcel survey Majuro map",
+      "language": "Marshallese-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://rmigov.com/",
+      "observation": "Government legal notices identify the Land Registration Authority and Division of Lands and Survey in Majuro; searched official/government and local-language sources. No publicly queryable parcel map/service identified; land records are described as office-held and customary."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://rmigov.com/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Official government portal request timed out in the web research tool; no actual HTTP status exposed."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-majuro.json"
+}

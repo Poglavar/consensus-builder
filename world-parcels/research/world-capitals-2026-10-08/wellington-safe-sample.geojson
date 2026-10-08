@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "nz-linz:3821633",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              174.7761767,
+              -41.2881058990644
+            ],
+            [
+              174.7761199,
+              -41.2882068320644
+            ],
+            [
+              174.775948067,
+              -41.2881512990645
+            ],
+            [
+              174.775946933,
+              -41.2881532820645
+            ],
+            [
+              174.77583885,
+              -41.2881183490644
+            ],
+            [
+              174.775839983,
+              -41.2881163820644
+            ],
+            [
+              174.775785117,
+              -41.2880986490644
+            ],
+            [
+              174.7758403,
+              -41.2880006820644
+            ],
+            [
+              174.775841883,
+              -41.2879978820644
+            ],
+            [
+              174.77592215,
+              -41.2880237660644
+            ],
+            [
+              174.7761767,
+              -41.2881058990644
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "nz-linz:3821633",
+        "id": "nz-linz:3821633",
+        "sourceId": "nz-linz-primary-parcels",
+        "sourceParcelId": "3821633",
+        "parcelNumber": "Lot 2 DP 48161",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 3181141,
+          "id": 3821633,
+          "appellation": "Lot 2 DP 48161",
+          "topology_type": "Primary"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nz-linz:4060608",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              174.775785117,
+              -41.2880986490644
+            ],
+            [
+              174.775783383,
+              -41.2881017160644
+            ],
+            [
+              174.775482917,
+              -41.2880034820644
+            ],
+            [
+              174.77553985,
+              -41.2879024660644
+            ],
+            [
+              174.7758403,
+              -41.2880006820644
+            ],
+            [
+              174.775785117,
+              -41.2880986490644
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "nz-linz:4060608",
+        "id": "nz-linz:4060608",
+        "sourceId": "nz-linz-primary-parcels",
+        "sourceParcelId": "4060608",
+        "parcelNumber": "Lot 1 DP 48161",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 3181234,
+          "id": 4060608,
+          "appellation": "Lot 1 DP 48161",
+          "topology_type": "Primary"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nz-linz:3836836",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              174.7748809,
+              -41.2879564320644
+            ],
+            [
+              174.77490855,
+              -41.2879650490644
+            ],
+            [
+              174.775216567,
+              -41.2880603160645
+            ],
+            [
+              174.77517725,
+              -41.2881307160644
+            ],
+            [
+              174.774841967,
+              -41.2880258320644
+            ],
+            [
+              174.7748809,
+              -41.2879564320644
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "nz-linz:3836836",
+        "id": "nz-linz:3836836",
+        "sourceId": "nz-linz-primary-parcels",
+        "sourceParcelId": "3836836",
+        "parcelNumber": "Lot 1 DP 88882",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 3200224,
+          "id": 3836836,
+          "appellation": "Lot 1 DP 88882",
+          "topology_type": "Primary"
+        }
+      }
+    }
+  ]
+}

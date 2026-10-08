@@ -1,0 +1,76 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:FM:palikir",
+  "name": "Palikir",
+  "country": "Federated States of Micronesia",
+  "countryCode": "FM",
+  "centerLatLon": [
+    6.916667,
+    158.15
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/FM.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/FM.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Palikir FSM cadastral parcel GIS official land records mapping",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Palikir pohnpei en sapw land map parcels cadastral",
+      "language": "Pohnpeian/local-language attempt",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Pohnpeian sapw map cadastral parcel Palikir",
+      "language": "Pohnpeian-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://fsm-data.sprep.org/dataset/fsm-decem-geoportal",
+      "observation": "Official DECEM geoportal is described by SPREP as the FSM geospatial data-sharing platform. Government contact records place national government at Palikir. Geoportal shell could not be opened as a queryable parcel service; no cadastral polygon endpoint found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://fsm-data.sprep.org/dataset/fsm-decem-geoportal",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Public landing page for official DECEM geoportal; no parcel geometry endpoint linked in the inspected view."
+    },
+    {
+      "url": "https://www.gov.fm/contact-2/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Page was not accessible via web research tool; no actual HTTP status exposed."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-palikir.json"
+}

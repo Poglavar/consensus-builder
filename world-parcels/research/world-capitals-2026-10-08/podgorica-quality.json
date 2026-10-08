@@ -1,0 +1,2904 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32634",
+  "featureCount": 408,
+  "validNonemptyCount": 406,
+  "invalidFeatures": [
+    {
+      "id": "me-water:517317",
+      "reason": "Self-intersection[357035.428350806 4700142.72972176]",
+      "empty": false
+    },
+    {
+      "id": "me-water:530006",
+      "reason": "Ring Self-intersection[357731.534010145 4699462.54444861]",
+      "empty": false
+    }
+  ],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "me-water:507240",
+        "me-water:515939"
+      ],
+      "overlapM2": 216008.74771672615,
+      "fractionOfSmaller": 0.9999990860163745
+    },
+    {
+      "ids": [
+        "me-water:511723",
+        "me-water:528106"
+      ],
+      "overlapM2": 49958.95411566949,
+      "fractionOfSmaller": 0.9999980750882516
+    }
+  ],
+  "sumPairwiseOverlapM2": 265967.7018323956,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 2.009361925032719,
+    "median": 145.22233402251993,
+    "max": 221568.0040523927
+  },
+  "features": [
+    {
+      "id": "me-water:507240",
+      "areaM2": 216021.38827494736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510741",
+      "areaM2": 1559.0804996749432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511248",
+      "areaM2": 3507.097700134469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511723",
+      "areaM2": 50742.89309079914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513283",
+      "areaM2": 998.1742003967273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513427",
+      "areaM2": 1387.1450700933863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513428",
+      "areaM2": 384.13287049863595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513699",
+      "areaM2": 282.9746851088493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513700",
+      "areaM2": 469.9666872233506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513716",
+      "areaM2": 2555.2835019092145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514127",
+      "areaM2": 15301.475439075519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514164",
+      "areaM2": 4523.4661234265695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514368",
+      "areaM2": 17113.257573212777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515736",
+      "areaM2": 9697.188194291333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515939",
+      "areaM2": 216008.94514536497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517159",
+      "areaM2": 1670.910606599957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517317",
+      "areaM2": 5267.757991620632,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518083",
+      "areaM2": 8813.6124997534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518990",
+      "areaM2": 12331.745642841639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:528106",
+      "areaM2": 49959.05028243232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510739",
+      "areaM2": 1675.1010664243083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510852",
+      "areaM2": 3962.1430734267706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510874",
+      "areaM2": 3586.1885821251435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511351",
+      "areaM2": 1133.465093204091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511594",
+      "areaM2": 3470.16084200318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511595",
+      "areaM2": 3285.648340156718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513715",
+      "areaM2": 332.0675668784755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517784",
+      "areaM2": 2143.1195513833964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518178",
+      "areaM2": 1096.3967688620614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518314",
+      "areaM2": 604.7329356011272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510737",
+      "areaM2": 774.8545816780537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510738",
+      "areaM2": 572.3208720232246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510740",
+      "areaM2": 404.83750952436276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510747",
+      "areaM2": 1866.0208624501179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510748",
+      "areaM2": 43.386022300341544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510749",
+      "areaM2": 63.595100301467596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510750",
+      "areaM2": 38.34597575657833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510751",
+      "areaM2": 48.475580575859944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510873",
+      "areaM2": 41.930432206288756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511244",
+      "areaM2": 1569.1656811991102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511245",
+      "areaM2": 525.8431821323244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511254",
+      "areaM2": 253.42275635869532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511255",
+      "areaM2": 15.854562712280721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511256",
+      "areaM2": 63.61802098428335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511257",
+      "areaM2": 49.465470456005896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511258",
+      "areaM2": 59.4450927999362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511350",
+      "areaM2": 247.61307432192834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511592",
+      "areaM2": 1228.6008404304462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511593",
+      "areaM2": 107.59932014775548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511909",
+      "areaM2": 11.004463957564564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512706",
+      "areaM2": 96.79408087428916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513219",
+      "areaM2": 164.8152677571138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513827",
+      "areaM2": 59.73587561746304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513828",
+      "areaM2": 63.0163830351501,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513829",
+      "areaM2": 54.87304595111317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513830",
+      "areaM2": 39.91215679965737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514249",
+      "areaM2": 31.97838160160784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514250",
+      "areaM2": 34.650333873244016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514278",
+      "areaM2": 100.51192497834086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515806",
+      "areaM2": 81.09918361668136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516727",
+      "areaM2": 4568.927621868655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518558",
+      "areaM2": 11447.137419511393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518890",
+      "areaM2": 124.65087220678934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510742",
+      "areaM2": 1044.9046919136167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510857",
+      "areaM2": 1212.348478897169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511247",
+      "areaM2": 335.41122732997087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512568",
+      "areaM2": 893.664271071036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512840",
+      "areaM2": 192.1981914283701,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513845",
+      "areaM2": 747.7334740224218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513846",
+      "areaM2": 134.02746178442825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513847",
+      "areaM2": 104.75547238526181,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515669",
+      "areaM2": 1588.8422403791492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516325",
+      "areaM2": 236.72826011285616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516927",
+      "areaM2": 491.90945162713837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516950",
+      "areaM2": 1057.707762461461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517262",
+      "areaM2": 660.8032466465801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517934",
+      "areaM2": 167.9028905861951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518033",
+      "areaM2": 293.62349826944575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511260",
+      "areaM2": 729.3817075510602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513812",
+      "areaM2": 105.71453661043628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516644",
+      "areaM2": 393.14022870791536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516929",
+      "areaM2": 21.021391607995824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516948",
+      "areaM2": 82.26003655650229,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516949",
+      "areaM2": 10.792838334320306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517973",
+      "areaM2": 7.580423071417291,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518271",
+      "areaM2": 302.21343870075094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518272",
+      "areaM2": 7.522583510155102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518922",
+      "areaM2": 93.3652589067479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518925",
+      "areaM2": 12.13982124526615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518926",
+      "areaM2": 2073.6525985775243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510752",
+      "areaM2": 18.482729300240955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510753",
+      "areaM2": 17.79678198517508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510870",
+      "areaM2": 68.73711282744887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510871",
+      "areaM2": 75.4517400791876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510872",
+      "areaM2": 8.840611194098692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511207",
+      "areaM2": 15.78208016725544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511259",
+      "areaM2": 150.85518730534463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511345",
+      "areaM2": 31.76756015515079,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511365",
+      "areaM2": 170.66133131925264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511686",
+      "areaM2": 118.9442606386617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511721",
+      "areaM2": 17.945703740741614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511722",
+      "areaM2": 24.359707863838754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511795",
+      "areaM2": 96.3163485839204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511918",
+      "areaM2": 38.9594951595938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512267",
+      "areaM2": 23.650246541446478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512275",
+      "areaM2": 76.59300143450278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512281",
+      "areaM2": 14.000050838520837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512600",
+      "areaM2": 15.594095850695439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512601",
+      "areaM2": 16.708439778082134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512825",
+      "areaM2": 81.14884671500249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512857",
+      "areaM2": 671.8970889112513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512941",
+      "areaM2": 165.74052907079485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513090",
+      "areaM2": 16.781350624137094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513831",
+      "areaM2": 56.243774169949326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513832",
+      "areaM2": 17.946857675516874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513833",
+      "areaM2": 23.0160012513153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513834",
+      "areaM2": 17.219510746933032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514051",
+      "areaM2": 55.374379787487484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514126",
+      "areaM2": 15.853089654530685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514262",
+      "areaM2": 10.782191870851738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514263",
+      "areaM2": 167.40676593771872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514557",
+      "areaM2": 1449.2211955211599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514693",
+      "areaM2": 111.03273296831578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514781",
+      "areaM2": 403.26812172276607,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514955",
+      "areaM2": 17.040595629843438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515157",
+      "areaM2": 13.538526615310897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515327",
+      "areaM2": 2.009361925032719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515328",
+      "areaM2": 140.58683983001515,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515344",
+      "areaM2": 31.79806320742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515345",
+      "areaM2": 3.9628835531002062,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515807",
+      "areaM2": 75.84821775367335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516694",
+      "areaM2": 119.61990168593303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517114",
+      "areaM2": 31.050081323135153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517127",
+      "areaM2": 2.4920738751465326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517517",
+      "areaM2": 4.373909488220047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517910",
+      "areaM2": 2032.3021913409318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517924",
+      "areaM2": 141.746056416275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517967",
+      "areaM2": 42.59259617277187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518075",
+      "areaM2": 145.5541947492346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518076",
+      "areaM2": 58.17094180776936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518263",
+      "areaM2": 586.3784048592729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518265",
+      "areaM2": 62.982350295269946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518530",
+      "areaM2": 351.2572277733719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518550",
+      "areaM2": 170.43225502941394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518567",
+      "areaM2": 253.84752096846043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518580",
+      "areaM2": 33.75721297408097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518608",
+      "areaM2": 303.19325030511595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518706",
+      "areaM2": 194.73332664549912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518901",
+      "areaM2": 24709.037517595123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:519177",
+      "areaM2": 107.34589266421777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:519178",
+      "areaM2": 44.57324827431922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511225",
+      "areaM2": 333.2896787913222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511226",
+      "areaM2": 93.32949101384202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511439",
+      "areaM2": 220.21949852248903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511581",
+      "areaM2": 403.2466932967055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511861",
+      "areaM2": 98.7417495423774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511941",
+      "areaM2": 174.43564466013146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511987",
+      "areaM2": 197.79833953985477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512066",
+      "areaM2": 385.9287335794754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512569",
+      "areaM2": 83.82061283682603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512582",
+      "areaM2": 388.26605585233665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512583",
+      "areaM2": 23.430613649130457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512584",
+      "areaM2": 200.33941113392527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512827",
+      "areaM2": 463.57016105476447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512829",
+      "areaM2": 103.70561682230249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512830",
+      "areaM2": 1440.8885061183603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512839",
+      "areaM2": 161.90843801465797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512841",
+      "areaM2": 22.362104541843003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512842",
+      "areaM2": 86.72884413781482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512843",
+      "areaM2": 168.48524127011478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513321",
+      "areaM2": 221.47066013883835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513627",
+      "areaM2": 52.78411614504109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513628",
+      "areaM2": 80.78042071477108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513637",
+      "areaM2": 7.086245346079739,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513943",
+      "areaM2": 1460.3565272360893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514244",
+      "areaM2": 25.349894896293897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514286",
+      "areaM2": 45.76154410762694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515006",
+      "areaM2": 192.30465218319617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515656",
+      "areaM2": 247.49260136277684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515666",
+      "areaM2": 297.6171187489054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515667",
+      "areaM2": 10.847424388620038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515684",
+      "areaM2": 73.46251293675755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515685",
+      "areaM2": 140.7691925375615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515887",
+      "areaM2": 218.8504029154209,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516326",
+      "areaM2": 10.844546718188127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516571",
+      "areaM2": 101.79147628509692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516572",
+      "areaM2": 302.90070315366285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516574",
+      "areaM2": 205.23620591425788,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516578",
+      "areaM2": 194.93131031315434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516579",
+      "areaM2": 489.89771095076156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516580",
+      "areaM2": 183.90130260461603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517216",
+      "areaM2": 220.3636559636404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517263",
+      "areaM2": 586.9882458763262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517937",
+      "areaM2": 273.42982916751777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518079",
+      "areaM2": 212.05138410965276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518568",
+      "areaM2": 113.03750987324656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518704",
+      "areaM2": 422.05514270732425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511342",
+      "areaM2": 508.04157563389134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511758",
+      "areaM2": 5.044467210578948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511788",
+      "areaM2": 390.83984940270074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512588",
+      "areaM2": 44.30109270387479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512589",
+      "areaM2": 49.99261352454273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512613",
+      "areaM2": 35.31709526269111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512846",
+      "areaM2": 237.7933682632039,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512847",
+      "areaM2": 245.6285219356155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512848",
+      "areaM2": 120.65894273350911,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512869",
+      "areaM2": 20.575864787101686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512870",
+      "areaM2": 182.90003590799492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512906",
+      "areaM2": 5.0291949287950395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513309",
+      "areaM2": 3.6019753942221633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513448",
+      "areaM2": 2.22243218490702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513777",
+      "areaM2": 4.482674745680873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514335",
+      "areaM2": 68.18102990780353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514336",
+      "areaM2": 69.91915119029093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514337",
+      "areaM2": 86.26344965744833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514428",
+      "areaM2": 221.83027204492987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514481",
+      "areaM2": 78.91782446999403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514774",
+      "areaM2": 212.52446862484885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514789",
+      "areaM2": 201.07921122659712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514898",
+      "areaM2": 145.88097549471595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515005",
+      "areaM2": 148.83961399124345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515037",
+      "areaM2": 149.93357548900437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515038",
+      "areaM2": 8.999683392957422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515668",
+      "areaM2": 269.93101812471025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515683",
+      "areaM2": 22.54491992859871,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515838",
+      "areaM2": 206.66435056832557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516384",
+      "areaM2": 62.82054172987147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516586",
+      "areaM2": 223.1753664207889,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516587",
+      "areaM2": 243.2128898762976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516588",
+      "areaM2": 251.88270499538098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516660",
+      "areaM2": 84.7107775514591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516661",
+      "areaM2": 344.38459177796835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516688",
+      "areaM2": 10.95727845666723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516928",
+      "areaM2": 2.2813189647416117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516945",
+      "areaM2": 11.961336554822584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516946",
+      "areaM2": 20.636985728326767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516947",
+      "areaM2": 6.536464916005595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518035",
+      "areaM2": 39.34618968751277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518070",
+      "areaM2": 36.22144966266768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518566",
+      "areaM2": 322.9091227227815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518573",
+      "areaM2": 431.69871599386323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518923",
+      "areaM2": 144.89047329580524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518924",
+      "areaM2": 140.0420758148053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511278",
+      "areaM2": 317.29820697711494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511991",
+      "areaM2": 29.14948078421744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512282",
+      "areaM2": 91.61320005294789,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512288",
+      "areaM2": 745.6373161506527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512581",
+      "areaM2": 321.57402046140646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512676",
+      "areaM2": 175.7578013666978,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512835",
+      "areaM2": 396.35180326813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512838",
+      "areaM2": 196.87686271348866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512849",
+      "areaM2": 172.67429973365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512850",
+      "areaM2": 114.9214486498285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512912",
+      "areaM2": 243.96263086447098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513094",
+      "areaM2": 951.132349923741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514038",
+      "areaM2": 30.300141507385636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514558",
+      "areaM2": 91.95584512971335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514699",
+      "areaM2": 89.7945815109438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515326",
+      "areaM2": 122.02652667005563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515672",
+      "areaM2": 258.57174322735807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516115",
+      "areaM2": 31.46568879646431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516589",
+      "areaM2": 109.39803381618351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516695",
+      "areaM2": 77.14025544480968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517459",
+      "areaM2": 110.88641220084153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517461",
+      "areaM2": 7.441719360986755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518242",
+      "areaM2": 143.37377844905004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518302",
+      "areaM2": 569.6835266470841,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518570",
+      "areaM2": 369.7352018465651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518571",
+      "areaM2": 611.0653680272704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518714",
+      "areaM2": 96.73194342037678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518954",
+      "areaM2": 19968.1599178201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518974",
+      "areaM2": 263.40309044580556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513698",
+      "areaM2": 499.1286071247988,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513713",
+      "areaM2": 684.0100535703089,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513714",
+      "areaM2": 346.88941384369895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513794",
+      "areaM2": 51.80083567895641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514367",
+      "areaM2": 5.859718342216611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514917",
+      "areaM2": 7423.534867516591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516375",
+      "areaM2": 1677.9281558117589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516376",
+      "areaM2": 12.052307757056333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517817",
+      "areaM2": 12333.346684650767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517818",
+      "areaM2": 71.28551297847653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518165",
+      "areaM2": 3371.0702212745523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518350",
+      "areaM2": 168.0821637162289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518351",
+      "areaM2": 73.36880913266518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518660",
+      "areaM2": 598.6250828066819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:530006",
+      "areaM2": 221568.0040523927,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511341",
+      "areaM2": 189.66302107122556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511800",
+      "areaM2": 56.202420437954366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511862",
+      "areaM2": 155.28790901576002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511863",
+      "areaM2": 154.88638434373834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512585",
+      "areaM2": 9.833262035483845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512586",
+      "areaM2": 270.27352037051355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512836",
+      "areaM2": 442.116420760709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512837",
+      "areaM2": 328.23852170596405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512844",
+      "areaM2": 52.70896238748306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512845",
+      "areaM2": 57.322237645889125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512859",
+      "areaM2": 41.614713059435964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512860",
+      "areaM2": 68.03465207102741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512861",
+      "areaM2": 165.0600542415898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513320",
+      "areaM2": 5971.169489671436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513529",
+      "areaM2": 3.1158584291736573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514202",
+      "areaM2": 182.73022016052647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514502",
+      "areaM2": 305.11466342447386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515008",
+      "areaM2": 23.438661160855766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515009",
+      "areaM2": 12.490323986933934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515670",
+      "areaM2": 58.16009165071795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515676",
+      "areaM2": 292.0868030899777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515677",
+      "areaM2": 48.74103252989022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515678",
+      "areaM2": 51.3192295564762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515679",
+      "areaM2": 47.86736212325178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515680",
+      "areaM2": 46.69727978734123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515682",
+      "areaM2": 22.68491481541686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515686",
+      "areaM2": 406.57081689888895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515910",
+      "areaM2": 811.3702495383457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516349",
+      "areaM2": 506.4778250309738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516581",
+      "areaM2": 103.0258525684869,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516582",
+      "areaM2": 51.43963374899297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516648",
+      "areaM2": 44.836026643865345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516649",
+      "areaM2": 155.7210391630476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516650",
+      "areaM2": 182.5713468897652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516652",
+      "areaM2": 29.051017975186422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516659",
+      "areaM2": 1367.6298229278439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517146",
+      "areaM2": 25212.455430875645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517307",
+      "areaM2": 272.7187397622731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517383",
+      "areaM2": 1069.2057580224432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517993",
+      "areaM2": 236.80405626569146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518118",
+      "areaM2": 1076.445150366774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518748",
+      "areaM2": 823.1466422465475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518749",
+      "areaM2": 2539.3714426426527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518827",
+      "areaM2": 70.11618227969034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:519118",
+      "areaM2": 180.38238092117206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:519119",
+      "areaM2": 24.061969822082023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511515",
+      "areaM2": 292.15653480204617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511516",
+      "areaM2": 1273.9060904730477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511734",
+      "areaM2": 351.2110985620277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512575",
+      "areaM2": 4166.709084086019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512828",
+      "areaM2": 206.26840416172752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512834",
+      "areaM2": 622.3418662065102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513225",
+      "areaM2": 86.33341221346417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513843",
+      "areaM2": 1602.2432631866468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514134",
+      "areaM2": 1192.276879174829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514135",
+      "areaM2": 1525.3193965546889,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514136",
+      "areaM2": 251.31972938596198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516570",
+      "areaM2": 387.32761789400166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516573",
+      "areaM2": 194.41349774315182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516625",
+      "areaM2": 1726.7555812640528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517342",
+      "areaM2": 3450.0993073932277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518103",
+      "areaM2": 402.9530591751241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510744",
+      "areaM2": 640.5017135900652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510855",
+      "areaM2": 29.22473753296948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510856",
+      "areaM2": 65.05993825745786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510864",
+      "areaM2": 29.88527954288524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510876",
+      "areaM2": 17.18132249396073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:510877",
+      "areaM2": 453.67154454007766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511246",
+      "areaM2": 309.4969476972414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511250",
+      "areaM2": 93.97699878116357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511251",
+      "areaM2": 48.82468696168254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511261",
+      "areaM2": 37.32651146232845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511262",
+      "areaM2": 120.95823566593603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511609",
+      "areaM2": 1417.0845960440515,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511748",
+      "areaM2": 138.7808443816927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:511839",
+      "areaM2": 23.995921491834213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512592",
+      "areaM2": 285.73986321531146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512597",
+      "areaM2": 55.0842770382949,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512598",
+      "areaM2": 82.50817512643721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512599",
+      "areaM2": 117.89624092542407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512602",
+      "areaM2": 1330.7794195253318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512851",
+      "areaM2": 232.9465246061679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512858",
+      "areaM2": 67.92902985314029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512970",
+      "areaM2": 63.864633204766086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512976",
+      "areaM2": 3.768046156148428,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:512977",
+      "areaM2": 110.45629906353842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513151",
+      "areaM2": 10.80938963078517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513152",
+      "areaM2": 18.328654049197638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513230",
+      "areaM2": 32.929838134670575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513782",
+      "areaM2": 1453.8754121771626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513862",
+      "areaM2": 4.7125868769265855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:513890",
+      "areaM2": 98.60004632726255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514220",
+      "areaM2": 23.163306885418663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514514",
+      "areaM2": 3.684037018683982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514584",
+      "areaM2": 147.29156810330977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514691",
+      "areaM2": 132.54711577584354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:514961",
+      "areaM2": 27.909375600541264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515194",
+      "areaM2": 155.70066954623232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515284",
+      "areaM2": 157.68395604926056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515824",
+      "areaM2": 54.76196645270448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515909",
+      "areaM2": 9.50590686002652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:515935",
+      "areaM2": 138.04303498778017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516643",
+      "areaM2": 61.031748066091275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516645",
+      "areaM2": 77.98955388151694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516646",
+      "areaM2": 79.80100215207399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516806",
+      "areaM2": 6.398053750711241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516882",
+      "areaM2": 9.926756891391733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:516883",
+      "areaM2": 8.955096182868916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517250",
+      "areaM2": 31.239583762713767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517251",
+      "areaM2": 50.14999587200118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517252",
+      "areaM2": 4241.722506721077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517292",
+      "areaM2": 255.53526949541754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517725",
+      "areaM2": 157.42576095096194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517773",
+      "areaM2": 84.13355114233487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:517961",
+      "areaM2": 159.88844217099043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518019",
+      "areaM2": 69.38182624564348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518060",
+      "areaM2": 137.19652171384797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518061",
+      "areaM2": 45.25688440933502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518081",
+      "areaM2": 2095.21277806793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518092",
+      "areaM2": 196.67108192654467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "me-water:518771",
+      "areaM2": 85.07906695428503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

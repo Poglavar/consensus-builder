@@ -1,0 +1,167 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry in Vienna; public sample verification is separate from executable adapter acceptance.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:AT:vienna",
+  "name": "Vienna",
+  "country": "Austria",
+  "countryCode": "AT",
+  "centerLatLon": [
+    48.2082,
+    16.3738
+  ],
+  "pointBasis": "Chosen central-city research locator, not an official boundary.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/AT.json"
+  ],
+  "priorEvidenceAssessment": "Earlier national GeoPackage range samples were not located in Vienna; no prior city-specific request found.",
+  "executedQueries": [
+    {
+      "query": "Vienna Austria cadastral parcels open data WFS BEV cadastral map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Wien Kataster Grundstücke BEV offene Daten API WFS Grundstücksgrenzen",
+      "language": "German",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site.data.bev.gv.at \"Kataster\" \"Wien\" \"gpkg\"",
+      "language": "German",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site.kataster.bev.gv.at \"API\" \"Grundstück\" \"GeoJSON\"",
+      "language": "German",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.bev.gv.at/Services/Geoinformationsdienste/Services/Katasterservice.html",
+      "observation": "Official BEV service page states public free cadastral map/API without access restrictions, no owner information, daily updating, and direct integration. Legal-coordinate limitations and conditions retained as notices."
+    },
+    {
+      "url": "https://www.bev.gv.at/en/Services/Products/Cadastre.html",
+      "observation": "BEV cadastral map product information; national scope."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/",
+      "observation": "Official viewer script and linked map style expose public vector tile and parcel-reference lookup endpoints. Embedded help states zoom 16 geometries are depicted with centimetre accuracy but do not yield legally binding coordinates."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kataster.bev.gv.at/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer shell and observed script reference read."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/styles/kataster/style_basic.json",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official style lists gst polygon layer."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/styles/kataster/tiles.json",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "XYZ vector tiles, maximum zoom16."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/assets/index-CtYaVX4-.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public client reveals api/all, api/gst/{kg}/{gnr}, and help describing vector data."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1&layers=GST-KG",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Cadastral reference 01004-1 found; geometry is a bounding rectangle, not the parcel shape."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/01004/1/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Exact-reference metadata again returns bounding rectangle."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/1125032332/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer exact object-id lookup also returns bounding rectangle."
+    },
+    {
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "72457-byte HTTP200 protobuf tile decoded to gst layer with 252 parcel polygon features; extent65536. Three polygons strictly inside the tile retained as safe examples."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official cadastral service returned cadastral references and polygon features inside central Vienna.",
+  "registryEvidenceUrls": [
+    "https://www.bev.gv.at/Services/Geoinformationsdienste/Services/Katasterservice.html",
+    "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "source": {
+    "sourceId": "at-bev-kataster-vector-tiles",
+    "name": "Austrian BEV cadastral vector tiles",
+    "operator": "Bundesamt für Eich- und Vermessungswesen (BEV)",
+    "endpoint": "https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf",
+    "method": "GET",
+    "responseFormat": "Mapbox Vector Tile (PBF), gst polygon layer",
+    "crs": "EPSG:3857 tile grid, converted to EPSG:4326",
+    "nativeIdentity": "kg + gnr cadastral reference; tile feature.id transport identity",
+    "scope": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+    "reuseNotice": "Official client states CC BY 4.0; retain BEV attribution and survey-coordinate caveat."
+  },
+  "sourceIds": [
+    "at-bev-kataster-vector-tiles"
+  ],
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "parcelRecordCount": 252,
+    "retainedSampleCount": 3,
+    "responseFile": "research/world-capitals-2026-10-08/vienna-adapter-sample.geojson",
+    "geometryType": "Polygon",
+    "queryPointLatLon": [
+      48.2082,
+      16.3738
+    ],
+    "sampleMeaning": "Three retained shapes are completely within the tile; boundary-crossing parcels require complete-shape reconstruction and independent checks.",
+    "initialSampleMetadataFile": "research/world-capitals-2026-10-08/vienna-safe-sample.json"
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "Official Austrian cadastre",
+    "verifiedOpenScope": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "enabled",
+  "status": "complete",
+  "appCityId": "vienna",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+    "evidenceFile": "research/world-capitals-2026-10-08/vienna-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/vienna-quality.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/vienna-adapter-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      48.2092,
+      16.37
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.0005
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "purpose": "Fresh direct native-coordinate verification of two small Beirut parcel boundary slivers. Polygons are retained unchanged.",
+  "checkedAt": "2026-10-08",
+  "request": {
+    "checkedAt": "2026-10-08T18:52:40.005Z",
+    "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?f=json&objectIds=17576%2C17577%2C18117%2C18668&outFields=OBJECTID_1%2CPID&returnGeometry=true&outSR=32636",
+    "httpStatus": 200,
+    "count": 4
+  },
+  "nativeCrs": "EPSG:32636",
+  "pairs": [
+    {
+      "ids": [
+        "Zo_74",
+        "Zo_73"
+      ],
+      "overlapM2": 0.1251821266752966,
+      "fractionOfSmaller": 0.0004979623707430194,
+      "maximumInscribedDiameterM": 0.026182335578543037
+    },
+    {
+      "ids": [
+        "Zo_101",
+        "Zo_77"
+      ],
+      "overlapM2": 0.30756021004686074,
+      "fractionOfSmaller": 0.0007532652060980672,
+      "maximumInscribedDiameterM": 0.042634768506327345
+    }
+  ],
+  "assessment": "Both source overlaps are narrow boundary slivers, under 0.31 square metres, 0.076 percent of the smaller parcel and 4.3 centimetres in inscribed width. Bounded qualification accepted with this explicit precision caveat; no geometry repair or new global tolerance."
+}

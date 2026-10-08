@@ -1,0 +1,73 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:KN:basseterre",
+  "name": "Basseterre",
+  "country": "Saint Kitts and Nevis",
+  "countryCode": "KN",
+  "centerLatLon": [
+    17.3,
+    -62.716667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Basseterre Saint Kitts cadastral map parcel land registry GIS government",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    },
+    {
+      "query": "site:mof.gov.kn Lands and Surveys parcel map GIS Saint Kitts cadastre",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.legal.gov.kn/land-registry/",
+      "observation": "Official Land Registry in Basseterre maintains consolidated current land records for Saint Christopher and Nevis; public access is in-person/e-search planned, with no public parcel geometry endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.legal.gov.kn/land-registry/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official registry page opened. It describes current records for Saint Christopher and Nevis; in-person searches are available and an electronic search service is planned, with no parcel geometry endpoint exposed."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The Land Registry is in Basseterre and maintains records for Saint Christopher and Nevis; available evidence describes in-person/e-search access, not Basseterre-specific coverage or parcel geometry.",
+    "urls": [
+      "https://www.legal.gov.kn/land-registry/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The Land Registry is in Basseterre and maintains records for Saint Christopher and Nevis; available evidence describes in-person/e-search access, not Basseterre-specific coverage or parcel geometry."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The Land Registry is in Basseterre and maintains records for Saint Christopher and Nevis; available evidence describes in-person/e-search access, not Basseterre-specific coverage or parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.legal.gov.kn/land-registry/"
+  ],
+  "sourceIds": []
+}

@@ -1,0 +1,171 @@
+{
+  "cityId": "capital:LB:beirut",
+  "name": "Beirut",
+  "country": "Lebanon",
+  "countryCode": "LB",
+  "centerLatLon": [
+    33.86666666666667,
+    35.5
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Beirut Lebanon official cadastral map GIS parcel plots land registry geographic portal",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.lrc.gov.lb/ar/content/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D9%84%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9",
+        "https://www.beiruturbanlab.com/en/Details/845/new-basemap-layers-of-the-beirut-built-environment-database-available-for-download",
+        "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/Cadastral_new/FeatureServer/0",
+        "https://storymaps.arcgis.com/stories/bfe80e48487d42a2a82ea061f3c62966"
+      ]
+    },
+    {
+      "query": "بيروت لبنان خريطة عقارية كادستر GIS عقار دائرة المساحة رسمي",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.lebanesearmy.gov.lb/ar/administrative_transactions/53",
+        "https://dgu.gov.lb/",
+        "https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download",
+        "https://www.lrc.gov.lb/ar/content/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D9%84%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download",
+      "observation": "Beirut Urban Lab says its database, developed with CNRS, includes municipal Beirut property boundaries and lot numbers, with downloadable data under ODbL."
+    },
+    {
+      "url": "https://www.beiruturbanlab.com/en/Details/845/new-basemap-layers-of-the-beirut-built-environment-database-available-for-download",
+      "observation": "Beirut Urban Lab describes free downloadable updated BBED layers and states ODbL attribution requirements."
+    },
+    {
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/Cadastral_new/FeatureServer/0",
+      "observation": "Beirut Urban Lab polygon layer; safe native fields include OBJECTID, CadastralID, Mohafaza, Kadaa, ArabicName, EnglishName, Cadastral_NewEng, DataSource and DateCreated. Layer metadata reports dataLastEditDate 2026-04-22; user/editor field CreatedBy omitted."
+    },
+    {
+      "url": "https://experience.arcgis.com/experience/e4268e4d6b9748668b5c7ca9891709c4",
+      "observation": "Publisher-linked Experience app references web map e74d5dc120dc4ac6bbe3fb22976686c7, whose Parcels of Beirut layer is forDameg FeatureServer/1."
+    },
+    {
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+      "observation": "Parcel_Output: description explicitly defines PID as cadastral district abbreviation plus parcel number, e.g. Ai_133. Geometry is separate individual land parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/Cadastral_new/FeatureServer/0/query",
+      "method": "GET ArcGIS REST bounded query via curl",
+      "params": {
+        "where": "1=1",
+        "geometry": "35.48,33.88,35.53,33.92",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 3
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:54:56Z",
+      "outcome": "Returned three Polygon geometries in municipal Beirut bbox; query requested OBJECTID and geometry only. Response exceededTransferLimit=true, but this bounded response contained exactly three features."
+    },
+    {
+      "url": "https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download",
+      "method": "web.run open",
+      "checkedAt": "2026-10-08",
+      "outcome": "Primary publisher page read: property boundaries and parcel numbers, 2019 survey update, linked download/map platform and ODbL notice."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/e4268e4d6b9748668b5c7ca9891709c4/data?f=json",
+      "httpStatus": 200,
+      "outcome": "Observed linked basemap item e74d5dc120dc4ac6bbe3fb22976686c7."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/e74d5dc120dc4ac6bbe3fb22976686c7/data?f=json",
+      "httpStatus": 200,
+      "outcome": "Parcels of Beirut references the tested forDameg layer."
+    },
+    {
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Polygon parcel layer with PID/native district-and-lot reference, OBJECTID_1 transport identity, EPSG:32636 native."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The publisher-linked municipal Beirut cadastral basemap returns individual parcel polygons and district/lot references. This establishes local cadastral geometry; legal registration, ownership, and currentness are not established by the research copy.",
+  "registryEvidenceUrls": [
+    "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+    "https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "sourceId": "lb-bbed-beirut-parcels",
+    "name": "Beirut Urban Lab municipal parcel basemap",
+    "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+    "endpoint": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+    "publisher": "Beirut Urban Lab / American University of Beirut, with CNRS",
+    "nativeIdentity": "PID: district abbreviation plus parcel number; OBJECTID_1 is transport identity",
+    "geometryType": "Polygon",
+    "scope": "Bounded municipal Beirut parcels; publisher describes a basemap updated to its 2019 survey. This is a research basemap, not a legal title service.",
+    "licence": "ODbL, attribution required as source notice.",
+    "safeSampleFile": "beirut-plots-adapter-sample.geojson"
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "sampleFile": "beirut-plots-adapter-sample.geojson",
+    "acceptanceFile": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json",
+    "uniqueAcceptedParcelReferences": 89
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "Municipal Beirut cadastral basemap",
+    "verifiedOpenScope": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "enabled",
+  "status": "complete",
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "remainingUncertainty": "Bounded sample only. Current legal registration and wider completeness are unverified; two native-coordinate boundary slivers are under 0.31 m² and 4.3 cm width, retained unchanged.",
+  "rejectedCandidates": [
+    {
+      "endpoint": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/Cadastral_new/FeatureServer/0",
+      "reason": "Cadastral districts with place names, not individual land parcels; earlier protocol/geometry results do not qualify it as a parcel source.",
+      "protocolDiagnosticFile": "research/world-capitals-2026-10-08/beirut-adapter-qualification.json"
+    }
+  ],
+  "sourceIds": [
+    "lb-bbed-beirut-parcels"
+  ],
+  "runtimeQualified": true,
+  "acceptanceFile": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json",
+  "geometryQualityFile": "research/world-capitals-2026-10-08/beirut-plots-quality.json",
+  "researchGroup": "asia",
+  "appCityId": "beirut",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "89 complete district-and-parcel PID references in 13 Beirut cells. Publisher describes a 2019-survey basemap; current legal registration and citywide completeness unverified. Two unchanged boundary slivers are under 0.31 m², 0.076% of the smaller parcel and 4.3 cm wide.",
+    "evidenceFile": "research/world-capitals-2026-10-08/beirut-plots-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/beirut-plots-quality.json"
+  },
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/beirut-plots-adapter-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      33.896,
+      35.5
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.001
+  }
+}

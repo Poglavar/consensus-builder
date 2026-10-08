@@ -3650,7 +3650,17 @@
             "athens": "Atena, Grčka",
             "gaborone": "Gaborone, Bocvana",
             "bloemfontein": "Bloemfontein, Južnoafrička Republika",
-            "pretoria": "Pretoria, Južnoafrička Republika"
+            "pretoria": "Pretoria, Južnoafrička Republika",
+            "vienna": "Beč, Austrija",
+            "cetinje": "Cetinje, Crna Gora",
+            "sanmarino": "San Marino, San Marino",
+            "thehague": "Haag, Nizozemska",
+            "wellington": "Wellington, Novi Zeland",
+            "beirut": "Bejrut, Libanon",
+            "thimphu": "Thimphu — Taba, Butan",
+            "bandarseribegawan": "Bandar Seri Begawan, Brunej",
+            "jerusalem": "Jeruzalem, Izrael",
+            "eastjerusalem": "Istočni Jeruzalem, Palestina"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",
@@ -4234,6 +4244,7 @@
             "noResults": "Nema takvog mjesta"
         },
         "legend": {
+            "toggle": "Legenda karte",
             "title": "Pokrivenost česticama po državi",
             "cities": "Grad s česticama u aplikaciji"
         },
@@ -4301,6 +4312,7 @@
         },
         "activity": {
             "title": "Najnovije aktivnosti",
+            "zoningType": "Zoniranje",
             "loading": "Učitavanje aktivnosti…",
             "empty": "Još nema nedavnih aktivnosti.",
             "error": "Aktivnosti privremeno nisu dostupne.",
